@@ -32,16 +32,39 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CLIENTES } from "@/lib/mock-data";
 import { formatRelativeTime } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 export function Topbar() {
+  const router = useRouter();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [lastSync, setLastSync] = useState<Date>(new Date(Date.now() - 1000 * 60 * 8));
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [userName, setUserName] = useState<string>("ADM Geral");
   const [period, setPeriod] = useState("7d");
   const [cliente, setCliente] = useState(CLIENTES[0]?.id ?? "");
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) {
+        setUserEmail(data.user.email ?? "");
+        const meta = data.user.user_metadata as { name?: string } | null;
+        if (meta?.name) setUserName(meta.name);
+      }
+    });
+  }, []);
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    toast.success("Sessão encerrada");
+    router.push("/login");
+    router.refresh();
+  };
 
   const handleSync = async () => {
     setSyncing(true);
@@ -151,17 +174,26 @@ export function Topbar() {
           <Button variant="ghost" className="h-9 px-2 gap-2">
             <Avatar className="size-7">
               <AvatarFallback className="bg-[var(--ddg-orange)]/20 text-[var(--ddg-orange)] text-xs font-bold">
-                LC
+                {userName
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .slice(0, 2)
+                  .toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <span className="hidden md:inline text-xs font-medium">ADM Geral</span>
+            <span className="hidden md:inline text-xs font-medium">
+              {userName}
+            </span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>
             <div className="flex flex-col">
-              <span className="text-sm font-medium">Lucas Cassiano</span>
-              <span className="text-xs text-muted-foreground">ADM Geral</span>
+              <span className="text-sm font-medium">{userName}</span>
+              <span className="text-xs text-muted-foreground truncate">
+                {userEmail || "ADM Geral"}
+              </span>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
@@ -169,7 +201,9 @@ export function Topbar() {
           <DropdownMenuItem>Configurações</DropdownMenuItem>
           <DropdownMenuItem>Logs de auditoria</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="text-destructive">Sair</DropdownMenuItem>
+          <DropdownMenuItem className="text-destructive" onClick={handleLogout}>
+            Sair
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>
