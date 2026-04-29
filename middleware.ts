@@ -23,6 +23,8 @@ export async function middleware(request: NextRequest) {
     "/api/webhooks",
     // OAuth callback
     "/api/oauth",
+    // Facebook Data Deletion callback
+    "/api/data-deletion",
   ];
   if (publicPaths.some((p) => request.nextUrl.pathname.startsWith(p))) {
     return NextResponse.next();
