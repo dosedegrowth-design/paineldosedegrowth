@@ -26,8 +26,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { configurarGoogle, testarConexaoGoogle, desconectarGoogle } from "@/lib/actions/conexoes";
+import { iniciarOAuthGoogle } from "@/lib/actions/oauth-google";
 import type { ClienteCompleto } from "@/lib/actions/clientes";
 import { formatRelativeTime } from "@/lib/utils";
+import { useOAuthPopup, type OAuthCompleteEvent } from "@/hooks/use-oauth-popup";
 
 interface Props {
   cliente: ClienteCompleto;
@@ -94,6 +96,39 @@ export function ConexaoGoogle({ cliente, onUpdate }: Props) {
     });
   };
 
+  // OAuth popup handler
+  const handleOAuthComplete = (event: OAuthCompleteEvent) => {
+    if (event.provider !== "google") return;
+    if (!event.ok) {
+      toast.error("Falha ao conectar Google", {
+        description: event.error ?? "Erro desconhecido",
+      });
+      return;
+    }
+    toast.success("Google Ads conectado!", {
+      description: "Refresh token salvo. Atualizando dados...",
+    });
+    onUpdate();
+  };
+
+  const { abrirPopup } = useOAuthPopup({ onComplete: handleOAuthComplete });
+
+  const handleOAuthConnect = () => {
+    startTransition(async () => {
+      const res = await iniciarOAuthGoogle(cliente.id, "configuracoes", "popup");
+      if (!res.ok || !res.url) {
+        toast.error("OAuth indisponível", { description: res.error });
+        return;
+      }
+      const opened = abrirPopup(res.url, "google");
+      if (!opened) {
+        toast.info("Popup bloqueado", {
+          description: "Redirecionando direto pro Google...",
+        });
+      }
+    });
+  };
+
   return (
     <>
       <Card
@@ -131,13 +166,25 @@ export function ConexaoGoogle({ cliente, onUpdate }: Props) {
           </div>
 
           <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-border">
+            {!isConnected && (
+              <Button
+                variant="ddg"
+                size="sm"
+                onClick={handleOAuthConnect}
+                disabled={pending}
+                className="gap-2"
+              >
+                {pending ? <Loader2 className="size-3.5 animate-spin" /> : <ExternalLink className="size-3.5" />}
+                Conectar via Google
+              </Button>
+            )}
             <Button
-              variant={isConnected ? "outline" : "ddg"}
+              variant={isConnected ? "outline" : "outline"}
               size="sm"
               onClick={() => setOpen(true)}
               className="gap-2"
             >
-              {isConnected ? "Editar" : "Configurar"}
+              {isConnected ? "Editar" : "Configurar manualmente"}
             </Button>
             {(isPending || isConnected) && cliente.google_customer_id && (
               <Button

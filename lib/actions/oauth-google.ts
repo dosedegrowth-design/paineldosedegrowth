@@ -25,7 +25,8 @@ const REQUIRED_SCOPES = ["https://www.googleapis.com/auth/adwords"].join(" ");
 
 export async function iniciarOAuthGoogle(
   clienteId: string,
-  origem: "wizard" | "configuracoes" = "configuracoes"
+  origem: "wizard" | "configuracoes" = "configuracoes",
+  modo: "popup" | "redirect" = "redirect"
 ): Promise<{ ok: boolean; url?: string; error?: string }> {
   if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
     return {
@@ -34,9 +35,9 @@ export async function iniciarOAuthGoogle(
     };
   }
 
-  // State: cliente_id.origem.nonce — valida CSRF e identifica destino do callback
+  // State: cliente_id.origem.modo.nonce — valida CSRF, destino e modo de retorno
   const nonce = crypto.randomBytes(8).toString("hex");
-  const state = `${clienteId}.${origem}.${nonce}`;
+  const state = `${clienteId}.${origem}.${modo}.${nonce}`;
 
   // Salva state pra validar no callback
   const supabase = await createClient();
@@ -68,15 +69,17 @@ export async function iniciarOAuthGoogle(
 export async function trocarCodeGoogle(params: {
   code: string;
   state: string;
-}): Promise<{ ok: boolean; clienteId?: string; origem?: string; error?: string }> {
+}): Promise<{ ok: boolean; clienteId?: string; origem?: string; modo?: string; error?: string }> {
   if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
     return { ok: false, error: "Google OAuth não configurado" };
   }
 
-  // Validar state: cliente_id.origem.nonce
+  // Validar state: cliente_id.origem.modo.nonce (4 partes) ou cliente_id.origem.nonce (legado)
   const partes = params.state.split(".");
-  if (partes.length !== 3) return { ok: false, error: "State inválido" };
-  const [clienteId, origem] = partes;
+  if (partes.length < 3) return { ok: false, error: "State inválido" };
+  const clienteId = partes[0];
+  const origem = partes[1];
+  const modo = partes.length === 4 ? partes[2] : "redirect";
 
   const supabase = await createClient();
   const { data: acesso } = await supabase
@@ -166,7 +169,7 @@ export async function trocarCodeGoogle(params: {
     if (error) return { ok: false, error: error.message };
 
     revalidatePath("/clientes");
-    return { ok: true, clienteId, origem };
+    return { ok: true, clienteId, origem, modo };
   } catch (err) {
     return { ok: false, error: String(err) };
   }

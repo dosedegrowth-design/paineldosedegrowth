@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { trocarCodeGoogle } from "@/lib/actions/oauth-google";
 import { createClient } from "@/lib/supabase/server";
+import { renderPopupResponse } from "@/lib/oauth-popup-response";
 
 /**
  * Callback do OAuth Google.
- * Google redireciona pra cá com ?code=... &state=cliente_id.origem.nonce
- *
- * Origem decide pra onde redireciona:
- * - "wizard"        → /clientes?wizard=resume&clienteId=X&google_ok=1
- * - "configuracoes" → /clientes/[slug]?google_ok=1
+ * Google redireciona pra cá com ?code=... &state=cliente_id.origem.modo.nonce
  */
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
@@ -17,17 +14,36 @@ export async function GET(req: NextRequest) {
   const error = url.searchParams.get("error");
   const errorDescription = url.searchParams.get("error_description");
 
-  // Erro vindo do Google (usuário cancelou, escopo negado, etc.)
+  const partes = state?.split(".") ?? [];
+  const modoFromState =
+    partes.length === 4 && (partes[2] === "popup" || partes[2] === "redirect")
+      ? partes[2]
+      : "redirect";
+
   if (error) {
+    const msg = errorDescription ?? error;
+    if (modoFromState === "popup") {
+      return renderPopupResponse({
+        ok: false,
+        provider: "google",
+        error: msg,
+        origin: url.origin,
+      });
+    }
     return NextResponse.redirect(
-      new URL(
-        `/clientes?oauth_error=${encodeURIComponent(errorDescription ?? error)}`,
-        url.origin
-      )
+      new URL(`/clientes?oauth_error=${encodeURIComponent(msg)}`, url.origin)
     );
   }
 
   if (!code || !state) {
+    if (modoFromState === "popup") {
+      return renderPopupResponse({
+        ok: false,
+        provider: "google",
+        error: "Parâmetros inválidos",
+        origin: url.origin,
+      });
+    }
     return NextResponse.redirect(
       new URL("/clientes?oauth_error=Parâmetros inválidos", url.origin)
     );
@@ -36,6 +52,14 @@ export async function GET(req: NextRequest) {
   const result = await trocarCodeGoogle({ code, state });
 
   if (!result.ok) {
+    if (modoFromState === "popup") {
+      return renderPopupResponse({
+        ok: false,
+        provider: "google",
+        error: result.error ?? "Erro Google OAuth",
+        origin: url.origin,
+      });
+    }
     return NextResponse.redirect(
       new URL(
         `/clientes?oauth_error=${encodeURIComponent(result.error ?? "Erro Google OAuth")}`,
@@ -46,8 +70,17 @@ export async function GET(req: NextRequest) {
 
   const clienteId = result.clienteId!;
   const origem = result.origem ?? "configuracoes";
+  const modo = result.modo ?? modoFromState;
 
-  // Wizard: volta pra /clientes?wizard=resume e passo 5 (Específico)
+  if (modo === "popup") {
+    return renderPopupResponse({
+      ok: true,
+      provider: "google",
+      clienteId,
+      origin: url.origin,
+    });
+  }
+
   if (origem === "wizard") {
     return NextResponse.redirect(
       new URL(
@@ -57,7 +90,6 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  // Configurações: volta pra página do cliente
   const supabase = await createClient();
   const { data: cliente } = await supabase
     .schema("trafego_ddg")

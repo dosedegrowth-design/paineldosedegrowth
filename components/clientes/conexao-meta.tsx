@@ -21,6 +21,7 @@ import { configurarMeta, testarConexaoMeta, desconectarMeta } from "@/lib/action
 import { iniciarOAuthMeta } from "@/lib/actions/oauth-meta";
 import type { ClienteCompleto } from "@/lib/actions/clientes";
 import { formatRelativeTime } from "@/lib/utils";
+import { useOAuthPopup, type OAuthCompleteEvent } from "@/hooks/use-oauth-popup";
 
 interface Props {
   cliente: ClienteCompleto;
@@ -89,15 +90,36 @@ export function ConexaoMeta({ cliente, onUpdate }: Props) {
     });
   };
 
+  // OAuth popup handler
+  const handleOAuthComplete = (event: OAuthCompleteEvent) => {
+    if (event.provider !== "meta") return;
+    if (!event.ok) {
+      toast.error("Falha ao conectar Meta", {
+        description: event.error ?? "Erro desconhecido",
+      });
+      return;
+    }
+    toast.success("Meta Ads conectado!", {
+      description: "Token long-lived salvo. Atualizando dados...",
+    });
+    onUpdate();
+  };
+
+  const { abrirPopup } = useOAuthPopup({ onComplete: handleOAuthComplete });
+
   const handleOAuthConnect = () => {
     startTransition(async () => {
-      const res = await iniciarOAuthMeta(cliente.id);
+      const res = await iniciarOAuthMeta(cliente.id, "configuracoes", "popup");
       if (!res.ok) {
         toast.error("OAuth indisponível", { description: res.error });
         return;
       }
-      // Redireciona pro Facebook
-      window.location.href = res.url!;
+      const opened = abrirPopup(res.url!, "meta");
+      if (!opened) {
+        toast.info("Popup bloqueado", {
+          description: "Redirecionando direto pro Facebook...",
+        });
+      }
     });
   };
 

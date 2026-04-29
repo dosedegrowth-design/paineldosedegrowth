@@ -30,7 +30,8 @@ const REQUIRED_SCOPES = [
 
 export async function iniciarOAuthMeta(
   clienteId: string,
-  origem: "wizard" | "configuracoes" = "configuracoes"
+  origem: "wizard" | "configuracoes" = "configuracoes",
+  modo: "popup" | "redirect" = "redirect"
 ): Promise<{ ok: boolean; url?: string; error?: string }> {
   if (!META_APP_ID) {
     return {
@@ -40,9 +41,9 @@ export async function iniciarOAuthMeta(
     };
   }
 
-  // State: cliente_id.origem.nonce — valida CSRF e identifica destino do callback
+  // State: cliente_id.origem.modo.nonce — valida CSRF, destino e modo de retorno
   const nonce = crypto.randomBytes(8).toString("hex");
-  const state = `${clienteId}.${origem}.${nonce}`;
+  const state = `${clienteId}.${origem}.${modo}.${nonce}`;
 
   // Salva state no Supabase pra validar no callback
   const supabase = await createClient();
@@ -74,17 +75,24 @@ export async function iniciarOAuthMeta(
 export async function trocarCodeMeta(params: {
   code: string;
   state: string;
-}): Promise<{ ok: boolean; clienteId?: string; origem?: string; error?: string }> {
+}): Promise<{ ok: boolean; clienteId?: string; origem?: string; modo?: string; error?: string }> {
   if (!META_APP_ID || !META_APP_SECRET) {
     return { ok: false, error: "Meta App não configurado" };
   }
 
-  // Validar state — formato novo: cliente_id.origem.nonce ; legado: cliente_id.nonce
+  // Validar state — formato novo: cliente_id.origem.modo.nonce
+  // Legado v2: cliente_id.origem.nonce ; Legado v1: cliente_id.nonce
   const partes = params.state.split(".");
   if (partes.length < 2) return { ok: false, error: "State inválido" };
   const clienteId = partes[0];
-  // Se tem 3 partes, segunda é origem; se tem 2, é state legado (= configuracoes)
-  const origem = partes.length === 3 ? partes[1] : "configuracoes";
+  let origem = "configuracoes";
+  let modo = "redirect";
+  if (partes.length === 4) {
+    origem = partes[1];
+    modo = partes[2];
+  } else if (partes.length === 3) {
+    origem = partes[1];
+  }
   if (!clienteId) return { ok: false, error: "State inválido" };
 
   const supabase = await createClient();
@@ -162,7 +170,7 @@ export async function trocarCodeMeta(params: {
     if (error) return { ok: false, error: error.message };
 
     revalidatePath("/clientes");
-    return { ok: true, clienteId, origem };
+    return { ok: true, clienteId, origem, modo };
   } catch (err) {
     return { ok: false, error: String(err) };
   }

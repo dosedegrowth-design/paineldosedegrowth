@@ -37,6 +37,7 @@ import {
 } from "@/lib/actions/clientes";
 import { iniciarOAuthMeta } from "@/lib/actions/oauth-meta";
 import { iniciarOAuthGoogle } from "@/lib/actions/oauth-google";
+import { useOAuthPopup, type OAuthCompleteEvent } from "@/hooks/use-oauth-popup";
 
 const TIPOS: {
   value: TipoNegocio;
@@ -141,6 +142,32 @@ export function ClienteWizard({ onClose }: WizardProps) {
   const [cacMaximo, setCacMaximo] = useState("");
   const [ticketMedio, setTicketMedio] = useState("");
   const [observacoes, setObservacoes] = useState("");
+
+  // Hook OAuth popup: callback chamado quando popup retorna com sucesso/erro
+  const handleOAuthComplete = (event: OAuthCompleteEvent) => {
+    if (!event.ok) {
+      toast.error(`Falha ao conectar ${event.provider === "meta" ? "Meta" : "Google"}`, {
+        description: event.error ?? "Erro desconhecido",
+      });
+      return;
+    }
+    if (event.provider === "meta") {
+      setMetaConectado(true);
+      toast.success("Meta Ads conectado!", {
+        description: "Token salvo. Bora pro próximo passo.",
+      });
+      // Avança automaticamente
+      setStep((s) => (s === 3 ? 4 : s));
+    } else if (event.provider === "google") {
+      setGoogleConectado(true);
+      toast.success("Google Ads conectado!", {
+        description: "Refresh token salvo. Bora pro próximo passo.",
+      });
+      setStep((s) => (s === 4 ? 5 : s));
+    }
+  };
+
+  const { abrirPopup } = useOAuthPopup({ onComplete: handleOAuthComplete });
 
   // Restaura estado do sessionStorage ao montar (após retorno de OAuth)
   useEffect(() => {
@@ -287,14 +314,21 @@ export function ClienteWizard({ onClose }: WizardProps) {
       toast.error("Cliente ainda não foi salvo. Volta e tenta de novo.");
       return;
     }
+    // Persiste estado caso popup falhe e caia no fallback redirect
     persistState({ step: 3 });
     startTransition(async () => {
-      const res = await iniciarOAuthMeta(clienteId, "wizard");
+      const res = await iniciarOAuthMeta(clienteId, "wizard", "popup");
       if (!res.ok || !res.url) {
         toast.error("Falha ao iniciar OAuth Meta", { description: res.error });
         return;
       }
-      window.location.href = res.url;
+      const opened = abrirPopup(res.url, "meta");
+      if (!opened) {
+        // Fallback: popup foi bloqueado, página redirecionou — toast informativo
+        toast.info("Popup bloqueado", {
+          description: "Redirecionando direto pro Facebook...",
+        });
+      }
     });
   };
 
@@ -305,12 +339,17 @@ export function ClienteWizard({ onClose }: WizardProps) {
     }
     persistState({ step: 4 });
     startTransition(async () => {
-      const res = await iniciarOAuthGoogle(clienteId, "wizard");
+      const res = await iniciarOAuthGoogle(clienteId, "wizard", "popup");
       if (!res.ok || !res.url) {
         toast.error("Falha ao iniciar OAuth Google", { description: res.error });
         return;
       }
-      window.location.href = res.url;
+      const opened = abrirPopup(res.url, "google");
+      if (!opened) {
+        toast.info("Popup bloqueado", {
+          description: "Redirecionando direto pro Google...",
+        });
+      }
     });
   };
 
