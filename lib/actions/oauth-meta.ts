@@ -29,7 +29,8 @@ const REQUIRED_SCOPES = [
 ].join(",");
 
 export async function iniciarOAuthMeta(
-  clienteId: string
+  clienteId: string,
+  origem: "wizard" | "configuracoes" = "configuracoes"
 ): Promise<{ ok: boolean; url?: string; error?: string }> {
   if (!META_APP_ID) {
     return {
@@ -39,8 +40,9 @@ export async function iniciarOAuthMeta(
     };
   }
 
-  // State assina cliente_id pra impedir CSRF
-  const state = `${clienteId}.${crypto.randomBytes(8).toString("hex")}`;
+  // State: cliente_id.origem.nonce — valida CSRF e identifica destino do callback
+  const nonce = crypto.randomBytes(8).toString("hex");
+  const state = `${clienteId}.${origem}.${nonce}`;
 
   // Salva state no Supabase pra validar no callback
   const supabase = await createClient();
@@ -72,13 +74,17 @@ export async function iniciarOAuthMeta(
 export async function trocarCodeMeta(params: {
   code: string;
   state: string;
-}): Promise<{ ok: boolean; clienteId?: string; error?: string }> {
+}): Promise<{ ok: boolean; clienteId?: string; origem?: string; error?: string }> {
   if (!META_APP_ID || !META_APP_SECRET) {
     return { ok: false, error: "Meta App não configurado" };
   }
 
-  // Validar state
-  const [clienteId] = params.state.split(".");
+  // Validar state — formato novo: cliente_id.origem.nonce ; legado: cliente_id.nonce
+  const partes = params.state.split(".");
+  if (partes.length < 2) return { ok: false, error: "State inválido" };
+  const clienteId = partes[0];
+  // Se tem 3 partes, segunda é origem; se tem 2, é state legado (= configuracoes)
+  const origem = partes.length === 3 ? partes[1] : "configuracoes";
   if (!clienteId) return { ok: false, error: "State inválido" };
 
   const supabase = await createClient();
@@ -156,7 +162,7 @@ export async function trocarCodeMeta(params: {
     if (error) return { ok: false, error: error.message };
 
     revalidatePath("/clientes");
-    return { ok: true, clienteId };
+    return { ok: true, clienteId, origem };
   } catch (err) {
     return { ok: false, error: String(err) };
   }

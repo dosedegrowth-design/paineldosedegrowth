@@ -15,6 +15,9 @@ import {
   Loader2,
   Settings,
   ArrowRight,
+  FileEdit,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -36,6 +39,7 @@ export default function ClientesPage() {
   const [clientes, setClientes] = useState<ClienteCompleto[]>([]);
   const [loading, setLoading] = useState(true);
   const [showWizard, setShowWizard] = useState(false);
+  const [mostrarRascunhos, setMostrarRascunhos] = useState(false);
 
   const loadClientes = async () => {
     setLoading(true);
@@ -52,6 +56,10 @@ export default function ClientesPage() {
     setShowWizard(false);
     loadClientes();
   };
+
+  const clientesFinalizados = clientes.filter((c) => c.setup_concluido);
+  const clientesRascunho = clientes.filter((c) => !c.setup_concluido);
+  const clientesVisiveis = mostrarRascunhos ? clientes : clientesFinalizados;
 
   return (
     <div className="space-y-6">
@@ -81,12 +89,29 @@ export default function ClientesPage() {
       </AnimatePresence>
 
       {!showWizard && !loading && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <SummaryCounter label="Total clientes" value={clientes.length} />
-          <SummaryCounter label="Lead/WhatsApp" value={clientes.filter((c) => c.tipo_negocio === "lead_whatsapp").length} />
-          <SummaryCounter label="E-commerce" value={clientes.filter((c) => c.tipo_negocio === "ecommerce").length} />
-          <SummaryCounter label="Setup completo" value={clientes.filter((c) => c.setup_concluido).length} highlight />
-        </div>
+        <>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <SummaryCounter label="Total ativos" value={clientesFinalizados.length} />
+            <SummaryCounter label="Lead/WhatsApp" value={clientesFinalizados.filter((c) => c.tipo_negocio === "lead_whatsapp").length} />
+            <SummaryCounter label="E-commerce" value={clientesFinalizados.filter((c) => c.tipo_negocio === "ecommerce").length} />
+            <SummaryCounter label="Rascunhos" value={clientesRascunho.length} />
+          </div>
+
+          {clientesRascunho.length > 0 && (
+            <div className="flex items-center justify-end">
+              <button
+                type="button"
+                onClick={() => setMostrarRascunhos((v) => !v)}
+                className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {mostrarRascunhos ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
+                {mostrarRascunhos
+                  ? "Ocultar rascunhos"
+                  : `Ver rascunhos (${clientesRascunho.length})`}
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       {loading && (
@@ -99,16 +124,27 @@ export default function ClientesPage() {
 
       {!loading && !showWizard && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {clientes.length === 0 && (
+          {clientesVisiveis.length === 0 && (
             <Card className="md:col-span-3">
               <CardContent className="p-12 text-center text-sm text-muted-foreground">
-                Nenhum cliente cadastrado ainda.
-                <br />
-                Clique em &ldquo;Novo cliente&rdquo; pra começar.
+                {clientes.length === 0 ? (
+                  <>
+                    Nenhum cliente cadastrado ainda.
+                    <br />
+                    Clique em &ldquo;Novo cliente&rdquo; pra começar.
+                  </>
+                ) : (
+                  <>
+                    Nenhum cliente finalizado ainda.
+                    <br />
+                    {clientesRascunho.length > 0 &&
+                      `Você tem ${clientesRascunho.length} rascunho(s) — clique em "Ver rascunhos" pra finalizar.`}
+                  </>
+                )}
               </CardContent>
             </Card>
           )}
-          {clientes.map((c, idx) => {
+          {clientesVisiveis.map((c, idx) => {
             const tipoCfg = TIPO_LABEL[c.tipo_negocio];
             const Icon = tipoCfg.icon;
             const conexoesPendentes = [
@@ -124,7 +160,14 @@ export default function ClientesPage() {
                 transition={{ delay: idx * 0.04 }}
               >
                 <Link href={`/clientes/${c.slug}`}>
-                <Card className="hover:border-[var(--ddg-orange)]/40 transition-all h-full cursor-pointer hover:scale-[1.01]">
+                <Card
+                  className={cn(
+                    "transition-all h-full cursor-pointer hover:scale-[1.01]",
+                    c.setup_concluido
+                      ? "hover:border-[var(--ddg-orange)]/40"
+                      : "border-dashed border-amber-500/30 bg-amber-500/[0.02] hover:border-amber-500/50"
+                  )}
+                >
                   <CardContent className="p-5 space-y-4">
                     <div className="flex items-start justify-between gap-2">
                       <div
@@ -133,10 +176,18 @@ export default function ClientesPage() {
                       >
                         <Building2 className="size-6" />
                       </div>
-                      <Badge className={cn("gap-1", tipoCfg.color)}>
-                        <Icon className="size-3" />
-                        {tipoCfg.label}
-                      </Badge>
+                      <div className="flex flex-col items-end gap-1.5">
+                        <Badge className={cn("gap-1", tipoCfg.color)}>
+                          <Icon className="size-3" />
+                          {tipoCfg.label}
+                        </Badge>
+                        {!c.setup_concluido && (
+                          <Badge variant="warning" className="gap-1 text-[10px]">
+                            <FileEdit className="size-2.5" />
+                            Rascunho
+                          </Badge>
+                        )}
+                      </div>
                     </div>
 
                     <div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Building2,
@@ -15,19 +15,28 @@ import {
   XCircle,
   AlertCircle,
   Globe,
-  Webhook,
   Sparkles,
   ChevronRight,
+  ExternalLink,
+  Clock,
+  Shield,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { createCliente, type TipoNegocio, type CreateClienteInput } from "@/lib/actions/clientes";
+import {
+  createClienteParcial,
+  finalizarSetupCliente,
+  cancelarRascunhoCliente,
+  type TipoNegocio,
+} from "@/lib/actions/clientes";
+import { iniciarOAuthMeta } from "@/lib/actions/oauth-meta";
+import { iniciarOAuthGoogle } from "@/lib/actions/oauth-google";
 
 const TIPOS: {
   value: TipoNegocio;
@@ -80,43 +89,147 @@ const STEPS = [
   { id: 6, label: "Confirmação" },
 ];
 
+const STORAGE_KEY = "trafego-ddg:wizard-state";
+
+interface WizardState {
+  clienteId: string | null;
+  step: number;
+  nome: string;
+  slug: string;
+  corPrimaria: string;
+  tipo: TipoNegocio | null;
+  metaConectado: boolean;
+  googleConectado: boolean;
+  plataformaEcom: string;
+  dominioSite: string;
+  pixelInstalado: boolean;
+  webhookCarrinho: boolean;
+  frequencia: "semanal" | "quinzenal" | "mensal";
+  painelComercialTipo: string;
+  painelComercialUrl: string;
+  cacMaximo: string;
+  ticketMedio: string;
+  observacoes: string;
+}
+
 interface WizardProps {
   onClose: () => void;
 }
 
 export function ClienteWizard({ onClose }: WizardProps) {
   const router = useRouter();
-  const [step, setStep] = useState(1);
+  const searchParams = useSearchParams();
   const [pending, startTransition] = useTransition();
+  const restoredOnce = useRef(false);
 
-  // Step 1
+  // Estado consolidado
+  const [clienteId, setClienteId] = useState<string | null>(null);
+  const [step, setStep] = useState(1);
   const [nome, setNome] = useState("");
   const [slug, setSlug] = useState("");
   const [corPrimaria, setCorPrimaria] = useState("#F15839");
-
-  // Step 2
   const [tipo, setTipo] = useState<TipoNegocio | null>(null);
-
-  // Step 3 - Meta
   const [metaConectado, setMetaConectado] = useState(false);
-
-  // Step 4 - Google
   const [googleConectado, setGoogleConectado] = useState(false);
-
-  // Step 5 - Específico
-  // ecommerce
   const [plataformaEcom, setPlataformaEcom] = useState("");
   const [dominioSite, setDominioSite] = useState("");
   const [pixelInstalado, setPixelInstalado] = useState(false);
   const [webhookCarrinho, setWebhookCarrinho] = useState(false);
-  // lead_whatsapp
   const [frequencia, setFrequencia] = useState<"semanal" | "quinzenal" | "mensal">("semanal");
   const [painelComercialTipo, setPainelComercialTipo] = useState("");
   const [painelComercialUrl, setPainelComercialUrl] = useState("");
-  // comuns
   const [cacMaximo, setCacMaximo] = useState("");
   const [ticketMedio, setTicketMedio] = useState("");
   const [observacoes, setObservacoes] = useState("");
+
+  // Restaura estado do sessionStorage ao montar (após retorno de OAuth)
+  useEffect(() => {
+    if (restoredOnce.current) return;
+    restoredOnce.current = true;
+
+    const wizardParam = searchParams.get("wizard");
+    if (wizardParam !== "resume") return;
+
+    const raw = typeof window !== "undefined" ? sessionStorage.getItem(STORAGE_KEY) : null;
+    if (!raw) return;
+
+    try {
+      const s = JSON.parse(raw) as WizardState;
+      setClienteId(s.clienteId);
+      setNome(s.nome);
+      setSlug(s.slug);
+      setCorPrimaria(s.corPrimaria);
+      setTipo(s.tipo);
+      setMetaConectado(s.metaConectado);
+      setGoogleConectado(s.googleConectado);
+      setPlataformaEcom(s.plataformaEcom);
+      setDominioSite(s.dominioSite);
+      setPixelInstalado(s.pixelInstalado);
+      setWebhookCarrinho(s.webhookCarrinho);
+      setFrequencia(s.frequencia);
+      setPainelComercialTipo(s.painelComercialTipo);
+      setPainelComercialUrl(s.painelComercialUrl);
+      setCacMaximo(s.cacMaximo);
+      setTicketMedio(s.ticketMedio);
+      setObservacoes(s.observacoes);
+
+      // Confirma sucesso e avança
+      const metaOk = searchParams.get("meta_ok") === "1";
+      const googleOk = searchParams.get("google_ok") === "1";
+      const oauthError = searchParams.get("oauth_error");
+
+      if (metaOk) {
+        setMetaConectado(true);
+        toast.success("Meta Ads conectado!", {
+          description: "Token long-lived salvo. Avançando pro próximo passo.",
+        });
+        setStep(4);
+      } else if (googleOk) {
+        setGoogleConectado(true);
+        toast.success("Google Ads conectado!", {
+          description: "Refresh token salvo. Avançando pro próximo passo.",
+        });
+        setStep(5);
+      } else if (oauthError) {
+        toast.error("OAuth falhou", { description: oauthError });
+        setStep(s.step); // permanece no passo onde estava
+      } else {
+        setStep(s.step);
+      }
+
+      // Limpa URL pra evitar loop ao recarregar
+      router.replace("/clientes");
+    } catch (err) {
+      console.error("Erro restaurando wizard state:", err);
+      sessionStorage.removeItem(STORAGE_KEY);
+    }
+  }, [searchParams, router]);
+
+  const persistState = (overrides: Partial<WizardState> = {}) => {
+    if (typeof window === "undefined") return;
+    const state: WizardState = {
+      clienteId,
+      step,
+      nome,
+      slug,
+      corPrimaria,
+      tipo,
+      metaConectado,
+      googleConectado,
+      plataformaEcom,
+      dominioSite,
+      pixelInstalado,
+      webhookCarrinho,
+      frequencia,
+      painelComercialTipo,
+      painelComercialUrl,
+      cacMaximo,
+      ticketMedio,
+      observacoes,
+      ...overrides,
+    };
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  };
 
   const slugify = (s: string) =>
     s
@@ -126,24 +239,100 @@ export function ClienteWizard({ onClose }: WizardProps) {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
 
-  // Validação por step
   const canProceed = () => {
     if (step === 1) return nome.length >= 2 && slug.length >= 3;
     if (step === 2) return tipo !== null;
-    if (step === 3) return true; // skip ok
-    if (step === 4) return true; // skip ok
+    if (step === 3) return true;
+    if (step === 4) return true;
     if (step === 5) return true;
     return true;
   };
 
-  const handleSubmit = () => {
+  // Avança um passo. Se 2→3, cria cliente parcial.
+  const handleNext = () => {
+    if (!canProceed()) return;
+
+    // Passo 2 → 3: cria cliente parcial no banco
+    if (step === 2 && !clienteId) {
+      if (!tipo) return;
+      startTransition(async () => {
+        const res = await createClienteParcial({
+          slug,
+          nome,
+          tipo_negocio: tipo,
+          cor_primaria: corPrimaria,
+        });
+        if (!res.ok) {
+          toast.error("Erro ao salvar cliente", { description: res.error });
+          return;
+        }
+        setClienteId(res.clienteId);
+        toast.success("Rascunho salvo", {
+          description: "Cliente criado como rascunho. Bora conectar as plataformas.",
+        });
+        setStep(3);
+      });
+      return;
+    }
+
+    setStep(step + 1);
+  };
+
+  const handlePrev = () => {
+    if (step > 1) setStep(step - 1);
+  };
+
+  const handleConectarMeta = () => {
+    if (!clienteId) {
+      toast.error("Cliente ainda não foi salvo. Volta e tenta de novo.");
+      return;
+    }
+    persistState({ step: 3 });
+    startTransition(async () => {
+      const res = await iniciarOAuthMeta(clienteId, "wizard");
+      if (!res.ok || !res.url) {
+        toast.error("Falha ao iniciar OAuth Meta", { description: res.error });
+        return;
+      }
+      window.location.href = res.url;
+    });
+  };
+
+  const handleConectarGoogle = () => {
+    if (!clienteId) {
+      toast.error("Cliente ainda não foi salvo. Volta e tenta de novo.");
+      return;
+    }
+    persistState({ step: 4 });
+    startTransition(async () => {
+      const res = await iniciarOAuthGoogle(clienteId, "wizard");
+      if (!res.ok || !res.url) {
+        toast.error("Falha ao iniciar OAuth Google", { description: res.error });
+        return;
+      }
+      window.location.href = res.url;
+    });
+  };
+
+  const handlePularMeta = () => {
+    setMetaConectado(false);
+    setStep(4);
+  };
+
+  const handlePularGoogle = () => {
+    setGoogleConectado(false);
+    setStep(5);
+  };
+
+  const handleFinalizar = () => {
+    if (!clienteId) {
+      toast.error("Cliente ainda não foi salvo");
+      return;
+    }
     if (!tipo) return;
     startTransition(async () => {
-      const input: CreateClienteInput = {
-        nome,
-        slug,
-        cor_primaria: corPrimaria,
-        tipo_negocio: tipo,
+      const res = await finalizarSetupCliente({
+        cliente_id: clienteId,
         cac_maximo: cacMaximo ? parseFloat(cacMaximo) : null,
         ticket_medio: ticketMedio ? parseFloat(ticketMedio) : null,
         plataforma_ecom: plataformaEcom || null,
@@ -154,19 +343,36 @@ export function ClienteWizard({ onClose }: WizardProps) {
         painel_comercial_tipo: painelComercialTipo || null,
         painel_comercial_url: painelComercialUrl || null,
         observacoes: observacoes || null,
-      };
-
-      const res = await createCliente(input);
+      });
       if (!res.ok) {
-        toast.error("Erro ao criar cliente", { description: res.error });
+        toast.error("Erro ao finalizar", { description: res.error });
         return;
       }
-      toast.success("Cliente criado com sucesso!", {
-        description: `${nome} foi cadastrado. Próximo passo: conectar Meta e Google Ads.`,
+      sessionStorage.removeItem(STORAGE_KEY);
+      toast.success("Cliente cadastrado!", {
+        description: `${nome} está pronto. ${metaConectado ? "Meta ✅" : "Meta pendente"} · ${googleConectado ? "Google ✅" : "Google pendente"}`,
       });
       onClose();
-      router.refresh();
+      router.push(`/clientes/${slug}`);
     });
+  };
+
+  const handleCancelar = () => {
+    if (clienteId) {
+      // Cliente já criado parcialmente — pergunta se quer cancelar rascunho
+      const confirma = confirm(
+        "Cancelar criação? O rascunho ficará salvo mas inativo. Você pode finalizar depois."
+      );
+      if (!confirma) return;
+      startTransition(async () => {
+        await cancelarRascunhoCliente(clienteId);
+        sessionStorage.removeItem(STORAGE_KEY);
+        onClose();
+        router.refresh();
+      });
+    } else {
+      onClose();
+    }
   };
 
   const tipoSelecionado = TIPOS.find((t) => t.value === tipo);
@@ -366,36 +572,20 @@ export function ClienteWizard({ onClose }: WizardProps) {
               )}
 
               {step === 3 && (
-                <ConexaoStep
-                  titulo="Conectar Meta Ads"
-                  descricao="Acesso ao Business Manager para puxar campanhas, ads e enviar conversões via CAPI"
-                  icone={MessageSquare}
-                  cor="bg-violet-500/10 text-violet-400"
+                <ConexaoMetaStep
                   conectado={metaConectado}
-                  onConectar={() => {
-                    setMetaConectado(true);
-                    toast.success("Meta marcado como conectar depois", {
-                      description: "Você poderá conectar via OAuth na página de Configurações.",
-                    });
-                  }}
-                  badges={["OAuth Business", "Pixel ID", "Ad Account ID", "CAPI"]}
+                  pending={pending}
+                  onConectar={handleConectarMeta}
+                  onPular={handlePularMeta}
                 />
               )}
 
               {step === 4 && (
-                <ConexaoStep
-                  titulo="Conectar Google Ads"
-                  descricao="Acesso à conta Google Ads para puxar campanhas e enviar Enhanced Conversions"
-                  icone={Sparkles}
-                  cor="bg-blue-500/10 text-blue-400"
+                <ConexaoGoogleStep
                   conectado={googleConectado}
-                  onConectar={() => {
-                    setGoogleConectado(true);
-                    toast.success("Google marcado como conectar depois", {
-                      description: "Aguardando aprovação do developer token DDG (3-7 dias).",
-                    });
-                  }}
-                  badges={["OAuth Google", "Customer ID", "Conversion Action", "Enhanced Conv."]}
+                  pending={pending}
+                  onConectar={handleConectarGoogle}
+                  onPular={handlePularGoogle}
                 />
               )}
 
@@ -552,7 +742,7 @@ export function ClienteWizard({ onClose }: WizardProps) {
                   <div>
                     <h3 className="text-lg font-semibold mb-1">Confirmação</h3>
                     <p className="text-sm text-muted-foreground">
-                      Revise antes de criar
+                      Revise antes de finalizar
                     </p>
                   </div>
 
@@ -582,28 +772,53 @@ export function ClienteWizard({ onClose }: WizardProps) {
                     {painelComercialTipo && <SummaryRow label="Painel comercial" value={painelComercialTipo} />}
                   </div>
 
-                  <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
+                  <div
+                    className={cn(
+                      "rounded-lg border p-4",
+                      metaConectado && googleConectado
+                        ? "border-emerald-500/30 bg-emerald-500/5"
+                        : "border-amber-500/30 bg-amber-500/5"
+                    )}
+                  >
                     <div className="flex items-start gap-3">
-                      <AlertCircle className="size-5 text-amber-400 mt-0.5 shrink-0" />
+                      {metaConectado && googleConectado ? (
+                        <CheckCircle2 className="size-5 text-emerald-500 mt-0.5 shrink-0" />
+                      ) : (
+                        <AlertCircle className="size-5 text-amber-400 mt-0.5 shrink-0" />
+                      )}
                       <div className="flex-1">
-                        <p className="text-sm font-semibold mb-1">Pendências de conexão</p>
-                        <p className="text-xs text-muted-foreground mb-3">
-                          O cliente será criado, mas as conexões abaixo precisam ser feitas em Configurações:
+                        <p className="text-sm font-semibold mb-1">
+                          {metaConectado && googleConectado
+                            ? "Tudo conectado!"
+                            : "Status das conexões"}
                         </p>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-2 mt-2">
                           <Badge variant="outline" className="gap-1">
-                            <XCircle className="size-3 text-muted-foreground" />
-                            Meta Ads
+                            {metaConectado ? (
+                              <CheckCircle2 className="size-3 text-emerald-500" />
+                            ) : (
+                              <XCircle className="size-3 text-muted-foreground" />
+                            )}
+                            Meta Ads {metaConectado ? "conectado" : "pendente"}
                           </Badge>
                           <Badge variant="outline" className="gap-1">
-                            <XCircle className="size-3 text-muted-foreground" />
-                            Google Ads
+                            {googleConectado ? (
+                              <CheckCircle2 className="size-3 text-emerald-500" />
+                            ) : (
+                              <XCircle className="size-3 text-muted-foreground" />
+                            )}
+                            Google Ads {googleConectado ? "conectado" : "pendente"}
                           </Badge>
                           <Badge variant="outline" className="gap-1">
                             <XCircle className="size-3 text-muted-foreground" />
                             Painel Comercial (webhook)
                           </Badge>
                         </div>
+                        {(!metaConectado || !googleConectado) && (
+                          <p className="text-xs text-muted-foreground mt-3">
+                            Você pode conectar as plataformas pendentes depois pela página /clientes/{slug}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -615,7 +830,7 @@ export function ClienteWizard({ onClose }: WizardProps) {
 
         {/* Footer */}
         <div className="px-6 py-4 border-t border-border flex items-center justify-between">
-          <Button variant="ghost" size="sm" onClick={onClose}>
+          <Button variant="ghost" size="sm" onClick={handleCancelar} disabled={pending}>
             Cancelar
           </Button>
           <div className="flex gap-2">
@@ -623,7 +838,7 @@ export function ClienteWizard({ onClose }: WizardProps) {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setStep(step - 1)}
+                onClick={handlePrev}
                 disabled={pending}
               >
                 <ArrowLeft className="size-4" />
@@ -634,24 +849,25 @@ export function ClienteWizard({ onClose }: WizardProps) {
               <Button
                 variant="ddg"
                 size="sm"
-                onClick={() => setStep(step + 1)}
+                onClick={handleNext}
                 disabled={!canProceed() || pending}
                 className="gap-1"
               >
-                Próximo
-                <ArrowRight className="size-4" />
+                {pending && step === 2 && <Loader2 className="size-4 animate-spin" />}
+                {pending && step === 2 ? "Salvando..." : "Próximo"}
+                {!pending && <ArrowRight className="size-4" />}
               </Button>
             ) : (
               <Button
                 variant="ddg"
                 size="sm"
-                onClick={handleSubmit}
+                onClick={handleFinalizar}
                 disabled={pending}
                 className="gap-2"
               >
                 {pending && <Loader2 className="size-4 animate-spin" />}
                 {!pending && <Save className="size-4" />}
-                {pending ? "Criando..." : "Criar cliente"}
+                {pending ? "Finalizando..." : "Finalizar cadastro"}
               </Button>
             )}
           </div>
@@ -661,46 +877,49 @@ export function ClienteWizard({ onClose }: WizardProps) {
   );
 }
 
-function ConexaoStep({
-  titulo,
-  descricao,
-  icone: Icon,
-  cor,
+// ==================== STEP COMPONENTS ====================
+
+function ConexaoMetaStep({
   conectado,
+  pending,
   onConectar,
-  badges,
+  onPular,
 }: {
-  titulo: string;
-  descricao: string;
-  icone: typeof MessageSquare;
-  cor: string;
   conectado: boolean;
+  pending: boolean;
   onConectar: () => void;
-  badges: string[];
+  onPular: () => void;
 }) {
   return (
     <div className="space-y-5">
       <div>
-        <h3 className="text-lg font-semibold mb-1">{titulo}</h3>
-        <p className="text-sm text-muted-foreground">{descricao}</p>
+        <h3 className="text-lg font-semibold mb-1">Conectar Meta Ads</h3>
+        <p className="text-sm text-muted-foreground">
+          Acesso ao Business Manager para puxar campanhas, ads e enviar conversões via CAPI
+        </p>
       </div>
 
-      <Card className={cn("border-2", conectado ? "border-emerald-500/40 bg-emerald-500/5" : "border-border")}>
+      <Card
+        className={cn(
+          "border-2",
+          conectado ? "border-emerald-500/40 bg-emerald-500/5" : "border-border"
+        )}
+      >
         <CardContent className="p-5 space-y-4">
           <div className="flex items-center gap-3">
-            <div className={cn("size-12 rounded-lg flex items-center justify-center", cor)}>
-              <Icon className="size-6" />
+            <div className="size-12 rounded-lg flex items-center justify-center bg-violet-500/10 text-violet-400">
+              <MessageSquare className="size-6" />
             </div>
             <div className="flex-1">
-              <p className="font-semibold">{titulo}</p>
+              <p className="font-semibold">Meta Ads (Facebook + Instagram)</p>
               <p className="text-xs text-muted-foreground">
-                {conectado ? "Marcado para conectar depois" : "Pendente"}
+                {conectado ? "Conectado via OAuth" : "Pendente de conexão"}
               </p>
             </div>
             {conectado ? (
-              <Badge variant="warning" className="gap-1">
-                <AlertCircle className="size-3" />
-                Pendente
+              <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/30 gap-1">
+                <CheckCircle2 className="size-3" />
+                Conectado
               </Badge>
             ) : (
               <Badge variant="secondary">Não configurado</Badge>
@@ -708,46 +927,191 @@ function ConexaoStep({
           </div>
 
           <div className="flex flex-wrap gap-1.5">
-            {badges.map((b) => (
-              <Badge key={b} variant="outline" className="text-[10px]">{b}</Badge>
-            ))}
+            <Badge variant="outline" className="text-[10px]">OAuth Business</Badge>
+            <Badge variant="outline" className="text-[10px]">Pixel ID</Badge>
+            <Badge variant="outline" className="text-[10px]">Ad Account ID</Badge>
+            <Badge variant="outline" className="text-[10px]">CAPI</Badge>
           </div>
 
-          <div className="rounded-md bg-muted/40 p-3 text-xs space-y-1">
-            <p className="font-semibold flex items-center gap-1.5">
-              <AlertCircle className="size-3.5 text-amber-400" />
-              Conexão completa só após Fase 1
-            </p>
-            <p className="text-muted-foreground leading-relaxed">
-              Aguardando aprovação do Google Ads developer token DDG (3-7 dias) e configuração do Meta App. Por agora, você pode marcar como &ldquo;conectar depois&rdquo; e finalizar o cadastro.
-            </p>
-          </div>
+          {!conectado && (
+            <div className="rounded-md bg-violet-500/5 border border-violet-500/20 p-3 text-xs space-y-2">
+              <p className="font-semibold flex items-center gap-1.5">
+                <Shield className="size-3.5 text-violet-400" />
+                O que vai acontecer ao clicar em &ldquo;Conectar Meta agora&rdquo;
+              </p>
+              <ol className="space-y-1 text-muted-foreground leading-relaxed list-decimal list-inside">
+                <li>Você será redirecionado pro Facebook</li>
+                <li>Autoriza acesso ao Business Manager (ads_management, ads_read, business_management)</li>
+                <li>Voltamos pro wizard com o token long-lived (60 dias) salvo</li>
+                <li>Detectamos automaticamente sua Ad Account principal</li>
+              </ol>
+            </div>
+          )}
 
-          <Button
-            type="button"
-            variant={conectado ? "outline" : "ddg"}
-            className="w-full gap-2"
-            onClick={onConectar}
-            disabled={conectado}
-          >
-            {conectado ? (
-              <>
-                <CheckCircle2 className="size-4" />
-                Marcado pra conectar depois
-              </>
-            ) : (
-              <>
-                <Webhook className="size-4" />
-                Marcar como conectar depois
-              </>
-            )}
-          </Button>
+          {conectado ? (
+            <div className="rounded-md bg-emerald-500/5 border border-emerald-500/20 p-3 text-xs">
+              <p className="font-semibold text-emerald-400 flex items-center gap-1.5">
+                <CheckCircle2 className="size-3.5" />
+                Meta Ads conectado com sucesso
+              </p>
+              <p className="text-muted-foreground mt-1">
+                Token salvo. Você pode prosseguir pro próximo passo.
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button
+                type="button"
+                variant="ddg"
+                className="flex-1 gap-2"
+                onClick={onConectar}
+                disabled={pending}
+              >
+                {pending ? <Loader2 className="size-4 animate-spin" /> : <ExternalLink className="size-4" />}
+                {pending ? "Abrindo Facebook..." : "Conectar Meta agora"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="gap-2"
+                onClick={onPular}
+                disabled={pending}
+              >
+                Pular por enquanto
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
 
       <p className="text-xs text-muted-foreground flex items-center gap-1.5">
         <Globe className="size-3" />
-        Você pode conectar agora ou depois pela página /configuracoes do cliente
+        Você pode conectar agora ou depois pela página do cliente
+      </p>
+    </div>
+  );
+}
+
+function ConexaoGoogleStep({
+  conectado,
+  pending,
+  onConectar,
+  onPular,
+}: {
+  conectado: boolean;
+  pending: boolean;
+  onConectar: () => void;
+  onPular: () => void;
+}) {
+  return (
+    <div className="space-y-5">
+      <div>
+        <h3 className="text-lg font-semibold mb-1">Conectar Google Ads</h3>
+        <p className="text-sm text-muted-foreground">
+          Acesso à conta Google Ads para puxar campanhas e enviar Enhanced Conversions
+        </p>
+      </div>
+
+      <Card
+        className={cn(
+          "border-2",
+          conectado ? "border-emerald-500/40 bg-emerald-500/5" : "border-border"
+        )}
+      >
+        <CardContent className="p-5 space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="size-12 rounded-lg flex items-center justify-center bg-blue-500/10 text-blue-400">
+              <Sparkles className="size-6" />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold">Google Ads</p>
+              <p className="text-xs text-muted-foreground">
+                {conectado ? "Conectado via OAuth" : "Pendente de conexão"}
+              </p>
+            </div>
+            {conectado ? (
+              <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/30 gap-1">
+                <CheckCircle2 className="size-3" />
+                Conectado
+              </Badge>
+            ) : (
+              <Badge variant="secondary">Não configurado</Badge>
+            )}
+          </div>
+
+          <div className="flex flex-wrap gap-1.5">
+            <Badge variant="outline" className="text-[10px]">OAuth Google</Badge>
+            <Badge variant="outline" className="text-[10px]">Customer ID</Badge>
+            <Badge variant="outline" className="text-[10px]">Conversion Action</Badge>
+            <Badge variant="outline" className="text-[10px]">Enhanced Conv.</Badge>
+          </div>
+
+          {!conectado && (
+            <>
+              <div className="rounded-md bg-amber-500/5 border border-amber-500/30 p-3 text-xs space-y-2">
+                <p className="font-semibold flex items-center gap-1.5">
+                  <Clock className="size-3.5 text-amber-400" />
+                  Aprovação Basic Access em análise pelo Google
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  O developer token DDG está em &ldquo;Acesso às Análises&rdquo; (test mode) — você pode conectar OAuth normalmente, mas o sync real de dados só funcionará após aprovação Basic Access (3-7 dias úteis). O token OAuth fica salvo até lá.
+                </p>
+              </div>
+
+              <div className="rounded-md bg-blue-500/5 border border-blue-500/20 p-3 text-xs space-y-2">
+                <p className="font-semibold flex items-center gap-1.5">
+                  <Shield className="size-3.5 text-blue-400" />
+                  O que vai acontecer ao clicar em &ldquo;Conectar Google agora&rdquo;
+                </p>
+                <ol className="space-y-1 text-muted-foreground leading-relaxed list-decimal list-inside">
+                  <li>Você será redirecionado pro Google</li>
+                  <li>Autoriza acesso ao Google Ads (scope adwords)</li>
+                  <li>Voltamos pro wizard com refresh_token salvo</li>
+                  <li>Detectamos automaticamente o Customer ID acessível na sua MCC</li>
+                </ol>
+              </div>
+            </>
+          )}
+
+          {conectado ? (
+            <div className="rounded-md bg-emerald-500/5 border border-emerald-500/20 p-3 text-xs">
+              <p className="font-semibold text-emerald-400 flex items-center gap-1.5">
+                <CheckCircle2 className="size-3.5" />
+                Google Ads conectado com sucesso
+              </p>
+              <p className="text-muted-foreground mt-1">
+                Refresh token salvo. Sync real começará após aprovação Basic Access pelo Google.
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button
+                type="button"
+                variant="ddg"
+                className="flex-1 gap-2"
+                onClick={onConectar}
+                disabled={pending}
+              >
+                {pending ? <Loader2 className="size-4 animate-spin" /> : <ExternalLink className="size-4" />}
+                {pending ? "Abrindo Google..." : "Conectar Google agora"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="gap-2"
+                onClick={onPular}
+                disabled={pending}
+              >
+                Pular por enquanto
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+        <Globe className="size-3" />
+        Você pode conectar agora ou depois pela página do cliente
       </p>
     </div>
   );

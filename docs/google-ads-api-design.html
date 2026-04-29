@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Google Ads API Design Document — Painel DDG Tráfego Pago</title>
+<style>
+  @page { size: A4; margin: 22mm 18mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+    color: #1a1a1a;
+    line-height: 1.55;
+    font-size: 10.5pt;
+    margin: 0;
+  }
+  h1 {
+    font-size: 22pt;
+    color: #F15839;
+    margin: 0 0 4pt;
+    letter-spacing: -0.5px;
+  }
+  h2 {
+    font-size: 14pt;
+    color: #F15839;
+    border-bottom: 2px solid #F15839;
+    padding-bottom: 4pt;
+    margin-top: 22pt;
+    margin-bottom: 10pt;
+  }
+  h3 {
+    font-size: 11.5pt;
+    color: #2a2a2a;
+    margin-top: 14pt;
+    margin-bottom: 6pt;
+  }
+  h4 {
+    font-size: 10.5pt;
+    color: #444;
+    margin-top: 10pt;
+    margin-bottom: 4pt;
+  }
+  p { margin: 6pt 0; }
+  ul, ol { margin: 6pt 0; padding-left: 22pt; }
+  li { margin-bottom: 3pt; }
+  code {
+    background: #f4f4f4;
+    padding: 1pt 4pt;
+    border-radius: 3pt;
+    font-family: "SF Mono", "Menlo", monospace;
+    font-size: 9.5pt;
+    color: #c7254e;
+  }
+  pre {
+    background: #f7f7f9;
+    border: 1px solid #e1e1e8;
+    border-radius: 4pt;
+    padding: 10pt;
+    font-family: "SF Mono", "Menlo", monospace;
+    font-size: 8.5pt;
+    line-height: 1.4;
+    overflow-x: auto;
+    white-space: pre-wrap;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8pt 0;
+    font-size: 9.5pt;
+  }
+  th, td {
+    border: 1px solid #d0d0d0;
+    padding: 5pt 7pt;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #fff5f1;
+    color: #F15839;
+    font-weight: 600;
+  }
+  .header {
+    text-align: center;
+    border-bottom: 3px solid #F15839;
+    padding-bottom: 14pt;
+    margin-bottom: 18pt;
+  }
+  .meta {
+    color: #777;
+    font-size: 9pt;
+    margin-top: 4pt;
+  }
+  .callout {
+    background: #fff5f1;
+    border-left: 3px solid #F15839;
+    padding: 8pt 12pt;
+    margin: 10pt 0;
+    border-radius: 0 4pt 4pt 0;
+  }
+  .footer {
+    margin-top: 30pt;
+    padding-top: 10pt;
+    border-top: 1px solid #ccc;
+    font-size: 9pt;
+    color: #888;
+    text-align: center;
+  }
+  .toc {
+    background: #fafafa;
+    padding: 10pt 14pt;
+    border-radius: 4pt;
+    border: 1px solid #eee;
+  }
+  .toc ul { list-style: none; padding-left: 0; }
+  .toc li { padding: 2pt 0; }
+  .page-break { page-break-after: always; }
+  strong { color: #1a1a1a; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Painel DDG — Tráfego Pago</h1>
+  <div style="font-size: 12pt; color: #555;">Google Ads API Tool — Design Document</div>
+  <div class="meta">
+    Dose de Growth (DDG) &middot; MCC 513-194-3362 &middot; April 2026 &middot; Version 1.0
+  </div>
+</div>
+
+<div class="toc">
+<strong>Table of Contents</strong>
+<ul>
+  <li>1. Tool Overview</li>
+  <li>2. Company Background</li>
+  <li>3. Target Users &amp; Access Model</li>
+  <li>4. System Architecture</li>
+  <li>5. Google Ads API Usage</li>
+  <li>6. Authentication &amp; Authorization Flow</li>
+  <li>7. Data Storage &amp; Sync Strategy</li>
+  <li>8. Use Cases &amp; User Stories</li>
+  <li>9. Rate Limiting &amp; Error Handling</li>
+  <li>10. Security, Privacy &amp; Compliance</li>
+  <li>11. Roadmap &amp; Milestones</li>
+  <li>12. Compliance with Google Ads API Policies</li>
+</ul>
+</div>
+
+<h2>1. Tool Overview</h2>
+
+<p><strong>Painel DDG Tráfego Pago</strong> is a proprietary internal web dashboard developed by Dose de Growth, a Brazilian digital marketing agency, to consolidate paid-traffic operations across our client portfolio. The tool unifies <strong>Google Ads</strong> and <strong>Meta Ads</strong> data into a single operational interface used by our in-house traffic managers.</p>
+
+<p>Our agency currently manages approximately 15–20 active Google Ads accounts under MCC <code>513-194-3362</code>, spanning e-commerce, healthcare clinics, beauty/wellness services, real estate, education, and B2B services.</p>
+
+<p>The Google Ads API is required because our manual workflow today (logging in to each client account separately, exporting CSVs, copying numbers into spreadsheets, building custom client reports) is unsustainable as our portfolio grows. The Painel DDG replaces this manual process with a unified, automated read-and-analyze layer on top of our agency's day-to-day operations.</p>
+
+<div class="callout">
+<strong>Key principle:</strong> the Painel DDG is <strong>not</strong> a public SaaS, is <strong>not</strong> resold, is <strong>not</strong> a third-party reporting product, and is <strong>not</strong> made available to anyone outside Dose de Growth's payroll and contracted account managers. It is strictly an internal operational tool for the same agency that already manages these client accounts under its MCC.
+</div>
+
+<h3>1.1 Primary purpose</h3>
+<ol>
+  <li><strong>Read-only data consolidation</strong>: pull campaign, ad group, ad, keyword, and search-term performance data from client accounts our agency already manages.</li>
+  <li><strong>Cross-platform unified reporting</strong>: display Google Ads + Meta Ads side-by-side with normalized metrics (spend, impressions, clicks, CTR, CPC, conversions, CPA, revenue, ROAS).</li>
+  <li><strong>Anomaly detection &amp; AI-assisted analysis</strong>: highlight spend spikes, ROAS drops, and unusual CPA patterns vs. 7d/14d baselines, with explanatory narratives generated by the Anthropic Claude API.</li>
+  <li><strong>Search-term auditing</strong>: surface high-spend / zero-conversion search terms to enable bulk negative keyword additions through our interface.</li>
+  <li><strong>Offline conversion uploads</strong> (Enhanced Conversions for Leads): forward real CRM closures (deals closed by our sales team) back to Google Ads so Smart Bidding optimizes toward customers who actually purchase, not just form-fillers.</li>
+</ol>
+
+<h2>2. Company Background</h2>
+
+<table>
+  <tr><th>Field</th><th>Value</th></tr>
+  <tr><td>Company name</td><td>Dose de Growth</td></tr>
+  <tr><td>Country</td><td>Brazil</td></tr>
+  <tr><td>Website</td><td>https://dosedegrowth.com</td></tr>
+  <tr><td>Business type</td><td>Digital marketing agency / SEM agency</td></tr>
+  <tr><td>Google Ads MCC</td><td>513-194-3362</td></tr>
+  <tr><td>API contact email</td><td>dosedegrowth@gmail.com</td></tr>
+  <tr><td>Active client accounts (Google Ads)</td><td>~15–20</td></tr>
+  <tr><td>Years operating</td><td>3+</td></tr>
+  <tr><td>Team size</td><td>5–10 (founders + traffic managers + designers)</td></tr>
+</table>
+
+<p>Dose de Growth has been managing paid-media campaigns on Google Ads and Meta Ads for clients in Brazil for over three years. All client accounts are owned by the clients themselves and explicitly linked to our MCC under signed service agreements.</p>
+
+<h2>3. Target Users &amp; Access Model</h2>
+
+<p>The Painel DDG is an <strong>internal-use tool</strong>. The following user roles are defined:</p>
+
+<table>
+  <tr>
+    <th>Role</th><th>Who</th><th>Access Level</th>
+  </tr>
+  <tr>
+    <td><code>adm_geral</code></td>
+    <td>DDG founder / agency operations lead (currently 1 person)</td>
+    <td>Full access to all client data, configuration, integrations, and offline-conversion uploads</td>
+  </tr>
+  <tr>
+    <td><code>gestor_ddg</code></td>
+    <td>DDG traffic managers (W2 employees and long-term contractors)</td>
+    <td>Read/write access scoped to the clients explicitly assigned to them</td>
+  </tr>
+  <tr>
+    <td><code>viewer_cliente</code> (Phase 5+)</td>
+    <td>Direct contacts at clients we already manage</td>
+    <td>Read-only, restricted to their own brand's data, white-labeled view</td>
+  </tr>
+</table>
+
+<p>For the API application under review, we are explicitly requesting <strong>internal users only</strong>. The <code>viewer_cliente</code> role exposes <strong>aggregated reporting only</strong> (no API write capabilities), and we will revisit the API access scope before exposing this read-only public-facing layer in the future.</p>
+
+<p>Authentication is handled by Supabase Auth (email + password and Google magic link). Row Level Security (RLS) is enforced at the database level so each user can only query data belonging to clients they are explicitly linked to.</p>
+
+<h2>4. System Architecture</h2>
+
+<h3>4.1 High-level diagram (textual)</h3>
+<pre>
+┌────────────────────────────────────────────────────────────────┐
+│  WEB UI                                                        │
+│  Next.js 16 App Router · TypeScript · Tailwind CSS · shadcn/ui │
+│  Hosted on Vercel · https://paineldosedegrowth.vercel.app      │
+└─────────────────────────────┬──────────────────────────────────┘
+                              │ Server Actions / API Routes
+┌─────────────────────────────▼──────────────────────────────────┐
+│  APPLICATION LAYER (Next.js server runtime)                    │
+│  · OAuth handlers     · Sync orchestrators                     │
+│  · Auth middleware    · Webhook receivers                      │
+└─────────────────────────────┬──────────────────────────────────┘
+                              │
+┌─────────────────────────────▼──────────────────────────────────┐
+│  DATA LAYER · Supabase (Postgres)                              │
+│  Schema: trafego_ddg                                           │
+│  · clientes, clientes_acessos, clientes_users                  │
+│  · campanhas_snapshot, adsets_snapshot, ads_snapshot           │
+│  · keywords_snapshot, search_terms                             │
+│  · eventos_offline (offline conversions queue)                 │
+│  · logs (audit), anomalias, mudancas                           │
+│  Row Level Security on every table                             │
+│  OAuth tokens encrypted via Supabase Vault                     │
+└─────────────────────────────┬──────────────────────────────────┘
+                              │
+┌─────────────────────────────▼──────────────────────────────────┐
+│  WORKERS · Supabase Edge Functions (Deno)                      │
+│  · sync-google-ads   (cron 4×/day)                             │
+│  · sync-meta-ads     (cron 4×/day)                             │
+│  · detect-anomalies  (cron 1×/day at 07:00 BRT)                │
+│  · push-offline-conversions  (cron every 30 min)               │
+└─────────────────────────────┬──────────────────────────────────┘
+                              │
+┌─────────────────────────────▼──────────────────────────────────┐
+│  EXTERNAL APIs                                                 │
+│  · Google Ads API v17  ← THIS APPLICATION                      │
+│  · Meta Marketing API v22                                      │
+│  · Anthropic Claude API (analysis narratives)                  │
+└────────────────────────────────────────────────────────────────┘
+</pre>
+
+<h3>4.2 Technology stack</h3>
+<table>
+  <tr><th>Layer</th><th>Technology</th></tr>
+  <tr><td>Frontend</td><td>Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4, shadcn/ui, Recharts, Framer Motion</td></tr>
+  <tr><td>Backend</td><td>Next.js Server Actions and API Routes (Node 20)</td></tr>
+  <tr><td>Workers</td><td>Supabase Edge Functions (Deno runtime)</td></tr>
+  <tr><td>Database</td><td>Supabase Postgres 15 with Row Level Security</td></tr>
+  <tr><td>Storage</td><td>Supabase Storage (creative thumbnails, generated PDFs)</td></tr>
+  <tr><td>Auth</td><td>Supabase Auth (email/password + Google magic link)</td></tr>
+  <tr><td>Hosting</td><td>Vercel (frontend) + Supabase (backend, Brazil South region)</td></tr>
+  <tr><td>Google Ads API client</td><td><code>google-ads-api</code> Node.js library (Opteo)</td></tr>
+</table>
+
+<h2>5. Google Ads API Usage</h2>
+
+<h3>5.1 API services and methods</h3>
+
+<table>
+  <tr><th>Service</th><th>Method</th><th>Purpose</th><th>Frequency</th></tr>
+  <tr>
+    <td>CustomerService</td>
+    <td>ListAccessibleCustomers, Get</td>
+    <td>Validate that the linked customer ID belongs to our MCC and is reachable</td>
+    <td>On account connect, then 1×/week</td>
+  </tr>
+  <tr>
+    <td>GoogleAdsService</td>
+    <td>SearchStream (GAQL)</td>
+    <td>Read campaigns, ad groups, ads, keywords, search terms, and daily metrics</td>
+    <td>4×/day per active account</td>
+  </tr>
+  <tr>
+    <td>AdGroupCriterionService</td>
+    <td>MutateAdGroupCriteria</td>
+    <td>Add negative keywords (single &amp; bulk) confirmed by a human in the UI</td>
+    <td>On user click; never automated</td>
+  </tr>
+  <tr>
+    <td>OfflineUserDataJobService</td>
+    <td>CreateOfflineUserDataJob, AddOfflineUserDataJobOperations, RunOfflineUserDataJob</td>
+    <td>Upload Enhanced Conversions for Leads from our internal CRM</td>
+    <td>Every 30 minutes (only if pending events exist)</td>
+  </tr>
+</table>
+
+<h3>5.2 Sample GAQL queries we plan to issue</h3>
+
+<p><strong>Daily campaign metrics (read):</strong></p>
+<pre>SELECT
+  campaign.id,
+  campaign.name,
+  campaign.status,
+  campaign.advertising_channel_type,
+  segments.date,
+  metrics.cost_micros,
+  metrics.impressions,
+  metrics.clicks,
+  metrics.ctr,
+  metrics.average_cpc,
+  metrics.conversions,
+  metrics.conversions_value,
+  metrics.cost_per_conversion
+FROM campaign
+WHERE segments.date DURING LAST_30_DAYS
+  AND campaign.status != 'REMOVED'</pre>
+
+<p><strong>Search terms with high spend and zero conversions:</strong></p>
+<pre>SELECT
+  search_term_view.search_term,
+  campaign.id,
+  ad_group.id,
+  metrics.cost_micros,
+  metrics.clicks,
+  metrics.conversions,
+  metrics.impressions
+FROM search_term_view
+WHERE segments.date DURING LAST_30_DAYS
+  AND metrics.cost_micros > 100000000
+  AND metrics.conversions = 0</pre>
+
+<h3>5.3 Estimated daily call volume</h3>
+<table>
+  <tr><th>Operation</th><th>Calls per account/day</th><th>Total (20 accounts)</th></tr>
+  <tr><td>Campaign + ad group + ad metrics sync (4×/day)</td><td>~8</td><td>~160</td></tr>
+  <tr><td>Keyword + search term sync (4×/day)</td><td>~4</td><td>~80</td></tr>
+  <tr><td>Account validation (weekly)</td><td>0.14</td><td>~3</td></tr>
+  <tr><td>Negative keyword mutations (UI-driven)</td><td>~1</td><td>~20</td></tr>
+  <tr><td>Offline conversion uploads (every 30 min when needed)</td><td>~10</td><td>~200</td></tr>
+  <tr><td><strong>Estimated total per day</strong></td><td></td><td><strong>~450 operations</strong></td></tr>
+</table>
+<p>Comfortably below Basic Access daily quota.</p>
+
+<h2>6. Authentication &amp; Authorization Flow</h2>
+
+<p>OAuth 2.0 is implemented exactly as specified by the Google Ads API authorization guide. The agency user (DDG admin) authenticates with their Google account that has access to the MCC; the resulting refresh token is encrypted at rest and used for all subsequent API calls on behalf of that MCC.</p>
+
+<h3>6.1 OAuth flow diagram</h3>
+<pre>
+[User] clicks "Connect Google Ads" in Painel DDG
+    │
+    ▼
+[Painel DDG] redirects to:
+  https://accounts.google.com/o/oauth2/v2/auth
+    ?client_id=&lt;OAUTH_CLIENT_ID&gt;
+    &amp;redirect_uri=https://painel.dosedegrowth.com/api/oauth/google/callback
+    &amp;response_type=code
+    &amp;scope=https://www.googleapis.com/auth/adwords
+    &amp;access_type=offline
+    &amp;prompt=consent
+    &amp;state=&lt;cliente_uuid&gt;
+    │
+    ▼
+[Google] user grants permission, redirects with ?code=...
+    │
+    ▼
+[Painel DDG callback] exchanges code → refresh_token
+    │
+    ▼
+Token encrypted via Supabase Vault → stored in clientes_acessos.google_oauth_refresh_token
+    │
+    ▼
+First sync triggered (initial 30 days of historical data)
+</pre>
+
+<h3>6.2 API call structure</h3>
+<p>Every Google Ads API request includes:</p>
+<ul>
+  <li><code>developer-token</code>: <code>ELFSpVDgQdhE73Q9w07l_g</code></li>
+  <li><code>login-customer-id</code>: <code>5131943362</code> (DDG MCC, no dashes)</li>
+  <li><code>customer-id</code>: target client's account, fetched via OAuth</li>
+  <li><code>Authorization: Bearer &lt;access_token&gt;</code> (refreshed via stored refresh token)</li>
+</ul>
+
+<h2>7. Data Storage &amp; Sync Strategy</h2>
+
+<h3>7.1 Snapshot model</h3>
+<p>Performance data is stored as <strong>immutable daily snapshots</strong>. Each sync inserts new rows; we never update existing rows. This guarantees an auditable historical trail and makes reconciliation with the Google Ads UI deterministic.</p>
+
+<p>Key tables (under <code>trafego_ddg</code> schema):</p>
+<ul>
+  <li><code>campanhas_snapshot</code> — one row per (cliente, plataforma, campanha_id, data)</li>
+  <li><code>adsets_snapshot</code> — same pattern, ad-group level</li>
+  <li><code>ads_snapshot</code> — ad-level metrics + creative thumbnail URLs</li>
+  <li><code>keywords_snapshot</code> — Search keywords with quality score</li>
+  <li><code>search_terms</code> — search terms triggering ads (with status flag for negative-keyword workflow)</li>
+</ul>
+
+<h3>7.2 Sync schedule</h3>
+<table>
+  <tr><th>Job</th><th>Cron</th><th>Behavior</th></tr>
+  <tr><td>sync-google-ads</td><td>06:00, 12:00, 18:00, 23:00 BRT</td><td>Pulls last 2 days of metrics for active accounts (covers late-arriving conversions)</td></tr>
+  <tr><td>sync-google-ads (initial)</td><td>On account connect</td><td>Pulls last 30 days of historical data once</td></tr>
+  <tr><td>push-offline-conversions</td><td>Every 30 min</td><td>Uploads pending offline events to OfflineUserDataJobService</td></tr>
+</table>
+
+<h2>8. Use Cases &amp; User Stories</h2>
+
+<h3>Use Case 1 — Daily morning briefing</h3>
+<p>Maria, a DDG traffic manager, opens the Painel at 9 AM and immediately sees, for each of her assigned clients: yesterday's spend vs. budget, conversions vs. 7-day baseline, and a sorted list of anomalies (e.g. "Petderma — Search ROAS dropped 38% vs. 7d baseline" with an AI-generated explanation pointing to a suspect ad group). Without the API, this takes 45–60 minutes of manual logins; with the API, it is a single page that loads instantly from our snapshot tables.</p>
+
+<h3>Use Case 2 — Search-term audit and bulk negation</h3>
+<p>Once a week, Maria filters the <code>search_terms</code> table for terms with cost &gt; R$200 and zero conversions in the last 30 days. She reviews the list, multi-selects irrelevant terms, and clicks "Add as negative keyword". The Painel issues a <code>MutateAdGroupCriteria</code> request for each selection. Every action is logged in <code>logs</code> with user_id, timestamp, payload, and API response — providing a complete audit trail.</p>
+
+<h3>Use Case 3 — Real fechamentos feeding Smart Bidding</h3>
+<p>When a client closes a deal in DDG's internal commercial CRM, a webhook fires to the Painel containing email, phone, gclid, and deal value. The <code>push-offline-conversions</code> job batches these events and uploads them via OfflineUserDataJobService as Enhanced Conversions for Leads. Within 24 hours the conversion appears in Google Ads, and Smart Bidding starts optimizing for customers who actually purchase, not just form-fillers — substantially improving ROAS over the next 2–4 weeks of campaign learning.</p>
+
+<h2>9. Rate Limiting &amp; Error Handling</h2>
+
+<h3>9.1 Rate limiting</h3>
+<ul>
+  <li>Application-level throttle: hard cap of 10 concurrent API calls across all sync jobs</li>
+  <li>Per-account sequential processing (no parallel calls within the same customer-id)</li>
+  <li>Exponential backoff on retryable errors: 1s, 2s, 4s, 8s, 16s (max 5 retries)</li>
+  <li>Daily call counter persisted in <code>logs</code> for monitoring</li>
+</ul>
+
+<h3>9.2 Error handling</h3>
+<table>
+  <tr><th>Error type</th><th>Handling</th></tr>
+  <tr><td><code>UNAUTHENTICATED</code></td><td>Refresh access token; if refresh token revoked, mark account <code>status_google = 'erro'</code> and notify admin to re-authorize</td></tr>
+  <tr><td><code>QUOTA_ERROR</code></td><td>Backoff 60 minutes; resume on next cron tick</td></tr>
+  <tr><td><code>RESOURCE_EXHAUSTED</code></td><td>Exponential backoff up to 5 retries; alert admin if exceeded</td></tr>
+  <tr><td><code>INVALID_ARGUMENT</code> (GAQL syntax)</td><td>Log full payload, mark sync as failed for that resource only, continue with others</td></tr>
+  <tr><td>Generic 5xx</td><td>Standard retry with backoff</td></tr>
+</table>
+
+<p>Every API call (success or failure) is recorded in the <code>logs</code> table for retroactive audit and quota tracking.</p>
+
+<h2>10. Security, Privacy &amp; Compliance</h2>
+
+<ul>
+  <li><strong>OAuth tokens encrypted at rest</strong> via Supabase Vault (AES-256-GCM)</li>
+  <li><strong>Row Level Security</strong> on every table — users can only access data linked to clients in their <code>clientes_users</code> mapping</li>
+  <li><strong>HTTPS only</strong> — TLS 1.3 enforced by Vercel and Supabase</li>
+  <li><strong>PII hashing for offline conversions</strong> — emails and phones SHA-256-hashed before transmission to Google Ads (also a Google policy requirement for Enhanced Conversions)</li>
+  <li><strong>LGPD compliance</strong> (Brazilian GDPR equivalent): clients can request data export and deletion; data processing agreements in place with all clients</li>
+  <li><strong>Audit log</strong>: every API mutation (negative keyword adds, offline uploads) is logged with user_id, timestamp, and payload</li>
+  <li><strong>No data resale</strong>: Google Ads API data is never exposed outside DDG operations or shared with third parties</li>
+  <li><strong>Daily backups</strong>: Supabase automatic Point-in-Time Recovery enabled</li>
+</ul>
+
+<h2>11. Roadmap &amp; Milestones</h2>
+<table>
+  <tr><th>Phase</th><th>Status</th><th>Deliverable</th></tr>
+  <tr><td>Phase 0 — Validation</td><td>✅ Complete</td><td>Schema deployed, mock data dashboards live, OAuth Meta integrated</td></tr>
+  <tr><td>Phase 1 — Real data sync</td><td>🚧 In progress (pending Basic Access approval)</td><td>OAuth Google Ads + initial 30-day pull + 4×/day cron</td></tr>
+  <tr><td>Phase 2 — Operational dashboards</td><td>Planned</td><td>Unified campaign tables, search-term auditor, change tracker</td></tr>
+  <tr><td>Phase 3 — AI layer</td><td>Planned</td><td>Anomaly detection, change-impact narratives, contextual chatbot</td></tr>
+  <tr><td>Phase 4 — Offline conversions</td><td>Planned</td><td>OfflineUserDataJobService integration with internal CRM</td></tr>
+  <tr><td>Phase 5 — Read-only client view</td><td>Future</td><td>White-labeled reporting layer (will request scope upgrade if needed)</td></tr>
+</table>
+
+<h2>12. Compliance with Google Ads API Policies</h2>
+<p>We acknowledge and will adhere to all Google Ads API policies, including:</p>
+<ul>
+  <li>The <a href="https://developers.google.com/google-ads/api/docs/policies">Required Minimum Functionality</a> requirements for any tools accessing the API</li>
+  <li>The <a href="https://ads.google.com/intl/en_us/home/terms/api-terms/">Google Ads API Terms and Conditions</a></li>
+  <li>The Google Ads policies regarding offline conversion uploads, hashed user data, and data retention</li>
+  <li>Keeping the API contact email up-to-date and responding to all inquiries from the API team within 5 business days</li>
+  <li>Not reselling or sublicensing API access</li>
+  <li>Not using the API to create automated campaigns or bidding strategies that operate outside human review</li>
+</ul>
+
+<p>All UI mutations (negative keywords, offline uploads) require explicit user action and are logged. No campaigns or bid changes are made automatically without human approval.</p>
+
+<div class="footer">
+  Painel DDG Tráfego Pago · Google Ads API Design Document v1.0 · April 2026<br>
+  Dose de Growth · MCC 513-194-3362 · dosedegrowth@gmail.com
+</div>
+
+</body>
+</html>

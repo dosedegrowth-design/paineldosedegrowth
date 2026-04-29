@@ -276,3 +276,187 @@ export async function getClienteBySlug(
   const all = await listClientes();
   return all.find((c) => c.slug === slug) ?? null;
 }
+
+// ==================== WIZARD: PARTIAL CREATE / UPDATE ====================
+// Cria cliente após passos 1+2 do wizard (nome, slug, tipo).
+// setup_concluido permanece false até finalizarSetupCliente().
+// Permite OAuth Meta/Google funcionarem nos passos 3 e 4.
+
+const CreateClienteParcialSchema = z.object({
+  slug: slugSchema,
+  nome: z.string().min(2).max(100),
+  tipo_negocio: z.enum(["ecommerce", "lead_whatsapp", "hibrido"]),
+  cor_primaria: z.string().regex(/^#[0-9a-fA-F]{6}$/).default("#F15839"),
+});
+
+export async function createClienteParcial(
+  input: z.input<typeof CreateClienteParcialSchema>
+): Promise<{ ok: true; clienteId: string } | { ok: false; error: string }> {
+  try {
+    const parsed = CreateClienteParcialSchema.safeParse(input);
+    if (!parsed.success) {
+      return { ok: false, error: parsed.error.errors.map((e) => e.message).join(", ") };
+    }
+
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return { ok: false, error: "Não autenticado" };
+
+    // 1. Cria cliente
+    const { data: cliente, error: e1 } = await supabase
+      .schema("trafego_ddg")
+      .from("clientes")
+      .insert({
+        slug: parsed.data.slug,
+        nome: parsed.data.nome,
+        tipo_negocio: parsed.data.tipo_negocio,
+        cor_primaria: parsed.data.cor_primaria,
+      })
+      .select("id")
+      .single();
+
+    if (e1 || !cliente) {
+      return {
+        ok: false,
+        error:
+          e1?.code === "23505"
+            ? `Slug "${parsed.data.slug}" já existe`
+            : (e1?.message ?? "Erro desconhecido"),
+      };
+    }
+
+    // 2. Cria registro de acessos (status nao_conectado em todos)
+    const { error: e2 } = await supabase
+      .schema("trafego_ddg")
+      .from("clientes_acessos")
+      .insert({
+        cliente_id: cliente.id,
+        status_meta: "nao_conectado",
+        status_google: "nao_conectado",
+        status_painel_comercial: "nao_conectado",
+      });
+    if (e2) console.error("Erro criando acessos parcial:", e2);
+
+    // 3. Cria config vazio com setup_concluido=false (rascunho)
+    const { error: e3 } = await supabase
+      .schema("trafego_ddg")
+      .from("cliente_config")
+      .insert({
+        cliente_id: cliente.id,
+        setup_concluido: false,
+      });
+    if (e3) console.error("Erro criando config parcial:", e3);
+
+    // 4. Vincula user atual como adm_geral
+    const { error: e4 } = await supabase
+      .schema("trafego_ddg")
+      .from("clientes_users")
+      .insert({
+        cliente_id: cliente.id,
+        user_id: user.id,
+        role: "adm_geral",
+      });
+    if (e4) console.error("Erro vinculando user parcial:", e4);
+
+    revalidatePath("/clientes");
+    return { ok: true, clienteId: cliente.id };
+  } catch (err) {
+    return { ok: false, error: String(err) };
+  }
+}
+
+const FinalizarSetupSchema = z.object({
+  cliente_id: z.string().uuid(),
+  cac_maximo: z.number().nonnegative().nullable().optional(),
+  ticket_medio: z.number().nonnegative().nullable().optional(),
+  plataforma_ecom: z.string().nullable().optional(),
+  dominio_site: z.string().nullable().optional(),
+  pixel_instalado: z.boolean().optional(),
+  webhook_carrinho_abandonado: z.boolean().optional(),
+  frequencia_vendas_manuais: z.enum(["semanal", "quinzenal", "mensal"]).optional(),
+  painel_comercial_tipo: z.string().nullable().optional(),
+  painel_comercial_url: z.string().nullable().optional(),
+  observacoes: z.string().nullable().optional(),
+});
+
+export async function finalizarSetupCliente(
+  input: z.input<typeof FinalizarSetupSchema>
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const parsed = FinalizarSetupSchema.safeParse(input);
+    if (!parsed.success) {
+      return { ok: false, error: parsed.error.errors.map((e) => e.message).join(", ") };
+    }
+    const supabase = await createClient();
+
+    // 1. Atualiza cliente (cac/ticket)
+    const { error: e1 } = await supabase
+      .schema("trafego_ddg")
+      .from("clientes")
+      .update({
+        cac_maximo: parsed.data.cac_maximo ?? null,
+        ticket_medio: parsed.data.ticket_medio ?? null,
+        atualizado_em: new Date().toISOString(),
+      })
+      .eq("id", parsed.data.cliente_id);
+    if (e1) return { ok: false, error: e1.message };
+
+    // 2. Atualiza config + marca setup_concluido=true
+    const { error: e2 } = await supabase
+      .schema("trafego_ddg")
+      .from("cliente_config")
+      .update({
+        plataforma_ecom: parsed.data.plataforma_ecom ?? null,
+        dominio_site: parsed.data.dominio_site ?? null,
+        pixel_instalado: parsed.data.pixel_instalado ?? false,
+        webhook_carrinho_abandonado: parsed.data.webhook_carrinho_abandonado ?? false,
+        frequencia_vendas_manuais: parsed.data.frequencia_vendas_manuais ?? "semanal",
+        painel_comercial_tipo: parsed.data.painel_comercial_tipo ?? null,
+        painel_comercial_url: parsed.data.painel_comercial_url ?? null,
+        observacoes: parsed.data.observacoes ?? null,
+        setup_concluido: true,
+      })
+      .eq("cliente_id", parsed.data.cliente_id);
+    if (e2) return { ok: false, error: e2.message };
+
+    revalidatePath("/clientes");
+    revalidatePath("/dashboard");
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: String(err) };
+  }
+}
+
+// Cancela rascunho: deleta cliente parcial (soft delete via ativo=false)
+export async function cancelarRascunhoCliente(
+  clienteId: string
+): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const supabase = await createClient();
+    // Apenas cancela se setup_concluido=false
+    const { data: config } = await supabase
+      .schema("trafego_ddg")
+      .from("cliente_config")
+      .select("setup_concluido")
+      .eq("cliente_id", clienteId)
+      .single();
+
+    if (config?.setup_concluido) {
+      return { ok: false, error: "Cliente já finalizado — use deleteCliente" };
+    }
+
+    const { error } = await supabase
+      .schema("trafego_ddg")
+      .from("clientes")
+      .update({ ativo: false })
+      .eq("id", clienteId);
+    if (error) return { ok: false, error: error.message };
+
+    revalidatePath("/clientes");
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: String(err) };
+  }
+}
