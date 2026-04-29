@@ -6,18 +6,34 @@
 > Stack: Next.js 16 + Supabase + Vercel + Anthropic API
 > Status: **Fase 0 — Validação**
 
-## DECISÕES TRAVADAS (2026-04-28)
+## DECISÕES TRAVADAS
 
 | Decisão | Valor |
 |---|---|
 | **Cliente piloto** | **Petderma** |
 | **Identidade visual** | Brand Guidelines DDG (ver `IDENTIDADE_VISUAL.md`) |
-| **Versionamento** | GitHub: `dosedegrowth-design/trafego-ddg` |
-| **Deploy** | Vercel (projeto `trafego-ddg`) |
-| **Domínio** | A definir depois (subdomínio Vercel default no MVP) |
+| **GitHub** | https://github.com/dosedegrowth-design/paineldosedegrowth |
+| **Vercel ATIVO** | https://paineldosedegrowth.vercel.app ✅ |
+| **Supabase** | Projeto DDG existente (`hkjukobqpjezhpxzplpj`) — schema `trafego_ddg` |
+| **Domínio** | A definir depois (Vercel default no MVP) |
 | **Primeiro acesso** | **ADM GERAL** (Lucas) — único user da Fase 0/1 |
 | **Stack** | Next.js 16 + Supabase + Tailwind v4 + shadcn |
 | **Plataformas MVP** | Google Ads + Meta Ads |
+
+## STATUS ATUAL (2026-04-29) — ✅ Fase 0 CONCLUÍDA
+
+- ✅ Scaffold Next.js completo (13 rotas)
+- ✅ 9 páginas funcionais com mock data realista da Petderma
+- ✅ 4 tipos de gráficos animados (Recharts + Framer Motion)
+- ✅ Repo GitHub `paineldosedegrowth` criado e sincronizado
+- ✅ Deploy Vercel produção em https://paineldosedegrowth.vercel.app
+- ✅ Schema `trafego_ddg` aplicado no Supabase DDG (16 tabelas + RLS + helpers)
+- ✅ Schema exposto via PostgREST (`pgrst.db_schemas` atualizado)
+- ✅ Cliente Petderma seedado em `trafego_ddg.clientes`
+- ✅ Env vars Vercel: SUPABASE_URL, ANON_KEY, APP_URL, HMAC_SECRET
+- ✅ Build limpo (0 erros TS)
+
+🚧 **Próximo: Fase 1 — Sync de dados reais Google + Meta**
 
 ---
 
@@ -749,6 +765,7 @@ Cada fase só é considerada DONE quando:
 |---|---|---|---|
 | 2026-04-28 | v0.1 | Documento inicial criado a partir da análise de 3 vídeos de referência | Claude + Lucas |
 | 2026-04-28 | v0.2 | Decisões travadas: Petderma como piloto, identidade DDG, GitHub+Vercel, ADM GERAL como user inicial. Adicionados arquivos `IDENTIDADE_VISUAL.md` e `README.md` | Claude + Lucas |
+| 2026-04-29 | v0.3 | Fase 0 CONCLUÍDA: scaffold Next.js + 9 páginas + gráficos animados + mock data. Repo `paineldosedegrowth` criado. Deploy Vercel ATIVO em paineldosedegrowth.vercel.app. Schema `trafego_ddg` aplicado no Supabase DDG (16 tabelas + RLS). Env vars configuradas. Build limpo. | Claude + Lucas |
 
 ---
 
