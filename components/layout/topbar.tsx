@@ -30,10 +30,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CLIENTES } from "@/lib/mock-data";
 import { formatRelativeTime } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { useCliente } from "@/components/cliente-provider";
+import { Badge } from "@/components/ui/badge";
 
 export function Topbar() {
   const router = useRouter();
@@ -44,7 +45,7 @@ export function Topbar() {
   const [userEmail, setUserEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("ADM Geral");
   const [period, setPeriod] = useState("7d");
-  const [cliente, setCliente] = useState(CLIENTES[0]?.id ?? "");
+  const { cliente, setClienteSlug, clientes } = useCliente();
 
   useEffect(() => {
     setMounted(true);
@@ -81,21 +82,33 @@ export function Topbar() {
   return (
     <header className="sticky top-0 z-30 h-16 flex items-center gap-3 border-b border-border bg-background/80 backdrop-blur-xl px-6">
       {/* Cliente switcher */}
-      <Select value={cliente} onValueChange={setCliente}>
-        <SelectTrigger className="w-[200px] h-9 bg-card">
-          <div className="flex items-center gap-2">
-            <span className="size-2 rounded-full bg-[var(--ddg-orange)] pulse-ring" />
+      <Select value={cliente.slug} onValueChange={setClienteSlug}>
+        <SelectTrigger className="w-[220px] h-9 bg-card">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="size-2 rounded-full bg-[var(--ddg-orange)] pulse-ring shrink-0" />
             <SelectValue placeholder="Cliente" />
           </div>
         </SelectTrigger>
         <SelectContent>
-          {CLIENTES.map((c) => (
-            <SelectItem key={c.id} value={c.id}>
-              {c.nome}
+          {clientes.map((c) => (
+            <SelectItem key={c.slug} value={c.slug}>
+              <div className="flex items-center gap-2">
+                <span>{c.nome}</span>
+                <span className="text-[10px] text-muted-foreground uppercase">
+                  {c.tipo_negocio === "lead_whatsapp" && "Lead WPP"}
+                  {c.tipo_negocio === "ecommerce" && "E-com"}
+                  {c.tipo_negocio === "hibrido" && "Híbrido"}
+                </span>
+              </div>
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
+      <Badge variant="outline" className="hidden lg:inline-flex text-[10px] uppercase">
+        {cliente.tipo_negocio === "lead_whatsapp" && "Lead/WhatsApp"}
+        {cliente.tipo_negocio === "ecommerce" && "E-commerce"}
+        {cliente.tipo_negocio === "hibrido" && "Híbrido"}
+      </Badge>
 
       {/* Search */}
       <div className="relative flex-1 max-w-md hidden md:block">

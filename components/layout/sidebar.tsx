@@ -15,26 +15,55 @@ import {
   Settings,
   RadioTower,
   ChevronLeft,
+  MessageSquare,
+  ShoppingBag,
+  Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useCliente } from "@/components/cliente-provider";
+import type { TipoNegocio } from "@/lib/mock-data";
 
-const NAV = [
-  { href: "/dashboard", label: "Visão Geral", icon: LayoutDashboard },
-  { href: "/campanhas", label: "Campanhas", icon: Megaphone },
-  { href: "/search-terms", label: "Search Terms", icon: Search },
-  { href: "/alertas", label: "Alertas", icon: AlertTriangle, badge: 3 },
-  { href: "/mudancas", label: "Mudanças", icon: GitBranch },
-  { href: "/otimizacoes", label: "Otimizações", icon: Sparkles, badge: 7 },
-  { href: "/relatorios", label: "Relatórios", icon: FileText },
-  { href: "/conversoes-offline", label: "Offline Conv.", icon: RadioTower },
-  { href: "/configuracoes", label: "Configurações", icon: Settings },
+interface NavItem {
+  href: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  badge?: number;
+  // se undefined, aparece pra todos. Se array, só para os tipos listados.
+  tipos?: TipoNegocio[];
+  section?: "main" | "intelligence" | "specific" | "admin";
+}
+
+const NAV: NavItem[] = [
+  { href: "/dashboard", label: "Visão Geral", icon: LayoutDashboard, section: "main" },
+  { href: "/campanhas", label: "Campanhas", icon: Megaphone, section: "main" },
+  { href: "/search-terms", label: "Search Terms", icon: Search, section: "main" },
+
+  // Específico por tipo
+  { href: "/vendas-manuais", label: "Vendas Manuais", icon: MessageSquare, tipos: ["lead_whatsapp", "hibrido"], section: "specific" },
+  { href: "/carrinho-abandonado", label: "Carrinho Abandonado", icon: ShoppingBag, tipos: ["ecommerce", "hibrido"], section: "specific" },
+
+  // Inteligência
+  { href: "/alertas", label: "Alertas", icon: AlertTriangle, badge: 3, section: "intelligence" },
+  { href: "/mudancas", label: "Mudanças", icon: GitBranch, section: "intelligence" },
+  { href: "/otimizacoes", label: "Otimizações", icon: Sparkles, badge: 7, section: "intelligence" },
+  { href: "/relatorios", label: "Relatórios", icon: FileText, section: "intelligence" },
+  { href: "/conversoes-offline", label: "Offline Conv.", icon: RadioTower, section: "intelligence" },
+
+  // Admin
+  { href: "/clientes", label: "Clientes", icon: Building2, section: "admin" },
+  { href: "/configuracoes", label: "Configurações", icon: Settings, section: "admin" },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const { cliente } = useCliente();
+
+  const visibleNav = NAV.filter(
+    (item) => !item.tipos || item.tipos.includes(cliente.tipo_negocio)
+  );
 
   return (
     <motion.aside
@@ -72,13 +101,24 @@ export function Sidebar() {
 
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto p-3 space-y-1">
-        {NAV.map((item) => {
+        {visibleNav.map((item, idx) => {
+          // separador entre seções
+          const prevItem = idx > 0 ? visibleNav[idx - 1] : null;
+          const showSeparator =
+            prevItem && prevItem.section !== item.section && !collapsed;
           const Icon = item.icon;
           const active =
             pathname === item.href || pathname.startsWith(item.href + "/");
           return (
+            <div key={item.href}>
+              {showSeparator && (
+                <div className="px-3 pt-3 pb-1.5 text-[10px] uppercase tracking-widest text-muted-foreground/60">
+                  {item.section === "specific" && "Modelo de Negócio"}
+                  {item.section === "intelligence" && "Inteligência"}
+                  {item.section === "admin" && "Administração"}
+                </div>
+              )}
             <Link
-              key={item.href}
               href={item.href}
               className={cn(
                 "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
@@ -112,6 +152,7 @@ export function Sidebar() {
                 </>
               )}
             </Link>
+            </div>
           );
         })}
       </nav>
