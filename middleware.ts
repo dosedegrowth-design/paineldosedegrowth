@@ -10,7 +10,20 @@ type CookieSet = { name: string; value: string; options?: CookieOptions };
  */
 export async function middleware(request: NextRequest) {
   // Skip auth pra rotas públicas
-  const publicPaths = ["/login", "/_next", "/brand", "/favicon.ico"];
+  const publicPaths = [
+    "/login",
+    "/_next",
+    "/brand",
+    "/favicon.ico",
+    // Páginas legais públicas (Meta + LGPD)
+    "/privacidade",
+    "/termos",
+    "/excluir-dados",
+    // Webhook receiver
+    "/api/webhooks",
+    // OAuth callback
+    "/api/oauth",
+  ];
   if (publicPaths.some((p) => request.nextUrl.pathname.startsWith(p))) {
     return NextResponse.next();
   }
