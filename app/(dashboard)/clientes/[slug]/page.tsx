@@ -2,6 +2,8 @@
 
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -13,17 +15,30 @@ import {
   CheckCircle2,
   AlertCircle,
   XCircle,
+  MoreVertical,
+  Pencil,
+  Trash2,
+  Users,
 } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import { PageHeader } from "@/components/dashboard/page-header";
 import { ConexaoMeta } from "@/components/clientes/conexao-meta";
 import { ConexaoGoogle } from "@/components/clientes/conexao-google";
 import { ConexaoPainel } from "@/components/clientes/conexao-painel";
-import { getClienteBySlug, type ClienteCompleto, type TipoNegocio } from "@/lib/actions/clientes";
+import { EditarClienteModal } from "@/components/clientes/editar-cliente-modal";
+import { GerenciarUsuariosModal } from "@/components/clientes/gerenciar-usuarios-modal";
+import { getClienteBySlug, deleteCliente, type ClienteCompleto, type TipoNegocio } from "@/lib/actions/clientes";
 import { cn, formatCurrency, formatRelativeTime } from "@/lib/utils";
 
 const TIPO_LABEL: Record<TipoNegocio, { label: string; icon: typeof Building2; color: string }> = {
@@ -38,8 +53,29 @@ interface PageProps {
 
 export default function ClienteDetalhePage({ params }: PageProps) {
   const { slug } = use(params);
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [cliente, setCliente] = useState<ClienteCompleto | null>(null);
   const [loading, setLoading] = useState(true);
+  const [editOpen, setEditOpen] = useState(false);
+  const [usersOpen, setUsersOpen] = useState(false);
+
+  const handleDelete = async () => {
+    if (!cliente) return;
+    const confirmed = confirm(
+      `Tem certeza que quer ARQUIVAR o cliente "${cliente.nome}"?\n\n` +
+        `Os dados não serão excluídos, apenas o cliente sai da lista ativa.\n` +
+        `Você pode reativar depois pelo Supabase se precisar.`
+    );
+    if (!confirmed) return;
+    const res = await deleteCliente(cliente.id);
+    if (!res.ok) {
+      toast.error("Erro ao arquivar", { description: res.error });
+      return;
+    }
+    toast.success("Cliente arquivado");
+    router.push("/clientes");
+  };
 
   const load = async () => {
     setLoading(true);
@@ -51,6 +87,22 @@ export default function ClienteDetalhePage({ params }: PageProps) {
   useEffect(() => {
     load();
   }, [slug]);
+
+  // Feedback de OAuth no retorno
+  useEffect(() => {
+    const metaOk = searchParams.get("meta_ok");
+    const oauthError = searchParams.get("oauth_error");
+    if (metaOk === "1") {
+      toast.success("Meta Ads conectado!", {
+        description: "Token long-lived salvo. Você pode testar a conexão agora.",
+      });
+      router.replace(`/clientes/${slug}`);
+    }
+    if (oauthError) {
+      toast.error("Falha ao conectar Meta", { description: oauthError });
+      router.replace(`/clientes/${slug}`);
+    }
+  }, [searchParams, router, slug]);
 
   if (loading) {
     return (
@@ -128,19 +180,47 @@ export default function ClienteDetalhePage({ params }: PageProps) {
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-4 text-sm">
-              {cliente.cac_maximo && (
-                <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">CAC máx</p>
-                  <p className="font-semibold tabular-nums">{formatCurrency(cliente.cac_maximo)}</p>
-                </div>
-              )}
-              {cliente.ticket_medio && (
-                <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Ticket médio</p>
-                  <p className="font-semibold tabular-nums">{formatCurrency(cliente.ticket_medio)}</p>
-                </div>
-              )}
+            <div className="flex items-center gap-4">
+              <div className="flex flex-wrap gap-4 text-sm">
+                {cliente.cac_maximo && (
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">CAC máx</p>
+                    <p className="font-semibold tabular-nums">{formatCurrency(cliente.cac_maximo)}</p>
+                  </div>
+                )}
+                {cliente.ticket_medio && (
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Ticket médio</p>
+                    <p className="font-semibold tabular-nums">{formatCurrency(cliente.ticket_medio)}</p>
+                  </div>
+                )}
+              </div>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <MoreVertical className="size-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-52">
+                  <DropdownMenuItem onClick={() => setEditOpen(true)}>
+                    <Pencil className="size-3.5" />
+                    Editar cliente
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setUsersOpen(true)}>
+                    <Users className="size-3.5" />
+                    Gerenciar usuários
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={handleDelete}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <Trash2 className="size-3.5" />
+                    Arquivar cliente
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
 
@@ -275,6 +355,19 @@ export default function ClienteDetalhePage({ params }: PageProps) {
           </CardContent>
         </Card>
       )}
+
+      {/* Modais */}
+      <EditarClienteModal
+        cliente={cliente}
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        onUpdated={load}
+      />
+      <GerenciarUsuariosModal
+        cliente={cliente}
+        open={usersOpen}
+        onClose={() => setUsersOpen(false)}
+      />
     </div>
   );
 }

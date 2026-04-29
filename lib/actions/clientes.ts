@@ -233,6 +233,43 @@ export async function deleteCliente(
   }
 }
 
+const UpdateClienteSchema = z.object({
+  cliente_id: z.string().uuid(),
+  nome: z.string().min(2).max(100),
+  cor_primaria: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+  cac_maximo: z.number().nonnegative().nullable(),
+  ticket_medio: z.number().nonnegative().nullable(),
+  tipo_negocio: z.enum(["ecommerce", "lead_whatsapp", "hibrido"]),
+});
+
+export async function updateCliente(
+  input: z.input<typeof UpdateClienteSchema>
+): Promise<{ ok: boolean; error?: string }> {
+  const parsed = UpdateClienteSchema.safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.errors.map((e) => e.message).join(", ") };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .schema("trafego_ddg")
+    .from("clientes")
+    .update({
+      nome: parsed.data.nome,
+      cor_primaria: parsed.data.cor_primaria,
+      cac_maximo: parsed.data.cac_maximo,
+      ticket_medio: parsed.data.ticket_medio,
+      tipo_negocio: parsed.data.tipo_negocio,
+      atualizado_em: new Date().toISOString(),
+    })
+    .eq("id", parsed.data.cliente_id);
+
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/clientes");
+  return { ok: true };
+}
+
 export async function getClienteBySlug(
   slug: string
 ): Promise<ClienteCompleto | null> {

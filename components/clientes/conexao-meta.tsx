@@ -18,6 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { configurarMeta, testarConexaoMeta, desconectarMeta } from "@/lib/actions/conexoes";
+import { iniciarOAuthMeta } from "@/lib/actions/oauth-meta";
 import type { ClienteCompleto } from "@/lib/actions/clientes";
 import { formatRelativeTime } from "@/lib/utils";
 
@@ -88,6 +89,18 @@ export function ConexaoMeta({ cliente, onUpdate }: Props) {
     });
   };
 
+  const handleOAuthConnect = () => {
+    startTransition(async () => {
+      const res = await iniciarOAuthMeta(cliente.id);
+      if (!res.ok) {
+        toast.error("OAuth indisponível", { description: res.error });
+        return;
+      }
+      // Redireciona pro Facebook
+      window.location.href = res.url!;
+    });
+  };
+
   return (
     <>
       <Card
@@ -126,13 +139,25 @@ export function ConexaoMeta({ cliente, onUpdate }: Props) {
 
           {/* Ações */}
           <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-border">
+            {!isConnected && (
+              <Button
+                variant="ddg"
+                size="sm"
+                onClick={handleOAuthConnect}
+                disabled={pending}
+                className="gap-2"
+              >
+                {pending ? <Loader2 className="size-3.5 animate-spin" /> : <MetaIcon />}
+                Conectar via Facebook
+              </Button>
+            )}
             <Button
-              variant={isConnected ? "outline" : "ddg"}
+              variant={isConnected ? "outline" : "outline"}
               size="sm"
               onClick={() => setOpen(true)}
               className="gap-2"
             >
-              {isConnected ? "Editar" : "Configurar"}
+              {isConnected ? "Editar" : "Configurar manual"}
             </Button>
             {(isPending || isConnected) && cliente.meta_ad_account_id && (
               <Button
