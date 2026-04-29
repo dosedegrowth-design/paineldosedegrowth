@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import {
   Plus,
   Building2,
@@ -13,6 +14,7 @@ import {
   XCircle,
   Loader2,
   Settings,
+  ArrowRight,
 } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -121,7 +123,8 @@ export default function ClientesPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.04 }}
               >
-                <Card className="hover:border-[var(--ddg-orange)]/40 transition-colors h-full">
+                <Link href={`/clientes/${c.slug}`}>
+                <Card className="hover:border-[var(--ddg-orange)]/40 transition-all h-full cursor-pointer hover:scale-[1.01]">
                   <CardContent className="p-5 space-y-4">
                     <div className="flex items-start justify-between gap-2">
                       <div
@@ -167,11 +170,17 @@ export default function ClientesPage() {
                       </div>
                     </div>
 
-                    {conexoesPendentes > 0 && (
-                      <Button variant="outline" size="sm" className="w-full gap-2">
+                    {conexoesPendentes > 0 ? (
+                      <div className="w-full inline-flex items-center justify-center gap-2 text-xs font-medium px-3 py-2 rounded-md border border-border hover:border-[var(--ddg-orange)]/40 transition-colors">
                         <Settings className="size-3.5" />
                         Configurar conexões ({conexoesPendentes})
-                      </Button>
+                        <ArrowRight className="size-3.5" />
+                      </div>
+                    ) : (
+                      <div className="w-full inline-flex items-center justify-center gap-2 text-xs font-medium px-3 py-2 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                        <CheckCircle2 className="size-3.5" />
+                        Tudo configurado
+                      </div>
                     )}
 
                     <div className="text-[10px] text-muted-foreground pt-2 border-t border-border flex justify-between">
@@ -185,6 +194,7 @@ export default function ClientesPage() {
                     </div>
                   </CardContent>
                 </Card>
+                </Link>
               </motion.div>
             );
           })}
