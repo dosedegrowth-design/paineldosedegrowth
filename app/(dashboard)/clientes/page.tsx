@@ -333,6 +333,7 @@ function ConexaoBadge({ label, status }: { label: string; status: StatusConexao 
   const cfg = {
     conectado: { variant: "success" as const, icon: CheckCircle2 },
     pendente: { variant: "warning" as const, icon: AlertCircle },
+    aguardando_selecao: { variant: "warning" as const, icon: AlertCircle },
     erro: { variant: "danger" as const, icon: XCircle },
     nao_conectado: { variant: "secondary" as const, icon: XCircle },
   }[status];

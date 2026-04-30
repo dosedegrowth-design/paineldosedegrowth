@@ -7,7 +7,12 @@ import { z } from "zod";
 // ==================== TYPES ====================
 
 export type TipoNegocio = "ecommerce" | "lead_whatsapp" | "hibrido";
-export type StatusConexao = "nao_conectado" | "pendente" | "conectado" | "erro";
+export type StatusConexao =
+  | "nao_conectado"
+  | "pendente"
+  | "aguardando_selecao"
+  | "conectado"
+  | "erro";
 
 export interface ClienteCompleto {
   id: string;
