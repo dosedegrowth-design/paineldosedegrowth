@@ -140,28 +140,99 @@ export async function trocarCodeMeta(params: {
     }
     const longData = (await longRes.json()) as { access_token: string };
 
-    // 3. Buscar primeira ad account (cliente DDG seleciona depois se tiver várias)
+    // 3. Buscar TODOS os recursos disponíveis (ad accounts, pixels, pages)
+    const token = longData.access_token;
+
+    // 3a. Ad Accounts
     const adAccRes = await fetch(
-      `https://graph.facebook.com/v22.0/me/adaccounts?fields=id,name,account_status&access_token=${longData.access_token}`
+      `https://graph.facebook.com/v22.0/me/adaccounts?fields=id,name,account_status,currency,business&limit=200&access_token=${token}`
     );
-    let adAccountId: string | null = null;
+    const adAccounts: Array<{
+      id: string;
+      name: string;
+      account_status: number;
+      currency?: string;
+      business?: { id: string; name: string };
+    }> = [];
     if (adAccRes.ok) {
-      const adAccData = (await adAccRes.json()) as {
-        data: Array<{ id: string; name: string; account_status: number }>;
-      };
-      // Pega primeira ativa
-      const ativa = adAccData.data.find((a) => a.account_status === 1);
-      adAccountId = ativa?.id ?? adAccData.data[0]?.id ?? null;
+      const adAccData = (await adAccRes.json()) as { data: typeof adAccounts };
+      adAccounts.push(...(adAccData.data ?? []));
     }
 
-    // 4. Salvar
+    // 3b. Pixels (de cada ad account ativa)
+    const pixels: Array<{ id: string; name: string; ad_account_id: string }> = [];
+    const adAccountsAtivas = adAccounts.filter((a) => a.account_status === 1);
+    for (const acc of adAccountsAtivas.slice(0, 10)) {
+      try {
+        const pxRes = await fetch(
+          `https://graph.facebook.com/v22.0/${acc.id}/adspixels?fields=id,name&access_token=${token}`
+        );
+        if (pxRes.ok) {
+          const pxData = (await pxRes.json()) as {
+            data?: Array<{ id: string; name: string }>;
+          };
+          for (const p of pxData.data ?? []) {
+            pixels.push({ id: p.id, name: p.name, ad_account_id: acc.id });
+          }
+        }
+      } catch (_e) {
+        // Ignora pixel fetch errors (alguns BMs bloqueiam, vida segue)
+      }
+    }
+
+    // 3c. Páginas (Facebook + Instagram conectado)
+    const pages: Array<{
+      id: string;
+      name: string;
+      category?: string;
+      instagram_business_account?: { id: string };
+    }> = [];
+    try {
+      const pagesRes = await fetch(
+        `https://graph.facebook.com/v22.0/me/accounts?fields=id,name,category,instagram_business_account&limit=200&access_token=${token}`
+      );
+      if (pagesRes.ok) {
+        const pagesData = (await pagesRes.json()) as { data: typeof pages };
+        pages.push(...(pagesData.data ?? []));
+      }
+    } catch (_e) {
+      // Ignora se user negou permissao de pages
+    }
+
+    // 4. Auto-seleção quando só tem 1 opção em cada categoria
+    const adAccountIdAuto =
+      adAccountsAtivas.length === 1
+        ? adAccountsAtivas[0].id
+        : adAccountsAtivas.length === 0 && adAccounts.length === 1
+          ? adAccounts[0].id
+          : null;
+    const pixelIdAuto = pixels.length === 1 ? pixels[0].id : null;
+    const pageIdAuto = pages.length === 1 ? pages[0].id : null;
+
+    // Se TODOS os recursos foram auto-selecionados → status conectado direto
+    // Senão → aguardando_selecao (modal vai abrir no frontend pra user escolher)
+    const tudoAutoSelecionado =
+      adAccountIdAuto !== null &&
+      (pixels.length === 0 || pixelIdAuto !== null) &&
+      (pages.length === 0 || pageIdAuto !== null);
+
+    const recursosDisponiveis = {
+      ad_accounts: adAccounts,
+      pixels,
+      pages,
+    };
+
+    // 5. Salvar
     const { error } = await supabase
       .schema("trafego_ddg")
       .from("clientes_acessos")
       .update({
-        meta_long_lived_token: longData.access_token,
-        meta_ad_account_id: adAccountId,
-        status_meta: "conectado",
+        meta_long_lived_token: token,
+        meta_ad_account_id: adAccountIdAuto,
+        meta_pixel_id: pixelIdAuto,
+        meta_page_id: pageIdAuto,
+        meta_recursos_disponiveis: recursosDisponiveis,
+        status_meta: tudoAutoSelecionado ? "conectado" : "aguardando_selecao",
         meta_ultimo_erro: null,
         ultima_sync_meta: new Date().toISOString(),
       })
@@ -178,4 +249,69 @@ export async function trocarCodeMeta(params: {
 
 export async function metaAppConfigurado(): Promise<boolean> {
   return !!(META_APP_ID && META_APP_SECRET);
+}
+
+// ==================== SELECAO DE RECURSOS POS-OAUTH ====================
+
+export interface MetaRecursosDisponiveis {
+  ad_accounts: Array<{
+    id: string;
+    name: string;
+    account_status: number;
+    currency?: string;
+    business?: { id: string; name: string };
+  }>;
+  pixels: Array<{ id: string; name: string; ad_account_id: string }>;
+  pages: Array<{
+    id: string;
+    name: string;
+    category?: string;
+    instagram_business_account?: { id: string };
+  }>;
+}
+
+export async function getMetaRecursosDisponiveis(
+  clienteId: string
+): Promise<MetaRecursosDisponiveis | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .schema("trafego_ddg")
+    .from("clientes_acessos")
+    .select("meta_recursos_disponiveis")
+    .eq("cliente_id", clienteId)
+    .single();
+  return (data?.meta_recursos_disponiveis as MetaRecursosDisponiveis) ?? null;
+}
+
+export async function selecionarRecursosMeta(input: {
+  clienteId: string;
+  adAccountId: string;
+  pixelId?: string | null;
+  businessId?: string | null;
+  pageId?: string | null;
+}): Promise<{ ok: boolean; error?: string }> {
+  if (!input.clienteId || !input.adAccountId) {
+    return { ok: false, error: "Cliente ID e Ad Account ID são obrigatórios" };
+  }
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .schema("trafego_ddg")
+      .from("clientes_acessos")
+      .update({
+        meta_ad_account_id: input.adAccountId,
+        meta_pixel_id: input.pixelId ?? null,
+        meta_business_id: input.businessId ?? null,
+        meta_page_id: input.pageId ?? null,
+        status_meta: "conectado",
+        meta_ultimo_erro: null,
+      })
+      .eq("cliente_id", input.clienteId);
+    if (error) return { ok: false, error: error.message };
+
+    revalidatePath("/clientes");
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: String(err) };
+  }
 }

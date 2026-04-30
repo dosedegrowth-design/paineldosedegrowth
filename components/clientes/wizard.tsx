@@ -38,6 +38,8 @@ import {
 import { iniciarOAuthMeta } from "@/lib/actions/oauth-meta";
 import { iniciarOAuthGoogle } from "@/lib/actions/oauth-google";
 import { useOAuthPopup, type OAuthCompleteEvent } from "@/hooks/use-oauth-popup";
+import { SelecionarRecursosMetaModal } from "@/components/clientes/selecionar-recursos-meta-modal";
+import { createClient } from "@/lib/supabase/client";
 
 const TIPOS: {
   value: TipoNegocio;
@@ -143,6 +145,32 @@ export function ClienteWizard({ onClose }: WizardProps) {
   const [ticketMedio, setTicketMedio] = useState("");
   const [observacoes, setObservacoes] = useState("");
 
+  // Modal de seleção de recursos Meta (aparece se OAuth retornou múltiplas opções)
+  const [showSelecaoMeta, setShowSelecaoMeta] = useState(false);
+
+  // Verifica status_meta no Supabase e decide próxima ação
+  const checarStatusMetaAposOAuth = async (cid: string) => {
+    const sb = createClient();
+    const { data } = await sb
+      .schema("trafego_ddg")
+      .from("clientes_acessos")
+      .select("status_meta")
+      .eq("cliente_id", cid)
+      .single();
+
+    if (data?.status_meta === "aguardando_selecao") {
+      // Múltiplas opções → abre modal de seleção
+      setShowSelecaoMeta(true);
+    } else if (data?.status_meta === "conectado") {
+      // Auto-selecionado (1 opção em cada categoria) → marca conectado e avança
+      setMetaConectado(true);
+      toast.success("Meta Ads conectado!", {
+        description: "Recursos detectados automaticamente. Bora pro próximo passo.",
+      });
+      setStep((s) => (s === 3 ? 4 : s));
+    }
+  };
+
   // Hook OAuth popup: callback chamado quando popup retorna com sucesso/erro
   const handleOAuthComplete = (event: OAuthCompleteEvent) => {
     if (!event.ok) {
@@ -152,12 +180,13 @@ export function ClienteWizard({ onClose }: WizardProps) {
       return;
     }
     if (event.provider === "meta") {
-      setMetaConectado(true);
-      toast.success("Meta Ads conectado!", {
-        description: "Token salvo. Bora pro próximo passo.",
+      const cid = event.clienteId ?? clienteId;
+      if (!cid) return;
+      // Toast intermediário enquanto checa status
+      toast.success("Autorização recebida", {
+        description: "Verificando recursos disponíveis...",
       });
-      // Avança automaticamente
-      setStep((s) => (s === 3 ? 4 : s));
+      checarStatusMetaAposOAuth(cid);
     } else if (event.provider === "google") {
       setGoogleConectado(true);
       toast.success("Google Ads conectado!", {
@@ -165,6 +194,11 @@ export function ClienteWizard({ onClose }: WizardProps) {
       });
       setStep((s) => (s === 4 ? 5 : s));
     }
+  };
+
+  const handleSelecaoMetaSuccess = () => {
+    setMetaConectado(true);
+    setStep((s) => (s === 3 ? 4 : s));
   };
 
   const { abrirPopup } = useOAuthPopup({ onComplete: handleOAuthComplete });
@@ -912,6 +946,14 @@ export function ClienteWizard({ onClose }: WizardProps) {
           </div>
         </div>
       </CardContent>
+
+      {/* Modal de seleção Meta (abre auto após OAuth se múltiplas opções) */}
+      <SelecionarRecursosMetaModal
+        clienteId={clienteId}
+        open={showSelecaoMeta}
+        onOpenChange={setShowSelecaoMeta}
+        onSuccess={handleSelecaoMetaSuccess}
+      />
     </Card>
   );
 }

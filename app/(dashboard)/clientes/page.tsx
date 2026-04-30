@@ -18,7 +18,10 @@ import {
   FileEdit,
   Eye,
   EyeOff,
+  Trash2,
+  MoreVertical,
 } from "lucide-react";
+import { toast } from "sonner";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,7 +29,14 @@ import { Badge } from "@/components/ui/badge";
 
 import { PageHeader } from "@/components/dashboard/page-header";
 import { ClienteWizard } from "@/components/clientes/wizard";
-import { listClientes, type ClienteCompleto, type StatusConexao, type TipoNegocio } from "@/lib/actions/clientes";
+import {
+  listClientes,
+  deleteCliente,
+  cancelarRascunhoCliente,
+  type ClienteCompleto,
+  type StatusConexao,
+  type TipoNegocio,
+} from "@/lib/actions/clientes";
 import { cn, formatCurrency, formatRelativeTime } from "@/lib/utils";
 
 const TIPO_LABEL: Record<TipoNegocio, { label: string; icon: typeof Building2; color: string }> = {
@@ -54,6 +64,40 @@ export default function ClientesPage() {
 
   const handleWizardClose = () => {
     setShowWizard(false);
+    loadClientes();
+  };
+
+  const handleApagarCliente = async (
+    e: React.MouseEvent,
+    cliente: ClienteCompleto
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const isRascunho = !cliente.setup_concluido;
+    const titulo = isRascunho
+      ? `Apagar rascunho "${cliente.nome}"?`
+      : `Apagar cliente "${cliente.nome}"?`;
+    const aviso = isRascunho
+      ? "O rascunho será removido permanentemente."
+      : `Isso vai arquivar o cliente (soft delete — pode ser restaurado depois). Todos os dados de campanhas, conexões e histórico ficarão intactos.\n\nDigite "${cliente.nome}" pra confirmar.`;
+
+    if (!isRascunho) {
+      const resposta = prompt(titulo + "\n\n" + aviso);
+      if (resposta !== cliente.nome) {
+        if (resposta !== null) toast.error("Nome não confere — cancelado");
+        return;
+      }
+    } else {
+      if (!confirm(titulo + "\n\n" + aviso)) return;
+    }
+
+    const fn = isRascunho ? cancelarRascunhoCliente : deleteCliente;
+    const res = await fn(cliente.id);
+    if (!res.ok) {
+      toast.error("Erro ao apagar", { description: res.error });
+      return;
+    }
+    toast.success(isRascunho ? "Rascunho apagado" : "Cliente arquivado");
     loadClientes();
   };
 
@@ -158,7 +202,18 @@ export default function ClientesPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.04 }}
+                className="relative group"
               >
+                {/* Botão Apagar (canto superior direito, aparece no hover) */}
+                <button
+                  type="button"
+                  onClick={(e) => handleApagarCliente(e, c)}
+                  className="absolute top-2 right-2 z-10 size-7 rounded-md bg-background/80 backdrop-blur border border-border opacity-0 group-hover:opacity-100 hover:bg-destructive hover:text-destructive-foreground hover:border-destructive transition-all flex items-center justify-center"
+                  title="Apagar cliente"
+                  aria-label="Apagar cliente"
+                >
+                  <Trash2 className="size-3.5" />
+                </button>
                 <Link href={`/clientes/${c.slug}`}>
                 <Card
                   className={cn(

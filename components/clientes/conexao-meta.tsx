@@ -22,6 +22,8 @@ import { iniciarOAuthMeta } from "@/lib/actions/oauth-meta";
 import type { ClienteCompleto } from "@/lib/actions/clientes";
 import { formatRelativeTime } from "@/lib/utils";
 import { useOAuthPopup, type OAuthCompleteEvent } from "@/hooks/use-oauth-popup";
+import { SelecionarRecursosMetaModal } from "@/components/clientes/selecionar-recursos-meta-modal";
+import { createClient } from "@/lib/supabase/client";
 
 interface Props {
   cliente: ClienteCompleto;
@@ -90,8 +92,11 @@ export function ConexaoMeta({ cliente, onUpdate }: Props) {
     });
   };
 
+  // Modal de seleção (Ad Account, Pixel, Página) — abre se OAuth retornou múltiplas opções
+  const [showSelecaoMeta, setShowSelecaoMeta] = useState(false);
+
   // OAuth popup handler
-  const handleOAuthComplete = (event: OAuthCompleteEvent) => {
+  const handleOAuthComplete = async (event: OAuthCompleteEvent) => {
     if (event.provider !== "meta") return;
     if (!event.ok) {
       toast.error("Falha ao conectar Meta", {
@@ -99,9 +104,29 @@ export function ConexaoMeta({ cliente, onUpdate }: Props) {
       });
       return;
     }
-    toast.success("Meta Ads conectado!", {
-      description: "Token long-lived salvo. Atualizando dados...",
-    });
+    // Verifica status_meta no Supabase pra decidir se abre modal
+    const sb = createClient();
+    const { data } = await sb
+      .schema("trafego_ddg")
+      .from("clientes_acessos")
+      .select("status_meta")
+      .eq("cliente_id", cliente.id)
+      .single();
+
+    if (data?.status_meta === "aguardando_selecao") {
+      toast.success("Autorização recebida", {
+        description: "Selecione qual Ad Account / Pixel / Página usar.",
+      });
+      setShowSelecaoMeta(true);
+    } else {
+      toast.success("Meta Ads conectado!", {
+        description: "Recursos detectados automaticamente.",
+      });
+      onUpdate();
+    }
+  };
+
+  const handleSelecaoMetaSuccess = () => {
     onUpdate();
   };
 
@@ -304,6 +329,14 @@ export function ConexaoMeta({ cliente, onUpdate }: Props) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Modal de seleção pós-OAuth */}
+      <SelecionarRecursosMetaModal
+        clienteId={cliente.id}
+        open={showSelecaoMeta}
+        onOpenChange={setShowSelecaoMeta}
+        onSuccess={handleSelecaoMetaSuccess}
+      />
     </>
   );
 }
