@@ -289,9 +289,22 @@ const CreateClienteParcialSchema = z.object({
   cor_primaria: z.string().regex(/^#[0-9a-fA-F]{6}$/).default("#F15839"),
 });
 
+export type CreateClienteParcialResult =
+  | { ok: true; clienteId: string }
+  | { ok: false; error: string }
+  | {
+      ok: false;
+      conflito: "slug_arquivado";
+      slug: string;
+      clienteId: string;
+      nome: string;
+      setupConcluido: boolean;
+      error: string;
+    };
+
 export async function createClienteParcial(
   input: z.input<typeof CreateClienteParcialSchema>
-): Promise<{ ok: true; clienteId: string } | { ok: false; error: string }> {
+): Promise<CreateClienteParcialResult> {
   try {
     const parsed = CreateClienteParcialSchema.safeParse(input);
     if (!parsed.success) {
@@ -318,12 +331,25 @@ export async function createClienteParcial(
       .single();
 
     if (e1 || !cliente) {
+      // Conflito de slug → checa se é cliente arquivado
+      if (e1?.code === "23505") {
+        const arquivado = await checarSlugArquivado(parsed.data.slug);
+        if (arquivado.arquivado) {
+          return {
+            ok: false,
+            conflito: "slug_arquivado",
+            slug: parsed.data.slug,
+            clienteId: arquivado.clienteId!,
+            nome: arquivado.nome ?? parsed.data.slug,
+            setupConcluido: arquivado.setupConcluido ?? false,
+            error: `Slug "${parsed.data.slug}" pertence a um cliente arquivado.`,
+          };
+        }
+        return { ok: false, error: `Slug "${parsed.data.slug}" já existe (ativo)` };
+      }
       return {
         ok: false,
-        error:
-          e1?.code === "23505"
-            ? `Slug "${parsed.data.slug}" já existe`
-            : (e1?.message ?? "Erro desconhecido"),
+        error: e1?.message ?? "Erro desconhecido",
       };
     }
 
@@ -458,5 +484,82 @@ export async function cancelarRascunhoCliente(
     return { ok: true };
   } catch (err) {
     return { ok: false, error: String(err) };
+  }
+}
+
+// Hard delete: apaga de vez do banco (cascade mata acessos, config, snapshots)
+// Libera o slug pra reuso. Use com cautela — não tem desfazer.
+export async function hardDeleteCliente(
+  clienteId: string
+): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .schema("trafego_ddg")
+      .from("clientes")
+      .delete()
+      .eq("id", clienteId);
+    if (error) return { ok: false, error: error.message };
+    revalidatePath("/clientes");
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: String(err) };
+  }
+}
+
+// Restaura cliente arquivado: ativo=false → true
+export async function restaurarCliente(
+  clienteId: string
+): Promise<{ ok: boolean; slug?: string; error?: string }> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .schema("trafego_ddg")
+      .from("clientes")
+      .update({ ativo: true })
+      .eq("id", clienteId)
+      .select("slug")
+      .single();
+    if (error) return { ok: false, error: error.message };
+    revalidatePath("/clientes");
+    return { ok: true, slug: data?.slug };
+  } catch (err) {
+    return { ok: false, error: String(err) };
+  }
+}
+
+// Verifica se slug está sendo ocupado por cliente arquivado (ativo=false).
+export async function checarSlugArquivado(slug: string): Promise<{
+  arquivado: boolean;
+  clienteId?: string;
+  nome?: string;
+  setupConcluido?: boolean;
+}> {
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .schema("trafego_ddg")
+      .from("clientes")
+      .select("id, nome, ativo")
+      .eq("slug", slug)
+      .eq("ativo", false)
+      .maybeSingle();
+    if (!data) return { arquivado: false };
+
+    const { data: cfg } = await supabase
+      .schema("trafego_ddg")
+      .from("cliente_config")
+      .select("setup_concluido")
+      .eq("cliente_id", data.id)
+      .maybeSingle();
+
+    return {
+      arquivado: true,
+      clienteId: data.id,
+      nome: data.nome,
+      setupConcluido: cfg?.setup_concluido ?? false,
+    };
+  } catch {
+    return { arquivado: false };
   }
 }

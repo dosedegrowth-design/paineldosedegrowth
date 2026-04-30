@@ -33,6 +33,8 @@ import {
   createClienteParcial,
   finalizarSetupCliente,
   cancelarRascunhoCliente,
+  hardDeleteCliente,
+  restaurarCliente,
   type TipoNegocio,
 } from "@/lib/actions/clientes";
 import { iniciarOAuthMeta } from "@/lib/actions/oauth-meta";
@@ -323,15 +325,83 @@ export function ClienteWizard({ onClose }: WizardProps) {
           tipo_negocio: tipo,
           cor_primaria: corPrimaria,
         });
-        if (!res.ok) {
-          toast.error("Erro ao salvar cliente", { description: res.error });
+
+        if ("ok" in res && res.ok) {
+          setClienteId(res.clienteId);
+          toast.success("Rascunho salvo", {
+            description: "Cliente criado como rascunho. Bora conectar as plataformas.",
+          });
+          setStep(3);
           return;
         }
-        setClienteId(res.clienteId);
-        toast.success("Rascunho salvo", {
-          description: "Cliente criado como rascunho. Bora conectar as plataformas.",
+
+        // Conflito de slug com cliente arquivado → 3 opções
+        if ("conflito" in res && res.conflito === "slug_arquivado") {
+          const tipoStr = res.setupConcluido ? "cliente" : "rascunho";
+          const escolha = window.prompt(
+            `Já existe um ${tipoStr} arquivado com slug "${res.slug}" (nome: ${res.nome}).\n\n` +
+              `Digite uma opção:\n` +
+              `  1 = Restaurar e continuar editando esse cliente\n` +
+              `  2 = Apagar de vez o arquivado e criar do zero\n` +
+              `  3 = Cancelar (vou trocar o slug)\n\n` +
+              `Sua escolha (1, 2 ou 3):`,
+            "1"
+          );
+
+          if (escolha === "1") {
+            // Restaurar
+            const r = await restaurarCliente(res.clienteId);
+            if (!r.ok) {
+              toast.error("Erro ao restaurar", { description: r.error });
+              return;
+            }
+            setClienteId(res.clienteId);
+            toast.success("Cliente restaurado", {
+              description: `${res.nome} foi restaurado. Continue do passo 3.`,
+            });
+            setStep(3);
+            return;
+          }
+
+          if (escolha === "2") {
+            // Hard delete + cria novo
+            const d = await hardDeleteCliente(res.clienteId);
+            if (!d.ok) {
+              toast.error("Erro ao apagar arquivado", { description: d.error });
+              return;
+            }
+            // Re-tenta criação agora que slug está livre
+            const res2 = await createClienteParcial({
+              slug,
+              nome,
+              tipo_negocio: tipo,
+              cor_primaria: corPrimaria,
+            });
+            if ("ok" in res2 && res2.ok) {
+              setClienteId(res2.clienteId);
+              toast.success("Cliente criado do zero", {
+                description: "Anterior apagado. Rascunho novo salvo.",
+              });
+              setStep(3);
+              return;
+            }
+            toast.error("Erro ao recriar", {
+              description: "ok" in res2 ? res2.error : "Falha desconhecida",
+            });
+            return;
+          }
+
+          // Cancelado (3 ou null) → fica no passo 1 pra trocar slug
+          toast.info("Operação cancelada", {
+            description: "Volte ao passo 1 e troque o slug.",
+          });
+          return;
+        }
+
+        // Erro genérico
+        toast.error("Erro ao salvar cliente", {
+          description: "ok" in res ? res.error : "Erro desconhecido",
         });
-        setStep(3);
       });
       return;
     }
