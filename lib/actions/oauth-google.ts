@@ -134,7 +134,7 @@ export async function trocarCodeGoogle(params: {
     let customerIds: string[] = [];
 
     const listRes = await fetch(
-      "https://googleads.googleapis.com/v17/customers:listAccessibleCustomers",
+      "https://googleads.googleapis.com/v23/customers:listAccessibleCustomers",
       {
         headers: {
           Authorization: `Bearer ${tokens.access_token}`,
@@ -161,7 +161,7 @@ export async function trocarCodeGoogle(params: {
       for (const cid of customerIds.slice(0, 50)) {
         try {
           const metaRes = await fetch(
-            `https://googleads.googleapis.com/v17/customers/${cid}/googleAds:search`,
+            `https://googleads.googleapis.com/v23/customers/${cid}/googleAds:search`,
             {
               method: "POST",
               headers: {

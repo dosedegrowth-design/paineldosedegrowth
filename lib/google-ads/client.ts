@@ -60,7 +60,7 @@ export class GoogleAdsClient {
    */
   async query<T = Record<string, unknown>>(gaql: string): Promise<T[]> {
     const accessToken = await this.getAccessToken();
-    const url = `https://googleads.googleapis.com/v17/customers/${this.creds.customerId}/googleAds:searchStream`;
+    const url = `https://googleads.googleapis.com/v23/customers/${this.creds.customerId}/googleAds:searchStream`;
     const res = await fetch(url, {
       method: "POST",
       headers: {
