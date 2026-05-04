@@ -130,6 +130,8 @@ export async function trocarCodeGoogle(params: {
     // 2. Buscar TODAS contas Google Ads acessíveis (sob MCC ou diretas)
     const customers: GoogleCustomer[] = [];
     const developerToken = process.env.GOOGLE_ADS_DEVELOPER_TOKEN ?? "";
+    let listError: string | null = null;
+    let customerIds: string[] = [];
 
     const listRes = await fetch(
       "https://googleads.googleapis.com/v17/customers:listAccessibleCustomers",
@@ -143,12 +145,19 @@ export async function trocarCodeGoogle(params: {
 
     if (listRes.ok) {
       const listData = (await listRes.json()) as { resourceNames?: string[] };
-      const customerIds = (listData.resourceNames ?? []).map((rn) =>
+      customerIds = (listData.resourceNames ?? []).map((rn) =>
         rn.replace("customers/", "")
       );
+    } else {
+      const errText = await listRes.text();
+      listError = `listAccessibleCustomers ${listRes.status}: ${errText.slice(0, 300)}`;
+      console.error("[oauth-google]", listError);
+    }
 
-      // Para cada customer, buscar metadata via SearchStream (nome, currency, manager flag)
-      // Usa a MCC como login-customer-id pra ter permissão
+    // Se a API retornou contas, busca metadata de cada uma
+    if (customerIds.length > 0) {
+
+      // Para cada customer, buscar metadata via SearchStream
       for (const cid of customerIds.slice(0, 50)) {
         try {
           const metaRes = await fetch(
@@ -237,7 +246,9 @@ export async function trocarCodeGoogle(params: {
     const customerIdAuto = customersClientes.length === 1 ? customersClientes[0].id : null;
     const tudoAutoSelecionado = customerIdAuto !== null;
 
-    const recursosDisponiveis = { customers };
+    // Se a API listAccessibleCustomers falhou, mantém status pra modal abrir
+    // com fallback de input manual + mensagem de erro pro user
+    const recursosDisponiveis = { customers, listError };
 
     // 3. Salvar
     const { error } = await supabase
@@ -249,7 +260,7 @@ export async function trocarCodeGoogle(params: {
         google_login_customer_id: GOOGLE_LOGIN_CUSTOMER_ID ?? null,
         google_recursos_disponiveis: recursosDisponiveis,
         status_google: tudoAutoSelecionado ? "conectado" : "aguardando_selecao",
-        google_ultimo_erro: null,
+        google_ultimo_erro: listError,
         ultima_sync_google: new Date().toISOString(),
       })
       .eq("cliente_id", clienteId);
@@ -281,6 +292,7 @@ export interface GoogleCustomer {
 
 export interface GoogleRecursosDisponiveis {
   customers: GoogleCustomer[];
+  listError?: string | null;
 }
 
 export async function getGoogleRecursosDisponiveis(
