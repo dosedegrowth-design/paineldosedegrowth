@@ -41,6 +41,7 @@ import { iniciarOAuthMeta } from "@/lib/actions/oauth-meta";
 import { iniciarOAuthGoogle } from "@/lib/actions/oauth-google";
 import { useOAuthPopup, type OAuthCompleteEvent } from "@/hooks/use-oauth-popup";
 import { SelecionarRecursosMetaModal } from "@/components/clientes/selecionar-recursos-meta-modal";
+import { SelecionarContaGoogleModal } from "@/components/clientes/selecionar-conta-google-modal";
 import { createClient } from "@/lib/supabase/client";
 
 const TIPOS: {
@@ -147,8 +148,9 @@ export function ClienteWizard({ onClose }: WizardProps) {
   const [ticketMedio, setTicketMedio] = useState("");
   const [observacoes, setObservacoes] = useState("");
 
-  // Modal de seleção de recursos Meta (aparece se OAuth retornou múltiplas opções)
+  // Modais de seleção (aparecem se OAuth retornou múltiplas opções)
   const [showSelecaoMeta, setShowSelecaoMeta] = useState(false);
+  const [showSelecaoGoogle, setShowSelecaoGoogle] = useState(false);
 
   // Verifica status_meta no Supabase e decide próxima ação
   const checarStatusMetaAposOAuth = async (cid: string) => {
@@ -161,15 +163,34 @@ export function ClienteWizard({ onClose }: WizardProps) {
       .single();
 
     if (data?.status_meta === "aguardando_selecao") {
-      // Múltiplas opções → abre modal de seleção
       setShowSelecaoMeta(true);
     } else if (data?.status_meta === "conectado") {
-      // Auto-selecionado (1 opção em cada categoria) → marca conectado e avança
       setMetaConectado(true);
       toast.success("Meta Ads conectado!", {
         description: "Recursos detectados automaticamente. Bora pro próximo passo.",
       });
       setStep((s) => (s === 3 ? 4 : s));
+    }
+  };
+
+  // Verifica status_google e decide próxima ação
+  const checarStatusGoogleAposOAuth = async (cid: string) => {
+    const sb = createClient();
+    const { data } = await sb
+      .schema("trafego_ddg")
+      .from("clientes_acessos")
+      .select("status_google")
+      .eq("cliente_id", cid)
+      .single();
+
+    if (data?.status_google === "aguardando_selecao") {
+      setShowSelecaoGoogle(true);
+    } else if (data?.status_google === "conectado") {
+      setGoogleConectado(true);
+      toast.success("Google Ads conectado!", {
+        description: "Conta detectada automaticamente. Bora pro próximo passo.",
+      });
+      setStep((s) => (s === 4 ? 5 : s));
     }
   };
 
@@ -181,26 +202,29 @@ export function ClienteWizard({ onClose }: WizardProps) {
       });
       return;
     }
+    const cid = event.clienteId ?? clienteId;
+    if (!cid) return;
     if (event.provider === "meta") {
-      const cid = event.clienteId ?? clienteId;
-      if (!cid) return;
-      // Toast intermediário enquanto checa status
-      toast.success("Autorização recebida", {
+      toast.success("Autorização Meta recebida", {
         description: "Verificando recursos disponíveis...",
       });
       checarStatusMetaAposOAuth(cid);
     } else if (event.provider === "google") {
-      setGoogleConectado(true);
-      toast.success("Google Ads conectado!", {
-        description: "Refresh token salvo. Bora pro próximo passo.",
+      toast.success("Autorização Google recebida", {
+        description: "Verificando contas acessíveis...",
       });
-      setStep((s) => (s === 4 ? 5 : s));
+      checarStatusGoogleAposOAuth(cid);
     }
   };
 
   const handleSelecaoMetaSuccess = () => {
     setMetaConectado(true);
     setStep((s) => (s === 3 ? 4 : s));
+  };
+
+  const handleSelecaoGoogleSuccess = () => {
+    setGoogleConectado(true);
+    setStep((s) => (s === 4 ? 5 : s));
   };
 
   const { abrirPopup } = useOAuthPopup({ onComplete: handleOAuthComplete });
@@ -1020,9 +1044,19 @@ export function ClienteWizard({ onClose }: WizardProps) {
       {/* Modal de seleção Meta (abre auto após OAuth se múltiplas opções) */}
       <SelecionarRecursosMetaModal
         clienteId={clienteId}
+        clienteNome={nome}
         open={showSelecaoMeta}
         onOpenChange={setShowSelecaoMeta}
         onSuccess={handleSelecaoMetaSuccess}
+      />
+
+      {/* Modal de seleção Google (abre auto após OAuth se múltiplas opções) */}
+      <SelecionarContaGoogleModal
+        clienteId={clienteId}
+        clienteNome={nome}
+        open={showSelecaoGoogle}
+        onOpenChange={setShowSelecaoGoogle}
+        onSuccess={handleSelecaoGoogleSuccess}
       />
     </Card>
   );

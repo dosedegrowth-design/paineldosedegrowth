@@ -30,6 +30,8 @@ import { iniciarOAuthGoogle } from "@/lib/actions/oauth-google";
 import type { ClienteCompleto } from "@/lib/actions/clientes";
 import { formatRelativeTime } from "@/lib/utils";
 import { useOAuthPopup, type OAuthCompleteEvent } from "@/hooks/use-oauth-popup";
+import { SelecionarContaGoogleModal } from "@/components/clientes/selecionar-conta-google-modal";
+import { createClient } from "@/lib/supabase/client";
 
 interface Props {
   cliente: ClienteCompleto;
@@ -96,8 +98,11 @@ export function ConexaoGoogle({ cliente, onUpdate }: Props) {
     });
   };
 
+  // Modal de seleção de conta Google (abre se OAuth retornou múltiplas opções)
+  const [showSelecaoGoogle, setShowSelecaoGoogle] = useState(false);
+
   // OAuth popup handler
-  const handleOAuthComplete = (event: OAuthCompleteEvent) => {
+  const handleOAuthComplete = async (event: OAuthCompleteEvent) => {
     if (event.provider !== "google") return;
     if (!event.ok) {
       toast.error("Falha ao conectar Google", {
@@ -105,9 +110,29 @@ export function ConexaoGoogle({ cliente, onUpdate }: Props) {
       });
       return;
     }
-    toast.success("Google Ads conectado!", {
-      description: "Refresh token salvo. Atualizando dados...",
-    });
+    // Verifica status_google no Supabase pra decidir se abre modal
+    const sb = createClient();
+    const { data } = await sb
+      .schema("trafego_ddg")
+      .from("clientes_acessos")
+      .select("status_google")
+      .eq("cliente_id", cliente.id)
+      .single();
+
+    if (data?.status_google === "aguardando_selecao") {
+      toast.success("Autorização recebida", {
+        description: "Selecione qual conta Google Ads usar.",
+      });
+      setShowSelecaoGoogle(true);
+    } else {
+      toast.success("Google Ads conectado!", {
+        description: "Conta detectada automaticamente.",
+      });
+      onUpdate();
+    }
+  };
+
+  const handleSelecaoGoogleSuccess = () => {
     onUpdate();
   };
 
@@ -301,6 +326,15 @@ export function ConexaoGoogle({ cliente, onUpdate }: Props) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Modal de seleção pós-OAuth */}
+      <SelecionarContaGoogleModal
+        clienteId={cliente.id}
+        clienteNome={cliente.nome}
+        open={showSelecaoGoogle}
+        onOpenChange={setShowSelecaoGoogle}
+        onSuccess={handleSelecaoGoogleSuccess}
+      />
     </>
   );
 }

@@ -333,6 +333,7 @@ export function ConexaoMeta({ cliente, onUpdate }: Props) {
       {/* Modal de seleção pós-OAuth */}
       <SelecionarRecursosMetaModal
         clienteId={cliente.id}
+        clienteNome={cliente.nome}
         open={showSelecaoMeta}
         onOpenChange={setShowSelecaoMeta}
         onSuccess={handleSelecaoMetaSuccess}

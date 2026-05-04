@@ -127,30 +127,117 @@ export async function trocarCodeGoogle(params: {
       };
     }
 
-    // 2. Buscar customer IDs acessíveis (sob a MCC ou diretos)
-    let customerId: string | null = null;
-    if (GOOGLE_LOGIN_CUSTOMER_ID) {
-      // Lista contas acessíveis pra esse usuário OAuth
-      const listRes = await fetch(
-        "https://googleads.googleapis.com/v17/customers:listAccessibleCustomers",
-        {
-          headers: {
-            Authorization: `Bearer ${tokens.access_token}`,
-            "developer-token": process.env.GOOGLE_ADS_DEVELOPER_TOKEN ?? "",
-          },
-        }
-      );
-      if (listRes.ok) {
-        const listData = (await listRes.json()) as { resourceNames?: string[] };
-        // resourceNames vêm como ["customers/1234567890", ...]
-        // Pega primeiro que NÃO seja a MCC (queremos a conta cliente)
-        const ids = (listData.resourceNames ?? [])
-          .map((rn) => rn.replace("customers/", ""))
-          .filter((id) => id !== GOOGLE_LOGIN_CUSTOMER_ID);
-        customerId = ids[0] ?? null;
+    // 2. Buscar TODAS contas Google Ads acessíveis (sob MCC ou diretas)
+    const customers: GoogleCustomer[] = [];
+    const developerToken = process.env.GOOGLE_ADS_DEVELOPER_TOKEN ?? "";
+
+    const listRes = await fetch(
+      "https://googleads.googleapis.com/v17/customers:listAccessibleCustomers",
+      {
+        headers: {
+          Authorization: `Bearer ${tokens.access_token}`,
+          "developer-token": developerToken,
+        },
       }
-      // Se não conseguiu listar (developer token em test mode), salva mesmo assim
+    );
+
+    if (listRes.ok) {
+      const listData = (await listRes.json()) as { resourceNames?: string[] };
+      const customerIds = (listData.resourceNames ?? []).map((rn) =>
+        rn.replace("customers/", "")
+      );
+
+      // Para cada customer, buscar metadata via SearchStream (nome, currency, manager flag)
+      // Usa a MCC como login-customer-id pra ter permissão
+      for (const cid of customerIds.slice(0, 50)) {
+        try {
+          const metaRes = await fetch(
+            `https://googleads.googleapis.com/v17/customers/${cid}/googleAds:search`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${tokens.access_token}`,
+                "developer-token": developerToken,
+                "Content-Type": "application/json",
+                ...(GOOGLE_LOGIN_CUSTOMER_ID
+                  ? { "login-customer-id": GOOGLE_LOGIN_CUSTOMER_ID }
+                  : {}),
+              },
+              body: JSON.stringify({
+                query: `SELECT customer.id, customer.descriptive_name, customer.currency_code, customer.time_zone, customer.manager, customer.test_account, customer.status FROM customer LIMIT 1`,
+              }),
+            }
+          );
+          if (metaRes.ok) {
+            const metaData = (await metaRes.json()) as {
+              results?: Array<{
+                customer?: {
+                  id?: string;
+                  descriptiveName?: string;
+                  currencyCode?: string;
+                  timeZone?: string;
+                  manager?: boolean;
+                  testAccount?: boolean;
+                  status?: string;
+                };
+              }>;
+            };
+            const cust = metaData.results?.[0]?.customer;
+            if (cust) {
+              customers.push({
+                id: cust.id ?? cid,
+                name: cust.descriptiveName ?? `Conta ${cid}`,
+                currency: cust.currencyCode ?? null,
+                time_zone: cust.timeZone ?? null,
+                manager: !!cust.manager,
+                test_account: !!cust.testAccount,
+                status: cust.status ?? "UNKNOWN",
+              });
+            } else {
+              customers.push({
+                id: cid,
+                name: `Conta ${cid}`,
+                currency: null,
+                time_zone: null,
+                manager: false,
+                test_account: false,
+                status: "UNKNOWN",
+              });
+            }
+          } else {
+            // Falha individual: salva sem metadata
+            customers.push({
+              id: cid,
+              name: `Conta ${cid}`,
+              currency: null,
+              time_zone: null,
+              manager: false,
+              test_account: false,
+              status: "UNKNOWN",
+            });
+          }
+        } catch {
+          customers.push({
+            id: cid,
+            name: `Conta ${cid}`,
+            currency: null,
+            time_zone: null,
+            manager: false,
+            test_account: false,
+            status: "UNKNOWN",
+          });
+        }
+      }
     }
+
+    // Filtra MCCs (manager=true) — usuário não vai trackear conta gerencial
+    const customersClientes = customers.filter((c) => !c.manager);
+
+    // Auto-seleção quando só tem 1 conta-cliente
+    const customerIdAuto = customersClientes.length === 1 ? customersClientes[0].id : null;
+    const tudoAutoSelecionado = customerIdAuto !== null;
+
+    const recursosDisponiveis = { customers };
 
     // 3. Salvar
     const { error } = await supabase
@@ -158,9 +245,10 @@ export async function trocarCodeGoogle(params: {
       .from("clientes_acessos")
       .update({
         google_oauth_refresh_token: tokens.refresh_token,
-        google_customer_id: customerId,
+        google_customer_id: customerIdAuto,
         google_login_customer_id: GOOGLE_LOGIN_CUSTOMER_ID ?? null,
-        status_google: "conectado",
+        google_recursos_disponiveis: recursosDisponiveis,
+        status_google: tudoAutoSelecionado ? "conectado" : "aguardando_selecao",
         google_ultimo_erro: null,
         ultima_sync_google: new Date().toISOString(),
       })
@@ -177,4 +265,60 @@ export async function trocarCodeGoogle(params: {
 
 export async function googleOAuthConfigurado(): Promise<boolean> {
   return !!(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET);
+}
+
+// ==================== TIPOS + SERVER ACTIONS PARA SELEÇÃO ====================
+
+export interface GoogleCustomer {
+  id: string;
+  name: string;
+  currency: string | null;
+  time_zone: string | null;
+  manager: boolean;
+  test_account: boolean;
+  status: string;
+}
+
+export interface GoogleRecursosDisponiveis {
+  customers: GoogleCustomer[];
+}
+
+export async function getGoogleRecursosDisponiveis(
+  clienteId: string
+): Promise<GoogleRecursosDisponiveis | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .schema("trafego_ddg")
+    .from("clientes_acessos")
+    .select("google_recursos_disponiveis")
+    .eq("cliente_id", clienteId)
+    .single();
+  return (data?.google_recursos_disponiveis as GoogleRecursosDisponiveis) ?? null;
+}
+
+export async function selecionarRecursoGoogle(input: {
+  clienteId: string;
+  customerId: string;
+}): Promise<{ ok: boolean; error?: string }> {
+  if (!input.clienteId || !input.customerId) {
+    return { ok: false, error: "Cliente ID e Customer ID são obrigatórios" };
+  }
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .schema("trafego_ddg")
+      .from("clientes_acessos")
+      .update({
+        google_customer_id: input.customerId,
+        status_google: "conectado",
+        google_ultimo_erro: null,
+      })
+      .eq("cliente_id", input.clienteId);
+    if (error) return { ok: false, error: error.message };
+
+    revalidatePath("/clientes");
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: String(err) };
+  }
 }

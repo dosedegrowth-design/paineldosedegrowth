@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { AccountCombobox, type ComboboxOption } from "@/components/clientes/account-combobox";
 import {
   getMetaRecursosDisponiveis,
   selecionarRecursosMeta,
@@ -22,6 +23,8 @@ import {
 
 interface Props {
   clienteId: string | null;
+  /** Nome do cliente — usado pra destacar opções "sugeridas" */
+  clienteNome?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
@@ -29,6 +32,7 @@ interface Props {
 
 export function SelecionarRecursosMetaModal({
   clienteId,
+  clienteNome,
   open,
   onOpenChange,
   onSuccess,
@@ -66,12 +70,48 @@ export function SelecionarRecursosMetaModal({
       .finally(() => setLoadingRecursos(false));
   }, [open, clienteId, onOpenChange]);
 
-  // Filtra pixels da ad account selecionada
-  const pixelsFiltrados = recursos?.pixels.filter(
-    (p) => !adAccountId || p.ad_account_id === adAccountId
-  ) ?? [];
+  // Mapeia ad accounts pro formato do AccountCombobox
+  const adAccountOptions = (recursos?.ad_accounts ?? []).map(
+    (a): ComboboxOption => ({
+      id: a.id,
+      name: a.name,
+      subId: a.id.replace("act_", ""),
+      status: a.account_status === 1 ? "ativa" : "inativa",
+      badges: [
+        ...(a.currency ? [a.currency] : []),
+        ...(a.business ? [a.business.name] : []),
+      ],
+      searchExtra: a.business?.name,
+    })
+  );
 
-  // Encontra business da ad account
+  // Filtra pixels da ad account selecionada e mapeia
+  const pixelOptions = (recursos?.pixels ?? [])
+    .filter((p) => !adAccountId || p.ad_account_id === adAccountId)
+    .map(
+      (p): ComboboxOption => ({
+        id: p.id,
+        name: p.name,
+        subId: p.id,
+        status: "ativa",
+      })
+    );
+
+  // Pages
+  const pageOptions = (recursos?.pages ?? []).map(
+    (p): ComboboxOption => ({
+      id: p.id,
+      name: p.name,
+      subId: p.id,
+      status: "ativa",
+      badges: [
+        ...(p.category ? [p.category] : []),
+        ...(p.instagram_business_account ? ["+ Instagram"] : []),
+      ],
+    })
+  );
+
+  // Resumo
   const adAccountSelecionada = recursos?.ad_accounts.find((a) => a.id === adAccountId);
   const businessId = adAccountSelecionada?.business?.id ?? null;
 
@@ -102,14 +142,15 @@ export function SelecionarRecursosMetaModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Facebook className="size-5 text-[#0866ff]" />
             Selecione os recursos Meta
           </DialogTitle>
           <DialogDescription>
-            Escolha qual Ad Account, Pixel e Página do Facebook usar para esse cliente.
+            Escolha qual Ad Account, Pixel e Página do Facebook usar
+            {clienteNome ? ` para ${clienteNome}` : ""}.
           </DialogDescription>
         </DialogHeader>
 
@@ -123,16 +164,13 @@ export function SelecionarRecursosMetaModal({
         )}
 
         {!loadingRecursos && recursos && (
-          <div className="space-y-5 py-2">
+          <div className="space-y-4 py-2">
             {/* Ad Account */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold flex items-center gap-1.5">
-                Ad Account *
-                <span className="text-[10px] text-muted-foreground font-normal">
-                  ({recursos.ad_accounts.length} disponíveis)
-                </span>
+                Ad Account <span className="text-[var(--ddg-orange)]">*</span>
               </label>
-              {recursos.ad_accounts.length === 0 ? (
+              {adAccountOptions.length === 0 ? (
                 <div className="rounded-md bg-amber-500/5 border border-amber-500/30 p-3 text-xs">
                   <p className="font-semibold flex items-center gap-1.5 text-amber-400">
                     <AlertCircle className="size-3.5" />
@@ -143,90 +181,63 @@ export function SelecionarRecursosMetaModal({
                   </p>
                 </div>
               ) : (
-                <select
+                <AccountCombobox
+                  options={adAccountOptions}
                   value={adAccountId}
-                  onChange={(e) => {
-                    setAdAccountId(e.target.value);
+                  onChange={(id) => {
+                    setAdAccountId(id);
                     setPixelId(""); // reset pixel quando troca account
                   }}
+                  placeholder="Selecione a Ad Account..."
+                  sugestaoMatch={clienteNome}
                   disabled={pending}
-                  className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
-                >
-                  <option value="">Selecione...</option>
-                  {recursos.ad_accounts.map((a) => (
-                    <option key={a.id} value={a.id}>
-                      {a.name} ({a.id.replace("act_", "")})
-                      {a.account_status !== 1 ? " — INATIVA" : ""}
-                      {a.currency ? ` · ${a.currency}` : ""}
-                      {a.business ? ` · ${a.business.name}` : ""}
-                    </option>
-                  ))}
-                </select>
+                />
               )}
             </div>
 
             {/* Pixel */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold flex items-center gap-1.5">
-                Pixel
-                <span className="text-[10px] text-muted-foreground font-normal">
-                  ({pixelsFiltrados.length} para essa ad account · opcional)
-                </span>
+                Pixel <span className="text-[10px] text-muted-foreground font-normal">(opcional — necessário pra CAPI)</span>
               </label>
-              {pixelsFiltrados.length === 0 ? (
+              {pixelOptions.length === 0 ? (
                 <div className="rounded-md bg-muted/40 p-2.5 text-xs text-muted-foreground">
                   {adAccountId
                     ? "Nenhum pixel encontrado nessa ad account. Você pode configurar depois."
                     : "Selecione uma Ad Account primeiro pra ver pixels disponíveis."}
                 </div>
               ) : (
-                <select
+                <AccountCombobox
+                  options={pixelOptions}
                   value={pixelId}
-                  onChange={(e) => setPixelId(e.target.value)}
+                  onChange={setPixelId}
+                  placeholder="Sem pixel (configurar depois)"
+                  sugestaoMatch={clienteNome}
+                  clearable
                   disabled={pending}
-                  className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
-                >
-                  <option value="">Sem pixel (configurar depois)</option>
-                  {pixelsFiltrados.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name} ({p.id})
-                    </option>
-                  ))}
-                </select>
+                />
               )}
-              <p className="text-[10px] text-muted-foreground">
-                Necessário para enviar conversões offline via CAPI
-              </p>
             </div>
 
             {/* Página */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold flex items-center gap-1.5">
-                Página do Facebook
-                <span className="text-[10px] text-muted-foreground font-normal">
-                  ({recursos.pages.length} disponíveis · opcional)
-                </span>
+                Página do Facebook <span className="text-[10px] text-muted-foreground font-normal">(opcional — Lead Ads/Messenger)</span>
               </label>
-              {recursos.pages.length === 0 ? (
+              {pageOptions.length === 0 ? (
                 <div className="rounded-md bg-muted/40 p-2.5 text-xs text-muted-foreground">
-                  Nenhuma página encontrada. Útil pra Lead Ads e Messenger.
+                  Nenhuma página encontrada.
                 </div>
               ) : (
-                <select
+                <AccountCombobox
+                  options={pageOptions}
                   value={pageId}
-                  onChange={(e) => setPageId(e.target.value)}
+                  onChange={setPageId}
+                  placeholder="Sem página (configurar depois)"
+                  sugestaoMatch={clienteNome}
+                  clearable
                   disabled={pending}
-                  className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
-                >
-                  <option value="">Sem página (configurar depois)</option>
-                  {recursos.pages.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                      {p.category ? ` · ${p.category}` : ""}
-                      {p.instagram_business_account ? " · com Instagram" : ""}
-                    </option>
-                  ))}
-                </select>
+                />
               )}
             </div>
 
@@ -239,7 +250,7 @@ export function SelecionarRecursosMetaModal({
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   <Badge variant="outline" className="text-[10px]">
-                    Ad Account: {adAccountSelecionada?.name}
+                    Ad: {adAccountSelecionada?.name}
                   </Badge>
                   {pixelId && (
                     <Badge variant="outline" className="text-[10px]">
