@@ -45,14 +45,16 @@ const NAV: NavItem[] = [
   // === Específico por tipo (parcial, salva em memória ainda) ===
   { href: "/vendas-manuais", label: "Vendas Manuais", icon: MessageSquare, tipos: ["lead_whatsapp", "hibrido"], section: "specific" },
 
+  // === Search Terms funcional (Google Ads) ===
+  { href: "/search-terms", label: "Search Terms", icon: Search, section: "main" },
+
   // === Em breve (Fase 2/3) — usuário vê mas sabe que não tá pronto ===
-  { href: "/search-terms", label: "Search Terms", icon: Search, section: "main", emBreve: true },
   { href: "/carrinho-abandonado", label: "Carrinho Abandonado", icon: ShoppingBag, tipos: ["ecommerce", "hibrido"], section: "specific", emBreve: true },
-  { href: "/alertas", label: "Alertas IA", icon: AlertTriangle, section: "intelligence", emBreve: true },
-  { href: "/mudancas", label: "Mudanças", icon: GitBranch, section: "intelligence", emBreve: true },
+  { href: "/alertas", label: "Alertas IA", icon: AlertTriangle, section: "intelligence" },
+  { href: "/mudancas", label: "Mudanças", icon: GitBranch, section: "intelligence" },
   { href: "/otimizacoes", label: "Otimizações", icon: Sparkles, section: "intelligence", emBreve: true },
-  { href: "/relatorios", label: "Relatórios", icon: FileText, section: "intelligence", emBreve: true },
-  { href: "/conversoes-offline", label: "Offline Conv.", icon: RadioTower, section: "intelligence", emBreve: true },
+  { href: "/relatorios", label: "Relatórios", icon: FileText, section: "intelligence" },
+  { href: "/conversoes-offline", label: "Offline Conv.", icon: RadioTower, section: "intelligence" },
 
   // === Admin ===
   { href: "/clientes", label: "Clientes", icon: Building2, section: "admin" },

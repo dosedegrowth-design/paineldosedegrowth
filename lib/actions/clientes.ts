@@ -32,6 +32,9 @@ export interface ClienteCompleto {
   google_customer_id: string | null;
   ultima_sync_meta: string | null;
   ultima_sync_google: string | null;
+  meta_ultimo_erro: string | null;
+  google_ultimo_erro: string | null;
+  ultima_sync_status: string | null;
   // de cliente_config
   plataforma_ecom: string | null;
   dominio_site: string | null;
@@ -113,6 +116,9 @@ export async function listClientes(): Promise<ClienteCompleto[]> {
         google_customer_id: acessos?.google_customer_id ?? null,
         ultima_sync_meta: acessos?.ultima_sync_meta ?? null,
         ultima_sync_google: acessos?.ultima_sync_google ?? null,
+        meta_ultimo_erro: acessos?.meta_ultimo_erro ?? null,
+        google_ultimo_erro: acessos?.google_ultimo_erro ?? null,
+        ultima_sync_status: acessos?.ultima_sync_status ?? null,
         plataforma_ecom: config?.plataforma_ecom ?? null,
         dominio_site: config?.dominio_site ?? null,
         frequencia_vendas_manuais: config?.frequencia_vendas_manuais ?? null,

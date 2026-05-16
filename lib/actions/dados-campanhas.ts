@@ -364,6 +364,417 @@ export async function getTopAds(
   return lista.sort((a, b) => b.investimento - a.investimento).slice(0, limit);
 }
 
+// ==================== MUDANCAS (Change Tracker) ====================
+
+export type Veredicto = "positiva" | "negativa" | "neutra" | "aguardando";
+
+export interface MudancaReal {
+  id: string;
+  plataforma: string;
+  entidade_tipo: string;
+  entidade_id: string;
+  entidade_nome: string | null;
+  campo: string;
+  valor_antes: string | null;
+  valor_depois: string | null;
+  feita_em: string;
+  veredicto: Veredicto;
+  narrativa_ia: string | null;
+  feita_por_email: string | null;
+}
+
+export async function listarMudancas(
+  clienteId: string,
+  limit: number = 50
+): Promise<MudancaReal[]> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .schema("trafego_ddg")
+      .from("mudancas")
+      .select(
+        "id, plataforma, entidade_tipo, entidade_id, entidade_nome, campo, valor_antes, valor_depois, feita_em, veredicto, narrativa_ia"
+      )
+      .eq("cliente_id", clienteId)
+      .order("feita_em", { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.error("listarMudancas:", error);
+      return [];
+    }
+    return (data ?? []).map((m) => ({ ...m, feita_por_email: null })) as MudancaReal[];
+  } catch (err) {
+    console.error("listarMudancas exception:", err);
+    return [];
+  }
+}
+
+/**
+ * Registra uma mudança manual (ex: usuário pausou campanha, ajustou budget).
+ * Captura snapshot atual pra comparar depois.
+ */
+export async function registrarMudanca(input: {
+  cliente_id: string;
+  plataforma: "meta" | "google";
+  entidade_tipo: "campanha" | "adset" | "ad" | "keyword";
+  entidade_id: string;
+  entidade_nome?: string;
+  campo: string;
+  valor_antes: string;
+  valor_depois: string;
+}): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const { error } = await supabase
+      .schema("trafego_ddg")
+      .from("mudancas")
+      .insert({
+        cliente_id: input.cliente_id,
+        plataforma: input.plataforma,
+        entidade_tipo: input.entidade_tipo,
+        entidade_id: input.entidade_id,
+        entidade_nome: input.entidade_nome ?? null,
+        campo: input.campo,
+        valor_antes: input.valor_antes,
+        valor_depois: input.valor_depois,
+        feita_por: user?.id ?? null,
+        veredicto: "aguardando",
+      });
+
+    if (error) return { ok: false, error: error.message };
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: String(err) };
+  }
+}
+
+// ==================== ANOMALIAS ====================
+
+export type AnomaliaSeveridade = "baixa" | "media" | "alta" | "critica";
+
+export interface AnomaliaReal {
+  id: string;
+  tipo: string;
+  severidade: AnomaliaSeveridade;
+  metrica: string;
+  entidade_tipo: string | null;
+  entidade_nome: string | null;
+  valor_atual: number;
+  baseline_7d: number | null;
+  baseline_14d: number | null;
+  desvio_percentual: number;
+  descricao: string;
+  narrativa_ia: string;
+  detectada_em: string;
+  resolvida_em: string | null;
+}
+
+export async function listarAnomalias(
+  clienteId: string,
+  opts: { somenteAbertas?: boolean; limit?: number } = {}
+): Promise<AnomaliaReal[]> {
+  try {
+    const supabase = await createClient();
+    let query = supabase
+      .schema("trafego_ddg")
+      .from("anomalias")
+      .select(
+        "id, tipo, severidade, metrica, entidade_tipo, entidade_nome, valor_atual, baseline_7d, baseline_14d, desvio_percentual, descricao, narrativa_ia, detectada_em, resolvida_em"
+      )
+      .eq("cliente_id", clienteId)
+      .order("detectada_em", { ascending: false })
+      .limit(opts.limit ?? 100);
+
+    if (opts.somenteAbertas) {
+      query = query.is("resolvida_em", null);
+    }
+
+    const { data, error } = await query;
+    if (error) {
+      console.error("listarAnomalias:", error);
+      return [];
+    }
+    return (data ?? []).map((a) => ({
+      ...a,
+      valor_atual: Number(a.valor_atual ?? 0),
+      baseline_7d: a.baseline_7d != null ? Number(a.baseline_7d) : null,
+      baseline_14d: a.baseline_14d != null ? Number(a.baseline_14d) : null,
+      desvio_percentual: Number(a.desvio_percentual ?? 0),
+    })) as AnomaliaReal[];
+  } catch (err) {
+    console.error("listarAnomalias exception:", err);
+    return [];
+  }
+}
+
+export async function resolverAnomalia(
+  id: string
+): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const { error } = await supabase
+      .schema("trafego_ddg")
+      .from("anomalias")
+      .update({
+        resolvida_em: new Date().toISOString(),
+        resolvida_por: user?.id ?? null,
+      })
+      .eq("id", id);
+    if (error) return { ok: false, error: error.message };
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: String(err) };
+  }
+}
+
+/**
+ * Dispara detect-anomalies sob demanda (chamado pelo botão "Rodar análise").
+ */
+export async function dispararDetectAnomalias(
+  clienteId: string
+): Promise<{ ok: boolean; total_anomalias?: number; error?: string }> {
+  try {
+    const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/detect-anomalies`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cliente_id: clienteId }),
+    });
+    if (!res.ok) return { ok: false, error: `Falhou: ${res.status}` };
+    const j = await res.json();
+    return { ok: true, total_anomalias: j.total_anomalias ?? 0 };
+  } catch (e) {
+    return { ok: false, error: String(e) };
+  }
+}
+
+// ==================== EVENTOS OFFLINE (Server-Side Conversions) ====================
+
+export interface EventoOffline {
+  id: string;
+  origem: string;
+  origem_lead_id: string | null;
+  tipo_evento: string;
+  valor: number;
+  moeda: string;
+  ocorrido_em: string;
+  enviado_google_em: string | null;
+  enviado_google_status: string | null;
+  enviado_meta_em: string | null;
+  enviado_meta_status: string | null;
+  tentativas: number;
+  erro_msg: string | null;
+  criado_em: string;
+  match_keys: string[];
+}
+
+export interface EventoOfflineStats {
+  total: number;
+  enviados_24h: number;
+  taxa_match_meta: number;
+  taxa_match_google: number;
+  receita_atribuida: number;
+  falhas: number;
+}
+
+export async function listarEventosOffline(
+  clienteId: string,
+  limit: number = 50
+): Promise<EventoOffline[]> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .schema("trafego_ddg")
+      .from("eventos_offline")
+      .select(
+        "id, origem, origem_lead_id, tipo_evento, valor, moeda, ocorrido_em, enviado_google_em, enviado_google_status, enviado_meta_em, enviado_meta_status, tentativas, erro_msg, criado_em, gclid, fbclid, email_hash, telefone_hash"
+      )
+      .eq("cliente_id", clienteId)
+      .order("ocorrido_em", { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.error("listarEventosOffline:", error);
+      return [];
+    }
+
+    return (data ?? []).map((e) => ({
+      id: e.id,
+      origem: e.origem,
+      origem_lead_id: e.origem_lead_id,
+      tipo_evento: e.tipo_evento,
+      valor: Number(e.valor ?? 0),
+      moeda: e.moeda ?? "BRL",
+      ocorrido_em: e.ocorrido_em,
+      enviado_google_em: e.enviado_google_em,
+      enviado_google_status: e.enviado_google_status,
+      enviado_meta_em: e.enviado_meta_em,
+      enviado_meta_status: e.enviado_meta_status,
+      tentativas: e.tentativas ?? 0,
+      erro_msg: e.erro_msg,
+      criado_em: e.criado_em,
+      match_keys: [
+        e.gclid && "gclid",
+        e.fbclid && "fbclid",
+        e.email_hash && "email",
+        e.telefone_hash && "phone",
+      ].filter(Boolean) as string[],
+    }));
+  } catch (err) {
+    console.error("listarEventosOffline exception:", err);
+    return [];
+  }
+}
+
+export async function statsEventosOffline(
+  clienteId: string,
+  daysBack: number = 30
+): Promise<EventoOfflineStats> {
+  const empty: EventoOfflineStats = {
+    total: 0,
+    enviados_24h: 0,
+    taxa_match_meta: 0,
+    taxa_match_google: 0,
+    receita_atribuida: 0,
+    falhas: 0,
+  };
+  try {
+    const { since } = defaultRange(daysBack);
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .schema("trafego_ddg")
+      .from("eventos_offline")
+      .select("valor, enviado_google_status, enviado_meta_status, ocorrido_em")
+      .eq("cliente_id", clienteId)
+      .gte("ocorrido_em", since);
+
+    if (error || !data) return empty;
+
+    const cutoff24h = new Date(Date.now() - 86400000).toISOString();
+    let total = 0;
+    let enviados_24h = 0;
+    let okMeta = 0;
+    let okGoogle = 0;
+    let receita_atribuida = 0;
+    let falhas = 0;
+    for (const r of data) {
+      total++;
+      receita_atribuida += Number(r.valor ?? 0);
+      if (r.ocorrido_em >= cutoff24h) enviados_24h++;
+      if (r.enviado_meta_status === "enviado" || r.enviado_meta_status === "success") okMeta++;
+      if (r.enviado_google_status === "enviado" || r.enviado_google_status === "success") okGoogle++;
+      if (
+        r.enviado_meta_status === "falha" ||
+        r.enviado_google_status === "falha"
+      )
+        falhas++;
+    }
+    return {
+      total,
+      enviados_24h,
+      taxa_match_meta: total ? (okMeta / total) * 100 : 0,
+      taxa_match_google: total ? (okGoogle / total) * 100 : 0,
+      receita_atribuida,
+      falhas,
+    };
+  } catch (err) {
+    console.error("statsEventosOffline:", err);
+    return empty;
+  }
+}
+
+// ==================== SEARCH TERMS (Google) ====================
+
+export interface SearchTermRow {
+  id: string;
+  termo: string;
+  campanha_id: string | null;
+  adgroup_id: string | null;
+  gasto_total: number;
+  cliques_total: number;
+  conversoes_total: number;
+  status: string;
+  ultimo_visto: string | null;
+  primeiro_visto: string | null;
+}
+
+/**
+ * Lista search terms do cliente Google Ads, ordenados por gasto desc.
+ * Filtros opcionais: somente ativos, somente sem conversão (alto gasto + 0 conv).
+ */
+export async function listarSearchTerms(
+  clienteId: string,
+  opts: { somenteAtivos?: boolean; alvoNegativacao?: boolean; limit?: number } = {}
+): Promise<SearchTermRow[]> {
+  try {
+    const supabase = await createClient();
+    let query = supabase
+      .schema("trafego_ddg")
+      .from("search_terms")
+      .select(
+        "id, termo, campanha_id, adgroup_id, gasto_total, cliques_total, conversoes_total, status, ultimo_visto, primeiro_visto"
+      )
+      .eq("cliente_id", clienteId)
+      .order("gasto_total", { ascending: false })
+      .limit(opts.limit ?? 500);
+
+    if (opts.somenteAtivos) {
+      query = query.eq("status", "ativo");
+    }
+    if (opts.alvoNegativacao) {
+      // Alto gasto sem conversão: gasto > 50 reais e zero conversões
+      query = query.gt("gasto_total", 50).eq("conversoes_total", 0);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error("listarSearchTerms:", error);
+      return [];
+    }
+    return (data ?? []) as SearchTermRow[];
+  } catch (err) {
+    console.error("listarSearchTerms exception:", err);
+    return [];
+  }
+}
+
+/**
+ * Marca uma lista de search terms como "negativada_pendente" (vai ser
+ * processada na próxima call à Google Ads API pra adicionar negative keyword).
+ */
+export async function marcarSearchTermsNegativacao(
+  clienteId: string,
+  ids: string[]
+): Promise<{ ok: boolean; afetados: number; error?: string }> {
+  if (ids.length === 0) return { ok: true, afetados: 0 };
+  try {
+    const supabase = await createClient();
+    const { error, count } = await supabase
+      .schema("trafego_ddg")
+      .from("search_terms")
+      .update({
+        status: "negativada_pendente",
+        acao_em: new Date().toISOString(),
+      })
+      .eq("cliente_id", clienteId)
+      .in("id", ids);
+
+    if (error) return { ok: false, afetados: 0, error: error.message };
+    return { ok: true, afetados: count ?? ids.length };
+  } catch (err) {
+    return { ok: false, afetados: 0, error: String(err) };
+  }
+}
+
 // ==================== VENDAS MANUAIS (lead_whatsapp) ====================
 
 export interface VendasManuaisAgregado {

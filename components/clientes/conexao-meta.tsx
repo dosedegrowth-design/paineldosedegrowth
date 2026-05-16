@@ -184,6 +184,18 @@ export function ConexaoMeta({ cliente, onUpdate }: Props) {
             </div>
           </div>
 
+          {/* Banner de erro detalhado */}
+          {cliente.meta_ultimo_erro && (
+            <div className="mt-3 rounded-md border border-red-500/40 bg-red-500/5 px-3 py-2">
+              <p className="text-[10px] uppercase tracking-widest text-red-400 font-bold mb-1">
+                Último erro
+              </p>
+              <p className="text-xs text-muted-foreground font-mono leading-snug">
+                {cliente.meta_ultimo_erro.slice(0, 200)}
+              </p>
+            </div>
+          )}
+
           {/* Ações */}
           <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-border">
             {!isConnected && (
