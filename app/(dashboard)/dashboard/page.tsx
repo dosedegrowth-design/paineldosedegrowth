@@ -92,6 +92,22 @@ export default function DashboardPage() {
 
   const temDadosReais = !!kpis && kpis.investimento > 0;
 
+  // Status real do sync — usa o timestamp do banco em vez de "tem dado?"
+  const sincronizouRecente =
+    !!cliente.ultima_sync_meta &&
+    Date.now() - new Date(cliente.ultima_sync_meta).getTime() < 24 * 3600 * 1000;
+  const conectouAlguma =
+    cliente.status_meta === "conectado" || cliente.status_google === "conectado";
+
+  type StatusBadge = "carregando" | "sincronizado" | "sem_entrega" | "aguardando";
+  const statusBadge: StatusBadge = carregando
+    ? "carregando"
+    : temDadosReais
+      ? "sincronizado"
+      : sincronizouRecente && conectouAlguma
+        ? "sem_entrega"
+        : "aguardando";
+
   // KPIs principais (reais ou zerados)
   const totalInvestimento = kpis?.investimento ?? 0;
   const totalCliques = kpis?.cliques ?? 0;
@@ -181,18 +197,30 @@ export default function DashboardPage() {
                 </button>
               ))}
             </div>
-            {/* Status badge */}
-            {carregando ? (
+            {/* Status badge — fala a verdade sobre o sync */}
+            {statusBadge === "carregando" && (
               <Badge variant="secondary" className="gap-1.5">
                 <span className="size-1.5 rounded-full bg-muted-foreground animate-pulse" />
                 Carregando...
               </Badge>
-            ) : temDadosReais ? (
+            )}
+            {statusBadge === "sincronizado" && (
               <Badge variant="success" className="gap-1.5">
                 <span className="size-1.5 rounded-full bg-emerald-500 pulse-ring" />
                 Sincronizado
               </Badge>
-            ) : (
+            )}
+            {statusBadge === "sem_entrega" && (
+              <Badge
+                variant="secondary"
+                className="gap-1.5"
+                title="Sincronizou com sucesso mas as campanhas não tiveram entrega no período (sem investimento). Pode ser conta nova, campanhas pausadas ou só posts boostados."
+              >
+                <span className="size-1.5 rounded-full bg-sky-500" />
+                Sincronizado · sem entrega
+              </Badge>
+            )}
+            {statusBadge === "aguardando" && (
               <Badge variant="warning" className="gap-1.5">
                 <span className="size-1.5 rounded-full bg-amber-500" />
                 Aguardando sync
