@@ -27,9 +27,6 @@ import { DDGBarChart } from "@/components/charts/bar-chart";
 import { DDGDonutChart } from "@/components/charts/donut-chart";
 import { DDGFunnelChart } from "@/components/charts/funnel-chart";
 
-import {
-  ANOMALIAS,
-} from "@/lib/mock-data";
 import { cn, formatCompact, formatCurrency } from "@/lib/utils";
 import { useCliente } from "@/components/cliente-provider";
 import { useEffect, useMemo, useState } from "react";
@@ -40,11 +37,13 @@ import {
   getCampanhasAgregadas,
   getTopAds,
   getVendasManuaisAgregadas,
+  listarAnomalias,
   type KPIsGerais,
   type SeriePonto,
   type CampanhaAgregada,
   type AdResumo,
   type VendasManuaisAgregado,
+  type AnomaliaReal,
 } from "@/lib/actions/dados-campanhas";
 
 type FiltroPlataforma = "todas" | "meta" | "google";
@@ -59,6 +58,7 @@ export default function DashboardPage() {
   const [campanhasReais, setCampanhasReais] = useState<CampanhaAgregada[]>([]);
   const [topAds, setTopAds] = useState<AdResumo[]>([]);
   const [vendas, setVendas] = useState<VendasManuaisAgregado | null>(null);
+  const [anomalias, setAnomalias] = useState<AnomaliaReal[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [plataforma, setPlataforma] = useState<FiltroPlataforma>("todas");
 
@@ -68,12 +68,13 @@ export default function DashboardPage() {
     setCarregando(true);
     const plat = plataforma === "todas" ? undefined : plataforma;
     (async () => {
-      const [k, s, c, t, v] = await Promise.all([
+      const [k, s, c, t, v, a] = await Promise.all([
         getKPIsGerais(cliente.id, 30, plat),
         getSerieDiaria(cliente.id, 30, plat),
         getCampanhasAgregadas(cliente.id, 30),
         getTopAds(cliente.id, 30, 5),
         getVendasManuaisAgregadas(cliente.id, 30),
+        listarAnomalias(cliente.id, { somenteAbertas: true, limit: 5 }),
       ]);
       if (cancelado) return;
       setKpis(k);
@@ -81,6 +82,7 @@ export default function DashboardPage() {
       setCampanhasReais(c);
       setTopAds(t);
       setVendas(v);
+      setAnomalias(a);
       setCarregando(false);
     })();
     return () => {
@@ -405,25 +407,51 @@ export default function DashboardPage() {
               </CardTitle>
               <CardDescription>Anomalias detectadas hoje</CardDescription>
             </div>
-            <Badge variant="ddg">{ANOMALIAS.filter((a) => !a.resolvida).length}</Badge>
+            <Badge variant="ddg">{anomalias.length}</Badge>
           </CardHeader>
           <CardContent className="space-y-3">
-            {ANOMALIAS.slice(0, 3).map((a) => (
-              <div key={a.id} className="rounded-lg border border-border bg-card/50 p-3 hover:border-[var(--ddg-orange)]/30 transition-colors cursor-pointer">
-                <div className="flex items-start gap-2">
-                  {a.desvio_percentual > 0 ? (
-                    <TrendingUp className={`size-4 mt-0.5 shrink-0 ${a.severidade === "critica" || a.severidade === "alta" ? "text-red-400" : "text-amber-400"}`} />
-                  ) : (
-                    <TrendingDown className="size-4 mt-0.5 shrink-0 text-amber-400" />
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium leading-tight">{a.descricao}</p>
-                    <p className="text-[10px] text-muted-foreground mt-1 line-clamp-2">{a.narrativa_ia}</p>
+            {anomalias.length === 0 ? (
+              <div className="rounded-lg border border-dashed border-border p-4 text-center">
+                <Sparkles className="size-5 text-muted-foreground mx-auto mb-2 opacity-50" />
+                <p className="text-xs text-muted-foreground">
+                  {carregando ? "Carregando..." : "Nenhuma anomalia aberta. Tudo nos eixos."}
+                </p>
+              </div>
+            ) : (
+              anomalias.slice(0, 3).map((a) => (
+                <div
+                  key={a.id}
+                  className="rounded-lg border border-border bg-card/50 p-3 hover:border-[var(--ddg-orange)]/30 transition-colors cursor-pointer"
+                >
+                  <div className="flex items-start gap-2">
+                    {a.desvio_percentual > 0 ? (
+                      <TrendingUp
+                        className={`size-4 mt-0.5 shrink-0 ${
+                          a.severidade === "critica" || a.severidade === "alta"
+                            ? "text-red-400"
+                            : "text-amber-400"
+                        }`}
+                      />
+                    ) : (
+                      <TrendingDown className="size-4 mt-0.5 shrink-0 text-amber-400" />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium leading-tight">{a.descricao}</p>
+                      {a.narrativa_ia && (
+                        <p className="text-[10px] text-muted-foreground mt-1 line-clamp-2">
+                          {a.narrativa_ia}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-            <Button variant="outline" size="sm" className="w-full">Ver todas</Button>
+              ))
+            )}
+            <Link href="/alertas">
+              <Button variant="outline" size="sm" className="w-full">
+                Ver todas
+              </Button>
+            </Link>
           </CardContent>
         </Card>
       </div>
