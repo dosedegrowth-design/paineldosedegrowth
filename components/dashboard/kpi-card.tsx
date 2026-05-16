@@ -16,6 +16,10 @@ interface KPICardProps {
   subtitle?: string;
   highlight?: boolean;
   decimals?: number;
+  /** Se true, mostra "—" em vez do valor. Útil quando dado depende de preenchimento externo. */
+  empty?: boolean;
+  /** Hint mostrado embaixo quando empty=true (ex: "Preencher em Vendas Manuais") */
+  emptyHint?: string;
 }
 
 export function KPICard({
@@ -28,6 +32,8 @@ export function KPICard({
   subtitle,
   highlight = false,
   decimals = 0,
+  empty = false,
+  emptyHint,
 }: KPICardProps) {
   const motionValue = useMotionValue(0);
   const rounded = useTransform(motionValue, (v) => {
@@ -81,32 +87,48 @@ export function KPICard({
             </div>
           )}
         </div>
-        <motion.div className="text-3xl font-bold tabular-nums leading-tight">
-          {rounded}
-        </motion.div>
-        <div className="mt-2 flex items-center gap-2">
-          {previousValue !== undefined && (
-            <div
-              className={cn(
-                "flex items-center gap-0.5 text-xs font-medium",
-                direction === "neutral"
-                  ? "text-muted-foreground"
-                  : isGood
-                  ? "text-emerald-400"
-                  : "text-red-400"
-              )}
-            >
-              {direction === "up" && <ArrowUpRight className="size-3" />}
-              {direction === "down" && <ArrowDownRight className="size-3" />}
-              {direction === "neutral" && <Minus className="size-3" />}
-              <span>
-                {direction !== "neutral" && (deltaPct > 0 ? "+" : "")}
-                {Math.abs(deltaPct).toFixed(1)}%
+        {empty ? (
+          <div className="text-3xl font-bold tabular-nums leading-tight text-muted-foreground/40">
+            —
+          </div>
+        ) : (
+          <motion.div className="text-3xl font-bold tabular-nums leading-tight">
+            {rounded}
+          </motion.div>
+        )}
+        <div className="mt-2 flex items-center gap-2 min-h-[18px]">
+          {empty ? (
+            emptyHint && (
+              <span className="text-xs text-muted-foreground/70 italic">
+                {emptyHint}
               </span>
-            </div>
-          )}
-          {subtitle && (
-            <span className="text-xs text-muted-foreground">{subtitle}</span>
+            )
+          ) : (
+            <>
+              {previousValue !== undefined && (
+                <div
+                  className={cn(
+                    "flex items-center gap-0.5 text-xs font-medium",
+                    direction === "neutral"
+                      ? "text-muted-foreground"
+                      : isGood
+                      ? "text-emerald-400"
+                      : "text-red-400"
+                  )}
+                >
+                  {direction === "up" && <ArrowUpRight className="size-3" />}
+                  {direction === "down" && <ArrowDownRight className="size-3" />}
+                  {direction === "neutral" && <Minus className="size-3" />}
+                  <span>
+                    {direction !== "neutral" && (deltaPct > 0 ? "+" : "")}
+                    {Math.abs(deltaPct).toFixed(1)}%
+                  </span>
+                </div>
+              )}
+              {subtitle && (
+                <span className="text-xs text-muted-foreground">{subtitle}</span>
+              )}
+            </>
           )}
         </div>
       </CardContent>

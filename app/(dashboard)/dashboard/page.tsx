@@ -29,20 +29,22 @@ import { DDGFunnelChart } from "@/components/charts/funnel-chart";
 
 import {
   ANOMALIAS,
-  VENDAS_MANUAIS,
 } from "@/lib/mock-data";
 import { formatCompact, formatCurrency } from "@/lib/utils";
 import { useCliente } from "@/components/cliente-provider";
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import {
   getKPIsGerais,
   getSerieDiaria,
   getCampanhasAgregadas,
   getTopAds,
+  getVendasManuaisAgregadas,
   type KPIsGerais,
   type SeriePonto,
   type CampanhaAgregada,
   type AdResumo,
+  type VendasManuaisAgregado,
 } from "@/lib/actions/dados-campanhas";
 
 export default function DashboardPage() {
@@ -54,23 +56,27 @@ export default function DashboardPage() {
   const [serie, setSerie] = useState<SeriePonto[]>([]);
   const [campanhasReais, setCampanhasReais] = useState<CampanhaAgregada[]>([]);
   const [topAds, setTopAds] = useState<AdResumo[]>([]);
+  const [vendas, setVendas] = useState<VendasManuaisAgregado | null>(null);
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
+    if (!cliente.id) return; // aguarda cliente carregar
     let cancelado = false;
     setCarregando(true);
     (async () => {
-      const [k, s, c, t] = await Promise.all([
+      const [k, s, c, t, v] = await Promise.all([
         getKPIsGerais(cliente.id, 30),
         getSerieDiaria(cliente.id, 30),
         getCampanhasAgregadas(cliente.id, 30),
         getTopAds(cliente.id, 30, 5),
+        getVendasManuaisAgregadas(cliente.id, 30),
       ]);
       if (cancelado) return;
       setKpis(k);
       setSerie(s);
       setCampanhasReais(c);
       setTopAds(t);
+      setVendas(v);
       setCarregando(false);
     })();
     return () => {
@@ -94,16 +100,14 @@ export default function DashboardPage() {
   const cpaMedio = kpis?.cpa ?? 0;
   const roasMedio = kpis?.roas ?? 0;
 
-  // Vendas manuais ainda vêm do mock (Fase 1 só sync Meta/Google)
-  const vendasCliente = VENDAS_MANUAIS.filter((v) => v.cliente_id === cliente.slug);
-  const totalLeadsFechados = vendasCliente.reduce((s, v) => s + v.leads_fechados, 0);
-  const totalFaturamento = vendasCliente.reduce((s, v) => s + v.faturamento, 0);
-  const totalLeadsRecebidos = vendasCliente.reduce((s, v) => s + v.total_leads_recebidos, 0);
-  const totalInvestVendas = vendasCliente.reduce((s, v) => s + v.total_investimento, 0);
-  const taxaFechamento = (totalLeadsFechados / Math.max(1, totalLeadsRecebidos)) * 100;
-  const cacReal = totalInvestVendas / Math.max(1, totalLeadsFechados);
-  const ticketMedioReal = totalFaturamento / Math.max(1, totalLeadsFechados);
-  const roasReal = totalFaturamento / Math.max(1, totalInvestVendas);
+  // Vendas manuais reais (banco) — só existem quando o time preenche em /vendas-manuais
+  const temVendas = !!vendas && vendas.periodos_registrados > 0;
+  const totalLeadsFechados = vendas?.leads_fechados ?? 0;
+  const totalFaturamento = vendas?.faturamento ?? 0;
+  const taxaFechamento = vendas?.taxa_fechamento ?? 0;
+  const cacReal = vendas?.cac_real ?? 0;
+  const ticketMedioReal = vendas?.ticket_medio ?? 0;
+  const roasReal = vendas?.roas_real ?? 0;
 
   // Add to cart / checkout só Meta (campos no raw_jsonb que ainda não temos extraindo)
   const totalAtc = 0;
@@ -175,33 +179,110 @@ export default function DashboardPage() {
       {isLeadWpp ? (
         <>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <KPICard label="Investimento" value={totalInvestimento} previousValue={totalInvestimento * 0.84} format="currency" icon={DollarSign} metricKey="investimento" highlight />
-            <KPICard label="Leads gerados" value={totalLeads} previousValue={totalLeads * 0.78} icon={MessageSquare} metricKey="leads" />
-            <KPICard label="Custo por Lead" value={cplMedio} previousValue={cplMedio * 1.15} format="currency" icon={Target} metricKey="cpl" decimals={2} />
-            <KPICard label="Leads fechados" value={totalLeadsFechados} previousValue={totalLeadsFechados * 0.82} icon={Users} subtitle={`${taxaFechamento.toFixed(1)}% conv.`} />
+            <KPICard label="Investimento" value={totalInvestimento} format="currency" icon={DollarSign} metricKey="investimento" highlight />
+            <KPICard label="Leads gerados" value={totalLeads} icon={MessageSquare} metricKey="leads" subtitle="Meta + Google" />
+            <KPICard label="Custo por Lead" value={cplMedio} format="currency" icon={Target} metricKey="cpl" decimals={2} />
+            <KPICard
+              label="Leads fechados"
+              value={totalLeadsFechados}
+              icon={Users}
+              empty={!temVendas}
+              emptyHint="Preencher em Vendas Manuais"
+              subtitle={temVendas ? `${taxaFechamento.toFixed(1)}% conv.` : undefined}
+            />
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <KPICard label="Faturamento real" value={totalFaturamento} previousValue={totalFaturamento * 0.78} format="currency" icon={TrendingUp} metricKey="receita" />
-            <KPICard label="CAC real" value={cacReal} previousValue={cacReal * 1.08} format="currency" icon={Target} metricKey="cpa" decimals={2} />
-            <KPICard label="Ticket médio" value={ticketMedioReal} previousValue={ticketMedioReal * 0.95} format="currency" decimals={2} />
-            <KPICard label="ROAS real" value={roasReal} previousValue={roasReal * 0.92} decimals={2} icon={Percent} subtitle="venda manual" />
+            <KPICard
+              label="Faturamento real"
+              value={totalFaturamento}
+              format="currency"
+              icon={TrendingUp}
+              metricKey="receita"
+              empty={!temVendas}
+              emptyHint="Preencher em Vendas Manuais"
+            />
+            <KPICard
+              label="CAC real"
+              value={cacReal}
+              format="currency"
+              icon={Target}
+              metricKey="cpa"
+              decimals={2}
+              empty={!temVendas}
+              emptyHint="Depende de Vendas Manuais"
+            />
+            <KPICard
+              label="Ticket médio"
+              value={ticketMedioReal}
+              format="currency"
+              decimals={2}
+              empty={!temVendas}
+              emptyHint="Depende de Vendas Manuais"
+            />
+            <KPICard
+              label="ROAS real"
+              value={roasReal}
+              decimals={2}
+              icon={Percent}
+              empty={!temVendas}
+              emptyHint="Depende de Vendas Manuais"
+              subtitle={temVendas ? "venda manual" : undefined}
+            />
           </div>
         </>
       ) : (
         <>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <KPICard label="Investimento" value={totalInvestimento} previousValue={totalInvestimento * 0.84} format="currency" icon={DollarSign} metricKey="investimento" highlight />
-            <KPICard label="Conversões" value={totalConversoes} previousValue={totalConversoes * 0.76} icon={ShoppingCart} metricKey="conversoes" />
-            <KPICard label="Receita" value={totalReceita} previousValue={totalReceita * 0.81} format="currency" icon={TrendingUp} metricKey="receita" />
-            <KPICard label="ROAS" value={roasMedio} previousValue={roasMedio * 0.92} icon={Target} metricKey="roas" decimals={2} subtitle="média ponderada" />
+            <KPICard label="Investimento" value={totalInvestimento} format="currency" icon={DollarSign} metricKey="investimento" highlight />
+            <KPICard label="Conversões" value={totalConversoes} icon={ShoppingCart} metricKey="conversoes" />
+            <KPICard label="Receita" value={totalReceita} format="currency" icon={TrendingUp} metricKey="receita" />
+            <KPICard label="ROAS" value={roasMedio} icon={Target} metricKey="roas" decimals={2} subtitle="média ponderada" />
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <KPICard label="CPA" value={cpaMedio} previousValue={cpaMedio * 1.12} format="currency" icon={Target} metricKey="cpa" decimals={2} />
-            <KPICard label="Add to Cart" value={totalAtc} previousValue={totalAtc * 0.88} icon={ShoppingCart} />
-            <KPICard label="Iniciaram Checkout" value={totalCheckout} previousValue={totalCheckout * 0.89} icon={ShoppingCart} />
-            <KPICard label="CTR" value={ctrMedio} previousValue={ctrMedio * 0.96} format="percent" icon={MousePointerClick} metricKey="ctr" decimals={2} />
+            <KPICard label="CPA" value={cpaMedio} format="currency" icon={Target} metricKey="cpa" decimals={2} />
+            <KPICard
+              label="Add to Cart"
+              value={totalAtc}
+              icon={ShoppingCart}
+              empty={totalAtc === 0}
+              emptyHint="Requer Pixel/Tag instalado"
+            />
+            <KPICard
+              label="Iniciaram Checkout"
+              value={totalCheckout}
+              icon={ShoppingCart}
+              empty={totalCheckout === 0}
+              emptyHint="Requer Pixel/Tag instalado"
+            />
+            <KPICard label="CTR" value={ctrMedio} format="percent" icon={MousePointerClick} metricKey="ctr" decimals={2} />
           </div>
         </>
+      )}
+
+      {/* CTA Vendas Manuais quando lead_whatsapp sem dados */}
+      {isLeadWpp && !temVendas && !carregando && (
+        <Card className="border-amber-500/30 bg-amber-500/5">
+          <CardContent className="p-4 flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-lg bg-amber-500/15 text-amber-400 flex items-center justify-center">
+                <TrendingUp className="size-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">Faltam dados de vendas reais</p>
+                <p className="text-xs text-muted-foreground">
+                  Faturamento, CAC, ticket médio e ROAS dependem do time preencher
+                  quais leads efetivamente fecharam no WhatsApp.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/vendas-manuais"
+              className="inline-flex items-center gap-2 text-xs font-medium px-4 py-2 rounded-md bg-[var(--ddg-orange)] text-white hover:brightness-110 transition"
+            >
+              Preencher vendas
+            </Link>
+          </CardContent>
+        </Card>
       )}
 
       <Card>

@@ -354,6 +354,92 @@ export async function getTopAds(
   return lista.sort((a, b) => b.investimento - a.investimento).slice(0, limit);
 }
 
+// ==================== VENDAS MANUAIS (lead_whatsapp) ====================
+
+export interface VendasManuaisAgregado {
+  total_leads_recebidos: number;
+  leads_fechados: number;
+  faturamento: number;
+  total_investimento: number;
+  // computados
+  taxa_fechamento: number; // %
+  cac_real: number;
+  ticket_medio: number;
+  roas_real: number;
+  // meta
+  periodos_registrados: number;
+  ultimo_preenchimento: string | null;
+}
+
+/**
+ * Agrega vendas_manuais do cliente para os últimos N dias (ou todas).
+ * Retorna zeros quando não há registros preenchidos.
+ */
+export async function getVendasManuaisAgregadas(
+  clienteId: string,
+  daysBack: number = 30
+): Promise<VendasManuaisAgregado> {
+  const empty: VendasManuaisAgregado = {
+    total_leads_recebidos: 0,
+    leads_fechados: 0,
+    faturamento: 0,
+    total_investimento: 0,
+    taxa_fechamento: 0,
+    cac_real: 0,
+    ticket_medio: 0,
+    roas_real: 0,
+    periodos_registrados: 0,
+    ultimo_preenchimento: null,
+  };
+
+  try {
+    const { since } = defaultRange(daysBack);
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .schema("trafego_ddg")
+      .from("vendas_manuais")
+      .select(
+        "total_leads_recebidos, leads_fechados, faturamento, total_investimento, preenchido_em"
+      )
+      .eq("cliente_id", clienteId)
+      .gte("periodo_inicio", since);
+
+    if (error || !data || data.length === 0) return empty;
+
+    let total_leads_recebidos = 0;
+    let leads_fechados = 0;
+    let faturamento = 0;
+    let total_investimento = 0;
+    let ultimo: string | null = null;
+    for (const v of data) {
+      total_leads_recebidos += Number(v.total_leads_recebidos ?? 0);
+      leads_fechados += Number(v.leads_fechados ?? 0);
+      faturamento += Number(v.faturamento ?? 0);
+      total_investimento += Number(v.total_investimento ?? 0);
+      const pe = v.preenchido_em as string | null;
+      if (pe && (!ultimo || pe > ultimo)) ultimo = pe;
+    }
+
+    return {
+      total_leads_recebidos,
+      leads_fechados,
+      faturamento,
+      total_investimento,
+      taxa_fechamento: total_leads_recebidos
+        ? (leads_fechados / total_leads_recebidos) * 100
+        : 0,
+      cac_real: leads_fechados ? total_investimento / leads_fechados : 0,
+      ticket_medio: leads_fechados ? faturamento / leads_fechados : 0,
+      roas_real: total_investimento ? faturamento / total_investimento : 0,
+      periodos_registrados: data.length,
+      ultimo_preenchimento: ultimo,
+    };
+  } catch (err) {
+    console.error("getVendasManuaisAgregadas:", err);
+    return empty;
+  }
+}
+
 // ==================== STATUS DA SYNC ====================
 
 export interface StatusSync {
