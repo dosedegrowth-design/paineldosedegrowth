@@ -28,33 +28,73 @@ import { DDGDonutChart } from "@/components/charts/donut-chart";
 import { DDGFunnelChart } from "@/components/charts/funnel-chart";
 
 import {
-  getCampanhasPorCliente,
-  gerarSerie30Dias,
-  TOP_ADS_PETDERMA,
-  TOP_ADS_MARINA,
   ANOMALIAS,
   VENDAS_MANUAIS,
 } from "@/lib/mock-data";
 import { formatCompact, formatCurrency } from "@/lib/utils";
 import { useCliente } from "@/components/cliente-provider";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  getKPIsGerais,
+  getSerieDiaria,
+  getCampanhasAgregadas,
+  getTopAds,
+  type KPIsGerais,
+  type SeriePonto,
+  type CampanhaAgregada,
+  type AdResumo,
+} from "@/lib/actions/dados-campanhas";
 
 export default function DashboardPage() {
   const { cliente } = useCliente();
   const isLeadWpp = cliente.tipo_negocio === "lead_whatsapp";
 
-  const campanhas = useMemo(() => getCampanhasPorCliente(cliente.slug), [cliente.slug]);
-  const serie = useMemo(() => gerarSerie30Dias(cliente.tipo_negocio), [cliente.tipo_negocio]);
-  const topAds = isLeadWpp ? TOP_ADS_PETDERMA : TOP_ADS_MARINA;
+  // Estado dos dados reais carregados
+  const [kpis, setKpis] = useState<KPIsGerais | null>(null);
+  const [serie, setSerie] = useState<SeriePonto[]>([]);
+  const [campanhasReais, setCampanhasReais] = useState<CampanhaAgregada[]>([]);
+  const [topAds, setTopAds] = useState<AdResumo[]>([]);
+  const [carregando, setCarregando] = useState(true);
 
-  const totalInvestimento = campanhas.reduce((s, c) => s + c.investimento, 0);
-  const totalCliques = campanhas.reduce((s, c) => s + c.cliques, 0);
-  const totalImpressoes = campanhas.reduce((s, c) => s + c.impressoes, 0);
-  const ctrMedio = (totalCliques / Math.max(1, totalImpressoes)) * 100;
+  useEffect(() => {
+    let cancelado = false;
+    setCarregando(true);
+    (async () => {
+      const [k, s, c, t] = await Promise.all([
+        getKPIsGerais(cliente.id, 30),
+        getSerieDiaria(cliente.id, 30),
+        getCampanhasAgregadas(cliente.id, 30),
+        getTopAds(cliente.id, 30, 5),
+      ]);
+      if (cancelado) return;
+      setKpis(k);
+      setSerie(s);
+      setCampanhasReais(c);
+      setTopAds(t);
+      setCarregando(false);
+    })();
+    return () => {
+      cancelado = true;
+    };
+  }, [cliente.id]);
 
-  const totalLeads = campanhas.reduce((s, c) => s + c.leads, 0);
-  const cplMedio = totalInvestimento / Math.max(1, totalLeads);
+  const temDadosReais = !!kpis && kpis.investimento > 0;
 
+  // KPIs principais (reais ou zerados)
+  const totalInvestimento = kpis?.investimento ?? 0;
+  const totalCliques = kpis?.cliques ?? 0;
+  const totalImpressoes = kpis?.impressoes ?? 0;
+  const ctrMedio = kpis?.ctr ?? 0;
+
+  const totalLeads = kpis?.conversoes ?? 0; // para lead_whatsapp = leads
+  const cplMedio = kpis?.cpl ?? 0;
+
+  const totalConversoes = kpis?.conversoes ?? 0;
+  const totalReceita = kpis?.receita ?? 0;
+  const cpaMedio = kpis?.cpa ?? 0;
+  const roasMedio = kpis?.roas ?? 0;
+
+  // Vendas manuais ainda vêm do mock (Fase 1 só sync Meta/Google)
   const vendasCliente = VENDAS_MANUAIS.filter((v) => v.cliente_id === cliente.slug);
   const totalLeadsFechados = vendasCliente.reduce((s, v) => s + v.leads_fechados, 0);
   const totalFaturamento = vendasCliente.reduce((s, v) => s + v.faturamento, 0);
@@ -65,30 +105,32 @@ export default function DashboardPage() {
   const ticketMedioReal = totalFaturamento / Math.max(1, totalLeadsFechados);
   const roasReal = totalFaturamento / Math.max(1, totalInvestVendas);
 
-  const totalConversoes = campanhas.reduce((s, c) => s + c.conversoes, 0);
-  const totalReceita = campanhas.reduce((s, c) => s + c.receita, 0);
-  const totalAtc = campanhas.reduce((s, c) => s + (c.add_to_cart ?? 0), 0);
-  const totalCheckout = campanhas.reduce((s, c) => s + (c.initiate_checkout ?? 0), 0);
-  const cpaMedio = totalInvestimento / Math.max(1, totalConversoes);
-  const roasMedio = totalReceita / Math.max(1, totalInvestimento);
+  // Add to cart / checkout só Meta (campos no raw_jsonb que ainda não temos extraindo)
+  const totalAtc = 0;
+  const totalCheckout = 0;
 
-  const investGoogle = campanhas.filter((c) => c.plataforma === "google").reduce((s, c) => s + c.investimento, 0);
-  const investMeta = campanhas.filter((c) => c.plataforma === "meta").reduce((s, c) => s + c.investimento, 0);
+  const investMeta = kpis?.investimento_meta ?? 0;
+  const investGoogle = kpis?.investimento_google ?? 0;
   const platformData = [
     { name: "Meta Ads", value: investMeta, color: "#a855f7" },
     { name: "Google Ads", value: investGoogle, color: "#3b82f6" },
-  ];
+  ].filter((p) => p.value > 0);
 
   const topCampanhas = useMemo(() => {
-    return [...campanhas]
-      .sort((a, b) => (isLeadWpp ? b.leads - a.leads : b.receita - a.receita))
+    return [...campanhasReais]
+      .sort((a, b) =>
+        isLeadWpp ? b.conversoes - a.conversoes : b.receita - a.receita
+      )
       .slice(0, 5)
       .map((c) => ({
-        name: c.campanha_nome.length > 22 ? c.campanha_nome.substring(0, 22) + "..." : c.campanha_nome,
-        value: isLeadWpp ? c.leads : c.receita,
+        name:
+          c.campanha_nome.length > 22
+            ? c.campanha_nome.substring(0, 22) + "..."
+            : c.campanha_nome,
+        value: isLeadWpp ? c.conversoes : c.receita,
         color: c.plataforma === "google" ? "#3b82f6" : "#a855f7",
       }));
-  }, [campanhas, isLeadWpp]);
+  }, [campanhasReais, isLeadWpp]);
 
   const funilSteps = isLeadWpp
     ? [
@@ -111,10 +153,22 @@ export default function DashboardPage() {
         title="Visão Geral"
         description={`${cliente.nome} · ${isLeadWpp ? "Modelo Lead/WhatsApp" : "Modelo E-commerce"} · Últimos 30 dias`}
         actions={
-          <Badge variant="ddg" className="gap-1.5">
-            <span className="size-1.5 rounded-full bg-[var(--ddg-orange)] pulse-ring" />
-            Sincronizado
-          </Badge>
+          carregando ? (
+            <Badge variant="secondary" className="gap-1.5">
+              <span className="size-1.5 rounded-full bg-muted-foreground animate-pulse" />
+              Carregando...
+            </Badge>
+          ) : temDadosReais ? (
+            <Badge variant="success" className="gap-1.5">
+              <span className="size-1.5 rounded-full bg-emerald-500 pulse-ring" />
+              Dados sincronizados
+            </Badge>
+          ) : (
+            <Badge variant="warning" className="gap-1.5">
+              <span className="size-1.5 rounded-full bg-amber-500" />
+              Aguardando sync
+            </Badge>
+          )
         }
       />
 
@@ -277,43 +331,59 @@ export default function DashboardPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="divide-y divide-border">
-            {topAds.map((ad, idx) => (
-              <div key={ad.id} className="flex items-center gap-4 px-6 py-3 hover:bg-accent/50 transition-colors">
-                <span className="text-xs font-bold text-muted-foreground w-5 tabular-nums">#{idx + 1}</span>
-                <div className="size-12 rounded-lg overflow-hidden bg-muted shrink-0 relative">
-                  <Image src={ad.thumbnail} alt={ad.headline} fill sizes="48px" className="object-cover" unoptimized />
+          {topAds.length === 0 ? (
+            <div className="px-6 py-8 text-center text-sm text-muted-foreground">
+              {carregando ? "Carregando criativos..." : "Nenhum anúncio com investimento no período."}
+            </div>
+          ) : (
+            <div className="divide-y divide-border">
+              {topAds.map((ad, idx) => (
+                <div key={ad.ad_id} className="flex items-center gap-4 px-6 py-3 hover:bg-accent/50 transition-colors">
+                  <span className="text-xs font-bold text-muted-foreground w-5 tabular-nums">#{idx + 1}</span>
+                  <div className="size-12 rounded-lg overflow-hidden bg-muted shrink-0 relative">
+                    {ad.thumbnail_url ? (
+                      <Image src={ad.thumbnail_url} alt={ad.ad_nome} fill sizes="48px" className="object-cover" unoptimized />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-muted-foreground text-[10px]">
+                        sem img
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <PlatformBadge platform={ad.plataforma} />
+                      <span className="text-xs text-muted-foreground truncate">
+                        {ad.headline ?? ad.ad_nome}
+                      </span>
+                    </div>
+                    <p className="text-sm font-medium truncate">{ad.ad_nome}</p>
+                  </div>
+                  <div className="hidden md:grid grid-cols-4 gap-6 text-right text-xs tabular-nums shrink-0">
+                    <div>
+                      <p className="text-muted-foreground">Investido</p>
+                      <p className="font-medium">{formatCompact(ad.investimento)}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">{isLeadWpp ? "Leads" : "Conv."}</p>
+                      <p className="font-medium">{ad.conversoes}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">CTR</p>
+                      <p className="font-medium">{ad.ctr.toFixed(2)}%</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">{isLeadWpp ? "CPL" : "ROAS"}</p>
+                      <p className="font-medium text-emerald-400">
+                        {isLeadWpp
+                          ? ad.cpl > 0 ? formatCurrency(ad.cpl) : "—"
+                          : ad.roas > 0 ? `${ad.roas.toFixed(2)}x` : "—"}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <PlatformBadge platform={ad.plataforma} />
-                    <span className="text-xs text-muted-foreground truncate">{ad.campanha}</span>
-                  </div>
-                  <p className="text-sm font-medium truncate">{ad.headline}</p>
-                </div>
-                <div className="hidden md:grid grid-cols-4 gap-6 text-right text-xs tabular-nums shrink-0">
-                  <div>
-                    <p className="text-muted-foreground">Investido</p>
-                    <p className="font-medium">{formatCompact(ad.investimento)}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">{isLeadWpp ? "Leads" : "Conv."}</p>
-                    <p className="font-medium">{isLeadWpp ? ad.leads : ad.conversoes}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">CTR</p>
-                    <p className="font-medium">{ad.ctr.toFixed(2)}%</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">{isLeadWpp ? "CPL" : "ROAS"}</p>
-                    <p className="font-medium text-emerald-400">
-                      {isLeadWpp ? formatCurrency(ad.cpl ?? 0) : `${ad.roas?.toFixed(2)}x`}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
