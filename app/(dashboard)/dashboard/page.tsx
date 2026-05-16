@@ -5,6 +5,7 @@ import {
   TrendingUp,
   Target,
   ShoppingCart,
+  ShoppingBag,
   MousePointerClick,
   Sparkles,
   TrendingDown,
@@ -45,6 +46,12 @@ import {
   type VendasManuaisAgregado,
   type AnomaliaReal,
 } from "@/lib/actions/dados-campanhas";
+import {
+  statsLojaShopify,
+  topProdutosShopify,
+  type StatsLojaShopify,
+  type ProdutoMaisVendido,
+} from "@/lib/actions/shopify";
 
 type FiltroPlataforma = "todas" | "meta" | "google";
 
@@ -59,6 +66,8 @@ export default function DashboardPage() {
   const [topAds, setTopAds] = useState<AdResumo[]>([]);
   const [vendas, setVendas] = useState<VendasManuaisAgregado | null>(null);
   const [anomalias, setAnomalias] = useState<AnomaliaReal[]>([]);
+  const [shopify, setShopify] = useState<StatsLojaShopify | null>(null);
+  const [topProdutos, setTopProdutos] = useState<ProdutoMaisVendido[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [plataforma, setPlataforma] = useState<FiltroPlataforma>("todas");
 
@@ -68,13 +77,21 @@ export default function DashboardPage() {
     setCarregando(true);
     const plat = plataforma === "todas" ? undefined : plataforma;
     (async () => {
-      const [k, s, c, t, v, a] = await Promise.all([
+      const isEcom = cliente.tipo_negocio !== "lead_whatsapp";
+      const shopifyConectado = cliente.status_shopify === "conectado";
+      const [k, s, c, t, v, a, sh, tp] = await Promise.all([
         getKPIsGerais(cliente.id, 30, plat),
         getSerieDiaria(cliente.id, 30, plat),
         getCampanhasAgregadas(cliente.id, 30),
         getTopAds(cliente.id, 30, 5),
         getVendasManuaisAgregadas(cliente.id, 30),
         listarAnomalias(cliente.id, { somenteAbertas: true, limit: 5 }),
+        isEcom && shopifyConectado
+          ? statsLojaShopify(cliente.id, 30)
+          : Promise.resolve(null),
+        isEcom && shopifyConectado
+          ? topProdutosShopify(cliente.id, 8)
+          : Promise.resolve([]),
       ]);
       if (cancelado) return;
       setKpis(k);
@@ -83,12 +100,14 @@ export default function DashboardPage() {
       setTopAds(t);
       setVendas(v);
       setAnomalias(a);
+      setShopify(sh);
+      setTopProdutos(tp);
       setCarregando(false);
     })();
     return () => {
       cancelado = true;
     };
-  }, [cliente.id, plataforma]);
+  }, [cliente.id, cliente.tipo_negocio, cliente.status_shopify, plataforma]);
 
   const temDadosReais = !!kpis && kpis.investimento > 0;
 
@@ -286,31 +305,140 @@ export default function DashboardPage() {
         </>
       ) : (
         <>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <KPICard label="Investimento" value={totalInvestimento} format="currency" icon={DollarSign} metricKey="investimento" highlight />
-            <KPICard label="Conversões" value={totalConversoes} icon={ShoppingCart} metricKey="conversoes" />
-            <KPICard label="Receita" value={totalReceita} format="currency" icon={TrendingUp} metricKey="receita" />
-            <KPICard label="ROAS" value={roasMedio} icon={Target} metricKey="roas" decimals={2} subtitle="média ponderada" />
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <KPICard label="CPA" value={cpaMedio} format="currency" icon={Target} metricKey="cpa" decimals={2} />
-            <KPICard
-              label="Add to Cart"
-              value={totalAtc}
-              icon={ShoppingCart}
-              empty={totalAtc === 0}
-              emptyHint="Requer Pixel/Tag instalado"
-            />
-            <KPICard
-              label="Iniciaram Checkout"
-              value={totalCheckout}
-              icon={ShoppingCart}
-              empty={totalCheckout === 0}
-              emptyHint="Requer Pixel/Tag instalado"
-            />
-            <KPICard label="CTR" value={ctrMedio} format="percent" icon={MousePointerClick} metricKey="ctr" decimals={2} />
-          </div>
+          {/* Quando Shopify conectado: receita/ROAS REAL da loja, não do pixel */}
+          {(() => {
+            const usarShopify = !!shopify && shopify.faturamento_bruto > 0;
+            const receita = usarShopify ? shopify!.faturamento_bruto : totalReceita;
+            const pedidos = usarShopify ? shopify!.pedidos_pagos : totalConversoes;
+            const roas =
+              totalInvestimento > 0 && receita > 0
+                ? receita / totalInvestimento
+                : roasMedio;
+            const ticket = usarShopify ? shopify!.ticket_medio : 0;
+            const cpa =
+              pedidos > 0 ? totalInvestimento / pedidos : cpaMedio;
+            return (
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <KPICard
+                    label="Investimento"
+                    value={totalInvestimento}
+                    format="currency"
+                    icon={DollarSign}
+                    metricKey="investimento"
+                    highlight
+                  />
+                  <KPICard
+                    label={usarShopify ? "Pedidos pagos" : "Conversões"}
+                    value={pedidos}
+                    icon={ShoppingCart}
+                    metricKey="conversoes"
+                    subtitle={usarShopify ? "Shopify · loja" : undefined}
+                  />
+                  <KPICard
+                    label="Receita"
+                    value={receita}
+                    format="currency"
+                    icon={TrendingUp}
+                    metricKey="receita"
+                    subtitle={usarShopify ? "real (Shopify)" : "pixel"}
+                  />
+                  <KPICard
+                    label="ROAS"
+                    value={roas}
+                    icon={Target}
+                    metricKey="roas"
+                    decimals={2}
+                    subtitle={usarShopify ? "receita real / invest" : "média ponderada"}
+                  />
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <KPICard
+                    label="CPA"
+                    value={cpa}
+                    format="currency"
+                    icon={Target}
+                    metricKey="cpa"
+                    decimals={2}
+                  />
+                  <KPICard
+                    label="Ticket médio"
+                    value={ticket}
+                    format="currency"
+                    icon={ShoppingBag}
+                    decimals={2}
+                    empty={!usarShopify}
+                    emptyHint={
+                      !usarShopify ? "Conecte Shopify pra ver real" : undefined
+                    }
+                  />
+                  <KPICard
+                    label="Carrinhos abandonados"
+                    value={shopify?.carrinhos_abandonados ?? 0}
+                    icon={ShoppingCart}
+                    empty={!usarShopify}
+                    emptyHint={!usarShopify ? "Shopify desconectado" : undefined}
+                    subtitle={
+                      usarShopify
+                        ? `${shopify!.taxa_abandono.toFixed(1)}% taxa`
+                        : undefined
+                    }
+                  />
+                  <KPICard
+                    label="CTR"
+                    value={ctrMedio}
+                    format="percent"
+                    icon={MousePointerClick}
+                    metricKey="ctr"
+                    decimals={2}
+                  />
+                </div>
+              </>
+            );
+          })()}
         </>
+      )}
+
+      {/* Top produtos Shopify (só ecom conectado) */}
+      {!isLeadWpp && shopify && topProdutos.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Top produtos vendidos · Shopify</CardTitle>
+            <CardDescription>Ranking por receita · últimos 30 dias</CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="divide-y divide-border">
+              {topProdutos.map((p, idx) => (
+                <div
+                  key={p.produto_id}
+                  className="px-5 py-3 flex items-center gap-4 hover:bg-accent/30"
+                >
+                  <span className="text-xs font-bold text-muted-foreground w-5 tabular-nums">
+                    #{idx + 1}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{p.nome}</p>
+                    {p.sku && (
+                      <p className="text-[10px] text-muted-foreground">SKU {p.sku}</p>
+                    )}
+                  </div>
+                  <div className="text-right shrink-0 grid grid-cols-2 gap-6 text-xs tabular-nums">
+                    <div>
+                      <p className="text-muted-foreground">Vendidos</p>
+                      <p className="font-medium">{p.total_vendido}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Receita</p>
+                      <p className="font-medium text-emerald-400">
+                        {formatCurrency(p.receita_total)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* CTA Vendas Manuais quando lead_whatsapp sem dados */}

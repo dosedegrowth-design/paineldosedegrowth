@@ -28,12 +28,16 @@ export interface ClienteCompleto {
   status_meta: StatusConexao;
   status_google: StatusConexao;
   status_painel_comercial: StatusConexao;
+  status_shopify: StatusConexao;
   meta_ad_account_id: string | null;
   google_customer_id: string | null;
+  shopify_shop_domain: string | null;
   ultima_sync_meta: string | null;
   ultima_sync_google: string | null;
+  ultima_sync_shopify: string | null;
   meta_ultimo_erro: string | null;
   google_ultimo_erro: string | null;
+  shopify_ultimo_erro: string | null;
   ultima_sync_status: string | null;
   // de cliente_config
   plataforma_ecom: string | null;
@@ -112,12 +116,16 @@ export async function listClientes(): Promise<ClienteCompleto[]> {
         status_meta: acessos?.status_meta ?? "nao_conectado",
         status_google: acessos?.status_google ?? "nao_conectado",
         status_painel_comercial: acessos?.status_painel_comercial ?? "nao_conectado",
+        status_shopify: acessos?.status_shopify ?? "nao_conectado",
         meta_ad_account_id: acessos?.meta_ad_account_id ?? null,
         google_customer_id: acessos?.google_customer_id ?? null,
+        shopify_shop_domain: acessos?.shopify_shop_domain ?? null,
         ultima_sync_meta: acessos?.ultima_sync_meta ?? null,
         ultima_sync_google: acessos?.ultima_sync_google ?? null,
+        ultima_sync_shopify: acessos?.ultima_sync_shopify ?? null,
         meta_ultimo_erro: acessos?.meta_ultimo_erro ?? null,
         google_ultimo_erro: acessos?.google_ultimo_erro ?? null,
+        shopify_ultimo_erro: acessos?.shopify_ultimo_erro ?? null,
         ultima_sync_status: acessos?.ultima_sync_status ?? null,
         plataforma_ecom: config?.plataforma_ecom ?? null,
         dominio_site: config?.dominio_site ?? null,
@@ -181,6 +189,7 @@ export async function createCliente(
         status_meta: "nao_conectado",
         status_google: "nao_conectado",
         status_painel_comercial: "nao_conectado",
+        status_shopify: "nao_conectado",
       });
 
     if (e2) console.error("Erro criando acessos:", e2);
@@ -373,6 +382,7 @@ export async function createClienteParcial(
         status_meta: "nao_conectado",
         status_google: "nao_conectado",
         status_painel_comercial: "nao_conectado",
+        status_shopify: "nao_conectado",
       });
     if (e2) console.error("Erro criando acessos parcial:", e2);
 

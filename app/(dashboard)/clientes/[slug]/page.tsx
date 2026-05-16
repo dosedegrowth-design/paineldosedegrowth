@@ -35,6 +35,7 @@ import {
 import { PageHeader } from "@/components/dashboard/page-header";
 import { ConexaoMeta } from "@/components/clientes/conexao-meta";
 import { ConexaoGoogle } from "@/components/clientes/conexao-google";
+import { ConexaoShopify } from "@/components/clientes/conexao-shopify";
 import { ConexaoPainel } from "@/components/clientes/conexao-painel";
 import { EditarClienteModal } from "@/components/clientes/editar-cliente-modal";
 import { GerenciarUsuariosModal } from "@/components/clientes/gerenciar-usuarios-modal";
@@ -280,6 +281,14 @@ export default function ClienteDetalhePage({ params }: PageProps) {
           <ConexaoGoogle cliente={cliente} onUpdate={load} />
           <ConexaoPainel cliente={cliente} onUpdate={load} />
         </div>
+
+        {/* Shopify só pra ecommerce ou hibrido */}
+        {(cliente.tipo_negocio === "ecommerce" ||
+          cliente.tipo_negocio === "hibrido") && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <ConexaoShopify cliente={cliente} onUpdate={load} />
+          </div>
+        )}
       </div>
 
       {/* Configurações específicas por tipo */}

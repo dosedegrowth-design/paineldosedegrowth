@@ -21,8 +21,10 @@ export interface ClienteContextItem {
   // Status real de conexão/sync — pra UI dizer a verdade
   status_meta: string | null;
   status_google: string | null;
+  status_shopify: string | null;
   ultima_sync_meta: string | null;
   ultima_sync_google: string | null;
+  ultima_sync_shopify: string | null;
   ultima_sync_status: string | null;
 }
 
@@ -49,8 +51,10 @@ const FALLBACK: ClienteContextItem = {
   ativo: true,
   status_meta: null,
   status_google: null,
+  status_shopify: null,
   ultima_sync_meta: null,
   ultima_sync_google: null,
+  ultima_sync_shopify: null,
   ultima_sync_status: null,
 };
 
@@ -67,8 +71,10 @@ function fromCompleto(c: ClienteCompleto): ClienteContextItem {
     ativo: c.ativo,
     status_meta: c.status_meta ?? null,
     status_google: c.status_google ?? null,
+    status_shopify: c.status_shopify ?? null,
     ultima_sync_meta: c.ultima_sync_meta ?? null,
     ultima_sync_google: c.ultima_sync_google ?? null,
+    ultima_sync_shopify: c.ultima_sync_shopify ?? null,
     ultima_sync_status: c.ultima_sync_status ?? null,
   };
 }
