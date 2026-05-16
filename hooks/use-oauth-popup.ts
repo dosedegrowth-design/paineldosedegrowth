@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef } from "react";
 
-export type OAuthProvider = "meta" | "google";
+export type OAuthProvider = "meta" | "google" | "shopify";
 
 export interface OAuthCompleteEvent {
   type: "ddg_oauth_complete";

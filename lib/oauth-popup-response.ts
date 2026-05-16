@@ -12,7 +12,7 @@ import { NextResponse } from "next/server";
 
 interface PopupResponseInput {
   ok: boolean;
-  provider: "meta" | "google";
+  provider: "meta" | "google" | "shopify";
   clienteId?: string;
   error?: string;
   origin: string; // URL.origin do callback (usado como targetOrigin no postMessage)
