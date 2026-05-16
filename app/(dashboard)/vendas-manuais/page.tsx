@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { motion } from "framer-motion";
 import {
   MessageSquare,
@@ -11,6 +11,8 @@ import {
   RadioTower,
   Sparkles,
   Save,
+  Loader2,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -22,15 +24,20 @@ import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { KPICard } from "@/components/dashboard/kpi-card";
 import { useCliente } from "@/components/cliente-provider";
-import { VENDAS_MANUAIS, type VendaManual } from "@/lib/mock-data";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import {
+  listarVendasManuais,
+  criarVendaManual,
+  deletarVendaManual,
+  type VendaManual,
+} from "@/lib/actions/vendas-manuais";
 
 export default function VendasManuaisPage() {
   const { cliente } = useCliente();
-  const [vendas, setVendas] = useState(
-    VENDAS_MANUAIS.filter((v) => v.cliente_id === cliente.slug)
-  );
+  const [vendas, setVendas] = useState<VendaManual[]>([]);
+  const [carregando, setCarregando] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [salvando, startSalvar] = useTransition();
 
   // Form state
   const [periodoInicio, setPeriodoInicio] = useState("");
@@ -42,6 +49,26 @@ export default function VendasManuaisPage() {
   const [percMeta, setPercMeta] = useState("");
   const [percGoogle, setPercGoogle] = useState("");
   const [observacoes, setObservacoes] = useState("");
+
+  // Carrega do banco
+  useEffect(() => {
+    if (!cliente.id) return;
+    let cancelado = false;
+    setCarregando(true);
+    listarVendasManuais(cliente.id).then((data) => {
+      if (cancelado) return;
+      setVendas(data);
+      setCarregando(false);
+    });
+    return () => {
+      cancelado = true;
+    };
+  }, [cliente.id]);
+
+  const carregar = async () => {
+    const data = await listarVendasManuais(cliente.id);
+    setVendas(data);
+  };
 
   if (cliente.tipo_negocio === "ecommerce") {
     return (
@@ -62,35 +89,52 @@ export default function VendasManuaisPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const nova: VendaManual = {
-      id: `vm_${Date.now()}`,
-      cliente_id: cliente.slug,
-      periodo_inicio: periodoInicio,
-      periodo_fim: periodoFim,
-      total_leads_recebidos: parseInt(leadsRecebidos) || 0,
-      total_investimento: parseFloat(investimento) || 0,
-      leads_fechados: parseInt(leadsFechados) || 0,
-      faturamento: parseFloat(faturamento) || 0,
-      perc_origem_meta: parseFloat(percMeta) || undefined,
-      perc_origem_google: parseFloat(percGoogle) || undefined,
-      observacoes: observacoes || undefined,
-      preenchido_em: new Date().toISOString(),
-    };
-    setVendas([nova, ...vendas]);
-    setShowForm(false);
-    toast.success("Venda manual registrada", {
-      description: "Server-side conversions serão enviados ao Meta e Google em até 30min.",
+    startSalvar(async () => {
+      const res = await criarVendaManual({
+        cliente_id: cliente.id,
+        periodo_inicio: periodoInicio,
+        periodo_fim: periodoFim,
+        total_leads_recebidos: parseInt(leadsRecebidos) || 0,
+        total_investimento: parseFloat(investimento) || 0,
+        leads_fechados: parseInt(leadsFechados) || 0,
+        faturamento: parseFloat(faturamento) || 0,
+        perc_origem_meta: percMeta ? parseFloat(percMeta) : null,
+        perc_origem_google: percGoogle ? parseFloat(percGoogle) : null,
+        observacoes: observacoes || null,
+      });
+
+      if (!res.ok) {
+        toast.error("Erro ao salvar", { description: res.error });
+        return;
+      }
+
+      toast.success("Venda manual registrada", {
+        description: "Dashboard atualizado. Server-side conversions serão enviados em breve.",
+      });
+      await carregar();
+      setShowForm(false);
+      // Reset
+      setPeriodoInicio("");
+      setPeriodoFim("");
+      setLeadsRecebidos("");
+      setInvestimento("");
+      setLeadsFechados("");
+      setFaturamento("");
+      setPercMeta("");
+      setPercGoogle("");
+      setObservacoes("");
     });
-    // Reset
-    setPeriodoInicio("");
-    setPeriodoFim("");
-    setLeadsRecebidos("");
-    setInvestimento("");
-    setLeadsFechados("");
-    setFaturamento("");
-    setPercMeta("");
-    setPercGoogle("");
-    setObservacoes("");
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Tem certeza que quer deletar essa venda manual?")) return;
+    const res = await deletarVendaManual(id);
+    if (!res.ok) {
+      toast.error("Erro ao deletar", { description: res.error });
+      return;
+    }
+    toast.success("Venda removida");
+    await carregar();
   };
 
   // KPIs do total
@@ -212,9 +256,13 @@ export default function VendasManuaisPage() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button type="submit" variant="ddg" className="gap-2">
-                    <Save className="size-4" />
-                    Salvar e enviar p/ Meta + Google
+                  <Button type="submit" variant="ddg" disabled={salvando} className="gap-2">
+                    {salvando ? (
+                      <Loader2 className="size-4 animate-spin" />
+                    ) : (
+                      <Save className="size-4" />
+                    )}
+                    {salvando ? "Salvando..." : "Salvar venda"}
                   </Button>
                   <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
                     Cancelar
@@ -265,10 +313,21 @@ export default function VendasManuaisPage() {
                         Registrado {formatDate(v.preenchido_em)}
                       </p>
                     </div>
-                    <Badge variant="success" className="gap-1.5">
-                      <RadioTower className="size-3" />
-                      Enviado Meta + Google
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="success" className="gap-1.5">
+                        <Save className="size-3" />
+                        Salvo
+                      </Badge>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="size-7 text-destructive"
+                        onClick={() => handleDelete(v.id)}
+                        title="Deletar"
+                      >
+                        <Trash2 className="size-3.5" />
+                      </Button>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-2 md:grid-cols-6 gap-3 text-sm">

@@ -33,25 +33,28 @@ interface NavItem {
   // se undefined, aparece pra todos. Se array, só para os tipos listados.
   tipos?: TipoNegocio[];
   section?: "main" | "intelligence" | "specific" | "admin";
+  /** Mostrar como "Em breve" — disable link + tooltip. */
+  emBreve?: boolean;
 }
 
 const NAV: NavItem[] = [
+  // === Funcional / com dados reais ===
   { href: "/dashboard", label: "Visão Geral", icon: LayoutDashboard, section: "main" },
   { href: "/campanhas", label: "Campanhas", icon: Megaphone, section: "main" },
-  { href: "/search-terms", label: "Search Terms", icon: Search, section: "main" },
 
-  // Específico por tipo
+  // === Específico por tipo (parcial, salva em memória ainda) ===
   { href: "/vendas-manuais", label: "Vendas Manuais", icon: MessageSquare, tipos: ["lead_whatsapp", "hibrido"], section: "specific" },
-  { href: "/carrinho-abandonado", label: "Carrinho Abandonado", icon: ShoppingBag, tipos: ["ecommerce", "hibrido"], section: "specific" },
 
-  // Inteligência
-  { href: "/alertas", label: "Alertas", icon: AlertTriangle, badge: 3, section: "intelligence" },
-  { href: "/mudancas", label: "Mudanças", icon: GitBranch, section: "intelligence" },
-  { href: "/otimizacoes", label: "Otimizações", icon: Sparkles, badge: 7, section: "intelligence" },
-  { href: "/relatorios", label: "Relatórios", icon: FileText, section: "intelligence" },
-  { href: "/conversoes-offline", label: "Offline Conv.", icon: RadioTower, section: "intelligence" },
+  // === Em breve (Fase 2/3) — usuário vê mas sabe que não tá pronto ===
+  { href: "/search-terms", label: "Search Terms", icon: Search, section: "main", emBreve: true },
+  { href: "/carrinho-abandonado", label: "Carrinho Abandonado", icon: ShoppingBag, tipos: ["ecommerce", "hibrido"], section: "specific", emBreve: true },
+  { href: "/alertas", label: "Alertas IA", icon: AlertTriangle, section: "intelligence", emBreve: true },
+  { href: "/mudancas", label: "Mudanças", icon: GitBranch, section: "intelligence", emBreve: true },
+  { href: "/otimizacoes", label: "Otimizações", icon: Sparkles, section: "intelligence", emBreve: true },
+  { href: "/relatorios", label: "Relatórios", icon: FileText, section: "intelligence", emBreve: true },
+  { href: "/conversoes-offline", label: "Offline Conv.", icon: RadioTower, section: "intelligence", emBreve: true },
 
-  // Admin
+  // === Admin ===
   { href: "/clientes", label: "Clientes", icon: Building2, section: "admin" },
   { href: "/configuracoes", label: "Configurações", icon: Settings, section: "admin" },
 ];
@@ -124,8 +127,10 @@ export function Sidebar() {
                 "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
                 active
                   ? "bg-[var(--ddg-orange)]/10 text-[var(--ddg-orange)]"
-                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground",
+                item.emBreve && "opacity-60"
               )}
+              title={item.emBreve ? "Em breve · em desenvolvimento" : undefined}
             >
               {active && (
                 <motion.span
@@ -137,7 +142,12 @@ export function Sidebar() {
               {!collapsed && (
                 <>
                   <span className="flex-1 truncate">{item.label}</span>
-                  {item.badge !== undefined && (
+                  {item.emBreve && (
+                    <span className="shrink-0 inline-flex items-center text-[9px] font-medium rounded-full px-1.5 py-0.5 bg-amber-500/15 text-amber-400 border border-amber-500/30 uppercase tracking-wider">
+                      Soon
+                    </span>
+                  )}
+                  {!item.emBreve && item.badge !== undefined && (
                     <span
                       className={cn(
                         "shrink-0 inline-flex items-center justify-center text-[10px] font-bold rounded-full px-1.5 py-0.5 min-w-[18px]",

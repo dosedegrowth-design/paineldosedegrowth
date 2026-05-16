@@ -239,27 +239,21 @@ export async function trocarCodeGoogle(params: {
       }
     }
 
-    // Filtra MCCs (manager=true) — usuário não vai trackear conta gerencial
-    const customersClientes = customers.filter((c) => !c.manager);
-
-    // Auto-seleção quando só tem 1 conta-cliente
-    const customerIdAuto = customersClientes.length === 1 ? customersClientes[0].id : null;
-    const tudoAutoSelecionado = customerIdAuto !== null;
-
-    // Se a API listAccessibleCustomers falhou, mantém status pra modal abrir
-    // com fallback de input manual + mensagem de erro pro user
+    // SEMPRE mostra modal de seleção (mesmo com 1 conta) pro user confirmar
+    // qual conta usar — evita auto-select silencioso de conta errada
     const recursosDisponiveis = { customers, listError };
 
-    // 3. Salvar
+    // 3. Salvar — status sempre aguardando_selecao até user confirmar
+    // Frontend abre modal e chama selecionarRecursoGoogle() pra finalizar
     const { error } = await supabase
       .schema("trafego_ddg")
       .from("clientes_acessos")
       .update({
         google_oauth_refresh_token: tokens.refresh_token,
-        google_customer_id: customerIdAuto,
+        google_customer_id: null, // só preenche quando user confirmar no modal
         google_login_customer_id: GOOGLE_LOGIN_CUSTOMER_ID ?? null,
         google_recursos_disponiveis: recursosDisponiveis,
-        status_google: tudoAutoSelecionado ? "conectado" : "aguardando_selecao",
+        status_google: "aguardando_selecao",
         google_ultimo_erro: listError,
         ultima_sync_google: new Date().toISOString(),
       })

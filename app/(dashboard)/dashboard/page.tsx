@@ -30,7 +30,7 @@ import { DDGFunnelChart } from "@/components/charts/funnel-chart";
 import {
   ANOMALIAS,
 } from "@/lib/mock-data";
-import { formatCompact, formatCurrency } from "@/lib/utils";
+import { cn, formatCompact, formatCurrency } from "@/lib/utils";
 import { useCliente } from "@/components/cliente-provider";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -47,6 +47,8 @@ import {
   type VendasManuaisAgregado,
 } from "@/lib/actions/dados-campanhas";
 
+type FiltroPlataforma = "todas" | "meta" | "google";
+
 export default function DashboardPage() {
   const { cliente } = useCliente();
   const isLeadWpp = cliente.tipo_negocio === "lead_whatsapp";
@@ -58,15 +60,17 @@ export default function DashboardPage() {
   const [topAds, setTopAds] = useState<AdResumo[]>([]);
   const [vendas, setVendas] = useState<VendasManuaisAgregado | null>(null);
   const [carregando, setCarregando] = useState(true);
+  const [plataforma, setPlataforma] = useState<FiltroPlataforma>("todas");
 
   useEffect(() => {
     if (!cliente.id) return; // aguarda cliente carregar
     let cancelado = false;
     setCarregando(true);
+    const plat = plataforma === "todas" ? undefined : plataforma;
     (async () => {
       const [k, s, c, t, v] = await Promise.all([
-        getKPIsGerais(cliente.id, 30),
-        getSerieDiaria(cliente.id, 30),
+        getKPIsGerais(cliente.id, 30, plat),
+        getSerieDiaria(cliente.id, 30, plat),
         getCampanhasAgregadas(cliente.id, 30),
         getTopAds(cliente.id, 30, 5),
         getVendasManuaisAgregadas(cliente.id, 30),
@@ -82,7 +86,7 @@ export default function DashboardPage() {
     return () => {
       cancelado = true;
     };
-  }, [cliente.id]);
+  }, [cliente.id, plataforma]);
 
   const temDadosReais = !!kpis && kpis.investimento > 0;
 
@@ -157,22 +161,42 @@ export default function DashboardPage() {
         title="Visão Geral"
         description={`${cliente.nome} · ${isLeadWpp ? "Modelo Lead/WhatsApp" : "Modelo E-commerce"} · Últimos 30 dias`}
         actions={
-          carregando ? (
-            <Badge variant="secondary" className="gap-1.5">
-              <span className="size-1.5 rounded-full bg-muted-foreground animate-pulse" />
-              Carregando...
-            </Badge>
-          ) : temDadosReais ? (
-            <Badge variant="success" className="gap-1.5">
-              <span className="size-1.5 rounded-full bg-emerald-500 pulse-ring" />
-              Dados sincronizados
-            </Badge>
-          ) : (
-            <Badge variant="warning" className="gap-1.5">
-              <span className="size-1.5 rounded-full bg-amber-500" />
-              Aguardando sync
-            </Badge>
-          )
+          <div className="flex items-center gap-3">
+            {/* Filtro Meta/Google */}
+            <div className="inline-flex items-center rounded-md border border-border p-0.5 bg-card">
+              {(["todas", "meta", "google"] as const).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setPlataforma(p)}
+                  className={cn(
+                    "px-3 h-7 text-xs font-medium rounded transition-colors",
+                    plataforma === p
+                      ? "bg-[var(--ddg-orange)] text-white"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {p === "todas" ? "Todas" : p === "meta" ? "Meta" : "Google"}
+                </button>
+              ))}
+            </div>
+            {/* Status badge */}
+            {carregando ? (
+              <Badge variant="secondary" className="gap-1.5">
+                <span className="size-1.5 rounded-full bg-muted-foreground animate-pulse" />
+                Carregando...
+              </Badge>
+            ) : temDadosReais ? (
+              <Badge variant="success" className="gap-1.5">
+                <span className="size-1.5 rounded-full bg-emerald-500 pulse-ring" />
+                Sincronizado
+              </Badge>
+            ) : (
+              <Badge variant="warning" className="gap-1.5">
+                <span className="size-1.5 rounded-full bg-amber-500" />
+                Aguardando sync
+              </Badge>
+            )}
+          </div>
         }
       />
 

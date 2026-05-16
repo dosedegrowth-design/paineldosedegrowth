@@ -199,40 +199,25 @@ export async function trocarCodeMeta(params: {
       // Ignora se user negou permissao de pages
     }
 
-    // 4. Auto-seleção quando só tem 1 opção em cada categoria
-    const adAccountIdAuto =
-      adAccountsAtivas.length === 1
-        ? adAccountsAtivas[0].id
-        : adAccountsAtivas.length === 0 && adAccounts.length === 1
-          ? adAccounts[0].id
-          : null;
-    const pixelIdAuto = pixels.length === 1 ? pixels[0].id : null;
-    const pageIdAuto = pages.length === 1 ? pages[0].id : null;
-
-    // Se TODOS os recursos foram auto-selecionados → status conectado direto
-    // Senão → aguardando_selecao (modal vai abrir no frontend pra user escolher)
-    const tudoAutoSelecionado =
-      adAccountIdAuto !== null &&
-      (pixels.length === 0 || pixelIdAuto !== null) &&
-      (pages.length === 0 || pageIdAuto !== null);
-
+    // SEMPRE mostra modal de seleção pra user confirmar Ad Account/Pixel/Page
+    // Evita auto-select silencioso que pode pegar conta errada do Business Manager
     const recursosDisponiveis = {
       ad_accounts: adAccounts,
       pixels,
       pages,
     };
 
-    // 5. Salvar
+    // 5. Salvar — status aguardando_selecao até user confirmar no modal
     const { error } = await supabase
       .schema("trafego_ddg")
       .from("clientes_acessos")
       .update({
         meta_long_lived_token: token,
-        meta_ad_account_id: adAccountIdAuto,
-        meta_pixel_id: pixelIdAuto,
-        meta_page_id: pageIdAuto,
+        meta_ad_account_id: null,
+        meta_pixel_id: null,
+        meta_page_id: null,
         meta_recursos_disponiveis: recursosDisponiveis,
-        status_meta: tudoAutoSelecionado ? "conectado" : "aguardando_selecao",
+        status_meta: "aguardando_selecao",
         meta_ultimo_erro: null,
         ultima_sync_meta: new Date().toISOString(),
       })

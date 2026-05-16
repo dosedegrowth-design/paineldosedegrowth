@@ -95,12 +95,13 @@ function defaultRange(daysBack: number): { since: string; until: string } {
 
 export async function getKPIsGerais(
   clienteId: string,
-  daysBack: number = 30
+  daysBack: number = 30,
+  plataforma?: Plataforma
 ): Promise<KPIsGerais> {
   const { since, until } = defaultRange(daysBack);
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  let query = supabase
     .schema("trafego_ddg")
     .from("campanhas_snapshot")
     .select(
@@ -109,6 +110,10 @@ export async function getKPIsGerais(
     .eq("cliente_id", clienteId)
     .gte("data", since)
     .lte("data", until);
+
+  if (plataforma) query = query.eq("plataforma", plataforma);
+
+  const { data, error } = await query;
 
   if (error || !data || data.length === 0) {
     return {
@@ -172,18 +177,23 @@ export async function getKPIsGerais(
 
 export async function getSerieDiaria(
   clienteId: string,
-  daysBack: number = 30
+  daysBack: number = 30,
+  plataforma?: Plataforma
 ): Promise<SeriePonto[]> {
   const { since, until } = defaultRange(daysBack);
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  let query = supabase
     .schema("trafego_ddg")
     .from("campanhas_snapshot")
     .select("data, investimento, impressoes, cliques, conversoes, receita")
     .eq("cliente_id", clienteId)
     .gte("data", since)
     .lte("data", until);
+
+  if (plataforma) query = query.eq("plataforma", plataforma);
+
+  const { data, error } = await query;
 
   if (error || !data) return [];
 
