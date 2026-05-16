@@ -34,6 +34,7 @@ import { useCliente } from "@/components/cliente-provider";
 import {
   getCampanhasAgregadas,
   dispararSyncMeta,
+  dispararSyncGoogle,
   type CampanhaAgregada,
 } from "@/lib/actions/dados-campanhas";
 
@@ -74,6 +75,22 @@ export default function CampanhasPage() {
       toast.error("Erro na sync", { id: "sync", description: res.error });
     } else {
       toast.success("Sync concluída", { id: "sync" });
+      await carregar();
+    }
+    setSincronizando(false);
+  };
+
+  const sincronizarGoogle = async () => {
+    setSincronizando(true);
+    toast.info("Sincronizando Google Ads...", { id: "sync-g" });
+    const res = await dispararSyncGoogle(cliente.id);
+    if (!res.ok) {
+      toast.error("Erro na sync Google", {
+        id: "sync-g",
+        description: res.error,
+      });
+    } else {
+      toast.success("Sync Google concluída", { id: "sync-g" });
       await carregar();
     }
     setSincronizando(false);
@@ -161,7 +178,21 @@ export default function CampanhasPage() {
               ) : (
                 <RefreshCw className="size-4" />
               )}
-              Sincronizar Meta
+              Sync Meta
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={sincronizarGoogle}
+              disabled={sincronizando}
+              className="gap-2"
+            >
+              {sincronizando ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <RefreshCw className="size-4" />
+              )}
+              Sync Google
             </Button>
             <Button variant="outline" size="sm" className="gap-2">
               <Download className="size-4" />

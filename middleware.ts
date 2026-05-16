@@ -25,6 +25,8 @@ export async function middleware(request: NextRequest) {
     "/api/oauth",
     // Facebook Data Deletion callback
     "/api/data-deletion",
+    // Sync endpoints (autenticados via Bearer token internamente)
+    "/api/sync",
   ];
   if (publicPaths.some((p) => request.nextUrl.pathname.startsWith(p))) {
     return NextResponse.next();

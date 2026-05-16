@@ -405,3 +405,31 @@ export async function dispararSyncMeta(
     return { ok: false, error: String(e) };
   }
 }
+
+export async function dispararSyncGoogle(
+  clienteId: string
+): Promise<{ ok: boolean; error?: string; result?: unknown }> {
+  try {
+    const baseUrl =
+      process.env.NEXT_PUBLIC_APP_URL ?? "https://painel.dosedegrowth.com";
+    const token = process.env.WEBHOOK_HMAC_SECRET;
+    if (!token) return { ok: false, error: "SYNC_TOKEN não configurado" };
+
+    const res = await fetch(`${baseUrl}/api/sync/google`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ cliente_id: clienteId, days_back: 30 }),
+    });
+    if (!res.ok) {
+      const txt = await res.text();
+      return { ok: false, error: `Sync falhou: ${res.status} ${txt.slice(0, 200)}` };
+    }
+    const result = await res.json();
+    return { ok: true, result };
+  } catch (e) {
+    return { ok: false, error: String(e) };
+  }
+}
