@@ -2,6 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { NovaCampanhaWizard } from "./wizard";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function NovaCampanhaPage() {
   const supabase = await createClient();
   const { data: contas } = await supabase

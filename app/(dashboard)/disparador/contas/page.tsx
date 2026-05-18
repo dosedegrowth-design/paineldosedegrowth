@@ -1,5 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/dashboard/page-header";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SyncWabasButton } from "./sync-wabas-button";
