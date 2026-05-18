@@ -10,15 +10,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, ArrowLeft, ArrowRight, Upload, Check, Plus } from "lucide-react";
+import { Loader2, ArrowLeft, ArrowRight, Upload, Check, Plus, Search, Calendar, ClipboardPaste } from "lucide-react";
 
 interface Conta {
   id: string;
   waba_id: string;
   display_name: string;
   phone_number_display: string | null;
-  tier: string;
-  quality_rating: string;
+  tier?: string;
+  quality_rating?: string;
 }
 
 interface Template {
@@ -42,12 +42,16 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
   const [step, setStep] = useState<Step>(1);
   const [submitting, setSubmitting] = useState(false);
 
-  const [contaId, setContaId] = useState(contas[0]?.id ?? "");
+  const [contaId, setContaId] = useState("");
+  const [searchConta, setSearchConta] = useState("");
   const [templates, setTemplates] = useState<Template[]>([]);
   const [templateId, setTemplateId] = useState("");
   const [campanhaNome, setCampanhaNome] = useState("");
   const [pacing, setPacing] = useState(3);
+  const [scheduledAt, setScheduledAt] = useState<string>("");
 
+  const [csvMode, setCsvMode] = useState<"upload" | "paste">("upload");
+  const [pasteText, setPasteText] = useState("");
   const [fileName, setFileName] = useState<string>("");
   const [rows, setRows] = useState<ParsedRow[]>([]);
   const [columns, setColumns] = useState<string[]>([]);
@@ -57,6 +61,16 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
   // "telefone" tambem mapeia uma coluna
   const [phoneColumn, setPhoneColumn] = useState<string>("");
   const [varMap, setVarMap] = useState<Record<string, string>>({});
+
+  const contasFiltradas = useMemo(() => {
+    if (!searchConta) return contas;
+    const s = searchConta.toLowerCase();
+    return contas.filter(
+      (c) =>
+        c.display_name.toLowerCase().includes(s) ||
+        c.phone_number_display?.toLowerCase().includes(s),
+    );
+  }, [contas, searchConta]);
 
   // Carrega templates da WABA da conta selecionada
   useEffect(() => {
@@ -110,12 +124,42 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
       if (parsed.length === 0) throw new Error("Arquivo sem linhas");
       setRows(parsed);
       setColumns(cols);
-      // auto-detecta coluna de telefone
       const auto = cols.find((c) => /telefone|phone|celular|whatsapp/i.test(c));
       if (auto) setPhoneColumn(auto);
       setStep(4);
     } catch (e) {
       toast.error(`Falha ao ler arquivo: ${(e as Error).message}`);
+    } finally {
+      setParsing(false);
+    }
+  }
+
+  function handlePaste() {
+    if (!pasteText.trim()) {
+      toast.error("Cole conteúdo CSV primeiro");
+      return;
+    }
+    setParsing(true);
+    try {
+      // Detecta separador (vírgula, ponto-e-vírgula ou tab)
+      const firstLine = pasteText.split("\n")[0] ?? "";
+      const sep = firstLine.includes(";") ? ";" : firstLine.includes("\t") ? "\t" : ",";
+      const result = Papa.parse<ParsedRow>(pasteText, {
+        header: true,
+        skipEmptyLines: true,
+        delimiter: sep,
+      });
+      const parsed = (result.data as ParsedRow[]).filter((r) => Object.values(r).some(Boolean));
+      const cols = result.meta.fields ?? [];
+      if (parsed.length === 0) throw new Error("CSV sem linhas");
+      setRows(parsed);
+      setColumns(cols);
+      setFileName(`colado (${parsed.length} linhas)`);
+      const auto = cols.find((c) => /telefone|phone|celular|whatsapp/i.test(c));
+      if (auto) setPhoneColumn(auto);
+      setStep(4);
+    } catch (e) {
+      toast.error(`Falha ao processar CSV: ${(e as Error).message}`);
     } finally {
       setParsing(false);
     }
@@ -168,12 +212,17 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
           nome: campanhaNome,
           pacing_per_sec: pacing,
           contatos,
+          scheduled_at: scheduledAt ? new Date(scheduledAt).toISOString() : null,
         }),
       });
       const campData = await campRes.json();
       if (!campRes.ok) throw new Error(campData.error);
 
-      toast.success(`Campanha "${campanhaNome}" criada com ${contatos.length} contatos.`);
+      if (scheduledAt) {
+        toast.success(`Campanha "${campanhaNome}" agendada para ${new Date(scheduledAt).toLocaleString("pt-BR")}.`);
+      } else {
+        toast.success(`Campanha "${campanhaNome}" criada com ${contatos.length} contatos.`);
+      }
       router.push(`/disparador/campanhas/${campData.campanha.id}`);
     } catch (e) {
       toast.error((e as Error).message);
@@ -198,27 +247,35 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
                 Nenhum número ativo. <a href="/disparador/contas" className="underline">Ative um primeiro</a>.
               </p>
             ) : (
-              contas.map((c) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => setContaId(c.id)}
-                  className={`w-full text-left p-3 border rounded-lg transition-colors ${
-                    contaId === c.id ? "border-primary bg-primary/5" : "border-border hover:bg-muted/40"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
+              <>
+                <div className="relative">
+                  <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder={`Buscar entre ${contas.length} números`}
+                    value={searchConta}
+                    onChange={(e) => setSearchConta(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+                <div className="max-h-[420px] overflow-y-auto space-y-2 pr-1">
+                  {contasFiltradas.map((c) => (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => setContaId(c.id)}
+                      className={`w-full text-left p-3 border rounded-lg transition-colors ${
+                        contaId === c.id ? "border-primary bg-primary/5" : "border-border hover:bg-muted/40"
+                      }`}
+                    >
                       <div className="font-medium">{c.display_name}</div>
                       <div className="text-xs text-muted-foreground font-mono">{c.phone_number_display}</div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Badge variant="outline">{c.tier}</Badge>
-                      <Badge variant={c.quality_rating === "GREEN" ? "default" : "outline"}>{c.quality_rating}</Badge>
-                    </div>
-                  </div>
-                </button>
-              ))
+                    </button>
+                  ))}
+                  {contasFiltradas.length === 0 && (
+                    <p className="text-xs text-muted-foreground py-4 text-center">Nenhum número encontrado.</p>
+                  )}
+                </div>
+              </>
             )}
             <NavRow
               onNext={() => contaId && setStep(2)}
@@ -293,24 +350,64 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
       {step === 3 && (
         <Card>
           <CardHeader>
-            <CardTitle>3. Upload da base</CardTitle>
-            <CardDescription>CSV ou XLSX. Precisa ter uma coluna de telefone.</CardDescription>
+            <CardTitle>3. Adicione a base de contatos</CardTitle>
+            <CardDescription>CSV/XLSX (upload) ou cole o conteúdo. Precisa ter uma coluna de telefone.</CardDescription>
           </CardHeader>
-          <CardContent>
-            <label className="block">
-              <div className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:bg-muted/30 transition-colors">
-                <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-sm font-medium">Clique para fazer upload</p>
-                <p className="text-xs text-muted-foreground mt-1">CSV ou XLSX, até 50k linhas</p>
+          <CardContent className="space-y-3">
+            <div className="flex gap-1 border-b border-border pb-1">
+              <button
+                type="button"
+                onClick={() => setCsvMode("upload")}
+                className={`px-3 py-2 text-sm rounded-t-md transition-colors flex items-center gap-2 ${
+                  csvMode === "upload" ? "bg-muted font-medium" : "text-muted-foreground hover:bg-muted/40"
+                }`}
+              >
+                <Upload className="h-4 w-4" /> Upload arquivo
+              </button>
+              <button
+                type="button"
+                onClick={() => setCsvMode("paste")}
+                className={`px-3 py-2 text-sm rounded-t-md transition-colors flex items-center gap-2 ${
+                  csvMode === "paste" ? "bg-muted font-medium" : "text-muted-foreground hover:bg-muted/40"
+                }`}
+              >
+                <ClipboardPaste className="h-4 w-4" /> Colar CSV
+              </button>
+            </div>
+
+            {csvMode === "upload" ? (
+              <label className="block">
+                <div className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:bg-muted/30 transition-colors">
+                  <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                  <p className="text-sm font-medium">Clique para fazer upload</p>
+                  <p className="text-xs text-muted-foreground mt-1">CSV ou XLSX, até 50k linhas</p>
+                </div>
+                <input
+                  type="file"
+                  accept=".csv,.xlsx,.xls"
+                  className="hidden"
+                  onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
+                />
+              </label>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground">
+                  Cole CSV separado por vírgula, ponto-e-vírgula ou tab. <strong>Primeira linha</strong> deve ser o cabeçalho.
+                </p>
+                <textarea
+                  className="w-full min-h-[180px] rounded-md border border-input bg-transparent px-3 py-2 text-sm font-mono"
+                  placeholder={"telefone,nome\n5511960725070,Lucas\n5511981812630,Marina"}
+                  value={pasteText}
+                  onChange={(e) => setPasteText(e.target.value)}
+                />
+                <Button onClick={handlePaste} disabled={parsing} className="w-full">
+                  {parsing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Processar CSV colado
+                </Button>
               </div>
-              <input
-                type="file"
-                accept=".csv,.xlsx,.xls"
-                className="hidden"
-                onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
-              />
-            </label>
-            {parsing && (
+            )}
+
+            {parsing && csvMode === "upload" && (
               <p className="text-xs text-muted-foreground mt-2 flex items-center gap-2">
                 <Loader2 className="h-3 w-3 animate-spin" /> Processando arquivo...
               </p>
@@ -406,16 +503,34 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
                 onChange={(e) => setPacing(Number(e.target.value))}
               />
               <p className="text-[10px] text-muted-foreground mt-1">
-                Recomendado começar com 3-5. Aumente só depois de verificar quality rating.
+                Recomendado começar com 3-5.
+              </p>
+            </div>
+
+            <div>
+              <label className="text-xs font-medium flex items-center gap-1">
+                <Calendar className="h-3 w-3" /> Agendar para (opcional)
+              </label>
+              <Input
+                type="datetime-local"
+                value={scheduledAt}
+                onChange={(e) => setScheduledAt(e.target.value)}
+                min={new Date(Date.now() + 60000).toISOString().slice(0, 16)}
+              />
+              <p className="text-[10px] text-muted-foreground mt-1">
+                Deixe vazio pra disparar agora (manual). Preencha pra disparo automático no horário marcado.
               </p>
             </div>
 
             <div className="bg-muted/40 rounded p-3 space-y-1 text-sm">
-              <div className="flex justify-between"><span>Conta</span><span className="font-medium">{conta?.display_name}</span></div>
+              <div className="flex justify-between"><span>Número</span><span className="font-medium">{conta?.display_name}</span></div>
               <div className="flex justify-between"><span>Template</span><span className="font-mono text-xs">{template?.name}</span></div>
               <div className="flex justify-between"><span>Contatos</span><span className="font-medium">{rows.length}</span></div>
               <div className="flex justify-between"><span>Custo estimado</span><span className="font-medium">R$ {(rows.length * 0.4).toFixed(2)}</span></div>
               <div className="flex justify-between"><span>Tempo estimado</span><span className="font-medium">{Math.ceil(rows.length / pacing / 60)} min</span></div>
+              {scheduledAt && (
+                <div className="flex justify-between"><span>Início</span><span className="font-medium">{new Date(scheduledAt).toLocaleString("pt-BR")}</span></div>
+              )}
             </div>
 
             <NavRow

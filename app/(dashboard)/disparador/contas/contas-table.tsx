@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Search, ToggleLeft, ToggleRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 
 interface Conta {
   id: string;
@@ -14,18 +13,8 @@ interface Conta {
   display_name: string;
   waba_name: string | null;
   phone_number_display: string | null;
-  tier: string;
-  quality_rating: string;
-  origem: "OWNED" | "CLIENT";
   ativo: boolean;
 }
-
-const QUALITY: Record<string, { label: string; variant: "default" | "destructive" | "outline" | "secondary" }> = {
-  GREEN: { label: "GREEN", variant: "default" },
-  YELLOW: { label: "YELLOW", variant: "outline" },
-  RED: { label: "RED", variant: "destructive" },
-  UNKNOWN: { label: "—", variant: "secondary" },
-};
 
 export function ContasTable({ contas }: { contas: Conta[] }) {
   const router = useRouter();
@@ -97,41 +86,32 @@ export function ContasTable({ contas }: { contas: Conta[] }) {
               <th className="px-4 py-2 w-10"></th>
               <th className="px-4 py-2">Nome</th>
               <th className="px-4 py-2">Número</th>
-              <th className="px-4 py-2">Quality</th>
-              <th className="px-4 py-2">Tier</th>
-              <th className="px-4 py-2">Origem</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {filtered.map((c) => {
-              const q = QUALITY[c.quality_rating] ?? QUALITY.UNKNOWN;
-              return (
-                <tr key={c.id} className={`hover:bg-muted/30 ${!c.ativo ? "opacity-50" : ""}`}>
-                  <td className="px-4 py-2">
-                    <button
-                      type="button"
-                      onClick={() => toggle(c)}
-                      className="text-muted-foreground hover:text-foreground"
-                      title={c.ativo ? "Ocultar" : "Ativar"}
-                    >
-                      {c.ativo ? <ToggleRight className="h-5 w-5 text-primary" /> : <ToggleLeft className="h-5 w-5" />}
-                    </button>
-                  </td>
-                  <td className="px-4 py-2">
-                    <div className="font-medium">{c.display_name}</div>
-                    {c.waba_name && c.waba_name !== c.display_name && (
-                      <div className="text-xs text-muted-foreground">{c.waba_name}</div>
-                    )}
-                  </td>
-                  <td className="px-4 py-2 font-mono text-xs">{c.phone_number_display ?? "—"}</td>
-                  <td className="px-4 py-2"><Badge variant={q.variant}>{q.label}</Badge></td>
-                  <td className="px-4 py-2 text-xs"><Badge variant="outline">{c.tier}</Badge></td>
-                  <td className="px-4 py-2 text-xs text-muted-foreground">{c.origem}</td>
-                </tr>
-              );
-            })}
+            {filtered.map((c) => (
+              <tr key={c.id} className={`hover:bg-muted/30 ${!c.ativo ? "opacity-50" : ""}`}>
+                <td className="px-4 py-2">
+                  <button
+                    type="button"
+                    onClick={() => toggle(c)}
+                    className="text-muted-foreground hover:text-foreground"
+                    title={c.ativo ? "Ocultar" : "Ativar"}
+                  >
+                    {c.ativo ? <ToggleRight className="h-5 w-5 text-primary" /> : <ToggleLeft className="h-5 w-5" />}
+                  </button>
+                </td>
+                <td className="px-4 py-2">
+                  <div className="font-medium">{c.display_name}</div>
+                  {c.waba_name && c.waba_name !== c.display_name && (
+                    <div className="text-xs text-muted-foreground">{c.waba_name}</div>
+                  )}
+                </td>
+                <td className="px-4 py-2 font-mono text-xs">{c.phone_number_display ?? "—"}</td>
+              </tr>
+            ))}
             {filtered.length === 0 && (
-              <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">Nenhuma conta encontrada.</td></tr>
+              <tr><td colSpan={3} className="px-4 py-8 text-center text-muted-foreground">Nenhuma conta encontrada.</td></tr>
             )}
           </tbody>
         </table>

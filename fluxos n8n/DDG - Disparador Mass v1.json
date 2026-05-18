@@ -20,9 +20,9 @@
         "values": {
           "string": [
             { "name": "campanha_id", "value": "={{ $json.body.campanha_id }}" },
-            { "name": "next_url", "value": "={{ $env.PAINEL_URL || 'https://trafegoddg.vercel.app' }}/api/dispatcher/pending" },
-            { "name": "send_url", "value": "={{ $env.PAINEL_URL || 'https://trafegoddg.vercel.app' }}/api/dispatcher/send" },
-            { "name": "dispatcher_secret", "value": "={{ $env.N8N_DISPATCHER_WEBHOOK_SECRET }}" }
+            { "name": "next_url", "value": "https://painel.dosedegrowth.com/api/dispatcher/pending" },
+            { "name": "send_url", "value": "https://painel.dosedegrowth.com/api/dispatcher/send" },
+            { "name": "dispatcher_secret", "value": "468ff4595978b1312a502b9b12b9a03c87628dd2212792e8428553cfca128fcd" }
           ]
         },
         "options": {}
