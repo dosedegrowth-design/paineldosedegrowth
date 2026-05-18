@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient as createSbClient } from "@supabase/supabase-js";
 import { WhatsappClient } from "@/lib/whatsapp/client";
-import { readVaultSecret } from "@/lib/whatsapp/vault";
 
 /**
  * POST /api/dispatcher/send
@@ -61,17 +60,33 @@ export async function POST(req: Request) {
     };
   };
 
-  // Pega conta + token
+  // Pega conta + token via business (schema novo: token fica em businesses, nao em contas)
   const { data: contaRow } = await supabase
     .schema("disparador" as never)
     .from("contas")
-    .select("waba_id, phone_number_id, token_vault_key")
+    .select("waba_id, phone_number_id, business:businesses(token_vault_key)")
     .eq("id", e.campanha.conta_id)
     .single();
   if (!contaRow) return NextResponse.json({ error: "conta nao encontrada" }, { status: 500 });
-  const conta = contaRow as { waba_id: string; phone_number_id: string; token_vault_key: string };
+  const conta = contaRow as unknown as {
+    waba_id: string;
+    phone_number_id: string;
+    business: { token_vault_key: string } | { token_vault_key: string }[] | null;
+  };
+  const businessObj = Array.isArray(conta.business) ? conta.business[0] : conta.business;
+  if (!businessObj?.token_vault_key) {
+    return NextResponse.json({ error: "conta sem business/token" }, { status: 500 });
+  }
 
-  const token = await readVaultSecret(conta.token_vault_key);
+  // Le token via RPC (Vault nao e acessivel via REST)
+  const { data: tokenResp, error: tokenErr } = await supabase
+    .schema("disparador" as never)
+    .rpc("get_token", { secret_name: businessObj.token_vault_key });
+  if (tokenErr || !tokenResp) {
+    return NextResponse.json({ error: `get_token: ${tokenErr?.message ?? "vazio"}` }, { status: 500 });
+  }
+  const token = tokenResp as unknown as string;
+
   const client = new WhatsappClient({
     accessToken: token,
     wabaId: conta.waba_id,
