@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, ArrowLeft, ArrowRight, Upload, Check } from "lucide-react";
+import { Loader2, ArrowLeft, ArrowRight, Upload, Check, Plus } from "lucide-react";
 
 interface Conta {
   id: string;
@@ -232,14 +232,28 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
         <Card>
           <CardHeader>
             <CardTitle>2. Escolha o template</CardTitle>
-            <CardDescription>Só templates APPROVED podem disparar.</CardDescription>
+            <CardDescription>
+              Templates vinculados ao número <span className="font-medium">{conta?.display_name}</span>. Só APPROVED podem disparar.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {templates.filter((t) => t.status === "APPROVED").length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                Nenhum template aprovado pra essa conta.{" "}
-                <a href="/disparador/templates/novo" className="underline">Criar um</a>.
-              </p>
+              <div className="flex flex-col items-center justify-center py-8 text-center space-y-3 border-2 border-dashed border-border rounded-lg">
+                <div className="text-sm">
+                  Nenhum template aprovado pra <span className="font-medium">{conta?.display_name}</span>.
+                </div>
+                {templates.some((t) => t.status === "PENDING") && (
+                  <div className="text-xs text-muted-foreground">
+                    {templates.filter((t) => t.status === "PENDING").length} template(s) aguardando aprovação Meta…
+                  </div>
+                )}
+                <Button asChild>
+                  <a href={`/disparador/templates/novo?conta_id=${contaId}&return_to=/disparador/campanhas/nova`}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Criar primeiro template pra essa conta
+                  </a>
+                </Button>
+              </div>
             ) : (
               templates
                 .filter((t) => t.status === "APPROVED")

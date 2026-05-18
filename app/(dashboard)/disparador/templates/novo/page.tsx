@@ -2,7 +2,12 @@ import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { NovoTemplateForm } from "./novo-template-form";
 
-export default async function NovoTemplatePage() {
+export default async function NovoTemplatePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ conta_id?: string; return_to?: string }>;
+}) {
+  const params = await searchParams;
   const supabase = await createClient();
   const { data: contas } = await supabase
     .schema("disparador" as never)
@@ -21,6 +26,8 @@ export default async function NovoTemplatePage() {
         contas={
           (contas as Array<{ id: string; display_name: string; phone_number_display: string | null }> | null) ?? []
         }
+        initialContaId={params.conta_id}
+        returnTo={params.return_to}
       />
     </div>
   );

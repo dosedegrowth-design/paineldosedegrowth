@@ -11,13 +11,15 @@ import { Loader2 } from "lucide-react";
 
 interface Props {
   contas: { id: string; display_name: string; phone_number_display: string | null }[];
+  initialContaId?: string;
+  returnTo?: string;
 }
 
-export function NovoTemplateForm({ contas }: Props) {
+export function NovoTemplateForm({ contas, initialContaId, returnTo }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
-    conta_id: contas[0]?.id ?? "",
+    conta_id: initialContaId ?? contas[0]?.id ?? "",
     name: "",
     language: "pt_BR",
     category: "MARKETING" as "MARKETING" | "UTILITY" | "AUTHENTICATION",
@@ -66,7 +68,7 @@ export function NovoTemplateForm({ contas }: Props) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Falha ao criar");
       toast.success(`Template "${form.name}" enviado pra Meta. Aguarde aprovação.`);
-      router.push("/disparador/templates");
+      router.push(returnTo ?? "/disparador/templates");
     } catch (err) {
       toast.error((err as Error).message);
     } finally {
