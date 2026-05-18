@@ -27,6 +27,9 @@ export async function middleware(request: NextRequest) {
     "/api/data-deletion",
     // Sync endpoints (autenticados via Bearer token internamente)
     "/api/sync",
+    // Disparador endpoints chamados pelo n8n (auth via X-Dispatcher-Secret header)
+    "/api/dispatcher/send",
+    "/api/dispatcher/pending",
   ];
   if (publicPaths.some((p) => request.nextUrl.pathname.startsWith(p))) {
     return NextResponse.next();
