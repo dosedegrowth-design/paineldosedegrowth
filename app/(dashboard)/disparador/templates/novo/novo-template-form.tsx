@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Loader2 } from "lucide-react";
 
 interface Props {
-  contas: { id: string; display_name: string }[];
+  contas: { id: string; display_name: string; phone_number_display: string | null }[];
 }
 
 export function NovoTemplateForm({ contas }: Props) {
@@ -90,7 +90,9 @@ export function NovoTemplateForm({ contas }: Props) {
               </SelectTrigger>
               <SelectContent>
                 {contas.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>{c.display_name}</SelectItem>
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.display_name} {c.phone_number_display ? `· ${c.phone_number_display}` : ""}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>

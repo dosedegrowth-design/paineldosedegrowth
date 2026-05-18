@@ -2,57 +2,83 @@
 -- DDG Disparador · Migration inicial
 -- 2026-05-18
 -- Schema: disparador
+-- Modelo: auto-sync de WABAs via System User token (1 token por BM)
 -- ============================================================
 
 create schema if not exists disparador;
 grant usage on schema disparador to anon, authenticated, service_role;
 
 -- ============================================================
--- CONTAS WABA (WhatsApp Business Accounts)
+-- BUSINESS MANAGERS (1 token por BM, compartilhado entre WABAs)
 -- ============================================================
 
-create table disparador.contas (
+create table disparador.businesses (
   id uuid primary key default gen_random_uuid(),
-  display_name text not null,                -- "SuperVisao Matriz", "LNB Maia"
-  waba_id text not null unique,              -- WhatsApp Business Account ID (Meta)
-  phone_number_id text not null unique,      -- Phone Number ID (Meta)
-  phone_number_display text,                 -- "+55 11 99999-9999" pra UI
-  token_vault_key text not null,             -- chave no Supabase Vault que guarda o access token
-  tier text check (tier in ('TIER_50','TIER_250','TIER_1K','TIER_10K','TIER_100K','TIER_UNLIMITED')) default 'TIER_1K',
-  quality_rating text check (quality_rating in ('GREEN','YELLOW','RED','UNKNOWN')) default 'UNKNOWN',
-  messaging_limit_per_day integer,           -- cache do limite Meta
+  meta_business_id text not null unique,
+  display_name text not null,
+  token_vault_key text not null,
+  system_user_id text,
+  meta_app_id text,
   ativo boolean default true,
-  observacoes text,
   ultima_sync_meta timestamptz,
   criado_em timestamptz default now(),
   atualizado_em timestamptz default now()
 );
 
-create index idx_contas_ativo on disparador.contas(ativo) where ativo = true;
+create index idx_businesses_ativo on disparador.businesses(ativo) where ativo = true;
 
 -- ============================================================
--- TEMPLATES (sync da Meta)
+-- CONTAS = WABA + Phone Number (auto-sync da Meta)
+-- ativo=false por default: usuario marca manualmente quais quer usar
+-- ============================================================
+
+create table disparador.contas (
+  id uuid primary key default gen_random_uuid(),
+  business_id uuid not null references disparador.businesses(id) on delete cascade,
+  waba_id text not null,
+  phone_number_id text not null,
+  display_name text not null,
+  waba_name text,
+  phone_number_display text,
+  tier text check (tier in ('TIER_50','TIER_250','TIER_1K','TIER_10K','TIER_100K','TIER_UNLIMITED')) default 'TIER_1K',
+  quality_rating text check (quality_rating in ('GREEN','YELLOW','RED','UNKNOWN')) default 'UNKNOWN',
+  messaging_limit_per_day integer,
+  origem text check (origem in ('OWNED','CLIENT')) default 'CLIENT',
+  ativo boolean default false,
+  observacoes text,
+  ultima_sync_meta timestamptz,
+  criado_em timestamptz default now(),
+  atualizado_em timestamptz default now(),
+  unique (waba_id, phone_number_id)
+);
+
+create index idx_contas_business on disparador.contas(business_id, ativo);
+create index idx_contas_phone on disparador.contas(phone_number_id);
+
+-- ============================================================
+-- TEMPLATES (sync da Meta — chave por waba_id)
 -- ============================================================
 
 create table disparador.templates (
   id uuid primary key default gen_random_uuid(),
-  conta_id uuid not null references disparador.contas(id) on delete cascade,
-  meta_id text,                              -- ID do template na Meta (vem depois da aprovacao)
-  name text not null,                        -- nome unico do template na WABA
+  waba_id text not null,
+  business_id uuid references disparador.businesses(id) on delete cascade,
+  meta_id text,
+  name text not null,
   language text not null default 'pt_BR',
   category text check (category in ('MARKETING','UTILITY','AUTHENTICATION')) not null,
   status text check (status in ('PENDING','APPROVED','REJECTED','DISABLED','PAUSED')) not null default 'PENDING',
-  components jsonb not null,                 -- header/body/footer/buttons da Meta
-  variables_count integer default 0,         -- quantas {{N}} no body — pra UI mapear colunas
+  components jsonb not null,
+  variables_count integer default 0,
   rejection_reason text,
-  quality_score text,                        -- HIGH/MEDIUM/LOW vindo da Meta
+  quality_score text,
   ultima_sync_meta timestamptz,
   criado_em timestamptz default now(),
   atualizado_em timestamptz default now(),
-  unique (conta_id, name, language)
+  unique (waba_id, name, language)
 );
 
-create index idx_templates_conta on disparador.templates(conta_id, status);
+create index idx_templates_waba on disparador.templates(waba_id, status);
 create index idx_templates_status on disparador.templates(status);
 
 -- ============================================================
@@ -62,13 +88,13 @@ create index idx_templates_status on disparador.templates(status);
 create table disparador.uploads (
   id uuid primary key default gen_random_uuid(),
   conta_id uuid not null references disparador.contas(id) on delete cascade,
-  storage_path text not null,                -- path no bucket disparador-uploads
+  storage_path text not null,
   filename_original text not null,
   total_linhas integer not null default 0,
   total_validos integer not null default 0,
   total_invalidos integer not null default 0,
-  column_mapping jsonb,                      -- { telefone: "phone", "1": "nome", "2": "valor" }
-  validacao_errors jsonb,                    -- [{ linha: 5, erro: "telefone invalido" }]
+  column_mapping jsonb,
+  validacao_errors jsonb,
   criado_por uuid references auth.users(id),
   criado_em timestamptz default now()
 );
@@ -92,11 +118,11 @@ create table disparador.campanhas (
   total_entregues integer not null default 0,
   total_lidos integer not null default 0,
   total_falhados integer not null default 0,
-  custo_estimado_brl numeric(10,2),          -- total_contatos * preco_por_msg
+  custo_estimado_brl numeric(10,2),
   scheduled_at timestamptz,
   started_at timestamptz,
   finished_at timestamptz,
-  paused_reason text,                        -- "circuit-breaker", "manual", "tier-exceeded"
+  paused_reason text,
   criado_por uuid references auth.users(id),
   criado_em timestamptz default now(),
   atualizado_em timestamptz default now()
@@ -112,10 +138,10 @@ create index idx_campanhas_conta on disparador.campanhas(conta_id, criado_em des
 create table disparador.envios (
   id uuid primary key default gen_random_uuid(),
   campanha_id uuid not null references disparador.campanhas(id) on delete cascade,
-  telefone text not null,                    -- formato E.164: 5511999999999 (sem +)
-  telefone_raw text,                         -- como veio no CSV
-  variables jsonb,                           -- { "1": "Joao", "2": "R$ 500" }
-  message_id text,                           -- wamid retornado pela Meta
+  telefone text not null,
+  telefone_raw text,
+  variables jsonb,
+  message_id text,
   status text check (status in ('pending','sending','sent','delivered','read','failed')) not null default 'pending',
   error_code text,
   error_message text,
@@ -132,7 +158,7 @@ create index idx_envios_message_id on disparador.envios(message_id) where messag
 create index idx_envios_telefone on disparador.envios(telefone);
 
 -- ============================================================
--- TRIGGER: atualiza atualizado_em
+-- TRIGGERS
 -- ============================================================
 
 create or replace function disparador.set_atualizado_em()
@@ -142,16 +168,14 @@ begin
   return new;
 end $$;
 
+create trigger trg_businesses_upd before update on disparador.businesses
+  for each row execute function disparador.set_atualizado_em();
 create trigger trg_contas_upd before update on disparador.contas
   for each row execute function disparador.set_atualizado_em();
 create trigger trg_templates_upd before update on disparador.templates
   for each row execute function disparador.set_atualizado_em();
 create trigger trg_campanhas_upd before update on disparador.campanhas
   for each row execute function disparador.set_atualizado_em();
-
--- ============================================================
--- TRIGGER: atualiza contadores da campanha
--- ============================================================
 
 create or replace function disparador.update_campanha_counters()
 returns trigger language plpgsql as $$
@@ -171,33 +195,46 @@ create trigger trg_envios_counters
   for each row execute function disparador.update_campanha_counters();
 
 -- ============================================================
+-- RPC: leitura de token do Vault (security definer)
+-- ============================================================
+
+create or replace function disparador.get_token(secret_name text)
+returns text
+language plpgsql
+security definer
+set search_path = vault, pg_temp
+as $$
+declare
+  s text;
+begin
+  select decrypted_secret into s
+  from vault.decrypted_secrets
+  where name = secret_name
+  limit 1;
+  return s;
+end $$;
+
+revoke all on function disparador.get_token(text) from public, anon, authenticated;
+grant execute on function disparador.get_token(text) to service_role;
+
+-- ============================================================
 -- RLS
 -- ============================================================
 
+alter table disparador.businesses enable row level security;
 alter table disparador.contas enable row level security;
 alter table disparador.templates enable row level security;
 alter table disparador.campanhas enable row level security;
 alter table disparador.envios enable row level security;
 alter table disparador.uploads enable row level security;
 
--- Por enquanto: authenticated users tem acesso total.
--- TODO: refinar por cliente quando estrutura multi-tenant estiver definida.
-create policy "auth read contas" on disparador.contas for select to authenticated using (true);
-create policy "auth write contas" on disparador.contas for all to authenticated using (true) with check (true);
+create policy "auth_all_businesses" on disparador.businesses for all to authenticated using (true) with check (true);
+create policy "auth_all_contas" on disparador.contas for all to authenticated using (true) with check (true);
+create policy "auth_all_templates" on disparador.templates for all to authenticated using (true) with check (true);
+create policy "auth_all_campanhas" on disparador.campanhas for all to authenticated using (true) with check (true);
+create policy "auth_all_envios" on disparador.envios for all to authenticated using (true) with check (true);
+create policy "auth_all_uploads" on disparador.uploads for all to authenticated using (true) with check (true);
 
-create policy "auth read templates" on disparador.templates for select to authenticated using (true);
-create policy "auth write templates" on disparador.templates for all to authenticated using (true) with check (true);
-
-create policy "auth read campanhas" on disparador.campanhas for select to authenticated using (true);
-create policy "auth write campanhas" on disparador.campanhas for all to authenticated using (true) with check (true);
-
-create policy "auth read envios" on disparador.envios for select to authenticated using (true);
-create policy "auth write envios" on disparador.envios for all to authenticated using (true) with check (true);
-
-create policy "auth read uploads" on disparador.uploads for select to authenticated using (true);
-create policy "auth write uploads" on disparador.uploads for all to authenticated using (true) with check (true);
-
--- service_role bypass total (n8n + edge functions usam isso)
 grant all on all tables in schema disparador to service_role;
 grant all on all sequences in schema disparador to service_role;
 
@@ -205,15 +242,13 @@ grant all on all sequences in schema disparador to service_role;
 -- STORAGE BUCKET
 -- ============================================================
 
--- Bucket privado pra uploads de CSV/XLSX
 insert into storage.buckets (id, name, public)
 values ('disparador-uploads', 'disparador-uploads', false)
 on conflict (id) do nothing;
 
-create policy "auth upload disparador" on storage.objects
-  for insert to authenticated
-  with check (bucket_id = 'disparador-uploads');
-
-create policy "auth read disparador" on storage.objects
-  for select to authenticated
-  using (bucket_id = 'disparador-uploads');
+-- ============================================================
+-- POSTGREST: expor schema disparador via API
+-- (executar manualmente se nao foi feito; necessita SUPERUSER)
+-- ============================================================
+-- alter role authenticator set pgrst.db_schemas = 'public,...,disparador';
+-- notify pgrst, 'reload config';

@@ -9,7 +9,8 @@ import { TemplatesFilters } from "./templates-filters";
 
 interface Template {
   id: string;
-  conta_id: string;
+  business_id: string | null;
+  waba_id: string;
   name: string;
   language: string;
   category: string;
@@ -17,7 +18,11 @@ interface Template {
   variables_count: number;
   rejection_reason: string | null;
   ultima_sync_meta: string | null;
-  conta: { display_name: string } | null;
+}
+
+interface Conta {
+  waba_id: string;
+  display_name: string;
 }
 
 const STATUS_VARIANT: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
@@ -31,37 +36,47 @@ const STATUS_VARIANT: Record<string, "default" | "secondary" | "destructive" | "
 export default async function TemplatesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ conta_id?: string }>;
+  searchParams: Promise<{ waba_id?: string }>;
 }) {
   const params = await searchParams;
   const supabase = await createClient();
 
-  const { data: contas } = await supabase
+  const { data: contasAtivas } = await supabase
     .schema("disparador" as never)
     .from("contas")
-    .select("id, display_name")
+    .select("waba_id, display_name")
     .eq("ativo", true)
     .order("display_name");
+
+  // Deduplica WABAs (varios numeros podem compartilhar a mesma WABA)
+  const wabasMap = new Map<string, string>();
+  for (const c of (contasAtivas as Conta[] | null) ?? []) {
+    if (!wabasMap.has(c.waba_id)) wabasMap.set(c.waba_id, c.display_name);
+  }
+  const wabaList = Array.from(wabasMap.entries()).map(([waba_id, display_name]) => ({ waba_id, display_name }));
 
   let query = supabase
     .schema("disparador" as never)
     .from("templates")
-    .select("*, conta:contas(display_name)")
+    .select("*")
     .order("name");
-  if (params.conta_id) query = query.eq("conta_id", params.conta_id);
+  if (params.waba_id) {
+    query = query.eq("waba_id", params.waba_id);
+  } else if (wabaList.length > 0) {
+    query = query.in("waba_id", wabaList.map((w) => w.waba_id));
+  }
 
   const { data: templates } = await query;
   const list = (templates as Template[] | null) ?? [];
-  const contasList = (contas as { id: string; display_name: string }[] | null) ?? [];
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Templates"
-        description="Templates Meta sincronizados. Aprovação leva de minutos a 24h. Só APPROVED pode ser usado em campanhas."
+        description="Templates Meta sincronizados das WABAs ativas. Aprovação leva minutos até 24h."
         actions={
           <div className="flex gap-2">
-            <TemplatesFilters contas={contasList} />
+            <TemplatesFilters wabas={wabaList} />
             <Button asChild>
               <Link href="/disparador/templates/novo">
                 <Plus className="mr-2 h-4 w-4" />
@@ -94,7 +109,7 @@ export default async function TemplatesPage({
                   <div className="min-w-0">
                     <div className="font-medium font-mono text-sm">{t.name}</div>
                     <div className="text-xs text-muted-foreground">
-                      {t.conta?.display_name} · {t.language} · {t.category} · {t.variables_count} variável(eis)
+                      WABA {t.waba_id} · {t.language} · {t.category} · {t.variables_count} variável(eis)
                     </div>
                     {t.rejection_reason && (
                       <div className="text-xs text-destructive mt-1">Rejeitado: {t.rejection_reason}</div>

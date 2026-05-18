@@ -14,6 +14,7 @@ import { Loader2, ArrowLeft, ArrowRight, Upload, Check } from "lucide-react";
 
 interface Conta {
   id: string;
+  waba_id: string;
   display_name: string;
   phone_number_display: string | null;
   tier: string;
@@ -57,14 +58,16 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
   const [phoneColumn, setPhoneColumn] = useState<string>("");
   const [varMap, setVarMap] = useState<Record<string, string>>({});
 
-  // Carrega templates da conta
+  // Carrega templates da WABA da conta selecionada
   useEffect(() => {
     if (!contaId) return;
-    fetch(`/api/dispatcher/templates?conta_id=${contaId}`)
+    const conta = contas.find((c) => c.id === contaId);
+    if (!conta?.waba_id) return;
+    fetch(`/api/dispatcher/templates?waba_id=${conta.waba_id}`)
       .then((r) => r.json())
       .then((d) => setTemplates((d.templates ?? []) as Template[]))
       .catch(() => toast.error("Falha ao carregar templates"));
-  }, [contaId]);
+  }, [contaId, contas]);
 
   const template = templates.find((t) => t.id === templateId);
   const conta = contas.find((c) => c.id === contaId);

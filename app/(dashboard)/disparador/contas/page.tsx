@@ -2,98 +2,104 @@ import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ContaForm } from "./conta-form";
-import { ConectarFacebookButton } from "./conectar-facebook-button";
+import { SyncWabasButton } from "./sync-wabas-button";
+import { ContasTable } from "./contas-table";
 
 interface Conta {
   id: string;
-  display_name: string;
+  business_id: string;
   waba_id: string;
   phone_number_id: string;
+  display_name: string;
+  waba_name: string | null;
   phone_number_display: string | null;
   tier: string;
   quality_rating: string;
+  origem: "OWNED" | "CLIENT";
   ativo: boolean;
   ultima_sync_meta: string | null;
+  business: { display_name: string; meta_business_id: string } | null;
 }
-
-const QUALITY_COLOR: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-  GREEN: "default",
-  YELLOW: "outline",
-  RED: "destructive",
-  UNKNOWN: "secondary",
-};
 
 export default async function ContasPage() {
   const supabase = await createClient();
-  const { data: contas } = await supabase
-    .schema("disparador" as never)
-    .from("contas")
-    .select("*")
-    .order("display_name");
+
+  const [{ data: contas }, { data: businesses }] = await Promise.all([
+    supabase
+      .schema("disparador" as never)
+      .from("contas")
+      .select("*, business:businesses(display_name, meta_business_id)")
+      .order("ativo", { ascending: false })
+      .order("waba_name"),
+    supabase
+      .schema("disparador" as never)
+      .from("businesses")
+      .select("id, display_name, meta_business_id, ultima_sync_meta")
+      .eq("ativo", true),
+  ]);
 
   const list = (contas as Conta[] | null) ?? [];
+  const bms = (businesses as Array<{ id: string; display_name: string; meta_business_id: string; ultima_sync_meta: string | null }> | null) ?? [];
+
+  const ativas = list.filter((c) => c.ativo);
+  const inativas = list.filter((c) => !c.ativo);
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Contas WABA"
-        description="Conecte uma conta WhatsApp Business via Facebook OAuth. O token fica criptografado no Supabase Vault."
+        title="Contas WhatsApp"
+        description="Números WhatsApp Business sincronizados automaticamente do Meta Business Manager. Ative só os que vão ser usados pra disparo."
+        actions={<SyncWabasButton />}
       />
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_400px]">
+      <div className="grid gap-4 md:grid-cols-3">
         <Card>
-          <CardHeader>
-            <CardTitle>Cadastradas</CardTitle>
+          <CardHeader className="pb-2">
+            <CardDescription>Business Managers conectados</CardDescription>
+            <CardTitle className="text-2xl">{bms.length}</CardTitle>
           </CardHeader>
           <CardContent>
-            {list.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Nenhuma conta ainda. Conecte uma ao lado.</p>
-            ) : (
-              <div className="space-y-3">
-                {list.map((c) => (
-                  <div key={c.id} className="flex items-center justify-between p-3 border border-border rounded-lg">
-                    <div>
-                      <div className="font-medium">{c.display_name}</div>
-                      <div className="text-xs text-muted-foreground font-mono">
-                        {c.phone_number_display ?? c.phone_number_id} · WABA {c.waba_id}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline">{c.tier}</Badge>
-                      <Badge variant={QUALITY_COLOR[c.quality_rating] ?? "secondary"}>{c.quality_rating}</Badge>
-                      {!c.ativo && <Badge variant="destructive">inativa</Badge>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            <div className="text-xs text-muted-foreground space-y-1">
+              {bms.map((b) => (
+                <div key={b.id} className="flex items-center justify-between">
+                  <span className="font-medium">{b.display_name}</span>
+                  <span className="font-mono text-[10px] opacity-60">{b.meta_business_id}</span>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
-
-        <div className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Conectar conta</CardTitle>
-              <CardDescription>
-                Clique abaixo, faça login no Facebook, escolha a BM e o número. Os IDs ficam capturados automaticamente.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <ConectarFacebookButton />
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-border" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-card px-2 text-muted-foreground">ou cadastro manual</span>
-                </div>
-              </div>
-              <ContaForm />
-            </CardContent>
-          </Card>
-        </div>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Números ativos</CardDescription>
+            <CardTitle className="text-2xl text-primary">{ativas.length}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-muted-foreground">Aparecem no wizard de campanha</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Números disponíveis</CardDescription>
+            <CardTitle className="text-2xl">{list.length}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-muted-foreground">{inativas.length} ocultos</p>
+          </CardContent>
+        </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Números disponíveis</CardTitle>
+          <CardDescription>
+            Toggle pra ativar/ocultar. Apenas números ativos aparecem nos disparos.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-0">
+          <ContasTable contas={list} />
+        </CardContent>
+      </Card>
     </div>
   );
 }

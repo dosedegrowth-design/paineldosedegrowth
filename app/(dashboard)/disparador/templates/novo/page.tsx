@@ -7,7 +7,7 @@ export default async function NovoTemplatePage() {
   const { data: contas } = await supabase
     .schema("disparador" as never)
     .from("contas")
-    .select("id, display_name")
+    .select("id, display_name, phone_number_display")
     .eq("ativo", true)
     .order("display_name");
 
@@ -15,9 +15,13 @@ export default async function NovoTemplatePage() {
     <div className="space-y-6">
       <PageHeader
         title="Novo template"
-        description="O template será enviado pra Meta aprovar. Aprovação varia de minutos a 24h. Use variáveis {{1}}, {{2}}, {{3}}... no corpo."
+        description="Template enviado pra Meta aprovar. Aprovação varia minutos a 24h. Use {{1}}, {{2}} no corpo pra variáveis."
       />
-      <NovoTemplateForm contas={(contas as { id: string; display_name: string }[] | null) ?? []} />
+      <NovoTemplateForm
+        contas={
+          (contas as Array<{ id: string; display_name: string; phone_number_display: string | null }> | null) ?? []
+        }
+      />
     </div>
   );
 }
