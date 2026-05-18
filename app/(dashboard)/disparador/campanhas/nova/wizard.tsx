@@ -189,13 +189,13 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
       {step === 1 && (
         <Card>
           <CardHeader>
-            <CardTitle>1. Escolha a conta WABA</CardTitle>
+            <CardTitle>1. Escolha o número de WhatsApp</CardTitle>
             <CardDescription>Quem vai ser o remetente dessa campanha.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {contas.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                Nenhuma conta cadastrada. <a href="/disparador/contas" className="underline">Cadastre uma primeiro</a>.
+                Nenhum número ativo. <a href="/disparador/contas" className="underline">Ative um primeiro</a>.
               </p>
             ) : (
               contas.map((c) => (

@@ -18,7 +18,7 @@ export function SyncWabasButton() {
       if (!res.ok) throw new Error(data.error ?? "Falha ao sincronizar");
       const result = data.results?.[0];
       const msg = result
-        ? `${result.wabas} WABAs · ${result.inserted} novos · ${result.updated} atualizados`
+        ? `${result.wabas} contas · ${result.inserted} novos · ${result.updated} atualizados`
         : "Sincronizado";
       toast.success(msg);
       router.refresh();
@@ -32,7 +32,7 @@ export function SyncWabasButton() {
   return (
     <Button onClick={handleSync} disabled={loading} variant="default">
       {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
-      Sincronizar do app
+      Sincronizar números
     </Button>
   );
 }

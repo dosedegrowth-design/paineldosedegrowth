@@ -37,7 +37,7 @@ export function NovoTemplateForm({ contas, initialContaId, returnTo }: Props) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.conta_id) {
-      toast.error("Selecione uma conta WABA primeiro.");
+      toast.error("Selecione um número primeiro.");
       return;
     }
     setLoading(true);
@@ -85,7 +85,7 @@ export function NovoTemplateForm({ contas, initialContaId, returnTo }: Props) {
         </CardHeader>
         <CardContent className="space-y-3">
           <div>
-            <label className="text-xs font-medium">Conta WABA</label>
+            <label className="text-xs font-medium">Número WhatsApp</label>
             <Select value={form.conta_id} onValueChange={(v) => setForm({ ...form, conta_id: v })}>
               <SelectTrigger>
                 <SelectValue placeholder="Selecione" />

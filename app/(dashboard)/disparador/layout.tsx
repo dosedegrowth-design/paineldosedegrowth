@@ -5,7 +5,7 @@ const TABS = [
   { href: "/disparador", label: "Visão Geral", icon: LayoutGrid },
   { href: "/disparador/campanhas", label: "Campanhas", icon: Send },
   { href: "/disparador/templates", label: "Templates", icon: FileText },
-  { href: "/disparador/contas", label: "Contas WABA", icon: Users2 },
+  { href: "/disparador/contas", label: "Números WhatsApp", icon: Users2 },
 ];
 
 export default function DisparadorLayout({ children }: { children: React.ReactNode }) {

@@ -21,10 +21,10 @@ export function TemplatesFilters({ wabas }: Props) {
       }}
     >
       <SelectTrigger className="w-[260px]">
-        <SelectValue placeholder="Todas as contas" />
+        <SelectValue placeholder="Todos os números" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="all">Todas as WABAs</SelectItem>
+        <SelectItem value="all">Todos os números</SelectItem>
         {wabas.map((w) => (
           <SelectItem key={w.waba_id} value={w.waba_id}>
             {w.display_name}

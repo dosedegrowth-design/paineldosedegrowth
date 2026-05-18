@@ -47,7 +47,7 @@ export default async function ContasPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Contas WhatsApp"
+        title="Números WhatsApp"
         description="Números WhatsApp Business sincronizados automaticamente do Meta Business Manager. Ative só os que vão ser usados pra disparo."
         actions={<SyncWabasButton />}
       />
@@ -55,7 +55,7 @@ export default async function ContasPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription>Business Managers conectados</CardDescription>
+            <CardDescription>Contas Meta conectadas</CardDescription>
             <CardTitle className="text-2xl">{bms.length}</CardTitle>
           </CardHeader>
           <CardContent>

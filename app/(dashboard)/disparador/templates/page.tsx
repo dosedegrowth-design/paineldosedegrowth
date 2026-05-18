@@ -73,7 +73,7 @@ export default async function TemplatesPage({
     <div className="space-y-6">
       <PageHeader
         title="Templates"
-        description="Templates Meta sincronizados das WABAs ativas. Aprovação leva minutos até 24h."
+        description="Templates Meta sincronizados dos números ativos. Aprovação leva minutos até 24h."
         actions={
           <div className="flex gap-2">
             <TemplatesFilters wabas={wabaList} />
