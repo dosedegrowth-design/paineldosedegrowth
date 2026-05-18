@@ -1,0 +1,207 @@
+{
+  "name": "DDG - Disparador Mass v1",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "disparador-start",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-start",
+      "name": "Webhook Start",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 300],
+      "webhookId": "disparador-start"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            { "name": "campanha_id", "value": "={{ $json.body.campanha_id }}" },
+            { "name": "next_url", "value": "={{ $env.PAINEL_URL || 'https://trafegoddg.vercel.app' }}/api/dispatcher/pending" },
+            { "name": "send_url", "value": "={{ $env.PAINEL_URL || 'https://trafegoddg.vercel.app' }}/api/dispatcher/send" },
+            { "name": "dispatcher_secret", "value": "={{ $env.N8N_DISPATCHER_WEBHOOK_SECRET }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-context",
+      "name": "Set Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, message: \"campanha enfileirada\", campanha_id: $('Set Context').first().json.campanha_id }) }}",
+        "options": {}
+      },
+      "id": "respond-ack",
+      "name": "Respond Ack",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [600, 200]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Set Context').first().json.next_url }}?campanha_id={{ $('Set Context').first().json.campanha_id }}&limit=50",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-Dispatcher-Secret", "value": "={{ $('Set Context').first().json.dispatcher_secret }}" }
+          ]
+        },
+        "options": {
+          "response": { "response": { "fullResponse": false } },
+          "timeout": 15000
+        }
+      },
+      "id": "get-pending",
+      "name": "Get Pending Envios",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [600, 400],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            { "value1": "={{ $json.stop }}", "value2": true }
+          ]
+        }
+      },
+      "id": "if-stop",
+      "name": "If Stop",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [800, 400]
+    },
+    {
+      "parameters": {},
+      "id": "end-flow",
+      "name": "End Flow",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1000, 300]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "envios",
+        "options": {
+          "include": "allOtherFields"
+        }
+      },
+      "id": "split-envios",
+      "name": "Split Envios",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [1000, 500]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "split-in-batches",
+      "name": "Split In Batches (1)",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [1200, 500]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Set Context').first().json.send_url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-Dispatcher-Secret", "value": "={{ $('Set Context').first().json.dispatcher_secret }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"envio_id\": \"{{ $json.id }}\" }",
+        "options": {
+          "response": { "response": { "fullResponse": false } },
+          "timeout": 30000
+        }
+      },
+      "id": "send-msg",
+      "name": "Send Message",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1400, 600],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "amount": "={{ $('Get Pending Envios').first().json.delay_ms_per_msg || 333 }}",
+        "unit": "milliseconds"
+      },
+      "id": "wait-pacing",
+      "name": "Wait (pacing)",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1600, 600],
+      "webhookId": "wait-pacing"
+    }
+  ],
+  "connections": {
+    "Webhook Start": {
+      "main": [[{ "node": "Set Context", "type": "main", "index": 0 }]]
+    },
+    "Set Context": {
+      "main": [[
+        { "node": "Respond Ack", "type": "main", "index": 0 },
+        { "node": "Get Pending Envios", "type": "main", "index": 0 }
+      ]]
+    },
+    "Get Pending Envios": {
+      "main": [[{ "node": "If Stop", "type": "main", "index": 0 }]]
+    },
+    "If Stop": {
+      "main": [
+        [{ "node": "End Flow", "type": "main", "index": 0 }],
+        [{ "node": "Split Envios", "type": "main", "index": 0 }]
+      ]
+    },
+    "Split Envios": {
+      "main": [[{ "node": "Split In Batches (1)", "type": "main", "index": 0 }]]
+    },
+    "Split In Batches (1)": {
+      "main": [
+        [{ "node": "Get Pending Envios", "type": "main", "index": 0 }],
+        [{ "node": "Send Message", "type": "main", "index": 0 }]
+      ]
+    },
+    "Send Message": {
+      "main": [[{ "node": "Wait (pacing)", "type": "main", "index": 0 }]]
+    },
+    "Wait (pacing)": {
+      "main": [[{ "node": "Split In Batches (1)", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveExecutionProgress": true,
+    "saveDataSuccessExecution": "all",
+    "saveDataErrorExecution": "all",
+    "saveManualExecutions": true,
+    "executionTimeout": 7200
+  },
+  "active": false,
+  "tags": [
+    { "name": "DDG" },
+    { "name": "Disparador" }
+  ],
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "description": "Disparador WhatsApp Cloud API em massa. Recebe POST /webhook/disparador-start com {campanha_id}. Webhook responde ACK imediato e continua processando: loop pega 50 envios pending por vez via /api/dispatcher/pending, dispara cada um via /api/dispatcher/send com Wait entre eles (pacing controlado pelo banco). Circuit-breaker no painel: se >10% de erro em 50 enviados, pausa campanha automaticamente. Quando endpoint pending retorna stop:true (paused/done/cancelled), o fluxo termina."
+  }
+}

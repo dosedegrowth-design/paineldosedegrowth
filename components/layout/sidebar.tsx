@@ -18,6 +18,7 @@ import {
   MessageSquare,
   ShoppingBag,
   Building2,
+  Send,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,7 @@ const NAV: NavItem[] = [
   // === Funcional / com dados reais ===
   { href: "/dashboard", label: "Visão Geral", icon: LayoutDashboard, section: "main" },
   { href: "/campanhas", label: "Campanhas", icon: Megaphone, section: "main" },
+  { href: "/disparador", label: "Disparador WhatsApp", icon: Send, section: "main" },
 
   // === Específico por tipo (parcial, salva em memória ainda) ===
   { href: "/vendas-manuais", label: "Vendas Manuais", icon: MessageSquare, tipos: ["lead_whatsapp", "hibrido"], section: "specific" },
