@@ -312,31 +312,40 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
                 </Button>
               </div>
             ) : (
-              templates
-                .filter((t) => t.status === "APPROVED")
-                .map((t) => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    onClick={() => setTemplateId(t.id)}
-                    className={`w-full text-left p-3 border rounded-lg transition-colors ${
-                      templateId === t.id ? "border-primary bg-primary/5" : "border-border hover:bg-muted/40"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="min-w-0 flex-1">
-                        <div className="font-mono text-sm font-medium">{t.name}</div>
-                        <div className="text-xs text-muted-foreground line-clamp-2 mt-1">
-                          {t.components.find((c) => c.type === "BODY")?.text}
+              <>
+                {templates
+                  .filter((t) => t.status === "APPROVED")
+                  .map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => setTemplateId(t.id)}
+                      className={`w-full text-left p-3 border rounded-lg transition-colors ${
+                        templateId === t.id ? "border-primary bg-primary/5" : "border-border hover:bg-muted/40"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="min-w-0 flex-1">
+                          <div className="font-mono text-sm font-medium">{t.name}</div>
+                          <div className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                            {t.components.find((c) => c.type === "BODY")?.text}
+                          </div>
+                        </div>
+                        <div className="flex gap-2 shrink-0">
+                          <Badge variant="outline">{t.language}</Badge>
+                          <Badge variant="secondary">{t.variables_count} vars</Badge>
                         </div>
                       </div>
-                      <div className="flex gap-2 shrink-0">
-                        <Badge variant="outline">{t.language}</Badge>
-                        <Badge variant="secondary">{t.variables_count} vars</Badge>
-                      </div>
-                    </div>
-                  </button>
-                ))
+                    </button>
+                  ))}
+
+                <Button asChild variant="outline" className="w-full border-dashed">
+                  <a href={`/disparador/templates/novo?conta_id=${contaId}&return_to=/disparador/campanhas/nova`}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Criar outro template pra esse número
+                  </a>
+                </Button>
+              </>
             )}
             <NavRow
               onBack={() => setStep(1)}
