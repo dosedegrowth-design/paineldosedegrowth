@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TemplatesFilters } from "./templates-filters";
+import { SyncTemplatesButton } from "./sync-templates-button";
 
 interface Template {
   id: string;
@@ -81,6 +82,7 @@ export default async function TemplatesPage({
         actions={
           <div className="flex gap-2">
             <TemplatesFilters wabas={wabaList} />
+            <SyncTemplatesButton />
             <Button asChild>
               <Link href="/disparador/templates/novo">
                 <Plus className="mr-2 h-4 w-4" />
