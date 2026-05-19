@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Plus, Trash2, Image as ImageIcon, Video, FileText, Type } from "lucide-react";
+import { Loader2, Plus, Trash2, Image as ImageIcon, Video, FileText, Type, Upload, Check } from "lucide-react";
 
 interface Props {
   contas: { id: string; display_name: string; phone_number_display: string | null }[];
@@ -34,11 +34,14 @@ export function NovoTemplateForm({ contas, initialContaId, returnTo }: Props) {
     category: "MARKETING" as "MARKETING" | "UTILITY" | "AUTHENTICATION",
     header_format: "NONE" as HeaderFormat,
     header_text: "",
-    header_media_url: "",
+    header_media_handle: "",
+    header_media_filename: "",
+    header_media_preview: "",
     body_text: "",
     footer_text: "",
   });
   const [buttons, setButtons] = useState<ButtonRow[]>([]);
+  const [uploadingMedia, setUploadingMedia] = useState(false);
 
   const bodyVarCount = useMemo(() => {
     const m = form.body_text.match(/\{\{\d+\}\}/g);
@@ -62,6 +65,44 @@ export function NovoTemplateForm({ contas, initialContaId, returnTo }: Props) {
     setButtons(buttons.filter((_, i) => i !== idx));
   }
 
+  async function handleMediaUpload(file: File) {
+    if (!form.conta_id) {
+      toast.error("Selecione um número primeiro.");
+      return;
+    }
+    const max = form.header_format === "IMAGE" ? 5 * 1024 * 1024
+      : form.header_format === "VIDEO" ? 16 * 1024 * 1024
+      : 100 * 1024 * 1024;
+    if (file.size > max) {
+      toast.error(`Arquivo muito grande. Máx ${Math.round(max / 1024 / 1024)}MB.`);
+      return;
+    }
+
+    setUploadingMedia(true);
+    try {
+      const previewUrl = URL.createObjectURL(file);
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("conta_id", form.conta_id);
+
+      const res = await fetch("/api/dispatcher/templates/upload-media", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok || !data.handle) throw new Error(data.error ?? "Falha no upload");
+
+      setForm({
+        ...form,
+        header_media_handle: data.handle,
+        header_media_filename: file.name,
+        header_media_preview: previewUrl,
+      });
+      toast.success(`Upload concluído: ${file.name}`);
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setUploadingMedia(false);
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.conta_id) {
@@ -75,11 +116,11 @@ export function NovoTemplateForm({ contas, initialContaId, returnTo }: Props) {
     // HEADER
     if (form.header_format === "TEXT" && form.header_text) {
       components.push({ type: "HEADER", format: "TEXT", text: form.header_text });
-    } else if (form.header_format !== "NONE" && form.header_format !== "TEXT" && form.header_media_url) {
+    } else if (form.header_format !== "NONE" && form.header_format !== "TEXT" && form.header_media_handle) {
       components.push({
         type: "HEADER",
         format: form.header_format,
-        example: { header_handle: [form.header_media_url] },
+        example: { header_handle: [form.header_media_handle] },
       });
     }
 
@@ -238,16 +279,51 @@ export function NovoTemplateForm({ contas, initialContaId, returnTo }: Props) {
             )}
             {(form.header_format === "IMAGE" || form.header_format === "VIDEO" || form.header_format === "DOCUMENT") && (
               <>
-                <Input
-                  placeholder={`URL pública da ${form.header_format === "IMAGE" ? "imagem" : form.header_format === "VIDEO" ? "vídeo" : "documento"}`}
-                  value={form.header_media_url}
-                  onChange={(e) => setForm({ ...form, header_media_url: e.target.value })}
-                />
+                {form.header_media_handle ? (
+                  <div className="flex items-center justify-between gap-2 p-2 border border-border rounded">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Check className="h-4 w-4 text-green-500 shrink-0" />
+                      <span className="text-xs truncate">{form.header_media_filename}</span>
+                    </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setForm({ ...form, header_media_handle: "", header_media_filename: "", header_media_preview: "" })}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ) : (
+                  <label className="block">
+                    <div className="border-2 border-dashed border-border rounded-lg p-4 text-center cursor-pointer hover:bg-muted/30 transition-colors">
+                      {uploadingMedia ? (
+                        <Loader2 className="h-5 w-5 mx-auto mb-1 animate-spin text-muted-foreground" />
+                      ) : (
+                        <Upload className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
+                      )}
+                      <p className="text-xs font-medium">
+                        {uploadingMedia ? "Enviando pra Meta..." : "Clique para fazer upload"}
+                      </p>
+                    </div>
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept={
+                        form.header_format === "IMAGE" ? "image/jpeg,image/png" :
+                        form.header_format === "VIDEO" ? "video/mp4,video/3gpp" :
+                        "application/pdf"
+                      }
+                      onChange={(e) => e.target.files?.[0] && handleMediaUpload(e.target.files[0])}
+                      disabled={uploadingMedia}
+                    />
+                  </label>
+                )}
                 <p className="text-[10px] text-muted-foreground">
-                  URL deve ser acessível publicamente. Meta vai baixar pra usar como exemplo.
-                  {form.header_format === "IMAGE" && " Formato: JPG/PNG, máx 5MB."}
-                  {form.header_format === "VIDEO" && " Formato: MP4/3GPP, máx 16MB."}
-                  {form.header_format === "DOCUMENT" && " Formato: PDF, máx 100MB."}
+                  {form.header_format === "IMAGE" && "JPG ou PNG, máx 5MB."}
+                  {form.header_format === "VIDEO" && "MP4 ou 3GPP, máx 16MB."}
+                  {form.header_format === "DOCUMENT" && "PDF, máx 100MB (limite Vercel pode reduzir)."}
+                  {" "}Arquivo vai ser enviado pra Meta como exemplo.
                 </p>
               </>
             )}
@@ -350,24 +426,30 @@ export function NovoTemplateForm({ contas, initialContaId, returnTo }: Props) {
                 <div className="font-bold text-sm">{form.header_text}</div>
               )}
               {form.header_format === "IMAGE" && (
-                <div className="bg-muted aspect-video rounded flex items-center justify-center">
-                  {form.header_media_url ? (
+                <div className="bg-muted aspect-video rounded flex items-center justify-center overflow-hidden">
+                  {form.header_media_preview ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={form.header_media_url} alt="header" className="w-full h-full object-cover rounded" />
+                    <img src={form.header_media_preview} alt="header" className="w-full h-full object-cover" />
                   ) : (
                     <ImageIcon className="h-8 w-8 text-muted-foreground" />
                   )}
                 </div>
               )}
               {form.header_format === "VIDEO" && (
-                <div className="bg-muted aspect-video rounded flex items-center justify-center">
-                  <Video className="h-8 w-8 text-muted-foreground" />
+                <div className="bg-muted aspect-video rounded flex items-center justify-center overflow-hidden">
+                  {form.header_media_preview ? (
+                    <video src={form.header_media_preview} className="w-full h-full" controls />
+                  ) : (
+                    <Video className="h-8 w-8 text-muted-foreground" />
+                  )}
                 </div>
               )}
               {form.header_format === "DOCUMENT" && (
                 <div className="bg-muted rounded p-3 flex items-center gap-2">
                   <FileText className="h-6 w-6 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">Documento anexo</span>
+                  <span className="text-xs text-muted-foreground truncate">
+                    {form.header_media_filename || "Documento anexo"}
+                  </span>
                 </div>
               )}
               <div className="text-sm whitespace-pre-wrap">{form.body_text || "(corpo vazio)"}</div>
