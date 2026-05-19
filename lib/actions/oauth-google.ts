@@ -18,6 +18,7 @@ import crypto from "node:crypto";
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_OAUTH_CLIENT_SECRET;
 const GOOGLE_LOGIN_CUSTOMER_ID = process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID;
+const GOOGLE_ADS_DEVELOPER_TOKEN = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://paineldosedegrowth.vercel.app";
 
 const REDIRECT_URI = `${APP_URL}/api/oauth/google/callback`;
@@ -300,6 +301,178 @@ export async function getGoogleRecursosDisponiveis(
     .eq("cliente_id", clienteId)
     .single();
   return (data?.google_recursos_disponiveis as GoogleRecursosDisponiveis) ?? null;
+}
+
+/**
+ * Re-lista contas Google acessíveis sem fazer novo OAuth.
+ * Usa o refresh_token existente pra pegar access_token novo,
+ * chama listAccessibleCustomers + busca metadata de cada,
+ * atualiza google_recursos_disponiveis no banco.
+ *
+ * Útil quando user ganha acesso a novas MCCs depois da conexão original
+ * OU quando quer revisar/trocar a conta selecionada sem refazer OAuth.
+ */
+export async function relistarContasGoogle(
+  clienteId: string
+): Promise<{ ok: true; recursos: GoogleRecursosDisponiveis } | { ok: false; error: string }> {
+  if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
+    return { ok: false, error: "Google OAuth não configurado" };
+  }
+  if (!GOOGLE_ADS_DEVELOPER_TOKEN) {
+    return { ok: false, error: "GOOGLE_ADS_DEVELOPER_TOKEN ausente" };
+  }
+
+  try {
+    const supabase = await createClient();
+    const { data: acesso, error: aErr } = await supabase
+      .schema("trafego_ddg")
+      .from("clientes_acessos")
+      .select("google_oauth_refresh_token, google_login_customer_id")
+      .eq("cliente_id", clienteId)
+      .single();
+
+    if (aErr || !acesso?.google_oauth_refresh_token) {
+      return {
+        ok: false,
+        error: "Sem refresh_token salvo. Conecte via OAuth primeiro.",
+      };
+    }
+
+    // 1. Refresh access_token
+    const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id: GOOGLE_CLIENT_ID,
+        client_secret: GOOGLE_CLIENT_SECRET,
+        refresh_token: acesso.google_oauth_refresh_token,
+        grant_type: "refresh_token",
+      }),
+    });
+
+    if (!tokenRes.ok) {
+      const errTxt = await tokenRes.text();
+      return {
+        ok: false,
+        error: `Refresh token rejeitado (${tokenRes.status}): ${errTxt.slice(0, 200)}. Refaça OAuth.`,
+      };
+    }
+
+    const tokens = (await tokenRes.json()) as { access_token: string };
+    const accessToken = tokens.access_token;
+    const loginCustomerHeader = acesso.google_login_customer_id ?? GOOGLE_LOGIN_CUSTOMER_ID;
+
+    // 2. listAccessibleCustomers
+    const listRes = await fetch(
+      "https://googleads.googleapis.com/v23/customers:listAccessibleCustomers",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "developer-token": GOOGLE_ADS_DEVELOPER_TOKEN,
+        },
+      }
+    );
+
+    let customerIds: string[] = [];
+    let listError: string | null = null;
+    if (listRes.ok) {
+      const listData = (await listRes.json()) as { resourceNames?: string[] };
+      customerIds = (listData.resourceNames ?? []).map((rn) =>
+        rn.replace("customers/", "")
+      );
+    } else {
+      const txt = await listRes.text();
+      listError = `listAccessibleCustomers ${listRes.status}: ${txt.slice(0, 300)}`;
+    }
+
+    // 3. Busca metadata de cada conta
+    const customers: GoogleCustomer[] = [];
+    for (const cid of customerIds.slice(0, 50)) {
+      try {
+        const metaRes = await fetch(
+          `https://googleads.googleapis.com/v23/customers/${cid}/googleAds:search`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "developer-token": GOOGLE_ADS_DEVELOPER_TOKEN,
+              "Content-Type": "application/json",
+              ...(loginCustomerHeader
+                ? { "login-customer-id": loginCustomerHeader.replace(/-/g, "") }
+                : {}),
+            },
+            body: JSON.stringify({
+              query: `SELECT customer.id, customer.descriptive_name, customer.currency_code, customer.time_zone, customer.manager, customer.test_account, customer.status FROM customer LIMIT 1`,
+            }),
+          }
+        );
+        if (metaRes.ok) {
+          const metaData = (await metaRes.json()) as {
+            results?: Array<{
+              customer?: {
+                id?: string;
+                descriptiveName?: string;
+                currencyCode?: string;
+                timeZone?: string;
+                manager?: boolean;
+                testAccount?: boolean;
+                status?: string;
+              };
+            }>;
+          };
+          const cust = metaData.results?.[0]?.customer;
+          customers.push({
+            id: cust?.id ?? cid,
+            name: cust?.descriptiveName ?? `Conta ${cid}`,
+            currency: cust?.currencyCode ?? null,
+            time_zone: cust?.timeZone ?? null,
+            manager: !!cust?.manager,
+            test_account: !!cust?.testAccount,
+            status: cust?.status ?? "UNKNOWN",
+          });
+        } else {
+          customers.push({
+            id: cid,
+            name: `Conta ${cid}`,
+            currency: null,
+            time_zone: null,
+            manager: false,
+            test_account: false,
+            status: "UNKNOWN",
+          });
+        }
+      } catch {
+        customers.push({
+          id: cid,
+          name: `Conta ${cid}`,
+          currency: null,
+          time_zone: null,
+          manager: false,
+          test_account: false,
+          status: "UNKNOWN",
+        });
+      }
+    }
+
+    const recursos: GoogleRecursosDisponiveis = { customers, listError };
+
+    // 4. Salva no banco
+    const { error: upErr } = await supabase
+      .schema("trafego_ddg")
+      .from("clientes_acessos")
+      .update({
+        google_recursos_disponiveis: recursos,
+        google_ultimo_erro: listError,
+      })
+      .eq("cliente_id", clienteId);
+
+    if (upErr) return { ok: false, error: upErr.message };
+
+    revalidatePath("/clientes");
+    return { ok: true, recursos };
+  } catch (err) {
+    return { ok: false, error: String(err) };
+  }
 }
 
 export async function selecionarRecursoGoogle(input: {

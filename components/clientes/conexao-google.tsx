@@ -10,6 +10,8 @@ import {
   Save,
   Power,
   Zap,
+  ArrowLeftRight,
+  RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -26,7 +28,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { configurarGoogle, testarConexaoGoogle, desconectarGoogle } from "@/lib/actions/conexoes";
-import { iniciarOAuthGoogle } from "@/lib/actions/oauth-google";
+import { iniciarOAuthGoogle, relistarContasGoogle } from "@/lib/actions/oauth-google";
 import type { ClienteCompleto } from "@/lib/actions/clientes";
 import { formatRelativeTime } from "@/lib/utils";
 import { useOAuthPopup, type OAuthCompleteEvent } from "@/hooks/use-oauth-popup";
@@ -136,6 +138,29 @@ export function ConexaoGoogle({ cliente, onUpdate }: Props) {
     onUpdate();
   };
 
+  const handleTrocarConta = () => {
+    // Abre modal direto usando os recursos já salvos no banco — sem refazer OAuth
+    setShowSelecaoGoogle(true);
+  };
+
+  const handleRelistar = () => {
+    startTransition(async () => {
+      toast.loading("Re-listando contas Google...", { id: "relist-google" });
+      const res = await relistarContasGoogle(cliente.id);
+      if (!res.ok) {
+        toast.error("Falha ao re-listar", { id: "relist-google", description: res.error });
+        return;
+      }
+      const count = res.recursos.customers.length;
+      toast.success(`${count} conta${count !== 1 ? "s" : ""} disponíveis`, {
+        id: "relist-google",
+        description: "Abrindo seletor...",
+      });
+      onUpdate();
+      setShowSelecaoGoogle(true);
+    });
+  };
+
   const { abrirPopup } = useOAuthPopup({ onComplete: handleOAuthComplete });
 
   const handleOAuthConnect = () => {
@@ -223,6 +248,32 @@ export function ConexaoGoogle({ cliente, onUpdate }: Props) {
             >
               {isConnected ? "Editar" : "Configurar manualmente"}
             </Button>
+            {(isPending || isConnected) && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleTrocarConta}
+                disabled={pending}
+                className="gap-2"
+                title="Abre seletor com as contas já listadas no último OAuth"
+              >
+                <ArrowLeftRight className="size-3.5" />
+                Trocar conta
+              </Button>
+            )}
+            {(isPending || isConnected) && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRelistar}
+                disabled={pending}
+                className="gap-2"
+                title="Refaz a busca de contas Google acessíveis sem fazer novo OAuth"
+              >
+                {pending ? <Loader2 className="size-3.5 animate-spin" /> : <RefreshCw className="size-3.5" />}
+                Re-listar contas
+              </Button>
+            )}
             {(isPending || isConnected) && cliente.google_customer_id && (
               <Button
                 variant="outline"
