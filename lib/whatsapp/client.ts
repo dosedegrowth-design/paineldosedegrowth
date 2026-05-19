@@ -43,7 +43,12 @@ export interface SendTemplatePayload {
   templateName: string;
   language: string;
   bodyVariables?: string[];                    // posicional: ["Joao", "R$ 500"]
-  headerVariables?: string[];
+  headerVariables?: string[];                  // pra header TEXT com {{1}}
+  headerMedia?: {                              // pra header IMAGE/VIDEO/DOCUMENT
+    type: "image" | "video" | "document";
+    link: string;                              // URL publica
+    filename?: string;                         // so pra DOCUMENT
+  };
   buttonVariables?: Array<{ index: number; text: string }>;
 }
 
@@ -141,12 +146,26 @@ export class WhatsappClient {
   async sendTemplate(p: SendTemplatePayload): Promise<SendResult> {
     const components: Array<Record<string, unknown>> = [];
 
-    if (p.headerVariables?.length) {
+    // HEADER com MEDIA (IMAGE/VIDEO/DOCUMENT)
+    if (p.headerMedia) {
+      const mediaPayload: Record<string, string> = { link: p.headerMedia.link };
+      if (p.headerMedia.type === "document" && p.headerMedia.filename) {
+        mediaPayload.filename = p.headerMedia.filename;
+      }
+      components.push({
+        type: "header",
+        parameters: [
+          { type: p.headerMedia.type, [p.headerMedia.type]: mediaPayload },
+        ],
+      });
+    } else if (p.headerVariables?.length) {
+      // HEADER TEXT com variaveis
       components.push({
         type: "header",
         parameters: p.headerVariables.map((v) => ({ type: "text", text: v })),
       });
     }
+
     if (p.bodyVariables?.length) {
       components.push({
         type: "body",

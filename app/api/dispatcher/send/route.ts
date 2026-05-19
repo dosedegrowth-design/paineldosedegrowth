@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       id, telefone, variables, campanha_id,
       campanha:campanhas (
         conta_id,
-        template:templates ( name, language, components )
+        template:templates ( name, language, components, header_media_url, header_media_type )
       )
     `)
     .single();
@@ -56,7 +56,13 @@ export async function POST(req: Request) {
     variables: Record<string, string>;
     campanha: {
       conta_id: string;
-      template: { name: string; language: string };
+      template: {
+        name: string;
+        language: string;
+        components?: unknown;
+        header_media_url?: string | null;
+        header_media_type?: "IMAGE" | "VIDEO" | "DOCUMENT" | null;
+      };
     };
   };
 
@@ -97,12 +103,24 @@ export async function POST(req: Request) {
   const keys = Object.keys(e.variables ?? {}).filter((k) => /^\d+$/.test(k)).sort((a, b) => Number(a) - Number(b));
   const bodyVariables = keys.map((k) => e.variables[k]);
 
+  // Monta headerMedia se template tem header com IMAGE/VIDEO/DOCUMENT
+  let headerMedia: { type: "image" | "video" | "document"; link: string; filename?: string } | undefined;
+  const mediaType = e.campanha.template.header_media_type;
+  const mediaUrl = e.campanha.template.header_media_url;
+  if (mediaType && mediaUrl) {
+    headerMedia = {
+      type: mediaType.toLowerCase() as "image" | "video" | "document",
+      link: mediaUrl,
+    };
+  }
+
   try {
     const r = await client.sendTemplate({
       to: e.telefone,
       templateName: e.campanha.template.name,
       language: e.campanha.template.language,
       bodyVariables: bodyVariables.length > 0 ? bodyVariables : undefined,
+      headerMedia,
     });
     await supabase
       .schema("disparador" as never)

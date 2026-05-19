@@ -4,18 +4,13 @@ import { createClient as createSbClient } from "@supabase/supabase-js";
 /**
  * POST /api/dispatcher/templates/upload-media
  *
- * Upload de midia para templates Meta WhatsApp (header IMAGE/VIDEO/DOCUMENT).
+ * Upload de midia pra templates Meta WhatsApp (header IMAGE/VIDEO/DOCUMENT).
  *
- * Padrao Meta: Resumable Upload Session API
- *  1. POST /{app_id}/uploads → retorna upload session id
- *  2. POST /{session_id} com binary → retorna header_handle "h"
- *  3. Usa "h" em components[0].example.header_handle ao criar template
+ * Faz DUAS coisas:
+ *  1. Resumable Upload API Meta -> retorna `handle` pra criar template
+ *  2. Upload Supabase Storage (bucket disparador-media) -> retorna `public_url` pra disparar
  *
- * FormData:
- *  - file: File (image/video/pdf)
- *  - conta_id: string (pra pegar token via business)
- *
- * Returns: { handle: string }
+ * Returns: { handle: string, public_url: string }
  */
 
 const API_VERSION = process.env.META_API_VERSION ?? "v25.0";
@@ -60,10 +55,13 @@ export async function POST(req: Request) {
   if (!tokenResp) return NextResponse.json({ error: "token vazio" }, { status: 500 });
   const token = tokenResp as unknown as string;
 
-  // STEP 1: Cria upload session
+  // Pega buffer uma vez (precisamos pra Meta + pra Supabase)
+  const buf = await file.arrayBuffer();
   const fileLength = file.size;
   const fileType = file.type;
 
+  // ─── META: Resumable Upload ───────────────────────────────
+  // STEP 1: Cria upload session
   const sessionUrl = new URL(`https://graph.facebook.com/${API_VERSION}/${businessObj.meta_app_id}/uploads`);
   sessionUrl.searchParams.set("file_length", fileLength.toString());
   sessionUrl.searchParams.set("file_type", fileType);
@@ -74,14 +72,13 @@ export async function POST(req: Request) {
   const sessionJson = await sessionRes.json();
   if (!sessionRes.ok) {
     return NextResponse.json(
-      { error: `Falha criando upload session: ${JSON.stringify(sessionJson)}` },
+      { error: `Falha criando upload session Meta: ${JSON.stringify(sessionJson)}` },
       { status: 502 },
     );
   }
   const sessionId = sessionJson.id as string;
 
-  // STEP 2: Faz upload do binario
-  const buf = await file.arrayBuffer();
+  // STEP 2: Upload binario pra Meta
   const uploadRes = await fetch(`https://graph.facebook.com/${API_VERSION}/${sessionId}`, {
     method: "POST",
     headers: {
@@ -93,10 +90,37 @@ export async function POST(req: Request) {
   const uploadJson = await uploadRes.json();
   if (!uploadRes.ok || !uploadJson.h) {
     return NextResponse.json(
-      { error: `Falha no upload: ${JSON.stringify(uploadJson)}` },
+      { error: `Falha upload Meta: ${JSON.stringify(uploadJson)}` },
+      { status: 502 },
+    );
+  }
+  const handle = uploadJson.h as string;
+
+  // ─── SUPABASE STORAGE: Upload pra ter URL publica ─────────
+  const ext = file.name.split(".").pop()?.toLowerCase() ?? "bin";
+  const storagePath = `${contaId}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
+
+  const { error: uploadStorageErr } = await supabase.storage
+    .from("disparador-media")
+    .upload(storagePath, buf, {
+      contentType: fileType,
+      upsert: false,
+    });
+  if (uploadStorageErr) {
+    return NextResponse.json(
+      { error: `Falha upload Storage: ${uploadStorageErr.message}`, handle },
       { status: 502 },
     );
   }
 
-  return NextResponse.json({ handle: uploadJson.h as string });
+  const { data: publicData } = supabase.storage
+    .from("disparador-media")
+    .getPublicUrl(storagePath);
+  const publicUrl = publicData.publicUrl;
+
+  return NextResponse.json({
+    handle,
+    public_url: publicUrl,
+    filename: file.name,
+  });
 }

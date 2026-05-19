@@ -35,6 +35,7 @@ export function NovoTemplateForm({ contas, initialContaId, returnTo }: Props) {
     header_format: "NONE" as HeaderFormat,
     header_text: "",
     header_media_handle: "",
+    header_media_url: "",
     header_media_filename: "",
     header_media_preview: "",
     body_text: "",
@@ -92,6 +93,7 @@ export function NovoTemplateForm({ contas, initialContaId, returnTo }: Props) {
       setForm({
         ...form,
         header_media_handle: data.handle,
+        header_media_url: data.public_url ?? "",
         header_media_filename: file.name,
         header_media_preview: previewUrl,
       });
@@ -167,6 +169,11 @@ export function NovoTemplateForm({ contas, initialContaId, returnTo }: Props) {
           language: form.language,
           category: form.category,
           components,
+          header_media_url: form.header_media_url || null,
+          header_media_type:
+            form.header_format === "IMAGE" ? "IMAGE" :
+            form.header_format === "VIDEO" ? "VIDEO" :
+            form.header_format === "DOCUMENT" ? "DOCUMENT" : null,
         }),
       });
       const data = await res.json();

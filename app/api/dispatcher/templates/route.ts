@@ -45,12 +45,14 @@ export async function GET(req: Request) {
  */
 export async function POST(req: Request) {
   const body = await req.json();
-  const { conta_id, name, language, category, components } = body as {
+  const { conta_id, name, language, category, components, header_media_url, header_media_type } = body as {
     conta_id: string;
     name: string;
     language: string;
     category: "MARKETING" | "UTILITY" | "AUTHENTICATION";
     components: TemplateComponent[];
+    header_media_url?: string | null;
+    header_media_type?: "IMAGE" | "VIDEO" | "DOCUMENT" | null;
   };
 
   if (!conta_id || !name || !language || !category || !components) {
@@ -87,6 +89,8 @@ export async function POST(req: Request) {
         status: (metaResp.status ?? "PENDING").toUpperCase(),
         components,
         variables_count: WhatsappClient.countBodyVariables(components),
+        header_media_url: header_media_url ?? null,
+        header_media_type: header_media_type ?? null,
         ultima_sync_meta: new Date().toISOString(),
       },
       { onConflict: "waba_id,name,language" },
