@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 
 /**
  * POST /api/dispatcher/start
- * Dispara o workflow n8n para iniciar uma campanha.
+ * Dispara a Edge Function dispatcher-fire-campanha que processa a campanha.
  *
  * Body: { campanha_id }
  */
@@ -15,7 +15,7 @@ export async function POST(req: Request) {
 
   const supabase = await createClient();
 
-  // Marca como running antes de chamar n8n (lock otimista)
+  // Marca como running (lock otimista)
   const { data: campanha, error: updErr } = await supabase
     .schema("disparador" as never)
     .from("campanhas")
@@ -32,38 +32,23 @@ export async function POST(req: Request) {
     );
   }
 
-  const url = process.env.N8N_DISPATCHER_WEBHOOK_URL;
-  const secret = process.env.N8N_DISPATCHER_WEBHOOK_SECRET;
-  if (!url) {
-    return NextResponse.json({ error: "N8N_DISPATCHER_WEBHOOK_URL nao configurada" }, { status: 500 });
+  // Chama Edge Function dispatcher-fire-campanha (fire-and-forget)
+  // Nao usamos await porque a Edge Function pode levar minutos pra processar
+  // e o Vercel Serverless tem timeout de 10s.
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!supabaseUrl) {
+    return NextResponse.json({ error: "NEXT_PUBLIC_SUPABASE_URL nao configurado" }, { status: 500 });
   }
 
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...(secret ? { "X-Dispatcher-Secret": secret } : {}),
-      },
-      body: JSON.stringify({ campanha_id }),
-    });
-    if (!res.ok) {
-      // Rollback
-      await supabase
-        .schema("disparador" as never)
-        .from("campanhas")
-        .update({ status: "error", paused_reason: `n8n webhook ${res.status}` })
-        .eq("id", campanha_id);
-      return NextResponse.json({ error: `n8n nao aceitou trigger: ${res.status}` }, { status: 502 });
-    }
-  } catch (e) {
-    await supabase
-      .schema("disparador" as never)
-      .from("campanhas")
-      .update({ status: "error", paused_reason: (e as Error).message })
-      .eq("id", campanha_id);
-    return NextResponse.json({ error: (e as Error).message }, { status: 502 });
-  }
+  fetch(`${supabaseUrl}/functions/v1/dispatcher-fire-campanha`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ campanha_id }),
+  }).catch((e) => {
+    // Erro de fetch nao bloqueia - campanha esta marcada como running
+    // e Edge Function pode ser re-disparada manualmente se falhar
+    console.error("[dispatcher/start] fetch Edge falhou:", e);
+  });
 
   return NextResponse.json({ campanha, status: "started" });
 }
