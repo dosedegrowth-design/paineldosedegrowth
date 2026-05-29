@@ -1,40 +1,31 @@
-// Edge Function: dispatcher-trigger-scheduled
-// Roda via pg_cron a cada minuto. Pega campanhas scheduled cujo horario ja passou
-// e dispara o webhook n8n pra cada uma.
+// Edge Function: dispatcher-trigger-scheduled (v6)
+// Roda via pg_cron a cada minuto.
+// 1) Pega campanhas 'scheduled' cujo horario ja passou -> dispara
+// 2) Pega campanhas 'running' com envios pending e sem atividade ha >3min
+//    (= Edge Function bateu timeout e parou no meio) -> re-dispara
 
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const N8N_URL = Deno.env.get("N8N_DISPATCHER_WEBHOOK_URL") ?? "https://webhook.dosedegrowth.cloud/webhook/disparador-start";
+const FIRE_URL = `${SUPABASE_URL}/functions/v1/dispatcher-fire-campanha`;
 
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE, { auth: { persistSession: false } });
 
 Deno.serve(async () => {
   const now = new Date().toISOString();
+  const results: Array<{ id: string; nome: string; tipo: string; ok: boolean; detail?: string }> = [];
 
-  const { data: campanhas, error } = await supabase
+  // (1) Campanhas SCHEDULED cujo horario passou
+  const { data: scheduledCampanhas } = await supabase
     .schema("disparador")
     .from("campanhas")
     .select("id, nome, scheduled_at")
     .eq("status", "scheduled")
     .lte("scheduled_at", now);
 
-  if (error) {
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
-  }
-
-  if (!campanhas?.length) {
-    return new Response(JSON.stringify({ triggered: 0, ts: now }), {
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
-  const results: Array<{ id: string; nome: string; ok: boolean; detail?: string }> = [];
-
-  for (const c of campanhas as Array<{ id: string; nome: string; scheduled_at: string }>) {
-    // Lock otimista: marca como running antes de chamar n8n
-    const { data: locked, error: lockErr } = await supabase
+  for (const c of (scheduledCampanhas ?? []) as Array<{ id: string; nome: string }>) {
+    const { data: locked } = await supabase
       .schema("disparador")
       .from("campanhas")
       .update({ status: "running", started_at: new Date().toISOString() })
@@ -42,38 +33,59 @@ Deno.serve(async () => {
       .eq("status", "scheduled")
       .select("id")
       .single();
-    if (lockErr || !locked) {
-      results.push({ id: c.id, nome: c.nome, ok: false, detail: "lock falhou" });
-      continue;
-    }
+    if (!locked) continue;
 
-    try {
-      const res = await fetch(N8N_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ campanha_id: c.id }),
-      });
-      if (!res.ok) {
-        await supabase
-          .schema("disparador")
-          .from("campanhas")
-          .update({ status: "error", paused_reason: `n8n trigger ${res.status}` })
-          .eq("id", c.id);
-        results.push({ id: c.id, nome: c.nome, ok: false, detail: `n8n ${res.status}` });
-      } else {
-        results.push({ id: c.id, nome: c.nome, ok: true });
-      }
-    } catch (e) {
-      await supabase
-        .schema("disparador")
-        .from("campanhas")
-        .update({ status: "error", paused_reason: (e as Error).message })
-        .eq("id", c.id);
-      results.push({ id: c.id, nome: c.nome, ok: false, detail: (e as Error).message });
-    }
+    fireCampanha(c.id).catch((e) => {
+      results.push({ id: c.id, nome: c.nome, tipo: "scheduled", ok: false, detail: e.message });
+    });
+    results.push({ id: c.id, nome: c.nome, tipo: "scheduled", ok: true });
+  }
+
+  // (2) Campanhas RUNNING com envios pending e sem atividade ha >3min
+  //     (Edge Function deve ter batido timeout 5min)
+  const cutoffDate = new Date(Date.now() - 3 * 60 * 1000).toISOString();
+  const { data: stuckCampanhas } = await supabase
+    .schema("disparador")
+    .from("campanhas")
+    .select("id, nome, started_at, atualizado_em")
+    .eq("status", "running")
+    .lte("atualizado_em", cutoffDate);
+
+  for (const c of (stuckCampanhas ?? []) as Array<{ id: string; nome: string }>) {
+    // Confere se tem envios pending
+    const { count } = await supabase
+      .schema("disparador")
+      .from("envios")
+      .select("id", { count: "exact", head: true })
+      .eq("campanha_id", c.id)
+      .eq("status", "pending");
+
+    if (!count || count === 0) continue;
+
+    // Toca atualizado_em pra evitar re-disparar no proximo cron antes da Edge terminar
+    await supabase
+      .schema("disparador")
+      .from("campanhas")
+      .update({ atualizado_em: new Date().toISOString() })
+      .eq("id", c.id);
+
+    fireCampanha(c.id).catch((e) => {
+      results.push({ id: c.id, nome: c.nome, tipo: "resumo", ok: false, detail: e.message });
+    });
+    results.push({ id: c.id, nome: c.nome, tipo: "resumo", ok: true, detail: `${count} pendentes` });
   }
 
   return new Response(JSON.stringify({ triggered: results.length, results, ts: now }), {
     headers: { "Content-Type": "application/json" },
   });
 });
+
+// Fire-and-forget: chama Edge Function sem esperar resposta
+function fireCampanha(campanha_id: string): Promise<void> {
+  // Nao usa await -- queremos que a chamada continue em background
+  return fetch(FIRE_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ campanha_id }),
+  }).then(() => {}).catch(() => {});
+}
