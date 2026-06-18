@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Papa from "papaparse";
@@ -53,9 +53,14 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
   const [csvMode, setCsvMode] = useState<"upload" | "paste">("upload");
   const [pasteText, setPasteText] = useState("");
   const [fileName, setFileName] = useState<string>("");
-  const [rows, setRows] = useState<ParsedRow[]>([]);
+  // rows completos ficam em ref pra evitar re-render React com 50k+ items
+  const rowsRef = useRef<ParsedRow[]>([]);
+  // sampleRows e totalRows sao apenas pra UI (preview + contador)
+  const [sampleRows, setSampleRows] = useState<ParsedRow[]>([]);
+  const [totalRows, setTotalRows] = useState(0);
   const [columns, setColumns] = useState<string[]>([]);
   const [parsing, setParsing] = useState(false);
+  const [parseProgress, setParseProgress] = useState(0);
 
   // mapping: posicao da variavel ({{1}}, {{2}}...) -> nome da coluna no CSV
   // "telefone" tambem mapeia uma coluna
@@ -92,37 +97,95 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
   }, [template]);
 
   const previewBody = useMemo(() => {
-    if (!bodyText || rows.length === 0) return bodyText;
+    if (!bodyText || sampleRows.length === 0) return bodyText;
     let txt = bodyText;
-    const sample = rows[0];
+    const sample = sampleRows[0];
     for (const [varNum, col] of Object.entries(varMap)) {
       if (col && sample[col]) {
         txt = txt.replace(new RegExp(`\\{\\{${varNum}\\}\\}`, "g"), sample[col]);
       }
     }
     return txt;
-  }, [bodyText, rows, varMap]);
+  }, [bodyText, sampleRows, varMap]);
 
   async function handleFile(f: File) {
     setParsing(true);
+    setParseProgress(0);
     setFileName(f.name);
+    rowsRef.current = [];
     try {
+      const isCsv = f.name.toLowerCase().endsWith(".csv");
       let parsed: ParsedRow[] = [];
       let cols: string[] = [];
-      if (f.name.toLowerCase().endsWith(".csv")) {
-        const text = await f.text();
-        const result = Papa.parse<ParsedRow>(text, { header: true, skipEmptyLines: true });
-        parsed = (result.data as ParsedRow[]).filter((r) => Object.values(r).some(Boolean));
-        cols = result.meta.fields ?? [];
+
+      if (isCsv) {
+        // CSV: stream com Web Worker (nao trava UI)
+        parsed = await new Promise<ParsedRow[]>((resolve, reject) => {
+          const acc: ParsedRow[] = [];
+          Papa.parse<ParsedRow>(f, {
+            header: true,
+            skipEmptyLines: true,
+            worker: true,
+            chunkSize: 1024 * 1024, // 1MB por chunk
+            chunk: (results) => {
+              for (const r of results.data) {
+                if (Object.values(r).some(Boolean)) acc.push(r);
+              }
+              if (!cols.length && results.meta.fields) cols = results.meta.fields;
+              setParseProgress(acc.length);
+            },
+            complete: () => resolve(acc),
+            error: (err) => reject(err),
+          });
+        });
       } else {
+        // XLSX: parse com opcoes leves, depois sheet_to_json em chunks pra liberar UI
         const buf = await f.arrayBuffer();
-        const wb = XLSX.read(buf, { type: "array" });
+        const wb = XLSX.read(buf, {
+          type: "array",
+          cellDates: false,
+          cellNF: false,
+          cellText: false,
+        });
         const sheet = wb.Sheets[wb.SheetNames[0]];
-        parsed = XLSX.utils.sheet_to_json<ParsedRow>(sheet, { defval: "" });
-        cols = parsed.length > 0 ? Object.keys(parsed[0]) : [];
+        const ref = sheet["!ref"];
+        if (!ref) throw new Error("XLSX sem dados");
+        const range = XLSX.utils.decode_range(ref);
+        const totalRowsXlsx = range.e.r - range.s.r;
+        const CHUNK = 2000;
+
+        for (let startRow = range.s.r; startRow <= range.e.r; startRow += CHUNK) {
+          const endRow = Math.min(startRow + CHUNK - 1, range.e.r);
+          // Inclui sempre a primeira linha (header)
+          const chunkRef = XLSX.utils.encode_range({
+            s: { r: startRow === range.s.r ? range.s.r : range.s.r, c: range.s.c },
+            e: { r: endRow, c: range.e.c },
+          });
+          // Pra primeiro chunk usa o range natural; pra outros, monta range custom
+          const opts: XLSX.Sheet2JSONOpts = { defval: "" };
+          if (startRow > range.s.r) {
+            opts.range = `${XLSX.utils.encode_cell({ r: startRow, c: range.s.c })}:${XLSX.utils.encode_cell({ r: endRow, c: range.e.c })}`;
+            opts.header = cols.length ? cols : 1;
+          }
+          const partial = XLSX.utils.sheet_to_json<ParsedRow>(sheet, startRow > range.s.r ? opts : { defval: "" });
+          const filtered = (partial as ParsedRow[]).filter((r) => Object.values(r).some(Boolean));
+          if (!cols.length && filtered.length > 0) cols = Object.keys(filtered[0]);
+          parsed.push(...filtered);
+          setParseProgress(parsed.length);
+          // libera UI a cada chunk
+          await new Promise((r) => setTimeout(r, 0));
+          void chunkRef; // avoid lint warning
+          void totalRowsXlsx;
+        }
       }
+
       if (parsed.length === 0) throw new Error("Arquivo sem linhas");
-      setRows(parsed);
+      if (parsed.length > 200000) throw new Error(`Arquivo com ${parsed.length} linhas excede limite de 200000`);
+
+      // Armazena rows em ref (nao causa re-render) + amostra de 10 no state
+      rowsRef.current = parsed;
+      setSampleRows(parsed.slice(0, 10));
+      setTotalRows(parsed.length);
       setColumns(cols);
       const auto = cols.find((c) => /telefone|phone|celular|whatsapp/i.test(c));
       if (auto) setPhoneColumn(auto);
@@ -131,6 +194,7 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
       toast.error(`Falha ao ler arquivo: ${(e as Error).message}`);
     } finally {
       setParsing(false);
+      setParseProgress(0);
     }
   }
 
@@ -152,7 +216,10 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
       const parsed = (result.data as ParsedRow[]).filter((r) => Object.values(r).some(Boolean));
       const cols = result.meta.fields ?? [];
       if (parsed.length === 0) throw new Error("CSV sem linhas");
-      setRows(parsed);
+      if (parsed.length > 200000) throw new Error(`CSV com ${parsed.length} linhas excede limite de 200000`);
+      rowsRef.current = parsed;
+      setSampleRows(parsed.slice(0, 10));
+      setTotalRows(parsed.length);
       setColumns(cols);
       setFileName(`colado (${parsed.length} linhas)`);
       const auto = cols.find((c) => /telefone|phone|celular|whatsapp/i.test(c));
@@ -166,6 +233,7 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
   }
 
   async function handleSubmit() {
+    const rows = rowsRef.current;
     if (!contaId || !templateId || !phoneColumn || !campanhaNome || rows.length === 0) {
       toast.error("Faltam campos obrigatorios");
       return;
@@ -389,7 +457,7 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
                 <div className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:bg-muted/30 transition-colors">
                   <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                   <p className="text-sm font-medium">Clique para fazer upload</p>
-                  <p className="text-xs text-muted-foreground mt-1">CSV ou XLSX, até 50k linhas</p>
+                  <p className="text-xs text-muted-foreground mt-1">CSV ou XLSX, até 200k linhas. CSV processa mais rápido.</p>
                 </div>
                 <input
                   type="file"
@@ -418,7 +486,10 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
 
             {parsing && csvMode === "upload" && (
               <p className="text-xs text-muted-foreground mt-2 flex items-center gap-2">
-                <Loader2 className="h-3 w-3 animate-spin" /> Processando arquivo...
+                <Loader2 className="h-3 w-3 animate-spin" />
+                {parseProgress > 0
+                  ? `Processando arquivo... ${parseProgress.toLocaleString("pt-BR")} linhas`
+                  : "Processando arquivo..."}
               </p>
             )}
             <NavRow onBack={() => setStep(2)} />
@@ -431,7 +502,7 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
           <CardHeader>
             <CardTitle>4. Mapear colunas</CardTitle>
             <CardDescription>
-              {rows.length} linhas detectadas em <span className="font-mono">{fileName}</span>.
+              {totalRows.toLocaleString("pt-BR")} linhas detectadas em <span className="font-mono">{fileName}</span>.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -534,9 +605,9 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
             <div className="bg-muted/40 rounded p-3 space-y-1 text-sm">
               <div className="flex justify-between"><span>Número</span><span className="font-medium">{conta?.display_name}</span></div>
               <div className="flex justify-between"><span>Template</span><span className="font-mono text-xs">{template?.name}</span></div>
-              <div className="flex justify-between"><span>Contatos</span><span className="font-medium">{rows.length}</span></div>
-              <div className="flex justify-between"><span>Custo estimado</span><span className="font-medium">R$ {(rows.length * 0.4).toFixed(2)}</span></div>
-              <div className="flex justify-between"><span>Tempo estimado</span><span className="font-medium">{Math.ceil(rows.length / pacing / 60)} min</span></div>
+              <div className="flex justify-between"><span>Contatos</span><span className="font-medium">{totalRows.toLocaleString("pt-BR")}</span></div>
+              <div className="flex justify-between"><span>Custo estimado</span><span className="font-medium">R$ {(totalRows * 0.4).toFixed(2)}</span></div>
+              <div className="flex justify-between"><span>Tempo estimado</span><span className="font-medium">{Math.ceil(totalRows / pacing / 60)} min</span></div>
               {scheduledAt && (
                 <div className="flex justify-between"><span>Início</span><span className="font-medium">{new Date(scheduledAt).toLocaleString("pt-BR")}</span></div>
               )}
