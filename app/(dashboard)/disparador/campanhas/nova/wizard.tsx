@@ -115,6 +115,18 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
     rowsRef.current = [];
     try {
       const isCsv = f.name.toLowerCase().endsWith(".csv");
+
+      // Validacao de tamanho ANTES de tentar parsear (evita crash de memoria)
+      const MB = f.size / 1024 / 1024;
+      if (!isCsv && MB > 20) {
+        throw new Error(
+          `XLSX de ${MB.toFixed(1)}MB e muito grande pro navegador. Salve como CSV no Excel (Arquivo > Salvar como > CSV UTF-8) e tente de novo. CSV suporta ate 100MB.`,
+        );
+      }
+      if (isCsv && MB > 100) {
+        throw new Error(`CSV de ${MB.toFixed(1)}MB excede limite de 100MB.`);
+      }
+
       let parsed: ParsedRow[] = [];
       let cols: string[] = [];
 
@@ -141,12 +153,26 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
       } else {
         // XLSX: parse com opcoes leves, depois sheet_to_json em chunks pra liberar UI
         const buf = await f.arrayBuffer();
-        const wb = XLSX.read(buf, {
-          type: "array",
-          cellDates: false,
-          cellNF: false,
-          cellText: false,
-        });
+        // dense=true reduz uso de memoria significativamente
+        // libera UI antes de iniciar parse (XLSX.read e sincrono e pesado)
+        await new Promise((r) => setTimeout(r, 0));
+        let wb: XLSX.WorkBook;
+        try {
+          wb = XLSX.read(buf, {
+            type: "array",
+            cellDates: false,
+            cellNF: false,
+            cellText: false,
+            cellFormula: false,
+            cellHTML: false,
+            cellStyles: false,
+            dense: true,
+          });
+        } catch {
+          throw new Error(
+            "XLSX corrompido ou muito complexo. Salve como CSV no Excel (Arquivo > Salvar como > CSV UTF-8) e tente de novo.",
+          );
+        }
         const sheet = wb.Sheets[wb.SheetNames[0]];
         const ref = sheet["!ref"];
         if (!ref) throw new Error("XLSX sem dados");
