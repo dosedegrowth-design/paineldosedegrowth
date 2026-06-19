@@ -3,8 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import Papa from "papaparse";
-import * as XLSX from "xlsx";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -131,14 +129,14 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
       let cols: string[] = [];
 
       if (isCsv) {
-        // CSV: stream com Web Worker (nao trava UI)
+        // CSV: stream sem worker (lazy import — worker:true em dynamic import quebra bundling)
+        const Papa = (await import("papaparse")).default;
         parsed = await new Promise<ParsedRow[]>((resolve, reject) => {
           const acc: ParsedRow[] = [];
           Papa.parse<ParsedRow>(f, {
             header: true,
             skipEmptyLines: true,
-            worker: true,
-            chunkSize: 1024 * 1024, // 1MB por chunk
+            chunkSize: 1024 * 1024,
             chunk: (results) => {
               for (const r of results.data) {
                 if (Object.values(r).some(Boolean)) acc.push(r);
@@ -151,12 +149,11 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
           });
         });
       } else {
-        // XLSX: parse com opcoes leves, depois sheet_to_json em chunks pra liberar UI
+        // XLSX: lazy import (xlsx ~870KB — so carrega quando usuario sobe planilha)
+        const XLSX = await import("xlsx");
         const buf = await f.arrayBuffer();
-        // dense=true reduz uso de memoria significativamente
-        // libera UI antes de iniciar parse (XLSX.read e sincrono e pesado)
         await new Promise((r) => setTimeout(r, 0));
-        let wb: XLSX.WorkBook;
+        let wb;
         try {
           wb = XLSX.read(buf, {
             type: "array",
@@ -177,18 +174,11 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
         const ref = sheet["!ref"];
         if (!ref) throw new Error("XLSX sem dados");
         const range = XLSX.utils.decode_range(ref);
-        const totalRowsXlsx = range.e.r - range.s.r;
         const CHUNK = 2000;
 
         for (let startRow = range.s.r; startRow <= range.e.r; startRow += CHUNK) {
           const endRow = Math.min(startRow + CHUNK - 1, range.e.r);
-          // Inclui sempre a primeira linha (header)
-          const chunkRef = XLSX.utils.encode_range({
-            s: { r: startRow === range.s.r ? range.s.r : range.s.r, c: range.s.c },
-            e: { r: endRow, c: range.e.c },
-          });
-          // Pra primeiro chunk usa o range natural; pra outros, monta range custom
-          const opts: XLSX.Sheet2JSONOpts = { defval: "" };
+          const opts: import("xlsx").Sheet2JSONOpts = { defval: "" };
           if (startRow > range.s.r) {
             opts.range = `${XLSX.utils.encode_cell({ r: startRow, c: range.s.c })}:${XLSX.utils.encode_cell({ r: endRow, c: range.e.c })}`;
             opts.header = cols.length ? cols : 1;
@@ -198,10 +188,7 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
           if (!cols.length && filtered.length > 0) cols = Object.keys(filtered[0]);
           parsed.push(...filtered);
           setParseProgress(parsed.length);
-          // libera UI a cada chunk
           await new Promise((r) => setTimeout(r, 0));
-          void chunkRef; // avoid lint warning
-          void totalRowsXlsx;
         }
       }
 
@@ -224,14 +211,14 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
     }
   }
 
-  function handlePaste() {
+  async function handlePaste() {
     if (!pasteText.trim()) {
       toast.error("Cole conteúdo CSV primeiro");
       return;
     }
     setParsing(true);
     try {
-      // Detecta separador (vírgula, ponto-e-vírgula ou tab)
+      const Papa = (await import("papaparse")).default;
       const firstLine = pasteText.split("\n")[0] ?? "";
       const sep = firstLine.includes(";") ? ";" : firstLine.includes("\t") ? "\t" : ",";
       const result = Papa.parse<ParsedRow>(pasteText, {
