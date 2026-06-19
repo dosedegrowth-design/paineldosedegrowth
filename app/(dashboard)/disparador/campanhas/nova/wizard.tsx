@@ -49,7 +49,8 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
   const [scheduledAt, setScheduledAt] = useState<string>("");
 
   const [csvMode, setCsvMode] = useState<"upload" | "paste">("upload");
-  const [pasteText, setPasteText] = useState("");
+  // textarea uncontrolled: state com 50k+ linhas trava o navegador
+  const pasteRef = useRef<HTMLTextAreaElement>(null);
   const [fileName, setFileName] = useState<string>("");
   // rows completos ficam em ref pra evitar re-render React com 50k+ items
   const rowsRef = useRef<ParsedRow[]>([]);
@@ -212,12 +213,15 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
   }
 
   async function handlePaste() {
+    const pasteText = pasteRef.current?.value ?? "";
     if (!pasteText.trim()) {
       toast.error("Cole conteúdo CSV primeiro");
       return;
     }
     setParsing(true);
     try {
+      // libera UI antes de processar texto gigante
+      await new Promise((r) => setTimeout(r, 0));
       const Papa = (await import("papaparse")).default;
       const firstLine = pasteText.split("\n")[0] ?? "";
       const sep = firstLine.includes(";") ? ";" : firstLine.includes("\t") ? "\t" : ",";
@@ -485,10 +489,12 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
                   Cole CSV separado por vírgula, ponto-e-vírgula ou tab. <strong>Primeira linha</strong> deve ser o cabeçalho.
                 </p>
                 <textarea
+                  ref={pasteRef}
                   className="w-full min-h-[180px] rounded-md border border-input bg-transparent px-3 py-2 text-sm font-mono"
                   placeholder={"telefone,nome\n5511960725070,Lucas\n5511981812630,Marina"}
-                  value={pasteText}
-                  onChange={(e) => setPasteText(e.target.value)}
+                  spellCheck={false}
+                  autoCorrect="off"
+                  autoCapitalize="off"
                 />
                 <Button onClick={handlePaste} disabled={parsing} className="w-full">
                   {parsing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
