@@ -15,6 +15,8 @@ export async function middleware(request: NextRequest) {
     "/_next",
     "/brand",
     "/favicon.ico",
+    // Landing pública do André Ar Condicionado
+    "/andre",
     // Páginas legais públicas (Meta + LGPD)
     "/privacidade",
     "/termos",
