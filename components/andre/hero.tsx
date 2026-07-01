@@ -7,11 +7,12 @@ import {
   Clock,
 } from "lucide-react";
 import { ANDRE_CONFIG, waLink, telLink } from "./config";
+import { HeroScene } from "./hero-scene";
 
 export function Hero() {
   return (
     <section id="top" className="relative overflow-hidden">
-      <div className="absolute inset-0 andre-aurora pointer-events-none" />
+      <HeroScene />
       <div className="absolute inset-0 andre-grid-bg pointer-events-none" />
 
       <div className="relative max-w-6xl mx-auto px-5 lg:px-8 pt-16 lg:pt-24 pb-20 lg:pb-28">
