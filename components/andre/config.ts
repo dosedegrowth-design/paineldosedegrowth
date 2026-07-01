@@ -4,7 +4,7 @@ export const ANDRE_CONFIG = {
   phone: "(11) 96581-2966",
   phoneRaw: "5511965812966",
   whatsappMessage:
-    "Olá, André! Vim pelo site e quero um orçamento rápido de ar condicionado.",
+    "Oi, André! Vi seu site e quero falar sobre ar condicionado.",
   emergencyText: "Atendimento em até 24h · Orçamento sem compromisso",
   city: "São Paulo e Grande SP",
   yearsExperience: 12,
