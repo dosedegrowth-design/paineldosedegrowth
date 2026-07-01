@@ -1,8 +1,8 @@
 export const ANDRE_CONFIG = {
   brand: "André Ar Condicionado",
   tagline: "Instalação, manutenção e higienização com garantia real.",
-  phone: "(11) 94000-0000",
-  phoneRaw: "5511940000000",
+  phone: "(11) 96581-2966",
+  phoneRaw: "5511965812966",
   whatsappMessage:
     "Olá, André! Vim pelo site e quero um orçamento rápido de ar condicionado.",
   emergencyText: "Atendimento em até 24h · Orçamento sem compromisso",
