@@ -52,15 +52,30 @@ export function Equipment() {
   return (
     <section id="equipamentos" className="relative py-20 lg:py-28 overflow-hidden">
       <div className="andre-bg andre-bg-bars">
+        <svg className="sine" viewBox="0 0 1600 200" preserveAspectRatio="none">
+          <path
+            d="M0,100 C 100,20 200,180 300,100 C 400,20 500,180 600,100 C 700,20 800,180 900,100 C 1000,20 1100,180 1200,100 C 1300,20 1400,180 1500,100 L 1600,100"
+            stroke="#7dd3fc"
+            strokeWidth="2"
+            fill="none"
+          />
+          <path
+            d="M0,110 C 100,30 200,190 300,110 C 400,30 500,190 600,110 C 700,30 800,190 900,110 C 1000,30 1100,190 1200,110 C 1300,30 1400,190 1500,110 L 1600,110"
+            stroke="#38bdf8"
+            strokeWidth="1.5"
+            strokeOpacity="0.6"
+            fill="none"
+          />
+        </svg>
         <div className="bar-grid">
-          {Array.from({ length: 24 }).map((_, i) => (
+          {Array.from({ length: 32 }).map((_, i) => (
             <span
               key={i}
               className="bar"
               style={{
-                height: `${20 + ((i * 37) % 60)}%`,
-                animationDelay: `${(i % 8) * 0.2}s`,
-                animationDuration: `${2.2 + ((i * 13) % 20) / 10}s`,
+                height: `${30 + ((i * 37) % 65)}%`,
+                animationDelay: `${(i % 10) * 0.18}s`,
+                animationDuration: `${1.6 + ((i * 13) % 20) / 10}s`,
               }}
             />
           ))}

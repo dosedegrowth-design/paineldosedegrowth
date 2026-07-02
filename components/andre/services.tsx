@@ -65,6 +65,23 @@ export function Services() {
       <div className="andre-bg andre-bg-wind">
         <span className="wind-orb o1" />
         <span className="wind-orb o2" />
+        <span className="wind-orb o3" />
+        <svg className="fan" viewBox="0 0 200 200" fill="none">
+          <circle cx="100" cy="100" r="8" fill="#7dd3fc" />
+          <circle cx="100" cy="100" r="14" stroke="#38bdf8" strokeWidth="1" />
+          <path d="M100 20 C 130 40, 130 70, 100 100 C 90 70, 80 50, 100 20 Z" fill="#38bdf8" fillOpacity="0.7" />
+          <path d="M180 100 C 160 130, 130 130, 100 100 C 130 90, 150 80, 180 100 Z" fill="#38bdf8" fillOpacity="0.7" />
+          <path d="M100 180 C 70 160, 70 130, 100 100 C 110 130, 120 150, 100 180 Z" fill="#38bdf8" fillOpacity="0.7" />
+          <path d="M20 100 C 40 70, 70 70, 100 100 C 70 110, 50 120, 20 100 Z" fill="#38bdf8" fillOpacity="0.7" />
+          <circle cx="100" cy="100" r="96" stroke="#7dd3fc" strokeWidth="1.5" strokeDasharray="4 8" opacity="0.5" />
+        </svg>
+        <svg className="fan-small" viewBox="0 0 200 200" fill="none">
+          <circle cx="100" cy="100" r="6" fill="#7dd3fc" />
+          <path d="M100 30 C 125 45, 125 70, 100 100 C 92 70, 85 55, 100 30 Z" fill="#22d3ee" fillOpacity="0.6" />
+          <path d="M170 100 C 155 125, 130 125, 100 100 C 130 92, 145 85, 170 100 Z" fill="#22d3ee" fillOpacity="0.6" />
+          <path d="M100 170 C 75 155, 75 130, 100 100 C 108 130, 115 145, 100 170 Z" fill="#22d3ee" fillOpacity="0.6" />
+          <path d="M30 100 C 45 75, 70 75, 100 100 C 70 108, 55 115, 30 100 Z" fill="#22d3ee" fillOpacity="0.6" />
+        </svg>
       </div>
       <div className="relative z-10 max-w-6xl mx-auto px-5 lg:px-8">
         <div className="max-w-2xl mb-12">

@@ -27,12 +27,24 @@ export function Coverage() {
       style={{ background: "#070c18" }}
     >
       <div className="andre-bg andre-bg-pulse">
+        <span className="sweep" />
+        <svg className="arc" viewBox="0 0 1000 500" preserveAspectRatio="none">
+          <path d="M120,110 Q 400,-40 620,200" />
+          <path d="M620,200 Q 700,50 820,150" />
+          <path d="M120,110 Q 200,300 280,350" />
+          <path d="M280,350 Q 500,220 620,200" />
+          <path d="M280,350 Q 600,470 780,375" />
+          <path d="M820,150 Q 600,300 780,375" />
+          <path d="M450,275 Q 500,150 620,200" />
+        </svg>
         <span className="ping p1" />
         <span className="ping p2" />
         <span className="ping p3" />
         <span className="ping p4" />
         <span className="ping p5" />
         <span className="ping p6" />
+        <span className="ping p7" />
+        <span className="ping p8" />
       </div>
       <div className="relative z-10 max-w-6xl mx-auto px-5 lg:px-8">
         <div className="grid lg:grid-cols-[1fr_1.2fr] gap-10 lg:gap-14 items-start">

@@ -39,7 +39,26 @@ export function FAQ() {
       className="relative py-20 lg:py-28 border-y border-white/[0.06] overflow-hidden"
       style={{ background: "#070c18" }}
     >
-      <div className="andre-bg andre-bg-breath" />
+      <div className="andre-bg andre-bg-breath">
+        <span className="frost-lines" />
+        {(["c1", "c2", "c3"] as const).map((k) => (
+          <svg key={k} className={`crystal ${k}`} viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
+            <line x1="50" y1="5"  x2="50" y2="95" />
+            <line x1="5"  y1="50" x2="95" y2="50" />
+            <line x1="15" y1="15" x2="85" y2="85" />
+            <line x1="85" y1="15" x2="15" y2="85" />
+            <path d="M50 5   L46 12  M50 5   L54 12" />
+            <path d="M50 95  L46 88  M50 95  L54 88" />
+            <path d="M5 50   L12 46  M5 50   L12 54" />
+            <path d="M95 50  L88 46  M95 50  L88 54" />
+            <path d="M15 15  L22 15  M15 15  L15 22" />
+            <path d="M85 85  L78 85  M85 85  L85 78" />
+            <path d="M85 15  L78 15  M85 15  L85 22" />
+            <path d="M15 85  L22 85  M15 85  L15 78" />
+            <circle cx="50" cy="50" r="4" />
+          </svg>
+        ))}
+      </div>
       <div className="relative z-10 max-w-4xl mx-auto px-5 lg:px-8">
         <div className="mb-12 text-center">
           <span className="andre-chip">Dúvidas frequentes</span>

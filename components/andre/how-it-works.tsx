@@ -42,6 +42,17 @@ export function HowItWorks() {
         <span className="stream-line l3" />
         <span className="stream-line l4" />
         <span className="stream-line l5" />
+        <span className="stream-line l6" />
+        {(["f1", "f2", "f3", "f4"] as const).map((k) => (
+          <svg key={k} className={`stream-flake ${k}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+            <line x1="2" x2="22" y1="12" y2="12" />
+            <line x1="12" x2="12" y1="2" y2="22" />
+            <path d="m20 16-4-4 4-4" />
+            <path d="m4 8 4 4-4 4" />
+            <path d="m16 4-4 4-4-4" />
+            <path d="m8 20 4-4 4 4" />
+          </svg>
+        ))}
       </div>
       <div className="relative z-10 max-w-6xl mx-auto px-5 lg:px-8">
         <div className="max-w-2xl mb-12">

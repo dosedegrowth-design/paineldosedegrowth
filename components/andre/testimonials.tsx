@@ -25,15 +25,18 @@ export function Testimonials() {
   return (
     <section className="relative py-20 lg:py-28 overflow-hidden">
       <div className="andre-bg andre-bg-rise">
-        {Array.from({ length: 18 }).map((_, i) => (
+        <span className="aurora-band a1" />
+        <span className="aurora-band a2" />
+        <span className="aurora-band a3" />
+        {Array.from({ length: 26 }).map((_, i) => (
           <span
             key={i}
             className="rise-flake"
             style={{
               left: `${(i * 53) % 100}%`,
-              animationDelay: `${(i % 9) * 1.4}s`,
-              animationDuration: `${12 + (i % 6) * 1.5}s`,
-              opacity: 0.3 + ((i * 17) % 40) / 100,
+              animationDelay: `${(i % 9) * 1.1}s`,
+              animationDuration: `${9 + (i % 6) * 1.5}s`,
+              opacity: 0.5 + ((i * 17) % 40) / 100,
             }}
           />
         ))}

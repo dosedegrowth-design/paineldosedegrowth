@@ -9,6 +9,24 @@ export function FinalCTA() {
       <div className="andre-bg andre-bg-beam">
         <span className="beam" />
         <span className="beam b2" />
+        <span className="beam b3" />
+        {Array.from({ length: 20 }).map((_, i) => {
+          const angle = (i / 20) * Math.PI * 2;
+          const dist = 60 + ((i * 13) % 30);
+          const tx = `${Math.cos(angle) * dist}vw`;
+          const ty = `${Math.sin(angle) * dist}vh`;
+          return (
+            <span
+              key={i}
+              className="burst-flake"
+              style={{
+                animationDelay: `${(i % 10) * 0.35}s`,
+                ["--tx" as string]: tx,
+                ["--ty" as string]: ty,
+              } as React.CSSProperties}
+            />
+          );
+        })}
       </div>
       <div className="relative z-10 max-w-4xl mx-auto px-5 lg:px-8 text-center">
         <span className="andre-chip">Bora resolver?</span>
