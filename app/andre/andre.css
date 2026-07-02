@@ -297,3 +297,262 @@
   .hero-star,
   .hero-window-blink { animation: none !important; }
 }
+
+/* ============================================================ */
+/* SECTION BACKGROUND VARIANTS — cada seção tem sua vibe fria    */
+/* ============================================================ */
+
+.andre-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* ----- 1. WIND LANES: linhas de vento frio deslizando (services) ----- */
+.andre-bg-wind::before,
+.andre-bg-wind::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(90deg, transparent 0%, rgba(125, 211, 252, 0.14) 25%, rgba(56, 189, 248, 0.1) 50%, transparent 100%);
+  background-size: 60% 1px;
+  background-repeat: no-repeat;
+  background-position: -60% 20%, 30% 40%, -30% 60%, 60% 80%;
+  animation: andre-wind-slide 8s linear infinite;
+  opacity: 0.7;
+}
+.andre-bg-wind::after {
+  background-position: -60% 25%, 30% 55%, -30% 75%;
+  animation-duration: 11s;
+  animation-delay: -3s;
+  opacity: 0.5;
+}
+.andre-bg-wind .wind-orb {
+  position: absolute;
+  width: 480px;
+  height: 480px;
+  border-radius: 999px;
+  filter: blur(80px);
+  opacity: 0.35;
+  animation: andre-orb-float 14s ease-in-out infinite;
+}
+.andre-bg-wind .wind-orb.o1 {
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.7), transparent 60%);
+  top: -20%; left: -10%;
+}
+.andre-bg-wind .wind-orb.o2 {
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.55), transparent 60%);
+  bottom: -20%; right: -10%;
+  animation-delay: -7s;
+}
+@keyframes andre-wind-slide {
+  0%   { transform: translateX(-10%); }
+  100% { transform: translateX(20%); }
+}
+@keyframes andre-orb-float {
+  0%, 100% { transform: translate3d(0, 0, 0)      scale(1); }
+  50%      { transform: translate3d(6%, 4%, 0)    scale(1.1); }
+}
+
+/* ----- 2. STREAM: correntes horizontais de ar (how-it-works) ----- */
+.andre-bg-stream {
+  background: linear-gradient(180deg, transparent, rgba(56,189,248,0.02) 40%, transparent);
+}
+.andre-bg-stream .stream-line {
+  position: absolute;
+  left: -30%;
+  width: 60%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(125, 211, 252, 0.55), transparent);
+  animation: andre-stream-flow linear infinite;
+  filter: blur(0.3px);
+}
+.andre-bg-stream .stream-line.l1 { top: 18%; animation-duration: 7s;  animation-delay: -0.5s; opacity: 0.9; }
+.andre-bg-stream .stream-line.l2 { top: 34%; animation-duration: 9s;  animation-delay: -3s;   opacity: 0.7; height: 2px; }
+.andre-bg-stream .stream-line.l3 { top: 52%; animation-duration: 6s;  animation-delay: -1.5s; opacity: 0.8; }
+.andre-bg-stream .stream-line.l4 { top: 68%; animation-duration: 10s; animation-delay: -4s;   opacity: 0.5; height: 2px; }
+.andre-bg-stream .stream-line.l5 { top: 84%; animation-duration: 8s;  animation-delay: -2s;   opacity: 0.6; }
+@keyframes andre-stream-flow {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(240vw); }
+}
+
+/* ----- 3. BARS: barras verticais tipo compressor pulsando (equipment) ----- */
+.andre-bg-bars {
+  background: linear-gradient(180deg, transparent, rgba(15, 23, 42, 0.4));
+}
+.andre-bg-bars .bar-grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  align-items: end;
+  padding: 0 5%;
+  gap: 0.5%;
+  opacity: 0.35;
+}
+.andre-bg-bars .bar {
+  border-radius: 3px 3px 0 0;
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.4), rgba(56, 189, 248, 0.05));
+  transform-origin: bottom;
+  animation: andre-bar-pulse ease-in-out infinite;
+}
+@keyframes andre-bar-pulse {
+  0%, 100% { transform: scaleY(0.4); opacity: 0.4; }
+  50%      { transform: scaleY(1);   opacity: 0.9; }
+}
+
+/* ----- 4. PULSE: pings de mapa (coverage) ----- */
+.andre-bg-pulse .ping {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.9);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
+}
+.andre-bg-pulse .ping::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border: 1.5px solid rgba(56, 189, 248, 0.55);
+  border-radius: 999px;
+  animation: andre-ping-ring 3s ease-out infinite;
+}
+.andre-bg-pulse .ping::before {
+  content: "";
+  position: absolute;
+  inset: -12px;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 999px;
+  animation: andre-ping-ring 3s ease-out infinite;
+  animation-delay: 0.6s;
+}
+.andre-bg-pulse .ping.p1 { top: 22%; left: 12%; }
+.andre-bg-pulse .ping.p2 { top: 40%; left: 62%; animation-delay: 1s; }
+.andre-bg-pulse .ping.p3 { top: 70%; left: 28%; animation-delay: 1.6s; }
+.andre-bg-pulse .ping.p4 { top: 30%; left: 82%; animation-delay: 0.4s; }
+.andre-bg-pulse .ping.p5 { top: 75%; left: 78%; animation-delay: 2s; }
+.andre-bg-pulse .ping.p6 { top: 55%; left: 45%; animation-delay: 0.8s; }
+@keyframes andre-ping-ring {
+  0%   { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(3.5); opacity: 0; }
+}
+.andre-bg-pulse::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 40%, transparent 100%);
+}
+
+/* ----- 5. RISE: flocos subindo em vez de caindo (testimonials) ----- */
+.andre-bg-rise {
+  background: radial-gradient(ellipse 90% 60% at 50% 100%, rgba(56, 189, 248, 0.08), transparent 65%);
+}
+.andre-bg-rise .rise-flake {
+  position: absolute;
+  bottom: -20px;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: radial-gradient(circle, #e0f2fe 0%, rgba(224, 242, 254, 0) 70%);
+  box-shadow: 0 0 6px rgba(224, 242, 254, 0.6);
+  animation: andre-rise-float linear infinite;
+}
+@keyframes andre-rise-float {
+  0%   { transform: translate3d(0, 0, 0)          scale(1);   opacity: 0; }
+  10%  {                                                       opacity: 1; }
+  50%  { transform: translate3d(-15px, -50vh, 0)  scale(1.2); }
+  100% { transform: translate3d(10px, -110vh, 0)  scale(0.6); opacity: 0; }
+}
+
+/* ----- 6. BREATH: gradiente radial respirando (faq) ----- */
+.andre-bg-breath::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(56, 189, 248, 0.14), transparent 45%),
+    radial-gradient(circle at 70% 60%, rgba(34, 211, 238, 0.12), transparent 45%),
+    radial-gradient(circle at 50% 90%, rgba(125, 211, 252, 0.08), transparent 50%);
+  animation: andre-breath 12s ease-in-out infinite alternate;
+  filter: blur(20px);
+}
+@keyframes andre-breath {
+  0%   { transform: scale(1)     rotate(0deg);  opacity: 0.8; }
+  100% { transform: scale(1.15)  rotate(6deg);  opacity: 1; }
+}
+
+/* ----- 7. BEAM: feixe aurora intenso varrendo (final-cta) ----- */
+.andre-bg-beam {
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 50%, rgba(56, 189, 248, 0.18), transparent 70%);
+}
+.andre-bg-beam .beam {
+  position: absolute;
+  top: -20%;
+  left: -30%;
+  width: 60%;
+  height: 200%;
+  background: linear-gradient(90deg, transparent 0%, rgba(125, 211, 252, 0.28) 50%, transparent 100%);
+  transform: rotate(18deg);
+  filter: blur(40px);
+  animation: andre-beam-sweep 9s ease-in-out infinite alternate;
+}
+.andre-bg-beam .beam.b2 {
+  left: 60%;
+  background: linear-gradient(90deg, transparent 0%, rgba(34, 211, 238, 0.22) 50%, transparent 100%);
+  animation-duration: 12s;
+  animation-delay: -4s;
+  transform: rotate(-18deg);
+}
+@keyframes andre-beam-sweep {
+  0%   { transform: rotate(18deg)  translateX(0)    scaleY(1);   opacity: 0.6; }
+  100% { transform: rotate(18deg)  translateX(30%)  scaleY(1.1); opacity: 1; }
+}
+
+/* ----- 8. TRUST: pontinhos frios pulsando na linha (trust-bar) ----- */
+.andre-bg-trust {
+  background:
+    linear-gradient(180deg, rgba(56, 189, 248, 0.02), rgba(56, 189, 248, 0)),
+    radial-gradient(ellipse 100% 50% at 50% 50%, rgba(56, 189, 248, 0.06), transparent);
+}
+.andre-bg-trust::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(125, 211, 252, 0.6) 1px, transparent 2px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(90deg, transparent, black 30%, black 70%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 30%, black 70%, transparent);
+  animation: andre-trust-shine 6s ease-in-out infinite alternate;
+  opacity: 0.35;
+}
+@keyframes andre-trust-shine {
+  0%   { transform: translateX(-4%);  opacity: 0.25; }
+  100% { transform: translateX(4%);   opacity: 0.55; }
+}
+
+/* Reduced motion covers all */
+@media (prefers-reduced-motion: reduce) {
+  .andre-bg-wind::before,
+  .andre-bg-wind::after,
+  .andre-bg-wind .wind-orb,
+  .andre-bg-stream .stream-line,
+  .andre-bg-bars .bar,
+  .andre-bg-pulse .ping::before,
+  .andre-bg-pulse .ping::after,
+  .andre-bg-rise .rise-flake,
+  .andre-bg-breath::before,
+  .andre-bg-beam .beam,
+  .andre-bg-trust::before { animation: none !important; }
+}

@@ -23,8 +23,22 @@ const items = [
 
 export function Testimonials() {
   return (
-    <section className="relative py-20 lg:py-28">
-      <div className="max-w-6xl mx-auto px-5 lg:px-8">
+    <section className="relative py-20 lg:py-28 overflow-hidden">
+      <div className="andre-bg andre-bg-rise">
+        {Array.from({ length: 18 }).map((_, i) => (
+          <span
+            key={i}
+            className="rise-flake"
+            style={{
+              left: `${(i * 53) % 100}%`,
+              animationDelay: `${(i % 9) * 1.4}s`,
+              animationDuration: `${12 + (i % 6) * 1.5}s`,
+              opacity: 0.3 + ((i * 17) % 40) / 100,
+            }}
+          />
+        ))}
+      </div>
+      <div className="relative z-10 max-w-6xl mx-auto px-5 lg:px-8">
         <div className="max-w-2xl mb-12">
           <span className="andre-chip">Depoimentos</span>
           <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight">

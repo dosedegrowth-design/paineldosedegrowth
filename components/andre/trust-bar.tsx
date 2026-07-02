@@ -25,8 +25,9 @@ const items = [
 
 export function TrustBar() {
   return (
-    <section className="relative border-y border-white/[0.06] bg-[#070c18]/70">
-      <div className="max-w-6xl mx-auto px-5 lg:px-8 py-6 lg:py-8">
+    <section className="relative border-y border-white/[0.06] bg-[#070c18]/70 overflow-hidden">
+      <div className="andre-bg andre-bg-trust" />
+      <div className="relative z-10 max-w-6xl mx-auto px-5 lg:px-8 py-6 lg:py-8">
         <ul className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-4">
           {items.map((it) => (
             <li key={it.title} className="flex items-start gap-3">

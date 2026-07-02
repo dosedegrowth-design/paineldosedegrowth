@@ -6,7 +6,11 @@ export function FinalCTA() {
   return (
     <section className="relative py-20 lg:py-28 overflow-hidden">
       <div className="absolute inset-0 andre-aurora pointer-events-none" />
-      <div className="relative max-w-4xl mx-auto px-5 lg:px-8 text-center">
+      <div className="andre-bg andre-bg-beam">
+        <span className="beam" />
+        <span className="beam b2" />
+      </div>
+      <div className="relative z-10 max-w-4xl mx-auto px-5 lg:px-8 text-center">
         <span className="andre-chip">Bora resolver?</span>
         <h2 className="mt-5 text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight">
           Seu ar merece um técnico{" "}

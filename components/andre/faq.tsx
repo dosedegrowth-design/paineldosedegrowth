@@ -36,10 +36,11 @@ export function FAQ() {
   return (
     <section
       id="faq"
-      className="relative py-20 lg:py-28 border-y border-white/[0.06]"
+      className="relative py-20 lg:py-28 border-y border-white/[0.06] overflow-hidden"
       style={{ background: "#070c18" }}
     >
-      <div className="max-w-4xl mx-auto px-5 lg:px-8">
+      <div className="andre-bg andre-bg-breath" />
+      <div className="relative z-10 max-w-4xl mx-auto px-5 lg:px-8">
         <div className="mb-12 text-center">
           <span className="andre-chip">Dúvidas frequentes</span>
           <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight">

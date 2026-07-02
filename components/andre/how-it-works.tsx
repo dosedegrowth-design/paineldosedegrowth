@@ -33,10 +33,17 @@ export function HowItWorks() {
   return (
     <section
       id="como-funciona"
-      className="relative py-20 lg:py-28 border-y border-white/[0.06]"
+      className="relative py-20 lg:py-28 border-y border-white/[0.06] overflow-hidden"
       style={{ background: "#070c18" }}
     >
-      <div className="max-w-6xl mx-auto px-5 lg:px-8">
+      <div className="andre-bg andre-bg-stream">
+        <span className="stream-line l1" />
+        <span className="stream-line l2" />
+        <span className="stream-line l3" />
+        <span className="stream-line l4" />
+        <span className="stream-line l5" />
+      </div>
+      <div className="relative z-10 max-w-6xl mx-auto px-5 lg:px-8">
         <div className="max-w-2xl mb-12">
           <span className="andre-chip">Como funciona</span>
           <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight">

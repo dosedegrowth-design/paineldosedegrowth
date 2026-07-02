@@ -23,10 +23,18 @@ export function Coverage() {
   return (
     <section
       id="cobertura"
-      className="relative py-20 lg:py-28"
+      className="relative py-20 lg:py-28 overflow-hidden"
       style={{ background: "#070c18" }}
     >
-      <div className="max-w-6xl mx-auto px-5 lg:px-8">
+      <div className="andre-bg andre-bg-pulse">
+        <span className="ping p1" />
+        <span className="ping p2" />
+        <span className="ping p3" />
+        <span className="ping p4" />
+        <span className="ping p5" />
+        <span className="ping p6" />
+      </div>
+      <div className="relative z-10 max-w-6xl mx-auto px-5 lg:px-8">
         <div className="grid lg:grid-cols-[1fr_1.2fr] gap-10 lg:gap-14 items-start">
           <div>
             <span className="andre-chip">Cobertura</span>

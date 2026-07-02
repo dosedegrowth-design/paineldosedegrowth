@@ -61,8 +61,12 @@ const services = [
 
 export function Services() {
   return (
-    <section id="servicos" className="relative py-20 lg:py-28">
-      <div className="max-w-6xl mx-auto px-5 lg:px-8">
+    <section id="servicos" className="relative py-20 lg:py-28 overflow-hidden">
+      <div className="andre-bg andre-bg-wind">
+        <span className="wind-orb o1" />
+        <span className="wind-orb o2" />
+      </div>
+      <div className="relative z-10 max-w-6xl mx-auto px-5 lg:px-8">
         <div className="max-w-2xl mb-12">
           <span className="andre-chip">Serviços</span>
           <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight">

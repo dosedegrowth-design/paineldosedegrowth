@@ -50,8 +50,23 @@ const brands = [
 
 export function Equipment() {
   return (
-    <section id="equipamentos" className="relative py-20 lg:py-28">
-      <div className="max-w-6xl mx-auto px-5 lg:px-8">
+    <section id="equipamentos" className="relative py-20 lg:py-28 overflow-hidden">
+      <div className="andre-bg andre-bg-bars">
+        <div className="bar-grid">
+          {Array.from({ length: 24 }).map((_, i) => (
+            <span
+              key={i}
+              className="bar"
+              style={{
+                height: `${20 + ((i * 37) % 60)}%`,
+                animationDelay: `${(i % 8) * 0.2}s`,
+                animationDuration: `${2.2 + ((i * 13) % 20) / 10}s`,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+      <div className="relative z-10 max-w-6xl mx-auto px-5 lg:px-8">
         <div className="max-w-2xl mb-12">
           <span className="andre-chip">Equipamentos</span>
           <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight">
