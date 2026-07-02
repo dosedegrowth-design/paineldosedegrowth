@@ -1,10 +1,11 @@
-import { MessageCircle, ClipboardCheck, Wrench, Sparkles } from "lucide-react";
+import { ClipboardCheck, Wrench, Sparkles } from "lucide-react";
 import { waLink } from "./config";
+import { WhatsAppIcon } from "./whatsapp-icon";
 
 const steps = [
   {
     n: "01",
-    icon: MessageCircle,
+    icon: WhatsAppIcon,
     title: "Você fala no WhatsApp",
     desc: "Manda foto, modelo ou só descreve o problema. Em minutos você tem um retorno técnico.",
   },
@@ -96,8 +97,8 @@ export function HowItWorks() {
             rel="noopener noreferrer"
             className="andre-btn-primary inline-flex items-center gap-2 h-12 px-6 rounded-lg text-[15px]"
           >
-            <MessageCircle className="h-5 w-5" />
-            Começar agora pelo WhatsApp
+            <WhatsAppIcon className="h-5 w-5" />
+            Chamar André no WhatsApp
           </a>
         </div>
       </div>

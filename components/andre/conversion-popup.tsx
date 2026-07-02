@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
-import { X, MessageCircle, Sparkles } from "lucide-react";
+import { X, Sparkles } from "lucide-react";
 import { waLink } from "./config";
+import { WhatsAppIcon } from "./whatsapp-icon";
 
 const STORAGE_KEY = "andre_popup_seen_v1";
 const DELAY_MS = 15_000;
@@ -180,8 +181,8 @@ export function ConversionPopup() {
               type="submit"
               className="andre-btn-primary w-full h-12 rounded-lg inline-flex items-center justify-center gap-2 text-[15px] mt-2"
             >
-              <MessageCircle className="h-5 w-5" />
-              Falar no WhatsApp agora
+              <WhatsAppIcon className="h-5 w-5" />
+              Chamar André no WhatsApp
             </button>
 
             <p className="text-[11px] text-slate-500 text-center pt-1">

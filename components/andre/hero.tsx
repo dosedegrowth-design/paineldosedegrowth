@@ -1,5 +1,4 @@
 import {
-  MessageCircle,
   Phone,
   ShieldCheck,
   Zap,
@@ -8,6 +7,7 @@ import {
 } from "lucide-react";
 import { ANDRE_CONFIG, waLink, telLink } from "./config";
 import { HeroScene } from "./hero-scene";
+import { WhatsAppIcon } from "./whatsapp-icon";
 
 export function Hero() {
   return (
@@ -48,8 +48,8 @@ export function Hero() {
                 rel="noopener noreferrer"
                 className="andre-btn-primary inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg text-[15px]"
               >
-                <MessageCircle className="h-5 w-5" />
-                Falar no WhatsApp agora
+                <WhatsAppIcon className="h-5 w-5" />
+                Chamar André no WhatsApp
               </a>
               <a
                 href={telLink()}
@@ -140,8 +140,8 @@ export function Hero() {
                 rel="noopener noreferrer"
                 className="andre-btn-primary mt-5 w-full inline-flex items-center justify-center gap-2 h-11 rounded-lg text-sm"
               >
-                <MessageCircle className="h-4 w-4" />
-                Quero meu orçamento
+                <WhatsAppIcon className="h-4 w-4" />
+                Quero meu orçamento grátis
               </a>
             </div>
           </div>

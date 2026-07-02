@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Phone, MessageCircle, Snowflake } from "lucide-react";
+import { Phone, Snowflake } from "lucide-react";
 import { ANDRE_CONFIG, waLink, telLink } from "./config";
+import { WhatsAppIcon } from "./whatsapp-icon";
 
 const links = [
   { href: "#servicos", label: "Serviços" },
@@ -76,9 +77,9 @@ export function Navbar() {
             rel="noopener noreferrer"
             className="andre-btn-primary inline-flex items-center gap-2 h-10 px-4 rounded-md text-sm"
           >
-            <MessageCircle className="h-4 w-4" />
-            <span className="hidden sm:inline">Orçamento no WhatsApp</span>
-            <span className="sm:hidden">Orçar</span>
+            <WhatsAppIcon className="h-4 w-4" />
+            <span className="hidden sm:inline">Chamar no WhatsApp</span>
+            <span className="sm:hidden">WhatsApp</span>
           </a>
         </div>
       </div>

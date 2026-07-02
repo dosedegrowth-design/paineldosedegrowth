@@ -1,4 +1,5 @@
-import { Snowflake, MessageCircle, Phone, MapPin, Clock } from "lucide-react";
+import { Snowflake, Phone, MapPin, Clock } from "lucide-react";
+import { WhatsAppIcon } from "./whatsapp-icon";
 import { ANDRE_CONFIG, waLink, telLink } from "./config";
 
 export function Footer() {
@@ -52,7 +53,7 @@ export function Footer() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-slate-300 hover:text-white transition-colors"
                 >
-                  <MessageCircle
+                  <WhatsAppIcon
                     className="h-4 w-4"
                     style={{ color: "#7dd3fc" }}
                   />

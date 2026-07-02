@@ -1,7 +1,7 @@
 "use client";
 
-import { MessageCircle } from "lucide-react";
 import { waLink } from "./config";
+import { WhatsAppIcon } from "./whatsapp-icon";
 
 export function WhatsAppFloat() {
   return (
@@ -17,7 +17,7 @@ export function WhatsAppFloat() {
           "0 12px 30px -8px rgba(37, 211, 102, 0.55), inset 0 1px 0 rgba(255,255,255,0.25)",
       }}
     >
-      <MessageCircle className="h-6 w-6 text-white" fill="white" strokeWidth={1.5} />
+      <WhatsAppIcon className="h-7 w-7 text-white" />
     </a>
   );
 }

@@ -1,5 +1,6 @@
-import { MessageCircle, Phone } from "lucide-react";
+import { Phone } from "lucide-react";
 import { ANDRE_CONFIG, waLink, telLink } from "./config";
+import { WhatsAppIcon } from "./whatsapp-icon";
 
 export function FinalCTA() {
   return (
@@ -23,8 +24,8 @@ export function FinalCTA() {
             rel="noopener noreferrer"
             className="andre-btn-primary inline-flex items-center gap-2 h-12 px-7 rounded-lg text-[15px]"
           >
-            <MessageCircle className="h-5 w-5" />
-            Chamar no WhatsApp
+            <WhatsAppIcon className="h-5 w-5" />
+            Chamar André no WhatsApp
           </a>
           <a
             href={telLink()}
