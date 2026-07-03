@@ -116,6 +116,13 @@ function CrystalField() {
 }
 
 export function AmbientCrystals() {
+  /* mobile: GPU vale mais que ambiência — não monta */
+  if (
+    typeof window !== "undefined" &&
+    (window.innerWidth < 768 || window.matchMedia("(pointer: coarse)").matches)
+  ) {
+    return null;
+  }
   return (
     <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden>
       <Canvas

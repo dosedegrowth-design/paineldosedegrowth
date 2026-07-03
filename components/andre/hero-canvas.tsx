@@ -16,11 +16,14 @@ import { MathUtils } from "three";
 import type { Group, Mesh, MeshStandardMaterial, MeshBasicMaterial } from "three";
 import { MistJet, makePuffTexture } from "./mist-jet";
 
-/* câmera cinematográfica: dolly e elevação suaves conforme o scroll */
+/* câmera cinematográfica: dolly com scroll SÓ no desktop —
+   no mobile o canvas fica abaixo da dobra e o dolly tirava o
+   aparelho do quadro (caixa vazia). */
 function CameraRig() {
   useFrame((state, delta) => {
-    const p = MathUtils.clamp(window.scrollY / 700, 0, 1);
     const cam = state.camera;
+    const desktop = window.innerWidth >= 1024;
+    const p = desktop ? MathUtils.clamp(window.scrollY / 700, 0, 1) : 0;
     cam.position.z = MathUtils.damp(cam.position.z, 5.6 - p * 0.9, 2.5, delta);
     cam.position.y = MathUtils.damp(cam.position.y, 0.2 + p * 0.6, 2.5, delta);
     cam.lookAt(0, -p * 0.25, 0);
@@ -179,7 +182,11 @@ function SplitUnit() {
       </group>
 
       {/* névoa de ar frio realista, dirigida pelo scroll */}
-      <MistJet count={220} />
+      <MistJet
+        count={
+          typeof window !== "undefined" && window.innerWidth < 768 ? 130 : 220
+        }
+      />
     </group>
   );
 }
