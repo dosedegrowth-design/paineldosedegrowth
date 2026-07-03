@@ -25,14 +25,9 @@ export function Hero() {
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.02] tracking-tight">
-              <span className="glitch" data-text="Ar que trabalha.">
-                Ar que trabalha.
-              </span>
+              Ar que trabalha.
               <br />
-              <span className="andre-gradient-text">
-                Técnico que resolve.
-                <span className="tech-caret" style={{ color: "#7dd3fc" }} />
-              </span>
+              <span className="andre-gradient-text">Técnico que resolve.</span>
             </h1>
 
             <p className="mt-6 text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed">
@@ -77,15 +72,9 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Right: janela pro 3D (a unidade fixa vive atrás) + quote widget */}
+          {/* Right: espaço aberto pro 3D (a unidade fixa vive atrás) + quote widget */}
           <div className="andre-anim-in [animation-delay:120ms] flex flex-col gap-5">
-            <div className="relative h-[240px] sm:h-[300px] lg:h-[340px] rounded-2xl border border-sky-400/15 flex items-end justify-between p-4 pointer-events-none">
-              <span className="tech-stamp">UNIDADE_3D_AO_VIVO</span>
-              <span className="tech-stamp">ROLE_P/_EXPLODIR ▼</span>
-              {/* cantos HUD */}
-              <span className="absolute top-2 left-2 w-5 h-5 border-l border-t border-sky-400/50" />
-              <span className="absolute top-2 right-2 w-5 h-5 border-r border-t border-sky-400/50" />
-            </div>
+            <div className="h-[200px] sm:h-[260px] lg:h-[320px] pointer-events-none" aria-hidden />
             <div className="andre-glass rounded-2xl p-6 lg:p-7 relative">
               <div
                 className="absolute -top-3 left-6 andre-chip"

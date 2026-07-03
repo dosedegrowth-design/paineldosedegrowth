@@ -332,6 +332,10 @@
   color: rgba(148, 163, 184, 0.7);
   text-shadow: none;
 }
+@media (max-width: 767px) {
+  .tech-readout,
+  .tech-bracket { display: none; }
+}
 .tech-dot {
   display: inline-block;
   width: 6px;

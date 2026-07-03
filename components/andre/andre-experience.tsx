@@ -240,27 +240,32 @@ function Scene() {
 
     const vp = state.viewport;
     const narrow = vp.width < 5;
-    const baseScale = narrow ? 0.55 : 0.95;
-    const heroX = narrow ? 0 : Math.min(2.2, vp.width * 0.21);
-    const heroY = narrow ? 1.15 : 0.15;
+    /* escala contida: nunca invade a coluna de texto */
+    const baseScale = narrow ? 0.42 : Math.min(0.62, vp.width * 0.068);
+    /* desktop: canal direito; mobile: faixa do spacer abaixo do texto */
+    const heroX = narrow ? 0 : Math.min(2.6, vp.width * 0.25);
+    const heroY = narrow ? -1.3 : 1.05;
 
     const t = state.clock.elapsedTime;
 
     if (unit.current) {
-      /* posição: hero → centro → recuo p/ cidade → centro no burst */
+      /* hero (lado direito) → centro sereno → recuo p/ cidade → centro no burst */
+      const midX = narrow ? 0 : heroX * 0.55;
       const cx =
-        heroX * intro + (-vp.width * 0.28) * cityK * (1 - burst);
+        heroX * intro +
+        midX * (1 - intro) * (1 - cityK) +
+        (-vp.width * 0.26) * cityK * (1 - burst);
       const cy =
         heroY * intro +
-        0.12 +
-        0.9 * cityK * (1 - burst) +
+        0.15 * (1 - intro) +
+        0.95 * cityK * (1 - burst) +
         Math.sin(t * 0.9) * 0.05;
       unit.current.position.x = cx;
       unit.current.position.y = cy;
 
       const s =
-        baseScale * (1 - 0.55 * cityK) * (1 + 0.12 * burst) +
-        0.06 * explode;
+        baseScale * (1 - 0.5 * cityK) * (1 + 0.1 * burst) +
+        0.04 * explode;
       unit.current.scale.setScalar(s);
 
       unit.current.rotation.y =

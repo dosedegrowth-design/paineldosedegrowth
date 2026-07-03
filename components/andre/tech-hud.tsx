@@ -54,9 +54,9 @@ export function TechHud() {
           zIndex: 24,
           pointerEvents: "none",
           background:
-            "repeating-linear-gradient(0deg, rgba(56,189,248,0.035) 0px, rgba(56,189,248,0.035) 1px, transparent 1px, transparent 3px)",
+            "repeating-linear-gradient(0deg, rgba(56,189,248,0.02) 0px, rgba(56,189,248,0.02) 1px, transparent 1px, transparent 4px)",
           mixBlendMode: "overlay",
-          opacity: 0.7,
+          opacity: 0.3,
         }}
       />
       {/* Corner brackets */}
