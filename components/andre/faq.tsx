@@ -37,7 +37,7 @@ export function FAQ() {
     <section
       id="faq"
       className="relative py-20 lg:py-28 border-y border-white/[0.06] overflow-hidden"
-      style={{ background: "#070c18" }}
+      style={{ background: "rgba(7, 12, 24, 0.6)" }}
     >
       <div className="andre-bg andre-bg-breath">
         <span className="frost-lines" />

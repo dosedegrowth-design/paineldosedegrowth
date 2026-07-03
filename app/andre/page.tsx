@@ -12,19 +12,24 @@ import { Footer } from "@/components/andre/footer";
 import { WhatsAppFloat } from "@/components/andre/whatsapp-float";
 import { ConversionPopup } from "@/components/andre/conversion-popup";
 import { TechHud } from "@/components/andre/tech-hud";
+import { TickerTape } from "@/components/andre/ticker-tape";
+import { AndreExperienceClient } from "@/components/andre/andre-experience-client";
 
 export default function AndrePage() {
   return (
     <>
+      <AndreExperienceClient />
       <Navbar />
-      <main>
+      <main className="relative">
         <Hero />
         <TrustBar />
+        <TickerTape />
         <Services />
         <HowItWorks />
         <Equipment />
         <Coverage />
         <Testimonials />
+        <TickerTape reverse />
         <FAQ />
         <FinalCTA />
       </main>

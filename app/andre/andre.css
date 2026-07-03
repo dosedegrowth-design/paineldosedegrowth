@@ -424,6 +424,66 @@
   95% { transform: translate(1px, 0);     opacity: 0.7; }
 }
 
+/* ============ TICKER KINETIC ============ */
+.andre-ticker {
+  overflow: hidden;
+  border-top: 1px solid rgba(56, 189, 248, 0.2);
+  border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+  background: rgba(5, 9, 20, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 12px 0;
+  position: relative;
+  z-index: 10;
+}
+.andre-ticker-track {
+  display: flex;
+  gap: 3rem;
+  width: max-content;
+  animation: andre-ticker-scroll 26s linear infinite;
+  will-change: transform;
+}
+.andre-ticker[data-reverse="true"] .andre-ticker-track {
+  animation-direction: reverse;
+}
+.andre-ticker-item {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(125, 211, 252, 0.9);
+  text-shadow: 0 0 10px rgba(56, 189, 248, 0.55);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 3rem;
+}
+.andre-ticker-sep {
+  color: rgba(56, 189, 248, 0.5);
+  font-size: 11px;
+}
+@keyframes andre-ticker-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .andre-ticker-track { animation: none; }
+}
+
+/* Scroll progress bar */
+.andre-scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  z-index: 45;
+  background: linear-gradient(90deg, #38bdf8, #22d3ee, #7dd3fc);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.8);
+  pointer-events: none;
+}
+
 /* Bigger neon grid variant */
 .andre-grid-neon {
   background-image:

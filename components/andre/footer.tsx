@@ -6,7 +6,7 @@ export function Footer() {
   return (
     <footer
       className="border-t border-white/[0.06] py-12 lg:py-16"
-      style={{ background: "#050914" }}
+      style={{ background: "rgba(5, 9, 20, 0.85)" }}
     >
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
         <div className="grid md:grid-cols-4 gap-8">

@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 
 export function TechHud() {
   const glowRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
@@ -11,12 +12,25 @@ export function TechHud() {
       glowRef.current.style.setProperty("--gx", `${e.clientX}px`);
       glowRef.current.style.setProperty("--gy", `${e.clientY}px`);
     };
+    const onScroll = () => {
+      if (!barRef.current) return;
+      const doc = document.documentElement;
+      const max = Math.max(1, doc.scrollHeight - window.innerHeight);
+      barRef.current.style.width = `${(window.scrollY / max) * 100}%`;
+    };
+    onScroll();
     window.addEventListener("mousemove", onMove, { passive: true });
-    return () => window.removeEventListener("mousemove", onMove);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
   return (
     <>
+      {/* Barra de progresso de scroll */}
+      <div ref={barRef} className="andre-scroll-progress" aria-hidden />
       {/* Cursor spotlight */}
       <div
         ref={glowRef}

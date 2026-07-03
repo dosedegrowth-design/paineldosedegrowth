@@ -23,8 +23,8 @@ export function Coverage() {
   return (
     <section
       id="cobertura"
-      className="relative py-20 lg:py-28 overflow-hidden"
-      style={{ background: "#070c18" }}
+      className="relative py-24 lg:py-40 overflow-hidden"
+      style={{ background: "rgba(7, 12, 24, 0.35)" }}
     >
       <div className="andre-bg andre-bg-pulse">
         <span className="sweep" />

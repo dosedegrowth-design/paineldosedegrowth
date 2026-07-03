@@ -6,14 +6,11 @@ import {
   Clock,
 } from "lucide-react";
 import { ANDRE_CONFIG, waLink, telLink } from "./config";
-import { HeroScene } from "./hero-scene";
 import { WhatsAppIcon } from "./whatsapp-icon";
-import { HeroCanvasClient } from "./hero-canvas-client";
 
 export function Hero() {
   return (
-    <section id="top" className="relative overflow-hidden">
-      <HeroScene />
+    <section id="top" className="relative overflow-hidden lg:min-h-[94vh] flex items-center">
       <div className="absolute inset-0 andre-grid-bg pointer-events-none" />
 
       <div className="relative max-w-6xl mx-auto px-5 lg:px-8 pt-16 lg:pt-24 pb-20 lg:pb-28">
@@ -80,14 +77,14 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Right: 3D unit + quote widget */}
+          {/* Right: janela pro 3D (a unidade fixa vive atrás) + quote widget */}
           <div className="andre-anim-in [animation-delay:120ms] flex flex-col gap-5">
-            <div className="relative h-[300px] sm:h-[360px] lg:h-[380px] rounded-2xl overflow-hidden andre-glass">
-              <HeroCanvasClient />
-              <div className="pointer-events-none absolute bottom-2 left-3 right-3 flex items-center justify-between text-[10px] uppercase tracking-[0.18em] text-slate-400">
-                <span>Arraste para girar</span>
-                <span style={{ color: "#7dd3fc" }}>· 3D real</span>
-              </div>
+            <div className="relative h-[240px] sm:h-[300px] lg:h-[340px] rounded-2xl border border-sky-400/15 flex items-end justify-between p-4 pointer-events-none">
+              <span className="tech-stamp">UNIDADE_3D_AO_VIVO</span>
+              <span className="tech-stamp">ROLE_P/_EXPLODIR ▼</span>
+              {/* cantos HUD */}
+              <span className="absolute top-2 left-2 w-5 h-5 border-l border-t border-sky-400/50" />
+              <span className="absolute top-2 right-2 w-5 h-5 border-r border-t border-sky-400/50" />
             </div>
             <div className="andre-glass rounded-2xl p-6 lg:p-7 relative">
               <div
