@@ -12,53 +12,8 @@ import {
   Lightformer,
   RoundedBox,
 } from "@react-three/drei";
-import type { Group, Mesh, MeshStandardMaterial, Points } from "three";
-
-function ColdAir({ count = 90 }: { count?: number }) {
-  const ref = useRef<Points>(null);
-  const positions = useMemo(() => {
-    const arr = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      arr[i * 3] = (Math.random() - 0.5) * 9;
-      arr[i * 3 + 1] = (Math.random() - 0.5) * 6;
-      arr[i * 3 + 2] = (Math.random() - 0.5) * 4;
-    }
-    return arr;
-  }, [count]);
-
-  useFrame((_, delta) => {
-    if (!ref.current) return;
-    const arr = ref.current.geometry.attributes.position.array as Float32Array;
-    for (let i = 0; i < count; i++) {
-      arr[i * 3 + 1] -= delta * 0.35;
-      arr[i * 3] += Math.sin(arr[i * 3 + 1] * 0.9 + i) * delta * 0.05;
-      if (arr[i * 3 + 1] < -3) arr[i * 3 + 1] = 3;
-    }
-    ref.current.geometry.attributes.position.needsUpdate = true;
-  });
-
-  return (
-    <points ref={ref}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={count}
-          array={positions}
-          itemSize={3}
-          args={[positions, 3]}
-        />
-      </bufferGeometry>
-      <pointsMaterial
-        size={0.05}
-        color="#bae6fd"
-        transparent
-        opacity={0.75}
-        depthWrite={false}
-        sizeAttenuation
-      />
-    </points>
-  );
-}
+import type { Group, Mesh, MeshStandardMaterial } from "three";
+import { MistJet } from "./mist-jet";
 
 function SplitUnit() {
   const group = useRef<Group>(null);
@@ -157,19 +112,8 @@ function SplitUnit() {
         </group>
       </group>
 
-      {/* glow de ar frio saindo */}
-      <mesh position={[0, -1.0, 0.55]}>
-        <sphereGeometry args={[0.32, 24, 24]} />
-        <meshStandardMaterial
-          color="#7dd3fc"
-          emissive="#38bdf8"
-          emissiveIntensity={2}
-          toneMapped={false}
-          transparent
-          opacity={0.35}
-          depthWrite={false}
-        />
-      </mesh>
+      {/* névoa de ar frio realista, dirigida pelo scroll */}
+      <MistJet count={220} />
     </group>
   );
 }
@@ -193,7 +137,6 @@ export function HeroCanvas() {
             <SplitUnit />
           </group>
         </Float>
-        <ColdAir count={90} />
         <ContactShadows
           position={[0, -1.5, 0]}
           opacity={0.4}

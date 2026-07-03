@@ -14,12 +14,14 @@ import { FinalCTA } from "@/components/andre/final-cta";
 import { Footer } from "@/components/andre/footer";
 import { WhatsAppFloat } from "@/components/andre/whatsapp-float";
 import { ConversionPopup } from "@/components/andre/conversion-popup";
+import { AmbientCrystalsClient } from "@/components/andre/ambient-crystals-client";
 
 export default function AndrePage() {
   return (
     <>
+      <AmbientCrystalsClient />
       <Navbar />
-      <main>
+      <main className="relative z-10">
         <Hero />
         <TrustBar />
         <Services />
