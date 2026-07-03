@@ -20,6 +20,7 @@ import { ThermoOverlay } from "@/components/andre/thermo-overlay";
 import { SmoothScroll } from "@/components/andre/smooth-scroll";
 import { Manifesto } from "@/components/andre/manifesto";
 import { CursorGlow } from "@/components/andre/cursor-glow";
+import { SiteFrame } from "@/components/andre/site-frame";
 
 export default function AndrePage() {
   return (
@@ -28,6 +29,7 @@ export default function AndrePage() {
       <AmbientCrystalsClient />
       <ThermoOverlay />
       <CursorGlow />
+      <SiteFrame />
       <Navbar />
       <main className="relative z-10">
         <Hero />

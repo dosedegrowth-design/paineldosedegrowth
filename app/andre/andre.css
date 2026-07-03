@@ -75,6 +75,63 @@ html {
     0 0 32px -12px rgba(56, 189, 248, 0.35);
 }
 
+/* ---------- assinatura visual de estúdio ---------- */
+
+/* grão de filme global — mata o "liso de IA" */
+.andre-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+/* tipografia gigante vazada (marca d'água editorial) */
+.andre-watermark {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: 900;
+  font-size: clamp(5rem, 16vw, 15rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(125, 211, 252, 0.1);
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* trilho lateral fixo — assinatura de site premiado */
+.andre-siderail {
+  position: fixed;
+  left: 22px;
+  bottom: 110px;
+  z-index: 20;
+  display: none;
+  align-items: center;
+  gap: 14px;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(148, 163, 184, 0.55);
+}
+.andre-siderail::after {
+  content: "";
+  width: 1px;
+  height: 64px;
+  background: linear-gradient(0deg, rgba(56, 189, 248, 0.5), transparent);
+}
+@media (min-width: 1024px) {
+  .andre-siderail { display: flex; }
+}
+
 /* card em destaque do pricing: profundidade real */
 .andre-card-featured {
   background:

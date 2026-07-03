@@ -1,6 +1,7 @@
 import { Star } from "lucide-react";
 import { Chapter } from "./chapter";
 import { RevealSection, TiltCard } from "./tilt-card";
+import { Watermark } from "./site-frame";
 
 const items = [
   {
@@ -31,8 +32,11 @@ const items = [
 
 export function Testimonials() {
   return (
-    <section className="relative py-24 lg:py-36">
-      <div className="max-w-6xl mx-auto px-5 lg:px-8">
+    <section className="relative py-24 lg:py-36 overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none" aria-hidden>
+        <Watermark text="CONFIANÇA" top="8%" />
+      </div>
+      <div className="relative max-w-6xl mx-auto px-5 lg:px-8">
         <RevealSection className="max-w-2xl mb-12">
           <Chapter n="09" label="Clientes" />
           <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] font-black leading-tight tracking-tight text-white">

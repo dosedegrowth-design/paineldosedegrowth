@@ -3,6 +3,7 @@ import { waLink } from "./config";
 import { WhatsAppIcon } from "./whatsapp-icon";
 import { RevealSection, TiltCard } from "./tilt-card";
 import { Chapter } from "./chapter";
+import { Watermark } from "./site-frame";
 
 const plans = [
   {
@@ -53,9 +54,27 @@ export function Pricing() {
   return (
     <section
       id="precos"
-      className="relative py-24 lg:py-36 bg-white/[0.02] border-y border-white/[0.06]"
+      className="relative py-24 lg:py-36 border-y border-white/[0.06] overflow-hidden"
     >
-      <div className="max-w-6xl mx-auto px-5 lg:px-8">
+      {/* composição de fundo: luz + tipografia vazada */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden>
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(55% 45% at 50% 78%, rgba(34, 211, 238, 0.13), transparent 68%), radial-gradient(40% 32% at 12% 12%, rgba(56, 189, 248, 0.08), transparent 60%)",
+          }}
+        />
+        <Watermark text="ORÇAMENTO" top="4%" />
+        <div
+          className="absolute inset-x-0 bottom-0 h-40"
+          style={{
+            background:
+              "linear-gradient(0deg, rgba(6,10,20,0.9), transparent)",
+          }}
+        />
+      </div>
+      <div className="relative max-w-6xl mx-auto px-5 lg:px-8">
         <RevealSection className="max-w-2xl mx-auto text-center mb-14 lg:mb-20">
           <div className="flex justify-center">
             <Chapter n="06" label="Investimento" />
@@ -142,14 +161,10 @@ export function Pricing() {
                   href={waLink(p.message)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`mt-8 inline-flex items-center justify-center gap-2 h-12 rounded-2xl text-sm font-bold transition-all ${
-                    p.featured ? "andre-btn-primary" : "andre-btn-ghost"
-                  }`}
+                  className="andre-btn-primary mt-8 inline-flex w-full items-center justify-center gap-2 h-12 px-4 rounded-2xl text-sm whitespace-nowrap"
                 >
-                  <WhatsAppIcon
-                    className={`h-4 w-4 ${p.featured ? "" : "text-green-500"}`}
-                  />
-                  Pedir orçamento exato
+                  <WhatsAppIcon className="h-4 w-4 shrink-0" />
+                  Pedir orçamento
                 </a>
               </TiltCard>
             </div>
