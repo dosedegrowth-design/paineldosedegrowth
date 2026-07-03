@@ -75,6 +75,19 @@ html {
     0 0 32px -12px rgba(56, 189, 248, 0.35);
 }
 
+/* card em destaque do pricing: profundidade real */
+.andre-card-featured {
+  background:
+    linear-gradient(180deg, rgba(8, 47, 73, 0.55) 0%, rgba(13, 20, 36, 0.95) 55%);
+  border: 1px solid rgba(34, 211, 238, 0.35);
+  border-radius: 24px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    0 24px 60px -20px rgba(0, 0, 0, 0.75),
+    0 0 50px -12px rgba(34, 211, 238, 0.3);
+}
+
 .andre-gradient-text {
   background: linear-gradient(120deg, #7dd3fc 0%, #22d3ee 55%, #38bdf8 100%);
   -webkit-background-clip: text;
