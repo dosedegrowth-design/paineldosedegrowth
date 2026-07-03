@@ -31,12 +31,14 @@ export function FieldGallery() {
             alt="Recarga de gás com manômetro de precisão"
             caption="RECARGA_COM_MANOMETRO"
             ratio="3/4"
+            delay={0.12}
           />
           <PhotoPanel
             src="/andre/ambiente-quarto.jpg"
             alt="Quarto climatizado com split instalado e acabamento limpo"
             caption="RESULTADO_ENTREGUE"
             ratio="3/4"
+            delay={0.24}
             className="sm:col-span-2 lg:col-span-1"
           />
         </div>
