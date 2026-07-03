@@ -13,6 +13,7 @@ import { WhatsAppFloat } from "@/components/andre/whatsapp-float";
 import { ConversionPopup } from "@/components/andre/conversion-popup";
 import { TechHud } from "@/components/andre/tech-hud";
 import { AndreExperienceClient } from "@/components/andre/andre-experience-client";
+import { FieldGallery } from "@/components/andre/field-gallery";
 
 export default function AndrePage() {
   return (
@@ -24,6 +25,7 @@ export default function AndrePage() {
         <TrustBar />
         <Services />
         <HowItWorks />
+        <FieldGallery />
         <Equipment />
         <Coverage />
         <Testimonials />
