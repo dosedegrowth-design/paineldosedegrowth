@@ -76,7 +76,7 @@ export function Hero() {
                 className="andre-btn-primary inline-flex items-center justify-center gap-2 h-13 px-7 rounded-sm text-[15px]"
               >
                 <WhatsAppIcon className="h-5 w-5" />
-                Solicitar visita técnica
+                Solicitar visita no WhatsApp
               </a>
             </Magnetic>
             <span className="font-tech text-xs tracking-[0.18em] text-[var(--andre-muted)] uppercase">

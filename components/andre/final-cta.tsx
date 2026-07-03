@@ -31,9 +31,9 @@ export function FinalCTA() {
                 href={waLink()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 h-12 px-7 rounded-xl text-[15px] font-bold bg-white text-slate-900 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
+                className="andre-btn-primary inline-flex items-center gap-2 h-12 px-7 rounded-xl text-[15px]"
               >
-                <WhatsAppIcon className="h-5 w-5 text-green-600" />
+                <WhatsAppIcon className="h-5 w-5" />
                 Chamar no WhatsApp
               </a>
               <a

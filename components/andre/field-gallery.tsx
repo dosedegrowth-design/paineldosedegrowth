@@ -78,7 +78,7 @@ export function FieldGallery() {
                   className="andre-btn-primary mt-6 inline-flex items-center gap-2 h-12 px-6 rounded-2xl text-[15px]"
                 >
                   <WhatsAppIcon className="h-5 w-5" />
-                  Pedir orçamento
+                  Orçamento no WhatsApp
                 </a>
               </div>
             </div>

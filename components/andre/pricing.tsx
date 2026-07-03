@@ -164,7 +164,7 @@ export function Pricing() {
                   className="andre-btn-primary mt-8 inline-flex w-full items-center justify-center gap-2 h-12 px-4 rounded-2xl text-sm whitespace-nowrap"
                 >
                   <WhatsAppIcon className="h-4 w-4 shrink-0" />
-                  Pedir orçamento
+                  Orçamento no WhatsApp
                 </a>
               </TiltCard>
             </div>

@@ -15,7 +15,7 @@ export function WhatsAppFloat() {
   }, []);
 
   return (
-    <div className="fixed bottom-5 right-5 z-30 flex items-center gap-3">
+    <div className="fixed bottom-5 right-5 z-30 hidden sm:flex items-center gap-3">
       {badge && (
         <span className="andre-anim-in hidden sm:inline-flex items-center gap-2 rounded-full border border-[var(--andre-border)] bg-[var(--andre-card)] px-3.5 py-2 font-tech text-[10px] uppercase tracking-[0.2em] text-[var(--andre-fg)] backdrop-blur-md shadow-lg">
           <span className="h-1.5 w-1.5 rounded-full bg-[var(--andre-primary)] animate-pulse" />
@@ -30,11 +30,10 @@ export function WhatsAppFloat() {
         data-magnetic
         className="andre-orb h-16 w-16 rounded-full inline-flex items-center justify-center"
         style={{
-          background:
-            "linear-gradient(135deg, hsl(185 100% 50%), hsl(190 95% 38%))",
+          background: "linear-gradient(135deg, #25d366, #16a34a)",
         }}
       >
-        <WhatsAppIcon className="h-8 w-8 text-[#03151c]" />
+        <WhatsAppIcon className="h-8 w-8 text-white" />
       </a>
     </div>
   );

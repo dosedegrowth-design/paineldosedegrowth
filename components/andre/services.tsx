@@ -10,6 +10,7 @@ import { waLink } from "./config";
 import { Chapter } from "./chapter";
 import { RevealSection, TiltCard } from "./tilt-card";
 import { HeroCanvasClient } from "./hero-canvas-client";
+import { WhatsAppIcon } from "./whatsapp-icon";
 
 const services = [
   {
@@ -17,7 +18,7 @@ const services = [
     title: "Precisão cirúrgica",
     code: "01 / INSTALAÇÃO",
     desc: "Split, Multi Split, Piso Teto, Cassete e VRF. Materiais originais e nivelamento perfeito.",
-    cta: "Quero instalar",
+    cta: "Instalar via WhatsApp",
     message: "Olá! Quero um orçamento de instalação de ar condicionado.",
   },
   {
@@ -25,7 +26,7 @@ const services = [
     title: "Longevidade tech",
     code: "02 / MANUTENÇÃO",
     desc: "Check-up completo que evita quebra do compressor e reduz até 30% da conta de luz.",
-    cta: "Agendar manutenção",
+    cta: "Agendar no WhatsApp",
     message: "Olá! Quero agendar uma manutenção preventiva.",
   },
   {
@@ -33,7 +34,7 @@ const services = [
     title: "Ar de montanha",
     code: "03 / HIGIENIZAÇÃO",
     desc: "Limpeza de serpentina, hélice e dreno. Elimina bactérias, mofo e mau cheiro.",
-    cta: "Higienizar meu ar",
+    cta: "Higienizar via WhatsApp",
     message: "Olá! Preciso de higienização do ar condicionado.",
   },
   {
@@ -41,7 +42,7 @@ const services = [
     title: "Pressão exata",
     code: "04 / RECARGA",
     desc: "R-410A, R-32 e R-22. Detecção de vazamento e teste de estanqueidade antes da carga.",
-    cta: "Verificar gás",
+    cta: "Verificar no WhatsApp",
     message: "Olá! Meu ar não gela, preciso verificar o gás.",
   },
   {
@@ -49,7 +50,7 @@ const services = [
     title: "Diagnóstico real",
     code: "05 / REPARO",
     desc: "Placa, capacitor, sensor, ventilador. Diagnóstico com laudo antes da troca.",
-    cta: "Meu ar quebrou",
+    cta: "Reparo via WhatsApp",
     message: "Olá! Meu ar condicionado quebrou, preciso de reparo.",
   },
   {
@@ -57,7 +58,7 @@ const services = [
     title: "Recomeço sem dano",
     code: "06 / MUDANÇA",
     desc: "Retiramos, transportamos e reinstalamos no endereço novo, sem danificar nada.",
-    cta: "Vou mudar de casa",
+    cta: "Mudança via WhatsApp",
     message: "Olá! Preciso desinstalar/mudar meu ar condicionado.",
   },
 ];
@@ -107,8 +108,9 @@ export function Services() {
                 href={waLink(s.message)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-sky-300 hover:text-sky-200 transition-colors group"
+                className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-green-400 hover:text-green-300 transition-colors group"
               >
+                <WhatsAppIcon className="h-4 w-4 shrink-0" />
                 {s.cta}
                 <MoveRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </a>

@@ -24,6 +24,7 @@ import { CursorGlow } from "@/components/andre/cursor-glow";
 import { SiteFrame } from "@/components/andre/site-frame";
 import { Thermometer } from "@/components/andre/thermometer";
 import { CustomCursor } from "@/components/andre/custom-cursor";
+import { MobileCtaBar } from "@/components/andre/mobile-cta-bar";
 
 export default function AndrePage() {
   return (
@@ -55,6 +56,7 @@ export default function AndrePage() {
       </main>
       <Footer />
       <WhatsAppFloat />
+      <MobileCtaBar />
       <ConversionPopup />
     </>
   );

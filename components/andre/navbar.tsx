@@ -110,11 +110,11 @@ export function Navbar() {
               target="_blank"
               rel="noopener noreferrer"
               data-magnetic
-              className="inline-flex items-center gap-2 h-10 px-5 rounded-sm text-sm font-bold bg-[var(--andre-fg)] text-[#04121a] hover:bg-[var(--andre-primary)] transition-colors duration-300"
+              className="andre-btn-primary inline-flex items-center gap-2 h-10 px-5 rounded-sm text-sm"
             >
               <WhatsAppIcon className="h-4 w-4" />
-              <span className="hidden sm:inline">Falar agora</span>
-              <span className="sm:hidden">Falar</span>
+              <span className="hidden sm:inline">Falar no WhatsApp</span>
+              <span className="sm:hidden">WhatsApp</span>
             </a>
             <button
               type="button"
@@ -175,7 +175,7 @@ export function Navbar() {
                 className="andre-btn-primary inline-flex items-center justify-center gap-2 h-12 rounded-xl text-[15px]"
               >
                 <WhatsAppIcon className="h-5 w-5" />
-                Pedir orçamento grátis
+                Orçamento no WhatsApp
               </a>
               <a
                 href={telLink()}

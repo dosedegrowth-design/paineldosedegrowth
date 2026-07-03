@@ -70,7 +70,7 @@ export function HowItWorks() {
             className="andre-btn-primary inline-flex items-center gap-2 h-12 px-7 rounded-xl text-[15px]"
           >
             <WhatsAppIcon className="h-5 w-5" />
-            Começar agora — orçamento grátis
+            Orçamento grátis no WhatsApp
           </a>
         </div>
       </div>
