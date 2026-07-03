@@ -34,7 +34,7 @@ export function FinalCTA() {
                 className="inline-flex items-center gap-2 h-12 px-7 rounded-xl text-[15px] font-bold bg-white text-slate-900 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
               >
                 <WhatsAppIcon className="h-5 w-5 text-green-600" />
-                Chamar André no WhatsApp
+                Chamar no WhatsApp
               </a>
               <a
                 href={telLink()}

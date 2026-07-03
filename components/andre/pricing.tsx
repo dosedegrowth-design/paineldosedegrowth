@@ -17,7 +17,7 @@ const plans = [
       "Desobstrução do dreno",
       "Coleta dos resíduos",
     ],
-    message: "Olá, André! Quero um orçamento de higienização.",
+    message: "Olá! Quero um orçamento de higienização.",
     featured: false,
   },
   {
@@ -31,7 +31,7 @@ const plans = [
       "Nivelamento e acabamento",
       "Nota fiscal + garantia 90 dias",
     ],
-    message: "Olá, André! Quero um orçamento de instalação de split.",
+    message: "Olá! Quero um orçamento de instalação de split.",
     featured: true,
   },
   {
@@ -45,7 +45,7 @@ const plans = [
       "Limpeza de filtros",
       "Relatório assinado",
     ],
-    message: "Olá, André! Quero agendar uma manutenção.",
+    message: "Olá! Quero agendar uma manutenção.",
     featured: false,
   },
 ];

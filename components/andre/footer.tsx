@@ -53,9 +53,18 @@ export function Footer() {
                   {ANDRE_CONFIG.phone}
                 </a>
               </li>
+              <li>
+                <a
+                  href="tel:08000151011"
+                  className="inline-flex items-center gap-2 text-slate-300 hover:text-white transition-colors font-medium"
+                >
+                  <Phone className="h-4 w-4 text-sky-400" />
+                  {ANDRE_CONFIG.phone0800} (demais regiões)
+                </a>
+              </li>
               <li className="inline-flex items-center gap-2 text-slate-400">
                 <MapPin className="h-4 w-4 text-sky-400" />
-                {ANDRE_CONFIG.city}
+                {ANDRE_CONFIG.address}
               </li>
               <li className="inline-flex items-center gap-2 text-slate-400">
                 <Clock className="h-4 w-4 text-sky-400" />

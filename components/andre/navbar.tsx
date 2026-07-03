@@ -75,7 +75,7 @@ export function Navbar() {
             </span>
             <div className="leading-tight flex items-center gap-2">
               <p className="andre-display text-[15px] uppercase tracking-tight text-white">
-                André <span className="text-[var(--andre-primary)]">AC</span>
+                Clima<span className="text-[var(--andre-primary)]">frio</span>
               </p>
               <span className="h-1.5 w-1.5 rounded-full bg-[var(--andre-primary)] animate-pulse" />
             </div>

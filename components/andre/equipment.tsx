@@ -13,7 +13,7 @@ const equipment = [
 
 const brands = [
   "LG", "Samsung", "Daikin", "Midea", "Carrier", "Elgin",
-  "Springer", "Fujitsu", "Gree", "Philco", "Consul", "Electrolux",
+  "Springer", "Mitsubishi", "Fujitsu", "Gree", "Philco", "Consul", "Electrolux",
 ];
 
 export function Equipment() {

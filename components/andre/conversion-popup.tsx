@@ -46,7 +46,7 @@ export function ConversionPopup() {
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    const lines = ["Olá, André! Vim pelo site e quero um orçamento."];
+    const lines = ["Olá! Vim pelo site e quero um orçamento."];
     if (nome) lines.push(`Nome: ${nome}`);
     lines.push(`Serviço: ${servico}`);
     if (endereco) lines.push(`Bairro/Cidade: ${endereco}`);
@@ -93,7 +93,7 @@ export function ConversionPopup() {
             <span className="andre-gradient-text">orçamento em 5 min</span>.
           </h3>
           <p className="mt-2 text-sm text-slate-400 leading-relaxed">
-            O André te chama direto no WhatsApp com preço fechado.
+            Nossa equipe te chama direto no WhatsApp com preço fechado.
           </p>
 
           <form onSubmit={handleSubmit} className="mt-5 space-y-3.5">
@@ -141,7 +141,7 @@ export function ConversionPopup() {
               className="andre-btn-primary w-full h-12 rounded-xl inline-flex items-center justify-center gap-2 text-[15px] mt-1"
             >
               <WhatsAppIcon className="h-5 w-5" />
-              Chamar André no WhatsApp
+              Chamar no WhatsApp
             </button>
             <p className="text-[11px] text-slate-400 text-center">
               Sem cadastro. Vai direto pra conversa.

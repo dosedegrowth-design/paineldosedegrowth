@@ -18,7 +18,7 @@ const services = [
     code: "01 / INSTALAÇÃO",
     desc: "Split, Multi Split, Piso Teto, Cassete e VRF. Materiais originais e nivelamento perfeito.",
     cta: "Quero instalar",
-    message: "Olá, André! Quero um orçamento de instalação de ar condicionado.",
+    message: "Olá! Quero um orçamento de instalação de ar condicionado.",
   },
   {
     icon: Wrench,
@@ -26,7 +26,7 @@ const services = [
     code: "02 / MANUTENÇÃO",
     desc: "Check-up completo que evita quebra do compressor e reduz até 30% da conta de luz.",
     cta: "Agendar manutenção",
-    message: "Olá, André! Quero agendar uma manutenção preventiva.",
+    message: "Olá! Quero agendar uma manutenção preventiva.",
   },
   {
     icon: Sparkles,
@@ -34,7 +34,7 @@ const services = [
     code: "03 / HIGIENIZAÇÃO",
     desc: "Limpeza de serpentina, hélice e dreno. Elimina bactérias, mofo e mau cheiro.",
     cta: "Higienizar meu ar",
-    message: "Olá, André! Preciso de higienização do ar condicionado.",
+    message: "Olá! Preciso de higienização do ar condicionado.",
   },
   {
     icon: Droplets,
@@ -42,7 +42,7 @@ const services = [
     code: "04 / RECARGA",
     desc: "R-410A, R-32 e R-22. Detecção de vazamento e teste de estanqueidade antes da carga.",
     cta: "Verificar gás",
-    message: "Olá, André! Meu ar não gela, preciso verificar o gás.",
+    message: "Olá! Meu ar não gela, preciso verificar o gás.",
   },
   {
     icon: Cable,
@@ -50,7 +50,7 @@ const services = [
     code: "05 / REPARO",
     desc: "Placa, capacitor, sensor, ventilador. Diagnóstico com laudo antes da troca.",
     cta: "Meu ar quebrou",
-    message: "Olá, André! Meu ar condicionado quebrou, preciso de reparo.",
+    message: "Olá! Meu ar condicionado quebrou, preciso de reparo.",
   },
   {
     icon: MoveRight,
@@ -58,7 +58,7 @@ const services = [
     code: "06 / MUDANÇA",
     desc: "Retiramos, transportamos e reinstalamos no endereço novo, sem danificar nada.",
     cta: "Vou mudar de casa",
-    message: "Olá, André! Preciso desinstalar/mudar meu ar condicionado.",
+    message: "Olá! Preciso desinstalar/mudar meu ar condicionado.",
   },
 ];
 
@@ -76,7 +76,7 @@ export function Services() {
             </h2>
             <p className="mt-4 text-slate-300 text-base leading-relaxed">
               Do primeiro furo na parede até a manutenção anual. Você fala com
-              o André direto — sem call center.
+              um técnico direto, do orçamento à entrega.
             </p>
           </RevealSection>
           <div className="relative h-[300px] sm:h-[360px] lg:h-[420px]">

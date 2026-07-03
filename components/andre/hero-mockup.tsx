@@ -48,7 +48,7 @@ export function HeroMockup() {
         <span className="h-2.5 w-2.5 rounded-full bg-green-300" />
         <div className="ml-3 flex items-center gap-1.5 text-[11px] font-semibold text-slate-500">
           <Snowflake className="h-3.5 w-3.5 text-sky-500" />
-          Painel do André · Atendimentos ao vivo
+          Painel Climafrio · Atendimentos ao vivo
         </div>
         <span className="ml-auto inline-flex items-center gap-1 text-[10px] font-bold text-green-600">
           <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
