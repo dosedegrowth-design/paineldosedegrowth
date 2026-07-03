@@ -19,6 +19,7 @@ import { Problema } from "@/components/andre/problema";
 import { ThermoOverlay } from "@/components/andre/thermo-overlay";
 import { SmoothScroll } from "@/components/andre/smooth-scroll";
 import { Manifesto } from "@/components/andre/manifesto";
+import { MarqueeStrip } from "@/components/andre/marquee-strip";
 import { CursorGlow } from "@/components/andre/cursor-glow";
 import { SiteFrame } from "@/components/andre/site-frame";
 import { Thermometer } from "@/components/andre/thermometer";
@@ -37,6 +38,7 @@ export default function AndrePage() {
       <Navbar />
       <main className="relative z-10">
         <Hero />
+        <MarqueeStrip />
         <Problema />
         <TrustBar />
         <Manifesto />

@@ -9,6 +9,7 @@ import {
 import { waLink } from "./config";
 import { Chapter } from "./chapter";
 import { RevealSection, TiltCard } from "./tilt-card";
+import { HeroCanvasClient } from "./hero-canvas-client";
 
 const services = [
   {
@@ -65,17 +66,27 @@ export function Services() {
   return (
     <section id="servicos" className="relative py-24 lg:py-36">
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
-        <RevealSection className="max-w-2xl mb-12 lg:mb-14">
-          <Chapter n="03" label="A solução" />
-          <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
-            Tudo o que seu ar precisa,{" "}
-            <span className="andre-gradient-text">com um técnico só</span>.
-          </h2>
-          <p className="mt-4 text-slate-300 text-base leading-relaxed">
-            Do primeiro furo na parede até a manutenção anual. Você fala com o
-            André direto — sem call center.
-          </p>
-        </RevealSection>
+        {/* header 2 colunas: texto + palco 3D interativo */}
+        <div className="grid lg:grid-cols-2 gap-8 items-center mb-12 lg:mb-16">
+          <RevealSection className="max-w-2xl">
+            <Chapter n="03" label="A solução" />
+            <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
+              Tudo o que seu ar precisa,{" "}
+              <span className="andre-gradient-text">com um técnico só</span>.
+            </h2>
+            <p className="mt-4 text-slate-300 text-base leading-relaxed">
+              Do primeiro furo na parede até a manutenção anual. Você fala com
+              o André direto — sem call center.
+            </p>
+          </RevealSection>
+          <div className="relative h-[300px] sm:h-[360px] lg:h-[420px]">
+            <div className="andre-hero-product-glow" aria-hidden />
+            <HeroCanvasClient />
+            <p className="pointer-events-none absolute bottom-1 left-1/2 -translate-x-1/2 font-tech text-[9.5px] uppercase tracking-[0.3em] text-[var(--andre-muted)] whitespace-nowrap">
+              Unidade 3D · a névoa responde ao seu scroll
+            </p>
+          </div>
+        </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
           {services.map((s, i) => (

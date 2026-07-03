@@ -16,11 +16,12 @@ export const metadata: Metadata = {
   applicationName: "André Ar Condicionado",
   robots: { index: true, follow: true },
   openGraph: {
-    title: "André Ar Condicionado — Ar que trabalha, técnico que resolve.",
+    title: "André AC — O frio certo, no silêncio certo.",
     description:
-      "Instalação, manutenção preventiva, higienização e recarga de gás com garantia. Orçamento gratuito pelo WhatsApp.",
+      "Instalação, manutenção e higienização de ar-condicionado com precisão de engenharia. Orçamento em minutos pelo WhatsApp.",
     type: "website",
     locale: "pt_BR",
+    images: [{ url: "/andre/hero-ac.jpg", width: 1600, height: 1024 }],
   },
 };
 
