@@ -20,18 +20,21 @@ export function Hero() {
         <div className="grid lg:grid-cols-[1.15fr_1fr] gap-10 lg:gap-14 items-center">
           {/* Left: copy */}
           <div className="andre-anim-in">
-            <div className="flex items-center gap-2 mb-6">
-              <span className="andre-chip inline-flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 andre-wa-pulse" />
-                Atendendo hoje · {ANDRE_CONFIG.city}
+            <div className="flex flex-wrap items-center gap-2 mb-6">
+              <span className="tech-stamp">SYS_ONLINE · ATENDENDO_AGORA</span>
+              <span className="tech-stamp" style={{ color: "rgba(148,163,184,0.9)" }}>
+                LOC: {ANDRE_CONFIG.city.toUpperCase()}
               </span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.02] tracking-tight">
-              Ar que trabalha.
+              <span className="glitch" data-text="Ar que trabalha.">
+                Ar que trabalha.
+              </span>
               <br />
               <span className="andre-gradient-text">
                 Técnico que resolve.
+                <span className="tech-caret" style={{ color: "#7dd3fc" }} />
               </span>
             </h1>
 

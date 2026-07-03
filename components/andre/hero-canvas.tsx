@@ -1,15 +1,51 @@
 "use client";
 
 import { Suspense, useRef, useState, useEffect } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   Environment,
   Float,
   OrbitControls,
   ContactShadows,
 } from "@react-three/drei";
-import type { Points } from "three";
+import type { Points, Group } from "three";
 import { SplitUnit3D } from "./split-unit-3d";
+
+function ScrollRig({ children }: { children: React.ReactNode }) {
+  const ref = useRef<Group>(null);
+  const camera = useThree((s) => s.camera);
+  const scroll = useRef(0);
+
+  useEffect(() => {
+    const onScroll = () => {
+      scroll.current = Math.min(1, Math.max(0, window.scrollY / 900));
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useFrame((_, delta) => {
+    const target = scroll.current;
+    if (ref.current) {
+      // Explode / rotate / lift as scroll progresses
+      const targetRotY = target * Math.PI * 0.9;
+      const targetRotX = -target * 0.35;
+      const targetScale = 0.95 + target * 0.15;
+      ref.current.rotation.y += (targetRotY - ref.current.rotation.y) * delta * 4;
+      ref.current.rotation.x += (targetRotX - ref.current.rotation.x) * delta * 4;
+      ref.current.scale.setScalar(
+        ref.current.scale.x + (targetScale - ref.current.scale.x) * delta * 4
+      );
+      ref.current.position.y += (target * 0.4 - ref.current.position.y) * delta * 4;
+    }
+    // Camera dolly forward
+    const camZ = 6.5 - target * 1.5;
+    camera.position.z += (camZ - camera.position.z) * delta * 4;
+  });
+
+  return <group ref={ref}>{children}</group>;
+}
 
 function ColdParticles({ count = 80 }: { count?: number }) {
   const ref = useRef<Points>(null);
@@ -93,13 +129,15 @@ export function HeroCanvas() {
         />
 
         <Suspense fallback={null}>
-          <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.35}>
-            <group scale={0.95} rotation={[-0.05, 0.35, 0]}>
-              <SplitUnit3D />
-            </group>
-          </Float>
+          <ScrollRig>
+            <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.35}>
+              <group rotation={[-0.05, 0.35, 0]}>
+                <SplitUnit3D />
+              </group>
+            </Float>
+          </ScrollRig>
 
-          <ColdParticles count={90} />
+          <ColdParticles count={120} />
 
           <ContactShadows
             position={[0, -1.1, 0]}
@@ -118,9 +156,8 @@ export function HeroCanvas() {
           enablePan={false}
           minPolarAngle={Math.PI / 2.5}
           maxPolarAngle={Math.PI / 1.8}
-          rotateSpeed={0.6}
-          autoRotate
-          autoRotateSpeed={0.4}
+          rotateSpeed={0.5}
+          enableRotate={false}
         />
       </Canvas>
     </div>

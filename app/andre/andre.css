@@ -303,6 +303,137 @@
   .hero-window-blink { animation: none !important; }
 }
 
+/* ============ TECH HUD ============ */
+.tech-bracket {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border: 1.5px solid rgba(125, 211, 252, 0.55);
+  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.5));
+}
+.tech-bracket-tl { top: 16px;    left: 16px;    border-right: 0; border-bottom: 0; }
+.tech-bracket-tr { top: 16px;    right: 16px;   border-left: 0;  border-bottom: 0; }
+.tech-bracket-bl { bottom: 16px; left: 16px;    border-right: 0; border-top: 0; }
+.tech-bracket-br { bottom: 16px; right: 16px;   border-left: 0;  border-top: 0; }
+.tech-readout {
+  position: absolute;
+  bottom: 24px;
+  left: 56px;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: rgba(125, 211, 252, 0.85);
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+}
+.tech-readout-r {
+  left: auto;
+  right: 56px;
+  color: rgba(148, 163, 184, 0.7);
+  text-shadow: none;
+}
+.tech-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #22c55e;
+  box-shadow: 0 0 10px #22c55e;
+  margin-right: 6px;
+  vertical-align: middle;
+  animation: tech-blink 1.4s ease-in-out infinite;
+}
+@keyframes tech-blink {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 1; }
+}
+
+/* Terminal accent chip */
+.tech-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: rgba(125, 211, 252, 0.9);
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 4px;
+  background: rgba(56, 189, 248, 0.05);
+  text-shadow: 0 0 6px rgba(56, 189, 248, 0.5);
+}
+.tech-stamp::before {
+  content: ">";
+  color: rgba(56, 189, 248, 0.9);
+  font-weight: 700;
+}
+.tech-caret {
+  display: inline-block;
+  width: 0.6ch;
+  background: currentColor;
+  animation: tech-caret 1s steps(2) infinite;
+  margin-left: 2px;
+  height: 0.9em;
+  vertical-align: -0.1em;
+}
+@keyframes tech-caret {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+
+/* Glitch text */
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+.glitch::before {
+  color: #22d3ee;
+  transform: translate(-2px, 0);
+  clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+  mix-blend-mode: screen;
+  animation: glitch-a 3.4s steps(1) infinite;
+}
+.glitch::after {
+  color: #f0abfc;
+  transform: translate(2px, 0);
+  clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+  mix-blend-mode: screen;
+  animation: glitch-b 4.1s steps(1) infinite;
+}
+@keyframes glitch-a {
+  0%, 90%, 100% { transform: translate(0, 0); opacity: 0; }
+  92% { transform: translate(-3px, -1px); opacity: 1; }
+  94% { transform: translate(2px, 1px);   opacity: 1; }
+  96% { transform: translate(-1px, 0);    opacity: 0.8; }
+}
+@keyframes glitch-b {
+  0%, 88%, 100% { transform: translate(0, 0); opacity: 0; }
+  90% { transform: translate(3px, 1px);   opacity: 1; }
+  93% { transform: translate(-2px, -1px); opacity: 1; }
+  95% { transform: translate(1px, 0);     opacity: 0.7; }
+}
+
+/* Bigger neon grid variant */
+.andre-grid-neon {
+  background-image:
+    linear-gradient(to right, rgba(56, 189, 248, 0.14) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(56, 189, 248, 0.14) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 40%, transparent 100%);
+}
+
 /* ============================================================ */
 /* SECTION BACKGROUND VARIANTS — cada seção tem sua vibe fria    */
 /* ============================================================ */

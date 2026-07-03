@@ -11,6 +11,7 @@ import { FinalCTA } from "@/components/andre/final-cta";
 import { Footer } from "@/components/andre/footer";
 import { WhatsAppFloat } from "@/components/andre/whatsapp-float";
 import { ConversionPopup } from "@/components/andre/conversion-popup";
+import { TechHud } from "@/components/andre/tech-hud";
 
 export default function AndrePage() {
   return (
@@ -28,6 +29,7 @@ export default function AndrePage() {
         <FinalCTA />
       </main>
       <Footer />
+      <TechHud />
       <WhatsAppFloat />
       <ConversionPopup />
     </>
