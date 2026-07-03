@@ -8,6 +8,7 @@ import {
 import { ANDRE_CONFIG, waLink, telLink } from "./config";
 import { HeroScene } from "./hero-scene";
 import { WhatsAppIcon } from "./whatsapp-icon";
+import { HeroCanvasClient } from "./hero-canvas-client";
 
 export function Hero() {
   return (
@@ -76,8 +77,15 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Right: quote widget */}
-          <div className="andre-anim-in [animation-delay:120ms]">
+          {/* Right: 3D unit + quote widget */}
+          <div className="andre-anim-in [animation-delay:120ms] flex flex-col gap-5">
+            <div className="relative h-[300px] sm:h-[360px] lg:h-[380px] rounded-2xl overflow-hidden andre-glass">
+              <HeroCanvasClient />
+              <div className="pointer-events-none absolute bottom-2 left-3 right-3 flex items-center justify-between text-[10px] uppercase tracking-[0.18em] text-slate-400">
+                <span>Arraste para girar</span>
+                <span style={{ color: "#7dd3fc" }}>· 3D real</span>
+              </div>
+            </div>
             <div className="andre-glass rounded-2xl p-6 lg:p-7 relative">
               <div
                 className="absolute -top-3 left-6 andre-chip"

@@ -7,6 +7,7 @@ import {
   MoveRight,
 } from "lucide-react";
 import { waLink } from "./config";
+import { TiltCard } from "./tilt-card";
 
 const services = [
   {
@@ -96,9 +97,17 @@ export function Services() {
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
-          {services.map((s) => (
-            <article key={s.title} className="andre-card p-6 flex flex-col">
+        <div
+          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5"
+          style={{ perspective: "1000px" }}
+        >
+          {services.map((s, i) => (
+            <TiltCard
+              key={s.title}
+              delay={i * 0.05}
+              className="andre-card p-6 flex flex-col relative"
+              intensity={10}
+            >
               <span
                 className="inline-flex h-11 w-11 items-center justify-center rounded-xl mb-4"
                 style={{
@@ -139,7 +148,7 @@ export function Services() {
                 {s.cta}
                 <MoveRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </a>
-            </article>
+            </TiltCard>
           ))}
         </div>
       </div>
