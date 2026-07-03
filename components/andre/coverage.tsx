@@ -12,11 +12,11 @@ export function Coverage() {
   return (
     <section
       id="cobertura"
-      className="relative py-24 lg:py-36 bg-white/[0.02] border-y border-white/[0.06]"
+      className="relative py-16 lg:py-36 bg-white/[0.02] border-y border-white/[0.06]"
     >
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
         <div className="grid lg:grid-cols-[1fr_1.2fr] gap-10 lg:gap-14 items-start">
-          <RevealSection>
+          <RevealSection className="mx-auto text-center lg:mx-0 lg:text-left">
             <Chapter n="08" label="Cobertura" />
             <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
               São Paulo e{" "}
@@ -27,7 +27,7 @@ export function Coverage() {
               Chama no WhatsApp — se der pra ir, a gente vai.
             </p>
 
-            <div className="mt-6 andre-card p-4 flex items-center gap-3">
+            <div className="mt-6 andre-card p-4 flex items-center gap-3 max-w-sm mx-auto lg:mx-0 text-left">
               <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-sky-400/10 border border-sky-400/25">
                 <MapPin className="h-5 w-5 text-sky-400" />
               </span>

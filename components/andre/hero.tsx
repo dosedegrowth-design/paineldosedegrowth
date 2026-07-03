@@ -9,7 +9,7 @@ export function Hero() {
   return (
     <section
       id="top"
-      className="relative overflow-hidden min-h-[100svh] flex items-end lg:items-center"
+      className="relative overflow-hidden min-h-[100svh] flex items-center"
     >
       {/* foto hiper-real com tratamento de cinema */}
       <div className="absolute inset-0" aria-hidden>
@@ -27,8 +27,8 @@ export function Hero() {
 
       <MistBackground />
 
-      <div className="relative w-full max-w-6xl mx-auto px-5 lg:px-8 pb-24 pt-32 lg:py-0">
-        <div className="max-w-2xl">
+      <div className="relative w-full max-w-6xl mx-auto px-5 lg:px-8 pt-28 pb-20 lg:py-0">
+        <div className="max-w-2xl mx-auto text-center lg:mx-0 lg:text-left">
           <div className="andre-anim-in">
             <span className="inline-flex items-center gap-2.5 rounded-full border border-[var(--andre-border)] bg-white/[0.04] backdrop-blur-md px-4 py-2 font-tech text-[10.5px] uppercase tracking-[0.28em] text-[var(--andre-muted)]">
               <span className="relative flex h-2 w-2">
@@ -62,12 +62,12 @@ export function Hero() {
             </span>
           </h1>
 
-          <p className="mt-9 text-base sm:text-lg text-[var(--andre-muted)] max-w-lg leading-relaxed andre-anim-in [animation-delay:900ms]">
+          <p className="mt-9 text-base sm:text-lg text-[var(--andre-muted)] max-w-lg mx-auto lg:mx-0 leading-relaxed andre-anim-in [animation-delay:900ms]">
             Instalação, manutenção e higienização com precisão de engenharia.
             Orçamento em minutos, atendimento em até 24h.
           </p>
 
-          <div className="mt-9 flex flex-col sm:flex-row items-start sm:items-center gap-4 andre-anim-in [animation-delay:1100ms]">
+          <div className="mt-9 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 andre-anim-in [animation-delay:1100ms]">
             <Magnetic>
               <a
                 href={waLink()}
@@ -84,7 +84,7 @@ export function Hero() {
             </span>
           </div>
 
-          <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2.5 text-[13px] text-[var(--andre-muted)] andre-anim-in [animation-delay:1300ms]">
+          <div className="mt-10 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2.5 text-[13px] text-[var(--andre-muted)] andre-anim-in [animation-delay:1300ms]">
             <span className="inline-flex items-center gap-1.5">
               <ShieldCheck className="h-4 w-4 text-[var(--andre-primary)]" />
               90 dias de garantia

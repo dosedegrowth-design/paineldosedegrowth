@@ -76,7 +76,7 @@ export function Problema() {
   /* Mobile: versão compacta empilhada — a pinada de 260vh vira um
      túnel preto em tela pequena. Reveals mantêm o drama. */
   const mobile = (
-    <section className="relative py-24 lg:hidden overflow-hidden">
+    <section className="relative py-16 lg:hidden overflow-hidden">
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -84,7 +84,7 @@ export function Problema() {
             "radial-gradient(70% 45% at 50% 45%, rgba(251,113,36,0.06), transparent 70%)",
         }}
       />
-      <div className="relative max-w-xl mx-auto px-5">
+      <div className="relative max-w-xl mx-auto px-5 text-center">
         <Chapter n="02" label="O problema" />
         <div className="mt-10 space-y-10">
           {statements.map((s, i) => (

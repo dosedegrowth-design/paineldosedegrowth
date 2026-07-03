@@ -29,10 +29,10 @@ export function HowItWorks() {
   return (
     <section
       id="como-funciona"
-      className="relative py-24 lg:py-36 bg-white/[0.02] border-y border-white/[0.06]"
+      className="relative py-16 lg:py-36 bg-white/[0.02] border-y border-white/[0.06]"
     >
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
-        <RevealSection className="max-w-2xl mb-12 lg:mb-14">
+        <RevealSection className="max-w-2xl mb-9 lg:mb-14 mx-auto text-center lg:mx-0 lg:text-left">
           <Chapter n="04" label="Como funciona" />
           <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
             Do WhatsApp ao{" "}

@@ -36,7 +36,7 @@ export function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="relative py-24 lg:py-36">
+    <section id="faq" className="relative py-16 lg:py-36">
       <div className="max-w-3xl mx-auto px-5 lg:px-8">
         <RevealSection className="mb-12 text-center">
           <div className="flex justify-center"><Chapter n="10" label="Dúvidas" /></div>

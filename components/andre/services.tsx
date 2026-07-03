@@ -64,11 +64,11 @@ const services = [
 
 export function Services() {
   return (
-    <section id="servicos" className="relative py-24 lg:py-36">
+    <section id="servicos" className="relative py-16 lg:py-36">
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
         {/* header 2 colunas: texto + palco 3D interativo */}
-        <div className="grid lg:grid-cols-2 gap-8 items-center mb-12 lg:mb-16">
-          <RevealSection className="max-w-2xl">
+        <div className="grid lg:grid-cols-2 gap-8 items-center mb-9 lg:mb-16">
+          <RevealSection className="max-w-2xl mx-auto text-center lg:mx-0 lg:text-left">
             <Chapter n="03" label="A solução" />
             <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
               Tudo o que seu ar precisa,{" "}

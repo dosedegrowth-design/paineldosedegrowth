@@ -18,9 +18,9 @@ const brands = [
 
 export function Equipment() {
   return (
-    <section id="equipamentos" className="relative py-24 lg:py-36">
+    <section id="equipamentos" className="relative py-16 lg:py-36">
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
-        <RevealSection className="max-w-2xl mb-12">
+        <RevealSection className="max-w-2xl mb-9 lg:mb-12 mx-auto text-center lg:mx-0 lg:text-left">
           <Chapter n="07" label="Equipamentos" />
           <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
             Atendemos praticamente{" "}

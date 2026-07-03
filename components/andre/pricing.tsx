@@ -54,7 +54,7 @@ export function Pricing() {
   return (
     <section
       id="precos"
-      className="relative py-24 lg:py-36 border-y border-white/[0.06] overflow-hidden"
+      className="relative py-16 lg:py-36 border-y border-white/[0.06] overflow-hidden"
     >
       {/* composição de fundo: luz + tipografia vazada */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
@@ -75,7 +75,7 @@ export function Pricing() {
         />
       </div>
       <div className="relative max-w-6xl mx-auto px-5 lg:px-8">
-        <RevealSection className="max-w-2xl mx-auto text-center mb-14 lg:mb-20">
+        <RevealSection className="max-w-2xl mx-auto text-center mb-10 lg:mb-20">
           <div className="flex justify-center">
             <Chapter n="06" label="Investimento" />
           </div>

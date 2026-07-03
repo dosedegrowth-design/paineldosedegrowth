@@ -32,12 +32,12 @@ const items = [
 
 export function Testimonials() {
   return (
-    <section className="relative py-24 lg:py-36 overflow-hidden">
+    <section className="relative py-16 lg:py-36 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
         <Watermark text="CONFIANÇA" top="8%" />
       </div>
       <div className="relative max-w-6xl mx-auto px-5 lg:px-8">
-        <RevealSection className="max-w-2xl mb-12">
+        <RevealSection className="max-w-2xl mb-9 lg:mb-12 mx-auto text-center lg:mx-0 lg:text-left">
           <Chapter n="09" label="Clientes" />
           <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
             Quem já contratou{" "}

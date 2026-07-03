@@ -6,9 +6,9 @@ export function Footer() {
   return (
     <footer className="border-t border-white/[0.06] bg-[#04070f] py-12 lg:py-16">
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
-        <div className="grid md:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-4 gap-8 text-center md:text-left">
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2.5 justify-center md:justify-start">
               <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-cyan-500 shadow-md shadow-sky-900/60">
                 <Snowflake className="h-4.5 w-4.5 text-white" />
               </span>
@@ -21,7 +21,7 @@ export function Footer() {
                 </p>
               </div>
             </div>
-            <p className="mt-4 text-sm text-slate-400 leading-relaxed max-w-md">
+            <p className="mt-4 text-sm text-slate-400 leading-relaxed max-w-md mx-auto md:mx-0">
               {ANDRE_CONFIG.tagline} Atendendo residencial, comercial e
               industrial em São Paulo e Grande SP há{" "}
               {ANDRE_CONFIG.yearsExperience} anos.
