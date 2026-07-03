@@ -6,7 +6,7 @@ export function FinalCTA() {
   return (
     <section className="relative py-16 lg:py-24">
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-sky-600 via-sky-500 to-cyan-500 px-6 py-14 lg:px-16 lg:py-20 text-center shadow-2xl shadow-sky-200">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-sky-600 via-sky-500 to-cyan-500 px-6 py-14 lg:px-16 lg:py-20 text-center shadow-2xl shadow-sky-900/40">
           {/* textura sutil */}
           <div
             className="absolute inset-0 opacity-15 pointer-events-none"

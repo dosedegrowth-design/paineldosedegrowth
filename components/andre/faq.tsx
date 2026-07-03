@@ -39,7 +39,7 @@ export function FAQ() {
       <div className="max-w-3xl mx-auto px-5 lg:px-8">
         <RevealSection className="mb-12 text-center">
           <span className="andre-chip">Dúvidas frequentes</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-slate-900">
+          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-white">
             O que a gente já respondeu{" "}
             <span className="andre-gradient-text">mil vezes</span>.
           </h2>
@@ -55,11 +55,11 @@ export function FAQ() {
                   className="w-full flex items-center justify-between gap-4 px-5 py-5 text-left"
                   aria-expanded={isOpen}
                 >
-                  <span className="text-[15px] sm:text-base font-bold text-slate-900 leading-snug">
+                  <span className="text-[15px] sm:text-base font-bold text-white leading-snug">
                     {f.q}
                   </span>
                   <Plus
-                    className="h-5 w-5 shrink-0 text-sky-600 transition-transform duration-300"
+                    className="h-5 w-5 shrink-0 text-sky-400 transition-transform duration-300"
                     style={{ transform: isOpen ? "rotate(45deg)" : "rotate(0deg)" }}
                   />
                 </button>
@@ -68,7 +68,7 @@ export function FAQ() {
                   style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
                 >
                   <div className="overflow-hidden">
-                    <p className="px-5 pb-5 text-sm text-slate-600 leading-relaxed">
+                    <p className="px-5 pb-5 text-sm text-slate-300 leading-relaxed">
                       {f.a}
                     </p>
                   </div>

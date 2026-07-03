@@ -69,13 +69,13 @@ export function ConversionPopup() {
         onClick={() => setOpen(false)}
       />
 
-      <div className="relative w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden andre-anim-in">
+      <div className="relative w-full max-w-md rounded-2xl bg-[#0d1424] ring-1 ring-white/10 shadow-2xl overflow-hidden andre-anim-in">
         <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-sky-500 via-cyan-400 to-sky-500" />
         <button
           type="button"
           aria-label="Fechar"
           onClick={() => setOpen(false)}
-          className="absolute top-3 right-3 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors"
+          className="absolute top-3 right-3 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-white/10 hover:text-white transition-colors"
         >
           <X className="h-4 w-4" />
         </button>
@@ -87,12 +87,12 @@ export function ConversionPopup() {
           </span>
           <h3
             id="popup-title"
-            className="mt-4 text-xl sm:text-2xl font-black tracking-tight text-slate-900 leading-tight"
+            className="mt-4 text-xl sm:text-2xl font-black tracking-tight text-white leading-tight"
           >
             Responde 3 campos,{" "}
             <span className="andre-gradient-text">orçamento em 5 min</span>.
           </h3>
-          <p className="mt-2 text-sm text-slate-500 leading-relaxed">
+          <p className="mt-2 text-sm text-slate-400 leading-relaxed">
             O André te chama direto no WhatsApp com preço fechado.
           </p>
 
@@ -107,7 +107,7 @@ export function ConversionPopup() {
                 onChange={(e) => setNome(e.target.value)}
                 required
                 placeholder="Como te chamamos?"
-                className="mt-1 w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-900 placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none transition-colors"
+                className="mt-1 w-full h-11 px-3.5 rounded-xl border border-white/10 bg-white/[0.04] text-sm text-white placeholder:text-slate-400 focus:border-sky-400 focus:bg-white/[0.08] focus:outline-none transition-colors"
               />
             </div>
             <div>
@@ -117,7 +117,7 @@ export function ConversionPopup() {
               <select
                 value={servico}
                 onChange={(e) => setServico(e.target.value)}
-                className="mt-1 w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-none transition-colors"
+                className="mt-1 w-full h-11 px-3.5 rounded-xl border border-white/10 bg-white/[0.04] text-sm text-white focus:border-sky-400 focus:bg-white/[0.08] focus:outline-none transition-colors"
               >
                 {services.map((s) => (
                   <option key={s}>{s}</option>
@@ -133,7 +133,7 @@ export function ConversionPopup() {
                 value={endereco}
                 onChange={(e) => setEndereco(e.target.value)}
                 placeholder="Ex: Perdizes, Santo André"
-                className="mt-1 w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-900 placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none transition-colors"
+                className="mt-1 w-full h-11 px-3.5 rounded-xl border border-white/10 bg-white/[0.04] text-sm text-white placeholder:text-slate-400 focus:border-sky-400 focus:bg-white/[0.08] focus:outline-none transition-colors"
               />
             </div>
             <button

@@ -34,7 +34,7 @@ export function Testimonials() {
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
         <RevealSection className="max-w-2xl mb-12">
           <span className="andre-chip">Depoimentos</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-slate-900">
+          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-white">
             Quem já contratou{" "}
             <span className="andre-gradient-text">volta a chamar</span>.
           </h2>
@@ -48,7 +48,7 @@ export function Testimonials() {
                   <Star key={i} className="h-4 w-4" fill="#fbbf24" color="#fbbf24" />
                 ))}
               </div>
-              <blockquote className="text-[15px] text-slate-700 leading-relaxed flex-1">
+              <blockquote className="text-[15px] text-slate-300 leading-relaxed flex-1">
                 “{t.text}”
               </blockquote>
               <figcaption className="mt-5 flex items-center gap-3">
@@ -59,8 +59,8 @@ export function Testimonials() {
                   {t.initials}
                 </span>
                 <div className="leading-tight">
-                  <p className="text-sm font-bold text-slate-900">{t.name}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">
+                  <p className="text-sm font-bold text-white">{t.name}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">
                     {t.where} · {t.service}
                   </p>
                 </div>

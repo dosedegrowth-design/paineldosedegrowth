@@ -58,13 +58,13 @@ export function Navbar() {
       >
         <div className="max-w-6xl mx-auto px-5 lg:px-8 h-16 flex items-center justify-between gap-6">
           <a href="#top" className="flex items-center gap-2.5">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-cyan-500 shadow-md shadow-sky-200">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-cyan-500 shadow-md shadow-sky-900/60">
               <Snowflake className="h-4.5 w-4.5 text-white" />
             </span>
             <div className="leading-tight">
-              <p className="text-sm font-black tracking-tight text-slate-900">
+              <p className="text-sm font-black tracking-tight text-white">
                 {ANDRE_CONFIG.brand.split(" ")[0]}
-                <span className="text-sky-600"> AC</span>
+                <span className="text-sky-400"> AC</span>
               </p>
               <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400 font-semibold">
                 Ar condicionado
@@ -79,8 +79,8 @@ export function Navbar() {
                 href={l.href}
                 className="text-[13.5px] font-semibold transition-colors border-b-2 pb-0.5"
                 style={{
-                  color: active === l.id ? "#0284c7" : "#475569",
-                  borderColor: active === l.id ? "#0284c7" : "transparent",
+                  color: active === l.id ? "#7dd3fc" : "#cbd5e1",
+                  borderColor: active === l.id ? "#38bdf8" : "transparent",
                 }}
               >
                 {l.label}
@@ -91,9 +91,9 @@ export function Navbar() {
           <div className="flex items-center gap-2">
             <a
               href={telLink()}
-              className="hidden md:inline-flex items-center gap-2 text-[13px] font-bold text-slate-700 hover:text-slate-900 transition-colors px-3 py-2"
+              className="hidden md:inline-flex items-center gap-2 text-[13px] font-bold text-slate-300 hover:text-white transition-colors px-3 py-2"
             >
-              <Phone className="h-4 w-4 text-sky-600" />
+              <Phone className="h-4 w-4 text-sky-400" />
               {ANDRE_CONFIG.phone}
             </a>
             <a
@@ -123,8 +123,12 @@ export function Navbar() {
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true">
           <div
-            className="absolute inset-0 bg-white/95"
-            style={{ backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
+            className="absolute inset-0"
+            style={{
+              background: "rgba(6, 10, 20, 0.94)",
+              backdropFilter: "blur(14px)",
+              WebkitBackdropFilter: "blur(14px)",
+            }}
             onClick={() => setOpen(false)}
           />
           <div className="relative h-full flex flex-col px-6 pt-5 pb-8">
@@ -145,8 +149,8 @@ export function Navbar() {
                   key={l.href}
                   href={l.href}
                   onClick={() => setOpen(false)}
-                  className="py-4 text-2xl font-black tracking-tight border-b border-slate-100 transition-colors"
-                  style={{ color: active === l.id ? "#0284c7" : "#0f172a" }}
+                  className="py-4 text-2xl font-black tracking-tight border-b border-white/[0.08] transition-colors"
+                  style={{ color: active === l.id ? "#7dd3fc" : "#f1f5f9" }}
                 >
                   {l.label}
                 </a>
@@ -167,7 +171,7 @@ export function Navbar() {
                 href={telLink()}
                 className="andre-btn-ghost inline-flex items-center justify-center gap-2 h-12 rounded-xl text-[15px]"
               >
-                <Phone className="h-5 w-5 text-sky-600" />
+                <Phone className="h-5 w-5 text-sky-400" />
                 {ANDRE_CONFIG.phone}
               </a>
             </div>

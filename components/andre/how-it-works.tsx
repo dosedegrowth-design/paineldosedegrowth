@@ -28,12 +28,12 @@ export function HowItWorks() {
   return (
     <section
       id="como-funciona"
-      className="relative py-20 lg:py-28 bg-white border-y border-slate-200"
+      className="relative py-20 lg:py-28 bg-white/[0.02] border-y border-white/[0.06]"
     >
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
         <RevealSection className="max-w-2xl mb-12 lg:mb-14">
           <span className="andre-chip">Como funciona</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-slate-900">
+          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-white">
             Do WhatsApp ao{" "}
             <span className="andre-gradient-text">ar gelando</span> em 3 passos.
           </h2>
@@ -42,16 +42,16 @@ export function HowItWorks() {
         <ol className="grid md:grid-cols-3 gap-5">
           {steps.map((s) => (
             <li key={s.n} className="andre-card p-7 relative overflow-hidden">
-              <span className="absolute -top-4 -right-2 text-[7rem] font-black leading-none text-sky-50 select-none pointer-events-none">
+              <span className="absolute -top-4 -right-2 text-[7rem] font-black leading-none text-sky-400/10 select-none pointer-events-none">
                 {s.n}
               </span>
-              <span className="relative inline-flex h-11 w-11 items-center justify-center rounded-xl bg-sky-50 border border-sky-100 mb-4">
-                <s.icon className="h-5 w-5 text-sky-600" />
+              <span className="relative inline-flex h-11 w-11 items-center justify-center rounded-xl bg-sky-400/10 border border-sky-400/25 mb-4">
+                <s.icon className="h-5 w-5 text-sky-400" />
               </span>
-              <h3 className="relative text-lg font-extrabold text-slate-900">
+              <h3 className="relative text-lg font-extrabold text-white">
                 {s.title}
               </h3>
-              <p className="relative text-sm text-slate-600 mt-2 leading-relaxed">
+              <p className="relative text-sm text-slate-300 mt-2 leading-relaxed">
                 {s.desc}
               </p>
             </li>

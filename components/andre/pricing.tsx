@@ -52,16 +52,16 @@ export function Pricing() {
   return (
     <section
       id="precos"
-      className="relative py-20 lg:py-28 bg-white border-y border-slate-200"
+      className="relative py-20 lg:py-28 bg-white/[0.02] border-y border-white/[0.06]"
     >
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
         <RevealSection className="max-w-2xl mx-auto text-center mb-12 lg:mb-14">
           <span className="andre-chip">Preços transparentes</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-slate-900">
+          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-white">
             Preço fechado{" "}
             <span className="andre-gradient-text">antes da visita</span>.
           </h2>
-          <p className="mt-4 text-slate-600 text-base leading-relaxed">
+          <p className="mt-4 text-slate-300 text-base leading-relaxed">
             Valores base — o orçamento exato sai em minutos no WhatsApp,
             conforme modelo e local. Sem surpresa na hora de pagar.
           </p>
@@ -72,7 +72,7 @@ export function Pricing() {
             <div
               key={p.name}
               className={`andre-card p-7 flex flex-col relative ${
-                p.featured ? "ring-2 ring-sky-500 shadow-xl shadow-sky-100" : ""
+                p.featured ? "ring-2 ring-cyan-400/70 shadow-xl shadow-cyan-500/20" : ""
               }`}
             >
               {p.featured && (
@@ -80,20 +80,20 @@ export function Pricing() {
                   MAIS PEDIDO
                 </span>
               )}
-              <h3 className="text-base font-extrabold text-slate-900">
+              <h3 className="text-base font-extrabold text-white">
                 {p.name}
               </h3>
               <p className="mt-3 text-[11px] uppercase tracking-wide font-semibold text-slate-400">
                 {p.prefix}
               </p>
-              <p className="text-4xl font-black tracking-tight text-slate-900">
+              <p className="text-4xl font-black tracking-tight text-white">
                 {p.price}
               </p>
-              <p className="mt-2 text-sm text-slate-600">{p.desc}</p>
+              <p className="mt-2 text-sm text-slate-300">{p.desc}</p>
               <ul className="mt-5 space-y-2.5 flex-1">
                 {p.items.map((it) => (
-                  <li key={it} className="flex items-start gap-2 text-sm text-slate-700">
-                    <Check className="h-4 w-4 text-sky-600 shrink-0 mt-0.5" />
+                  <li key={it} className="flex items-start gap-2 text-sm text-slate-300">
+                    <Check className="h-4 w-4 text-sky-400 shrink-0 mt-0.5" />
                     {it}
                   </li>
                 ))}

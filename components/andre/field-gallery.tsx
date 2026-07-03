@@ -7,11 +7,11 @@ export function FieldGallery() {
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
         <RevealSection className="max-w-2xl mb-12">
           <span className="andre-chip">Na prática</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-slate-900">
+          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-white">
             O padrão de execução que{" "}
             <span className="andre-gradient-text">você pode exigir</span>.
           </h2>
-          <p className="mt-4 text-slate-600 text-base leading-relaxed">
+          <p className="mt-4 text-slate-300 text-base leading-relaxed">
             Manômetro na recarga, laudo no diagnóstico e ambiente entregue
             limpo. Técnica não é opcional.
           </p>

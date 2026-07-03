@@ -21,7 +21,7 @@ export function Equipment() {
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
         <RevealSection className="max-w-2xl mb-12">
           <span className="andre-chip">Equipamentos</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-slate-900">
+          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-white">
             Atendemos praticamente{" "}
             <span className="andre-gradient-text">qualquer modelo</span>.
           </h2>
@@ -30,12 +30,12 @@ export function Equipment() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {equipment.map((e) => (
             <div key={e.name} className="andre-card p-5 flex items-center gap-4">
-              <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-50 border border-sky-100">
-                <e.icon className="h-5 w-5 text-sky-600" />
+              <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-400/10 border border-sky-400/25">
+                <e.icon className="h-5 w-5 text-sky-400" />
               </span>
               <div className="leading-tight">
-                <p className="text-[15px] font-extrabold text-slate-900">{e.name}</p>
-                <p className="text-xs text-slate-500 mt-0.5">{e.btus}</p>
+                <p className="text-[15px] font-extrabold text-white">{e.name}</p>
+                <p className="text-xs text-slate-400 mt-0.5">{e.btus}</p>
               </div>
             </div>
           ))}
@@ -49,7 +49,7 @@ export function Equipment() {
             {brands.map((b) => (
               <span
                 key={b}
-                className="text-base font-extrabold text-slate-300 hover:text-slate-500 transition-colors select-none"
+                className="text-base font-extrabold text-slate-600 hover:text-slate-400 transition-colors select-none"
               >
                 {b}
               </span>

@@ -60,11 +60,11 @@ export function Services() {
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
         <RevealSection className="max-w-2xl mb-12 lg:mb-14">
           <span className="andre-chip">Serviços</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-slate-900">
+          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-white">
             Tudo o que seu ar precisa,{" "}
             <span className="andre-gradient-text">com um técnico só</span>.
           </h2>
-          <p className="mt-4 text-slate-600 text-base leading-relaxed">
+          <p className="mt-4 text-slate-300 text-base leading-relaxed">
             Do primeiro furo na parede até a manutenção anual. Você fala com o
             André direto — sem call center.
           </p>
@@ -73,20 +73,20 @@ export function Services() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
           {services.map((s) => (
             <article key={s.title} className="andre-card p-6 flex flex-col">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-cyan-500 shadow-md shadow-sky-200 mb-4">
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-cyan-500 shadow-md shadow-sky-900/60 mb-4">
                 <s.icon className="h-5 w-5 text-white" />
               </span>
-              <h3 className="text-lg font-extrabold text-slate-900 leading-tight">
+              <h3 className="text-lg font-extrabold text-white leading-tight">
                 {s.title}
               </h3>
-              <p className="text-sm text-slate-600 mt-2 leading-relaxed flex-1">
+              <p className="text-sm text-slate-300 mt-2 leading-relaxed flex-1">
                 {s.desc}
               </p>
               <a
                 href={waLink(s.message)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-sky-700 hover:text-sky-900 transition-colors group"
+                className="mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-sky-300 hover:text-sky-200 transition-colors group"
               >
                 {s.cta}
                 <MoveRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />

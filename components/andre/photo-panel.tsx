@@ -35,7 +35,7 @@ export function PhotoPanel({
   return (
     <motion.figure
       ref={ref}
-      className={`relative overflow-hidden rounded-2xl ring-1 ring-slate-200 shadow-[0_16px_40px_-16px_rgba(15,23,42,0.18)] group bg-white ${className}`}
+      className={`relative overflow-hidden rounded-2xl ring-1 ring-white/10 shadow-[0_16px_40px_-16px_rgba(0,0,0,0.6)] group bg-[#0d1424] ${className}`}
       style={{ aspectRatio: ratio }}
       initial={
         reduceMotion

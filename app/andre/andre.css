@@ -1,17 +1,15 @@
-/* André Ar Condicionado — tema claro SaaS premium (estilo Lovable template) */
+/* André Ar Condicionado — dark cinematográfico premium */
 
 .andre-scope {
-  --andre-bg: #f8fafc;
-  --andre-card: #ffffff;
-  --andre-border: #e2e8f0;
-  --andre-fg: #0f172a;
-  --andre-muted: #64748b;
-  --andre-dim: #94a3b8;
+  --andre-bg: #060a14;
+  --andre-card: rgba(13, 20, 36, 0.88);
+  --andre-border: rgba(148, 163, 184, 0.14);
+  --andre-fg: #f1f5f9;
+  --andre-muted: #94a3b8;
 
-  --andre-primary: #0284c7;      /* sky-600 */
-  --andre-primary-strong: #0369a1;
-  --andre-accent: #06b6d4;       /* cyan-500 */
-  --andre-wa: #22c55e;
+  --andre-primary: #22d3ee;
+  --andre-sky: #38bdf8;
+  --andre-wa: #25d366;
   --andre-wa-dark: #16a34a;
 
   background: var(--andre-bg);
@@ -19,14 +17,13 @@
   font-family: "Montserrat", system-ui, -apple-system, sans-serif;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 .andre-scope * {
   border-color: var(--andre-border);
 }
 
-/* Âncoras suaves sem a navbar sticky cobrir o título */
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 5rem;
@@ -41,7 +38,7 @@ html {
 }
 .andre-scope a:focus-visible,
 .andre-scope button:focus-visible {
-  outline: 2px solid var(--andre-primary);
+  outline: 2px solid var(--andre-sky);
   outline-offset: 3px;
   border-radius: 8px;
 }
@@ -52,9 +49,9 @@ html {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #e0f2fe;
-  border: 1px solid #bae6fd;
-  color: #0369a1;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  color: #7dd3fc;
   border-radius: 999px;
   padding: 6px 14px;
   font-size: 12.5px;
@@ -65,99 +62,121 @@ html {
   background: var(--andre-card);
   border: 1px solid var(--andre-border);
   border-radius: 20px;
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.04),
-    0 8px 24px -12px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 12px 40px -16px rgba(0, 0, 0, 0.6);
   transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
 }
 .andre-card:hover {
   transform: translateY(-3px);
-  border-color: #bae6fd;
+  border-color: rgba(56, 189, 248, 0.4);
   box-shadow:
-    0 2px 4px rgba(15, 23, 42, 0.04),
-    0 20px 40px -16px rgba(2, 132, 199, 0.18);
+    0 16px 48px -16px rgba(0, 0, 0, 0.7),
+    0 0 32px -12px rgba(56, 189, 248, 0.35);
 }
 
 .andre-gradient-text {
-  background: linear-gradient(120deg, #0284c7 0%, #06b6d4 60%, #0ea5e9 100%);
+  background: linear-gradient(120deg, #7dd3fc 0%, #22d3ee 55%, #38bdf8 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-/* CTA WhatsApp — conversão, sempre verde */
 .andre-btn-primary {
   background: linear-gradient(135deg, #25d366 0%, #16a34a 100%);
   color: #ffffff;
   font-weight: 700;
   box-shadow:
-    0 8px 20px -8px rgba(34, 197, 94, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    0 10px 26px -10px rgba(37, 211, 102, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
   transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease;
 }
 .andre-btn-primary:hover {
-  filter: brightness(1.05);
+  filter: brightness(1.07);
   transform: translateY(-1px);
-  box-shadow: 0 12px 28px -8px rgba(34, 197, 94, 0.55);
 }
 .andre-btn-primary:active { transform: translateY(0); }
 
-/* botão secundário claro */
 .andre-btn-ghost {
-  background: #ffffff;
-  border: 1px solid var(--andre-border);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(148, 163, 184, 0.22);
   color: var(--andre-fg);
   font-weight: 600;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
   transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
 }
 .andre-btn-ghost:hover {
-  border-color: #7dd3fc;
-  background: #f0f9ff;
+  border-color: rgba(56, 189, 248, 0.55);
+  background: rgba(56, 189, 248, 0.08);
   transform: translateY(-1px);
 }
 
-/* botão escuro (navbar / hero secundário) */
-.andre-btn-dark {
-  background: #0f172a;
-  color: #ffffff;
-  font-weight: 700;
-  transition: transform 150ms ease, background 150ms ease;
-}
-.andre-btn-dark:hover { background: #1e293b; transform: translateY(-1px); }
-
-/* pulso do WhatsApp float */
 @keyframes andre-pulse-ring {
-  0%   { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.45); }
-  70%  { box-shadow: 0 0 0 18px rgba(34, 197, 94, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+  0%   { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); }
+  70%  { box-shadow: 0 0 0 20px rgba(37, 211, 102, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
 }
 .andre-wa-pulse { animation: andre-pulse-ring 2.4s infinite; }
 
-/* fundo pontilhado sutil do hero (SaaS) */
-.andre-dots {
-  background-image: radial-gradient(circle, rgba(2, 132, 199, 0.14) 1px, transparent 1.5px);
-  background-size: 22px 22px;
-  mask-image: radial-gradient(ellipse 75% 65% at 50% 35%, black 30%, transparent 90%);
-  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 35%, black 30%, transparent 90%);
+/* ---------- cena ambiente ---------- */
+
+/* grid neon sutil do hero */
+.andre-grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(56, 189, 248, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(56, 189, 248, 0.07) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 35%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 35%, transparent 100%);
 }
 
-/* glow suave atrás do mockup */
-.andre-hero-glow {
+/* aurora fria */
+.andre-aurora {
   background:
-    radial-gradient(42rem 22rem at 65% 30%, rgba(56, 189, 248, 0.18), transparent 65%),
-    radial-gradient(30rem 18rem at 30% 70%, rgba(6, 182, 212, 0.12), transparent 65%);
+    radial-gradient(52rem 28rem at 18% -8%, rgba(56, 189, 248, 0.16), transparent 62%),
+    radial-gradient(38rem 24rem at 88% 12%, rgba(34, 211, 238, 0.13), transparent 62%),
+    radial-gradient(46rem 26rem at 50% 105%, rgba(56, 189, 248, 0.09), transparent 62%);
 }
 
-/* topbar clara com blur ao rolar */
+/* estrelas */
+.andre-star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 999px;
+  background: #e0f2fe;
+  box-shadow: 0 0 5px rgba(224, 242, 254, 0.8);
+  animation: andre-twinkle 3.8s ease-in-out infinite;
+}
+@keyframes andre-twinkle {
+  0%, 100% { opacity: 0.15; transform: scale(0.8); }
+  50%      { opacity: 0.9;  transform: scale(1.15); }
+}
+
+/* neve subindo (testemunhos) */
+.andre-rise-flake {
+  position: absolute;
+  bottom: -16px;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: radial-gradient(circle, #e0f2fe 0%, rgba(224, 242, 254, 0) 70%);
+  box-shadow: 0 0 8px rgba(125, 211, 252, 0.7);
+  animation: andre-rise linear infinite;
+}
+@keyframes andre-rise {
+  0%   { transform: translate3d(0, 0, 0);          opacity: 0; }
+  10%  {                                            opacity: 0.9; }
+  100% { transform: translate3d(-14px, -105vh, 0);  opacity: 0; }
+}
+
+/* topbar */
 .andre-topbar[data-scrolled="true"] {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(14px) saturate(150%);
-  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  background: rgba(6, 10, 20, 0.78);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
   border-bottom: 1px solid var(--andre-border);
 }
 
-/* entrada suave */
 @keyframes andre-float-in {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -165,5 +184,7 @@ html {
 .andre-anim-in { animation: andre-float-in 700ms cubic-bezier(0.16, 1, 0.3, 1) both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .andre-anim-in, .andre-wa-pulse { animation: none !important; }
+  .andre-anim-in, .andre-wa-pulse, .andre-star, .andre-rise-flake {
+    animation: none !important;
+  }
 }
