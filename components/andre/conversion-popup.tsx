@@ -8,46 +8,49 @@ import { WhatsAppIcon } from "./whatsapp-icon";
 const STORAGE_KEY = "andre_popup_seen_v1";
 const DELAY_MS = 15_000;
 
+const services = [
+  "Instalação",
+  "Manutenção preventiva",
+  "Higienização",
+  "Recarga de gás",
+  "Reparo / conserto",
+  "Desinstalação / mudança",
+  "Não sei ainda",
+];
+
 export function ConversionPopup() {
   const [open, setOpen] = useState(false);
   const [nome, setNome] = useState("");
-  const [servico, setServico] = useState("Instalação");
+  const [servico, setServico] = useState(services[0]);
   const [endereco, setEndereco] = useState("");
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
     if (sessionStorage.getItem(STORAGE_KEY)) return;
-
-    const t = window.setTimeout(() => {
+    const t = setTimeout(() => {
       setOpen(true);
       sessionStorage.setItem(STORAGE_KEY, "1");
     }, DELAY_MS);
-
-    return () => window.clearTimeout(t);
+    return () => clearTimeout(t);
   }, []);
 
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    window.addEventListener("keydown", onKey);
+    document.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
     return () => {
-      window.removeEventListener("keydown", onKey);
+      document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
     };
   }, [open]);
 
-  function onSubmit(e: FormEvent) {
+  function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    const msg = [
-      `Olá, André! Vim pelo site e quero um orçamento.`,
-      nome && `Nome: ${nome}`,
-      `Serviço: ${servico}`,
-      endereco && `Bairro/Cidade: ${endereco}`,
-    ]
-      .filter(Boolean)
-      .join("\n");
-    window.open(waLink(msg), "_blank", "noopener,noreferrer");
+    const lines = ["Olá, André! Vim pelo site e quero um orçamento."];
+    if (nome) lines.push(`Nome: ${nome}`);
+    lines.push(`Serviço: ${servico}`);
+    if (endereco) lines.push(`Bairro/Cidade: ${endereco}`);
+    window.open(waLink(lines.join("\n")), "_blank", "noopener,noreferrer");
     setOpen(false);
   }
 
@@ -58,69 +61,44 @@ export function ConversionPopup() {
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 sm:p-6"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="andre-popup-title"
+      aria-labelledby="popup-title"
     >
-      <button
-        aria-label="Fechar"
-        onClick={() => setOpen(false)}
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-      />
       <div
-        className="relative w-full max-w-md rounded-2xl overflow-hidden andre-anim-in"
-        style={{
-          background:
-            "linear-gradient(180deg, rgba(14,23,42,0.98), rgba(10,17,32,0.98))",
-          border: "1px solid rgba(56,189,248,0.25)",
-          boxShadow: "0 30px 80px -20px rgba(0,0,0,0.6)",
-        }}
-      >
-        <div
-          className="absolute inset-x-0 top-0 h-32 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(30rem 12rem at 50% 0%, rgba(56,189,248,0.25), transparent 70%)",
-          }}
-        />
+        className="absolute inset-0 bg-slate-900/50"
+        style={{ backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)" }}
+        onClick={() => setOpen(false)}
+      />
 
+      <div className="relative w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden andre-anim-in">
+        <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-sky-500 via-cyan-400 to-sky-500" />
         <button
+          type="button"
+          aria-label="Fechar"
           onClick={() => setOpen(false)}
-          aria-label="Fechar popup"
-          className="absolute top-3 right-3 z-10 h-8 w-8 rounded-full inline-flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+          className="absolute top-3 right-3 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors"
         >
           <X className="h-4 w-4" />
         </button>
 
-        <div className="relative p-6 sm:p-7">
-          <div className="flex items-center gap-2 mb-4">
-            <span
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg"
-              style={{
-                background: "rgba(56,189,248,0.12)",
-                border: "1px solid rgba(56,189,248,0.3)",
-              }}
-            >
-              <Sparkles className="h-4 w-4" style={{ color: "#7dd3fc" }} />
-            </span>
-            <span className="andre-chip">Oferta rápida</span>
-          </div>
-
+        <div className="p-6 sm:p-7">
+          <span className="andre-chip">
+            <Sparkles className="h-3.5 w-3.5" />
+            Orçamento rápido
+          </span>
           <h3
-            id="andre-popup-title"
-            className="text-xl sm:text-2xl font-black text-white leading-tight tracking-tight"
+            id="popup-title"
+            className="mt-4 text-xl sm:text-2xl font-black tracking-tight text-slate-900 leading-tight"
           >
-            Manda seus dados,{" "}
-            <span className="andre-gradient-text">
-              orçamento em 5 minutos.
-            </span>
+            Responde 3 campos,{" "}
+            <span className="andre-gradient-text">orçamento em 5 min</span>.
           </h3>
-          <p className="mt-2 text-sm text-slate-400 leading-relaxed">
-            Preencha 3 campos e o André te chama direto no WhatsApp com preço
-            fechado.
+          <p className="mt-2 text-sm text-slate-500 leading-relaxed">
+            O André te chama direto no WhatsApp com preço fechado.
           </p>
 
-          <form className="mt-5 space-y-3" onSubmit={onSubmit}>
+          <form onSubmit={handleSubmit} className="mt-5 space-y-3.5">
             <div>
-              <label className="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">
+              <label className="text-[11px] uppercase tracking-wider font-bold text-slate-400">
                 Seu nome
               </label>
               <input
@@ -129,39 +107,25 @@ export function ConversionPopup() {
                 onChange={(e) => setNome(e.target.value)}
                 required
                 placeholder="Como te chamamos?"
-                className="mt-1 w-full h-11 rounded-lg px-3 text-sm text-white placeholder:text-slate-500 focus:outline-none transition-colors"
-                style={{
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                }}
+                className="mt-1 w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-900 placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none transition-colors"
               />
             </div>
-
             <div>
-              <label className="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">
+              <label className="text-[11px] uppercase tracking-wider font-bold text-slate-400">
                 Serviço
               </label>
               <select
                 value={servico}
                 onChange={(e) => setServico(e.target.value)}
-                className="mt-1 w-full h-11 rounded-lg px-3 text-sm text-white focus:outline-none"
-                style={{
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                }}
+                className="mt-1 w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-none transition-colors"
               >
-                <option>Instalação</option>
-                <option>Manutenção preventiva</option>
-                <option>Higienização</option>
-                <option>Recarga de gás</option>
-                <option>Reparo / conserto</option>
-                <option>Desinstalação / mudança</option>
-                <option>Não sei ainda</option>
+                {services.map((s) => (
+                  <option key={s}>{s}</option>
+                ))}
               </select>
             </div>
-
             <div>
-              <label className="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">
+              <label className="text-[11px] uppercase tracking-wider font-bold text-slate-400">
                 Bairro ou cidade
               </label>
               <input
@@ -169,23 +133,17 @@ export function ConversionPopup() {
                 value={endereco}
                 onChange={(e) => setEndereco(e.target.value)}
                 placeholder="Ex: Perdizes, Santo André"
-                className="mt-1 w-full h-11 rounded-lg px-3 text-sm text-white placeholder:text-slate-500 focus:outline-none transition-colors"
-                style={{
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                }}
+                className="mt-1 w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-900 placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none transition-colors"
               />
             </div>
-
             <button
               type="submit"
-              className="andre-btn-primary w-full h-12 rounded-lg inline-flex items-center justify-center gap-2 text-[15px] mt-2"
+              className="andre-btn-primary w-full h-12 rounded-xl inline-flex items-center justify-center gap-2 text-[15px] mt-1"
             >
               <WhatsAppIcon className="h-5 w-5" />
               Chamar André no WhatsApp
             </button>
-
-            <p className="text-[11px] text-slate-500 text-center pt-1">
+            <p className="text-[11px] text-slate-400 text-center">
               Sem cadastro. Vai direto pra conversa.
             </p>
           </form>

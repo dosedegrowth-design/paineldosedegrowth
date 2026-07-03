@@ -52,7 +52,7 @@ function CountUp({
   return (
     <span className="tabular-nums">
       {formatted}
-      <span style={{ color: "#7dd3fc" }}>{suffix}</span>
+      <span className="text-sky-600">{suffix}</span>
     </span>
   );
 }
@@ -62,11 +62,8 @@ export function StatsBand() {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section
-      className="relative py-14 lg:py-20 border-y border-white/[0.06] overflow-hidden"
-      style={{ background: "rgba(7, 12, 24, 0.55)" }}
-    >
-      <div ref={ref} className="relative z-10 max-w-6xl mx-auto px-5 lg:px-8">
+    <section className="relative py-14 lg:py-18 bg-gradient-to-b from-sky-50/60 to-white border-y border-slate-200">
+      <div ref={ref} className="max-w-6xl mx-auto px-5 lg:px-8">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-4">
           {stats.map((s, i) => (
             <motion.div
@@ -77,7 +74,7 @@ export function StatsBand() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.1 }}
             >
-              <p className="text-4xl lg:text-5xl font-black tracking-tight text-white">
+              <p className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900">
                 <CountUp
                   value={s.value}
                   suffix={s.suffix}
@@ -86,7 +83,7 @@ export function StatsBand() {
                   start={inView}
                 />
               </p>
-              <p className="mt-2 text-[13px] text-slate-400 leading-snug">
+              <p className="mt-2 text-[13px] text-slate-500 leading-snug">
                 {s.label}
               </p>
             </motion.div>

@@ -1,40 +1,36 @@
-import {
-  Phone,
-  ShieldCheck,
-  Zap,
-  Star,
-  Clock,
-} from "lucide-react";
+import { Phone, ShieldCheck, Zap, Clock, Star } from "lucide-react";
 import { ANDRE_CONFIG, waLink, telLink } from "./config";
 import { WhatsAppIcon } from "./whatsapp-icon";
+import { HeroMockup } from "./hero-mockup";
 
 export function Hero() {
   return (
-    <section id="top" className="relative overflow-hidden lg:min-h-[94vh] flex items-center">
-      <div className="absolute inset-0 andre-grid-bg pointer-events-none" />
+    <section id="top" className="relative overflow-hidden">
+      <div className="absolute inset-0 andre-hero-glow pointer-events-none" />
+      <div className="absolute inset-0 andre-dots pointer-events-none" />
 
-      <div className="relative max-w-6xl mx-auto px-5 lg:px-8 pt-16 lg:pt-24 pb-20 lg:pb-28">
-        <div className="grid lg:grid-cols-[1.15fr_1fr] gap-10 lg:gap-14 items-center">
-          {/* Left: copy */}
+      <div className="relative max-w-6xl mx-auto px-5 lg:px-8 pt-14 lg:pt-24 pb-16 lg:pb-24">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-14 items-center">
+          {/* Copy */}
           <div className="andre-anim-in">
-            <div className="flex flex-wrap items-center gap-2 mb-6">
-              <span className="tech-stamp">SYS_ONLINE · ATENDENDO_AGORA</span>
-              <span className="tech-stamp" style={{ color: "rgba(148,163,184,0.9)" }}>
-                LOC: {ANDRE_CONFIG.city.toUpperCase()}
-              </span>
-            </div>
+            <span className="andre-chip">
+              <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+              Atendendo agora · {ANDRE_CONFIG.city}
+            </span>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.02] tracking-tight">
-              Ar que trabalha.
+            <h1 className="mt-6 text-4xl sm:text-5xl lg:text-[3.4rem] font-black leading-[1.05] tracking-tight text-slate-900">
+              Seu ar condicionado
               <br />
-              <span className="andre-gradient-text">Técnico que resolve.</span>
+              resolvido{" "}
+              <span className="andre-gradient-text">sem enrolação</span>.
             </h1>
 
-            <p className="mt-6 text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed">
-              Instalação, manutenção preventiva, higienização e recarga de gás
-              para Split, Multi Split, VRF, Piso Teto e Cassete —
-              com <strong className="text-white">garantia real</strong> e
-              atendimento em até <strong className="text-white">24h</strong>.
+            <p className="mt-5 text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed">
+              Instalação, manutenção, higienização e recarga de gás com{" "}
+              <strong className="text-slate-900">orçamento em minutos</strong>{" "}
+              pelo WhatsApp e atendimento em até{" "}
+              <strong className="text-slate-900">24h</strong>. Split, Multi
+              Split, VRF, Piso Teto e Cassete.
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
@@ -42,119 +38,46 @@ export function Hero() {
                 href={waLink()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="andre-btn-primary inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg text-[15px]"
+                className="andre-btn-primary inline-flex items-center justify-center gap-2 h-12 px-6 rounded-xl text-[15px]"
               >
                 <WhatsAppIcon className="h-5 w-5" />
-                Chamar André no WhatsApp
+                Pedir orçamento grátis
               </a>
               <a
                 href={telLink()}
-                className="andre-btn-ghost inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg text-[15px] font-semibold"
+                className="andre-btn-ghost inline-flex items-center justify-center gap-2 h-12 px-6 rounded-xl text-[15px]"
               >
-                <Phone className="h-5 w-5" style={{ color: "#7dd3fc" }} />
+                <Phone className="h-5 w-5 text-sky-600" />
                 {ANDRE_CONFIG.phone}
               </a>
             </div>
 
-            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-[13px] text-slate-400">
-              <span className="inline-flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4" style={{ color: "#7dd3fc" }} />
+            <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2.5 text-[13px] text-slate-500">
+              <span className="inline-flex items-center gap-1.5">
+                <ShieldCheck className="h-4 w-4 text-sky-600" />
                 90 dias de garantia
               </span>
-              <span className="inline-flex items-center gap-2">
-                <Zap className="h-4 w-4" style={{ color: "#7dd3fc" }} />
-                Orçamento em minutos
+              <span className="inline-flex items-center gap-1.5">
+                <Zap className="h-4 w-4 text-sky-600" />
+                Resposta em ~5 min
               </span>
-              <span className="inline-flex items-center gap-2">
-                <Clock className="h-4 w-4" style={{ color: "#7dd3fc" }} />
+              <span className="inline-flex items-center gap-1.5">
+                <Clock className="h-4 w-4 text-sky-600" />
                 Atendimento em 24h
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Star className="h-4 w-4 text-amber-400" fill="#fbbf24" />
+                {ANDRE_CONFIG.rating} ({ANDRE_CONFIG.clientsServed} clientes)
               </span>
             </div>
           </div>
 
-          {/* Right: espaço aberto pro 3D (a unidade fixa vive atrás) + quote widget */}
-          <div className="andre-anim-in [animation-delay:120ms] flex flex-col gap-5">
-            <div className="h-[200px] sm:h-[260px] lg:h-[320px] pointer-events-none" aria-hidden />
-            <div className="andre-glass rounded-2xl p-6 lg:p-7 relative">
-              <div
-                className="absolute -top-3 left-6 andre-chip"
-                style={{ background: "#0e172a" }}
-              >
-                Resposta em ~5 min
-              </div>
-
-              <div className="flex items-center gap-2 mb-4">
-                <div className="flex -space-x-2">
-                  {[0, 1, 2].map((i) => (
-                    <div
-                      key={i}
-                      className="h-8 w-8 rounded-full ring-2 ring-[#0e172a]"
-                      style={{
-                        background: `linear-gradient(135deg,
-                          hsl(${200 + i * 20}, 70%, ${55 - i * 8}%),
-                          hsl(${185 + i * 15}, 60%, ${40 - i * 6}%))`,
-                      }}
-                    />
-                  ))}
-                </div>
-                <p className="text-xs text-slate-400 leading-tight">
-                  <strong className="text-white">
-                    {ANDRE_CONFIG.clientsServed}
-                  </strong>{" "}
-                  clientes atendidos em {ANDRE_CONFIG.yearsExperience} anos
-                </p>
-              </div>
-
-              <div className="flex items-center gap-1.5 mb-5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className="h-4 w-4"
-                    fill="#fbbf24"
-                    color="#fbbf24"
-                  />
-                ))}
-                <span className="text-xs text-slate-300 ml-1 font-semibold">
-                  {ANDRE_CONFIG.rating} de 5
-                </span>
-              </div>
-
-              <div className="space-y-3">
-                <QuoteRow label="Instalação Split 9.000 – 12.000 BTU" price="a partir de R$ 380" />
-                <QuoteRow label="Manutenção completa + higienização" price="a partir de R$ 190" />
-                <QuoteRow label="Recarga de gás R-410A / R-32" price="sob consulta" />
-                <QuoteRow label="Visita técnica + diagnóstico" price="gratuita*" />
-              </div>
-
-              <p className="text-[11px] text-slate-500 mt-4 leading-relaxed">
-                *Visita gratuita mediante execução do serviço. Valores variam
-                por modelo e localização.
-              </p>
-
-              <a
-                href={waLink("Olá, André! Quero receber um orçamento personalizado.")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="andre-btn-primary mt-5 w-full inline-flex items-center justify-center gap-2 h-11 rounded-lg text-sm"
-              >
-                <WhatsAppIcon className="h-4 w-4" />
-                Quero meu orçamento grátis
-              </a>
-            </div>
+          {/* Mockup do painel */}
+          <div className="relative lg:pl-4">
+            <HeroMockup />
           </div>
         </div>
       </div>
     </section>
-  );
-}
-
-function QuoteRow({ label, price }: { label: string; price: string }) {
-  return (
-    <div className="flex items-center justify-between gap-4 py-2 border-b border-white/[0.05] last:border-b-0">
-      <span className="text-[13px] text-slate-300 leading-tight">{label}</span>
-      <span className="text-[13px] font-semibold text-white whitespace-nowrap">
-        {price}
-      </span>
-    </div>
   );
 }

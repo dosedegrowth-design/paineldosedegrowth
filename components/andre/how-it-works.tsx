@@ -1,32 +1,26 @@
-import { ClipboardCheck, Wrench, Sparkles } from "lucide-react";
+import { ClipboardCheck, Wrench } from "lucide-react";
 import { waLink } from "./config";
 import { WhatsAppIcon } from "./whatsapp-icon";
 import { RevealSection } from "./tilt-card";
 
 const steps = [
   {
-    n: "01",
+    n: "1",
     icon: WhatsAppIcon,
-    title: "Você fala no WhatsApp",
-    desc: "Manda foto, modelo ou só descreve o problema. Em minutos você tem um retorno técnico.",
+    title: "Chama no WhatsApp",
+    desc: "Manda foto ou descreve o problema. Em ~5 minutos você recebe retorno técnico com preço fechado.",
   },
   {
-    n: "02",
+    n: "2",
     icon: ClipboardCheck,
-    title: "Recebe o orçamento",
-    desc: "Preço fechado antes da visita. Sem surpresa, sem taxa escondida.",
+    title: "Agenda o melhor horário",
+    desc: "Sem taxa escondida, sem surpresa. Chegamos no horário combinado, com uniforme e ferramenta.",
   },
   {
-    n: "03",
+    n: "3",
     icon: Wrench,
-    title: "Técnico agendado",
-    desc: "Escolhe o melhor dia e horário. Chegamos no horário combinado, com uniforme e ferramenta.",
-  },
-  {
-    n: "04",
-    icon: Sparkles,
-    title: "Ar funcionando",
-    desc: "Serviço testado, nota fiscal emitida e 90 dias de garantia. Você paga só se aprovar.",
+    title: "Ar funcionando, garantido",
+    desc: "Serviço testado na sua frente, nota fiscal e 90 dias de garantia. Você só paga se aprovar.",
   },
 ];
 
@@ -34,90 +28,45 @@ export function HowItWorks() {
   return (
     <section
       id="como-funciona"
-      className="relative py-20 lg:py-28 border-y border-white/[0.06] overflow-hidden"
-      style={{ background: "rgba(7, 12, 24, 0.6)" }}
+      className="relative py-20 lg:py-28 bg-white border-y border-slate-200"
     >
-      <div className="andre-bg andre-bg-stream">
-        <span className="stream-line l1" />
-        <span className="stream-line l2" />
-        <span className="stream-line l3" />
-        <span className="stream-line l4" />
-        <span className="stream-line l5" />
-        <span className="stream-line l6" />
-        {(["f1", "f2", "f3", "f4"] as const).map((k) => (
-          <svg key={k} className={`stream-flake ${k}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-            <line x1="2" x2="22" y1="12" y2="12" />
-            <line x1="12" x2="12" y1="2" y2="22" />
-            <path d="m20 16-4-4 4-4" />
-            <path d="m4 8 4 4-4 4" />
-            <path d="m16 4-4 4-4-4" />
-            <path d="m8 20 4-4 4 4" />
-          </svg>
-        ))}
-      </div>
-      <div className="relative z-10 max-w-6xl mx-auto px-5 lg:px-8">
-        <RevealSection className="max-w-2xl mb-12">
+      <div className="max-w-6xl mx-auto px-5 lg:px-8">
+        <RevealSection className="max-w-2xl mb-12 lg:mb-14">
           <span className="andre-chip">Como funciona</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight">
+          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-slate-900">
             Do WhatsApp ao{" "}
-            <span className="andre-gradient-text">ar funcionando</span> em
-            poucos passos.
+            <span className="andre-gradient-text">ar gelando</span> em 3 passos.
           </h2>
         </RevealSection>
 
-        <ol className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {steps.map((s, i) => (
-            <li key={s.n} className="relative">
-              <div className="andre-card p-6 h-full">
-                <div className="flex items-center justify-between mb-4">
-                  <span
-                    className="text-4xl font-black leading-none tracking-tight"
-                    style={{ color: "rgba(125, 211, 252, 0.35)" }}
-                  >
-                    {s.n}
-                  </span>
-                  <span
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-lg"
-                    style={{
-                      background: "rgba(56,189,248,0.10)",
-                      border: "1px solid rgba(56,189,248,0.25)",
-                    }}
-                  >
-                    <s.icon
-                      className="h-4.5 w-4.5"
-                      style={{ color: "#7dd3fc" }}
-                    />
-                  </span>
-                </div>
-                <h3 className="text-base font-bold text-white leading-tight">
-                  {s.title}
-                </h3>
-                <p className="text-sm text-slate-400 mt-2 leading-relaxed">
-                  {s.desc}
-                </p>
-              </div>
-              {i < steps.length - 1 && (
-                <div
-                  className="hidden lg:block absolute top-1/2 -right-2 h-px w-4"
-                  style={{
-                    background:
-                      "linear-gradient(90deg, rgba(125,211,252,0.4), transparent)",
-                  }}
-                />
-              )}
+        <ol className="grid md:grid-cols-3 gap-5">
+          {steps.map((s) => (
+            <li key={s.n} className="andre-card p-7 relative overflow-hidden">
+              <span className="absolute -top-4 -right-2 text-[7rem] font-black leading-none text-sky-50 select-none pointer-events-none">
+                {s.n}
+              </span>
+              <span className="relative inline-flex h-11 w-11 items-center justify-center rounded-xl bg-sky-50 border border-sky-100 mb-4">
+                <s.icon className="h-5 w-5 text-sky-600" />
+              </span>
+              <h3 className="relative text-lg font-extrabold text-slate-900">
+                {s.title}
+              </h3>
+              <p className="relative text-sm text-slate-600 mt-2 leading-relaxed">
+                {s.desc}
+              </p>
             </li>
           ))}
         </ol>
 
-        <div className="mt-12 flex justify-center">
+        <div className="mt-10 flex justify-center">
           <a
             href={waLink()}
             target="_blank"
             rel="noopener noreferrer"
-            className="andre-btn-primary inline-flex items-center gap-2 h-12 px-6 rounded-lg text-[15px]"
+            className="andre-btn-primary inline-flex items-center gap-2 h-12 px-7 rounded-xl text-[15px]"
           >
             <WhatsAppIcon className="h-5 w-5" />
-            Chamar André no WhatsApp
+            Começar agora — orçamento grátis
           </a>
         </div>
       </div>

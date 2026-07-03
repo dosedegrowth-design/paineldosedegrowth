@@ -4,63 +4,52 @@ import { WhatsAppIcon } from "./whatsapp-icon";
 
 export function FinalCTA() {
   return (
-    <section className="relative py-20 lg:py-28 overflow-hidden">
-      <div className="absolute inset-0 andre-aurora pointer-events-none" />
-      <div className="andre-bg andre-bg-beam">
-        <span className="beam" />
-        <span className="beam b2" />
-        <span className="beam b3" />
-        {Array.from({ length: 20 }).map((_, i) => {
-          const angle = (i / 20) * Math.PI * 2;
-          const dist = 60 + ((i * 13) % 30);
-          const tx = `${Math.cos(angle) * dist}vw`;
-          const ty = `${Math.sin(angle) * dist}vh`;
-          return (
-            <span
-              key={i}
-              className="burst-flake"
-              style={{
-                animationDelay: `${(i % 10) * 0.35}s`,
-                ["--tx" as string]: tx,
-                ["--ty" as string]: ty,
-              } as React.CSSProperties}
-            />
-          );
-        })}
-      </div>
-      <div className="relative z-10 max-w-4xl mx-auto px-5 lg:px-8 text-center">
-        <span className="andre-chip">Bora resolver?</span>
-        <h2 className="mt-5 text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight">
-          Seu ar merece um técnico{" "}
-          <span className="andre-gradient-text">que atende o telefone</span>.
-        </h2>
-        <p className="mt-5 text-slate-300 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-          Manda uma foto do seu aparelho no WhatsApp. Em minutos você recebe um
-          orçamento honesto — sem enrolação, sem taxa escondida, sem call center.
-        </p>
+    <section className="relative py-16 lg:py-24">
+      <div className="max-w-6xl mx-auto px-5 lg:px-8">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-sky-600 via-sky-500 to-cyan-500 px-6 py-14 lg:px-16 lg:py-20 text-center shadow-2xl shadow-sky-200">
+          {/* textura sutil */}
+          <div
+            className="absolute inset-0 opacity-15 pointer-events-none"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, rgba(255,255,255,0.7) 1px, transparent 1.5px)",
+              backgroundSize: "22px 22px",
+            }}
+          />
+          <div className="relative">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight text-white">
+              Seu ar merece um técnico
+              <br className="hidden sm:block" /> que atende o telefone.
+            </h2>
+            <p className="mt-4 text-sky-50 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+              Manda uma foto do aparelho no WhatsApp. Em minutos você recebe um
+              orçamento honesto — sem enrolação, sem taxa escondida.
+            </p>
 
-        <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <a
-            href={waLink()}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="andre-btn-primary inline-flex items-center gap-2 h-12 px-7 rounded-lg text-[15px]"
-          >
-            <WhatsAppIcon className="h-5 w-5" />
-            Chamar André no WhatsApp
-          </a>
-          <a
-            href={telLink()}
-            className="andre-btn-ghost inline-flex items-center gap-2 h-12 px-7 rounded-lg text-[15px] font-semibold"
-          >
-            <Phone className="h-5 w-5" style={{ color: "#7dd3fc" }} />
-            {ANDRE_CONFIG.phone}
-          </a>
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <a
+                href={waLink()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 h-12 px-7 rounded-xl text-[15px] font-bold bg-white text-slate-900 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
+              >
+                <WhatsAppIcon className="h-5 w-5 text-green-600" />
+                Chamar André no WhatsApp
+              </a>
+              <a
+                href={telLink()}
+                className="inline-flex items-center gap-2 h-12 px-7 rounded-xl text-[15px] font-bold text-white border border-white/40 hover:bg-white/10 transition-colors"
+              >
+                <Phone className="h-5 w-5" />
+                {ANDRE_CONFIG.phone}
+              </a>
+            </div>
+
+            <p className="mt-6 text-xs text-sky-100">
+              {ANDRE_CONFIG.emergencyText}
+            </p>
+          </div>
         </div>
-
-        <p className="mt-6 text-xs text-slate-500">
-          {ANDRE_CONFIG.emergencyText}
-        </p>
       </div>
     </section>
   );

@@ -1,11 +1,5 @@
 "use client";
 
-/* Painel de foto estilo makepill com Framer Motion:
-   - reveal por clip-path + fade + lift ao entrar na viewport
-   - parallax sutil da imagem conforme o scroll
-   - zoom suave no hover
-   Imagens vivem em public/andre/. */
-
 import { useRef } from "react";
 import {
   motion,
@@ -41,25 +35,17 @@ export function PhotoPanel({
   return (
     <motion.figure
       ref={ref}
-      className={`relative overflow-hidden rounded-2xl border border-sky-400/20 group ${className}`}
-      style={{ aspectRatio: ratio, background: "#0a1120" }}
+      className={`relative overflow-hidden rounded-2xl ring-1 ring-slate-200 shadow-[0_16px_40px_-16px_rgba(15,23,42,0.18)] group bg-white ${className}`}
+      style={{ aspectRatio: ratio }}
       initial={
         reduceMotion
           ? { opacity: 0 }
-          : {
-              opacity: 0,
-              y: 36,
-              clipPath: "inset(14% 8% 14% 8% round 20px)",
-            }
+          : { opacity: 0, y: 32, clipPath: "inset(12% 7% 12% 7% round 18px)" }
       }
       whileInView={
         reduceMotion
           ? { opacity: 1 }
-          : {
-              opacity: 1,
-              y: 0,
-              clipPath: "inset(0% 0% 0% 0% round 20px)",
-            }
+          : { opacity: 1, y: 0, clipPath: "inset(0% 0% 0% 0% round 18px)" }
       }
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] }}
@@ -69,36 +55,27 @@ export function PhotoPanel({
         alt={alt}
         loading="lazy"
         className="absolute inset-0 h-full w-full object-cover"
-        style={{
-          y: reduceMotion ? 0 : parallaxY,
-          scale: 1.1,
-        }}
-        whileHover={reduceMotion ? undefined : { scale: 1.16 }}
+        style={{ y: reduceMotion ? 0 : parallaxY, scale: 1.1 }}
+        whileHover={reduceMotion ? undefined : { scale: 1.15 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       />
-      {/* wash frio pra casar com a paleta */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="absolute inset-x-0 bottom-0 h-24 pointer-events-none"
         style={{
-          background:
-            "linear-gradient(180deg, rgba(5,9,20,0.05) 55%, rgba(5,9,20,0.72) 100%)",
-          mixBlendMode: "multiply",
+          background: "linear-gradient(180deg, transparent, rgba(15,23,42,0.55))",
         }}
       />
       <motion.figcaption
-        className="absolute bottom-3 left-3 right-3 flex items-center justify-between"
+        className="absolute bottom-3 left-3 right-3"
         initial={{ opacity: 0, y: 10 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: delay + 0.35 }}
+        transition={{ duration: 0.6, delay: delay + 0.3 }}
       >
-        <span className="tech-stamp" style={{ fontSize: 10 }}>
+        <span className="inline-flex items-center rounded-full bg-white/90 backdrop-blur px-3 py-1 text-[11px] font-bold text-slate-800 shadow-sm">
           {caption}
         </span>
       </motion.figcaption>
-      {/* cantos HUD */}
-      <span className="absolute top-2.5 left-2.5 w-4 h-4 border-l border-t border-sky-300/60" />
-      <span className="absolute top-2.5 right-2.5 w-4 h-4 border-r border-t border-sky-300/60" />
     </motion.figure>
   );
 }
