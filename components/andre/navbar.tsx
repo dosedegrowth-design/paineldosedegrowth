@@ -15,11 +15,20 @@ const links = [
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState("");
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
+    let last = 0;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 12);
+      /* esconde descendo, reaparece subindo — presença só quando importa */
+      if (y > 160 && y - last > 6) setHidden(true);
+      else if (last - y > 4 || y < 160) setHidden(false);
+      last = y;
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -53,8 +62,11 @@ export function Navbar() {
   return (
     <>
       <header
-        className="andre-topbar sticky top-0 z-40 transition-colors duration-300"
+        className="andre-topbar sticky top-0 z-40 transition-[background,border-color,transform] duration-500"
         data-scrolled={scrolled}
+        style={{
+          transform: hidden && !open ? "translateY(-100%)" : "translateY(0)",
+        }}
       >
         <div className="max-w-6xl mx-auto px-5 lg:px-8 h-16 flex items-center justify-between gap-6">
           <a href="#top" className="flex items-center gap-2.5">

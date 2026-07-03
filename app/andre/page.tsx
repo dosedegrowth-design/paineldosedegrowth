@@ -17,17 +17,23 @@ import { ConversionPopup } from "@/components/andre/conversion-popup";
 import { AmbientCrystalsClient } from "@/components/andre/ambient-crystals-client";
 import { Problema } from "@/components/andre/problema";
 import { ThermoOverlay } from "@/components/andre/thermo-overlay";
+import { SmoothScroll } from "@/components/andre/smooth-scroll";
+import { Manifesto } from "@/components/andre/manifesto";
+import { CursorGlow } from "@/components/andre/cursor-glow";
 
 export default function AndrePage() {
   return (
     <>
+      <SmoothScroll />
       <AmbientCrystalsClient />
       <ThermoOverlay />
+      <CursorGlow />
       <Navbar />
       <main className="relative z-10">
         <Hero />
         <Problema />
         <TrustBar />
+        <Manifesto />
         <Services />
         <HowItWorks />
         <FieldGallery />
