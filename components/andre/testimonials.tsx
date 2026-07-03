@@ -1,32 +1,34 @@
-import { Star } from "lucide-react";
 import { Chapter } from "./chapter";
-import { RevealSection, TiltCard } from "./tilt-card";
+import { RevealSection } from "./tilt-card";
 import { Watermark } from "./site-frame";
+import { AnimatedTestimonials } from "./animated-testimonials";
+import { WhatsAppIcon } from "./whatsapp-icon";
+import { waLink } from "./config";
 
-const items = [
+const depoimentos = [
   {
+    quote:
+      "Chegou no horário, explicou tudo, instalou e ainda organizou os fios. Muito acima da média.",
     name: "Renata M.",
-    where: "Perdizes · SP",
-    text: "Chegou no horário, explicou tudo, instalou e ainda organizou os fios. Muito acima da média.",
+    designation: "Perdizes · São Paulo",
     service: "Instalação Split 12.000",
-    initials: "RM",
-    color: "#0ea5e9",
+    src: "/andre/ambiente-quarto.jpg",
   },
   {
+    quote:
+      "Depois da higienização, o ar voltou a gelar como novo. Recomendo pra quem tem criança em casa.",
     name: "Carlos A.",
-    where: "Santo André · SP",
-    text: "Depois da higienização, o ar voltou a gelar como novo. Recomendo pra quem tem criança em casa.",
+    designation: "Santo André · SP",
     service: "Higienização + manutenção",
-    initials: "CA",
-    color: "#06b6d4",
+    src: "/andre/tecnico-manutencao.jpg",
   },
   {
+    quote:
+      "Pediu foto no WhatsApp, mandou orçamento na hora e resolveu no mesmo dia. Nunca tinha visto isso.",
     name: "Juliana P.",
-    where: "Alphaville · SP",
-    text: "Pediu foto no WhatsApp, mandou orçamento na hora e resolveu no mesmo dia. Nunca tinha visto isso.",
-    service: "Reparo de placa",
-    initials: "JP",
-    color: "#0284c7",
+    designation: "Alphaville · SP",
+    service: "Reparo e carga de gás",
+    src: "/andre/tecnico-gas.jpg",
   },
 ];
 
@@ -37,7 +39,7 @@ export function Testimonials() {
         <Watermark text="CONFIANÇA" top="8%" />
       </div>
       <div className="relative max-w-6xl mx-auto px-5 lg:px-8">
-        <RevealSection className="max-w-2xl mb-9 lg:mb-12 mx-auto text-center lg:mx-0 lg:text-left">
+        <RevealSection className="max-w-2xl mb-10 lg:mb-14 mx-auto text-center lg:mx-0 lg:text-left">
           <Chapter n="09" label="Clientes" />
           <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
             Quem já contratou{" "}
@@ -45,33 +47,21 @@ export function Testimonials() {
           </h2>
         </RevealSection>
 
-        <div className="grid md:grid-cols-3 gap-5">
-          {items.map((t, i) => (
-            <TiltCard key={t.name} delay={i * 0.08} intensity={6} className="andre-card p-6 flex flex-col relative">
-              <div className="flex items-center gap-1 mb-4">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-4 w-4" fill="#fbbf24" color="#fbbf24" />
-                ))}
-              </div>
-              <blockquote className="text-[15px] text-slate-300 leading-relaxed flex-1">
-                “{t.text}”
-              </blockquote>
-              <figcaption className="mt-5 flex items-center gap-3">
-                <span
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full text-white text-xs font-black"
-                  style={{ background: t.color }}
-                >
-                  {t.initials}
-                </span>
-                <div className="leading-tight">
-                  <p className="text-sm font-bold text-white">{t.name}</p>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    {t.where} · {t.service}
-                  </p>
-                </div>
-              </figcaption>
-            </TiltCard>
-          ))}
+        <RevealSection>
+          <AnimatedTestimonials testimonials={depoimentos} />
+        </RevealSection>
+
+        <div className="mt-12 lg:mt-16 flex justify-center">
+          <a
+            href={waLink()}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-magnetic
+            className="andre-btn-primary inline-flex items-center gap-2 h-12 px-7 rounded-xl text-[15px]"
+          >
+            <WhatsAppIcon className="h-5 w-5" />
+            Quero esse atendimento no WhatsApp
+          </a>
         </div>
       </div>
     </section>
