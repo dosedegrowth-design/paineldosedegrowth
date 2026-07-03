@@ -1,6 +1,7 @@
 import { ClipboardCheck, Wrench, Sparkles } from "lucide-react";
 import { waLink } from "./config";
 import { WhatsAppIcon } from "./whatsapp-icon";
+import { RevealSection } from "./tilt-card";
 
 const steps = [
   {
@@ -55,14 +56,14 @@ export function HowItWorks() {
         ))}
       </div>
       <div className="relative z-10 max-w-6xl mx-auto px-5 lg:px-8">
-        <div className="max-w-2xl mb-12">
+        <RevealSection className="max-w-2xl mb-12">
           <span className="andre-chip">Como funciona</span>
           <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight">
             Do WhatsApp ao{" "}
             <span className="andre-gradient-text">ar funcionando</span> em
             poucos passos.
           </h2>
-        </div>
+        </RevealSection>
 
         <ol className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {steps.map((s, i) => (

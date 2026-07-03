@@ -1,4 +1,5 @@
 import { Star, Quote } from "lucide-react";
+import { RevealSection } from "./tilt-card";
 
 const items = [
   {
@@ -42,13 +43,13 @@ export function Testimonials() {
         ))}
       </div>
       <div className="relative z-10 max-w-6xl mx-auto px-5 lg:px-8">
-        <div className="max-w-2xl mb-12">
+        <RevealSection className="max-w-2xl mb-12">
           <span className="andre-chip">Depoimentos</span>
           <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight">
             Quem já contratou{" "}
             <span className="andre-gradient-text">volta a chamar</span>.
           </h2>
-        </div>
+        </RevealSection>
 
         <div className="grid md:grid-cols-3 gap-4 lg:gap-5">
           {items.map((t) => (

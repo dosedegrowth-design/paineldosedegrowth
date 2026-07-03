@@ -29,6 +29,27 @@
   border-color: var(--andre-border);
 }
 
+/* Âncoras suaves sem a navbar sticky cobrir o título da seção */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+/* Affordance de clique + foco visível pra teclado */
+.andre-scope a,
+.andre-scope button {
+  cursor: pointer;
+}
+.andre-scope a:focus-visible,
+.andre-scope button:focus-visible {
+  outline: 2px solid var(--andre-primary);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
 /* Ambient gradient wash used behind hero */
 .andre-grid-bg {
   background-image:

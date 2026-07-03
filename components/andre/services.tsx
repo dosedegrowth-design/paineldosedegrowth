@@ -7,7 +7,7 @@ import {
   MoveRight,
 } from "lucide-react";
 import { waLink } from "./config";
-import { TiltCard } from "./tilt-card";
+import { TiltCard, RevealSection } from "./tilt-card";
 
 const services = [
   {
@@ -85,7 +85,7 @@ export function Services() {
         </svg>
       </div>
       <div className="relative z-10 max-w-6xl mx-auto px-5 lg:px-8">
-        <div className="max-w-2xl mb-12">
+        <RevealSection className="max-w-2xl mb-12">
           <span className="andre-chip">Serviços</span>
           <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight">
             Tudo o que seu ar condicionado precisa,{" "}
@@ -95,7 +95,7 @@ export function Services() {
             Do primeiro furo na parede até a manutenção anual. Você fala com o
             André direto — sem call center, sem enrolação.
           </p>
-        </div>
+        </RevealSection>
 
         <div
           className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5"

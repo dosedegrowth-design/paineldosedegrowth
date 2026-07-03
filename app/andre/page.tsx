@@ -14,6 +14,7 @@ import { ConversionPopup } from "@/components/andre/conversion-popup";
 import { TechHud } from "@/components/andre/tech-hud";
 import { AndreExperienceClient } from "@/components/andre/andre-experience-client";
 import { FieldGallery } from "@/components/andre/field-gallery";
+import { StatsBand } from "@/components/andre/stats-band";
 
 export default function AndrePage() {
   return (
@@ -29,6 +30,7 @@ export default function AndrePage() {
         <Equipment />
         <Coverage />
         <Testimonials />
+        <StatsBand />
         <FAQ />
         <FinalCTA />
       </main>

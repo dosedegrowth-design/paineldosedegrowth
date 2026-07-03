@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Plus } from "lucide-react";
+import { RevealSection } from "./tilt-card";
 
 const faqs = [
   {
@@ -60,13 +61,13 @@ export function FAQ() {
         ))}
       </div>
       <div className="relative z-10 max-w-4xl mx-auto px-5 lg:px-8">
-        <div className="mb-12 text-center">
+        <RevealSection className="mb-12 text-center">
           <span className="andre-chip">Dúvidas frequentes</span>
           <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight">
             O que a gente já respondeu{" "}
             <span className="andre-gradient-text">mil vezes</span>.
           </h2>
-        </div>
+        </RevealSection>
 
         <ul className="space-y-3">
           {faqs.map((f, i) => {

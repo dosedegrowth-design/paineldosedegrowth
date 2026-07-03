@@ -1,4 +1,5 @@
 import { PhotoPanel } from "./photo-panel";
+import { RevealSection } from "./tilt-card";
 
 export function FieldGallery() {
   return (
@@ -7,7 +8,7 @@ export function FieldGallery() {
       style={{ background: "rgba(7, 12, 24, 0.45)" }}
     >
       <div className="relative z-10 max-w-6xl mx-auto px-5 lg:px-8">
-        <div className="max-w-2xl mb-12">
+        <RevealSection className="max-w-2xl mb-12">
           <span className="andre-chip">Na prática</span>
           <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight">
             O padrão de execução que{" "}
@@ -17,7 +18,7 @@ export function FieldGallery() {
             Manômetro na recarga, laudo no diagnóstico e ambiente entregue
             limpo. Técnica não é opcional.
           </p>
-        </div>
+        </RevealSection>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
           <PhotoPanel

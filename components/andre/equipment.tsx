@@ -1,4 +1,5 @@
 import { Wind, Boxes, PanelTop, PanelBottom, Layers } from "lucide-react";
+import { RevealSection } from "./tilt-card";
 
 const equipment = [
   {
@@ -82,7 +83,7 @@ export function Equipment() {
         </div>
       </div>
       <div className="relative z-10 max-w-6xl mx-auto px-5 lg:px-8">
-        <div className="max-w-2xl mb-12">
+        <RevealSection className="max-w-2xl mb-12">
           <span className="andre-chip">Equipamentos</span>
           <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight">
             Atendemos praticamente{" "}
@@ -91,7 +92,7 @@ export function Equipment() {
           <p className="mt-4 text-slate-300 text-base leading-relaxed">
             De residencial a industrial. Se aparelha ar, o André conserta.
           </p>
-        </div>
+        </RevealSection>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
           {equipment.map((e) => (
