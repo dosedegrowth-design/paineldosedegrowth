@@ -39,7 +39,7 @@ export function Testimonials() {
       <div className="relative max-w-6xl mx-auto px-5 lg:px-8">
         <RevealSection className="max-w-2xl mb-12">
           <Chapter n="09" label="Clientes" />
-          <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] font-black leading-tight tracking-tight text-white">
+          <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
             Quem já contratou{" "}
             <span className="andre-gradient-text">volta a chamar</span>.
           </h2>

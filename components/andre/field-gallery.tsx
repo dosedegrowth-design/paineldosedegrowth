@@ -33,7 +33,7 @@ function Header() {
   return (
     <RevealSection className="max-w-2xl">
       <Chapter n="05" label="Na prática" />
-      <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] font-black leading-tight tracking-tight text-white">
+      <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
         O padrão que{" "}
         <span className="andre-gradient-text">você pode exigir</span>.
       </h2>

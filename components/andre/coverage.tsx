@@ -18,7 +18,7 @@ export function Coverage() {
         <div className="grid lg:grid-cols-[1fr_1.2fr] gap-10 lg:gap-14 items-start">
           <RevealSection>
             <Chapter n="08" label="Cobertura" />
-            <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] font-black leading-tight tracking-tight text-white">
+            <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
               São Paulo e{" "}
               <span className="andre-gradient-text">Grande SP</span>.
             </h2>

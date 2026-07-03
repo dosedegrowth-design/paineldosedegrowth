@@ -21,6 +21,8 @@ import { SmoothScroll } from "@/components/andre/smooth-scroll";
 import { Manifesto } from "@/components/andre/manifesto";
 import { CursorGlow } from "@/components/andre/cursor-glow";
 import { SiteFrame } from "@/components/andre/site-frame";
+import { Thermometer } from "@/components/andre/thermometer";
+import { CustomCursor } from "@/components/andre/custom-cursor";
 
 export default function AndrePage() {
   return (
@@ -30,6 +32,8 @@ export default function AndrePage() {
       <ThermoOverlay />
       <CursorGlow />
       <SiteFrame />
+      <Thermometer />
+      <CustomCursor />
       <Navbar />
       <main className="relative z-10">
         <Hero />

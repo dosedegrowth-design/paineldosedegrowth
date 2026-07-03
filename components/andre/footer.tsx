@@ -78,7 +78,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-6 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+        <div className="mt-12 pt-6 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3 font-tech text-[10px] uppercase tracking-[0.22em] text-[var(--andre-muted)]">
           <p>
             © {new Date().getFullYear()} {ANDRE_CONFIG.brand}. Todos os
             direitos reservados.

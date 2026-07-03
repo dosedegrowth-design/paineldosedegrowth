@@ -79,7 +79,7 @@ export function Pricing() {
           <div className="flex justify-center">
             <Chapter n="06" label="Investimento" />
           </div>
-          <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] font-black leading-tight tracking-tight text-white">
+          <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
             Preço fechado{" "}
             <span className="andre-gradient-text">antes da visita</span>.
           </h2>

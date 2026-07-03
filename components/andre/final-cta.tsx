@@ -17,7 +17,7 @@ export function FinalCTA() {
             }}
           />
           <div className="relative">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight text-white">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl andre-display leading-[1.02] text-white">
               Seu ar merece um técnico
               <br className="hidden sm:block" /> que atende o telefone.
             </h2>
