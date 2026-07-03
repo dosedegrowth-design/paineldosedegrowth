@@ -1,20 +1,26 @@
 /* André Ar Condicionado — dark cinematográfico premium */
 
 .andre-scope {
-  --andre-bg: #060a14;
-  --andre-card: rgba(13, 20, 36, 0.88);
-  --andre-border: rgba(148, 163, 184, 0.14);
-  --andre-fg: #f1f5f9;
-  --andre-muted: #94a3b8;
+  /* cold-tech precision tokens */
+  --andre-bg: hsl(220 20% 4%);
+  --andre-card: hsl(217 24% 9% / 0.88);
+  --andre-border: hsl(180 10% 98% / 0.1);
+  --andre-fg: hsl(180 10% 98%);
+  --andre-muted: hsl(180 10% 98% / 0.55);
 
-  --andre-primary: #22d3ee;
-  --andre-sky: #38bdf8;
+  --andre-primary: hsl(185 100% 50%);
+  --andre-accent: hsl(195 100% 85%);
+  --andre-sky: hsl(190 95% 60%);
   --andre-wa: #25d366;
   --andre-wa-dark: #16a34a;
 
+  --font-display: "Inter Tight", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-tech: "JetBrains Mono", ui-monospace, monospace;
+
   background: var(--andre-bg);
   color: var(--andre-fg);
-  font-family: "Montserrat", system-ui, -apple-system, sans-serif;
+  font-family: var(--font-body);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   color-scheme: dark;
@@ -146,7 +152,7 @@ html {
 }
 
 .andre-gradient-text {
-  background: linear-gradient(120deg, #7dd3fc 0%, #22d3ee 55%, #38bdf8 100%);
+  background: linear-gradient(115deg, var(--andre-fg) 0%, var(--andre-accent) 45%, var(--andre-primary) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -314,4 +320,132 @@ html {
   .andre-anim-in, .andre-wa-pulse, .andre-star, .andre-rise-flake {
     animation: none !important;
   }
+}
+
+
+/* ---------- cold-tech type & fx ---------- */
+.andre-display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.font-tech {
+  font-family: var(--font-tech);
+}
+
+/* névoa radial flutuante do hero */
+@keyframes andre-float-mist {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.5; }
+  50%      { transform: translate3d(3%, -4%, 0) scale(1.12); opacity: 0.85; }
+}
+.andre-mist-blob {
+  position: absolute;
+  width: 46rem;
+  height: 30rem;
+  border-radius: 999px;
+  background: radial-gradient(closest-side, hsl(185 100% 50% / 0.13), transparent 70%);
+  filter: blur(30px);
+  animation: andre-float-mist 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* glow do produto */
+.andre-hero-product-glow {
+  position: absolute;
+  inset: 8%;
+  border-radius: 999px;
+  background: radial-gradient(closest-side, hsl(185 100% 50% / 0.16), transparent 72%);
+  filter: blur(44px);
+  pointer-events: none;
+}
+
+/* cursor custom (só desktop com hover real) */
+@media (hover: hover) and (pointer: fine) {
+  .andre-scope, .andre-scope a, .andre-scope button { cursor: none; }
+}
+.andre-cursor-dot,
+.andre-cursor-ring {
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 60;
+  pointer-events: none;
+  border-radius: 999px;
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .andre-cursor-dot, .andre-cursor-ring { display: block; }
+}
+.andre-cursor-dot {
+  width: 8px; height: 8px;
+  background: var(--andre-primary);
+  box-shadow: 0 0 12px hsl(185 100% 50% / 0.8);
+}
+.andre-cursor-ring {
+  width: 32px; height: 32px;
+  border: 1px solid hsl(185 100% 50% / 0.55);
+  transition: width 0.25s ease, height 0.25s ease, border-color 0.25s ease;
+}
+.andre-cursor-ring[data-hovering="true"] {
+  width: 56px; height: 56px;
+  border-color: hsl(195 100% 85% / 0.9);
+}
+
+/* termômetro fixo */
+.andre-thermo {
+  position: fixed;
+  right: 26px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+@media (min-width: 1024px) { .andre-thermo { display: flex; } }
+.andre-thermo-bar {
+  width: 1px;
+  height: 12rem;
+  background: hsl(180 10% 98% / 0.12);
+  position: relative;
+}
+.andre-thermo-fill {
+  position: absolute;
+  bottom: 0; left: -0.5px;
+  width: 2px;
+  background: var(--andre-primary);
+  box-shadow: 0 0 10px hsl(185 100% 50% / 0.8);
+}
+.andre-thermo-label {
+  writing-mode: vertical-rl;
+  font-family: var(--font-tech);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: var(--andre-muted);
+}
+
+/* orb WhatsApp respirando */
+@keyframes andre-breathe {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(185 100% 50% / 0.45), 0 8px 30px -6px hsl(185 100% 50% / 0.5); }
+  50%      { box-shadow: 0 0 0 14px hsl(185 100% 50% / 0), 0 8px 40px -4px hsl(185 100% 50% / 0.75); }
+}
+.andre-orb {
+  animation: andre-breathe 2.6s ease-in-out infinite;
+}
+
+/* linhas de varredura discretas */
+.andre-scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg,
+    hsl(185 100% 50% / 0.012) 0px,
+    hsl(185 100% 50% / 0.012) 1px,
+    transparent 1px,
+    transparent 4px);
+  opacity: 0.5;
+}
+@media (prefers-reduced-motion: reduce) {
+  .andre-mist-blob, .andre-orb { animation: none !important; }
 }

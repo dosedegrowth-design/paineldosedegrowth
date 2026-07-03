@@ -73,14 +73,11 @@ export function Navbar() {
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-cyan-500 shadow-md shadow-sky-900/60">
               <Snowflake className="h-4.5 w-4.5 text-white" />
             </span>
-            <div className="leading-tight">
-              <p className="text-sm font-black tracking-tight text-white">
-                {ANDRE_CONFIG.brand.split(" ")[0]}
-                <span className="text-sky-400"> AC</span>
+            <div className="leading-tight flex items-center gap-2">
+              <p className="andre-display text-[15px] uppercase tracking-tight text-white">
+                André <span className="text-[var(--andre-primary)]">AC</span>
               </p>
-              <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400 font-semibold">
-                Ar condicionado
-              </p>
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--andre-primary)] animate-pulse" />
             </div>
           </a>
 
@@ -89,10 +86,10 @@ export function Navbar() {
               <a
                 key={l.href}
                 href={l.href}
-                className="text-[13.5px] font-semibold transition-colors border-b-2 pb-0.5"
+                className="font-tech text-[10.5px] uppercase tracking-[0.24em] transition-colors border-b pb-1"
                 style={{
-                  color: active === l.id ? "#7dd3fc" : "#cbd5e1",
-                  borderColor: active === l.id ? "#38bdf8" : "transparent",
+                  color: active === l.id ? "var(--andre-primary)" : "var(--andre-muted)",
+                  borderColor: active === l.id ? "var(--andre-primary)" : "transparent",
                 }}
               >
                 {l.label}
@@ -112,11 +109,12 @@ export function Navbar() {
               href={waLink()}
               target="_blank"
               rel="noopener noreferrer"
-              className="andre-btn-primary inline-flex items-center gap-2 h-10 px-4 rounded-xl text-sm"
+              data-magnetic
+              className="inline-flex items-center gap-2 h-10 px-5 rounded-sm text-sm font-bold bg-[var(--andre-fg)] text-[#04121a] hover:bg-[var(--andre-primary)] transition-colors duration-300"
             >
               <WhatsAppIcon className="h-4 w-4" />
-              <span className="hidden sm:inline">Pedir orçamento</span>
-              <span className="sm:hidden">Orçamento</span>
+              <span className="hidden sm:inline">Falar agora</span>
+              <span className="sm:hidden">Falar</span>
             </a>
             <button
               type="button"

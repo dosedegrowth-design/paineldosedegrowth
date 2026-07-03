@@ -36,6 +36,7 @@ export function Magnetic({
   return (
     <motion.div
       ref={ref}
+      data-magnetic
       onMouseMove={onMove}
       onMouseLeave={onLeave}
       style={{ x: sx, y: sy, display: "inline-block" }}

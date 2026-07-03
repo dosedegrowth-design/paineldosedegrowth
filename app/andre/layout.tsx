@@ -1,10 +1,18 @@
 import type { Metadata, Viewport } from "next";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/inter/700.css";
+import "@fontsource/inter-tight/700.css";
+import "@fontsource/inter-tight/800.css";
+import "@fontsource/jetbrains-mono/400.css";
+import "@fontsource/jetbrains-mono/500.css";
 import "./andre.css";
 
 export const metadata: Metadata = {
-  title: "André Ar Condicionado — Instalação, manutenção e higienização em SP",
+  title: "André AC — Ar-condicionado em São Paulo | Instalação 24h",
   description:
-    "Serviço rápido, técnico especializado e garantia real. Split, Multi Split, VRF, Piso Teto, Cassete. Atendimento em 24h em São Paulo e Grande SP.",
+    "Instalação, manutenção e higienização de ar-condicionado com precisão técnica. Split, Multi Split, VRF. Orçamento em minutos no WhatsApp, atendimento em 24h em SP.",
   applicationName: "André Ar Condicionado",
   robots: { index: true, follow: true },
   openGraph: {
