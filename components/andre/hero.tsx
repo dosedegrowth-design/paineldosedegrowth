@@ -2,12 +2,18 @@ import { Phone, ShieldCheck, Zap, Clock, Star } from "lucide-react";
 import { ANDRE_CONFIG, waLink, telLink } from "./config";
 import { WhatsAppIcon } from "./whatsapp-icon";
 import { HeroCanvasClient } from "./hero-canvas-client";
+import { Chapter } from "./chapter";
+import { SplitText } from "./split-text";
+import { Magnetic } from "./magnetic";
 
 const stars = Array.from({ length: 24 });
 
 export function Hero() {
   return (
-    <section id="top" className="relative overflow-hidden">
+    <section
+      id="top"
+      className="relative overflow-hidden min-h-[100svh] flex items-center"
+    >
       <div className="absolute inset-0 andre-aurora pointer-events-none" />
       <div className="absolute inset-0 andre-grid-bg pointer-events-none" />
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
@@ -24,50 +30,51 @@ export function Hero() {
         ))}
       </div>
 
-      <div className="relative max-w-6xl mx-auto px-5 lg:px-8 pt-14 lg:pt-24 pb-16 lg:pb-24">
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-8 items-center">
-          {/* Copy */}
-          <div className="andre-anim-in">
-            <span className="andre-chip">
-              <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
-              Atendendo agora · {ANDRE_CONFIG.city}
-            </span>
-
-            <h1 className="mt-6 text-4xl sm:text-5xl lg:text-[3.4rem] font-black leading-[1.05] tracking-tight text-white">
-              Seu ar condicionado
-              <br />
-              resolvido{" "}
-              <span className="andre-gradient-text">sem enrolação</span>.
-            </h1>
-
-            <p className="mt-5 text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed">
-              Instalação, manutenção, higienização e recarga de gás com{" "}
-              <strong className="text-white">orçamento em minutos</strong> pelo
-              WhatsApp e atendimento em até{" "}
-              <strong className="text-white">24h</strong>. Split, Multi Split,
-              VRF, Piso Teto e Cassete.
-            </p>
-
-            <div className="mt-8 flex flex-col sm:flex-row gap-3">
-              <a
-                href={waLink()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="andre-btn-primary inline-flex items-center justify-center gap-2 h-12 px-6 rounded-xl text-[15px]"
-              >
-                <WhatsAppIcon className="h-5 w-5" />
-                Pedir orçamento grátis
-              </a>
-              <a
-                href={telLink()}
-                className="andre-btn-ghost inline-flex items-center justify-center gap-2 h-12 px-6 rounded-xl text-[15px]"
-              >
-                <Phone className="h-5 w-5 text-sky-400" />
-                {ANDRE_CONFIG.phone}
-              </a>
+      <div className="relative w-full max-w-6xl mx-auto px-5 lg:px-8 py-24 lg:py-0">
+        <div className="grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-4 items-center">
+          {/* Editorial */}
+          <div>
+            <div className="andre-anim-in">
+              <Chapter n="01" label={`${ANDRE_CONFIG.city}`} />
             </div>
 
-            <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2.5 text-[13px] text-slate-400">
+            <h1 className="mt-8 text-[2.6rem] sm:text-6xl lg:text-[4.6rem] font-black leading-[1.02] tracking-[-0.02em] text-white">
+              <SplitText text="O frio certo," delay={0.15} />
+              <br />
+              <SplitText text="no silêncio certo." delay={0.5} gradient />
+            </h1>
+
+            <p className="mt-7 text-base sm:text-lg text-slate-300 max-w-lg leading-relaxed andre-anim-in [animation-delay:900ms]">
+              Instalação, manutenção e higienização com{" "}
+              <strong className="text-white">orçamento em minutos</strong> e
+              atendimento em até <strong className="text-white">24h</strong>.
+              Split, Multi Split, VRF, Piso Teto e Cassete.
+            </p>
+
+            <div className="mt-9 flex flex-col sm:flex-row gap-3 andre-anim-in [animation-delay:1100ms]">
+              <Magnetic>
+                <a
+                  href={waLink()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="andre-btn-primary inline-flex items-center justify-center gap-2 h-13 px-7 rounded-2xl text-[15px]"
+                >
+                  <WhatsAppIcon className="h-5 w-5" />
+                  Pedir orçamento grátis
+                </a>
+              </Magnetic>
+              <Magnetic strength={0.2}>
+                <a
+                  href={telLink()}
+                  className="andre-btn-ghost inline-flex items-center justify-center gap-2 h-13 px-7 rounded-2xl text-[15px]"
+                >
+                  <Phone className="h-5 w-5 text-sky-400" />
+                  {ANDRE_CONFIG.phone}
+                </a>
+              </Magnetic>
+            </div>
+
+            <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-2.5 text-[13px] text-slate-400 andre-anim-in [animation-delay:1300ms]">
               <span className="inline-flex items-center gap-1.5">
                 <ShieldCheck className="h-4 w-4 text-sky-400" />
                 90 dias de garantia
@@ -82,15 +89,23 @@ export function Hero() {
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <Star className="h-4 w-4 text-amber-400" fill="#fbbf24" />
-                {ANDRE_CONFIG.rating} ({ANDRE_CONFIG.clientsServed} clientes)
+                {ANDRE_CONFIG.rating} · {ANDRE_CONFIG.clientsServed} clientes
               </span>
             </div>
           </div>
 
-          {/* 3D */}
-          <div className="relative h-[320px] sm:h-[400px] lg:h-[480px]">
+          {/* Cena WebGL */}
+          <div className="relative h-[340px] sm:h-[420px] lg:h-[78vh]">
             <HeroCanvasClient />
           </div>
+        </div>
+
+        {/* scroll cue */}
+        <div className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2 hidden lg:flex flex-col items-center gap-2 andre-anim-in [animation-delay:1600ms]">
+          <span className="text-[10px] tracking-[0.3em] uppercase text-slate-500 font-bold">
+            role
+          </span>
+          <span className="andre-scroll-line" />
         </div>
       </div>
     </section>

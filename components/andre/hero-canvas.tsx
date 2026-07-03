@@ -12,13 +12,73 @@ import {
   Lightformer,
   RoundedBox,
 } from "@react-three/drei";
-import type { Group, Mesh, MeshStandardMaterial } from "three";
-import { MistJet } from "./mist-jet";
+import { MathUtils } from "three";
+import type { Group, Mesh, MeshStandardMaterial, MeshBasicMaterial } from "three";
+import { MistJet, makePuffTexture } from "./mist-jet";
+
+/* câmera cinematográfica: dolly e elevação suaves conforme o scroll */
+function CameraRig() {
+  useFrame((state, delta) => {
+    const p = MathUtils.clamp(window.scrollY / 700, 0, 1);
+    const cam = state.camera;
+    cam.position.z = MathUtils.damp(cam.position.z, 5.6 - p * 0.9, 2.5, delta);
+    cam.position.y = MathUtils.damp(cam.position.y, 0.2 + p * 0.6, 2.5, delta);
+    cam.lookAt(0, -p * 0.25, 0);
+  });
+  return null;
+}
+
+/* linhas de fluxo de vento — elegantes, quase subliminares */
+function WindLines() {
+  const group = useRef<Group>(null);
+  const texture = useMemo(() => makePuffTexture(), []);
+  const lines = useMemo(
+    () =>
+      Array.from({ length: 5 }, (_, i) => ({
+        y: -1.1 - i * 0.28,
+        z: 0.6 + i * 0.12,
+        speed: 0.5 + (i % 3) * 0.22,
+        offset: (i * 1.7) % 6,
+        scale: 2.6 + (i % 2) * 1.1,
+      })),
+    []
+  );
+
+  useFrame((state) => {
+    if (!group.current) return;
+    const t = state.clock.elapsedTime;
+    group.current.children.forEach((c, i) => {
+      const cfg = lines[i];
+      const x = ((t * cfg.speed + cfg.offset) % 7) - 3.5;
+      c.position.x = x;
+      const m = (c as Mesh).material as MeshBasicMaterial;
+      m.opacity = Math.sin(((x + 3.5) / 7) * Math.PI) * 0.1;
+    });
+  });
+
+  return (
+    <group ref={group}>
+      {lines.map((l, i) => (
+        <mesh key={i} position={[0, l.y, l.z]} scale={[l.scale, 0.07, 1]}>
+          <planeGeometry args={[1, 1]} />
+          <meshBasicMaterial
+            map={texture}
+            transparent
+            opacity={0.08}
+            depthWrite={false}
+            color="#bfe6fb"
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+}
 
 function SplitUnit() {
   const group = useRef<Group>(null);
   const fan = useRef<Group>(null);
   const led = useRef<Mesh>(null);
+  const louver = useRef<Group>(null);
   const mouse = useRef({ x: 0, y: 0 });
 
   useMemo(() => {
@@ -47,6 +107,12 @@ function SplitUnit() {
       (led.current.material as MeshStandardMaterial).emissiveIntensity =
         1.5 + Math.sin(t * 2.4) * 0.5;
     }
+    /* aleta abre nos primeiros segundos — o aparelho "liga" em cena */
+    if (louver.current) {
+      const open = MathUtils.clamp((t - 0.7) / 1.6, 0, 1);
+      const eased = 1 - Math.pow(1 - open, 3);
+      louver.current.rotation.x = -0.04 - eased * 0.5;
+    }
   });
 
   return (
@@ -64,8 +130,8 @@ function SplitUnit() {
         </mesh>
       ))}
 
-      {/* louver aberto soprando */}
-      <group position={[0, -0.58, 0.34]} rotation={[-0.5, 0, 0]}>
+      {/* louver — abre quando o aparelho entra em cena */}
+      <group ref={louver} position={[0, -0.58, 0.34]} rotation={[-0.04, 0, 0]}>
         <mesh castShadow>
           <boxGeometry args={[3.95, 0.15, 0.05]} />
           <meshStandardMaterial color="#e2e8f0" metalness={0.35} roughness={0.25} />
@@ -132,11 +198,13 @@ export function HeroCanvas() {
       <pointLight position={[0, -0.6, 2.4]} intensity={0.6} color="#22d3ee" distance={7} />
 
       <Suspense fallback={null}>
+        <CameraRig />
         <Float speed={1.3} rotationIntensity={0.12} floatIntensity={0.4}>
           <group scale={0.82}>
             <SplitUnit />
           </group>
         </Float>
+        <WindLines />
         <ContactShadows
           position={[0, -1.5, 0]}
           opacity={0.4}

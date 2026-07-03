@@ -1,5 +1,6 @@
 import { Star } from "lucide-react";
-import { RevealSection } from "./tilt-card";
+import { Chapter } from "./chapter";
+import { RevealSection, TiltCard } from "./tilt-card";
 
 const items = [
   {
@@ -30,19 +31,19 @@ const items = [
 
 export function Testimonials() {
   return (
-    <section className="relative py-20 lg:py-28">
+    <section className="relative py-24 lg:py-36">
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
         <RevealSection className="max-w-2xl mb-12">
-          <span className="andre-chip">Depoimentos</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-white">
+          <Chapter n="09" label="Clientes" />
+          <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] font-black leading-tight tracking-tight text-white">
             Quem já contratou{" "}
             <span className="andre-gradient-text">volta a chamar</span>.
           </h2>
         </RevealSection>
 
         <div className="grid md:grid-cols-3 gap-5">
-          {items.map((t) => (
-            <figure key={t.name} className="andre-card p-6 flex flex-col">
+          {items.map((t, i) => (
+            <TiltCard key={t.name} delay={i * 0.08} intensity={6} className="andre-card p-6 flex flex-col relative">
               <div className="flex items-center gap-1 mb-4">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star key={i} className="h-4 w-4" fill="#fbbf24" color="#fbbf24" />
@@ -65,7 +66,7 @@ export function Testimonials() {
                   </p>
                 </div>
               </figcaption>
-            </figure>
+            </TiltCard>
           ))}
         </div>
       </div>

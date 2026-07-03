@@ -15,14 +15,18 @@ import { Footer } from "@/components/andre/footer";
 import { WhatsAppFloat } from "@/components/andre/whatsapp-float";
 import { ConversionPopup } from "@/components/andre/conversion-popup";
 import { AmbientCrystalsClient } from "@/components/andre/ambient-crystals-client";
+import { Problema } from "@/components/andre/problema";
+import { ThermoOverlay } from "@/components/andre/thermo-overlay";
 
 export default function AndrePage() {
   return (
     <>
       <AmbientCrystalsClient />
+      <ThermoOverlay />
       <Navbar />
       <main className="relative z-10">
         <Hero />
+        <Problema />
         <TrustBar />
         <Services />
         <HowItWorks />

@@ -1,4 +1,5 @@
 import { Wind, Boxes, PanelTop, PanelBottom, Layers } from "lucide-react";
+import { Chapter } from "./chapter";
 import { RevealSection } from "./tilt-card";
 
 const equipment = [
@@ -17,11 +18,11 @@ const brands = [
 
 export function Equipment() {
   return (
-    <section id="equipamentos" className="relative py-20 lg:py-28">
+    <section id="equipamentos" className="relative py-24 lg:py-36">
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
         <RevealSection className="max-w-2xl mb-12">
-          <span className="andre-chip">Equipamentos</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-white">
+          <Chapter n="07" label="Equipamentos" />
+          <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] font-black leading-tight tracking-tight text-white">
             Atendemos praticamente{" "}
             <span className="andre-gradient-text">qualquer modelo</span>.
           </h2>

@@ -7,7 +7,8 @@ import {
   MoveRight,
 } from "lucide-react";
 import { waLink } from "./config";
-import { RevealSection } from "./tilt-card";
+import { Chapter } from "./chapter";
+import { RevealSection, TiltCard } from "./tilt-card";
 
 const services = [
   {
@@ -56,11 +57,11 @@ const services = [
 
 export function Services() {
   return (
-    <section id="servicos" className="relative py-20 lg:py-28">
+    <section id="servicos" className="relative py-24 lg:py-36">
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
         <RevealSection className="max-w-2xl mb-12 lg:mb-14">
-          <span className="andre-chip">Serviços</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-white">
+          <Chapter n="03" label="A solução" />
+          <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] font-black leading-tight tracking-tight text-white">
             Tudo o que seu ar precisa,{" "}
             <span className="andre-gradient-text">com um técnico só</span>.
           </h2>
@@ -71,8 +72,8 @@ export function Services() {
         </RevealSection>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
-          {services.map((s) => (
-            <article key={s.title} className="andre-card p-6 flex flex-col">
+          {services.map((s, i) => (
+            <TiltCard key={s.title} delay={i * 0.06} className="andre-card p-6 flex flex-col relative">
               <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-cyan-500 shadow-md shadow-sky-900/60 mb-4">
                 <s.icon className="h-5 w-5 text-white" />
               </span>
@@ -91,7 +92,7 @@ export function Services() {
                 {s.cta}
                 <MoveRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </a>
-            </article>
+            </TiltCard>
           ))}
         </div>
       </div>

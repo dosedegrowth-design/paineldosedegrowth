@@ -12,7 +12,7 @@ import { useFrame } from "@react-three/fiber";
 import { CanvasTexture, MathUtils, NormalBlending } from "three";
 import type { Points, ShaderMaterial } from "three";
 
-function makePuffTexture(): CanvasTexture {
+export function makePuffTexture(): CanvasTexture {
   const s = 128;
   const cv = document.createElement("canvas");
   cv.width = cv.height = s;

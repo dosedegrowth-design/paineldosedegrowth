@@ -1,7 +1,8 @@
 import { Check } from "lucide-react";
+import { Chapter } from "./chapter";
 import { waLink } from "./config";
 import { WhatsAppIcon } from "./whatsapp-icon";
-import { RevealSection } from "./tilt-card";
+import { RevealSection, TiltCard } from "./tilt-card";
 
 const plans = [
   {
@@ -52,12 +53,12 @@ export function Pricing() {
   return (
     <section
       id="precos"
-      className="relative py-20 lg:py-28 bg-white/[0.02] border-y border-white/[0.06]"
+      className="relative py-24 lg:py-36 bg-white/[0.02] border-y border-white/[0.06]"
     >
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
         <RevealSection className="max-w-2xl mx-auto text-center mb-12 lg:mb-14">
-          <span className="andre-chip">Preços transparentes</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-white">
+          <div className="flex justify-center"><Chapter n="06" label="Investimento" /></div>
+          <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] font-black leading-tight tracking-tight text-white">
             Preço fechado{" "}
             <span className="andre-gradient-text">antes da visita</span>.
           </h2>
@@ -68,11 +69,13 @@ export function Pricing() {
         </RevealSection>
 
         <div className="grid md:grid-cols-3 gap-5 items-stretch">
-          {plans.map((p) => (
-            <div
+          {plans.map((p, i) => (
+            <TiltCard
               key={p.name}
+              delay={i * 0.08}
+              intensity={5}
               className={`andre-card p-7 flex flex-col relative ${
-                p.featured ? "ring-2 ring-cyan-400/70 shadow-xl shadow-cyan-500/20" : ""
+                p.featured ? "andre-border-glow ring-1 ring-cyan-400/40 shadow-xl shadow-cyan-500/20" : ""
               }`}
             >
               {p.featured && (
@@ -109,7 +112,7 @@ export function Pricing() {
                 <WhatsAppIcon className={`h-4 w-4 ${p.featured ? "" : "text-green-600"}`} />
                 Pedir orçamento exato
               </a>
-            </div>
+            </TiltCard>
           ))}
         </div>
 

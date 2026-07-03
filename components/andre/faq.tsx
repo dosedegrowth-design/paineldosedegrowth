@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Chapter } from "./chapter";
 import { Plus } from "lucide-react";
 import { RevealSection } from "./tilt-card";
 
@@ -35,11 +36,11 @@ export function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="relative py-20 lg:py-28">
+    <section id="faq" className="relative py-24 lg:py-36">
       <div className="max-w-3xl mx-auto px-5 lg:px-8">
         <RevealSection className="mb-12 text-center">
-          <span className="andre-chip">Dúvidas frequentes</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-white">
+          <div className="flex justify-center"><Chapter n="10" label="Dúvidas" /></div>
+          <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] font-black leading-tight tracking-tight text-white">
             O que a gente já respondeu{" "}
             <span className="andre-gradient-text">mil vezes</span>.
           </h2>

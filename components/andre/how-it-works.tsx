@@ -1,4 +1,5 @@
 import { ClipboardCheck, Wrench } from "lucide-react";
+import { Chapter } from "./chapter";
 import { waLink } from "./config";
 import { WhatsAppIcon } from "./whatsapp-icon";
 import { RevealSection } from "./tilt-card";
@@ -28,12 +29,12 @@ export function HowItWorks() {
   return (
     <section
       id="como-funciona"
-      className="relative py-20 lg:py-28 bg-white/[0.02] border-y border-white/[0.06]"
+      className="relative py-24 lg:py-36 bg-white/[0.02] border-y border-white/[0.06]"
     >
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
         <RevealSection className="max-w-2xl mb-12 lg:mb-14">
-          <span className="andre-chip">Como funciona</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-white">
+          <Chapter n="04" label="Como funciona" />
+          <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] font-black leading-tight tracking-tight text-white">
             Do WhatsApp ao{" "}
             <span className="andre-gradient-text">ar gelando</span> em 3 passos.
           </h2>

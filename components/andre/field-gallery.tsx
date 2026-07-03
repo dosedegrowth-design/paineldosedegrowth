@@ -1,13 +1,14 @@
 import { PhotoPanel } from "./photo-panel";
+import { Chapter } from "./chapter";
 import { RevealSection } from "./tilt-card";
 
 export function FieldGallery() {
   return (
-    <section className="relative py-20 lg:py-28">
+    <section className="relative py-24 lg:py-36">
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
         <RevealSection className="max-w-2xl mb-12">
-          <span className="andre-chip">Na prática</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-tight tracking-tight text-white">
+          <Chapter n="05" label="Na prática" />
+          <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] font-black leading-tight tracking-tight text-white">
             O padrão de execução que{" "}
             <span className="andre-gradient-text">você pode exigir</span>.
           </h2>
