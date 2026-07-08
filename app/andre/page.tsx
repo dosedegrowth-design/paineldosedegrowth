@@ -1,5 +1,5 @@
 import { Navbar } from "@/components/andre/navbar";
-import { Hero } from "@/components/andre/hero";
+import { ArcHero } from "@/components/andre/arc-hero";
 import { TrustBar } from "@/components/andre/trust-bar";
 import { Services } from "@/components/andre/services";
 import { HowItWorks } from "@/components/andre/how-it-works";
@@ -38,7 +38,7 @@ export default function AndrePage() {
       <CustomCursor />
       <Navbar />
       <main className="relative z-10">
-        <Hero />
+        <ArcHero />
         <MarqueeStrip />
         <Problema />
         <TrustBar />
