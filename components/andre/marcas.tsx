@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Chapter } from "./chapter";
 import { RevealSection } from "./tilt-card";
 
@@ -5,12 +6,12 @@ import { RevealSection } from "./tilt-card";
    estilizada (sem logos de terceiros). */
 
 const marcas = [
-  "Springer Midea",
-  "Elgin",
-  "LG",
-  "Samsung",
-  "Daikin",
-  "Carrier",
+  { nome: "Springer Midea", slug: "springer-midea" },
+  { nome: "Elgin", slug: "elgin" },
+  { nome: "LG", slug: "lg" },
+  { nome: "Samsung", slug: "samsung" },
+  { nome: "Daikin", slug: "daikin" },
+  { nome: "Carrier", slug: "carrier" },
 ];
 
 export function Marcas() {
@@ -28,13 +29,15 @@ export function Marcas() {
         <RevealSection className="mt-9 lg:mt-12">
           <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {marcas.map((m) => (
-              <li
-                key={m}
-                className="andre-card h-20 flex items-center justify-center px-4"
-              >
-                <span className="andre-display text-base sm:text-lg text-slate-300 tracking-tight text-center whitespace-nowrap">
-                  {m}
-                </span>
+              <li key={m.slug} className="andre-card">
+                <Link
+                  href={`/andre/marcas/${m.slug}`}
+                  className="h-20 flex items-center justify-center px-4 transition-colors hover:text-white"
+                >
+                  <span className="andre-display text-base sm:text-lg text-slate-300 tracking-tight text-center whitespace-nowrap">
+                    {m.nome}
+                  </span>
+                </Link>
               </li>
             ))}
           </ul>

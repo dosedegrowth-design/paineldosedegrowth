@@ -13,6 +13,7 @@ const links = [
   { href: "/andre/empresa", label: "Empresa" },
   { href: "/andre/solucoes", label: "Soluções" },
   { href: "/andre/produtos", label: "Produtos" },
+  { href: "/andre/marcas", label: "Marcas" },
   { href: "/andre/segmentos", label: "Segmentos" },
   { href: "/andre/contato", label: "Contato" },
 ];

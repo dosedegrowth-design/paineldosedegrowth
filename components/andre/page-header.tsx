@@ -12,6 +12,7 @@ export function PageHeader({
   highlight,
   sub,
   crumb,
+  parent,
 }: {
   n: string;
   kicker: string;
@@ -20,6 +21,8 @@ export function PageHeader({
   highlight?: string;
   sub?: string;
   crumb: string;
+  /** nível intermediário do breadcrumb (ex.: Produtos em Home › Produtos › VRF) */
+  parent?: { label: string; href: string };
 }) {
   return (
     <section className="relative overflow-hidden pt-32 lg:pt-40 pb-12 lg:pb-16">
@@ -43,6 +46,17 @@ export function PageHeader({
             Home
           </Link>
           <ChevronRight className="h-3 w-3" />
+          {parent ? (
+            <>
+              <Link
+                href={parent.href}
+                className="hover:text-slate-300 transition-colors"
+              >
+                {parent.label}
+              </Link>
+              <ChevronRight className="h-3 w-3" />
+            </>
+          ) : null}
           <span className="text-[var(--andre-primary)]">{crumb}</span>
         </nav>
 

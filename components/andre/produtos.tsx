@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   AirVent,
   PanelTop,
@@ -20,41 +21,49 @@ const linhas = [
   {
     icon: AirVent,
     name: "Split",
+    slug: "split",
     desc: "A linha clássica pra ambientes residenciais e comerciais de pequeno porte.",
   },
   {
     icon: PanelTop,
     name: "Hi Wall",
+    slug: "hi-wall",
     desc: "Evaporadora de parede compacta, silenciosa e de instalação versátil.",
   },
   {
     icon: Layers,
     name: "Multi Split",
+    slug: "multi-split",
     desc: "Vários ambientes climatizados com uma única unidade condensadora.",
   },
   {
     icon: Network,
     name: "Multi V",
+    slug: "multi-v",
     desc: "Sistema VRF da LG pra edifícios com controle individual por zona.",
   },
   {
     icon: Building2,
     name: "VRF",
+    slug: "vrf",
     desc: "Vazão de refrigerante variável — eficiência pra médios e grandes edifícios.",
   },
   {
     icon: Boxes,
     name: "VRV",
+    slug: "vrv",
     desc: "A tecnologia Daikin de volume variável pra projetos corporativos.",
   },
   {
     icon: Container,
     name: "Self Contained",
+    slug: "self-contained",
     desc: "Climatização robusta pra grandes áreas, data centers e lojas.",
   },
   {
     icon: Snowflake,
     name: "Chiller",
+    slug: "chiller",
     desc: "Água gelada pra plantas industriais, hospitais e shopping centers.",
   },
 ];
@@ -77,20 +86,25 @@ export function Produtos() {
 
         <div className="mt-10 lg:mt-14 grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
           {linhas.map((l, i) => (
-            <TiltCard
-              key={l.name}
-              delay={i * 0.05}
-              className="andre-card p-5 lg:p-6 flex flex-col"
-            >
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-sky-400/10 border border-sky-400/25 mb-4">
-                <l.icon className="h-5 w-5 text-sky-400" />
-              </span>
-              <h3 className="andre-display text-lg text-white leading-tight">
-                {l.name}
-              </h3>
-              <p className="text-[13px] text-slate-400 mt-1.5 leading-relaxed">
-                {l.desc}
-              </p>
+            <TiltCard key={l.name} delay={i * 0.05} className="andre-card">
+              <Link
+                href={`/andre/produtos/${l.slug}`}
+                className="p-5 lg:p-6 flex flex-col h-full group"
+              >
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-sky-400/10 border border-sky-400/25 mb-4">
+                  <l.icon className="h-5 w-5 text-sky-400" />
+                </span>
+                <h3 className="andre-display text-lg text-white leading-tight">
+                  {l.name}
+                </h3>
+                <p className="text-[13px] text-slate-400 mt-1.5 leading-relaxed flex-1">
+                  {l.desc}
+                </p>
+                <span className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold text-[var(--andre-primary)]">
+                  Saiba mais
+                  <MoveRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                </span>
+              </Link>
             </TiltCard>
           ))}
         </div>

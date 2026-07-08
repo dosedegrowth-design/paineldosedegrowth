@@ -101,7 +101,7 @@ export function Footer() {
               <li><Link href="/andre/solucoes" className="hover:text-white transition-colors">Soluções</Link></li>
               <li><Link href="/andre/produtos" className="hover:text-white transition-colors">Linhas de produto</Link></li>
               <li><Link href="/andre/segmentos" className="hover:text-white transition-colors">Segmentos</Link></li>
-              <li><Link href="/andre/produtos#marcas" className="hover:text-white transition-colors">Marcas parceiras</Link></li>
+              <li><Link href="/andre/marcas" className="hover:text-white transition-colors">Marcas parceiras</Link></li>
               <li><Link href="/andre/contato#faq" className="hover:text-white transition-colors">Dúvidas frequentes</Link></li>
             </ul>
           </div>
