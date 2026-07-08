@@ -1,10 +1,10 @@
-import { Award, ShieldCheck, Timer, Wallet } from "lucide-react";
+import { Award, ShieldCheck, Building2, Headset } from "lucide-react";
 
 const items = [
-  { icon: Timer, title: "Atendimento em 24h", desc: "Emergência? Retornamos em minutos." },
-  { icon: ShieldCheck, title: "90 dias de garantia", desc: "Todo serviço com nota fiscal." },
-  { icon: Award, title: "Técnicos certificados", desc: "NR-35, NR-10 e refrigeração." },
-  { icon: Wallet, title: "Sem taxa de visita", desc: "Fechou o serviço, a visita é grátis." },
+  { icon: Award, title: "Desde 1985", desc: "Quatro décadas de climatização em SP." },
+  { icon: Building2, title: "Multissegmento", desc: "Do hospitalar ao residencial." },
+  { icon: ShieldCheck, title: "Técnicos certificados", desc: "NR-35, NR-10 e refrigeração." },
+  { icon: Headset, title: "Atendimento nacional", desc: "0800 015 1011 pra todo o Brasil." },
 ];
 
 export function TrustBar() {

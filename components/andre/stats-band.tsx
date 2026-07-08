@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 
 const stats = [
-  { value: 12, suffix: " anos", label: "de estrada em refrigeração", decimals: 0 },
-  { value: 3500, suffix: "+", label: "clientes atendidos", decimals: 0, thousands: true },
-  { value: 4.9, suffix: "★", label: "avaliação média", decimals: 1 },
-  { value: 24, suffix: "h", label: "prazo máximo de atendimento", decimals: 0 },
+  { value: 40, suffix: "+ anos", label: "de mercado — desde 1985", decimals: 0 },
+  { value: 8, suffix: " linhas", label: "de produto, do Split ao Chiller", decimals: 0 },
+  { value: 6, suffix: " marcas", label: "parceiras homologadas", decimals: 0 },
+  { value: 24, suffix: "h", label: "atendimento e suporte técnico", decimals: 0 },
 ];
 
 function CountUp({
@@ -79,7 +79,6 @@ export function StatsBand() {
                   value={s.value}
                   suffix={s.suffix}
                   decimals={s.decimals}
-                  thousands={s.thousands}
                   start={inView}
                 />
               </p>

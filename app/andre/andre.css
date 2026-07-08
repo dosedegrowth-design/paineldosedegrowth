@@ -529,6 +529,7 @@ html {
 }
 
 /* âncoras não podem parar embaixo da navbar fixa (scroll nativo mobile) */
-#top, #servicos, #como-funciona, #precos, #cobertura, #equipamentos, #faq {
+#top, #empresa, #servicos, #produtos, #segmentos, #marcas, #como-funciona,
+#cobertura, #faq, #contato {
   scroll-margin-top: 84px;
 }

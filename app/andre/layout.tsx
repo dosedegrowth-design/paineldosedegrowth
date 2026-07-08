@@ -10,15 +10,15 @@ import "@fontsource/jetbrains-mono/500.css";
 import "./andre.css";
 
 export const metadata: Metadata = {
-  title: "Climafrio — Ar-condicionado em São Paulo | Instalação e Manutenção",
+  title: "Climafrio — Soluções em Climatização desde 1985 | São Paulo",
   description:
-    "Instalação, manutenção e higienização de ar-condicionado com precisão técnica. Split, Multi Split, VRF. Orçamento em minutos no WhatsApp, atendimento em 24h em SP.",
+    "Projetos, instalação e manutenção de sistemas de climatização pra hospitais, indústrias, comércio e residências. Split, VRF, VRV, Self Contained e Chiller. Desde 1985 em São Paulo.",
   applicationName: "Climafrio",
   robots: { index: true, follow: true },
   openGraph: {
-    title: "Climafrio — O frio certo, no silêncio certo.",
+    title: "Climafrio — Melhore o ar que você respira.",
     description:
-      "Instalação, manutenção e higienização de ar-condicionado com precisão de engenharia. Orçamento em minutos pelo WhatsApp.",
+      "Soluções em climatização desde 1985: projetos, instalação e manutenção pra hospitalar, industrial, sala limpa, comercial e residencial.",
     type: "website",
     locale: "pt_BR",
     images: [{ url: "/andre/hero-ac.jpg", width: 1600, height: 1024 }],
@@ -36,7 +36,8 @@ const jsonLd = {
   "@type": "HVACBusiness",
   name: "Climafrio",
   description:
-    "Instalação, manutenção preventiva, higienização e recarga de gás de ar condicionado em São Paulo e Grande SP. Split, Multi Split, VRF, Piso Teto e Cassete.",
+    "Soluções em climatização desde 1985: projetos, instalação e manutenção de Split, Multi Split, VRF, VRV, Self Contained e Chiller pra hospitalar, industrial, sala limpa, comercial e residencial.",
+  foundingDate: "1985",
   telephone: "+551120957000",
   url: "https://painel.dosedegrowth.com/andre",
   email: "vendas@climafrio.com.br",

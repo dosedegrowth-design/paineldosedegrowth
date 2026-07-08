@@ -1,21 +1,21 @@
 import { Navbar } from "@/components/andre/navbar";
 import { HeroGlobe } from "@/components/andre/hero-globe";
 import { TrustBar } from "@/components/andre/trust-bar";
+import { Empresa } from "@/components/andre/empresa";
 import { Services } from "@/components/andre/services";
+import { Produtos } from "@/components/andre/produtos";
+import { Segmentos } from "@/components/andre/segmentos";
+import { Marcas } from "@/components/andre/marcas";
 import { HowItWorks } from "@/components/andre/how-it-works";
 import { FieldGallery } from "@/components/andre/field-gallery";
-import { Pricing } from "@/components/andre/pricing";
-import { Equipment } from "@/components/andre/equipment";
 import { Coverage } from "@/components/andre/coverage";
 import { StatsBand } from "@/components/andre/stats-band";
 import { Testimonials } from "@/components/andre/testimonials";
 import { FAQ } from "@/components/andre/faq";
-import { FinalCTA } from "@/components/andre/final-cta";
+import { Contato } from "@/components/andre/contato";
 import { Footer } from "@/components/andre/footer";
 import { WhatsAppFloat } from "@/components/andre/whatsapp-float";
-import { ConversionPopup } from "@/components/andre/conversion-popup";
 import { AmbientCrystalsClient } from "@/components/andre/ambient-crystals-client";
-import { Problema } from "@/components/andre/problema";
 import { ThermoOverlay } from "@/components/andre/thermo-overlay";
 import { SmoothScroll } from "@/components/andre/smooth-scroll";
 import { Manifesto } from "@/components/andre/manifesto";
@@ -24,7 +24,6 @@ import { CursorGlow } from "@/components/andre/cursor-glow";
 import { SiteFrame } from "@/components/andre/site-frame";
 import { Thermometer } from "@/components/andre/thermometer";
 import { CustomCursor } from "@/components/andre/custom-cursor";
-import { MobileCtaBar } from "@/components/andre/mobile-cta-bar";
 
 export default function AndrePage() {
   return (
@@ -40,24 +39,23 @@ export default function AndrePage() {
       <main className="relative z-10">
         <HeroGlobe />
         <MarqueeStrip />
-        <Problema />
+        <Empresa />
         <TrustBar />
         <Manifesto />
         <Services />
+        <Produtos />
+        <Segmentos />
+        <Marcas />
         <HowItWorks />
         <FieldGallery />
-        <Pricing />
-        <Equipment />
         <Coverage />
         <StatsBand />
         <Testimonials />
         <FAQ />
-        <FinalCTA />
+        <Contato />
       </main>
       <Footer />
       <WhatsAppFloat />
-      <MobileCtaBar />
-      <ConversionPopup />
     </>
   );
 }

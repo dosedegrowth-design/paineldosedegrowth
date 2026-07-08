@@ -1,11 +1,14 @@
 const items = [
+  "Desde 1985",
+  "Projetos de climatização",
   "Instalação",
-  "Higienização",
   "Manutenção",
-  "Recarga de gás",
-  "Atendimento 24h",
-  "Garantia 90 dias",
-  "São Paulo · Grande SP",
+  "Hospitalar",
+  "Industrial",
+  "Sala limpa",
+  "Comercial",
+  "Residencial",
+  "VRF · VRV · Chiller",
 ];
 
 export function MarqueeStrip() {

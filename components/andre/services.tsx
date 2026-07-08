@@ -14,52 +14,52 @@ import { WhatsAppIcon } from "./whatsapp-icon";
 
 const services = [
   {
+    icon: Cable,
+    title: "Engenharia que dimensiona",
+    code: "01 / PROJETOS",
+    desc: "Cálculo de carga térmica, especificação e projeto executivo pra obras novas e retrofit.",
+    cta: "Falar sobre um projeto",
+    message: "Olá! Gostaria de falar sobre um projeto de climatização.",
+  },
+  {
     icon: Wind,
     title: "Precisão cirúrgica",
-    code: "01 / INSTALAÇÃO",
-    desc: "Split, Multi Split, Piso Teto, Cassete e VRF. Materiais originais e nivelamento perfeito.",
-    cta: "Instalar via WhatsApp",
+    code: "02 / INSTALAÇÃO",
+    desc: "Split, Multi Split, VRF, VRV, Self Contained e Chiller — com materiais originais.",
+    cta: "Solicitar orçamento",
     message: "Olá! Quero um orçamento de instalação de ar condicionado.",
   },
   {
     icon: Wrench,
-    title: "Longevidade tech",
-    code: "02 / MANUTENÇÃO",
-    desc: "Check-up completo que evita quebra do compressor e reduz até 30% da conta de luz.",
-    cta: "Agendar no WhatsApp",
-    message: "Olá! Quero agendar uma manutenção preventiva.",
+    title: "Longevidade garantida",
+    code: "03 / MANUTENÇÃO",
+    desc: "Planos preventivos e corretivos que evitam paradas e reduzem o consumo de energia.",
+    cta: "Conhecer os planos",
+    message: "Olá! Quero saber sobre planos de manutenção.",
   },
   {
     icon: Sparkles,
     title: "Ar de montanha",
-    code: "03 / HIGIENIZAÇÃO",
+    code: "04 / HIGIENIZAÇÃO",
     desc: "Limpeza de serpentina, hélice e dreno. Elimina bactérias, mofo e mau cheiro.",
-    cta: "Higienizar via WhatsApp",
+    cta: "Agendar higienização",
     message: "Olá! Preciso de higienização do ar condicionado.",
   },
   {
     icon: Droplets,
     title: "Pressão exata",
-    code: "04 / RECARGA",
+    code: "05 / RECARGA",
     desc: "R-410A, R-32 e R-22. Detecção de vazamento e teste de estanqueidade antes da carga.",
-    cta: "Verificar no WhatsApp",
+    cta: "Verificar meu sistema",
     message: "Olá! Meu ar não gela, preciso verificar o gás.",
   },
   {
-    icon: Cable,
-    title: "Diagnóstico real",
-    code: "05 / REPARO",
-    desc: "Placa, capacitor, sensor, ventilador. Diagnóstico com laudo antes da troca.",
-    cta: "Reparo via WhatsApp",
-    message: "Olá! Meu ar condicionado quebrou, preciso de reparo.",
-  },
-  {
     icon: MoveRight,
-    title: "Recomeço sem dano",
-    code: "06 / MUDANÇA",
-    desc: "Retiramos, transportamos e reinstalamos no endereço novo, sem danificar nada.",
-    cta: "Mudança via WhatsApp",
-    message: "Olá! Preciso desinstalar/mudar meu ar condicionado.",
+    title: "Diagnóstico real",
+    code: "06 / REPARO",
+    desc: "Placa, capacitor, sensor, ventilador. Diagnóstico com laudo técnico antes da troca.",
+    cta: "Solicitar diagnóstico",
+    message: "Olá! Meu ar condicionado quebrou, preciso de reparo.",
   },
 ];
 
@@ -70,14 +70,14 @@ export function Services() {
         {/* header 2 colunas: texto + palco 3D interativo */}
         <div className="grid lg:grid-cols-2 gap-8 items-center mb-9 lg:mb-16">
           <RevealSection className="max-w-2xl mx-auto text-center lg:mx-0 lg:text-left">
-            <Chapter n="03" label="A solução" />
+            <Chapter n="02" label="Soluções" />
             <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
-              Tudo o que seu ar precisa,{" "}
-              <span className="andre-gradient-text">com um técnico só</span>.
+              Do projeto à manutenção,{" "}
+              <span className="andre-gradient-text">ciclo completo</span>.
             </h2>
             <p className="mt-4 text-slate-300 text-base leading-relaxed">
-              Do primeiro furo na parede até a manutenção anual. Você fala com
-              um técnico direto, do orçamento à entrega.
+              A Climafrio acompanha o sistema por toda a vida útil: especifica,
+              instala, mantém e responde quando você precisa.
             </p>
           </RevealSection>
           <div className="relative h-[300px] sm:h-[360px] lg:h-[420px]">

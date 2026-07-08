@@ -6,11 +6,11 @@ import { ANDRE_CONFIG, waLink, telLink } from "./config";
 import { WhatsAppIcon } from "./whatsapp-icon";
 
 const links = [
-  { href: "#servicos", id: "servicos", label: "Serviços" },
-  { href: "#como-funciona", id: "como-funciona", label: "Como funciona" },
-  { href: "#precos", id: "precos", label: "Preços" },
-  { href: "#cobertura", id: "cobertura", label: "Cobertura" },
-  { href: "#faq", id: "faq", label: "Dúvidas" },
+  { href: "#empresa", id: "empresa", label: "Empresa" },
+  { href: "#servicos", id: "servicos", label: "Soluções" },
+  { href: "#produtos", id: "produtos", label: "Produtos" },
+  { href: "#segmentos", id: "segmentos", label: "Segmentos" },
+  { href: "#contato", id: "contato", label: "Contato" },
 ];
 
 export function Navbar() {
@@ -175,7 +175,7 @@ export function Navbar() {
                 className="andre-btn-primary inline-flex items-center justify-center gap-2 h-12 rounded-xl text-[15px]"
               >
                 <WhatsAppIcon className="h-5 w-5" />
-                Orçamento no WhatsApp
+                Falar com um especialista
               </a>
               <a
                 href={telLink()}

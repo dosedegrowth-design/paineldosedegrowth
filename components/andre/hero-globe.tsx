@@ -36,19 +36,20 @@ export function HeroGlobe() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--andre-primary)] opacity-70" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--andre-primary)]" />
             </span>
-            São Paulo · Atendimento 24h
+            Soluções em climatização · desde 1985
           </span>
         </div>
 
         <h1 className="andre-display mt-8 text-[2.7rem] sm:text-6xl lg:text-7xl xl:text-8xl uppercase leading-[0.92] tracking-tighter text-white">
-          <SplitText text="O frio certo," delay={0.15} />
+          <SplitText text="Melhore o ar" delay={0.15} />
           <br />
-          <SplitText text="no silêncio certo." delay={0.5} gradient />
+          <SplitText text="que você respira." delay={0.5} gradient />
         </h1>
 
-        <p className="mt-8 text-base sm:text-lg text-[var(--andre-muted)] max-w-lg mx-auto leading-relaxed andre-anim-in [animation-delay:900ms]">
-          Instalação, manutenção e higienização com precisão de engenharia.
-          Orçamento em minutos, atendimento em até 24h.
+        <p className="mt-8 text-base sm:text-lg text-[var(--andre-muted)] max-w-xl mx-auto leading-relaxed andre-anim-in [animation-delay:900ms]">
+          Projetos, instalação e manutenção de sistemas de climatização pra
+          hospitais, indústrias, comércio e residências — há quatro décadas
+          em São Paulo.
         </p>
 
         <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-4 andre-anim-in [animation-delay:1100ms]">
@@ -60,29 +61,29 @@ export function HeroGlobe() {
               className="andre-btn-primary inline-flex items-center justify-center gap-2 h-13 px-7 rounded-sm text-[15px]"
             >
               <WhatsAppIcon className="h-5 w-5" />
-              Solicitar visita no WhatsApp
+              Falar com um especialista
             </a>
           </Magnetic>
           <a
-            href="#como-funciona"
+            href="#empresa"
             className="andre-btn-ghost inline-flex items-center justify-center h-13 px-7 rounded-sm text-[15px]"
           >
-            Como funciona
+            Conheça a Climafrio
           </a>
         </div>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2.5 text-[13px] text-[var(--andre-muted)] andre-anim-in [animation-delay:1300ms]">
           <span className="inline-flex items-center gap-1.5">
+            <Clock className="h-4 w-4 text-[var(--andre-primary)]" />
+            Desde 1985 no mercado
+          </span>
+          <span className="inline-flex items-center gap-1.5">
             <ShieldCheck className="h-4 w-4 text-[var(--andre-primary)]" />
-            90 dias de garantia
+            Hospitalar · Industrial · Comercial
           </span>
           <span className="inline-flex items-center gap-1.5">
             <Zap className="h-4 w-4 text-[var(--andre-primary)]" />
-            Resposta em ~5 min
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <Clock className="h-4 w-4 text-[var(--andre-primary)]" />
-            {ANDRE_CONFIG.rating} · {ANDRE_CONFIG.clientsServed} clientes
+            {ANDRE_CONFIG.phone0800} — nacional
           </span>
         </div>
 
