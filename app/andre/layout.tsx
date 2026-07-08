@@ -7,6 +7,7 @@ import { ThermoOverlay } from "@/components/andre/thermo-overlay";
 import { SmoothScroll } from "@/components/andre/smooth-scroll";
 import { CursorGlow } from "@/components/andre/cursor-glow";
 import { SiteFrame } from "@/components/andre/site-frame";
+import { ClimaRail } from "@/components/andre/clima-rail";
 import { CustomCursor } from "@/components/andre/custom-cursor";
 import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
@@ -87,6 +88,7 @@ export default function AndreLayout({
       <ThermoOverlay />
       <CursorGlow />
       <SiteFrame />
+      <ClimaRail />
       <CustomCursor />
       <Navbar />
       <main className="relative z-10">{children}</main>

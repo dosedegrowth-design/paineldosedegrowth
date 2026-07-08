@@ -27,7 +27,7 @@ export function EmpresaTeaser() {
       <SectionFX aurora stars={7} />
       <div className="relative max-w-6xl mx-auto px-5 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-10 items-center">
-          <RevealSection>
+          <RevealSection className="text-center lg:text-center">
             <Chapter n="01" label="A empresa" />
             <h2 className="mt-4 text-4xl sm:text-5xl andre-display leading-[1.02] text-white">
               Quatro décadas de{" "}
@@ -46,21 +46,38 @@ export function EmpresaTeaser() {
               <MoveRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </RevealSection>
-          <RevealSection className="grid grid-cols-3 gap-3">
-            {[
-              ["1985", "ano de fundação"],
-              ["8", "linhas de produto"],
-              ["6", "marcas parceiras"],
-            ].map(([v, l]) => (
-              <div key={l} className="andre-card p-5 text-center">
-                <p className="text-3xl lg:text-4xl font-black text-white tabular-nums">
-                  {v}
-                </p>
-                <p className="mt-1 text-[11px] text-slate-400 leading-snug">
-                  {l}
+          <RevealSection>
+            <div className="andre-card overflow-hidden">
+              <div className="relative aspect-[16/9]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/andre/servicos/ambiente.jpg"
+                  alt="Ar-condicionado split instalado em ambiente residencial"
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a1018]/80 via-transparent to-transparent" />
+                <p className="absolute bottom-3 left-0 right-0 text-center font-tech text-[9.5px] uppercase tracking-[0.28em] text-slate-200">
+                  Instalação entregue · acabamento limpo
                 </p>
               </div>
-            ))}
+            </div>
+            <div className="mt-3 grid grid-cols-3 gap-3">
+              {[
+                ["1985", "ano de fundação"],
+                ["8", "linhas de produto"],
+                ["6", "marcas parceiras"],
+              ].map(([v, l]) => (
+                <div key={l} className="andre-card p-4 text-center">
+                  <p className="text-2xl lg:text-3xl font-black text-white tabular-nums">
+                    {v}
+                  </p>
+                  <p className="mt-1 text-[11px] text-slate-400 leading-snug">
+                    {l}
+                  </p>
+                </div>
+              ))}
+            </div>
           </RevealSection>
         </div>
       </div>
@@ -72,16 +89,19 @@ const solucoesDestaque = [
   {
     icon: Cable,
     title: "Projetos",
+    foto: "/andre/servicos/projetos.jpg",
     desc: "Carga térmica, especificação e projeto executivo pra obra e retrofit.",
   },
   {
     icon: Wind,
     title: "Instalação",
+    foto: "/andre/servicos/instalacao.jpg",
     desc: "Do Split ao Chiller, com materiais originais e equipe própria.",
   },
   {
     icon: Wrench,
     title: "Manutenção",
+    foto: "/andre/servicos/manutencao.jpg",
     desc: "Planos preventivos e corretivos pra operação que não pode parar.",
   },
 ];
@@ -91,7 +111,7 @@ export function SolucoesTeaser() {
     <section className="relative py-16 lg:py-28 bg-white/[0.02] border-y border-white/[0.06]">
       <SectionFX grid stars={6} />
       <div className="relative max-w-6xl mx-auto px-5 lg:px-8">
-        <RevealSection className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+        <RevealSection className="flex flex-col items-center text-center gap-4">
           <div>
             <Chapter n="02" label="Soluções" />
             <h2 className="mt-4 text-4xl sm:text-5xl andre-display leading-[1.02] text-white">
@@ -110,14 +130,26 @@ export function SolucoesTeaser() {
 
         <div className="mt-10 grid sm:grid-cols-3 gap-4">
           {solucoesDestaque.map((s, i) => (
-            <TiltCard key={s.title} delay={i * 0.07} className="andre-card p-6">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-cyan-500 shadow-md shadow-sky-900/60 mb-4">
-                <s.icon className="h-5 w-5 text-white" />
-              </span>
-              <h3 className="andre-display text-xl text-white">{s.title}</h3>
-              <p className="text-sm text-slate-300 mt-2 leading-relaxed">
-                {s.desc}
-              </p>
+            <TiltCard key={s.title} delay={i * 0.07} className="andre-card overflow-hidden">
+              <div className="relative aspect-[16/9] overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={s.foto}
+                  alt={s.title}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a1018] via-transparent to-transparent" />
+                <span className="absolute bottom-3 left-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-cyan-500 shadow-md shadow-sky-900/60">
+                  <s.icon className="h-5 w-5 text-white" />
+                </span>
+              </div>
+              <div className="p-6 pt-4 text-center">
+                <h3 className="andre-display text-xl text-white">{s.title}</h3>
+                <p className="text-sm text-slate-300 mt-2 leading-relaxed">
+                  {s.desc}
+                </p>
+              </div>
             </TiltCard>
           ))}
         </div>

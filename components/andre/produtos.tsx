@@ -74,12 +74,12 @@ export function Produtos() {
     <section id="produtos" className="relative py-16 lg:py-36">
       <SectionFX grid stars={8} flakes={5} />
       <div className="relative max-w-6xl mx-auto px-5 lg:px-8">
-        <RevealSection className="max-w-2xl mx-auto text-center lg:mx-0 lg:text-left">
+        <RevealSection className="max-w-2xl mx-auto text-center">
           <h2 className=" text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
             Do Split ao Chiller,{" "}
             <span className="andre-gradient-text">a linha completa</span>.
           </h2>
-          <p className="mt-4 text-slate-300 text-base leading-relaxed max-w-xl mx-auto lg:mx-0">
+          <p className="mt-4 text-slate-300 text-base leading-relaxed max-w-xl mx-auto">
             Oito linhas de equipamentos pra climatizar de um quarto a uma
             planta industrial — sempre com a marca e o porte certos pro
             projeto.

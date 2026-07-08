@@ -31,7 +31,7 @@ const photos = [
 
 function Header() {
   return (
-    <RevealSection className="max-w-2xl mx-auto text-center lg:mx-0 lg:text-left">
+    <RevealSection className="max-w-2xl mx-auto text-center">
       <Chapter n="05" label="Na prática" />
       <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
         O padrão que{" "}

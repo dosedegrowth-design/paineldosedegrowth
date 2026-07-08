@@ -44,7 +44,7 @@ export function Manifesto() {
     <section className="relative py-16 lg:py-44">
       <div ref={ref} className="max-w-4xl mx-auto px-5 lg:px-8">
         {/* Desktop: as palavras acendem com o scroll */}
-        <p className="hidden lg:block text-[3.4rem] font-black leading-[1.18] tracking-tight text-white">
+        <p className="hidden lg:block text-[3.4rem] font-black leading-[1.18] tracking-tight text-white text-center">
           {reduce
             ? SENTENCE
             : words.map((w, i) => (

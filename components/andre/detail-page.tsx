@@ -52,7 +52,7 @@ export function DetailPage({
               {item.corpo.map((p) => (
                 <p
                   key={p.slice(0, 24)}
-                  className="text-slate-300 text-base sm:text-lg leading-relaxed mt-5 first:mt-0"
+                  className="text-slate-300 text-base sm:text-lg leading-relaxed mt-5 first:mt-0 text-center lg:text-left"
                 >
                   {p}
                 </p>
@@ -75,10 +75,10 @@ export function DetailPage({
           </div>
 
           <RevealSection className="mt-14 lg:mt-20">
-            <p className="font-tech text-[10px] uppercase tracking-[0.28em] text-slate-500 mb-4">
+            <p className="font-tech text-[10px] uppercase tracking-[0.28em] text-slate-500 mb-4 text-center">
               {relatedTitle}
             </p>
-            <div className="flex flex-wrap gap-2.5">
+            <div className="flex flex-wrap justify-center gap-2.5">
               {related.map((r) => (
                 <Link
                   key={r.slug}

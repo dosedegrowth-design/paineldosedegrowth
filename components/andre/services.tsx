@@ -17,6 +17,7 @@ const services = [
     icon: Cable,
     title: "Engenharia que dimensiona",
     code: "01 / PROJETOS",
+    foto: "/andre/servicos/projetos.jpg",
     desc: "Cálculo de carga térmica, especificação e projeto executivo pra obras novas e retrofit.",
     cta: "Falar sobre um projeto",
     message: "Olá! Gostaria de falar sobre um projeto de climatização.",
@@ -25,6 +26,7 @@ const services = [
     icon: Wind,
     title: "Precisão cirúrgica",
     code: "02 / INSTALAÇÃO",
+    foto: "/andre/servicos/instalacao.jpg",
     desc: "Split, Multi Split, VRF, VRV, Self Contained e Chiller — com materiais originais.",
     cta: "Solicitar orçamento",
     message: "Olá! Quero um orçamento de instalação de ar condicionado.",
@@ -33,6 +35,7 @@ const services = [
     icon: Wrench,
     title: "Longevidade garantida",
     code: "03 / MANUTENÇÃO",
+    foto: "/andre/servicos/manutencao.jpg",
     desc: "Planos preventivos e corretivos que evitam paradas e reduzem o consumo de energia.",
     cta: "Conhecer os planos",
     message: "Olá! Quero saber sobre planos de manutenção.",
@@ -41,6 +44,7 @@ const services = [
     icon: Sparkles,
     title: "Ar de montanha",
     code: "04 / HIGIENIZAÇÃO",
+    foto: "/andre/servicos/higienizacao.jpg",
     desc: "Limpeza de serpentina, hélice e dreno. Elimina bactérias, mofo e mau cheiro.",
     cta: "Agendar higienização",
     message: "Olá! Preciso de higienização do ar condicionado.",
@@ -49,6 +53,7 @@ const services = [
     icon: Droplets,
     title: "Pressão exata",
     code: "05 / RECARGA",
+    foto: "/andre/servicos/recarga.jpg",
     desc: "R-410A, R-32 e R-22. Detecção de vazamento e teste de estanqueidade antes da carga.",
     cta: "Verificar meu sistema",
     message: "Olá! Meu ar não gela, preciso verificar o gás.",
@@ -57,6 +62,7 @@ const services = [
     icon: MoveRight,
     title: "Diagnóstico real",
     code: "06 / REPARO",
+    foto: "/andre/servicos/reparo.jpg",
     desc: "Placa, capacitor, sensor, ventilador. Diagnóstico com laudo técnico antes da troca.",
     cta: "Solicitar diagnóstico",
     message: "Olá! Meu ar condicionado quebrou, preciso de reparo.",
@@ -70,7 +76,7 @@ export function Services() {
       <div className="relative max-w-6xl mx-auto px-5 lg:px-8">
         {/* header 2 colunas: texto + palco 3D interativo */}
         <div className="grid lg:grid-cols-2 gap-8 items-center mb-9 lg:mb-16">
-          <RevealSection className="max-w-2xl mx-auto text-center lg:mx-0 lg:text-left">
+          <RevealSection className="max-w-2xl mx-auto text-center">
             <h2 className=" text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
               Do projeto à manutenção,{" "}
               <span className="andre-gradient-text">ciclo completo</span>.
@@ -91,10 +97,21 @@ export function Services() {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
           {services.map((s, i) => (
-            <TiltCard key={s.title} delay={i * 0.06} className="andre-card p-6 flex flex-col relative">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-cyan-500 shadow-md shadow-sky-900/60 mb-4">
-                <s.icon className="h-5 w-5 text-white" />
-              </span>
+            <TiltCard key={s.title} delay={i * 0.06} className="andre-card flex flex-col relative overflow-hidden">
+              <div className="relative aspect-[16/9] overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={s.foto}
+                  alt={s.title}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a1018] via-transparent to-transparent" />
+                <span className="absolute bottom-3 left-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-cyan-500 shadow-md shadow-sky-900/60">
+                  <s.icon className="h-5 w-5 text-white" />
+                </span>
+              </div>
+              <div className="p-6 pt-4 flex flex-col flex-1">
               <p className="font-tech text-[10px] tracking-[0.24em] text-[var(--andre-primary)] mb-2">
                 {s.code}
               </p>
@@ -114,6 +131,7 @@ export function Services() {
                 {s.cta}
                 <MoveRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </a>
+              </div>
             </TiltCard>
           ))}
         </div>

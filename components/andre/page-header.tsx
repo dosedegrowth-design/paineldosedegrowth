@@ -31,7 +31,7 @@ export function PageHeader({
       <div className="relative max-w-6xl mx-auto px-5 lg:px-8">
         <nav
           aria-label="breadcrumb"
-          className="flex items-center gap-1.5 font-tech text-[10px] uppercase tracking-[0.24em] text-slate-500"
+          className="flex items-center justify-center gap-1.5 font-tech text-[10px] uppercase tracking-[0.24em] text-slate-500"
         >
           <Link
             href="/andre"
@@ -54,10 +54,10 @@ export function PageHeader({
           <span className="text-[var(--andre-primary)]">{crumb}</span>
         </nav>
 
-        <div className="mt-6">
+        <div className="mt-6 flex justify-center">
           <Chapter n={n} label={kicker} />
         </div>
-        <h1 className="mt-4 text-4xl sm:text-5xl lg:text-[3.8rem] andre-display leading-[1.02] text-white max-w-3xl">
+        <h1 className="mt-4 text-4xl sm:text-5xl lg:text-[3.8rem] andre-display leading-[1.02] text-white max-w-3xl mx-auto text-center">
           {title}
           {highlight ? (
             <>
@@ -67,7 +67,7 @@ export function PageHeader({
           ) : null}
         </h1>
         {sub ? (
-          <p className="mt-5 text-slate-300 text-base sm:text-lg leading-relaxed max-w-2xl">
+          <p className="mt-5 text-slate-300 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto text-center">
             {sub}
           </p>
         ) : null}
