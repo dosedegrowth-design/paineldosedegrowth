@@ -24,7 +24,7 @@ const arcImages = [
     alt: "Profissional em serviço de manutenção",
   },
   {
-    src: "/andre/ambiente-quarto.jpg",
+    src: "/andre/arc/thumb-ambiente-quarto.jpg",
     alt: "Quarto climatizado com split instalado pela Climafrio",
   },
   {
@@ -32,11 +32,11 @@ const arcImages = [
     alt: "Interior moderno e confortável",
   },
   {
-    src: "/andre/tecnico-manutencao.jpg",
+    src: "/andre/arc/thumb-tecnico-manutencao.jpg",
     alt: "Técnico Climafrio verificando pressão do sistema",
   },
   {
-    src: "/andre/tecnico-gas.jpg",
+    src: "/andre/arc/thumb-tecnico-gas.jpg",
     alt: "Recarga de gás com manômetro de precisão",
   },
   {
@@ -44,7 +44,7 @@ const arcImages = [
     alt: "Ambiente residencial climatizado",
   },
   {
-    src: "/andre/hero-ac.jpg",
+    src: "/andre/arc/thumb-hero-ac.jpg",
     alt: "Ar-condicionado split em ambiente residencial",
   },
   {
