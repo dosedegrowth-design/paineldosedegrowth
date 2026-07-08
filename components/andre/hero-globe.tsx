@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ShieldCheck, Zap, Clock } from "lucide-react";
 import { ANDRE_CONFIG, waLink } from "./config";
 import { WhatsAppIcon } from "./whatsapp-icon";
@@ -64,12 +65,12 @@ export function HeroGlobe() {
               Falar com um especialista
             </a>
           </Magnetic>
-          <a
-            href="#empresa"
+          <Link
+            href="/andre/empresa"
             className="andre-btn-ghost inline-flex items-center justify-center h-13 px-7 rounded-sm text-[15px]"
           >
             Conheça a Climafrio
-          </a>
+          </Link>
         </div>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2.5 text-[13px] text-[var(--andre-muted)] andre-anim-in [animation-delay:1300ms]">

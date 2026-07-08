@@ -1,4 +1,13 @@
 import type { Metadata, Viewport } from "next";
+import { Navbar } from "@/components/andre/navbar";
+import { Footer } from "@/components/andre/footer";
+import { WhatsAppFloat } from "@/components/andre/whatsapp-float";
+import { AmbientCrystalsClient } from "@/components/andre/ambient-crystals-client";
+import { ThermoOverlay } from "@/components/andre/thermo-overlay";
+import { SmoothScroll } from "@/components/andre/smooth-scroll";
+import { CursorGlow } from "@/components/andre/cursor-glow";
+import { SiteFrame } from "@/components/andre/site-frame";
+import { CustomCursor } from "@/components/andre/custom-cursor";
 import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
@@ -73,7 +82,16 @@ export default function AndreLayout({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      {children}
+      <SmoothScroll />
+      <AmbientCrystalsClient />
+      <ThermoOverlay />
+      <CursorGlow />
+      <SiteFrame />
+      <CustomCursor />
+      <Navbar />
+      <main className="relative z-10">{children}</main>
+      <Footer />
+      <WhatsAppFloat />
     </div>
   );
 }

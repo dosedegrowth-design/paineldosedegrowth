@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Snowflake, Phone, MapPin, Mail, ShoppingBag } from "lucide-react";
 import { WhatsAppIcon } from "./whatsapp-icon";
 import { ANDRE_CONFIG, waLink, telLink } from "./config";
@@ -96,12 +97,12 @@ export function Footer() {
               Institucional
             </p>
             <ul className="space-y-2.5 text-sm text-slate-300">
-              <li><a href="#empresa" className="hover:text-white transition-colors">A empresa</a></li>
-              <li><a href="#servicos" className="hover:text-white transition-colors">Soluções</a></li>
-              <li><a href="#produtos" className="hover:text-white transition-colors">Linhas de produto</a></li>
-              <li><a href="#segmentos" className="hover:text-white transition-colors">Segmentos</a></li>
-              <li><a href="#marcas" className="hover:text-white transition-colors">Marcas parceiras</a></li>
-              <li><a href="#faq" className="hover:text-white transition-colors">Dúvidas frequentes</a></li>
+              <li><Link href="/andre/empresa" className="hover:text-white transition-colors">A empresa</Link></li>
+              <li><Link href="/andre/solucoes" className="hover:text-white transition-colors">Soluções</Link></li>
+              <li><Link href="/andre/produtos" className="hover:text-white transition-colors">Linhas de produto</Link></li>
+              <li><Link href="/andre/segmentos" className="hover:text-white transition-colors">Segmentos</Link></li>
+              <li><Link href="/andre/produtos#marcas" className="hover:text-white transition-colors">Marcas parceiras</Link></li>
+              <li><Link href="/andre/contato#faq" className="hover:text-white transition-colors">Dúvidas frequentes</Link></li>
             </ul>
           </div>
         </div>

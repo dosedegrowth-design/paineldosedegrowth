@@ -1,5 +1,4 @@
 import { Target, Eye, Handshake } from "lucide-react";
-import { Chapter } from "./chapter";
 import { RevealSection, TiltCard } from "./tilt-card";
 
 /* Seção institucional — história, missão, visão e valores.
@@ -29,8 +28,7 @@ export function Empresa() {
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
           <RevealSection className="max-w-2xl mx-auto text-center lg:mx-0 lg:text-left">
-            <Chapter n="01" label="A empresa" />
-            <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
+            <h2 className=" text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
               Quatro décadas de{" "}
               <span className="andre-gradient-text">clima sob controle</span>.
             </h2>

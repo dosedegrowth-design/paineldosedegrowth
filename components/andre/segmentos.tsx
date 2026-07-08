@@ -6,7 +6,6 @@ import {
   Home,
   Warehouse,
 } from "lucide-react";
-import { Chapter } from "./chapter";
 import { RevealSection, TiltCard } from "./tilt-card";
 
 /* Aplicações/segmentos do site climafrio.com.br, com uma linha
@@ -53,8 +52,7 @@ export function Segmentos() {
     >
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
         <RevealSection className="max-w-2xl mx-auto text-center">
-          <Chapter n="04" label="Segmentos" />
-          <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
+          <h2 className=" text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
             Cada ambiente exige{" "}
             <span className="andre-gradient-text">uma engenharia</span>.
           </h2>

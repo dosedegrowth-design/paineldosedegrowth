@@ -10,7 +10,6 @@ import {
   ShoppingBag,
   MoveRight,
 } from "lucide-react";
-import { Chapter } from "./chapter";
 import { RevealSection, TiltCard } from "./tilt-card";
 import { ANDRE_CONFIG } from "./config";
 
@@ -65,8 +64,7 @@ export function Produtos() {
     <section id="produtos" className="relative py-16 lg:py-36">
       <div className="max-w-6xl mx-auto px-5 lg:px-8">
         <RevealSection className="max-w-2xl mx-auto text-center lg:mx-0 lg:text-left">
-          <Chapter n="03" label="Linhas de produto" />
-          <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
+          <h2 className=" text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
             Do Split ao Chiller,{" "}
             <span className="andre-gradient-text">a linha completa</span>.
           </h2>

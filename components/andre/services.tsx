@@ -7,7 +7,6 @@ import {
   MoveRight,
 } from "lucide-react";
 import { waLink } from "./config";
-import { Chapter } from "./chapter";
 import { RevealSection, TiltCard } from "./tilt-card";
 import { HeroCanvasClient } from "./hero-canvas-client";
 import { WhatsAppIcon } from "./whatsapp-icon";
@@ -70,8 +69,7 @@ export function Services() {
         {/* header 2 colunas: texto + palco 3D interativo */}
         <div className="grid lg:grid-cols-2 gap-8 items-center mb-9 lg:mb-16">
           <RevealSection className="max-w-2xl mx-auto text-center lg:mx-0 lg:text-left">
-            <Chapter n="02" label="Soluções" />
-            <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
+            <h2 className=" text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
               Do projeto à manutenção,{" "}
               <span className="andre-gradient-text">ciclo completo</span>.
             </h2>

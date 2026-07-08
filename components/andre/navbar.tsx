@@ -1,23 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Phone, Snowflake, Menu, X } from "lucide-react";
 import { ANDRE_CONFIG, waLink, telLink } from "./config";
 import { WhatsAppIcon } from "./whatsapp-icon";
 
+/* Navegação institucional multi-páginas — cada item é uma rota real. */
+
 const links = [
-  { href: "#empresa", id: "empresa", label: "Empresa" },
-  { href: "#servicos", id: "servicos", label: "Soluções" },
-  { href: "#produtos", id: "produtos", label: "Produtos" },
-  { href: "#segmentos", id: "segmentos", label: "Segmentos" },
-  { href: "#contato", id: "contato", label: "Contato" },
+  { href: "/andre/empresa", label: "Empresa" },
+  { href: "/andre/solucoes", label: "Soluções" },
+  { href: "/andre/produtos", label: "Produtos" },
+  { href: "/andre/segmentos", label: "Segmentos" },
+  { href: "/andre/contato", label: "Contato" },
 ];
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState("");
+  const pathname = usePathname();
 
   useEffect(() => {
     let last = 0;
@@ -34,23 +38,10 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  /* fecha o drawer ao navegar */
   useEffect(() => {
-    const sections = links
-      .map((l) => document.getElementById(l.id))
-      .filter(Boolean) as HTMLElement[];
-    if (!sections.length) return;
-    const obs = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible) setActive(visible.target.id);
-      },
-      { rootMargin: "-30% 0px -55% 0px", threshold: [0, 0.2, 0.5] }
-    );
-    sections.forEach((s) => obs.observe(s));
-    return () => obs.disconnect();
-  }, []);
+    setOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -58,6 +49,8 @@ export function Navbar() {
       document.body.style.overflow = "";
     };
   }, [open]);
+
+  const isActive = (href: string) => pathname === href;
 
   return (
     <>
@@ -69,7 +62,7 @@ export function Navbar() {
         }}
       >
         <div className="max-w-6xl mx-auto px-5 lg:px-8 h-16 flex items-center justify-between gap-6">
-          <a href="#top" className="flex items-center gap-2.5">
+          <Link href="/andre" className="flex items-center gap-2.5">
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-cyan-500 shadow-md shadow-sky-900/60">
               <Snowflake className="h-4.5 w-4.5 text-white" />
             </span>
@@ -79,21 +72,25 @@ export function Navbar() {
               </p>
               <span className="h-1.5 w-1.5 rounded-full bg-[var(--andre-primary)] animate-pulse" />
             </div>
-          </a>
+          </Link>
 
           <nav className="hidden lg:flex items-center gap-7">
             {links.map((l) => (
-              <a
+              <Link
                 key={l.href}
                 href={l.href}
                 className="font-tech text-[10.5px] uppercase tracking-[0.24em] transition-colors border-b pb-1"
                 style={{
-                  color: active === l.id ? "var(--andre-primary)" : "var(--andre-muted)",
-                  borderColor: active === l.id ? "var(--andre-primary)" : "transparent",
+                  color: isActive(l.href)
+                    ? "var(--andre-primary)"
+                    : "var(--andre-muted)",
+                  borderColor: isActive(l.href)
+                    ? "var(--andre-primary)"
+                    : "transparent",
                 }}
               >
                 {l.label}
-              </a>
+              </Link>
             ))}
           </nav>
 
@@ -154,16 +151,24 @@ export function Navbar() {
               </button>
             </div>
             <nav className="flex flex-col gap-1">
+              <Link
+                href="/andre"
+                onClick={() => setOpen(false)}
+                className="py-4 text-2xl font-black tracking-tight border-b border-white/[0.08] transition-colors"
+                style={{ color: pathname === "/andre" ? "#7dd3fc" : "#f1f5f9" }}
+              >
+                Home
+              </Link>
               {links.map((l) => (
-                <a
+                <Link
                   key={l.href}
                   href={l.href}
                   onClick={() => setOpen(false)}
                   className="py-4 text-2xl font-black tracking-tight border-b border-white/[0.08] transition-colors"
-                  style={{ color: active === l.id ? "#7dd3fc" : "#f1f5f9" }}
+                  style={{ color: isActive(l.href) ? "#7dd3fc" : "#f1f5f9" }}
                 >
                   {l.label}
-                </a>
+                </Link>
               ))}
             </nav>
             <div className="mt-auto flex flex-col gap-3">
