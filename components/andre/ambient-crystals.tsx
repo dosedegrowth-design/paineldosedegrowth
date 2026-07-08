@@ -9,16 +9,14 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { MathUtils, MeshStandardMaterial } from "three";
 import type { Group, Mesh } from "three";
 
-const COUNT = 30;
-
-function CrystalField() {
+function CrystalField({ count, pointer }: { count: number; pointer: boolean }) {
   const group = useRef<Group>(null);
   const mouse = useRef({ x: 0, y: 0 });
   const scroll = useRef({ last: 0, vel: 0 });
 
   const crystals = useMemo(
     () =>
-      Array.from({ length: COUNT }, (_, i) => ({
+      Array.from({ length: count }, (_, i) => ({
         x: ((i * 137.5) % 100) / 100 * 16 - 8,
         y: (((i * 73.3) % 100) / 100) * 12 - 6,
         z: -1.5 - (((i * 41.7) % 100) / 100) * 3,
@@ -27,7 +25,7 @@ function CrystalField() {
         drift: 0.4 + (((i * 53.9) % 100) / 100) * 0.8,
         octa: i % 3 !== 0,
       })),
-    []
+    [count]
   );
 
   const material = useMemo(
@@ -46,7 +44,7 @@ function CrystalField() {
   );
 
   useMemo(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || !pointer) return;
     window.addEventListener(
       "pointermove",
       (e) => {
@@ -55,7 +53,7 @@ function CrystalField() {
       },
       { passive: true }
     );
-  }, []);
+  }, [pointer]);
 
   useFrame((state, delta) => {
     const dt = Math.min(delta, 0.05);
@@ -115,24 +113,19 @@ function CrystalField() {
   );
 }
 
-export function AmbientCrystals() {
-  /* mobile: GPU vale mais que ambiência — não monta */
-  if (
-    typeof window !== "undefined" &&
-    (window.innerWidth < 768 || window.matchMedia("(pointer: coarse)").matches)
-  ) {
-    return null;
-  }
+export function AmbientCrystals({ lite = false }: { lite?: boolean }) {
+  /* mobile roda a versão lite: menos meshes, DPR 1, sem parallax de mouse —
+     a ambiência fica, o custo cai */
   return (
     <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden>
       <Canvas
         camera={{ position: [0, 0, 6], fov: 45 }}
-        dpr={[1, 1.5]}
+        dpr={lite ? 1 : [1, 1.5]}
         gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}
       >
         <ambientLight intensity={0.6} color="#dbeafe" />
         <directionalLight position={[3, 4, 5]} intensity={0.8} color="#7dd3fc" />
-        <CrystalField />
+        <CrystalField count={lite ? 16 : 30} pointer={!lite} />
       </Canvas>
     </div>
   );

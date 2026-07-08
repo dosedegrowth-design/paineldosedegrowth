@@ -1,15 +1,14 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useDesktopFX } from "./use-desktop-fx";
+import { useMotionFX } from "./use-desktop-fx";
 
 const GlobeCanvas = dynamic(
   () => import("@/components/ui/globe-hero").then((m) => m.GlobeCanvas),
   { ssr: false }
 );
 
-/* Globo wireframe estático (SVG) — versão sem custo pro mobile: mesma
-   identidade visual do canvas three.js, zero JavaScript. */
+/* Globo wireframe estático (SVG) — fallback só pra prefers-reduced-motion. */
 function StaticWireGlobe() {
   const parallels = [-60, -40, -20, 0, 20, 40, 60];
   const meridians = [0.15, 0.4, 0.65, 0.85];
@@ -35,10 +34,11 @@ function StaticWireGlobe() {
   );
 }
 
-/* Atrás do hero: canvas three.js girando em desktop; SVG estático no
-   mobile (o chunk de 231KB do three.js não é baixado lá). */
+/* Atrás do hero: o mesmo globo three.js girando em desktop E mobile —
+   mesma complexidade nas duas telas. SVG estático só quando o usuário
+   pede menos movimento (prefers-reduced-motion). */
 export function GlobeBackdrop() {
-  const ok = useDesktopFX();
+  const { ok } = useMotionFX();
 
   return (
     <div

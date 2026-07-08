@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useDesktopFX } from "./use-desktop-fx";
+import { useMotionFX } from "./use-desktop-fx";
 
 const HeroCanvas = dynamic(
   () => import("./hero-canvas").then((m) => m.HeroCanvas),
@@ -9,7 +9,7 @@ const HeroCanvas = dynamic(
 );
 
 export function HeroCanvasClient() {
-  const ok = useDesktopFX();
+  const { ok } = useMotionFX();
   if (!ok) return null;
   return <HeroCanvas />;
 }

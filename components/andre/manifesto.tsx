@@ -43,7 +43,8 @@ export function Manifesto() {
   return (
     <section className="relative py-16 lg:py-44">
       <div ref={ref} className="max-w-4xl mx-auto px-5 lg:px-8">
-        <p className="text-3xl sm:text-4xl lg:text-[3.4rem] font-black leading-[1.18] tracking-tight text-white text-center lg:text-left">
+        {/* Desktop: as palavras acendem com o scroll */}
+        <p className="hidden lg:block text-[3.4rem] font-black leading-[1.18] tracking-tight text-white">
           {reduce
             ? SENTENCE
             : words.map((w, i) => (
@@ -55,6 +56,16 @@ export function Manifesto() {
                   progress={scrollYProgress}
                 />
               ))}
+        </p>
+
+        {/* Mobile: citação estática totalmente legível — nada de texto
+            fantasma boiando no preto */}
+        <p className="lg:hidden text-3xl sm:text-4xl font-black leading-[1.18] tracking-tight text-white text-center">
+          Conforto não é luxo. É engenharia bem feita —{" "}
+          <span className="andre-gradient-text">
+            no grau certo, no silêncio certo
+          </span>
+          , todos os dias do verão.
         </p>
       </div>
     </section>

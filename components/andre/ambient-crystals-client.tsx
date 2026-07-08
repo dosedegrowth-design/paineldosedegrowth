@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useDesktopFX } from "./use-desktop-fx";
+import { useMotionFX } from "./use-desktop-fx";
 
 const AmbientCrystals = dynamic(
   () => import("./ambient-crystals").then((m) => m.AmbientCrystals),
@@ -9,7 +9,7 @@ const AmbientCrystals = dynamic(
 );
 
 export function AmbientCrystalsClient() {
-  const ok = useDesktopFX();
+  const { ok, lite } = useMotionFX();
   if (!ok) return null;
-  return <AmbientCrystals />;
+  return <AmbientCrystals lite={lite} />;
 }

@@ -22,3 +22,24 @@ export function useDesktopFX() {
 
   return ok;
 }
+
+/* Efeitos que rodam em TODAS as telas (o globo e os cristais fazem parte
+   da identidade também no mobile) — mas em dose menor: `lite` sinaliza
+   telas touch/pequenas pra reduzir contagem de meshes e DPR. Respeita
+   prefers-reduced-motion. */
+export function useMotionFX() {
+  const [state, setState] = useState({ ok: false, lite: false });
+
+  useEffect(() => {
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    if (reduce) return;
+    const lite = window.matchMedia(
+      "(max-width: 1023px), (pointer: coarse)"
+    ).matches;
+    setState({ ok: true, lite });
+  }, []);
+
+  return state;
+}
