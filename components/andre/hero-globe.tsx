@@ -30,7 +30,7 @@ export function HeroGlobe() {
         }}
       />
 
-      <div className="relative z-10 w-full max-w-4xl mx-auto px-5 lg:px-8 pt-28 pb-24 lg:py-0 text-center">
+      <div className="relative z-10 w-full max-w-4xl mx-auto px-5 lg:px-8 pt-12 pb-28 lg:py-0 text-center">
         <div className="andre-anim-in">
           <span className="inline-flex items-center gap-2.5 rounded-full border border-[var(--andre-border)] bg-white/[0.04] backdrop-blur-md px-4 py-2 font-tech text-[10.5px] uppercase tracking-[0.28em] text-[var(--andre-muted)]">
             <span className="relative flex h-2 w-2">

@@ -25,7 +25,8 @@ const Globe: React.FC<{
   radius: number;
   color: string;
   opacity: number;
-}> = ({ rotationSpeed, radius, color, opacity }) => {
+  segments: number;
+}> = ({ rotationSpeed, radius, color, opacity, segments }) => {
   const groupRef = useRef<THREE.Group>(null!);
 
   useFrame(() => {
@@ -39,7 +40,7 @@ const Globe: React.FC<{
   return (
     <group ref={groupRef}>
       <mesh>
-        <sphereGeometry args={[radius, 64, 64]} />
+        <sphereGeometry args={[radius, segments, segments]} />
         <meshBasicMaterial
           color={color}
           transparent
@@ -52,18 +53,30 @@ const Globe: React.FC<{
 };
 
 /* Só o Canvas — importe via next/dynamic pra não mandar three.js no bundle
-   inicial nem pro mobile. */
+   inicial. `segments`, `dpr` e `frameloop` permitem baratear em telas
+   fracas e PAUSAR a renderização quando o hero sai da viewport. */
 export function GlobeCanvas({
   rotationSpeed = 0.005,
   globeRadius = 1,
   wireframeColor = "#94a3b8",
   wireframeOpacity = 0.15,
+  segments = 64,
+  dpr,
+  frameloop = "always",
 }: Pick<
   DotGlobeHeroProps,
   "rotationSpeed" | "globeRadius" | "wireframeColor" | "wireframeOpacity"
->) {
+> & {
+  segments?: number;
+  dpr?: number | [number, number];
+  frameloop?: "always" | "never";
+}) {
   return (
-    <Canvas>
+    <Canvas
+      dpr={dpr}
+      frameloop={frameloop}
+      gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+    >
       <PerspectiveCamera makeDefault position={[0, 0, 3]} fov={75} />
       <ambientLight intensity={0.5} />
       <pointLight position={[10, 10, 10]} intensity={1} />
@@ -73,6 +86,7 @@ export function GlobeCanvas({
         radius={globeRadius}
         color={wireframeColor}
         opacity={wireframeOpacity}
+        segments={segments}
       />
     </Canvas>
   );

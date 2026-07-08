@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useMotionFX } from "./use-desktop-fx";
 
@@ -39,9 +40,25 @@ function StaticWireGlobe() {
    pede menos movimento (prefers-reduced-motion). */
 export function GlobeBackdrop() {
   const { ok, lite } = useMotionFX();
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(true);
+
+  /* fora da viewport, o loop de renderização PARA — rolar o resto da
+     página (e voltar rápido pro topo) fica leve */
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => setVisible(e.isIntersecting),
+      { rootMargin: "120px" }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   return (
     <div
+      ref={ref}
       className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center overflow-hidden"
       aria-hidden
     >
@@ -53,6 +70,10 @@ export function GlobeBackdrop() {
             globeRadius={lite ? 0.92 : 1.55}
             wireframeColor="#22d3ee"
             wireframeOpacity={lite ? 0.17 : 0.14}
+            /* mobile: malha e resolução menores — mesmo visual, metade do custo */
+            segments={lite ? 40 : 64}
+            dpr={lite ? [1, 1.5] : [1, 2]}
+            frameloop={visible ? "always" : "never"}
           />
         </div>
       ) : (
