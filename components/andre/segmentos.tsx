@@ -12,6 +12,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { RevealSection, TiltCard } from "./tilt-card";
+import { SectionFX } from "./section-fx";
 import { SEGMENTOS_DATA } from "./site-data";
 
 /* As 8 aplicações do site climafrio.com.br, cada card levando pra
@@ -34,7 +35,8 @@ export function Segmentos() {
       id="segmentos"
       className="relative py-16 lg:py-28 bg-white/[0.02] border-y border-white/[0.06]"
     >
-      <div className="max-w-6xl mx-auto px-5 lg:px-8">
+      <SectionFX aurora grid flakes={10} />
+      <div className="relative max-w-6xl mx-auto px-5 lg:px-8">
         <RevealSection className="max-w-2xl mx-auto text-center">
           <h2 className="text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">
             Cada ambiente exige{" "}

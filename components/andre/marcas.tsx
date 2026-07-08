@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Chapter } from "./chapter";
+import { SectionFX } from "./section-fx";
 import { RevealSection } from "./tilt-card";
 
 /* As 6 marcas parceiras do site climafrio.com.br, em tipografia
@@ -17,7 +18,8 @@ const marcas = [
 export function Marcas() {
   return (
     <section id="marcas" className="relative py-14 lg:py-24">
-      <div className="max-w-6xl mx-auto px-5 lg:px-8">
+      <SectionFX aurora stars={10} />
+      <div className="relative max-w-6xl mx-auto px-5 lg:px-8">
         <RevealSection className="text-center">
           <Chapter n="05" label="Marcas parceiras" />
           <h2 className="mt-4 text-3xl sm:text-4xl andre-display leading-[1.05] text-white">

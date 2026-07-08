@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { Chapter } from "./chapter";
+import { SectionFX } from "./section-fx";
 
 /* Cabeçalho padrão das páginas internas do site institucional:
    breadcrumb + capítulo + título grande no padrão editorial. */
@@ -26,14 +27,7 @@ export function PageHeader({
 }) {
   return (
     <section className="relative overflow-hidden pt-32 lg:pt-40 pb-12 lg:pb-16">
-      <div
-        className="absolute inset-0 pointer-events-none"
-        aria-hidden
-        style={{
-          background:
-            "radial-gradient(80% 60% at 50% 0%, rgba(34, 211, 238, 0.07), transparent 70%)",
-        }}
-      />
+      <SectionFX aurora grid stars={9} />
       <div className="relative max-w-6xl mx-auto px-5 lg:px-8">
         <nav
           aria-label="breadcrumb"

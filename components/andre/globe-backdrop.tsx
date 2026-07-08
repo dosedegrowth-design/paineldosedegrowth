@@ -38,7 +38,7 @@ function StaticWireGlobe() {
    mesma complexidade nas duas telas. SVG estático só quando o usuário
    pede menos movimento (prefers-reduced-motion). */
 export function GlobeBackdrop() {
-  const { ok } = useMotionFX();
+  const { ok, lite } = useMotionFX();
 
   return (
     <div
@@ -49,9 +49,10 @@ export function GlobeBackdrop() {
         <div className="absolute inset-0">
           <GlobeCanvas
             rotationSpeed={0.0035}
-            globeRadius={1.55}
+            /* mobile: raio menor pra esfera caber INTEIRA na tela */
+            globeRadius={lite ? 0.92 : 1.55}
             wireframeColor="#22d3ee"
-            wireframeOpacity={0.14}
+            wireframeOpacity={lite ? 0.17 : 0.14}
           />
         </div>
       ) : (

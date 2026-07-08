@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
+import { SectionFX } from "./section-fx";
 
 const stats = [
   { value: 40, suffix: "+ anos", label: "de mercado — desde 1985", decimals: 0 },
@@ -63,7 +64,8 @@ export function StatsBand() {
 
   return (
     <section className="relative py-14 lg:py-18 bg-white/[0.02] border-y border-white/[0.06]">
-      <div ref={ref} className="max-w-6xl mx-auto px-5 lg:px-8">
+      <SectionFX grid stars={5} />
+      <div ref={ref} className="relative max-w-6xl mx-auto px-5 lg:px-8">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-4">
           {stats.map((s, i) => (
             <motion.div

@@ -1,5 +1,6 @@
 import { Target, Eye, Handshake } from "lucide-react";
 import { RevealSection, TiltCard } from "./tilt-card";
+import { SectionFX } from "./section-fx";
 
 /* Seção institucional — história, missão, visão e valores.
    Textos de missão/visão/valores são os oficiais do site climafrio.com.br. */
@@ -25,7 +26,8 @@ const mvv = [
 export function Empresa() {
   return (
     <section id="empresa" className="relative py-16 lg:py-36">
-      <div className="max-w-6xl mx-auto px-5 lg:px-8">
+      <SectionFX aurora flip stars={8} />
+      <div className="relative max-w-6xl mx-auto px-5 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
           <RevealSection className="max-w-2xl mx-auto text-center lg:mx-0 lg:text-left">
             <h2 className=" text-4xl sm:text-5xl lg:text-[3.6rem] andre-display leading-[1.02] text-white">

@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { waLink } from "./config";
 import { RevealSection, TiltCard } from "./tilt-card";
+import { SectionFX } from "./section-fx";
 import { HeroCanvasClient } from "./hero-canvas-client";
 import { WhatsAppIcon } from "./whatsapp-icon";
 
@@ -65,7 +66,8 @@ const services = [
 export function Services() {
   return (
     <section id="servicos" className="relative py-16 lg:py-36">
-      <div className="max-w-6xl mx-auto px-5 lg:px-8">
+      <SectionFX aurora stars={6} />
+      <div className="relative max-w-6xl mx-auto px-5 lg:px-8">
         {/* header 2 colunas: texto + palco 3D interativo */}
         <div className="grid lg:grid-cols-2 gap-8 items-center mb-9 lg:mb-16">
           <RevealSection className="max-w-2xl mx-auto text-center lg:mx-0 lg:text-left">

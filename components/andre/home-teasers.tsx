@@ -13,6 +13,7 @@ import {
   Phone,
 } from "lucide-react";
 import { Chapter } from "./chapter";
+import { SectionFX } from "./section-fx";
 import { RevealSection, TiltCard } from "./tilt-card";
 import { ANDRE_CONFIG, waLink, telLink } from "./config";
 import { WhatsAppIcon } from "./whatsapp-icon";
@@ -23,7 +24,8 @@ import { WhatsAppIcon } from "./whatsapp-icon";
 export function EmpresaTeaser() {
   return (
     <section className="relative py-16 lg:py-28">
-      <div className="max-w-6xl mx-auto px-5 lg:px-8">
+      <SectionFX aurora stars={7} />
+      <div className="relative max-w-6xl mx-auto px-5 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-10 items-center">
           <RevealSection>
             <Chapter n="01" label="A empresa" />
@@ -87,7 +89,8 @@ const solucoesDestaque = [
 export function SolucoesTeaser() {
   return (
     <section className="relative py-16 lg:py-28 bg-white/[0.02] border-y border-white/[0.06]">
-      <div className="max-w-6xl mx-auto px-5 lg:px-8">
+      <SectionFX grid stars={6} />
+      <div className="relative max-w-6xl mx-auto px-5 lg:px-8">
         <RevealSection className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
           <div>
             <Chapter n="02" label="Soluções" />
@@ -135,7 +138,8 @@ const segmentosChips = [
 export function SegmentosTeaser() {
   return (
     <section className="relative py-16 lg:py-28">
-      <div className="max-w-6xl mx-auto px-5 lg:px-8 text-center">
+      <SectionFX aurora flip flakes={8} />
+      <div className="relative max-w-6xl mx-auto px-5 lg:px-8 text-center">
         <RevealSection>
           <Chapter n="03" label="Segmentos" />
           <h2 className="mt-4 text-4xl sm:text-5xl andre-display leading-[1.02] text-white">
@@ -174,7 +178,8 @@ export function SegmentosTeaser() {
 export function ContatoBand() {
   return (
     <section className="relative py-16 lg:py-24">
-      <div className="max-w-6xl mx-auto px-5 lg:px-8">
+      <SectionFX stars={8} />
+      <div className="relative max-w-6xl mx-auto px-5 lg:px-8">
         <RevealSection className="andre-card px-6 py-10 lg:px-12 lg:py-12 text-center">
           <h2 className="text-3xl sm:text-4xl andre-display leading-[1.05] text-white">
             Vamos falar sobre{" "}

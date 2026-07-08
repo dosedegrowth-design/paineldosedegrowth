@@ -3,6 +3,7 @@ import { Check, MoveRight } from "lucide-react";
 import { PageHeader } from "./page-header";
 import { RevealSection } from "./tilt-card";
 import { ContatoBand } from "./home-teasers";
+import { SectionFX } from "./section-fx";
 import type { DetailItem } from "./site-data";
 
 /* Template das páginas de detalhe (produto, marca, segmento):
@@ -44,7 +45,8 @@ export function DetailPage({
       />
 
       <section className="relative pb-16 lg:pb-28">
-        <div className="max-w-6xl mx-auto px-5 lg:px-8">
+        <SectionFX aurora flip stars={7} flakes={4} />
+        <div className="relative max-w-6xl mx-auto px-5 lg:px-8">
           <div className="grid lg:grid-cols-[1.4fr_1fr] gap-8 lg:gap-12 items-start">
             <RevealSection>
               {item.corpo.map((p) => (
