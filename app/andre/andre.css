@@ -527,3 +527,8 @@ html {
   .andre-kenburns, .andre-marquee-track { animation: none !important; }
   .andre-scribble path { stroke-dashoffset: 0; animation: none; }
 }
+
+/* âncoras não podem parar embaixo da navbar fixa (scroll nativo mobile) */
+#top, #servicos, #como-funciona, #precos, #cobertura, #equipamentos, #faq {
+  scroll-margin-top: 84px;
+}

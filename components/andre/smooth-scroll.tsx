@@ -10,6 +10,15 @@ export function SmoothScroll() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    /* touch: scroll nativo é mais leve e mais natural que o Lenis —
+       só garante âncora suave e sai */
+    if (window.matchMedia("(pointer: coarse)").matches) {
+      document.documentElement.style.scrollBehavior = "smooth";
+      return () => {
+        document.documentElement.style.scrollBehavior = "";
+      };
+    }
+
     /* o CSS smooth nativo conflita com o Lenis */
     document.documentElement.style.scrollBehavior = "auto";
 

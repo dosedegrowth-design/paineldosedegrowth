@@ -5,12 +5,16 @@
    Reversível: voltar ao topo re-aquece. */
 
 import { useEffect, useRef } from "react";
+import { useDesktopFX } from "./use-desktop-fx";
 
 export function ThermoOverlay() {
   const warm = useRef<HTMLDivElement>(null);
   const cool = useRef<HTMLDivElement>(null);
+  /* blend mode de tela cheia é caro em GPU de celular — desktop only */
+  const ok = useDesktopFX();
 
   useEffect(() => {
+    if (!ok) return;
     let raf = 0;
     const update = () => {
       const p = Math.min(1, window.scrollY / 1800);
@@ -27,7 +31,9 @@ export function ThermoOverlay() {
       window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [ok]);
+
+  if (!ok) return null;
 
   return (
     <>
