@@ -4,7 +4,7 @@
       "type": "http",
       "url": "https://mcp.chatplace.io/mcp",
       "headers": {
-        "Authorization": "Bearer ${CHATPLACE_API_KEY}"
+        "Authorization": "Bearer cpk_2d4c1cde48ec08074f4c4c238feb7d80e0636602"
       }
     },
     "21st": {
