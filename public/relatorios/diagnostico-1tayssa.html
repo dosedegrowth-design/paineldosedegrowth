@@ -161,7 +161,9 @@ svg text{font-family:inherit}
 .limits ul{margin:8px 0 0;padding-left:18px}
 .limits li{margin:4px 0}
 footer{margin:70px 0 48px;color:var(--muted);font-size:12.5px;text-align:center}
-.scroll-x{overflow-x:auto}
+.scroll-x{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.swipe-hint{display:none;font-size:12px;color:var(--muted);text-align:center;margin:2px 0 8px}
+@media(max-width:700px){.swipe-hint{display:block}}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 </style>
 
@@ -228,6 +230,7 @@ footer{margin:70px 0 48px;color:var(--muted);font-size:12.5px;text-align:center}
         <span><i style="background:var(--c-pessoal)"></i>Pessoal / humor / fora do nicho (10)</span>
         <span style="color:var(--muted)">— linha pontilhada: mediana da conta (1.825)</span>
       </div>
+      <div class="swipe-hint">← deslize o gráfico para os lados →</div>
       <div class="scroll-x"><div id="timeline" style="min-width:640px"></div></div>
     </div>
   </section>
@@ -266,6 +269,7 @@ footer{margin:70px 0 48px;color:var(--muted);font-size:12.5px;text-align:center}
         <span><i style="background:var(--c-nicho)"></i>Nicho</span>
         <span><i style="background:var(--c-pessoal)"></i>Pessoal / humor</span>
       </div>
+      <div class="swipe-hint">← deslize o gráfico para os lados →</div>
       <div class="scroll-x"><div id="scatter" style="min-width:560px"></div></div>
     </div>
   </section>
