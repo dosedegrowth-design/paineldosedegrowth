@@ -1,5 +1,12 @@
 {
   "mcpServers": {
+    "chatplace": {
+      "type": "http",
+      "url": "https://mcp.chatplace.io/mcp",
+      "headers": {
+        "Authorization": "Bearer ${CHATPLACE_API_KEY}"
+      }
+    },
     "21st": {
       "type": "http",
       "url": "https://21st.dev/api/mcp",
