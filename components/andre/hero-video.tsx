@@ -18,15 +18,20 @@ const tags = [
 ];
 
 export function HeroVideo() {
-  const { ok } = useMotionFX();
+  const { ok, lite } = useMotionFX();
+  /* mobile recebe o recorte VERTICAL do mesmo vídeo (enquadrado no
+     técnico com o manifold); desktop usa o horizontal com a ação
+     puxada pra baixo do quadro */
+  const base = lite ? "/andre/hero-video-mobile" : "/andre/hero-video";
 
   return (
     <div id="top">
       <VideoHero
-        videoSrc="/andre/hero-video.mp4"
-        videoSrcWebm="/andre/hero-video.webm"
-        poster="/andre/hero-video-poster.jpg"
+        videoSrc={`${base}.mp4`}
+        videoSrcWebm={`${base}.webm`}
+        poster={`${base}-poster.jpg`}
         playVideo={ok}
+        objectPosition={lite ? "50% 85%" : "66% 92%"}
         overlay={
           <>
             {/* tinta fria da marca + legibilidade */}

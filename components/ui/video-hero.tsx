@@ -18,6 +18,8 @@ interface VideoHeroProps {
   poster?: string;
   /** quando false, renderiza só o poster (prefers-reduced-motion) */
   playVideo?: boolean;
+  /** enquadramento do object-cover (ex.: "68% 88%" pra ação embaixo/direita) */
+  objectPosition?: string;
   /** camadas de overlay sobre o vídeo (gradientes, vinhetas) */
   overlay?: React.ReactNode;
   /** conteúdo ancorado na base */
@@ -32,6 +34,7 @@ export function VideoHero({
   videoSrcWebm,
   poster,
   playVideo = true,
+  objectPosition,
   overlay,
   children,
   footerClassName,
@@ -54,12 +57,14 @@ export function VideoHero({
       >
         {playVideo ? (
           <video
+            key={videoSrc}
             poster={poster}
             autoPlay
             muted
             loop
             playsInline
             className="absolute inset-0 h-full w-full object-cover"
+            style={objectPosition ? { objectPosition } : undefined}
           >
             {videoSrcWebm && <source src={videoSrcWebm} type="video/webm" />}
             <source src={videoSrc} type="video/mp4" />
@@ -71,6 +76,7 @@ export function VideoHero({
               src={poster}
               alt=""
               className="absolute inset-0 h-full w-full object-cover"
+              style={objectPosition ? { objectPosition } : undefined}
             />
           )
         )}
