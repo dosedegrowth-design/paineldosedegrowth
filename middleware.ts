@@ -19,6 +19,8 @@ export async function middleware(request: NextRequest) {
     "/andre",
     // Relatórios públicos compartilháveis (HTML estático em public/relatorios)
     "/relatorios",
+    // Apostilas públicas compartilháveis (HTML + PDF estáticos em public/apostilas)
+    "/apostilas",
     // Páginas legais públicas (Meta + LGPD)
     "/privacidade",
     "/termos",
