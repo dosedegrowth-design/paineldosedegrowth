@@ -1,4 +1,4 @@
-import { HeroGlobe } from "@/components/andre/hero-globe";
+import { HeroVideo } from "@/components/andre/hero-video";
 import { MarqueeStrip } from "@/components/andre/marquee-strip";
 import { TrustBar } from "@/components/andre/trust-bar";
 import {
@@ -14,7 +14,7 @@ import { Testimonials } from "@/components/andre/testimonials";
 export default function AndreHome() {
   return (
     <>
-      <HeroGlobe />
+      <HeroVideo />
       <MarqueeStrip />
       <TrustBar />
       <EmpresaTeaser />
