@@ -248,16 +248,33 @@
 
   /* ---------- IMPRESSÃO / PDF ---------- */
   @media print{
-    body{background:#fff}
+    /* Toda página tem base creme (html bg imprime em todas as folhas) —
+       nunca aparece branco puro */
+    html{background:#F7EEE8}
+    body{background:transparent}
+    /* Cada módulo vira um cartão arredondado na folha creme */
+    .module{
+      page-break-before:always;
+      margin:7mm 7mm 7mm;
+      border-radius:22px;
+      padding:13mm 0 15mm;
+      min-height:278mm;
+    }
+    /* Gradientes viram cor sólida: leitores de PDF de celular
+       renderizam gradiente diagonal como triângulo por cima do texto */
+    .cover,.foot-band{background:#7A3247}
+    .letter-band{background:#6D2B3F}
+    .box--brand{background:#5A2233}
+    .box--gold{background:#F9EFD3}
+    .box--rose{background:#F8E3E9}
     .cover{height:296mm;page-break-after:always;min-height:0}
     .letter-band{height:296mm;page-break-after:always;display:flex;flex-direction:column;justify-content:center}
-    .toc-band{page-break-after:always;padding:12mm 22px}
+    .toc-band{page-break-after:always;padding:12mm 22px;background-color:transparent}
     .toc{padding:26px 36px 18px}
     .toc a{padding:7.5px 4px}
     .toc a .t{font-size:17px}
     .toc a::before{font-size:19px}
-    .module{page-break-before:always;padding:16mm 0 18mm}
-    .module .inner{max-width:none;padding:0 17mm}
+    .module .inner{max-width:none;padding:0 13mm}
     .foot-band{page-break-before:always;height:296mm;display:flex;flex-direction:column;justify-content:center}
     .tbl-wrap,.box,.letter,.toc,.form-doc,figure img{box-shadow:none}
     figure,.box,.pad-demo,.module-head,.tbl-wrap{break-inside:avoid;page-break-inside:avoid}
