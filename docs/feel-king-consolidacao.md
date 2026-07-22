@@ -41,20 +41,22 @@ Metas personalizadas (par WPP+Ligação da unidade): Conversoes VO · Conversoes
 
 WhatsApp central das 5 unidades: 551138490563 → separação por Page Path. Ligação por telefone da unidade.
 
+⚠️ Page Path SEM barra inicial (as URLs reais são /unidade-feel-king-<bairro>/ — "contém /moema/" não casaria).
+
 | Trigger | Condição |
 |---|---|
-| CLK-WPP-VO | Click URL contém 551138490563 E NÃO contém tel: E Page Path contém /villa-olimpia/ |
-| CLK-WPP-Jardins | idem, /jardins/ |
-| CLK-WPP-Itaim | idem, /itaim-bibi/ |
-| CLK-WPP-OF | idem, /oscar-freire/ |
-| CLK-WPP-Moema | idem, /moema/ |
-| CLK-WPP-Visagismo | idem, /consultoria-visagista/ |
+| CLK-WPP-VO | Click URL contém 551138490563 E NÃO contém tel: E Page Path contém villa-olimpia |
+| CLK-WPP-Jardins | idem, contém jardins |
+| CLK-WPP-Itaim | idem, contém itaim-bibi |
+| CLK-WPP-OF | idem, contém oscar-freire |
+| CLK-WPP-Moema | idem, contém moema |
+| CLK-WPP-Visagismo | idem, contém consultoria-visagista |
 | CLK-Tel-VO | tel: contém 1138490563 |
 | CLK-Tel-Jardins | tel: contém 1130635563 |
 | CLK-Tel-Itaim | tel: contém 1131677953 |
 | CLK-Tel-OF | tel: contém 1130887022 |
 | CLK-Tel-Moema | tel: contém 1150558631 |
-| CLK-Tel-Visagismo | tel: em /consultoria-visagista/ |
+| CLK-Tel-Visagismo | tel: e Page Path contém consultoria-visagista |
 
 Tags antigas dos outros AWs: **não tocar** (contas antigas pausadas; limpeza depois da virada).
 
