@@ -10,12 +10,15 @@
 - [ ] **Fase B** — vincular 5 fichas GMN na VO (Robert, manual)
 - [ ] **Fase C** — GTM triggers+tags em rascunho (extensão) → **publicar versão "Consolidacao Feel King v1" (Robert)**
 - [x] **Fase D** — 9 listas de negativas (A-I) criadas na biblioteca da VO (A-G reconstruídas do transcript; nunca existiram como listas compartilhadas)
-- [ ] **Fase E** — 11 campanhas PAUSADAS — em andamento:
-  - [x] DD - Pesquisa - Convencional 4km - Vila Olimpia V2 · ID 24062859784
-  - [x] DD - Pesquisa - Convencional 4km - Jardins · ID 24058251107
-  - [x] DD - Pesquisa - Convencional 4km - Itaim V2 · ID 24063865099
-  - [ ] Oscar Freire · Moema · Visagismo Rede (extensão criando)
-  - [ ] 5× PMax GMN (aguardam fichas vinculadas)
+- [x] **Fase E (Pesquisa)** — 6/6 criadas, completas e PAUSADAS (23/jul):
+  - DD - Pesquisa - Convencional 4km - Vila Olimpia V2 · 24062859784 · R$ 35/dia
+  - DD - Pesquisa - Convencional 4km - Jardins · 24058251107 · R$ 35/dia
+  - DD - Pesquisa - Convencional 4km - Itaim V2 · 24063865099 · R$ 35/dia
+  - DD - Pesquisa - Convencional 4km - Oscar Freire · 24060872051 · R$ 35/dia
+  - DD - Pesquisa - Convencional 4km - Moema · 24061000289 · R$ 35/dia
+  - DD - Pesquisa - Visagismo Premium - Rede · 24061436777 · R$ 225/dia · geo 9 distritos (Jardim Paulista, Itaim Bibi, Moema, Pinheiros, Consolação, Vila Mariana, Perdizes, Campo Belo, Alto de Pinheiros; VO/VNC/Brooklin/Higienópolis sem entidade no Google — cobertos pelos distritos) · listas A-E+F+H+I (sem G)
+  - Todas: meta só da unidade (3 metas padrão removidas) · AI Max OFF · 2 sitelinks
+- [ ] **Fase E (PMax)** — 5× PMax GMN R$ 30/dia (aguardam fichas GMN vinculadas)
 
 **Decisões de plataforma (Smart Bidding / Maximizar conversões):** ajuste % por dispositivo e por dia/horário NÃO existem nessa estratégia (só -100%). Decisão: sem ajustes — Smart Bidding otimiza sozinho com o sinal das conversões novas. A janela 08:00-21:00 vale. Extensões reduzidas a 2 sitelinks por campanha (polimento pós-ativação); os 5 sitelinks de nível conta seguem elegíveis (não remover).
 - [ ] Atualizar cartão da VO (alerta "nova forma de pagamento exigida")
