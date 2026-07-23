@@ -9,8 +9,15 @@
 - [x] **Fase A** — 12 conversões + 6 metas criadas na VO ✅
 - [ ] **Fase B** — vincular 5 fichas GMN na VO (Robert, manual)
 - [ ] **Fase C** — GTM triggers+tags em rascunho (extensão) → **publicar versão "Consolidacao Feel King v1" (Robert)**
-- [ ] **Fase D** — listas de negativas A-G (copiar de Moema) + H/I novas
-- [ ] **Fase E** — 11 campanhas criadas PAUSADAS
+- [x] **Fase D** — 9 listas de negativas (A-I) criadas na biblioteca da VO (A-G reconstruídas do transcript; nunca existiram como listas compartilhadas)
+- [ ] **Fase E** — 11 campanhas PAUSADAS — em andamento:
+  - [x] DD - Pesquisa - Convencional 4km - Vila Olimpia V2 · ID 24062859784
+  - [x] DD - Pesquisa - Convencional 4km - Jardins · ID 24058251107
+  - [x] DD - Pesquisa - Convencional 4km - Itaim V2 · ID 24063865099
+  - [ ] Oscar Freire · Moema · Visagismo Rede (extensão criando)
+  - [ ] 5× PMax GMN (aguardam fichas vinculadas)
+
+**Decisões de plataforma (Smart Bidding / Maximizar conversões):** ajuste % por dispositivo e por dia/horário NÃO existem nessa estratégia (só -100%). Decisão: sem ajustes — Smart Bidding otimiza sozinho com o sinal das conversões novas. A janela 08:00-21:00 vale. Extensões reduzidas a 2 sitelinks por campanha (polimento pós-ativação); os 5 sitelinks de nível conta seguem elegíveis (não remover).
 - [ ] Atualizar cartão da VO (alerta "nova forma de pagamento exigida")
 - [ ] Validar conversões no Tag Assistant → ativar Pesquisas
 - [ ] Ativar PMax só após dias de dado nas conversões (lição: PMax da VO queimou R$72 sem sinal)
