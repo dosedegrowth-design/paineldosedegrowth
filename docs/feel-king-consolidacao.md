@@ -26,7 +26,16 @@
   - DD - PMax - GMN - Oscar Freire · 24067233597
   - DD - PMax - GMN - Moema · 24067259514
 
-**ESTRUTURA COMPLETA: 11/11 campanhas · R$ 550/dia · todas pausadas.**
+**ESTRUTURA COMPLETA: 11/11 campanhas · R$ 550/dia.**
+
+## VIRADA FEITA (27/jul)
+- [x] GTM publicado ("Consolidacao Feel King v1")
+- [x] Auditoria final: 11 campanhas OK, 5 PMax com destino/raio/meta corretos (sem resíduo da cópia)
+- [x] **3 campanhas antigas PAUSADAS** (Visagismo VO R$66 · Convencional VO R$30,80 · PMax GMN VO R$13,20)
+- [x] **11 campanhas novas ATIVADAS**
+- [ ] **Cartão da VO** — único bloqueio restante: enquanto o pagamento não for resolvido, nada veicula
+- [ ] Validar disparo das conversões (as 12 estavam "Inativo" por nunca terem recebido clique) — clicar WhatsApp+telefone no site e conferir em Metas → Conversões
+- [ ] Considerar pausar as 5 PMax por ~1 semana após o cartão, deixando as 6 de Busca acumularem sinal de conversão primeiro
 
 ⚠️ Nunca usar recursos das campanhas `[Merci]` (outro cliente na mesma conta) — não copiar, não abrir, não tocar.
 
