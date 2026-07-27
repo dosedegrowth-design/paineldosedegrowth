@@ -18,7 +18,19 @@
   - DD - Pesquisa - Convencional 4km - Moema · 24061000289 · R$ 35/dia
   - DD - Pesquisa - Visagismo Premium - Rede · 24061436777 · R$ 225/dia · geo 9 distritos (Jardim Paulista, Itaim Bibi, Moema, Pinheiros, Consolação, Vila Mariana, Perdizes, Campo Belo, Alto de Pinheiros; VO/VNC/Brooklin/Higienópolis sem entidade no Google — cobertos pelos distritos) · listas A-E+F+H+I (sem G)
   - Todas: meta só da unidade (3 metas padrão removidas) · AI Max OFF · 2 sitelinks
-- [ ] **Fase E (PMax)** — 5× PMax GMN R$ 30/dia (aguardam fichas GMN vinculadas)
+- [x] **Fase B** — fichas GMN: já estavam vinculadas (Perfil da Empresa barbeariafeelking@gmail.com, 5 locais, ativo no nível conta)
+- [x] **Fase E (PMax)** — 5/5 criadas e PAUSADAS (R$ 30/dia cada), copiadas da Jardins:
+  - DD - PMax - GMN - Vila Olimpia · 24071845403
+  - DD - PMax - GMN - Jardins · 24066981033
+  - DD - PMax - GMN - Itaim · 24077038207
+  - DD - PMax - GMN - Oscar Freire · 24067233597
+  - DD - PMax - GMN - Moema · 24067259514
+
+**ESTRUTURA COMPLETA: 11/11 campanhas · R$ 550/dia · todas pausadas.**
+
+⚠️ Nunca usar recursos das campanhas `[Merci]` (outro cliente na mesma conta) — não copiar, não abrir, não tocar.
+
+Lixo a limpar na virada: campanha duplicada "DD - PMax - GMN - Jardins #4" (pausada, inofensiva) · rascunho antigo da Itaim em "Rascunhos em andamento" · PMax antiga "DD - Pmax - GMN - Vila Olimpia" (R$ 13,20/dia, ATIVA — pausar no dia da virada).
 
 **Decisões de plataforma (Smart Bidding / Maximizar conversões):** ajuste % por dispositivo e por dia/horário NÃO existem nessa estratégia (só -100%). Decisão: sem ajustes — Smart Bidding otimiza sozinho com o sinal das conversões novas. A janela 08:00-21:00 vale. Extensões reduzidas a 2 sitelinks por campanha (polimento pós-ativação); os 5 sitelinks de nível conta seguem elegíveis (não remover).
 - [ ] Atualizar cartão da VO (alerta "nova forma de pagamento exigida")
