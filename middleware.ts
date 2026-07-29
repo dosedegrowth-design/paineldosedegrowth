@@ -9,6 +9,14 @@ type CookieSet = { name: string; value: string; options?: CookieOptions };
  * descomentar a verificação de sessão.
  */
 export async function middleware(request: NextRequest) {
+  // Subdomínio da LP da Tayssa (tayssa.dosedegrowth.com): raiz mostra a LP
+  const host = request.headers.get("host") ?? "";
+  if (host.startsWith("tayssa.") && request.nextUrl.pathname === "/") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/tayssa";
+    return NextResponse.rewrite(url);
+  }
+
   // Skip auth pra rotas públicas
   const publicPaths = [
     "/login",
