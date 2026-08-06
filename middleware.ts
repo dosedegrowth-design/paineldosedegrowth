@@ -35,6 +35,8 @@ export async function middleware(request: NextRequest) {
     "/excluir-dados",
     // LP pública da Tayssa (verificação de anunciante/BM Meta)
     "/tayssa",
+    // Página avulsa "cadê o link" (zoeira, sem destino)
+    "/cade",
     // Webhook receiver
     "/api/webhooks",
     // OAuth callback
