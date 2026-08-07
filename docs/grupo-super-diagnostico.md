@@ -26,9 +26,23 @@ Período analisado: 08/jul a 06/ago/2026 (30 dias). Leitura apenas.
 - **Osasco:** as 2 ações (Contato e Contato (1)) estão **Inativas**; campanha marcada "site sem tag do Google".
 - **Leopoldina:** PMax com "seu site não tem uma tag do Google"; meta Visualização de página com configuração incorreta.
 
-**Hipótese principal (a confirmar no GTM):** as versões dos containers com as tags de conversão foram criadas mas **nunca publicadas** — o login da Marcela tem permissão de *Aprovação*, não de *Publicação*. Quem publica: `supervisao.matrizbr@gmail.com` ou `luisbyluis@gmail.com`.
+## CONFIRMADO NO GTM (06/ago) — nenhuma das 5 tem tag de conversão publicada
 
-Containers: Leopoldina GTM-NR4K222M · Barueri GTM-P8X84PGW · Butantã GTM-T3JSV3XB · Morumbi GTM-P9HLDQTF · Osasco GTM-MK9F2Z7N (container matriz do supervisao.com).
+| Unidade | Container | Versão publicada | Vazia? | Tag conversão GAds |
+|---|---|---|---|---|
+| Vila Leopoldina | GTM-NR4K222M | v1 "Empty Container" — 12/05/2025 | **SIM** | só rascunho (v6, 07/07/26) |
+| Barueri | GTM-P8X84PGW | v3 "qwe" — 24/11/2025 | não (1 tag WA/N8N) | só rascunho (v6) |
+| Butantã | GTM-T3JSV3XB | v3 "qwe" — 24/11/2025 | não (1 tag WA/N8N) | só rascunho (v6) |
+| Morumbi | GTM-P9HLDQTF | v4 "qwe" — 24/11/2025 | não (1 tag WA/N8N) | só rascunho (v9 — **5 versões empilhadas**) |
+| Osasco | GTM-MK9F2Z7N ("supervisao.com") | v2 — 06/05/2026 | **SIM** | **nunca foi criada** |
+
+**Gargalo estrutural:** `midiagruposuper@gmail.com` (quem montou as tags) tem **Aprovação em todos os 5, nunca Publicação**.
+Publicadores: `supervisao.matrizbr@gmail.com` (ativo nos 5) e **`luisbyluis@gmail.com`** (ativo em Barueri/Butantã/Morumbi; em Osasco o convite está **pendente**, nunca aceito).
+Outros usuários: raphael.alvares@goidea.com.br (Aprovação), victor@goidea.com.br (Edição).
+
+⚠️ **Containers duplicados** — existe um grupo paralelo "SPV ..." (GTM-NGZ7H6T4 Barueri, GTM-5TDXMVSP Butantã, GTM-PBGTCVCG Leopoldina, GTM-5CM56RTX Morumbi). Se o site carregar o snippet "SPV" em vez do "Unidade", publicar o rascunho não resolve nada.
+
+⚠️ Osasco usa o container **matriz do site inteiro** (supervisao.com) — publicar nele afeta todo o site, não só a unidade.
 
 ## Por que não gastam
 
