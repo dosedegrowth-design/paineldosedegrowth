@@ -44,6 +44,23 @@ Outros usuários: raphael.alvares@goidea.com.br (Aprovação), victor@goidea.com
 
 ⚠️ Osasco usa o container **matriz do site inteiro** (supervisao.com) — publicar nele afeta todo o site, não só a unidade.
 
+## ETAPA 2 — o que carrega no site (06/ago)
+
+URLs reais (via `/unidade-sitemap.xml`, 195 unidades):
+- Leopoldina `/unidade/super-visao-vila-leopoldina/`
+- Barueri `/unidade/super-visao-alphaville-barueri/` ⚠️ **não** é `super-visao-barueri`
+- Butantã `/unidade/super-visao-butanta/`
+- Morumbi `/unidade/super-visao-morumbi/`
+- Osasco — **são DUAS unidades**: `/super-visao-sp-osasco-centro/` e `/super-visao-sp-osasco-autonomistas/`
+
+**Achados:**
+1. Os 5 containers de unidade carregam em TODAS as páginas — segmentação é por gatilho (Page Path), não por instalação. Frágil: mudança de slug quebra medição em silêncio.
+2. 🔴 **Barueri: o gatilho publicado aponta para `/unidade/super-visao-barueri/`, que dá 404.** A URL real tem "alphaville" no meio. A única tag publicada dela nunca dispara. Butantã e Morumbi têm filtros corretos.
+3. 🔴 **34 containers GTM na mesma página** — performance e risco de dupla contagem. Limpeza à parte.
+4. Os containers duplicados "SPV ..." **não carregam em lugar nenhum** — órfãos, podem ser arquivados.
+5. As AW de unidade que aparecem na página vêm de outro container (tag base/remarketing) — **não significam medição de conversão**. O evento continua não publicado nas 5.
+6. 🔴 **Barueri e Osasco não têm AW de unidade na página.** AWs presentes: Leopoldina AW-11167321050 · Butantã AW-11199591511 · Morumbi AW-11199566478. Comuns a todas: AW-857805648, AW-16477318402, AW-10977219450, AW-795781580.
+
 ## Por que não gastam
 
 | Unidade | Motivo |
