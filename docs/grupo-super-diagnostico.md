@@ -61,14 +61,16 @@ URLs reais (via `/unidade-sitemap.xml`, 195 unidades):
 5. As AW de unidade que aparecem na página vêm de outro container (tag base/remarketing) — **não significam medição de conversão**. O evento continua não publicado nas 5.
 6. 🔴 **Barueri e Osasco não têm AW de unidade na página.** AWs presentes: Leopoldina AW-11167321050 · Butantã AW-11199591511 · Morumbi AW-11199566478. Comuns a todas: AW-857805648, AW-16477318402, AW-10977219450, AW-795781580.
 
-## Por que não gastam
+## Por que não gastam — CONFIRMADO: não é orçamento, é Ad Rank
 
-| Unidade | Motivo |
-|---|---|
-| Butantã | Search "limitada — segmentando menos pesquisas"; grupos Cautelar -76% e Transferência -75%; 1.243 impressões no mês; sem pagamento desde 15/jun |
-| Osasco | veiculação zerada até ~28/jul; configuração incorreta (sem tag + keywords insuficientes); CPC R$ 3,93 (o mais caro do grupo) |
-| Barueri | Search limitada, ~20% do orçamento ocioso |
-| Leopoldina | gastou normal, mas saldo R$ 0,44 — para em horas |
+**Butantã** — perde **>90% das impressões por classificação** e só **1,66% por orçamento**. Ou seja, o R$ 40/dia fica intocado porque a campanha não ganha leilão. Ninguém mexeu nos grupos (histórico de 60 dias: zero alterações) — a queda de 75% foi o algoritmo. 10 keywords só (5 frase + 5 exata, nenhuma ampla), grupo "Certicar" com anúncio e **zero keywords**, local em "Presença" (mais restrito). Anúncios todos Qualificados com força Excelente.
+
+**Osasco** — perde **81% por classificação**, 13% por orçamento. E ficou **impedida de veicular até 27/jul** por pendência de identidade do cliente + aceite de T&C (4 registros no histórico, 27/jul 12h23-12h29) — passou 20 dos 30 dias sem poder rodar. 10 keywords todas em ampla, 2 com "raramente exibido (baixo índice de qualidade)", **1 único RSA na conta**, CPC R$ 3,93 (média do grupo R$ 1,27). Meta = padrão da conta (Contatos), diferente da Butantã que usa meta personalizada.
+
+### O ciclo vicioso (a explicação de tudo)
+Campanha em Maximizar conversões → meta aponta pra ação que nunca recebe sinal (tag não publicada) → Smart Bidding sem sinal derruba os lances → Ad Rank despenca → perde 80-90% das impressões por classificação → não gasta e não converte → o algoritmo continua sem sinal. **Não gastar e não converter são o mesmo problema.**
+
+Nota: as 41 conversões de Leopoldina vêm de ações nativas do Google (Conversation started 36 + Calls from ads 7), não da tag de WhatsApp do GTM — não contradiz o diagnóstico.
 
 ## Falta de padrão entre as contas
 
