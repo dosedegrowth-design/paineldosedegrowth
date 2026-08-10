@@ -17,6 +17,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
+  // Subdomínio da LP da Carolina Kühn (carol.dosedegrowth.com): raiz mostra a LP
+  if (host.startsWith("carol.") && request.nextUrl.pathname === "/") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/carol";
+    return NextResponse.rewrite(url);
+  }
+
   // Skip auth pra rotas públicas
   const publicPaths = [
     "/login",
@@ -35,6 +42,8 @@ export async function middleware(request: NextRequest) {
     "/excluir-dados",
     // LP pública da Tayssa (verificação de anunciante/BM Meta)
     "/tayssa",
+    // LP pública da Carolina Kühn (portfólio UGC)
+    "/carol",
     // Página avulsa "cadê o link" (zoeira, sem destino)
     "/cade",
     // Webhook receiver

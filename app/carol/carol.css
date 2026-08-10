@@ -1,0 +1,274 @@
+/* Carolina Kühn — editorial feminino com autoridade de mercado.
+   Paleta: ivory quente + plum profundo + framboesa. Fraunces (display) +
+   Montserrat (corpo, já carregada no root layout). */
+
+.carol-scope {
+  --carol-bg: #faf6f1;
+  --carol-bg-soft: #f2eae1;
+  --carol-ink: #241a20;
+  --carol-muted: rgba(36, 26, 32, 0.62);
+  --carol-line: rgba(36, 26, 32, 0.12);
+
+  --carol-accent: #c22e6b;
+  --carol-accent-deep: #8f1e4e;
+  --carol-accent-soft: #f7e0ea;
+  --carol-gold: #b98a4e;
+
+  --carol-dark: #201219;
+  --carol-dark-soft: #2b1a23;
+  --carol-dark-fg: #f6efe9;
+  --carol-dark-muted: rgba(246, 239, 233, 0.6);
+  --carol-dark-line: rgba(246, 239, 233, 0.14);
+
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body: "Montserrat", system-ui, -apple-system, sans-serif;
+
+  background: var(--carol-bg);
+  color: var(--carol-ink);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  color-scheme: light;
+}
+
+.carol-scope * {
+  border-color: var(--carol-line);
+}
+
+.carol-scope ::selection {
+  background: var(--carol-accent);
+  color: #fff;
+}
+
+.carol-scope a,
+.carol-scope button {
+  cursor: pointer;
+}
+.carol-scope a:focus-visible,
+.carol-scope button:focus-visible {
+  outline: 2px solid var(--carol-accent);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+/* Âncoras não escondem título atrás da navbar fixa */
+.carol-scope section[id] {
+  scroll-margin-top: 5.5rem;
+}
+
+/* ---------- tipografia ---------- */
+
+.carol-display {
+  font-family: var(--font-display);
+  font-weight: 560;
+  letter-spacing: -0.02em;
+  line-height: 1.04;
+  font-variation-settings: "SOFT" 40, "WONK" 0;
+}
+
+.carol-display-italic {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 480;
+  letter-spacing: -0.01em;
+}
+
+.carol-eyebrow {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--carol-accent);
+}
+
+/* ---------- primitives ---------- */
+
+.carol-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(194, 46, 107, 0.07);
+  border: 1px solid rgba(194, 46, 107, 0.25);
+  color: var(--carol-accent-deep);
+  border-radius: 999px;
+  padding: 7px 16px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.carol-card {
+  background: #fffdfa;
+  border: 1px solid var(--carol-line);
+  border-radius: 20px;
+  box-shadow: 0 10px 36px -18px rgba(36, 26, 32, 0.25);
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    border-color 220ms ease;
+}
+.carol-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(194, 46, 107, 0.35);
+  box-shadow:
+    0 18px 48px -18px rgba(36, 26, 32, 0.3),
+    0 0 32px -14px rgba(194, 46, 107, 0.35);
+}
+
+.carol-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 999px;
+  padding: 15px 30px;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease;
+}
+.carol-btn:active {
+  transform: scale(0.97);
+}
+
+.carol-btn-primary {
+  background: var(--carol-ink);
+  color: var(--carol-bg);
+  box-shadow: 0 14px 34px -14px rgba(36, 26, 32, 0.55);
+}
+.carol-btn-primary:hover {
+  background: var(--carol-accent-deep);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px -14px rgba(143, 30, 78, 0.55);
+}
+
+.carol-btn-accent {
+  background: var(--carol-accent);
+  color: #fff;
+  box-shadow: 0 14px 34px -12px rgba(194, 46, 107, 0.55);
+}
+.carol-btn-accent:hover {
+  background: var(--carol-accent-deep);
+  transform: translateY(-2px);
+}
+
+.carol-btn-ghost {
+  background: transparent;
+  color: var(--carol-ink);
+  border: 1.5px solid rgba(36, 26, 32, 0.25);
+}
+.carol-btn-ghost:hover {
+  border-color: var(--carol-accent);
+  color: var(--carol-accent-deep);
+  transform: translateY(-2px);
+}
+
+.carol-dark-section .carol-btn-ghost {
+  color: var(--carol-dark-fg);
+  border-color: rgba(246, 239, 233, 0.3);
+}
+.carol-dark-section .carol-btn-ghost:hover {
+  border-color: var(--carol-accent);
+  color: #fff;
+}
+
+/* ---------- marquee de marcas (CSS puro) ---------- */
+
+.carol-marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 8%,
+    black 92%,
+    transparent
+  );
+}
+.carol-marquee-track {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  animation: carol-marquee-scroll 36s linear infinite;
+}
+.carol-marquee:hover .carol-marquee-track {
+  animation-play-state: paused;
+}
+@keyframes carol-marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ---------- assinatura visual ---------- */
+
+/* grão de filme — tira o "liso" da página */
+.carol-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.045;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+/* marca d'água editorial gigante */
+.carol-watermark {
+  position: absolute;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(36, 26, 32, 0.08);
+  user-select: none;
+  pointer-events: none;
+  white-space: nowrap;
+  line-height: 1;
+}
+.carol-dark-section .carol-watermark {
+  -webkit-text-stroke: 1px rgba(246, 239, 233, 0.08);
+}
+
+/* barra de progresso da audiência */
+.carol-bar {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(246, 239, 233, 0.12);
+  overflow: hidden;
+}
+.carol-bar > span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--carol-accent), #e75a93);
+}
+
+/* sublinhado expressivo em destaques do texto */
+.carol-hl {
+  background: linear-gradient(
+      to top,
+      rgba(194, 46, 107, 0.22),
+      rgba(194, 46, 107, 0.22)
+    )
+    no-repeat left bottom / 100% 0.42em;
+  padding-bottom: 0.06em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carol-marquee-track,
+  .carol-scope .animate-marquee-left,
+  .carol-scope .animate-marquee-right {
+    animation-play-state: paused !important;
+  }
+}
