@@ -15,19 +15,21 @@ export function CarolHero() {
         className="absolute inset-0 h-full max-h-none w-full max-w-none"
         cardClassName="h-[170px] w-[230px] md:h-[210px] md:w-[290px] rounded-2xl"
         fadeClassName="from-[var(--carol-bg)]"
+        overlayClassName="bg-black/10"
       />
 
-      {/* Véu ivory por cima do carrossel pra dar legibilidade */}
+      {/* Véu leve — as fotos da Carol aparecem; a legibilidade do texto
+          fica por conta do núcleo radial forte logo abaixo */}
       <div
         aria-hidden
-        className="absolute inset-0 z-10 bg-[var(--carol-bg)]/62"
+        className="absolute inset-0 z-10 bg-[var(--carol-bg)]/45 md:bg-[var(--carol-bg)]/25"
       />
       <div
         aria-hidden
         className="absolute inset-0 z-10"
         style={{
           background:
-            "radial-gradient(ellipse 70% 55% at 50% 45%, rgba(246,241,231,0.92) 0%, rgba(246,241,231,0.55) 55%, transparent 100%)",
+            "radial-gradient(ellipse 56% 46% at 50% 45%, rgba(246,241,231,0.96) 0%, rgba(246,241,231,0.82) 38%, rgba(246,241,231,0.35) 64%, transparent 84%)",
         }}
       />
 

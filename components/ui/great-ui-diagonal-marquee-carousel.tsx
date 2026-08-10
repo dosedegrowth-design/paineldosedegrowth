@@ -17,6 +17,8 @@ export interface DiagonalMarqueeCarouselProps {
   className?: string;
   cardClassName?: string;
   fadeClassName?: string;
+  /** Overlay escurecedor de cada card (default bg-black/40) */
+  overlayClassName?: string;
 }
 
 const DEFAULT_CARDS: CardItem[] = [
@@ -52,7 +54,15 @@ const DEFAULT_CARDS: CardItem[] = [
   },
 ];
 
-const Card = ({ card, className }: { card: CardItem; className?: string }) => {
+const Card = ({
+  card,
+  className,
+  overlayClassName,
+}: {
+  card: CardItem;
+  className?: string;
+  overlayClassName?: string;
+}) => {
   return (
     <div
       className={cn(
@@ -65,7 +75,7 @@ const Card = ({ card, className }: { card: CardItem; className?: string }) => {
         alt={card.title}
         className="h-full w-full object-cover"
       />
-      <div className="absolute inset-0 bg-black/40" />
+      <div className={cn("absolute inset-0 bg-black/40", overlayClassName)} />
     </div>
   );
 };
@@ -75,11 +85,13 @@ const MarqueeRow = ({
   speed,
   direction,
   cardClassName,
+  overlayClassName,
 }: {
   cards: CardItem[];
   speed: number;
   direction: 1 | -1;
   cardClassName?: string;
+  overlayClassName?: string;
 }) => {
   const animationClass =
     direction === -1 ? "animate-marquee-left" : "animate-marquee-right";
@@ -96,14 +108,22 @@ const MarqueeRow = ({
         <div className="flex shrink-0">
           {cards.map((card, idx) => (
             <div key={`${card.id}-${idx}`} className="shrink-0 pr-8">
-              <Card card={card} className={cardClassName} />
+              <Card
+                card={card}
+                className={cardClassName}
+                overlayClassName={overlayClassName}
+              />
             </div>
           ))}
         </div>
         <div className="flex shrink-0">
           {cards.map((card, idx) => (
             <div key={`${card.id}-${idx}-copy`} className="shrink-0 pr-8">
-              <Card card={card} className={cardClassName} />
+              <Card
+                card={card}
+                className={cardClassName}
+                overlayClassName={overlayClassName}
+              />
             </div>
           ))}
         </div>
@@ -120,6 +140,7 @@ export default function DiagonalMarqueeCarousel({
   className = "",
   cardClassName = "",
   fadeClassName = "",
+  overlayClassName = "",
 }: DiagonalMarqueeCarouselProps) {
   const rotationStyle = {
     transform: `rotate(${angle}deg)`,
@@ -170,30 +191,35 @@ export default function DiagonalMarqueeCarousel({
           speed={baseSpeed}
           direction={-1}
           cardClassName={cardClassName}
+          overlayClassName={overlayClassName}
         />
         <MarqueeRow
           cards={rowCardsReverse}
           speed={baseSpeed - 15 > 20 ? baseSpeed - 15 : 30}
           direction={alternateDirections ? 1 : -1}
           cardClassName={cardClassName}
+          overlayClassName={overlayClassName}
         />
         <MarqueeRow
           cards={rowCards}
           speed={baseSpeed + 15}
           direction={-1}
           cardClassName={cardClassName}
+          overlayClassName={overlayClassName}
         />
         <MarqueeRow
           cards={rowCardsReverse}
           speed={baseSpeed - 6 > 20 ? baseSpeed - 6 : 35}
           direction={alternateDirections ? 1 : -1}
           cardClassName={cardClassName}
+          overlayClassName={overlayClassName}
         />
         <MarqueeRow
           cards={rowCards}
           speed={baseSpeed + 24}
           direction={-1}
           cardClassName={cardClassName}
+          overlayClassName={overlayClassName}
         />
       </div>
 
