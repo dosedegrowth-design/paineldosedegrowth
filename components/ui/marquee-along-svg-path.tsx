@@ -323,10 +323,15 @@ const MarqueeAlongSvgPath = ({
   const reactId = useId();
   const id = pathId || `marquee-path-${reactId}`;
 
-  // Scroll tracking
+  // Scroll tracking — aceita RefObject ou HTMLElement direto
+  const scrollContainerRef = React.useMemo<RefObject<HTMLElement | null>>(() => {
+    if (!scrollContainer) return container;
+    if ("current" in scrollContainer) return scrollContainer;
+    return { current: scrollContainer };
+  }, [scrollContainer]);
+
   const { scrollY } = useScroll({
-    container:
-      (scrollContainer as RefObject<HTMLDivElement | null>) || container,
+    container: scrollContainerRef as RefObject<HTMLDivElement | null>,
   });
 
   const scrollVelocity = useVelocity(scrollY);
