@@ -76,7 +76,7 @@ export function CarolProcesso() {
                       className={cn(
                         "flex h-11 w-11 items-center justify-center rounded-full border text-[13px] font-bold transition-all duration-300",
                         i === ativo
-                          ? "scale-110 border-[var(--carol-accent)] bg-[var(--carol-accent)] text-white shadow-[0_10px_24px_-10px_rgba(194,46,107,0.7)]"
+                          ? "scale-110 border-[var(--carol-accent)] bg-[var(--carol-accent)] text-white shadow-[0_10px_24px_-10px_rgba(95,108,56,0.7)]"
                           : feito
                             ? "border-[var(--carol-accent)]/60 bg-[var(--carol-accent-soft)] text-[var(--carol-accent-deep)]"
                             : "border-[var(--carol-ink)]/20 bg-[var(--carol-bg)] text-[var(--carol-muted)] group-hover:border-[var(--carol-accent)]/50"

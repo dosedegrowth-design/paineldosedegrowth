@@ -9,8 +9,8 @@ const LINKS = [
   { href: "#sobre", label: "Sobre" },
   { href: "#numeros", label: "Números" },
   { href: "#portfolio", label: "Portfólio" },
+  { href: "#fotografia", label: "Fotografia" },
   { href: "#servicos", label: "Serviços" },
-  { href: "#processo", label: "Processo" },
   { href: "#comunidade", label: "Comunidade" },
   { href: "#investimento", label: "Investimento" },
 ] as const;

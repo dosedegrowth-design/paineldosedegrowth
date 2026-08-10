@@ -1,24 +1,27 @@
-/* Carolina Kühn — editorial feminino com autoridade de mercado.
-   Paleta: ivory quente + plum profundo + framboesa. Fraunces (display) +
-   Montserrat (corpo, já carregada no root layout). */
+/* Carolina Kühn — editorial natural, feminino e acolhedor.
+   Paleta: areia + tons terrosos + verde alecrim/musgo (a cor da parede
+   onde ela grava). Fraunces (display) + Montserrat (corpo, já carregada
+   no root layout). */
 
 .carol-scope {
-  --carol-bg: #faf6f1;
-  --carol-bg-soft: #f2eae1;
-  --carol-ink: #241a20;
-  --carol-muted: rgba(36, 26, 32, 0.68); /* ≥4,5:1 sobre bg e bg-soft (WCAG AA) */
-  --carol-line: rgba(36, 26, 32, 0.12);
+  --carol-bg: #f6f1e7;
+  --carol-bg-soft: #ede5d5;
+  --carol-ink: #2e2b20;
+  --carol-muted: rgba(46, 43, 32, 0.7); /* ≥4,5:1 sobre bg e bg-soft (WCAG AA) */
+  --carol-line: rgba(46, 43, 32, 0.12);
 
-  --carol-accent: #c22e6b;
-  --carol-accent-deep: #8f1e4e;
-  --carol-accent-soft: #f7e0ea;
-  --carol-gold: #b98a4e;
+  --carol-accent: #5f6c38; /* verde alecrim */
+  --carol-accent-deep: #454f2a; /* verde musgo profundo */
+  --carol-accent-soft: #e6e8d3; /* sálvia clara */
+  --carol-accent-light: #c9d39a; /* sálvia sobre fundos escuros */
+  --carol-terra: #b3653a; /* terracota */
+  --carol-gold: #b98a4e; /* areia dourada */
 
-  --carol-dark: #201219;
-  --carol-dark-soft: #2b1a23;
-  --carol-dark-fg: #f6efe9;
-  --carol-dark-muted: rgba(246, 239, 233, 0.6);
-  --carol-dark-line: rgba(246, 239, 233, 0.14);
+  --carol-dark: #272b1c; /* musgo escuro */
+  --carol-dark-soft: #333827;
+  --carol-dark-fg: #f3eee1;
+  --carol-dark-muted: rgba(243, 238, 225, 0.62);
+  --carol-dark-line: rgba(243, 238, 225, 0.14);
 
   --font-display: "Fraunces Variable", Georgia, "Times New Roman", serif;
   --font-body: "Montserrat", system-ui, -apple-system, sans-serif;
@@ -85,9 +88,9 @@
   text-transform: uppercase;
   color: var(--carol-accent);
 }
-/* Sobre fundo plum o accent escuro não passa de 4,5:1 — usa o tom claro */
+/* Sobre fundo musgo o verde escuro não passa de 4,5:1 — usa a sálvia */
 .carol-dark-section .carol-eyebrow {
-  color: #e75a93;
+  color: var(--carol-accent-light);
 }
 
 /* ---------- primitives ---------- */
@@ -96,8 +99,8 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(194, 46, 107, 0.07);
-  border: 1px solid rgba(194, 46, 107, 0.25);
+  background: rgba(95, 108, 56, 0.08);
+  border: 1px solid rgba(95, 108, 56, 0.3);
   color: var(--carol-accent-deep);
   border-radius: 999px;
   padding: 7px 16px;
@@ -108,10 +111,10 @@
 }
 
 .carol-card {
-  background: #fffdfa;
+  background: #fdfaf3;
   border: 1px solid var(--carol-line);
   border-radius: 20px;
-  box-shadow: 0 10px 36px -18px rgba(36, 26, 32, 0.25);
+  box-shadow: 0 10px 36px -18px rgba(46, 43, 32, 0.25);
   transition:
     transform 220ms ease,
     box-shadow 220ms ease,
@@ -119,10 +122,10 @@
 }
 .carol-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(194, 46, 107, 0.35);
+  border-color: rgba(95, 108, 56, 0.4);
   box-shadow:
-    0 18px 48px -18px rgba(36, 26, 32, 0.3),
-    0 0 32px -14px rgba(194, 46, 107, 0.35);
+    0 18px 48px -18px rgba(46, 43, 32, 0.3),
+    0 0 32px -14px rgba(95, 108, 56, 0.4);
 }
 
 .carol-btn {
@@ -148,19 +151,19 @@
 .carol-btn-primary {
   background: var(--carol-ink);
   color: var(--carol-bg);
-  box-shadow: 0 14px 34px -14px rgba(36, 26, 32, 0.55);
+  box-shadow: 0 14px 34px -14px rgba(46, 43, 32, 0.55);
 }
 .carol-btn-primary:hover {
   background: var(--carol-accent-deep);
   color: #fff;
   transform: translateY(-2px);
-  box-shadow: 0 18px 40px -14px rgba(143, 30, 78, 0.55);
+  box-shadow: 0 18px 40px -14px rgba(69, 79, 42, 0.55);
 }
 
 .carol-btn-accent {
   background: var(--carol-accent);
   color: #fff;
-  box-shadow: 0 14px 34px -12px rgba(194, 46, 107, 0.55);
+  box-shadow: 0 14px 34px -12px rgba(95, 108, 56, 0.55);
 }
 .carol-btn-accent:hover {
   background: var(--carol-accent-deep);
@@ -170,7 +173,7 @@
 .carol-btn-ghost {
   background: transparent;
   color: var(--carol-ink);
-  border: 1.5px solid rgba(36, 26, 32, 0.25);
+  border: 1.5px solid rgba(46, 43, 32, 0.25);
 }
 .carol-btn-ghost:hover {
   border-color: var(--carol-accent);
@@ -180,14 +183,14 @@
 
 .carol-dark-section .carol-btn-ghost {
   color: var(--carol-dark-fg);
-  border-color: rgba(246, 239, 233, 0.3);
+  border-color: rgba(243, 238, 225, 0.3);
 }
 .carol-dark-section .carol-btn-ghost:hover {
-  border-color: var(--carol-accent);
+  border-color: var(--carol-accent-light);
   color: #fff;
 }
 
-/* ---------- marquee de marcas (CSS puro) ---------- */
+/* ---------- marquee (marcas + depoimentos, CSS puro) ---------- */
 
 .carol-marquee {
   overflow: hidden;
@@ -212,6 +215,9 @@
   white-space: nowrap;
   animation: carol-marquee-scroll 48s linear infinite;
 }
+.carol-marquee-slow .carol-marquee-track {
+  animation-duration: 72s;
+}
 .carol-marquee:hover .carol-marquee-track {
   animation-play-state: paused;
 }
@@ -221,6 +227,80 @@
   }
   to {
     transform: translateX(-50%);
+  }
+}
+
+/* ---------- mockup de iPhone / prints do Instagram ---------- */
+
+.carol-phone {
+  position: relative;
+  border-radius: 44px;
+  background: #101208;
+  padding: 10px;
+  box-shadow:
+    0 30px 70px -30px rgba(16, 18, 8, 0.65),
+    inset 0 0 0 1.5px rgba(243, 238, 225, 0.16);
+}
+.carol-phone-screen {
+  position: relative;
+  overflow: hidden;
+  border-radius: 34px;
+  background: #000;
+}
+/* notch/ilha dinâmica */
+.carol-phone::after {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32%;
+  height: 13px;
+  border-radius: 999px;
+  background: #101208;
+  z-index: 30;
+}
+
+/* zoom lento na capa — sensação de vídeo rodando */
+.carol-kenburns {
+  animation: carol-kenburns 14s ease-in-out infinite alternate;
+}
+@keyframes carol-kenburns {
+  from {
+    transform: scale(1.02) translate(0, 0);
+  }
+  to {
+    transform: scale(1.14) translate(-1.5%, -2.5%);
+  }
+}
+
+/* barra de progresso do reel */
+.carol-reel-progress {
+  animation: carol-reel-progress 9s linear infinite;
+  transform-origin: left center;
+}
+@keyframes carol-reel-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* chips flutuantes ao redor do iPhone de Insights */
+.carol-float {
+  animation: carol-float 5.5s ease-in-out infinite alternate;
+}
+.carol-float-late {
+  animation-delay: 2.2s;
+}
+@keyframes carol-float {
+  from {
+    transform: translateY(-6px);
+  }
+  to {
+    transform: translateY(10px);
   }
 }
 
@@ -245,14 +325,14 @@
   font-style: italic;
   font-weight: 500;
   color: transparent;
-  -webkit-text-stroke: 1px rgba(36, 26, 32, 0.08);
+  -webkit-text-stroke: 1px rgba(46, 43, 32, 0.08);
   user-select: none;
   pointer-events: none;
   white-space: nowrap;
   line-height: 1;
 }
 .carol-dark-section .carol-watermark {
-  -webkit-text-stroke: 1px rgba(246, 239, 233, 0.08);
+  -webkit-text-stroke: 1px rgba(243, 238, 225, 0.08);
 }
 
 /* barra de progresso da audiência */
@@ -260,22 +340,26 @@
   position: relative;
   height: 8px;
   border-radius: 999px;
-  background: rgba(246, 239, 233, 0.12);
+  background: rgba(243, 238, 225, 0.12);
   overflow: hidden;
 }
 .carol-bar > span {
   position: absolute;
   inset: 0 auto 0 0;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--carol-accent), #e75a93);
+  background: linear-gradient(
+    90deg,
+    var(--carol-accent),
+    var(--carol-accent-light)
+  );
 }
 
 /* sublinhado expressivo em destaques do texto */
 .carol-hl {
   background: linear-gradient(
       to top,
-      rgba(194, 46, 107, 0.22),
-      rgba(194, 46, 107, 0.22)
+      rgba(95, 108, 56, 0.24),
+      rgba(95, 108, 56, 0.24)
     )
     no-repeat left bottom / 100% 0.42em;
   padding-bottom: 0.06em;
@@ -286,5 +370,10 @@
   .carol-scope .animate-marquee-left,
   .carol-scope .animate-marquee-right {
     animation-play-state: paused !important;
+  }
+  .carol-kenburns,
+  .carol-reel-progress,
+  .carol-float {
+    animation: none !important;
   }
 }

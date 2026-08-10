@@ -1,5 +1,6 @@
 import { ArrowDown, Instagram } from "lucide-react";
 import DiagonalMarqueeCarousel from "@/components/ui/great-ui-diagonal-marquee-carousel";
+import { CountUp } from "./count-up";
 import { Reveal } from "./reveal";
 import { HERO_CARDS, IG_HANDLE, IG_URL, ORCAMENTO_URL } from "./site-data";
 
@@ -26,7 +27,7 @@ export function CarolHero() {
         className="absolute inset-0 z-10"
         style={{
           background:
-            "radial-gradient(ellipse 70% 55% at 50% 45%, rgba(250,246,241,0.92) 0%, rgba(250,246,241,0.55) 55%, transparent 100%)",
+            "radial-gradient(ellipse 70% 55% at 50% 45%, rgba(246,241,231,0.92) 0%, rgba(246,241,231,0.55) 55%, transparent 100%)",
         }}
       />
 
@@ -59,8 +60,8 @@ export function CarolHero() {
 
         <Reveal delay={0.24}>
           <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--carol-muted)]">
-            UGC creator, estrategista e fotógrafa. Conteúdo que não é só bonito
-            — é pensado pra gerar resultado.
+            UGC creator, estrategista, fotógrafa e modelo. Conteúdo 100%
+            focado em mulheres — e pensado pra gerar resultado.
           </p>
         </Reveal>
 
@@ -88,7 +89,7 @@ export function CarolHero() {
               <div key={s.l} className="text-center">
                 <dt className="sr-only">{s.l}</dt>
                 <dd className="carol-display text-2xl text-[var(--carol-accent-deep)] md:text-3xl">
-                  {s.v}
+                  <CountUp value={s.v} />
                 </dd>
                 <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--carol-muted)]">
                   {s.l}

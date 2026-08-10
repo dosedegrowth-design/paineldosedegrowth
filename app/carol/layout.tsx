@@ -6,7 +6,7 @@ import { IG_URL, TIKTOK_URL } from "@/components/carol/site-data";
 
 const TITLE = "Carolina Kühn — UGC Creator & Estrategista";
 const DESCRIPTION =
-  "8+ anos de estratégia nos bastidores de marcas como Nestlé, Itaú e Apple — agora na frente da câmera. UGC, fotografia autoral e uma comunidade que confia. 2,16 mi de visualizações em 30 dias.";
+  "8+ anos de estratégia nos bastidores de marcas como Nestlé, Itaú e Apple — agora na frente da câmera. UGC, fotografia, e uma comunidade de mulheres que confia. 2,16 mi de visualizações em 30 dias.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://paineltrafego.dosedegrowth.com.br"),
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#faf6f1",
+  themeColor: "#f6f1e7",
   width: "device-width",
   initialScale: 1,
 };
