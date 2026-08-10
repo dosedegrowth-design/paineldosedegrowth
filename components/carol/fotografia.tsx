@@ -1,16 +1,12 @@
-"use client";
-
 import { Camera, Sparkle } from "lucide-react";
-import MarqueeAlongSvgPath from "@/components/ui/marquee-along-svg-path";
+import { CarolGaleria } from "./galeria";
 import { Reveal } from "./reveal";
-import { FOTOS_AUTORAIS, ORCAMENTO_URL } from "./site-data";
+import { ORCAMENTO_URL } from "./site-data";
+import { PORTFOLIO_FOTOS } from "./portfolio-fotos";
 
-/* Curva em S usada pela galeria de fotografia */
-const GALLERY_PATH =
-  "M1 209.434C58.5872 255.935 387.926 325.938 482.583 209.434C600.905 63.8051 525.516 -43.2211 427.332 19.9613C329.149 83.1436 352.902 242.723 515.041 267.302C644.752 286.966 943.56 181.94 995 156.5";
-
-/* Fotografia profissional + modelo como serviço à parte — pedido da
-   Carol no áudio: destacar essa frente separada do UGC. */
+/* Portfólio fotográfico completo + fotografia/modelo como serviço à
+   parte — pedido da Carol no áudio, reforçado pelo Lucas: galeria de
+   verdade, com as 65 fotos profissionais navegáveis. */
 export function CarolFotografia() {
   return (
     <section id="fotografia" className="bg-[var(--carol-bg-soft)] py-24 md:py-32">
@@ -19,7 +15,7 @@ export function CarolFotografia() {
           <Reveal className="max-w-2xl">
             <p className="carol-eyebrow flex items-center gap-2">
               <Camera className="h-3.5 w-3.5" />
-              Serviço à parte
+              Portfólio fotográfico · serviço à parte
             </p>
             <h2 className="carol-display mt-4 text-4xl text-[var(--carol-ink)] md:text-5xl">
               Fotografia profissional{" "}
@@ -28,7 +24,8 @@ export function CarolFotografia() {
               </span>
             </h2>
             <p className="mt-5 text-[15px] leading-relaxed text-[var(--carol-muted)]">
-              Além do UGC, a Carol atende ensaios e campanhas como{" "}
+              {PORTFOLIO_FOTOS.length} fotos de ensaios e campanhas reais.
+              Além do UGC, a Carol atende como{" "}
               <strong className="text-[var(--carol-ink)]">fotógrafa</strong> —
               e também do outro lado da lente, como{" "}
               <strong className="text-[var(--carol-ink)]">modelo</strong>, com
@@ -49,38 +46,10 @@ export function CarolFotografia() {
           </Reveal>
         </div>
 
-        <Reveal delay={0.1}>
-          <div className="mt-10 overflow-hidden rounded-3xl border border-[var(--carol-line)] bg-[var(--carol-bg)]">
-            <MarqueeAlongSvgPath
-              path={GALLERY_PATH}
-              viewBox="0 0 996 330"
-              baseVelocity={7}
-              slowdownOnHover
-              draggable
-              grabCursor
-              repeat={1}
-              dragSensitivity={0.1}
-              responsive
-              className="h-[300px] w-full select-none md:h-[420px]"
-            >
-              {FOTOS_AUTORAIS.map((src, i) => (
-                <div
-                  key={src}
-                  className="h-40 w-28 overflow-hidden rounded-lg shadow-xl transition-transform duration-300 ease-in-out hover:scale-150 md:h-28 md:w-20"
-                >
-                  <img
-                    src={src}
-                    alt={`Fotografia autoral ${i + 1} — Carolina Kühn`}
-                    loading="lazy"
-                    className="h-full w-full object-cover"
-                    draggable={false}
-                  />
-                </div>
-              ))}
-            </MarqueeAlongSvgPath>
-          </div>
-          <p className="mt-3 text-center text-[11.5px] text-[var(--carol-muted)]/80">
-            Arraste as fotos — ensaios reais da Carol.
+        <Reveal delay={0.1} className="mt-12">
+          <CarolGaleria />
+          <p className="mt-4 text-center text-[11.5px] text-[var(--carol-muted)]/80">
+            Clique em qualquer foto pra ampliar e navegar pelo ensaio.
           </p>
         </Reveal>
       </div>

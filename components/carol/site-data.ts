@@ -127,19 +127,8 @@ export const REELS = [
   },
 ] as const;
 
-/* Ensaios fotográficos — fotos reais do Drive da Carol */
-export const FOTOS_AUTORAIS = [
-  "/carol/foto-1.webp",
-  "/carol/foto-2.webp",
-  "/carol/foto-3.webp",
-  "/carol/foto-4.webp",
-  "/carol/foto-5.webp",
-  "/carol/foto-6.webp",
-  "/carol/foto-7.webp",
-  "/carol/foto-8.webp",
-  "/carol/foto-9.webp",
-  "/carol/foto-10.webp",
-] as const;
+/* Ensaios fotográficos: ver portfolio-fotos.ts (65 fotos do Drive,
+   geradas com dimensões pra masonry) */
 
 /* Cards do hero (carrossel diagonal de fundo) — fotos reais da Carol */
 export const HERO_CARDS = [
