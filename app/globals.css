@@ -123,8 +123,12 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-* {
-  border-color: var(--border);
+/* Em @layer base pra não vencer as utilities de cor de borda do
+   Tailwind v4 (regra fora de camada ganha de qualquer utility) */
+@layer base {
+  * {
+    border-color: var(--border);
+  }
 }
 
 body {

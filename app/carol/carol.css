@@ -6,7 +6,7 @@
   --carol-bg: #faf6f1;
   --carol-bg-soft: #f2eae1;
   --carol-ink: #241a20;
-  --carol-muted: rgba(36, 26, 32, 0.62);
+  --carol-muted: rgba(36, 26, 32, 0.68); /* ≥4,5:1 sobre bg e bg-soft (WCAG AA) */
   --carol-line: rgba(36, 26, 32, 0.12);
 
   --carol-accent: #c22e6b;
@@ -84,6 +84,10 @@
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--carol-accent);
+}
+/* Sobre fundo plum o accent escuro não passa de 4,5:1 — usa o tom claro */
+.carol-dark-section .carol-eyebrow {
+  color: #e75a93;
 }
 
 /* ---------- primitives ---------- */

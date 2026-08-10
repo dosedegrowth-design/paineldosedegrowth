@@ -125,7 +125,9 @@ export default function DiagonalMarqueeCarousel({
     transform: `rotate(${angle}deg)`,
   };
 
-  const rowCards = [...cards, ...cards, ...cards];
+  // 2× já cobre o clip visível em qualquer viewport comum; 3× dobrava
+  // o número de <img> por fileira sem efeito visual
+  const rowCards = [...cards, ...cards];
   const rowCardsReverse = [...rowCards].reverse();
 
   return (

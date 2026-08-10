@@ -13,7 +13,7 @@ import {
 export function CarolContato() {
   return (
     <section id="contato" className="relative overflow-hidden bg-[var(--carol-bg-soft)] pb-14 pt-24 md:pt-32">
-      <span className="carol-watermark left-1/2 top-2 -translate-x-1/2 text-[16vw]">
+      <span aria-hidden className="carol-watermark left-1/2 top-2 -translate-x-1/2 text-[16vw]">
         vamos?
       </span>
 

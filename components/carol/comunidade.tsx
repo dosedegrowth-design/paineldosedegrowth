@@ -29,14 +29,12 @@ const PILARES = [
 ] as const;
 
 export function CarolComunidade() {
-  const linkComunidade = COMUNIDADE_URL || ORCAMENTO_URL;
-
   return (
     <section
       id="comunidade"
       className="carol-dark-section relative overflow-hidden bg-[var(--carol-dark)] py-24 text-[var(--carol-dark-fg)] md:py-32"
     >
-      <span className="carol-watermark bottom-4 left-[-2%] text-[18vw]">juntas</span>
+      <span aria-hidden className="carol-watermark bottom-4 left-[-2%] text-[18vw]">juntas</span>
 
       <div className="relative mx-auto max-w-6xl px-5 md:px-8">
         <Reveal className="max-w-2xl">
@@ -85,19 +83,22 @@ export function CarolComunidade() {
         )}
 
         <Reveal delay={0.15} className="mt-12 flex flex-col items-start gap-3 sm:flex-row">
-          <a
-            href={linkComunidade}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="carol-btn carol-btn-accent"
-          >
-            Quero entrar na comunidade
-          </a>
+          {/* Botão de entrada só quando a Carol passar o link real */}
+          {COMUNIDADE_URL && (
+            <a
+              href={COMUNIDADE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="carol-btn carol-btn-accent"
+            >
+              Quero entrar na comunidade
+            </a>
+          )}
           <a
             href={ORCAMENTO_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="carol-btn carol-btn-ghost"
+            className={COMUNIDADE_URL ? "carol-btn carol-btn-ghost" : "carol-btn carol-btn-accent"}
           >
             Quero anunciar na comunidade
           </a>

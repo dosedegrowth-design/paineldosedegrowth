@@ -4,7 +4,7 @@ import { Reveal } from "./reveal";
 export function CarolSobre() {
   return (
     <section id="sobre" className="relative overflow-hidden py-24 md:py-32">
-      <span className="carol-watermark left-[-2%] top-6 text-[22vw]">Carol</span>
+      <span aria-hidden className="carol-watermark left-[-2%] top-6 text-[22vw]">Carol</span>
 
       <div className="relative mx-auto grid max-w-6xl items-center gap-14 px-5 md:grid-cols-[5fr_6fr] md:px-8">
         {/* Retrato editorial (placeholder até as fotos reais do Drive) */}
@@ -13,6 +13,8 @@ export function CarolSobre() {
             <img
               src="/carol/sobre.webp"
               alt="Carolina Kühn"
+              loading="lazy"
+              decoding="async"
               className="aspect-[4/5] w-full rounded-2xl object-cover"
             />
             <p className="carol-display-italic mt-4 text-center text-lg text-[var(--carol-muted)]">

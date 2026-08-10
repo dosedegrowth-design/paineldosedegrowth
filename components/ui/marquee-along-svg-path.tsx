@@ -9,6 +9,7 @@ import {
   transform,
   useAnimationFrame,
   useMotionValue,
+  useReducedMotion,
   useScroll,
   useSpring,
   useTransform,
@@ -358,8 +359,13 @@ const MarqueeAlongSvgPath = ({
     { clamp: false }
   );
 
+  const shouldReduceMotion = useReducedMotion();
+
   // Animation frame handler
   useAnimationFrame((_, delta) => {
+    // Com reduced-motion o marquee não anda sozinho (drag continua ok)
+    if (shouldReduceMotion && !isDragging.current) return;
+
     if (isDragging.current && draggable) {
       baseOffset.set(baseOffset.get() + dragVelocity.current);
 

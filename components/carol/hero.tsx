@@ -51,7 +51,7 @@ export function CarolHero() {
 
         <Reveal delay={0.16}>
           <p className="carol-display-italic mt-4 max-w-2xl text-[clamp(1.25rem,3.2vw,1.85rem)] leading-snug text-[var(--carol-ink)]/85">
-            8 anos de estratégia nos bastidores de grandes marcas.
+            8+ anos de estratégia nos bastidores de grandes marcas.
             <br className="hidden md:block" /> Agora, também{" "}
             <span className="carol-hl">na frente da câmera</span>.
           </p>
@@ -81,8 +81,8 @@ export function CarolHero() {
         <Reveal delay={0.42}>
           <dl className="mt-12 flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
             {[
-              { v: "2,1 mi", l: "visualizações / 30 dias" },
-              { v: "1,2 mi", l: "contas alcançadas" },
+              { v: "2,16 mi", l: "visualizações / 30 dias" },
+              { v: "1,26 mi", l: "contas alcançadas" },
               { v: "+3,7 mil", l: "seguidores / 30 dias" },
             ].map((s) => (
               <div key={s.l} className="text-center">
@@ -102,7 +102,7 @@ export function CarolHero() {
       <a
         href="#marcas"
         aria-label="Rolar para a próxima seção"
-        className="absolute bottom-7 left-1/2 z-20 -translate-x-1/2 rounded-full border border-[var(--carol-line)] bg-[var(--carol-bg)]/80 p-3 text-[var(--carol-muted)] backdrop-blur transition-colors hover:text-[var(--carol-accent-deep)]"
+        className="absolute bottom-7 left-1/2 z-20 -translate-x-1/2 rounded-full border border-[var(--carol-line)] bg-[var(--carol-bg)]/80 p-3.5 text-[var(--carol-muted)] backdrop-blur transition-colors hover:text-[var(--carol-accent-deep)]"
       >
         <ArrowDown className="h-4 w-4 animate-bounce" />
       </a>

@@ -7,6 +7,8 @@ export function CarolMarcasStrip() {
       <p className="carol-eyebrow px-5 text-center !text-[10.5px] !tracking-[0.32em] opacity-80">
         Bastidores de estratégia e criação para marcas como
       </p>
+      {/* Lista acessível — o marquee visual abaixo é aria-hidden */}
+      <p className="sr-only">{MARCAS.join(", ")}.</p>
       <div className="carol-marquee mt-5" aria-hidden>
         <div className="carol-marquee-track">
           {row.map((marca, i) => (

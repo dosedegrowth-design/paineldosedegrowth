@@ -39,7 +39,7 @@ export function CarolPortfolio() {
               >
                 <img
                   src={reel.img}
-                  alt={`UGC de ${reel.categoria.toLowerCase()} — Carolina Kühn`}
+                  alt={`UGC — ${reel.categoria} — Carolina Kühn`}
                   loading="lazy"
                   className="aspect-[4/5] w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
@@ -97,7 +97,7 @@ export function CarolPortfolio() {
               {FOTOS_AUTORAIS.map((src, i) => (
                 <div
                   key={src}
-                  className="h-24 w-16 overflow-hidden rounded-lg shadow-xl transition-transform duration-300 ease-in-out hover:scale-150 md:h-28 md:w-20"
+                  className="h-40 w-28 overflow-hidden rounded-lg shadow-xl transition-transform duration-300 ease-in-out hover:scale-150 md:h-28 md:w-20"
                 >
                   <img
                     src={src}

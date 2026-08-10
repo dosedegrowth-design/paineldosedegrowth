@@ -7,18 +7,18 @@ export function CarolNumeros() {
       id="numeros"
       className="carol-dark-section relative overflow-hidden bg-[var(--carol-dark)] py-24 text-[var(--carol-dark-fg)] md:py-32"
     >
-      <span className="carol-watermark right-[-4%] top-8 text-[20vw]">2,1mi</span>
+      <span aria-hidden className="carol-watermark right-[-4%] top-8 text-[20vw]">2,1mi</span>
 
       <div className="relative mx-auto max-w-6xl px-5 md:px-8">
         <Reveal className="max-w-2xl">
-          <p className="carol-eyebrow">Resultados orgânicos · últimos 30 dias</p>
+          <p className="carol-eyebrow">Resultados · últimos 30 dias</p>
           <h2 className="carol-display mt-4 text-4xl md:text-5xl">
             Números que uma{" "}
             <span className="carol-display-italic text-[#e75a93]">publi comum</span>{" "}
             não entrega
           </h2>
           <p className="mt-5 text-[15px] leading-relaxed text-[var(--carol-dark-muted)]">
-            Crescimento orgânico, sem mídia paga — quase todo o alcance vem de
+            Crescimento puxado por conteúdo: 96,2% das visualizações vêm de
             público novo, descobrindo o perfil pelos Reels.
           </p>
         </Reveal>

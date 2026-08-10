@@ -33,6 +33,9 @@ export function CarolUgcStats() {
             </Reveal>
           ))}
         </div>
+        <p className="mt-6 text-center text-[11px] text-[var(--carol-muted)]/70">
+          Dados de estudos de mercado sobre user-generated content.
+        </p>
       </div>
     </section>
   );

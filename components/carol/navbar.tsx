@@ -68,7 +68,7 @@ export function CarolNavbar() {
           type="button"
           aria-label={open ? "Fechar menu" : "Abrir menu"}
           aria-expanded={open}
-          className="rounded-lg p-2 text-[var(--carol-ink)] lg:hidden"
+          className="rounded-lg p-2.5 text-[var(--carol-ink)] lg:hidden"
           onClick={() => setOpen((v) => !v)}
         >
           {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -87,7 +87,7 @@ export function CarolNavbar() {
             <a
               key={l.href}
               href={l.href}
-              className="rounded-lg px-3 py-2.5 text-[15px] font-semibold text-[var(--carol-ink)] transition-colors hover:bg-[var(--carol-accent-soft)]"
+              className="rounded-lg px-3 py-3 text-[15px] font-semibold text-[var(--carol-ink)] transition-colors hover:bg-[var(--carol-accent-soft)]"
               onClick={() => setOpen(false)}
             >
               {l.label}

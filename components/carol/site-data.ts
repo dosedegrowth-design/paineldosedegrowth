@@ -26,7 +26,7 @@ export const DEPOIMENTOS: { nome: string; texto: string }[] = [];
 
 export const METRICAS = [
   { valor: "2,16 mi", rotulo: "visualizações", detalhe: "96,2% de público novo" },
-  { valor: "1,26 mi", rotulo: "contas alcançadas", detalhe: "alcance orgânico" },
+  { valor: "1,26 mi", rotulo: "contas alcançadas", detalhe: "em 30 dias" },
   { valor: "431,8 mil", rotulo: "interações", detalhe: "288,4 mil contas engajadas" },
   { valor: "+3.704", rotulo: "novos seguidores", detalhe: "em 30 dias" },
   { valor: "98,2%", rotulo: "das views em Reels", detalhe: "vídeo é o formato dela" },
@@ -172,12 +172,12 @@ export const MODELOS = [
     nome: "Creator + Distribuição",
     tag: "Alcance da audiência",
     descricao:
-      "Conteúdo criado e publicado no perfil da Carolina. Sua marca aparece pra uma audiência de mais de 1,2 milhão de contas alcançadas por mês — 92% mulheres, maioria de 25 a 34 anos.",
+      "Conteúdo criado e publicado no perfil da Carolina. Sua marca aparece pra uma audiência de mais de 1,2 milhão de contas alcançadas nos últimos 30 dias — 92% mulheres, maioria de 25 a 34 anos.",
     beneficios: [
-      "Publicação no @daybycarolk (Reels + Stories)",
+      "Publicação no perfil @daybycarolk",
       "Exposição pra audiência qualificada dela",
       "Prova social pública no perfil",
-      "Métricas de performance compartilhadas",
+      "Formato e volume definidos no briefing",
     ],
   },
   {
@@ -189,7 +189,7 @@ export const MODELOS = [
       "Vídeos prontos pra Meta Ads e TikTok Ads",
       "Formato nativo, cara de conteúdo orgânico",
       "Direitos de uso conforme contrato",
-      "Variações de gancho pra teste A/B",
+      "Entrega vertical 9:16 pronta pra veicular",
     ],
   },
 ] as const;
