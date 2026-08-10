@@ -94,6 +94,15 @@ O recurso de local da Barueri está em "Todos os locais selecionados" (sem filtr
 - Osasco não aparece no seletor de contas do MCC (só pela tabela) — verificar vínculo.
 - Sitelinks reprovados em Butantã e Morumbi.
 
+## EXECUÇÃO
+
+### ✅ Vila Leopoldina — concluída
+- Meta "Conversoes SPV Leopoldina" ampliada p/ 3 ações (WhatsApp + Calls from ads + Conversation started), aplicada nas 2 campanhas, metas padrão removidas
+- Snippet estruturado "Serviços" criado (em análise)
+- PMax: orçamento R$ 10 → R$ 13/dia · renomeada p/ "SPV - Leopoldina - PMax - Principais Servicos" · recurso de ligação 11970919850 adicionado (em revisão) · 2º grupo de recursos "TRANSFERÊNCIA" criado
+- Keywords: 22 amplas → 66 (22 ampla + 22 frase + 22 exata)
+- **Pendente decisão:** nome da empresa "Super Visão Leopoldina" REPROVADO (irrelevância) · logotipo 640×640 limitado (espaço em branco) · 3 rascunhos legados mantidos · saldo esgotado
+
 ## Ações prioritárias
 
 1. 🔴 **Recarregar Vila Leopoldina** (R$ 0,44, única que converte)
