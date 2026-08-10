@@ -9,7 +9,7 @@ const DESCRIPTION =
   "8+ anos de estratégia nos bastidores de marcas como Nestlé, Itaú e Apple — agora na frente da câmera. UGC, fotografia, e uma comunidade de mulheres que confia. 2,16 mi de visualizações em 30 dias.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://paineltrafego.dosedegrowth.com.br"),
+  metadataBase: new URL("https://painel.dosedegrowth.com"),
   title: { absolute: TITLE },
   description: DESCRIPTION,
   applicationName: "Carolina Kühn",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: TITLE,
     description: DESCRIPTION,
-    url: "https://paineltrafego.dosedegrowth.com.br/carol",
+    url: "https://painel.dosedegrowth.com/carol",
     type: "website",
     locale: "pt_BR",
     images: [{ url: "/carol/og.jpg", width: 1200, height: 630 }],

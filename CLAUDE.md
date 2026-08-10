@@ -26,7 +26,7 @@
 |---|---|
 | Repo GitHub | `dosedegrowth-design/paineldosedegrowth` |
 | Branch principal | `main` |
-| Domínio produção | `https://paineltrafego.dosedegrowth.com.br` (alias do Vercel) |
+| Domínio produção | `https://painel.dosedegrowth.com` (alias do Vercel — o antigo `paineltrafego.dosedegrowth.com.br` saiu do DNS) |
 | Vercel project | `dose-de-growths-projects/paineldosedegrowth` |
 | Supabase project | `hkjukobqpjezhpxzplpj` (DDG, sa-east-1) |
 | Schema | `trafego_ddg` |
@@ -162,7 +162,7 @@ Lucas ainda tá em "Acesso básico" no dev token. Limita a 15k operações/dia. 
 
 ### 4. Finalizar OAuth Shopify Marina
 - Lucas já criou app "Painel DDG" no Dev Dashboard novo do Shopify (Client ID `15cbb5c3d1fa336cfdaa91e9fb268155`).
-- ⚠️ **Falta registrar redirect URL no app:** `https://paineltrafego.dosedegrowth.com.br/api/oauth/shopify/callback`
+- ⚠️ **Falta registrar redirect URL no app:** `https://painel.dosedegrowth.com/api/oauth/shopify/callback`
   - No Dev Dashboard → Painel DDG → Versões → Criar versão → preenche "URLs de redirecionamento" → Lançar
 - ⚠️ **Falta adicionar 2 env vars no Vercel:**
   - `SHOPIFY_APP_CLIENT_ID = 15cbb5c3d1fa336cfdaa91e9fb268155`

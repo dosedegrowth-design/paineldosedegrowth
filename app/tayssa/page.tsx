@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     title: "Tayssa · @1.tayssa",
     description:
       "Página oficial de Tayssa. Acompanhe conteúdos, novidades e atendimento direto pelo Instagram @1.tayssa.",
-    url: "https://paineltrafego.dosedegrowth.com.br/tayssa",
+    url: "https://painel.dosedegrowth.com/tayssa",
     type: "website",
   },
 };
