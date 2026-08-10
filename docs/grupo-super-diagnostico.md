@@ -72,7 +72,21 @@ Campanha em Maximizar conversões → meta aponta pra ação que nunca recebe si
 
 Nota: as 41 conversões de Leopoldina vêm de ações nativas do Google (Conversation started 36 + Calls from ads 7), não da tag de WhatsApp do GTM — não contradiz o diagnóstico.
 
-## Falta de padrão entre as contas
+## ETAPA B — comparativo das 5 (06/ago)
+
+**Padrão dominante (Barueri, Butantã, Morumbi):** Pesquisa R$ 40 + PMax R$ 13 · Maximizar conversões sem tCPA · meta personalizada "Conversoes SPV [unidade]" · 3 grupos (Cautelar/Transferencia/Certicar) com 27 kw em frase+exata e 1 RSA cada · 2 grupos de recursos na PMax · sitelinks + destaques + snippet + chamada + local · GMN vinculado · 6 km em Presença · 06:00-00:00.
+
+### 🔴 Achado grave: Barueri anuncia o endereço do MORUMBI
+O recurso de local da Barueri está em "Todos os locais selecionados" (sem filtro de nome) e a ficha que aparece nos anúncios é **"Super Visão Vistorias Automotivas – Morumbi, Av. Giovanni Gronchi, 6093"** — 4.860 impressões no período. Além disso Barueri usa GMN de outra conta (`victor@goidea.com.br`, 5 locais) enquanto as outras usam `supervisao.campanhas01@gmail.com` (79 locais).
+
+### O que falta em cada uma
+- **Leopoldina:** snippet estruturado · meta personalizada (usa metas padrão) · PMax R$ 10 em vez de 13 · só 1 grupo de recursos na PMax · 22 kw em ampla (padrão é 27 em frase+exata) · anúncios "Médio" · nome/logotipo reprovados · recurso de ligação ausente na PMax · saldo esgotado · 3 rascunhos · nome da PMax com espaço duplo
+- **Barueri:** corrigir recurso de local (mostra Morumbi) · unificar GMN · extensão de mensagem/WhatsApp · ações de site (Visualizacao-pagina, compra, Conversation started) · "Obter rota" inativa · 6 destaques contra 12
+- **Butantã:** extensão de mensagem/WhatsApp · só 4 ações de conversão (contra 10-11) · meta "Visualização de página" com configuração incorreta · 12 sitelinks contra 20-25 · renomear PMax (`SPV Butante ... - ` grafia errada e nome inacabado)
+- **Morumbi:** PMax usa 5 km "Locais do Perfil da Empresa" (padrão é 6 km endereço fixo) · programação 06:00-23:45 · Clique WhatsApp INATIVA com janela de 4 semanas (padrão 30 dias) · mensagem só na PMax · sitelinks reprovados · telefone sem formatação · limpar 4 campanhas pausadas + 16 grupos legados
+- **Osasco (a mais distante):** não tem PMax · 1 grupo só (falta Transferencia e Certicar) · 35 kw em ampla num grupo só · GMN não vinculado · ZERO extensões (só um logo gerado pela IA) · meta padrão da conta · 2 ações duplicadas e inativas · única em "Presença ou interesse" · sem janela horária
+
+## Falta de padrão entre as contas (levantamento inicial)
 
 - Nomenclatura inconsistente: "SPV Butante", "SPV - OSASCO", "SPV Morumbi - Pesquisa leads - Pmax - 03-04-2026", e legados sem padrão em Morumbi ([Search] Morumbi - AT, [DOMICILIO][MORUMBI], FRANQUEADORA | SEARCH...).
 - Orçamentos diferentes: Leopoldina R$ 50/dia (10+40) · Barueri/Butantã/Morumbi R$ 53/dia (13+40) · Osasco R$ 40/dia (1 campanha só, sem PMax).
