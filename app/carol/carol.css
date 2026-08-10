@@ -20,7 +20,7 @@
   --carol-dark-muted: rgba(246, 239, 233, 0.6);
   --carol-dark-line: rgba(246, 239, 233, 0.14);
 
-  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-display: "Fraunces Variable", Georgia, "Times New Roman", serif;
   --font-body: "Montserrat", system-ui, -apple-system, sans-serif;
 
   background: var(--carol-bg);
@@ -31,8 +31,13 @@
   color-scheme: light;
 }
 
-.carol-scope * {
-  border-color: var(--carol-line);
+/* Em @layer base pra perder das utilities do Tailwind (que vivem em
+   @layer utilities) — fora de camada, esta regra anularia todo
+   border-[var(--carol-*)] da LP */
+@layer base {
+  .carol-scope * {
+    border-color: var(--carol-line);
+  }
 }
 
 .carol-scope ::selection {
@@ -182,6 +187,13 @@
 
 .carol-marquee {
   overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 8%,
+    black 92%,
+    transparent
+  );
   mask-image: linear-gradient(
     to right,
     transparent,
@@ -194,7 +206,7 @@
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
-  animation: carol-marquee-scroll 36s linear infinite;
+  animation: carol-marquee-scroll 48s linear infinite;
 }
 .carol-marquee:hover .carol-marquee-track {
   animation-play-state: paused;

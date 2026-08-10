@@ -19,7 +19,7 @@ export function CarolHero() {
       {/* Véu ivory por cima do carrossel pra dar legibilidade */}
       <div
         aria-hidden
-        className="absolute inset-0 z-10 bg-[var(--carol-bg)]/72"
+        className="absolute inset-0 z-10 bg-[var(--carol-bg)]/62"
       />
       <div
         aria-hidden

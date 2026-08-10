@@ -472,7 +472,7 @@ const MarqueeAlongSvgPath = ({
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      className={cn("relative", className)}
+      className={cn("relative", draggable && "touch-pan-y", className)}
     >
       <div
         ref={marqueeContainerRef}

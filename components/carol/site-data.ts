@@ -71,72 +71,72 @@ export const MARCAS = [
 ] as const;
 
 /* ---------- portfólio ---------- */
-/* Reels enviados pela Carol (03/ago). Thumbnails são placeholders do
-   Unsplash até baixarmos as capas reais — trocar `img` mantendo o link. */
+/* Reels enviados pela Carol (03/ago). Capas: fotos reais do Drive
+   "Fotos Profissionais - Carolina Kühn UGC" (public/carol/). */
 
 export const REELS = [
   {
     categoria: "Moda",
     descricao: "Looks, provadores e styling",
     url: "https://www.instagram.com/reel/DR5LCPKEunE/",
-    img: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=700&q=80",
+    img: "/carol/reel-moda.webp",
   },
   {
     categoria: "Lifestyle",
     descricao: "Rotina, viagens e dia a dia",
     url: "https://www.instagram.com/reel/DRAG8ByEYRV/",
-    img: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=700&q=80",
+    img: "/carol/reel-lifestyle.webp",
   },
   {
     categoria: "Review de produto",
     descricao: "Análises honestas que geram confiança",
     url: "https://www.instagram.com/reel/DOrUX3PEmuR/",
-    img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=700&q=80",
+    img: "/carol/reel-review.webp",
   },
   {
     categoria: "Fitness",
     descricao: "Treino, wellness e performance",
     url: "https://www.instagram.com/p/DRfMbjKkdD4/",
-    img: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=700&q=80",
+    img: "/carol/reel-fitness.webp",
   },
   {
     categoria: "Unboxing",
     descricao: "Primeira impressão em tempo real",
     url: "https://www.instagram.com/reel/DQ70D-WEYNx/",
-    img: "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?auto=format&fit=crop&w=700&q=80",
+    img: "/carol/reel-unboxing.webp",
   },
   {
     categoria: "GRWM & Beleza",
     descricao: "Get ready with me, skincare e make",
     url: "https://www.instagram.com/reel/DaGrF33NXf7/",
-    img: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=700&q=80",
+    img: "/carol/reel-grwm.webp",
   },
 ] as const;
 
-/* Fotografia autoral — placeholders até subirmos as fotos reais do Drive */
+/* Ensaios fotográficos — fotos reais do Drive da Carol */
 export const FOTOS_AUTORAIS = [
-  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80",
-  "https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=500&q=80",
-  "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=500&q=80",
-  "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=80",
-  "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=500&q=80",
-  "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=500&q=80",
-  "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=500&q=80",
-  "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=500&q=80",
-  "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=500&q=80",
-  "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=500&q=80",
+  "/carol/foto-1.webp",
+  "/carol/foto-2.webp",
+  "/carol/foto-3.webp",
+  "/carol/foto-4.webp",
+  "/carol/foto-5.webp",
+  "/carol/foto-6.webp",
+  "/carol/foto-7.webp",
+  "/carol/foto-8.webp",
+  "/carol/foto-9.webp",
+  "/carol/foto-10.webp",
 ] as const;
 
-/* Cards do hero (carrossel diagonal de fundo) */
+/* Cards do hero (carrossel diagonal de fundo) — fotos reais da Carol */
 export const HERO_CARDS = [
-  { id: 1, url: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=700&q=80", title: "Moda" },
-  { id: 2, url: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=700&q=80", title: "Beleza" },
-  { id: 3, url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=700&q=80", title: "Editorial" },
-  { id: 4, url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=700&q=80", title: "Fitness" },
-  { id: 5, url: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=700&q=80", title: "Lifestyle" },
-  { id: 6, url: "https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=700&q=80", title: "Make" },
-  { id: 7, url: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=700&q=80", title: "Fashion" },
-  { id: 8, url: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=700&q=80", title: "Estilo" },
+  { id: 1, url: "/carol/hero-1.webp", title: "Editorial" },
+  { id: 2, url: "/carol/hero-2.webp", title: "Moda" },
+  { id: 3, url: "/carol/hero-3.webp", title: "Bastidores de criação" },
+  { id: 4, url: "/carol/hero-4.webp", title: "Styling" },
+  { id: 5, url: "/carol/hero-5.webp", title: "Campanha" },
+  { id: 6, url: "/carol/hero-6.webp", title: "Ensaio" },
+  { id: 7, url: "/carol/hero-7.webp", title: "Fitness" },
+  { id: 8, url: "/carol/hero-8.webp", title: "Atelier" },
 ] as const;
 
 /* ---------- serviços ---------- */

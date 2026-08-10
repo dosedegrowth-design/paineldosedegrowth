@@ -152,6 +152,10 @@ export default function DiagonalMarqueeCarousel({
         .animate-marquee-right {
           animation: marquee-right var(--speed) linear infinite;
         }
+        .animate-marquee-left:hover,
+        .animate-marquee-right:hover {
+          animation-play-state: paused;
+        }
       `,
         }}
       />
@@ -191,15 +195,17 @@ export default function DiagonalMarqueeCarousel({
         />
       </div>
 
+      {/* Sem dark:from-neutral-950 — o painel força class="dark" no <html>
+          e a variante venceria o fadeClassName em páginas light */}
       <div
         className={cn(
-          "pointer-events-none absolute inset-x-0 top-0 z-10 h-1/4 bg-gradient-to-b from-white to-transparent dark:from-neutral-950",
+          "pointer-events-none absolute inset-x-0 top-0 z-10 h-1/4 bg-gradient-to-b from-white to-transparent",
           fadeClassName,
         )}
       />
       <div
         className={cn(
-          "pointer-events-none absolute inset-x-0 bottom-0 z-10 h-1/4 bg-gradient-to-t from-white to-transparent dark:from-neutral-950",
+          "pointer-events-none absolute inset-x-0 bottom-0 z-10 h-1/4 bg-gradient-to-t from-white to-transparent",
           fadeClassName,
         )}
       />

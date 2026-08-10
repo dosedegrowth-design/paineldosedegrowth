@@ -1,11 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource/fraunces/400.css";
-import "@fontsource/fraunces/500.css";
-import "@fontsource/fraunces/600.css";
-import "@fontsource/fraunces/700.css";
-import "@fontsource/fraunces/400-italic.css";
-import "@fontsource/fraunces/500-italic.css";
-import "@fontsource/fraunces/600-italic.css";
+import "@fontsource-variable/fraunces/full.css";
+import "@fontsource-variable/fraunces/full-italic.css";
 import "./carol.css";
 import { IG_URL, TIKTOK_URL } from "@/components/carol/site-data";
 

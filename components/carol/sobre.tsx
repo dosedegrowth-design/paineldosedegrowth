@@ -11,7 +11,7 @@ export function CarolSobre() {
         <Reveal className="relative mx-auto w-full max-w-md">
           <div className="rotate-[-2deg] rounded-[24px] bg-white p-3 pb-14 shadow-[0_24px_60px_-24px_rgba(36,26,32,0.4)]">
             <img
-              src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80"
+              src="/carol/sobre.webp"
               alt="Carolina Kühn"
               className="aspect-[4/5] w-full rounded-2xl object-cover"
             />
