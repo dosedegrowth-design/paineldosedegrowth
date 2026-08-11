@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, ArrowLeft, ArrowRight, Upload, Check, Plus, Search, Calendar, ClipboardPaste } from "lucide-react";
+import { Loader2, ArrowLeft, ArrowRight, Upload, Check, Plus, Search, Calendar, ClipboardPaste, AlertTriangle } from "lucide-react";
+import { parseTemplateShape, type TemplateComponentLike } from "@/lib/whatsapp/template-shape";
 
 interface Conta {
   id: string;
@@ -26,7 +27,14 @@ interface Template {
   category: string;
   status: string;
   variables_count: number;
-  components: Array<{ type: string; text?: string }>;
+  components: Array<{
+    type: string;
+    text?: string;
+    format?: string;
+    buttons?: Array<{ type: string; text?: string; url?: string }>;
+  }>;
+  header_media_url?: string | null;
+  header_media_type?: string | null;
 }
 
 interface ParsedRow {
@@ -64,7 +72,10 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
   // mapping: posicao da variavel ({{1}}, {{2}}...) -> nome da coluna no CSV
   // "telefone" tambem mapeia uma coluna
   const [phoneColumn, setPhoneColumn] = useState<string>("");
+  // varMap: field.key -> nome da coluna do CSV, OU "__fixed__" pra valor fixo
   const [varMap, setVarMap] = useState<Record<string, string>>({});
+  // fixedVals: field.key -> valor fixo (usado quando varMap[key] === "__fixed__")
+  const [fixedVals, setFixedVals] = useState<Record<string, string>>({});
 
   const contasFiltradas = useMemo(() => {
     if (!searchConta) return contas;
@@ -95,17 +106,41 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
     return template.components.find((c) => c.type === "BODY")?.text ?? "";
   }, [template]);
 
+  // Forma do template: quais campos precisam de valor (header/body/botão) + mídia
+  const shape = useMemo(() => {
+    if (!template) return null;
+    return parseTemplateShape((template.components as TemplateComponentLike[]) ?? []);
+  }, [template]);
+
+  // Template com mídia no header mas sem imagem sincronizada -> precisa "Atualizar"
+  const faltaMidiaHeader = useMemo(
+    () => !!shape?.headerMedia && !template?.header_media_url,
+    [shape, template],
+  );
+
+  // Todos os campos do template preenchidos (coluna ou valor fixo) + telefone + sem pendência de mídia
+  const step4Ready = useMemo(() => {
+    if (!phoneColumn || faltaMidiaHeader) return false;
+    return (shape?.fields ?? []).every((f) => {
+      const col = varMap[f.key];
+      if (col === "__fixed__") return !!(fixedVals[f.key] ?? "").trim();
+      return !!col;
+    });
+  }, [phoneColumn, faltaMidiaHeader, shape, varMap, fixedVals]);
+
   const previewBody = useMemo(() => {
     if (!bodyText || sampleRows.length === 0) return bodyText;
     let txt = bodyText;
     const sample = sampleRows[0];
-    for (const [varNum, col] of Object.entries(varMap)) {
-      if (col && sample[col]) {
-        txt = txt.replace(new RegExp(`\\{\\{${varNum}\\}\\}`, "g"), sample[col]);
-      }
+    for (const f of shape?.fields ?? []) {
+      const col = varMap[f.key];
+      if (!col || !sample[col]) continue;
+      // substitui {{n}} (posicional/header) ou {{nome}} (body nomeado)
+      const token = f.key.startsWith("body:") ? f.key.slice(5) : f.key.replace(/^header:/, "");
+      txt = txt.replace(new RegExp(`\\{\\{\\s*${token}\\s*\\}\\}`, "g"), sample[col]);
     }
     return txt;
-  }, [bodyText, sampleRows, varMap]);
+  }, [bodyText, sampleRows, varMap, shape]);
 
   async function handleFile(f: File) {
     setParsing(true);
@@ -255,16 +290,33 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
       toast.error("Faltam campos obrigatorios");
       return;
     }
+    // Template com imagem no header ainda não sincronizada
+    if (faltaMidiaHeader) {
+      toast.error("Este template tem mídia no cabeçalho que ainda não foi sincronizada. Vá em Templates → Atualizar e volte.");
+      return;
+    }
+    // Todo campo do template (variável/botão) precisa de coluna ou valor fixo
+    const semValor = (shape?.fields ?? []).filter((f) => {
+      const col = varMap[f.key];
+      if (col === "__fixed__") return !(fixedVals[f.key] ?? "").trim();
+      return !col;
+    });
+    if (semValor.length > 0) {
+      toast.error(`Faltou preencher: ${semValor.map((f) => f.label).join(", ")}`);
+      return;
+    }
     setSubmitting(true);
     try {
-      // Monta contatos com variables mapeadas
+      // Monta contatos com variables mapeadas (por coluna ou valor fixo)
       const contatos = rows
         .map((r) => {
           const raw = String(r[phoneColumn] ?? "");
           if (!raw) return null;
           const variables: Record<string, string> = {};
-          for (const [varNum, col] of Object.entries(varMap)) {
-            if (col) variables[varNum] = String(r[col] ?? "");
+          for (const f of shape?.fields ?? []) {
+            const col = varMap[f.key];
+            if (col === "__fixed__") variables[f.key] = fixedVals[f.key] ?? "";
+            else if (col) variables[f.key] = String(r[col] ?? "");
           }
           return { telefone: normalize(raw), telefone_raw: raw, variables };
         })
@@ -539,25 +591,49 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
               </Select>
             </div>
 
-            {template && template.variables_count > 0 && (
+            {faltaMidiaHeader && (
+              <div className="flex gap-2 items-start rounded-md border border-amber-300 bg-amber-50 p-3 text-amber-800">
+                <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+                <div className="text-xs">
+                  Este template tem <strong>mídia no cabeçalho</strong> que ainda não foi sincronizada.
+                  Vá em <strong>Templates → Atualizar</strong> e volte pra cá pra poder disparar.
+                </div>
+              </div>
+            )}
+
+            {shape?.headerMedia && !faltaMidiaHeader && (
+              <div className="text-xs text-muted-foreground rounded-md border border-border p-2">
+                📎 Cabeçalho com {shape.headerMedia.type === "image" ? "imagem" : shape.headerMedia.type === "video" ? "vídeo" : "documento"} — enviado automaticamente (mídia do próprio template).
+              </div>
+            )}
+
+            {shape && shape.fields.length > 0 && (
               <>
-                <div className="text-xs font-medium pt-2">Variáveis do template</div>
-                {Array.from({ length: template.variables_count }, (_, i) => i + 1).map((n) => (
-                  <div key={n}>
-                    <label className="text-xs text-muted-foreground">{`{{${n}}}`} →</label>
+                <div className="text-xs font-medium pt-2">Preencher campos do template</div>
+                {shape.fields.map((f) => (
+                  <div key={f.key} className="space-y-1">
+                    <label className="text-xs text-muted-foreground">{f.label} →</label>
                     <Select
-                      value={varMap[String(n)] ?? ""}
-                      onValueChange={(v) => setVarMap({ ...varMap, [String(n)]: v })}
+                      value={varMap[f.key] ?? ""}
+                      onValueChange={(v) => setVarMap({ ...varMap, [f.key]: v })}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecione uma coluna" />
+                        <SelectValue placeholder="Coluna do CSV ou valor fixo" />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="__fixed__">✏️ Valor fixo (digitar)</SelectItem>
                         {columns.map((c) => (
                           <SelectItem key={c} value={c}>{c}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
+                    {varMap[f.key] === "__fixed__" && (
+                      <Input
+                        placeholder="Valor fixo pra todos os contatos"
+                        value={fixedVals[f.key] ?? ""}
+                        onChange={(e) => setFixedVals({ ...fixedVals, [f.key]: e.target.value })}
+                      />
+                    )}
                   </div>
                 ))}
               </>
@@ -570,8 +646,8 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
 
             <NavRow
               onBack={() => setStep(3)}
-              onNext={() => phoneColumn && setStep(5)}
-              nextDisabled={!phoneColumn}
+              onNext={() => step4Ready && setStep(5)}
+              nextDisabled={!step4Ready}
             />
           </CardContent>
         </Card>

@@ -43,6 +43,7 @@ export interface SendTemplatePayload {
   templateName: string;
   language: string;
   bodyVariables?: string[];                    // posicional: ["Joao", "R$ 500"]
+  bodyNamedParams?: Array<{ name: string; text: string }>; // nomeado: {customer_name}
   headerVariables?: string[];                  // pra header TEXT com {{1}}
   headerMedia?: {                              // pra header IMAGE/VIDEO/DOCUMENT
     type: "image" | "video" | "document";
@@ -166,7 +167,18 @@ export class WhatsappClient {
       });
     }
 
-    if (p.bodyVariables?.length) {
+    if (p.bodyNamedParams?.length) {
+      // Body com variáveis NOMEADAS ({{customer_name}})
+      components.push({
+        type: "body",
+        parameters: p.bodyNamedParams.map((v) => ({
+          type: "text",
+          parameter_name: v.name,
+          text: v.text,
+        })),
+      });
+    } else if (p.bodyVariables?.length) {
+      // Body com variáveis POSICIONAIS ({{1}}, {{2}})
       components.push({
         type: "body",
         parameters: p.bodyVariables.map((v) => ({ type: "text", text: v })),

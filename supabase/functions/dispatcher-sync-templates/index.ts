@@ -21,7 +21,12 @@ interface MetaTemplate {
   language: string;
   category: "MARKETING" | "UTILITY" | "AUTHENTICATION";
   status: "PENDING" | "APPROVED" | "REJECTED" | "DISABLED" | "PAUSED";
-  components: Array<{ type: string; text?: string }>;
+  components: Array<{
+    type: string;
+    text?: string;
+    format?: string;
+    example?: { header_handle?: string[]; header_url?: string[] };
+  }>;
   quality_score?: { score?: string };
   rejected_reason?: string;
 }
@@ -97,26 +102,92 @@ async function fetchTemplates(wabaId: string, token: string): Promise<MetaTempla
 function countBodyVars(components: MetaTemplate["components"]): number {
   const body = components.find((c) => c.type === "BODY");
   if (!body?.text) return 0;
+  // conta apenas variáveis POSICIONAIS ({{1}}). Nomeadas ({{nome}}) são
+  // derivadas dos components na hora do envio, não por esse contador.
   const matches = body.text.match(/\{\{\d+\}\}/g);
   if (!matches) return 0;
   return Math.max(...matches.map((m) => parseInt(m.replace(/\D/g, ""), 10)));
 }
 
+const STORAGE_MARKER = "/storage/v1/object/public/disparador-media/";
+
+/**
+ * Templates com header IMAGE/VIDEO/DOCUMENT exigem a mídia em TODO envio.
+ * A URL de exemplo da Meta (scontent.whatsapp.net) expira, então baixamos
+ * uma vez e re-hospedamos no Storage (bucket público disparador-media).
+ * Retorna { url, type } ou null.
+ */
+async function ensureHeaderMedia(
+  contaId: string,
+  t: MetaTemplate,
+  existingUrl: string | null | undefined,
+): Promise<{ url: string; type: string } | null> {
+  const header = t.components.find((c) => c.type === "HEADER");
+  const fmt = (header?.format ?? "TEXT").toUpperCase();
+  if (fmt !== "IMAGE" && fmt !== "VIDEO" && fmt !== "DOCUMENT") return null;
+
+  // Já re-hospedado antes -> reaproveita (não baixa de novo toda sync)
+  if (existingUrl && existingUrl.includes(STORAGE_MARKER)) {
+    return { url: existingUrl, type: fmt };
+  }
+
+  const srcUrl = header?.example?.header_handle?.[0] ?? header?.example?.header_url?.[0];
+  if (!srcUrl) return null;
+
+  try {
+    const res = await fetch(srcUrl);
+    if (!res.ok) throw new Error(`download ${res.status}`);
+    const contentType = res.headers.get("content-type") ?? "application/octet-stream";
+    const buf = new Uint8Array(await res.arrayBuffer());
+    const ext = fmt === "IMAGE" ? "jpg" : fmt === "VIDEO" ? "mp4" : "pdf";
+    const path = `${contaId}/tmpl-${t.id}.${ext}`;
+
+    const { error: upErr } = await supabase.storage
+      .from("disparador-media")
+      .upload(path, buf, { contentType, upsert: true });
+    if (upErr) throw new Error(upErr.message);
+
+    const { data: pub } = supabase.storage.from("disparador-media").getPublicUrl(path);
+    return { url: pub.publicUrl, type: fmt };
+  } catch (e) {
+    console.error(`ensureHeaderMedia falhou (${t.name}):`, (e as Error).message);
+    return null;
+  }
+}
+
 async function upsertTemplates(contaId: string, templates: MetaTemplate[]): Promise<number> {
   if (templates.length === 0) return 0;
-  const rows = templates.map((t) => ({
-    conta_id: contaId,
-    meta_id: t.id,
-    name: t.name,
-    language: t.language,
-    category: t.category,
-    status: t.status,
-    components: t.components,
-    variables_count: countBodyVars(t.components),
-    rejection_reason: t.rejected_reason ?? null,
-    quality_score: t.quality_score?.score ?? null,
-    ultima_sync_meta: new Date().toISOString(),
-  }));
+
+  // URLs de mídia já salvas (pra não re-baixar toda sync)
+  const { data: existing } = await supabase
+    .schema("disparador")
+    .from("templates")
+    .select("name, language, header_media_url")
+    .eq("conta_id", contaId);
+  const existingMap = new Map<string, string | null>(
+    (existing ?? []).map((r: { name: string; language: string; header_media_url: string | null }) =>
+      [`${r.name}|${r.language}`, r.header_media_url]),
+  );
+
+  const rows = [];
+  for (const t of templates) {
+    const media = await ensureHeaderMedia(contaId, t, existingMap.get(`${t.name}|${t.language}`));
+    rows.push({
+      conta_id: contaId,
+      meta_id: t.id,
+      name: t.name,
+      language: t.language,
+      category: t.category,
+      status: t.status,
+      components: t.components,
+      variables_count: countBodyVars(t.components),
+      rejection_reason: t.rejected_reason ?? null,
+      quality_score: t.quality_score?.score ?? null,
+      header_media_url: media?.url ?? null,
+      header_media_type: media?.type ?? null,
+      ultima_sync_meta: new Date().toISOString(),
+    });
+  }
 
   const { error } = await supabase
     .schema("disparador")

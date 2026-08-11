@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient as createSbClient } from "@supabase/supabase-js";
 import { WhatsappClient } from "@/lib/whatsapp/client";
+import { parseTemplateShape, namedParamFromKey, type TemplateComponentLike } from "@/lib/whatsapp/template-shape";
 
 /**
  * POST /api/dispatcher/send
@@ -99,27 +100,60 @@ export async function POST(req: Request) {
     phoneNumberId: conta.phone_number_id,
   });
 
-  // Monta bodyVariables na ordem ({{1}}, {{2}}, ...)
-  const keys = Object.keys(e.variables ?? {}).filter((k) => /^\d+$/.test(k)).sort((a, b) => Number(a) - Number(b));
-  const bodyVariables = keys.map((k) => e.variables[k]);
+  // Monta os componentes a partir da FORMA real do template (header/body/botão),
+  // puxando cada valor de e.variables pela chave definida no template-shape.
+  const tmpl = e.campanha.template;
+  const shape = parseTemplateShape((tmpl.components as TemplateComponentLike[]) ?? []);
+  const vars = e.variables ?? {};
 
-  // Monta headerMedia se template tem header com IMAGE/VIDEO/DOCUMENT
+  const bodyVariables: string[] = [];
+  const bodyNamedParams: Array<{ name: string; text: string }> = [];
+  const headerVariables: string[] = [];
+  const buttonVariables: Array<{ index: number; text: string }> = [];
+
+  for (const f of shape.fields) {
+    const val = String(vars[f.key] ?? "");
+    if (f.scope === "body") {
+      const named = namedParamFromKey(f.key);
+      if (named) bodyNamedParams.push({ name: named, text: val });
+      else bodyVariables.push(val);
+    } else if (f.scope === "header") {
+      headerVariables.push(val);
+    } else if (f.scope === "button") {
+      const idx = Number(f.key.split(":")[1]);
+      buttonVariables.push({ index: idx, text: val });
+    }
+  }
+
+  // Header com mídia (IMAGE/VIDEO/DOCUMENT) — a imagem é fixa do template,
+  // re-hospedada no Storage pelo sync. Sem ela, o envio falharia na Meta.
   let headerMedia: { type: "image" | "video" | "document"; link: string; filename?: string } | undefined;
-  const mediaType = e.campanha.template.header_media_type;
-  const mediaUrl = e.campanha.template.header_media_url;
-  if (mediaType && mediaUrl) {
-    headerMedia = {
-      type: mediaType.toLowerCase() as "image" | "video" | "document",
-      link: mediaUrl,
-    };
+  if (shape.headerMedia) {
+    const mediaUrl = tmpl.header_media_url;
+    if (!mediaUrl) {
+      await supabase
+        .schema("disparador" as never)
+        .from("envios")
+        .update({
+          status: "failed",
+          error_message: "Template tem mídia no cabeçalho mas ela não foi sincronizada. Clique em 'Atualizar' na tela de templates e tente de novo.",
+          failed_at: new Date().toISOString(),
+        })
+        .eq("id", envio_id);
+      return NextResponse.json({ ok: false, error: "header_media_url ausente" }, { status: 422 });
+    }
+    headerMedia = { type: shape.headerMedia.type, link: mediaUrl };
   }
 
   try {
     const r = await client.sendTemplate({
       to: e.telefone,
-      templateName: e.campanha.template.name,
-      language: e.campanha.template.language,
+      templateName: tmpl.name,
+      language: tmpl.language,
       bodyVariables: bodyVariables.length > 0 ? bodyVariables : undefined,
+      bodyNamedParams: bodyNamedParams.length > 0 ? bodyNamedParams : undefined,
+      headerVariables: headerVariables.length > 0 ? headerVariables : undefined,
+      buttonVariables: buttonVariables.length > 0 ? buttonVariables : undefined,
       headerMedia,
     });
     await supabase
