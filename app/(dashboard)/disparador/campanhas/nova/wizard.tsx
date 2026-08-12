@@ -613,6 +613,11 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
                 {shape.fields.map((f) => (
                   <div key={f.key} className="space-y-1">
                     <label className="text-xs text-muted-foreground">{f.label} →</label>
+                    {f.hint && (
+                      <p className="text-[11px] text-muted-foreground">
+                        Completa o link (sem espaços): <span className="font-mono">{f.hint}</span>
+                      </p>
+                    )}
                     <Select
                       value={varMap[f.key] ?? ""}
                       onValueChange={(v) => setVarMap({ ...varMap, [f.key]: v })}
@@ -629,9 +634,14 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
                     </Select>
                     {varMap[f.key] === "__fixed__" && (
                       <Input
-                        placeholder="Valor fixo pra todos os contatos"
+                        placeholder={f.noSpaces ? "Sem espaços (ex: pontos)" : "Valor fixo pra todos os contatos"}
                         value={fixedVals[f.key] ?? ""}
-                        onChange={(e) => setFixedVals({ ...fixedVals, [f.key]: e.target.value })}
+                        onChange={(e) => {
+                          const raw = e.target.value;
+                          // parâmetro de URL de botão não pode ter espaço
+                          const val = f.noSpaces ? raw.replace(/\s+/g, "") : raw;
+                          setFixedVals({ ...fixedVals, [f.key]: val });
+                        }}
                       />
                     )}
                   </div>

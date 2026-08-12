@@ -32,6 +32,10 @@ export interface TemplateField {
   label: string;
   /** onde a variável aparece */
   scope: "header" | "body" | "button";
+  /** dica extra pra UI (ex: link do botão com o espaço a preencher) */
+  hint?: string;
+  /** true = valor não pode ter espaço (ex: parâmetro de URL de botão) */
+  noSpaces?: boolean;
 }
 
 export interface TemplateShape {
@@ -98,10 +102,14 @@ export function parseTemplateShape(components: TemplateComponentLike[]): Templat
   if (buttonsComp?.buttons) {
     buttonsComp.buttons.forEach((btn, idx) => {
       if (btn.type === "URL" && btn.url && /\{\{\s*\d+\s*\}\}/.test(btn.url)) {
+        // dica: mostra o link com o pedaço a completar (sem espaços)
+        const hint = btn.url.replace(/\{\{\s*\d+\s*\}\}/, "▁▁▁");
         shape.fields.push({
           key: `button:${idx}`,
-          label: `Botão "${btn.text ?? "link"}" (link dinâmico)`,
+          label: `Link do botão "${btn.text ?? "link"}"`,
           scope: "button",
+          hint,
+          noSpaces: true,
         });
       }
     });

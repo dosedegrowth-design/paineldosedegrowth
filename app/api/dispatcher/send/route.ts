@@ -121,7 +121,8 @@ export async function POST(req: Request) {
       headerVariables.push(val);
     } else if (f.scope === "button") {
       const idx = Number(f.key.split(":")[1]);
-      buttonVariables.push({ index: idx, text: val });
+      // parâmetro de URL de botão não pode ter espaço/quebra (Meta #132018)
+      buttonVariables.push({ index: idx, text: val.replace(/\s+/g, "") });
     }
   }
 
