@@ -1,21 +1,25 @@
-# Palavra com Alma — Plano de Mídia
+# Palavra com Alma — Documento de ideias
 
-**Objetivo:** encher a agenda de consultas oraculares da Natália Uriel (R$ 300) com mulheres, via Instagram e Facebook Ads, usando criativos gravados por ela.
+> **Ideia inicial, pra conversar.** Não é proposta comercial. É um levantamento do mercado e um conjunto de ideias pra Natália Uriel ler com calma, riscar o que não combina com ela e trazer o que faz sentido. Depois a gente senta, conversa e fecha junto o que vai pro ar.
+
+Um caminho possível pra **encher a agenda de consultas da Natália Uriel com mulheres**, usando anúncios no Instagram e no Facebook, com vídeos gravados por ela.
 
 | | |
 |---|---|
 | **Atuante** | Natália Uriel — Oraculista · Magista · Kimbanda (@palavracomalma) |
-| **Oferta** | Consulta oracular R$ 300 — online e presencial (SP) |
-| **Conversão** | WhatsApp — ela responde, rápido |
-| **Fora do escopo** | Loja (@loja.palavracomalma) — só se o oráculo validar |
+| **Consulta** | R$ 300 — online e presencial (SP) |
+| **Verba sugerida** | R$ 1.200 a 1.500 por mês, pra começar |
+| **Onde fecha** | WhatsApp — ela responde, rápido |
+
+Os textos de vídeo deste documento são **sugestões de ponto de partida** — não roteiro pronto pra decorar. A voz, as palavras e o que pode ou não ser dito são dela.
 
 ---
 
-## 1. O leilão
+## 1. O mercado hoje
 
-Anúncios ativos no Brasil por termo — Biblioteca de Anúncios do Meta, ago/2026:
+Quantos anúncios estão rodando no Brasil agora, por assunto. Dados públicos da Biblioteca de Anúncios do Facebook, agosto de 2026:
 
-| Termo | Ativos |
+| Assunto | Anúncios no ar |
 |---|---|
 | consulta espiritual | ~1.790 |
 | pombagira | ~1.173 |
@@ -25,184 +29,200 @@ Anúncios ativos no Brasil por termo — Biblioteca de Anúncios do Meta, ago/20
 | jogo de búzios | ~511 |
 | baralho cigano | ~502 |
 
-Demanda validada: o público já compra consulta pelo Instagram e fecha no WhatsApp. O custo disso é leilão disputado — entrar com "mais do mesmo" sai caro. A diferenciação está no ângulo, não no volume de verba.
+Isso mostra duas coisas. A primeira é boa: **as pessoas já estão acostumadas a marcar consulta pela internet** — chegam pelo Instagram e fecham no WhatsApp. Não precisamos ensinar ninguém a fazer isso.
 
-## 2. O que copiar dos grandes
+A segunda é o cuidado: tem **muita gente anunciando ao mesmo tempo**, e o Facebook cobra mais caro de quem anuncia igual a todo mundo. Por isso a diferença tem que estar no jeito de falar, não no tamanho da verba.
 
-Só mecanismo de tráfego. Conduta e discurso ficam de fora — do ponto de vista de quem é do culto, a maioria é marmoteiro. Pegamos a máquina e descartamos a postura.
+## 2. O que dá pra aproveitar de quem já anuncia
 
-| Player | Escala | Mecanismo que funciona |
+Aqui a gente olhou só pra **maneira de anunciar** — o que funciona na prática. O discurso e a postura da maioria a gente descarta: quem é do culto sabe que boa parte é marmotagem.
+
+| Perfil | Tamanho | O que funciona no jeito de anunciar |
 |---|---|---|
-| Mãe Michelly da Cigana | ~1M IG | **Abertura de agenda toda semana** como campanha recorrente + consulta a distância por vídeo/WhatsApp |
-| Oráculo Ancião | 49 ads | Escala por **duplicação** — dezenas de cópias do mesmo anúncio |
-| Tarot com Aurora | 43 ads | Always-on com selo **"on-line agora"** — anúncio vira plantão |
-| Márcia Valéria | 14 ads | Único com **topo de funil real** — entrega valor de graça antes de vender |
-| Recanto Quimbanda | 15 ads | Reels impulsionados **em lote** pra engordar remarketing barato |
-| Sacerdotisa Matildes | ~145k IG | Autoridade feminina no orgânico com esteira consulta → ritual → curso |
-| Sensitivas de promessa | 4–10 cada | Marcam onde está o maior volume de dor (amor) — e servem de contraexemplo: conta com esse discurso cai em ciclo |
-| Páginas Mãe/Yalorixá genéricas | dezenas | O mar de igual — prova que identidade forte se destaca com pouco esforço |
+| Mãe Michelly da Cigana | ~1 milhão | Toda semana **abre a agenda e avisa** — vira um anúncio novo por semana, sempre. E atende de longe, por chamada de vídeo e WhatsApp. |
+| Oráculo Ancião | 49 anúncios | Sobe **dezenas de cópias do mesmo anúncio**, pra aparecer pra mais gente sem cansar um vídeo só. |
+| Tarot com Aurora | 43 anúncios | Deixa sempre no ar um aviso de **"estou disponível agora"**. O anúncio vira plantão. |
+| Márcia Valéria | 14 anúncios | A única que **entrega algo de graça antes de vender** — e isso barateia todo o resto. |
+| Recanto Quimbanda | 15 anúncios | Impulsiona **vários vídeos do perfil de uma vez**, pra juntar público interessado gastando pouco. |
+| Sacerdotisa Matildes | ~145 mil | Construiu autoridade sem anunciar, só com conteúdo. Hoje vende consulta, ritual e curso. |
+| As que prometem resultado | 4 a 10 cada | Mostram onde está a maior procura (amor) — e servem de aviso: **quem promete resultado tem a conta bloqueada** e fica recriando conta o tempo todo. |
+| Perfis genéricos de mãe e yalorixá | dezenas | São todos iguais. Justamente por isso, quem tem identidade própria se destaca com pouco esforço. |
 
-**A lacuna:** todo mundo fala com a mulher fragilizada pela dependência ("traga ele de volta") ou fala genérico demais. Ninguém grande anuncia com **força feminina** no centro, apesar da Pombagira ser exatamente o arquétipo da mulher dona de si. É o espaço que a Natália ocupa sem concorrência direta.
+**O espaço que está vazio:** quase todo mundo fala com a mulher pelo lado da carência — "traga ele de volta" — ou fala de um jeito tão genérico que ninguém lembra depois. **Ninguém grande está anunciando pelo lado da força**, mesmo a Pombagira sendo justamente o retrato da mulher dona de si. É esse espaço que a Natália pode ocupar praticamente sozinha.
 
-## 3. Posicionamento
+## 3. A ideia central
 
 > **"A força que você está procurando fora, já mora em você."**
 
-Consulta **não é adivinhação e não é pra prender homem** — é direção, clareza e retomada de poder. A mulher fragilizada é o público, mas a comunicação devolve ar de mulher forte: Pombagira como espelho de autonomia, nunca ferramenta de dependência.
+A consulta **não é adivinhação e não é pra prender homem** — é direção, clareza e retomada de poder. A mulher que chega machucada continua sendo o público, mas o jeito de falar com ela devolve força em vez de alimentar dependência: a Pombagira como espelho de autonomia.
 
-**R$ 300 é premium no nicho, e isso é coerente:** quem vende empoderamento não briga por preço. O valor filtra curiosa e atrai quem valoriza.
+**A dor principal quem diz é a Natália.** As dores que aparecem nas ideias de vídeo — amor, caminhos travados, busca espiritual — são o que a gente viu no mercado. O que vale mesmo é o que ela mais atende no dia a dia. Essa é a primeira coisa pra conversar, porque é ela que define quais vídeos merecem mais verba.
 
-**Dor principal — quem define é o atendimento da Natália.** As dores que aparecem nos criativos (amor, caminhos travados, busca espiritual) são leitura de mercado. A calibragem final vem do que ela mais atende hoje — primeira pergunta do M0, e a resposta define qual criativo recebe mais verba.
+## 4. Como os anúncios rodam
 
-## 4. Funil e verba
+Tudo termina numa conversa no WhatsApp. Com **R$ 1.200 a 1.500 por mês** — mais ou menos R$ 40 a 50 por dia — dá pra rodar as três etapas.
 
-WhatsApp-first, verba inteira no oráculo. R$ 1.500–3.000/mês sustenta o sistema completo.
+**Etapa 1 · Quem ainda não conhece (~45% da verba)**
+Fazer mulheres assistirem aos vídeos dela e começarem a seguir. Mulheres de 25 a 55 anos, interesses amplos — o próprio vídeo faz a filtragem. Vídeos V1 a V5 e imagens E1, E2. Serve pra formar a lista de quem assistiu e se interessou, que é o que barateia as etapas seguintes.
 
-| Etapa | % | Campanha | Criativos | Régua |
-|---|---|---|---|---|
-| **Topo** | 45% | ThruPlay + engajamento. Mulheres 25–55, interesses amplos — o criativo é o filtro | V1–V5, E1, E2 | Fabrica públicos: viu 50%/75% do vídeo, engajou com perfil (30/60/90d) |
-| **Meio** | 25% | Remarketing sobre o público do topo. Responde: é pra mim? é sério? como funciona? | V6–V9, E3, E4 | CTR > 1,5% · frequência ≤ 3/semana |
-| **Fundo** | 30% | Mensagens (WhatsApp) com agenda semanal + always-on de consulta online | V10, V11, E5 | Custo por conversa R$ 3–15 |
+**Etapa 2 · Quem já viu e ficou na dúvida (~25%)**
+Aparecer de novo só pra quem já assistiu ou já interagiu com o perfil. Responde: é pra mim? é de verdade? como funciona e quanto custa? Vídeos V6 a V9 e imagens E3, E4. De olho em quantas pessoas clicam e quantas vezes a mesma pessoa vê o anúncio.
 
-**A conta com R$ 300:** R$ 3–15 por conversa → 20–40% converte em agendamento → **R$ 12–75 por consulta** → R$ 300 de receita. Cada consulta paga de **4 a 25×** o próprio custo de aquisição.
+**Etapa 3 · Quem já está pronta (~30%)**
+Levar direto pra conversa no WhatsApp, com a agenda da semana. Mais um anúncio fixo sobre a consulta online, gastando pouco por dia. Vídeos V10 e V11, imagem E5. De olho em quanto custa cada conversa iniciada e quantas viram consulta marcada.
 
-Acima de R$ 20 por conversa, trocar criativo — não aumentar verba. A taxa de agendamento depende de velocidade de resposta, e isso já está resolvido.
+### A conta
 
-**Remarketing em camadas:** 0–7d oferta direta · 8–30d prova social + agenda · 31–90d volta pro conteúdo de identificação.
+R$ 3 a 15 por conversa iniciada → 20 a 40% viram consulta → **R$ 12 a 75 de custo por consulta** → R$ 300 de valor da consulta.
 
-## 5. Criativos
+Ou seja: cada consulta paga **de 4 a 25 vezes** o que custou pra trazer aquela pessoa.
 
-Onze vídeos e cinco estáticos. Cada ficha traz fala sugerida, cenário, racional e onde roda — **base pra Natália partir, não script fechado**: ela adapta com a voz dela e o que o fundamento permite. Preservar sempre o gancho de 3 segundos, a função no funil e o CTA.
+São números de referência do que a gente observou no mercado — na prática só dá pra saber depois de rodar. Se a conversa começar a custar mais de R$ 20, o certo é trocar o vídeo, não colocar mais dinheiro. Uma coisa já joga a favor: quantas conversas viram consulta depende muito da rapidez da resposta, e a Natália responde ela mesma.
 
-> **Antes de gravar:** auditar o perfil. Conteúdo que já existe e encaixa nos lotes vira anúncio no mesmo dia, sem gravação nova — é o atalho que mais acelera o cronograma.
+**Voltar a aparecer pra quem já viu:** nos primeiros 7 dias, o convite direto. Entre 8 e 30 dias, depoimento e agenda. Depois disso, volta o conteúdo que fez ela se identificar.
 
-### Lote A · Topo — 5 vídeos (gravar numa tarde só)
+## 5. Ideias de vídeo
 
-**V1 · O medo que te ensinaram** · 30–40s
-- **Gancho:** *"Você tem medo da Kimbanda? Pois é. Te ensinaram a ter."*
-- **Corpo:** *"Te ensinaram que era coisa do mal, coisa de gente perigosa. Curioso, né? As religiões onde a mulher tem voz, corpo e poder são sempre as que pintaram de demônio. Eu sou iniciada. E o que eu vejo na minha mesa todo dia não é maldade — é mulher chegando quebrada e saindo inteira."*
-- **CTA:** *"Me segue que eu vou te mostrar essa espiritualidade sem filtro e sem medo."*
-- **Cenário:** altar desfocado ao fundo, luz de vela + luz quente no rosto, guias visíveis.
-- **Racional:** identificação máxima — ataca preconceito que toda mulher do nicho já sentiu. Gera comentário e compartilhamento (distribuição de graça) e estabelece autoridade acolhedora.
-- **Roda em:** topo (ThruPlay) + fixado no perfil. Mede por custo de ThruPlay, % que assistiu 50%, seguidores novos.
+**Tudo aqui é sugestão.** A Natália lê, corta o que não combina, muda as palavras pro jeito dela e diz o que não pode ser falado por causa do fundamento. Se der pra manter três coisas de cada ideia, ótimo: uma **primeira frase que prenda a atenção**, a **etapa onde o vídeo entra** e o **convite no final**. O resto é dela.
 
-**V2 · Pombagira não é o que te contaram — a bandeira** · 30–45s
-- **Gancho:** *"Pombagira não é sobre prender homem. É sobre você parar de se abandonar."*
-- **Corpo:** *"A Pombagira é o arquétipo da mulher que ninguém manda. A mulher que fala não. Que fala sim. Que senta na mesa e se serve primeiro. Quando uma mulher chega na minha consulta pedindo pra trazer ele de volta, a primeira pergunta que vem não é sobre ele. É: e você, quando é que você volta pra você?"*
-- **CTA:** *"Se isso te tocou, me segue. É disso que essa página vive."*
-- **Racional:** a bandeira da marca e o ângulo que nenhum concorrente grande usa em anúncio. Filtra o público certo e reposiciona a dor de maior volume de um jeito verdadeiro e anunciável. Candidato a melhor performer.
-- **Roda em:** topo principal; depois vira meio com CTA de consulta. Mede por compartilhamento, salvamento, custo por seguidor.
+**Atalho:** antes de gravar qualquer coisa, vale olhar o perfil dela. Se já existir vídeo parecido com alguma dessas ideias, dá pra transformar em anúncio no mesmo dia — sem gravar nada novo.
 
-**V3 · Minha história** · 40–60s
-- **Gancho:** *"Eu não escolhi a Kimbanda. Eu fui buscada."*
-- **Corpo:** história real dela em 40s — o caminho até a iniciação, o dia que entendeu o chamado, o que mudou nela como mulher. Uma frase sobre a casa. Se fizer sentido, o Tata aparece junto (casal de axé é chancela de tradição forte).
-- **CTA:** *"Hoje eu abro esse caminho pra outras mulheres. Me segue pra caminhar junto."*
-- **Racional:** rosto + história é o que sustenta consulta de R$ 300 — transforma perfil em pessoa. Melhor primeiro vídeo pra quem cai no perfil sem conhecer nada.
-- **Roda em:** topo secundário + destaque fixo no Instagram.
+### Grupo 1 — Pra quem ainda não conhece
 
-**V4 · Sinais de caminho travado** · 30–40s
-- **Gancho:** *"Três sinais de que a energia da sua casa tá pedindo socorro."*
-- **Corpo:** ⚠️ **os três sinais quem escolhe é a Natália**, com base no que mais chega na mesa dela. Lista rápida cortada com imagens de apoio (vela, altar). Fecha com: *"isso não é fraqueza sua. Em axé a gente chama de caminho travado — e caminho travado se abre."*
-- **CTA:** *"Salva esse vídeo e me segue."*
-- **Cuidado:** tom geral e educativo ("a gente", "a casa", "quando acontece"). Falar direto da condição de quem assiste derruba o anúncio.
-- **Racional:** formato-lista é o que o algoritmo mais distribui. Alcança a dor de prosperidade/limpeza, hoje só atacada com copy agressiva.
+*São só ideias. Dá pra gravar todas numa tarde, escolher duas, ou trocar por outras que ela achar melhor. A gente decide junto na reunião.*
 
-**V5 · O que acontece numa consulta** · 30–45s · topo e meio
-- **Gancho:** *"Deixa eu te mostrar o que acontece de verdade numa consulta de oráculo."*
-- **Corpo:** bastidor estético sem expor fundamento (mesa, cartas ou búzios, vela, mãos). Narração: *"Você senta. A gente abre a mesa e pede licença. Você não precisa contar nada — o oráculo mostra o desenho: onde você está, o que te trava e qual o caminho. Você sai com direção, não com dependência. Online ou aqui em SP, é o mesmo axé."*
-- **CTA:** *"Quer saber quando abre a agenda? Me segue."*
-- **Racional:** mata a objeção nº 1 de quem nunca consultou e já planta a agenda. Ponte natural topo→meio.
+**V1 · O medo que te ensinaram** · 30 a 40s
+- Primeira frase: *"Você tem medo da Kimbanda? Pois é. Te ensinaram a ter."*
+- Sugestão de fala: *"Te ensinaram que era coisa do mal, coisa de gente perigosa. Curioso, né? As religiões onde a mulher tem voz, corpo e poder são sempre as que pintaram de demônio. Eu sou iniciada. E o que eu vejo na minha mesa todo dia não é maldade — é mulher chegando quebrada e saindo inteira."*
+- Convite: *"Me segue que eu vou te mostrar essa espiritualidade sem filtro e sem medo."*
+- Cenário: altar desfocado ao fundo, luz de vela junto com uma luz quente no rosto, guias à mostra.
+- Por que esse: toca num preconceito que toda mulher desse meio já sentiu. Gera comentário e compartilhamento, e isso espalha o vídeo de graça.
 
-### Lote B · Meio — 4 vídeos (mesma tarde, troca de figurino)
+**V2 · Pombagira não é o que te contaram** · 30 a 45s — *a ideia mais forte do conjunto*
+- Primeira frase: *"Pombagira não é sobre prender homem. É sobre você parar de se abandonar."*
+- Sugestão de fala: *"A Pombagira é o retrato da mulher que ninguém manda. A mulher que fala não. Que fala sim. Que senta na mesa e se serve primeiro. Quando uma mulher chega na minha consulta pedindo pra trazer ele de volta, a primeira pergunta que vem não é sobre ele. É: e você, quando é que você volta pra você?"*
+- Convite: *"Se isso te tocou, me segue. É disso que essa página vive."*
+- Por que esse: atrai exatamente o público que a gente quer e trata o assunto mais procurado do meio — amor — de um jeito verdadeiro e que o Facebook aprova. É o que tem mais chance de dar certo.
 
-**V6 · Como funciona na prática** · 30–40s
-- **Gancho:** *"Como funciona uma consulta comigo? Rapidinho:"*
-- **Corpo:** passo a passo sem mistério — agenda pelo WhatsApp, online por vídeo ou presencial em SP, quanto dura, investimento de R$ 300, formas de pagamento, o que ela pode perguntar. Tom de quem recebe, não de quem vende.
-- **CTA:** *"Chama no WhatsApp que eu te explico tudo."*
-- **Racional:** o meio existe pra tirar fricção. Responde o que a mulher tem vergonha de perguntar — costuma ser o melhor custo por conversa do remarketing.
-- **Roda em:** remarketing de quem viu 50% de vídeo ou engajou com o perfil.
+**V3 · Minha história** · 40 a 60s
+- Primeira frase: *"Eu não escolhi a Kimbanda. Eu fui buscada."*
+- Sugestão: a história dela em uns quarenta segundos — o caminho até a iniciação, o dia em que entendeu o chamado, o que mudou nela como mulher. Uma frase sobre a casa. Se ela quiser, o Tata pode aparecer junto (casal de axé passa muita tradição).
+- Convite: *"Hoje eu abro esse caminho pra outras mulheres. Me segue pra caminhar junto."*
+- Por que esse: rosto e história transformam um perfil em pessoa — é o que faz alguém confiar o suficiente pra marcar uma consulta. É também o melhor vídeo pra deixar fixado no perfil.
 
-**V7 · Não é sobre ele** · 40–60s
-- **Gancho:** *"'Ele vai voltar?' — essa é a pergunta que eu mais escuto. E eu vou ser honesta com você."*
-- **Corpo:** *"O oráculo até responde. Mas eu nunca vi a resposta sobre ele curar uma mulher. O que cura é o que vem depois: entender o que te prendeu nesse ciclo, o que é seu, o que é herança, e o que a sua Pombagira tá te cobrando há anos. A consulta não é sobre trazer alguém de volta. É sobre trazer você de volta."*
-- **CTA:** *"Quando você estiver pronta, minha mesa tá aberta. Chama no WhatsApp."*
-- **Racional:** fala direto com o maior volume de dor do nicho sem prometer nada sobre terceiros — mantém a conta segura e diferencia num leilão lotado de "amarração garantida". Coração ético da marca.
-- **Roda em:** meio. Versão sem CTA final roda no topo também.
+**V4 · Sinais de caminho travado** · 30 a 40s
+- Primeira frase: *"Três sinais de que a energia da sua casa tá pedindo socorro."*
+- **Em aberto:** quais são os três sinais quem diz é a Natália, pelo que ela mais escuta na mesa.
+- Sugestão: lista rápida, cortada com imagens dela acendendo vela e arrumando o altar. Uma ideia de fechamento: *"isso não é fraqueza sua. Em axé a gente chama de caminho travado — e caminho travado se abre."*
+- Convite: *"Salva esse vídeo e me segue."*
+- Cuidado: falar de forma geral — "a gente", "a casa", "quando acontece". Se apontar direto pra quem assiste, o Facebook derruba o anúncio.
+- Por que esse: vídeo em formato de lista é o que mais se espalha nesse meio, e ninguém está falando dessa dor sem apelação.
 
-**V8 · Prova social** · 30–45s
-- **Formato:** ela contando 2–3 relatos reais, autorizados e sem nome: *"cheguei achando que era sobre ele, saí entendendo que era sobre mim"* · *"me senti acolhida, sem julgamento"*.
-- **Cuidado:** depoimento de experiência e sentimento. Nunca resultado material.
-- **Racional:** prova social é a moeda do meio. Pela boca dela em vez de print cru, mantém a estética premium que sustenta o preço.
+**V5 · O que acontece numa consulta** · 30 a 45s · serve nas etapas 1 e 2
+- Primeira frase: *"Deixa eu te mostrar o que acontece de verdade numa consulta de oráculo."*
+- Sugestão: imagens bonitas do momento, sem mostrar fundamento (a mesa, as cartas ou os búzios, a vela acesa, as mãos), com ela narrando: *"Você senta. A gente abre a mesa e pede licença. Você não precisa contar nada — o oráculo mostra o desenho: onde você está, o que te trava e qual o caminho. Você sai com direção, não com dependência. Online ou aqui em SP, é o mesmo axé."*
+- Convite: *"Quer saber quando abre a agenda? Me segue."*
+- Por que esse: o maior medo de quem nunca consultou é não saber como é. Esse vídeo resolve isso e já deixa a agenda no radar.
 
-**V9 · Tour da casa e do altar** · 20s
-- **Formato:** cinematográfico sem fala — velas acendendo, guias, defumação, mãos preparando a mesa. Texto na tela: *"Aqui, mulher não pede permissão pra ter força."*
-- **Racional:** o nicho vende atmosfera. Roda barato em alcance, deixa a página premium e vira banco de imagens pros estáticos.
+### Grupo 2 — Pra quem já viu e ficou na dúvida
 
-### Lote C · Fundo — 2 vídeos (o V10 se regrava toda semana em 10 min)
+*Também são só ideias. Podem sair no mesmo dia de gravação do grupo 1, com troca de roupa — ou ficar pra depois, se ela preferir começar devagar.*
 
-**V10 ⭐ · Agenda da semana aberta — o motor** · 20–30s · semanal
-- **Template:** *"Abriu a agenda da semana. Eu tenho X vagas de consulta — online ou presencial aqui em SP — entre [dia] e [dia]. Semana passada fechou rápido, então se você vinha esperando um sinal: é esse. Toca no botão e chama no WhatsApp."*
-- **Regra:** ⚠️ a escassez precisa ser verdadeira — falta definir quantas vagas reais por semana.
-- **Racional:** mecanismo mais comprovado do nicho inteiro. Escassez real e recorrente dá motivo novo pro anúncio toda semana e cria hábito. Dez minutos de regravação semanal sustentam o funil de conversão sozinhos.
-- **Roda em:** campanha de Mensagens, domingo até esgotar, público quente. Mede por custo por conversa e vagas preenchidas.
+**V6 · Como funciona na prática** · 30 a 40s
+- Primeira frase: *"Como funciona uma consulta comigo? Rapidinho:"*
+- Sugestão: o passo a passo sem mistério — marca pelo WhatsApp, é online por chamada de vídeo ou presencial em SP, quanto tempo dura, o valor de R$ 300, como pagar e o que ela pode perguntar. Tom de quem recebe, não de quem vende.
+- Convite: *"Chama no WhatsApp que eu te explico tudo."*
+- Por que esse: costuma ser o vídeo que traz conversa mais barata, porque tira todas as dúvidas de uma vez.
 
-**V11 · Consulta online sem perder o axé** · 30–40s
-- **Gancho:** *"'Mas online funciona?' — funciona, e eu te explico por quê."*
-- **Corpo:** mesma mesa, mesma entidade, ela na casa dela. Pra quem é de longe, tem vergonha, é mãe sem tempo.
-- **CTA:** *"Chama no WhatsApp e agenda a sua."*
-- **Racional:** quebra a objeção geográfica e transforma o mercado de SP no Brasil inteiro. Always-on, budget baixo.
+**V7 · Não é sobre ele** · 40 a 60s
+- Primeira frase: *"'Ele vai voltar?' — essa é a pergunta que eu mais escuto. E eu vou ser honesta com você."*
+- Sugestão de fala: *"O oráculo até responde. Mas eu nunca vi a resposta sobre ele curar uma mulher. O que cura é o que vem depois: entender o que te prendeu nesse ciclo, o que é seu, o que é herança, e o que a sua Pombagira tá te cobrando há anos. A consulta não é sobre trazer alguém de volta. É sobre trazer você de volta."*
+- Convite: *"Quando você estiver pronta, minha mesa tá aberta. Chama no WhatsApp."*
+- Por que esse: fala com quem mais procura esse tipo de serviço sem prometer nada sobre outra pessoa. Isso mantém a conta segura e diferencia dos anúncios de "amarração garantida".
 
-### Lote D · Estáticos — 5 peças
+**V8 · Relatos de quem já veio** · 30 a 45s
+- Formato: ela contando dois ou três relatos verdadeiros, com autorização e sem citar nome — *"cheguei achando que era sobre ele, saí entendendo que era sobre mim"*, *"me senti acolhida, sem julgamento"*.
+- Cuidado: relato de sentimento pode. Relato de resultado — "consegui o emprego", "ele voltou" — derruba o anúncio.
+- Por que esse: ver que outras mulheres foram bem recebidas é o que faz alguém em dúvida dar o passo.
 
-| # | Peça | Descrição | Etapa |
+**V9 · A casa e o altar** · 20s
+- Formato: vinte segundos de imagens bonitas — velas acendendo, guias, defumação, as mãos preparando a mesa. Uma frase escrita na tela: *"Aqui, mulher não pede permissão pra ter força."*
+- Por que esse: esse meio se vende muito pelo clima. Aparece barato pra muita gente e deixa o perfil com cara de casa séria.
+
+### Grupo 3 — Pra quem já está pronta
+
+*Idem: sugestão. Se ela topar, o primeiro vídeo vira uma gravação rápida toda semana — uns dez minutos, direto do celular.*
+
+**V10 · Agenda da semana aberta** · 20 a 30s · toda semana
+- Modelo de fala: *"Abriu a agenda da semana. Eu tenho X vagas de consulta — online ou presencial aqui em SP — entre [dia] e [dia]. Semana passada fechou rápido, então se você vinha esperando um sinal: é esse. Toca no botão e chama no WhatsApp."*
+- **Em aberto:** precisa ser verdade — quantas vagas ela realmente tem por semana?
+- Por que esse: vaga limitada de verdade dá um motivo novo pro anúncio toda semana e acostuma o público a esperar a abertura. Dez minutos de gravação por semana seguram sozinhos essa etapa.
+- Quando roda: de domingo até as vagas acabarem, aparecendo só pra quem já conhece o trabalho dela.
+
+**V11 · Consulta online** · 30 a 40s
+- Primeira frase: *"'Mas online funciona?' — funciona, e eu te explico por quê."*
+- Sugestão: mesma mesa, mesma entidade, ela na casa dela. Pra quem mora longe, pra quem tem vergonha de ir, pra mãe que não tem com quem deixar os filhos.
+- Convite: *"Chama no WhatsApp e agenda a sua."*
+- Por que esse: deixa de atender só São Paulo e passa a atender o Brasil inteiro. Fica sempre no ar gastando pouco.
+
+### Ideias de imagem
+
+*Sugestões também. Imagem é mais barata de fazer e serve pra testar um assunto rápido, antes de gastar tempo gravando vídeo.*
+
+| Peça | Formato | Ideia | Etapa |
 |---|---|---|---|
-| E1 | Citação-manifesto | Retrato forte, olhar na lente, fundo de velas, sobre *"Pombagira não ensina a prender ninguém. Ensina a nunca mais se abandonar."* | Topo |
-| E2 | Carrossel de mitos | 7 cards: capa forte, 5 mentiras que contaram sobre a Kimbanda, card final com a verdade + convite | Topo |
-| E3 | Carrossel "como funciona" | 5 cards: agenda pelo WhatsApp · online ou presencial · o que o oráculo mostra · duração e R$ 300 · CTA | Meio |
-| E4 | Depoimento designado | Aspas grandes de relato de experiência sobre foto esmaecida | Meio |
-| E5 | Template de agenda | Arte editável semanal com nº de vagas e botão. Par do V10 — estático em stories/feed, vídeo em Reels | Fundo |
+| E1 | Frase forte | Um retrato dela olhando pra câmera, com velas ao fundo, sobre a frase *"Pombagira não ensina a prender ninguém. Ensina a nunca mais se abandonar."* | 1 |
+| E2 | Sequência de mitos | Sete telas: capa forte, cinco mentiras que contaram sobre a Kimbanda e uma tela final com a verdade e o convite pra seguir. | 1 |
+| E3 | Como funciona | Cinco telas: marca pelo WhatsApp · online ou presencial · o que o oráculo mostra · quanto dura e quanto custa · o convite. | 2 |
+| E4 | Relato ilustrado | Um relato de quem já veio, em letras grandes, sobre uma foto dela mais apagada ao fundo. | 2 |
+| E5 | Aviso de agenda | Uma arte editável toda semana, com o número de vagas e o botão de conversa. Anda junto com o vídeo da agenda. | 3 |
 
-## 6. Guia de gravação
+## 6. Como gravar
 
-1. **Auditar o perfil antes de tudo** — o que já existe e encaixa vira anúncio hoje.
-2. Celular na vertical (9:16), lente na altura dos olhos — tripé ou pilha de livros.
-3. Luz de frente pro rosto (janela ou ring light), velas atrás. Penumbra é a marca, mas o rosto iluminado.
-4. Lapela de R$ 50 muda tudo. Casa em silêncio; som ambiente entra na edição.
-5. Os 3 primeiros segundos são o anúncio — começar no gancho, sem "oi gente".
-6. Legenda sempre — a maioria assiste sem som.
-7. Figurino dela de verdade: guias, colares, turbante. Trocar entre lotes.
-8. 15 min de imagens de apoio por sessão: vela, cartas, búzios, defumador, altar. Alimenta meses de edição.
-9. Três takes por ficha — o natural sempre ganha do decorado.
+Nada de produção cara — celular resolve. São só cuidados que fazem diferença grande no resultado.
 
-**Guard-rails de anúncio:** sem promessa de resultado · sem apontar a condição de quem assiste (sempre 3ª pessoa) · sem imagem forte de ritual · conta nova aquece devagar (R$ 30–50/dia subindo, BM verificado) — nesse nicho conta cai por velocidade, não só por conteúdo.
+1. **Celular em pé, na altura dos olhos.** Um tripé simples ou uma pilha de livros resolve.
+2. **Luz batendo no rosto** — de frente pra janela ou uma luz de anel. As velas ficam atrás. A penumbra é bonita, mas o rosto precisa aparecer.
+3. **Um microfone de lapela barato muda tudo.** Casa em silêncio na hora de gravar; som de fundo entra depois, na edição.
+4. **Os três primeiros segundos decidem tudo.** Começar já na frase forte, sem "oi gente, tudo bem".
+5. **Legenda sempre** — a maioria assiste sem som.
+6. **A roupa dela de verdade:** guias, colares, turbante. Se trocar de roupa entre um grupo e outro, os vídeos parecem de dias diferentes.
+7. **Uns quinze minutos de imagens soltas por gravação:** vela, cartas, búzios, defumador, altar. Isso rende material pra meses.
+8. **Três tentativas por vídeo.** A mais natural sempre fica melhor que a decorada.
 
-## 7. Marcos
+**Cuidados pra conta não cair.** O Facebook é rígido nesse assunto. Três regras que evitam problema: não prometer resultado, não apontar a situação de quem está assistindo (falar sempre de forma geral) e não mostrar imagem forte de ritual. E conta nova começa devagar: uns R$ 30 a 50 por dia, subindo aos poucos, com o cadastro da empresa verificado. Nesse meio, muita conta cai por acelerar demais no começo, não pelo conteúdo.
 
-Sem data fixa. O ritmo é ditado pela disponibilidade de gravação da Natália e pelo acervo que já existe — com acervo bom, M1 acontece na mesma semana.
+## 7. Por onde começar
 
-| | Marco | O que destrava |
-|---|---|---|
-| **M0** | Alinhamento com a Natália | Dor principal, vagas por semana, história pro V3, relatos autorizados, auditoria do acervo |
-| **M1** | Topo no ar | V1, V2, V4 + estáticos começam a fabricar público de remarketing |
-| **M2** | Motor semanal ligado | V10 + E5 toda semana — primeiras consultas vindas de tráfego |
-| **M3** | Meio de funil no ar | V6–V8 sobre o remarketing; custo por conversa cai |
-| **M4** | Escala | Duplicar vencedores (+20% a cada 3–4 dias) + público semelhante de quem chamou no WhatsApp |
-| **M5** | Fase 2 (só se o oráculo validar) | Loja como segunda receita; avaliar curso ou mentoria |
+Sem data marcada — o ritmo depende da agenda dela pra gravar e do que já existe no perfil. Se já tiver material aproveitável, os anúncios sobem na mesma semana.
 
-**Kill rules:** custo por conversa > 2× a média por 3 dias → pausa · frequência > 4 no remarketing → troca criativo · nunca editar anúncio vencedor (duplicar pra escalar — editar zera o aprendizado).
+1. **Uma conversa pra alinhar.** Ver o que ela achou das ideias, entender o que ela mais atende, quantas vagas tem por semana e o que dá pra aproveitar do perfil. Sai daí a lista do que vale gravar de verdade.
+2. **Primeiros vídeos no ar.** Gravação nova ou material que já existe. Começa a se formar a lista de mulheres que assistiram e se interessaram.
+3. **Agenda semanal.** O aviso de vagas toda semana. É aqui que costumam entrar as primeiras consultas vindas de anúncio.
+4. **Vídeos pra quem ficou na dúvida.** Aqueles que explicam e mostram relatos, aparecendo só pra quem já conhece. A conversa fica mais barata porque a pessoa já viu o rosto dela.
+5. **Aumentar o que der certo.** Colocar mais verba nos vídeos que funcionarem e buscar pessoas parecidas com quem já chamou no WhatsApp.
+6. **Depois, se fizer sentido.** Só se a consulta estiver girando bem: a loja entra como segunda fonte de receita, e aí dá pra pensar em curso.
 
-## 8. O que falta
+**Quando pausar ou trocar:**
+- Conversa custando mais que o dobro da média por três dias seguidos: pausa aquele vídeo.
+- A mesma pessoa vendo o anúncio demais: troca o vídeo, não aumenta a verba.
+- Anúncio que está indo bem nunca se edita — faz uma cópia. Editar zera o aprendizado do Facebook.
 
-- [ ] Quantas vagas reais por semana (escassez verdadeira do V10)
-- [ ] A dor que mais chega na mesa (define os 3 sinais do V4 e onde vai mais verba)
-- [ ] História da iniciação, do jeito que ela topa contar (V3)
-- [ ] 2–3 relatos autorizados (V8, E4)
-- [ ] Acervo atual do perfil — o que já pode virar anúncio agora
-- [ ] Disponibilidade de gravação (define velocidade de M1–M3)
-- [ ] Infra Meta: conta comercial IG, Página, Business Manager, WhatsApp Business
+## 8. Pontos pra conversar
+
+O que a gente precisa saber dela pra transformar essas ideias em algo real.
+
+- [ ] **O que ela achou das ideias** — o que combina com ela, o que não combina e o que ela mudaria.
+- [ ] **A dor que mais chega na mesa** — é o que define quais vídeos merecem mais verba.
+- [ ] **Quantas vagas ela tem por semana** — pro aviso de agenda ser verdadeiro.
+- [ ] **A história da iniciação**, do jeito que ela quiser contar.
+- [ ] **Dois ou três relatos** de pessoas que já consultaram, com autorização.
+- [ ] **O que já existe no perfil** — talvez já dê pra anunciar sem gravar nada.
+- [ ] **Quando ela consegue gravar** — é isso que define o ritmo.
+- [ ] **Conta do Instagram e do WhatsApp** — ver se está tudo ligado do jeito que o Facebook pede pra anunciar.
 
 ---
 
-**Fontes.** Biblioteca de Anúncios do Meta, 14/ago/2026, anúncios ativos no Brasil — termos quimbanda, consulta espiritual, jogo de búzios, pombagira, maria padilha, baralho cigano, amarração amorosa, mais análise por página de cada anunciante citado. Perfis públicos: [@palavracomalma](https://www.instagram.com/palavracomalma/), [@maemichellydacigana](https://www.instagram.com/maemichellydacigana/), [@sacerdotisamatildes](https://www.instagram.com/sacerdotisamatildes/).
+**De onde vieram os números.** Biblioteca de Anúncios do Facebook, consultada em 14 de agosto de 2026, considerando anúncios ativos no Brasil para os assuntos quimbanda, consulta espiritual, jogo de búzios, pombagira, maria padilha, baralho cigano e amarração amorosa — mais a análise de cada perfil citado. Perfis públicos consultados: [@palavracomalma](https://www.instagram.com/palavracomalma/), [@maemichellydacigana](https://www.instagram.com/maemichellydacigana/) e [@sacerdotisamatildes](https://www.instagram.com/sacerdotisamatildes/).
 
-*Dose de Growth · Tráfego — próximo passo: M0.*
+**Dose de Growth** · Documento de ideias, não é proposta comercial. Feito pra ser lido com calma antes da nossa conversa.
