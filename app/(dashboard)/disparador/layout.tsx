@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { Send, LayoutGrid, Users2, FileText, Inbox } from "lucide-react";
+import { Send, LayoutGrid, Users2, FileText, Inbox, BarChart3 } from "lucide-react";
 
 const TABS = [
   { href: "/disparador", label: "Visão Geral", icon: LayoutGrid },
   { href: "/disparador/campanhas", label: "Campanhas", icon: Send },
   { href: "/disparador/templates", label: "Templates", icon: FileText },
   { href: "/disparador/contas", label: "Números WhatsApp", icon: Users2 },
+  { href: "/disparador/insights", label: "Insights (Meta)", icon: BarChart3 },
 ];
 
 export default function DisparadorLayout({ children }: { children: React.ReactNode }) {
