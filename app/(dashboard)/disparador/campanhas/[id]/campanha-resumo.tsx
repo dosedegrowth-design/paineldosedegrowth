@@ -13,6 +13,7 @@ interface Props {
   template: string | null;
   total: number;
   enviados: number;
+  entregues: number;
   falhados: number;
   pendentes: number;
   status: string;
@@ -49,6 +50,7 @@ export function CampanhaResumo(p: Props) {
     `👥 Base: ${p.total.toLocaleString("pt-BR")} contatos`,
     ``,
     `✅ Enviados: ${p.enviados.toLocaleString("pt-BR")} (${taxa}%)`,
+    `📬 Entregues: ${p.entregues.toLocaleString("pt-BR")}`,
     `❌ Falhas: ${p.falhados.toLocaleString("pt-BR")}`,
     `⏳ Pendentes: ${p.pendentes.toLocaleString("pt-BR")}`,
     ``,

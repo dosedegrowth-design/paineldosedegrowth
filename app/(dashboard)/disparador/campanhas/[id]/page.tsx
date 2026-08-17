@@ -49,15 +49,29 @@ export default async function CampanhaDetailPage({ params }: { params: Promise<{
   if (!data) notFound();
   const c = data as Campanha;
 
-  // Envios realmente pendentes (pra habilitar "Retomar pendentes")
-  const { count: pendentes } = await supabase
-    .schema("disparador" as never)
-    .from("envios")
-    .select("id", { count: "exact", head: true })
-    .eq("campanha_id", id)
-    .eq("status", "pending");
+  // Contagem REAL por status (vinda dos envios, não do campo agregado).
+  // Ciclo: pending -> sent (aceito/wamid) -> delivered -> read | failed (+motivo)
+  async function contar(status: string) {
+    const { count } = await supabase
+      .schema("disparador" as never)
+      .from("envios")
+      .select("id", { count: "exact", head: true })
+      .eq("campanha_id", id)
+      .eq("status", status);
+    return count ?? 0;
+  }
+  const [pendentes, aceitos, entregues, lidos, falhados] = await Promise.all([
+    contar("pending"),
+    contar("sent"), // aceito pela Meta, aguardando confirmação de entrega
+    contar("delivered"),
+    contar("read"),
+    contar("failed"),
+  ]);
+  const entreguesTotal = entregues + lidos;
+  // "Enviados" = tudo que a Meta aceitou (tem wamid): sent + delivered + read
+  const enviadosTotal = aceitos + entreguesTotal;
 
-  const progress = c.total_contatos > 0 ? (c.total_enviados / c.total_contatos) * 100 : 0;
+  const progress = c.total_contatos > 0 ? (enviadosTotal / c.total_contatos) * 100 : 0;
 
   return (
     <div className="space-y-6">
@@ -69,8 +83,8 @@ export default async function CampanhaDetailPage({ params }: { params: Promise<{
             <Badge variant={STATUS_VARIANT[c.status] ?? "secondary"}>{c.status}</Badge>
             <CampanhaActions
               campanha={c}
-              pendentes={pendentes ?? 0}
-              falhados={c.total_falhados ?? 0}
+              pendentes={pendentes}
+              falhados={falhados}
             />
           </div>
         }
@@ -84,11 +98,12 @@ export default async function CampanhaDetailPage({ params }: { params: Promise<{
         </Card>
       )}
 
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-5">
         <StatCard label="Total" value={c.total_contatos} />
-        <StatCard label="Enviados" value={c.total_enviados} accent="primary" />
-        <StatCard label="Entregues" value={c.total_entregues} />
-        <StatCard label="Falhas" value={c.total_falhados} accent={c.total_falhados > 0 ? "destructive" : undefined} />
+        <StatCard label="Enviados" value={enviadosTotal} accent="primary" />
+        <StatCard label="Entregues" value={entreguesTotal} />
+        <StatCard label="Falhas" value={falhados} accent={falhados > 0 ? "destructive" : undefined} />
+        <StatCard label="Pendentes" value={pendentes} />
       </div>
 
       <Card>
@@ -111,9 +126,10 @@ export default async function CampanhaDetailPage({ params }: { params: Promise<{
         telefone={c.conta?.phone_number_display ?? null}
         template={c.template?.name ?? null}
         total={c.total_contatos}
-        enviados={c.total_enviados}
-        falhados={c.total_falhados}
-        pendentes={pendentes ?? 0}
+        enviados={enviadosTotal}
+        entregues={entreguesTotal}
+        falhados={falhados}
+        pendentes={pendentes}
         status={c.status}
         startedAt={c.started_at}
         finishedAt={c.finished_at}
