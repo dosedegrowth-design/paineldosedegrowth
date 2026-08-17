@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/dashboard/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CampanhaActions } from "./campanha-actions";
+import { CampanhaResumo } from "./campanha-resumo";
 import { EnviosTable } from "./envios-table";
 
 const STATUS_VARIANT: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
@@ -103,6 +104,20 @@ export default async function CampanhaDetailPage({ params }: { params: Promise<{
           </div>
         </CardContent>
       </Card>
+
+      <CampanhaResumo
+        nome={c.nome}
+        conta={c.conta?.display_name ?? null}
+        telefone={c.conta?.phone_number_display ?? null}
+        template={c.template?.name ?? null}
+        total={c.total_contatos}
+        enviados={c.total_enviados}
+        falhados={c.total_falhados}
+        pendentes={pendentes ?? 0}
+        status={c.status}
+        startedAt={c.started_at}
+        finishedAt={c.finished_at}
+      />
 
       <EnviosTable campanhaId={c.id} />
     </div>
