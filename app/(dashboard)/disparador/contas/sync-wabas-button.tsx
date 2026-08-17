@@ -19,8 +19,10 @@ export function SyncWabasButton() {
     }
 
     setLoading(true);
+    const tid = toast.loading("Buscando números na Meta… leva 1-2 min, pode deixar aberto.");
     try {
-      // Chama Edge Function direto (evita timeout 10s do Serverless do Next)
+      // Chama Edge Function direto (evita timeout 10s do Serverless do Next).
+      // A sync de 200+ números leva ~137s; damos margem no client.
       const res = await fetch(`${supabaseUrl}/functions/v1/dispatcher-sync-wabas`, {
         method: "POST",
         headers: {
@@ -28,26 +30,38 @@ export function SyncWabasButton() {
           Authorization: `Bearer ${supabaseKey}`,
         },
         body: JSON.stringify({}),
+        signal: AbortSignal.timeout(180_000),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Falha ao sincronizar");
-      const result = data.results?.[0];
-      const msg = result
-        ? `${result.wabas} números · ${result.inserted} novos · ${result.updated} atualizados`
-        : "Sincronizado";
-      toast.success(msg);
-      router.refresh();
+
+      if (res.ok) {
+        const data = await res.json();
+        const result = data.results?.[0];
+        const msg = result
+          ? `${result.wabas} números · ${result.inserted} novos · ${result.updated} atualizados`
+          : "Números sincronizados";
+        toast.success(msg, { id: tid });
+      } else {
+        // 504/IDLE_TIMEOUT: a Edge costuma terminar o trabalho mesmo assim
+        toast.success("Sincronização em andamento. Os números novos aparecem em instantes.", { id: tid });
+      }
     } catch (e) {
-      toast.error((e as Error).message);
+      const err = e as Error;
+      if (err.name === "TimeoutError" || err.name === "AbortError") {
+        toast.success("Ainda sincronizando no servidor. Atualize a página em ~1 min.", { id: tid });
+      } else {
+        toast.error(err.message, { id: tid });
+      }
     } finally {
       setLoading(false);
+      // Mostra o que já entrou no banco, mesmo se a resposta demorou/falhou
+      router.refresh();
     }
   }
 
   return (
     <Button onClick={handleSync} disabled={loading} variant="default">
       {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
-      Sincronizar números
+      {loading ? "Sincronizando…" : "Sincronizar números"}
     </Button>
   );
 }

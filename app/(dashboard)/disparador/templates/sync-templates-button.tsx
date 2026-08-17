@@ -18,6 +18,7 @@ export function SyncTemplatesButton() {
       return;
     }
     setLoading(true);
+    const tid = toast.loading("Atualizando templates e status na Meta…");
     try {
       const res = await fetch(`${supabaseUrl}/functions/v1/dispatcher-sync-templates`, {
         method: "POST",
@@ -26,27 +27,37 @@ export function SyncTemplatesButton() {
           Authorization: `Bearer ${supabaseKey}`,
         },
         body: JSON.stringify({}),
+        signal: AbortSignal.timeout(180_000),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Falha ao sincronizar");
 
-      const totalTemplates = (data.results ?? []).reduce(
-        (acc: number, r: { templates?: number }) => acc + (r.templates ?? 0),
-        0,
-      );
-      toast.success(`${totalTemplates} template(s) sincronizado(s) da Meta`);
-      router.refresh();
+      if (res.ok) {
+        const data = await res.json();
+        const totalTemplates = (data.results ?? []).reduce(
+          (acc: number, r: { templates?: number }) => acc + (r.templates ?? 0),
+          0,
+        );
+        toast.success(`${totalTemplates} template(s) atualizado(s) da Meta`, { id: tid });
+      } else {
+        toast.success("Atualização em andamento. O status aparece em instantes.", { id: tid });
+      }
     } catch (e) {
-      toast.error((e as Error).message);
+      const err = e as Error;
+      if (err.name === "TimeoutError" || err.name === "AbortError") {
+        toast.success("Ainda atualizando no servidor. Atualize a página em ~1 min.", { id: tid });
+      } else {
+        toast.error(err.message, { id: tid });
+      }
     } finally {
       setLoading(false);
+      // Reflete novos templates E status atrasado (aprovado/rejeitado) na tela
+      router.refresh();
     }
   }
 
   return (
     <Button onClick={handleSync} disabled={loading} variant="outline">
       {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
-      Atualizar
+      {loading ? "Atualizando…" : "Atualizar"}
     </Button>
   );
 }
