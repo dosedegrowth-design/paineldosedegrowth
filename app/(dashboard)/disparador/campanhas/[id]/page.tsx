@@ -48,6 +48,14 @@ export default async function CampanhaDetailPage({ params }: { params: Promise<{
   if (!data) notFound();
   const c = data as Campanha;
 
+  // Envios realmente pendentes (pra habilitar "Retomar pendentes")
+  const { count: pendentes } = await supabase
+    .schema("disparador" as never)
+    .from("envios")
+    .select("id", { count: "exact", head: true })
+    .eq("campanha_id", id)
+    .eq("status", "pending");
+
   const progress = c.total_contatos > 0 ? (c.total_enviados / c.total_contatos) * 100 : 0;
 
   return (
@@ -58,7 +66,11 @@ export default async function CampanhaDetailPage({ params }: { params: Promise<{
         actions={
           <div className="flex items-center gap-2">
             <Badge variant={STATUS_VARIANT[c.status] ?? "secondary"}>{c.status}</Badge>
-            <CampanhaActions campanha={c} />
+            <CampanhaActions
+              campanha={c}
+              pendentes={pendentes ?? 0}
+              falhados={c.total_falhados ?? 0}
+            />
           </div>
         }
       />
