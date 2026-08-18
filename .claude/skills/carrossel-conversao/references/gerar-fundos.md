@@ -66,3 +66,14 @@ pessoa e o rosto em cenas de "adjustment". Para forçar sem rosto:
 Os vídeos do cliente (pasta VÍDEOS EDITADOS) têm ótimos movimentos. Com ffmpeg:
 `ffmpeg -ss <tempo> -i video.mp4 -frames:v 1 -q:v 2 frame.jpg`, depois passo 3. Neste ambiente
 remoto o ffmpeg não está instalado e o download do vídeo é pesado; preferir gerar/stock por ora.
+
+## Exportar PNG final (1080x1350 feed / 1080x1920 reels) e empacotar
+As artes viram arquivo de verdade pro cliente (o link do artifact NAO serve pra mandar/organizar no Drive).
+Pipeline (scripts nesta pasta):
+1. `embutir-fontes.mjs`: baixa Anton/Archivo/Inter Tight do Google Fonts e gera `fonts-embed.css` (data-URI).
+   OBRIGATORIO: o Chromium headless local NAO carrega Google Fonts, entao os titulos saem em serifa se nao embutir.
+2. `exportar-pngs.mjs`: para cada card/criativo gera um HTML de tamanho exato (unidades vw, fundo em data-URI,
+   fontes embutidas) e tira screenshot com o Chromium headless em `--window-size=1080,1350` (ou 1080,1920 reels),
+   `--force-device-scale-factor=1 --virtual-time-budget=3500`. Confira 2 amostras com Read antes de rodar tudo.
+3. `empacotar-zip.mjs`: converte pra JPG q86, nomeia por carrossel/criativo e monta pastas "Carrosseis" e
+   "Reels e Feed", depois `zip -r`. Entrega via SendUserFile (nao dá pra subir 44 base64 no Drive via MCP: caro).
