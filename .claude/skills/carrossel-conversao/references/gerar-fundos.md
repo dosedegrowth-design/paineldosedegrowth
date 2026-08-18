@@ -34,7 +34,35 @@ Nada de botão gordo. Pílula **fina e pequena** no rodapé: `padding:6px 12px; 
 font-weight:600; border:1px solid` translúcido. WhatsApp = verde translúcido + logo pequeno.
 Sem número (é anúncio linkado). Carrossel de prevenção pode ser só "Agende sua avaliação".
 
-## Extrair frame de vídeo (quando tiver ffmpeg)
+## Usar foto que o cliente COLOU no chat (funciona!)
+Imagem colada no chat não vira arquivo no disco, MAS fica no transcript da sessão em base64.
+Extraia assim (é a forma real de usar as fotos reais que o cliente manda aqui):
+```
+JL=/root/.claude/projects/<proj>/<sessao>.jsonl
+node -e "const fs=require('fs');JSON... percorre linhas, message.content[].type==='image',
+  source.data (base64) -> fs.writeFileSync('real.webp', Buffer.from(data,'base64'))"
+```
+Depois trata com sharp e embute como as outras. Foi assim que embutimos o consultório real do Dr. Samuel.
+Então PODE pedir pro cliente colar fotos aqui (consultório, ele atendendo, retrato) que dá pra usar de verdade.
+
+## Regra dura de ZERO rosto (aprendido na marra)
+Fundo com rosto de estranho estraga: parece que não é o profissional. O modelo INSISTE em botar a
+pessoa e o rosto em cenas de "adjustment". Para forçar sem rosto:
+- Use "extreme close-up macro", "only forearms and hands and the back", "absolutely NO heads, NO faces,
+  NO shoulders of any person in the frame". Enquadrar só mão+região tratada.
+- Paciente sempre de bruços ou de costas (nuca/costas, nunca rosto).
+- Gere `count:2` e escolha a limpa. SEMPRE confira: monte um contact sheet com sharp e Read, ou
+  screenshot do artifact com o Chromium headless (`/opt/pw-browsers/chromium-1194/chrome-linux/chrome
+  --headless=new --no-sandbox --window-size=1180,3400 --screenshot=out.png file://...`). Recorte faixas
+  com sharp `.extract()` e Read pra validar rosto + colisão de texto antes de publicar.
+
+## Gotchas de layout (validados por screenshot)
+- `<meta charset="utf-8">` no topo (sem ele o Chromium local mostra acento quebrado).
+- NÃO use `grid-template-rows:minmax(42%,1fr) auto` no card: empurra título longo pra cima e colide.
+  Use `1fr auto` + `.headline{font-size:clamp(17px,4.8vw,21px);line-height:1.05}` (título curto embaixo).
+
+## Extrair frame de vídeo (ffmpeg ESTÁ disponível)
+`/opt/pw-browsers/ffmpeg-1011/ffmpeg-linux` existe neste ambiente.
 Os vídeos do cliente (pasta VÍDEOS EDITADOS) têm ótimos movimentos. Com ffmpeg:
 `ffmpeg -ss <tempo> -i video.mp4 -frames:v 1 -q:v 2 frame.jpg`, depois passo 3. Neste ambiente
 remoto o ffmpeg não está instalado e o download do vídeo é pesado; preferir gerar/stock por ora.
