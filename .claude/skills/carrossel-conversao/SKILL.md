@@ -51,8 +51,9 @@ MCP que transforma **roteiro em texto → carrossel pronto** (link editável no 
 4. **NUNCA use travessão** (—, o traço longo). Use vírgula, ponto ou dois-pontos. (O servidor troca,
    mas escreva já certo.)
 5. **Gancho na dor, não no serviço.** A capa fala do problema que a pessoa sente, não do procedimento.
-6. **CTA sempre pro WhatsApp** (o objetivo da conta é conversa iniciada). Verbo no imperativo:
-   "Agende sua avaliação pelo WhatsApp".
+6. **CTA sempre pra ação, sem número.** O objetivo da conta é conversa no WhatsApp, mas o card é
+   **anúncio linkado a um botão**: NÃO coloque telefone nem descrição longa no card. Use botão curto
+   com verbo no imperativo: "Chame no WhatsApp" (com logo do WhatsApp) ou "Agende sua avaliação".
 7. **Prova/autoridade no card do meio:** causa do problema + por que o tratamento certo resolve.
 8. **Etiqueta (pílula):** opcional, no canto do card. Use para nicho/assinatura ("Quiropraxia",
    "Dr. Fulano"). Vazio = sem pílula.
