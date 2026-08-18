@@ -1,68 +1,268 @@
-<!-- Template de carrossel de conversão (3 cards, 4:5). Parametrizável.
-     Edite as variáveis :root e o conteúdo dos 3 .card. Abra no navegador em 1080px
-     de largura por card e exporte cada card como PNG (ou via Playwright screenshot).
-     Regras: sem travessão, 1 ideia por card, capa=gancho na dor, card3=CTA WhatsApp. -->
-<meta charset="utf-8">
+<title>Criativos Dr. Samuel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800&family=Inter+Tight:wght@400;500;600&display=swap">
 <style>
   :root{
-    --brand:#F15839;      /* cor de acento do cliente (whitelabel cor_primaria) */
-    --wa:#25D366;         /* verde WhatsApp, não mudar */
-    --card-w:1080px;      /* largura de export por card */
+    --paper:#EAEEF0; --panel:#FFFFFF; --ink:#101619; --ink-soft:#3B474C;
+    --line:#D3DBDE; --muted:#66757B;
+    --teal:#0E9E92; --teal-deep:#0B6E67; --ddg:#F15839; --wa:#25D366;
+    --tealTint:#DDEEEB;
+    --shadow:0 18px 40px -22px rgba(16,40,44,.45);
+    --radius:18px;
+    --bg1:url("__BG1__"); --bg2:url("__BG2__"); --bg3:url("__BG3__");
+    --bg4:url("__BG4__"); --bg5:url("__BG5__");
   }
-  *{box-sizing:border-box;margin:0}
-  body{background:#20282a;font-family:"Inter Tight",Arial,sans-serif;
-    display:flex;gap:24px;flex-wrap:wrap;padding:24px;justify-content:center}
-  .card{position:relative;width:var(--card-w);aspect-ratio:4/5;border-radius:22px;
-    overflow:hidden;background:#0b1112;color:#F4F6F5;display:flex;flex-direction:column;
-    justify-content:flex-end}
-  /* zona da foto: troque este bloco por <img src="foto.jpg" class="ph"> object-fit:cover */
-  .ph{position:absolute;inset:0;z-index:0;object-fit:cover;width:100%;height:100%;
-    background:linear-gradient(180deg,#12403c,#0c2523 42%,#080f10)}
-  .scrim{position:absolute;inset:0;z-index:1;
-    background:linear-gradient(180deg,rgba(6,12,12,.05),rgba(4,9,9,.92) 100%)}
-  .top{position:absolute;top:0;left:0;right:0;z-index:3;display:flex;
-    justify-content:space-between;padding:34px 34px 0}
-  .pill{font-weight:700;font-size:24px;background:var(--brand);color:#fff;
-    padding:12px 22px;border-radius:999px}
-  .body{position:relative;z-index:2;padding:0 38px 40px}
-  .kicker{font-weight:700;font-size:24px;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--brand);margin-bottom:14px}
-  .h{font-family:"Anton",Arial,sans-serif;text-transform:uppercase;font-size:60px;
-    line-height:1.04;margin-bottom:16px}
-  .h .hl{color:var(--brand)}
-  .sup{font-size:28px;color:rgba(244,246,245,.88);max-width:26ch}
-  .wa{margin-top:14px;display:flex;align-items:center;gap:16px;background:var(--wa);
-    color:#04310f;border-radius:16px;padding:22px 26px}
-  .wa b{font-family:"Anton",Arial;font-size:32px;font-weight:400}
-  .wa span{display:block;font-weight:700;font-size:22px;opacity:.9}
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --paper:#0C1113; --panel:#141B1E; --ink:#EDF1F2; --ink-soft:#B7C2C6;
+      --line:#25302F; --muted:#849499; --tealTint:#0F2A28;
+      --shadow:0 22px 46px -24px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0C1113; --panel:#141B1E; --ink:#EDF1F2; --ink-soft:#B7C2C6;
+    --line:#25302F; --muted:#849499; --tealTint:#0F2A28;
+    --shadow:0 22px 46px -24px rgba(0,0,0,.7);
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Inter Tight",system-ui,sans-serif; -webkit-font-smoothing:antialiased; line-height:1.5}
+  .wrap{max-width:1120px; margin:0 auto; padding:48px 24px 96px}
+
+  header.top{margin-bottom:8px}
+  .eyebrow{font-family:"Archivo",sans-serif; font-weight:700; font-size:12px;
+    letter-spacing:.18em; text-transform:uppercase; color:var(--teal-deep);
+    display:flex; align-items:center; gap:10px}
+  :root[data-theme="dark"] .eyebrow{color:var(--teal)}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .eyebrow{color:var(--teal)}}
+  .eyebrow::before{content:""; width:26px; height:2px; background:currentColor; display:inline-block}
+  h1{font-family:"Archivo",sans-serif; font-weight:800; font-size:clamp(34px,6vw,54px);
+    line-height:1.02; letter-spacing:-.02em; margin:14px 0 0; text-wrap:balance; max-width:16ch}
+  .lede{margin:16px 0 0; color:var(--ink-soft); font-size:18px; max-width:60ch}
+  .meta-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:24px}
+  .chip{font-family:"Archivo",sans-serif; font-weight:600; font-size:12.5px; letter-spacing:.02em;
+    padding:7px 13px; border-radius:999px; border:1px solid var(--line);
+    background:var(--panel); color:var(--ink-soft); display:inline-flex; align-items:center; gap:7px}
+  .chip b{color:var(--ink); font-weight:700}
+  .chip.free{border-color:transparent; background:var(--tealTint); color:var(--teal-deep)}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip.free{color:#5fd8cc}}
+  :root[data-theme="dark"] .chip.free{color:#5fd8cc}
+
+  .block{margin-top:52px}
+  .block-head{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:20px}
+  .idx{font-family:"Anton",sans-serif; font-size:34px; line-height:1; color:var(--teal)}
+  .block-title{font-family:"Archivo",sans-serif; font-weight:800; font-size:24px; letter-spacing:-.01em}
+  .tag-new{font-family:"Archivo",sans-serif; font-weight:700; font-size:10.5px; letter-spacing:.12em;
+    text-transform:uppercase; color:#fff; background:var(--ddg); padding:5px 9px; border-radius:6px}
+  .tag-prev{background:var(--teal-deep)}
+  .block-sub{color:var(--muted); font-size:14.5px; width:100%; margin-top:-8px}
+
+  .cards{display:grid; grid-template-columns:repeat(3,1fr); gap:18px}
+  @media(max-width:760px){
+    .cards{grid-auto-flow:column; grid-template-columns:none; grid-auto-columns:80%;
+      overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:8px; margin:0 -24px; padding-left:24px; padding-right:24px}
+    .card{scroll-snap-align:center}
+  }
+
+  /* Creative card 4:5 with real photo background */
+  .card{position:relative; aspect-ratio:4/5; border-radius:var(--radius); overflow:hidden;
+    background:#0b1112; color:#F4F6F5; box-shadow:var(--shadow); isolation:isolate;
+    display:grid; grid-template-rows:1fr auto}
+  .ph{position:absolute; inset:0; z-index:0; background-size:cover; background-position:center}
+  .ph.b1{background-image:var(--bg1)} .ph.b2{background-image:var(--bg2)}
+  .ph.b3{background-image:var(--bg3)} .ph.b4{background-image:var(--bg4)} .ph.b5{background-image:var(--bg5)}
+  .ph::after{content:""; position:absolute; inset:0;
+    background:radial-gradient(120% 85% at 50% 22%, transparent 42%, rgba(0,0,0,.5))}
+  .scrim{position:absolute; inset:0; z-index:1;
+    background:linear-gradient(180deg, rgba(4,10,10,.05) 30%, rgba(5,11,11,.72) 62%, rgba(3,8,8,.95) 100%)}
+  .toprow{grid-row:1; z-index:3; align-self:start;
+    display:flex; justify-content:space-between; align-items:flex-start; gap:8px; padding:16px 16px 0}
+  .pill{font-family:"Archivo",sans-serif; font-weight:700; font-size:11px; letter-spacing:.04em;
+    background:rgba(10,20,20,.42); backdrop-filter:blur(5px);
+    border:1px solid rgba(255,255,255,.20); color:#fff; padding:6px 11px; border-radius:999px}
+  .pill.accent{background:var(--teal); border-color:transparent}
+  .dots{display:flex; gap:5px; margin-top:5px}
+  .dots i{width:16px;height:3px;border-radius:2px;background:rgba(255,255,255,.42)}
+  .dots i.on{background:#fff;width:22px}
+
+  .body{grid-row:2; z-index:3; padding:0 18px 16px; display:flex; flex-direction:column; gap:8px}
+  .kicker{font-family:"Archivo",sans-serif; font-weight:700; font-size:11px; letter-spacing:.14em;
+    text-transform:uppercase; color:#7ff0e4}
+  .headline{font-family:"Anton",sans-serif; font-weight:400; text-transform:uppercase;
+    font-size:clamp(20px,2.7vw,26px); line-height:1.06; letter-spacing:.004em; text-wrap:balance;
+    text-shadow:0 2px 18px rgba(0,0,0,.5)}
+  .headline .hl{color:#3fe0cf}
+  .support{font-size:13px; color:rgba(244,246,245,.9); line-height:1.34; max-width:26ch;
+    text-shadow:0 1px 10px rgba(0,0,0,.5)}
+
+  /* THIN, discreet CTA — small pill at the bottom */
+  .cta{margin-top:9px; align-self:start; display:inline-flex; align-items:center; gap:7px;
+    font-family:"Archivo",sans-serif; font-weight:600; font-size:12px; letter-spacing:.03em;
+    padding:6px 12px; border-radius:999px; border:1px solid}
+  .cta.whats{color:#a7f3c4; border-color:rgba(37,211,102,.55); background:rgba(37,211,102,.12)}
+  .cta.book{color:#8fe9de; border-color:rgba(19,190,175,.55); background:rgba(14,158,146,.14)}
+  .cta svg{width:14px; height:14px; flex:none}
+
+  .script{margin-top:16px; background:var(--panel); border:1px solid var(--line);
+    border-radius:14px; padding:16px 18px; display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+  @media(max-width:760px){.script{grid-template-columns:1fr}}
+  .slot h4{margin:0 0 6px; font-family:"Archivo",sans-serif; font-weight:700; font-size:11px;
+    letter-spacing:.1em; text-transform:uppercase; color:var(--teal-deep)}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .slot h4{color:#5fd8cc}}
+  :root[data-theme="dark"] .slot h4{color:#5fd8cc}
+  .slot p{margin:0; font-size:14px; color:var(--ink)}
+  .slot p.sup{color:var(--muted); font-size:13px; margin-top:3px}
+
+  .note{margin-top:60px; border-top:1px solid var(--line); padding-top:24px;
+    color:var(--muted); font-size:13.5px; max-width:74ch}
+  .note b{color:var(--ink)}
+  .note code{font-family:"Archivo",monospace; background:var(--tealTint); color:var(--teal-deep);
+    padding:1px 6px; border-radius:5px; font-size:12.5px}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .note code{color:#5fd8cc}}
+  :root[data-theme="dark"] .note code{color:#5fd8cc}
 </style>
 
-<!-- CARD 1 · CAPA (gancho na dor) -->
-<div class="card">
-  <div class="ph"></div><div class="scrim"></div>
-  <div class="top"><span class="pill">NICHO</span></div>
-  <div class="body">
-    <div class="h">GANCHO NA DOR <span class="hl">com virada</span></div>
-    <div class="sup">Frase de apoio curta, uma ideia.</div>
-  </div>
-</div>
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Dose de Growth · Renovação de criativo</div>
+    <h1>Carrosséis de conversão, Dr. Samuel</h1>
+    <p class="lede">Três ângulos novos para o feed e Meta Ads, cada um em 3 páginas com o mesmo destino: iniciar conversa no WhatsApp. Fundos reais de movimento, sem rosto, pra impactar.</p>
+    <div class="meta-row">
+      <span class="chip"><b>@dr.samuelchagas</b> · Fisioterapia + Quiropraxia</span>
+      <span class="chip">Formato <b>4:5</b> · feed</span>
+      <span class="chip">Objetivo <b>conversa no WhatsApp</b></span>
+      <span class="chip free">Fundos reais embutidos</span>
+    </div>
+  </header>
 
-<!-- CARD 2 · CONTEÚDO (causa + autoridade) -->
-<div class="card">
-  <div class="ph"></div><div class="scrim"></div>
-  <div class="body">
-    <div class="kicker">Por que acontece</div>
-    <div class="h">A CAUSA REAL DO PROBLEMA</div>
-    <div class="sup">O tratamento certo resolve a origem, não só o sintoma.</div>
-  </div>
-</div>
+  <!-- CAROUSEL 1 -->
+  <section class="block">
+    <div class="block-head">
+      <span class="idx">01</span><span class="block-title">Enxaqueca &amp; cervical</span>
+      <span class="tag-new">Ângulo novo</span>
+      <span class="block-sub">A dor de cabeça que começa no pescoço. Fundo: pescoço, ajuste e consultório.</span>
+    </div>
+    <div class="cards">
+      <article class="card">
+        <div class="ph b1"></div><div class="scrim"></div>
+        <div class="toprow"><span class="pill accent">Quiropraxia</span><span class="dots"><i class="on"></i><i></i><i></i></span></div>
+        <div class="body">
+          <div class="headline">Sua enxaqueca pode <span class="hl">não estar na cabeça</span></div>
+          <p class="support">Ela pode estar começando no seu pescoço.</p>
+        </div>
+      </article>
+      <article class="card">
+        <div class="ph b2"></div><div class="scrim"></div>
+        <div class="toprow"><span class="pill">Por que acontece</span><span class="dots"><i></i><i class="on"></i><i></i></span></div>
+        <div class="body">
+          <div class="headline">A tensão na cervical vira dor de cabeça</div>
+          <p class="support">O ajuste postural trata a origem, não só o sintoma.</p>
+        </div>
+      </article>
+      <article class="card">
+        <div class="ph b3"></div><div class="scrim"></div>
+        <div class="toprow"><span class="pill">Dr. Samuel Chagas</span><span class="dots"><i></i><i></i><i class="on"></i></span></div>
+        <div class="body">
+          <div class="headline">Descubra a real <span class="hl">causa</span> da sua dor</div>
+          <div class="cta whats"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1012 2zm0 2a8 8 0 11-4.2 14.8l-.3-.2-2.8.8.8-2.8-.2-.3A8 8 0 0112 4zm-2.7 3.6c-.2 0-.5.1-.7.3-.3.3-.9.9-.9 2.1s.9 2.4 1 2.6c.1.2 1.7 2.8 4.3 3.8 2.1.8 2.5.7 3 .6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2 0-.1-.2-.2-.5-.3l-1.6-.8c-.2-.1-.4-.1-.6.1l-.7.9c-.1.2-.3.2-.5.1-.7-.3-1.4-.6-2.1-1.5-.5-.6-.9-1.3-1-1.5-.1-.2 0-.4.1-.5l.4-.5c.1-.2.2-.3.2-.5s0-.3-.1-.4l-.8-1.8c-.2-.4-.4-.4-.6-.4z"/></svg>Chame no WhatsApp</div>
+        </div>
+      </article>
+    </div>
+    <div class="script">
+      <div class="slot"><h4>Card 1 · Capa</h4><p>Sua enxaqueca pode não estar na cabeça.</p><p class="sup">Ela pode estar começando no seu pescoço.</p></div>
+      <div class="slot"><h4>Card 2 · Conteúdo</h4><p>A tensão na cervical vira dor de cabeça.</p><p class="sup">O ajuste postural trata a origem, não só o sintoma.</p></div>
+      <div class="slot"><h4>Card 3 · CTA</h4><p>Descubra a real causa da sua dor.</p><p class="sup">Botão fino: Chame no WhatsApp.</p></div>
+    </div>
+  </section>
 
-<!-- CARD 3 · CTA (WhatsApp) -->
-<div class="card">
-  <div class="ph"></div><div class="scrim"></div>
-  <div class="top"><span class="pill">Dr. Fulano | Nicho</span></div>
-  <div class="body">
-    <div class="h">FRASE DE <span class="hl">virada</span></div>
-    <div class="wa"><b>WA</b><span>Agende sua avaliação pelo WhatsApp<br>11 90000-0000</span></div>
-  </div>
+  <!-- CAROUSEL 2 -->
+  <section class="block">
+    <div class="block-head">
+      <span class="idx">02</span><span class="block-title">Nervo ciático</span>
+      <span class="tag-new">Ângulo novo</span>
+      <span class="block-sub">Formigamento na perna como sinal de alerta. Fundo de tratamento em todos os cards.</span>
+    </div>
+    <div class="cards">
+      <article class="card">
+        <div class="ph b4"></div><div class="scrim"></div>
+        <div class="toprow"><span class="pill accent">Fisioterapia</span><span class="dots"><i class="on"></i><i></i><i></i></span></div>
+        <div class="body">
+          <div class="headline">Formigamento na perna <span class="hl">não é normal</span></div>
+          <p class="support">Pode ser o seu nervo ciático inflamado.</p>
+        </div>
+      </article>
+      <article class="card">
+        <div class="ph b2"></div><div class="scrim"></div>
+        <div class="toprow"><span class="pill">A causa</span><span class="dots"><i></i><i class="on"></i><i></i></span></div>
+        <div class="body">
+          <div class="headline">Hérnia e má postura comprimem o ciático</div>
+          <p class="support">O tratamento certo alivia a dor e adia a cirurgia.</p>
+        </div>
+      </article>
+      <article class="card">
+        <div class="ph b3"></div><div class="scrim"></div>
+        <div class="toprow"><span class="pill">Dr. Samuel Chagas</span><span class="dots"><i></i><i></i><i class="on"></i></span></div>
+        <div class="body">
+          <div class="headline">Chega de conviver <span class="hl">com a dor</span></div>
+          <div class="cta whats"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1012 2zm0 2a8 8 0 11-4.2 14.8l-.3-.2-2.8.8.8-2.8-.2-.3A8 8 0 0112 4zm-2.7 3.6c-.2 0-.5.1-.7.3-.3.3-.9.9-.9 2.1s.9 2.4 1 2.6c.1.2 1.7 2.8 4.3 3.8 2.1.8 2.5.7 3 .6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2 0-.1-.2-.2-.5-.3l-1.6-.8c-.2-.1-.4-.1-.6.1l-.7.9c-.1.2-.3.2-.5.1-.7-.3-1.4-.6-2.1-1.5-.5-.6-.9-1.3-1-1.5-.1-.2 0-.4.1-.5l.4-.5c.1-.2.2-.3.2-.5s0-.3-.1-.4l-.8-1.8c-.2-.4-.4-.4-.6-.4z"/></svg>Chame no WhatsApp</div>
+        </div>
+      </article>
+    </div>
+    <div class="script">
+      <div class="slot"><h4>Card 1 · Capa</h4><p>Formigamento na perna não é normal.</p><p class="sup">Pode ser o seu nervo ciático inflamado.</p></div>
+      <div class="slot"><h4>Card 2 · Conteúdo</h4><p>Hérnia e má postura comprimem o ciático.</p><p class="sup">O tratamento certo alivia a dor e adia a cirurgia.</p></div>
+      <div class="slot"><h4>Card 3 · CTA</h4><p>Chega de conviver com a dor.</p><p class="sup">Botão fino: Chame no WhatsApp.</p></div>
+    </div>
+  </section>
+
+  <!-- CAROUSEL 3 -->
+  <section class="block">
+    <div class="block-head">
+      <span class="idx">03</span><span class="block-title">Postura no trabalho</span>
+      <span class="tag-new tag-prev">Prevenção</span>
+      <span class="block-sub">Fala com quem passa o dia sentado. CTA só com a ação.</span>
+    </div>
+    <div class="cards">
+      <article class="card">
+        <div class="ph b5"></div><div class="scrim"></div>
+        <div class="toprow"><span class="pill accent">Quiropraxia</span><span class="dots"><i class="on"></i><i></i><i></i></span></div>
+        <div class="body">
+          <div class="headline">8 horas sentado estão <span class="hl">detonando sua coluna</span></div>
+          <p class="support">E você nem percebe.</p>
+        </div>
+      </article>
+      <article class="card">
+        <div class="ph b1"></div><div class="scrim"></div>
+        <div class="toprow"><span class="pill">O efeito</span><span class="dots"><i></i><i class="on"></i><i></i></span></div>
+        <div class="body">
+          <div class="headline">Má postura vira dor lombar, cervical e cansaço</div>
+          <p class="support">O ajuste quiropráxico devolve alinhamento e alívio.</p>
+        </div>
+      </article>
+      <article class="card">
+        <div class="ph b3"></div><div class="scrim"></div>
+        <div class="toprow"><span class="pill">Dr. Samuel Chagas</span><span class="dots"><i></i><i></i><i class="on"></i></span></div>
+        <div class="body">
+          <div class="headline">Sua coluna está <span class="hl">pedindo socorro</span></div>
+          <div class="cta book"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4L19 6"/></svg>Agende sua avaliação</div>
+        </div>
+      </article>
+    </div>
+    <div class="script">
+      <div class="slot"><h4>Card 1 · Capa</h4><p>8 horas sentado estão detonando sua coluna.</p><p class="sup">E você nem percebe.</p></div>
+      <div class="slot"><h4>Card 2 · Conteúdo</h4><p>Má postura vira dor lombar, cervical e cansaço.</p><p class="sup">O ajuste quiropráxico devolve alinhamento e alívio.</p></div>
+      <div class="slot"><h4>Card 3 · CTA</h4><p>Sua coluna está pedindo socorro.</p><p class="sup">Botão fino: Agende sua avaliação (sem número, é anúncio linkado).</p></div>
+    </div>
+  </section>
+
+  <p class="note">
+    <b>Fundos reais, embutidos.</b> Agora cada card tem uma foto de verdade por baixo do texto: mão no
+    pescoço, ajuste na coluna, tratamento da lombar, consultório e a rotina no desk. São imagens de
+    movimento, <b>sem mostrar rosto de ninguém</b>, na paleta escura/teal, pra impactar. O texto tem
+    escurecimento e sombra pra ler bem por cima. <b>CTA fino</b> embaixo: carrosséis 1 e 2 com
+    <b>Chame no WhatsApp</b>, o 3 com <b>Agende sua avaliação</b>. Sem número (é anúncio linkado),
+    sem travessão, uma ideia por card. Formato <code>4:5</code> pronto pro feed.
+  </p>
 </div>
