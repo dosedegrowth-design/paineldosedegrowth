@@ -1,0 +1,68 @@
+<!-- Template de carrossel de conversão (3 cards, 4:5). Parametrizável.
+     Edite as variáveis :root e o conteúdo dos 3 .card. Abra no navegador em 1080px
+     de largura por card e exporte cada card como PNG (ou via Playwright screenshot).
+     Regras: sem travessão, 1 ideia por card, capa=gancho na dor, card3=CTA WhatsApp. -->
+<meta charset="utf-8">
+<style>
+  :root{
+    --brand:#F15839;      /* cor de acento do cliente (whitelabel cor_primaria) */
+    --wa:#25D366;         /* verde WhatsApp, não mudar */
+    --card-w:1080px;      /* largura de export por card */
+  }
+  *{box-sizing:border-box;margin:0}
+  body{background:#20282a;font-family:"Inter Tight",Arial,sans-serif;
+    display:flex;gap:24px;flex-wrap:wrap;padding:24px;justify-content:center}
+  .card{position:relative;width:var(--card-w);aspect-ratio:4/5;border-radius:22px;
+    overflow:hidden;background:#0b1112;color:#F4F6F5;display:flex;flex-direction:column;
+    justify-content:flex-end}
+  /* zona da foto: troque este bloco por <img src="foto.jpg" class="ph"> object-fit:cover */
+  .ph{position:absolute;inset:0;z-index:0;object-fit:cover;width:100%;height:100%;
+    background:linear-gradient(180deg,#12403c,#0c2523 42%,#080f10)}
+  .scrim{position:absolute;inset:0;z-index:1;
+    background:linear-gradient(180deg,rgba(6,12,12,.05),rgba(4,9,9,.92) 100%)}
+  .top{position:absolute;top:0;left:0;right:0;z-index:3;display:flex;
+    justify-content:space-between;padding:34px 34px 0}
+  .pill{font-weight:700;font-size:24px;background:var(--brand);color:#fff;
+    padding:12px 22px;border-radius:999px}
+  .body{position:relative;z-index:2;padding:0 38px 40px}
+  .kicker{font-weight:700;font-size:24px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--brand);margin-bottom:14px}
+  .h{font-family:"Anton",Arial,sans-serif;text-transform:uppercase;font-size:60px;
+    line-height:1.04;margin-bottom:16px}
+  .h .hl{color:var(--brand)}
+  .sup{font-size:28px;color:rgba(244,246,245,.88);max-width:26ch}
+  .wa{margin-top:14px;display:flex;align-items:center;gap:16px;background:var(--wa);
+    color:#04310f;border-radius:16px;padding:22px 26px}
+  .wa b{font-family:"Anton",Arial;font-size:32px;font-weight:400}
+  .wa span{display:block;font-weight:700;font-size:22px;opacity:.9}
+</style>
+
+<!-- CARD 1 · CAPA (gancho na dor) -->
+<div class="card">
+  <div class="ph"></div><div class="scrim"></div>
+  <div class="top"><span class="pill">NICHO</span></div>
+  <div class="body">
+    <div class="h">GANCHO NA DOR <span class="hl">com virada</span></div>
+    <div class="sup">Frase de apoio curta, uma ideia.</div>
+  </div>
+</div>
+
+<!-- CARD 2 · CONTEÚDO (causa + autoridade) -->
+<div class="card">
+  <div class="ph"></div><div class="scrim"></div>
+  <div class="body">
+    <div class="kicker">Por que acontece</div>
+    <div class="h">A CAUSA REAL DO PROBLEMA</div>
+    <div class="sup">O tratamento certo resolve a origem, não só o sintoma.</div>
+  </div>
+</div>
+
+<!-- CARD 3 · CTA (WhatsApp) -->
+<div class="card">
+  <div class="ph"></div><div class="scrim"></div>
+  <div class="top"><span class="pill">Dr. Fulano | Nicho</span></div>
+  <div class="body">
+    <div class="h">FRASE DE <span class="hl">virada</span></div>
+    <div class="wa"><b>WA</b><span>Agende sua avaliação pelo WhatsApp<br>11 90000-0000</span></div>
+  </div>
+</div>
