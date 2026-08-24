@@ -41,3 +41,30 @@ por screenshot/print. Zero crédito, controle total do texto (que é onde IA de 
 `references/template-carrossel.html` é um render de 3 cards parametrizável (edite as variáveis no topo
 do `<script>`/CSS: cor, @, textos, e as URLs/observações de foto). Abra no navegador, ajuste o
 zoom pra 1080 de largura por card e tire o print de cada um, ou rode via Playwright para exportar PNG.
+
+## Padrão vencedor v2 (validado ago/2026 — anúncio de clique pro WhatsApp)
+
+Estrutura TOF→MOF→BOF em 3 cards, pesquisada em fontes BR de tráfego pago
+(CTW tem CPL 30–60% menor quando a peça vende a *conversa*, não o produto):
+
+1. **Card 1 · Gancho**: foto real full-bleed + headline em TARJA (caixas Anton
+   empilhadas, linha de punch com fundo na cor de destaque) + selo pill no topo
+   ("Cotação grátis · 2 min"). Nunca card só tipográfico — lê como IA amadora.
+2. **Card 2 · Prova**: mockup fiel de conversa do WhatsApp (header #008069 com
+   avatar + "digitando…", wallpaper #EFE7DE, balão in #FFF / out #D9FDD3, horário
+   + tick azul #53BDEB, barra "Mensagem"). Mostra a conversa exata que o clique
+   inicia. Sempre nota "Conversa ilustrativa" + disclaimers do nicho.
+3. **Card 3 · Fechamento**: headline tarja + botão verde WhatsApp gigante
+   (gradiente #2BD46A→#1BA84F) + 3 chips de objeção ("Sem custo", "2 minutos").
+
+Fotos: 1 foto por nicho basta — 3 recortes diferentes (zoom/posição/brilho/blur
+via sharp) pra capa, fundo escurecido do mockup e CTA. Banco Freepik via
+Maginific `stock_search` (license free) = zero créditos.
+
+⚠️ **Gotcha Chromium `--headless=new`**: o viewport CSS fica **87px menor** que
+o `--window-size` (barra de UI). Layout com 100vh sai com faixa branca no
+rodapé. Fix (já aplicado em exportar-pngs.mjs): janela `h+87` + crop `WxH`.
+
+Compliance emagrecimento/saúde (mais rígido que financeiro): sem antes/depois,
+sem "perca X kg", sem prazo, sem foco em partes do corpo; público 18+;
+"resultados variam de pessoa para pessoa" no card 2 e 3.

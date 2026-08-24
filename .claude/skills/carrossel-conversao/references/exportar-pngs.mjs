@@ -92,10 +92,16 @@ function adPage(a,fmt,dataUri){
  <div class="cta">${wa}${a.cta}</div><div class="sig">Dr. Samuel Chagas · Fisioterapia + Quiropraxia</div></div></div></body></html>`;
 }
 
-function shoot(htmlPath,pngPath,w,h){
+// ATENCAO: no --headless=new o viewport CSS fica 87px MENOR que o --window-size
+// (barra de UI do headless). Sem compensar, todo layout com 100vh sai com faixa
+// branca no rodape. Fix: janela h+87 e crop do screenshot pra WxH com sharp.
+async function shoot(htmlPath,pngPath,w,h){
+ const raw=pngPath.replace(/\.png$/,'_raw.png');
  execFileSync(CHROME,['--headless=new','--no-sandbox','--disable-gpu','--hide-scrollbars',
-  '--force-device-scale-factor=1',`--window-size=${w},${h}`,'--virtual-time-budget=3500',
-  `--screenshot=${pngPath}`,`file://${htmlPath}`],{stdio:'ignore'});
+  '--force-device-scale-factor=1',`--window-size=${w},${h+87}`,'--virtual-time-budget=3500',
+  `--screenshot=${raw}`,`file://${htmlPath}`],{stdio:'ignore'});
+ await s(raw).extract({left:0,top:0,width:w,height:h}).png().toFile(pngPath);
+ fs.unlinkSync(raw);
 }
 
 // ---------- data ----------
@@ -122,7 +128,7 @@ async function run(){
    const html = j.kind==='card'? cardPage(j.sl,j.active,du) : adPage(j.a,j.fmt,du);
    const hp=`${TMP}/j.html`; fs.writeFileSync(hp,html);
    const w=1080,h=tall?1920:1350;
-   shoot(hp,`${OUT}/${j.name}`,w,h);
+   await shoot(hp,`${OUT}/${j.name}`,w,h);
    process.stderr.write(`[${i}/${list.length}] ${j.name}\n`);
  }
  console.log('DONE',list.length,'pngs');
