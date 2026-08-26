@@ -75,14 +75,17 @@ async function syncBusiness(biz: Business) {
     }
 
     const allFromMeta: ContaRow[] = [];
-    for (const w of ownedWabas) {
-      const phones = await fetchPhoneNumbers(w.id, token).catch((e) => { errors.push(`owned ${w.name}: ${e.message}`); return []; });
-      for (const p of phones) allFromMeta.push(toRow(biz.id, w, p, "OWNED"));
-    }
-    for (const w of clientWabas) {
-      const phones = await fetchPhoneNumbers(w.id, token).catch((e) => { errors.push(`client ${w.name}: ${e.message}`); return []; });
-      for (const p of phones) allFromMeta.push(toRow(biz.id, w, p, "CLIENT"));
-    }
+    const wabaJobs = [
+      ...ownedWabas.map((w) => ({ w, origem: "OWNED" as const })),
+      ...clientWabas.map((w) => ({ w, origem: "CLIENT" as const })),
+    ];
+    // Paraleliza as buscas de telefone (antes era 1 WABA por vez -> estourava o timeout de 150s)
+    const rowsPorWaba = await mapLimit(wabaJobs, 20, async ({ w, origem }) => {
+      const phones = await fetchPhoneNumbers(w.id, token)
+        .catch((e) => { errors.push(`${origem} ${w.name}: ${(e as Error).message}`); return []; });
+      return phones.map((p) => toRow(biz.id, w, p, origem));
+    });
+    for (const rows of rowsPorWaba) allFromMeta.push(...rows);
 
     const novas = allFromMeta.filter((r) => !existMap.has(`${r.waba_id}|${r.phone_number_id}`));
     const atualizar = allFromMeta.filter((r) => existMap.has(`${r.waba_id}|${r.phone_number_id}`));
@@ -94,7 +97,8 @@ async function syncBusiness(biz: Business) {
       else inserted = novas.length;
     }
 
-    for (const r of atualizar) {
+    // Paraleliza os updates (antes 160+ round trips em sequencia)
+    await mapLimit(atualizar, 20, async (r) => {
       const id = existMap.get(`${r.waba_id}|${r.phone_number_id}`)!;
       const { error: updErr } = await supabase.schema("disparador").from("contas")
         .update({
@@ -109,7 +113,7 @@ async function syncBusiness(biz: Business) {
         .eq("id", id);
       if (updErr) errors.push(`update ${r.waba_name}: ${updErr.message}`);
       else updated++;
-    }
+    });
 
     await supabase.schema("disparador").from("businesses")
       .update({ ultima_sync_meta: new Date().toISOString() })
@@ -142,6 +146,20 @@ async function fetchPhoneNumbers(wabaId: string, token: string): Promise<MetaPho
   if (!res.ok) throw new Error(`fetchPhones ${res.status}: ${await res.text()}`);
   const json = await res.json() as { data?: MetaPhone[] };
   return json.data ?? [];
+}
+
+// Concorrência limitada: roda fn em paralelo, no máximo `limit` ao mesmo tempo.
+async function mapLimit<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {
+  const results: R[] = new Array(items.length);
+  let idx = 0;
+  async function worker() {
+    while (idx < items.length) {
+      const cur = idx++;
+      results[cur] = await fn(items[cur]);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, () => worker()));
+  return results;
 }
 
 function toRow(businessUuid: string, w: MetaWaba, p: MetaPhone, origem: "OWNED" | "CLIENT"): ContaRow {
