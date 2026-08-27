@@ -94,3 +94,9 @@ node manual_build.js      # regenera manual html + PDF (precisa thumbs_build.js 
 ```
 
 O executável do Chromium está hardcoded (`/opt/pw-browsers/chromium-1194/...`) — ajustar pro ambiente se necessário. Pra nova arte de carrossel/flyer: duplicar o bloco correspondente em `templates_build.js`, trocar headline/foto/preço e rodar.
+
+## Operação (estado em 27/ago/2026)
+
+- **Cliente cadastrado no painel DDG**: `trafego_ddg.clientes` id `c4c0f24d-b8ea-44cc-9208-05a7bcc1a685`, slug `vem-pra-paraty`, cor `#FF7A45`, tipo `lead_whatsapp`, ticket R$ 700. View pública: https://painel.dosedegrowth.com/c/vem-pra-paraty (exige o fix do middleware deste branch mergeado no main + OAuth Meta feito em /clientes).
+- **Plano de lançamento** (checklist D1/D2, semana 1 com legendas prontas, roteiros de stories, scripts de WhatsApp, KPIs e insumos do cliente): seção 09 do manual — fonte em `tools/manual_build.js`.
+- Pendências com o cliente: fotos reais das 4 lanchas, nomes/capacidades, depoimentos reais, WhatsApp oficial de reservas, roteiros/preços por lancha, autorização de imagem.

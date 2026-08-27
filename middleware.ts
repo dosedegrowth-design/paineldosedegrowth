@@ -30,6 +30,8 @@ export async function middleware(request: NextRequest) {
     "/_next",
     "/brand",
     "/favicon.ico",
+    // View whitelabel pública do cliente final (/c/[slug])
+    "/c/",
     // Landing pública do André Ar Condicionado
     "/andre",
     // Relatórios públicos compartilháveis (HTML estático em public/relatorios)
