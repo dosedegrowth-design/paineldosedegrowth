@@ -1,0 +1,28 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../fonts/fonts-local.css">
+<style>
+  html,body{margin:0;padding:0;background:transparent}
+  #stage{width:1680px;height:560px;position:relative;background:{{BG}}}
+  .lockup{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}
+  .line{display:flex;align-items:baseline;gap:34px}
+  .vem{font-family:'Pacifico';font-size:190px;color:{{ACCENT}};transform:rotate(-4deg) translateY(-10px);line-height:1}
+  .paraty{font-family:'Lilita One';font-size:172px;color:{{MAIN}};letter-spacing:6px;line-height:1}
+  .sub{font-family:'Poppins';font-weight:600;font-size:34px;letter-spacing:14px;color:{{SUB}};margin-top:18px}
+  svg.wave{margin-top:16px}
+</style></head>
+<body>
+<div id="stage">
+  <div class="lockup">
+    <div class="line"><span class="vem">Vem</span><span class="paraty">PRA PARATY</span></div>
+    <svg class="wave" width="420" height="36" viewBox="0 0 420 36">
+      <g fill="none" stroke-width="9" stroke-linecap="round">
+        <path d="M 10 18 Q 45 2 80 18 T 150 18" stroke="#17C3B2"/>
+        <path d="M 170 18 Q 205 2 240 18 T 310 18" stroke="#FF7A45"/>
+        <path d="M 330 18 Q 365 2 400 18 T 470 18" stroke="#17C3B2"/>
+      </g>
+    </svg>
+    <div class="sub">PASSEIOS DE LANCHA • PARATY-RJ</div>
+  </div>
+</div>
+</body></html>

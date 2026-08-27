@@ -1,0 +1,58 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../fonts/fonts-local.css">
+<style>
+  html,body{margin:0;padding:0;background:transparent}
+  #stage{width:1024px;height:1024px}
+</style></head>
+<body>
+<div id="stage">
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="innerClip"><circle cx="512" cy="512" r="318"/></clipPath>
+    <path id="arcTop" d="M 124 512 A 388 388 0 0 1 900 512" fill="none"/>
+    <path id="arcBottom" d="M 158 512 A 354 354 0 0 0 866 512" fill="none"/>
+  </defs>
+
+  <circle cx="512" cy="512" r="490" fill="none" stroke="#FFFFFF" stroke-width="10"/>
+  <circle cx="512" cy="512" r="330" fill="none" stroke="#FFFFFF" stroke-width="6"/>
+
+  <g clip-path="url(#innerClip)">
+    <!-- sol -->
+    <circle cx="512" cy="448" r="140" fill="none" stroke="#FFFFFF" stroke-width="10"/>
+    <!-- gaivotas -->
+    <g stroke="#FFFFFF" stroke-width="9" fill="none" stroke-linecap="round">
+      <path d="M 348 330 Q 362 314 376 326 Q 390 314 404 330"/>
+      <path d="M 622 296 Q 633 284 644 293 Q 655 284 666 296"/>
+    </g>
+    <!-- lancha -->
+    <g id="boat">
+      <path d="M 366 566 Q 362 560 372 558 L 738 512 Q 752 510 748 522 L 716 586 Q 712 594 700 595 L 398 602 Q 384 602 380 594 Z" fill="#FFFFFF"/>
+      <path d="M 556 546 L 596 498 Q 600 493 608 492 L 646 488 L 626 537 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="4" transform="translate(0,-8)"/>
+      <g stroke="#FFFFFF" stroke-width="9" fill="none" stroke-linecap="round" opacity="0.95">
+        <path d="M 730 576 Q 750 586 756 606"/>
+        <path d="M 746 556 Q 772 570 780 594"/>
+      </g>
+    </g>
+    <!-- ondas em traço -->
+    <g stroke="#FFFFFF" stroke-width="10" fill="none" stroke-linecap="round">
+      <path d="M 220 632 Q 280 608 340 632 T 460 632 T 580 632 T 700 632 T 820 632"/>
+      <path d="M 250 692 Q 310 668 370 692 T 490 692 T 610 692 T 730 692"/>
+      <path d="M 300 752 Q 360 728 420 752 T 540 752 T 660 752"/>
+    </g>
+  </g>
+
+  <text font-family="'Lilita One'" font-size="92" fill="#FFFFFF" letter-spacing="14">
+    <textPath href="#arcTop" startOffset="50%" text-anchor="middle">VEM PRA PARATY</textPath>
+  </text>
+  <text font-family="Poppins" font-weight="600" font-size="40" fill="#FFFFFF" letter-spacing="10">
+    <textPath href="#arcBottom" startOffset="50%" text-anchor="middle">PASSEIOS DE LANCHA • PARATY-RJ</textPath>
+  </text>
+
+  <g fill="#FFFFFF">
+    <rect x="96" y="496" width="26" height="26" transform="rotate(45 109 509)"/>
+    <rect x="902" y="496" width="26" height="26" transform="rotate(45 915 509)"/>
+  </g>
+</svg>
+</div>
+</body></html>
