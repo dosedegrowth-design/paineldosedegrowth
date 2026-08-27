@@ -31,7 +31,7 @@ const angles = [
   for (const a of angles) {
     for (const f of a.formatos) {
       const src = path.join(ADS, `vpp-${a.id}-${a.slug}-${f}.png`);
-      const w = f === 'feed' ? 430 : 330;
+      const w = f === 'feed' ? 860 : 640;
       fs.writeFileSync(tmp, `<body style="margin:0"><img id="i" src="file://${src}" style="width:${w}px;display:block"></body>`);
       await page.goto('file://' + tmp, { waitUntil: 'load' });
       await page.waitForFunction(() => { const i = document.getElementById('i'); return i.complete && i.naturalWidth > 0; });

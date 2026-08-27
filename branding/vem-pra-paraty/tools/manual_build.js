@@ -43,14 +43,14 @@ const adCards = angles.map((a, i) => `
       <span class="afmt">${a.formatos.map(f => f === 'feed' ? 'Feed 4:5' : 'Story 9:16').join(' + ')}</span>
     </div>
     <p class="ahip">${a.hip}</p>
-    <div class="aimgs">${a.formatos.map(f => `<img src="${b64a(`${a.id}-${f}.jpg`)}" alt="${a.nome} ${f}" class="${f}">`).join('')}</div>
+    <div class="aimgs">${a.formatos.map(f => `<img src="${b64a(`${a.id}-${f}.jpg`)}" alt="${a.nome} ${f}" class="${f} zoom" data-cap="Ângulo ${String(i + 1).padStart(2, '0')} • ${a.nome} — ${f === 'feed' ? 'Feed 4:5' : 'Story 9:16'}">`).join('')}</div>
     <div class="afiles">${a.formatos.map(f => `<code>vpp-${a.id}-${a.slug}-${f}.png</code>`).join(' ')}</div>
   </div>`).join('\n');
 const capaLabel = { roteiros:'Roteiros', frota:'Frota', precos:'Preços', depoimentos:'Depoimentos', reservas:'Reservas', paraty:'Paraty', promocoes:'Promoções', bastidores:'Bastidores' };
 
-const capaCircle = (c, size) => `<div class="hl"><div class="hlc" style="width:${size}px;height:${size}px"><img src="${c.d}" alt="Capa ${capaLabel[c.s]}"></div><span>${capaLabel[c.s]}</span></div>`;
+const capaCircle = (c, size) => `<div class="hl"><div class="hlc" style="width:${size}px;height:${size}px"><img class="zoom" data-cap="Capa de destaque — ${capaLabel[c.s]}" src="${c.d}" alt="Capa ${capaLabel[c.s]}"></div><span>${capaLabel[c.s]}</span></div>`;
 
-const html = (fontsBlock, printCss) => `<!doctype html>
+const html = (fontsBlock, printCss, extras = '') => `<!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Vem pra Paraty</title>
@@ -279,10 +279,10 @@ ${fontsBlock}
   <div class="shead"><span class="snum">03</span><h2>Logo</h2></div>
   <p class="sdesc">O selo náutico é a assinatura: sol de fim de tarde, a serra, a lancha planando. Versão principal pra foto de perfil e carimbos; horizontal pra cabeçalhos; monocromática pra marca d’água.</p>
   <div class="logos">
-    <div class="lg" style="background:#0B2D48"><img src="${img.selo}" alt="Selo principal"><span><b>Principal</b> — foto de perfil e fundos escuros</span></div>
-    <div class="lg" style="background:#F6EFE3"><img src="${img.seloClaro}" alt="Selo fundo claro"><span style="color:#0B2D48"><b>Fundo claro</b> — papelaria, fundos areia/branco</span></div>
-    <div class="lg" style="background:linear-gradient(180deg,#0E9AA7,#17C3B2)"><img src="${img.seloMono}" alt="Selo monocromático"><span style="color:#fff"><b>Mono branca</b> — marca d’água sobre foto (60–75% opacidade)</span></div>
-    <div class="lg wide" style="background:#0B2D48"><img src="${img.lockup}" alt="Logo horizontal"><span><b>Horizontal</b> — cabeçalho de flyer, capa de vídeo, assinatura de arte</span></div>
+    <div class="lg" style="background:#0B2D48"><img class="zoom" data-cap="Logo — Selo principal" src="${img.selo}" alt="Selo principal"><span><b>Principal</b> — foto de perfil e fundos escuros</span></div>
+    <div class="lg" style="background:#F6EFE3"><img class="zoom" data-cap="Logo — Selo em fundo claro" src="${img.seloClaro}" alt="Selo fundo claro"><span style="color:#0B2D48"><b>Fundo claro</b> — papelaria, fundos areia/branco</span></div>
+    <div class="lg" style="background:linear-gradient(180deg,#0E9AA7,#17C3B2)"><img class="zoom" data-cap="Logo — Mono branca (marca d’água)" src="${img.seloMono}" alt="Selo monocromático"><span style="color:#fff"><b>Mono branca</b> — marca d’água sobre foto (60–75% opacidade)</span></div>
+    <div class="lg wide" style="background:#0B2D48"><img class="zoom" data-cap="Logo — Horizontal" src="${img.lockup}" alt="Logo horizontal"><span><b>Horizontal</b> — cabeçalho de flyer, capa de vídeo, assinatura de arte</span></div>
   </div>
   <div class="rules">
     <span class="rule ok">✓ Respiro mínimo: altura do “V” ao redor</span>
@@ -322,7 +322,7 @@ Passeios de lancha em Paraty-RJ
       ${capas.slice(0, 5).map(c => capaCircle(c, 56)).join('\n      ')}
     </div>
     <div class="mposts">
-      <img src="${img.tplCar}" alt=""><img src="${img.tplFly}" alt=""><img src="${img.tplSto}" alt="">
+      <img class="zoom" data-cap="Feed montado — capa de carrossel" src="${img.tplCar}" alt="Post carrossel"><img class="zoom" data-cap="Feed montado — flyer promo" src="${img.tplFly}" alt="Post flyer"><img class="zoom" data-cap="Feed montado — story promo" src="${img.tplSto}" alt="Post story">
     </div>
   </div>
 </section>
@@ -331,9 +331,9 @@ Passeios de lancha em Paraty-RJ
   <div class="shead"><span class="snum">06</span><h2>Templates de post</h2></div>
   <p class="sdesc">Três estruturas prontas que cobrem o dia a dia: conteúdo de valor, oferta no feed e oferta em story. Preços e textos são ilustrativos — troca a foto, troca a frase, a identidade segura o resto.</p>
   <div class="tpls">
-    <div class="tpl"><img src="${img.tplCar}" alt="Template capa de carrossel"><b>Capa de carrossel — 1080×1350</b><span>Selo no topo, pill laranja de categoria, headline em duas cores, “arrasta pro lado”.</span></div>
-    <div class="tpl"><img src="${img.tplFly}" alt="Template flyer promocional"><b>Flyer promo (feed/ads) — 1080×1350</b><span>Selo central, pill turquesa, bloco de preço laranja + CTA WhatsApp.</span></div>
-    <div class="tpl"><img src="${img.tplSto}" alt="Template story promocional"><b>Story promo — 1080×1920</b><span>Pacifico de abertura, checklist de benefícios, CTA laranja full-width.</span></div>
+    <div class="tpl"><img class="zoom" data-cap="Template — Capa de carrossel 1080×1350" src="${img.tplCar}" alt="Template capa de carrossel"><b>Capa de carrossel — 1080×1350</b><span>Selo no topo, pill laranja de categoria, headline em duas cores, “arrasta pro lado”.</span></div>
+    <div class="tpl"><img class="zoom" data-cap="Template — Flyer promo (feed/ads) 1080×1350" src="${img.tplFly}" alt="Template flyer promocional"><b>Flyer promo (feed/ads) — 1080×1350</b><span>Selo central, pill turquesa, bloco de preço laranja + CTA WhatsApp.</span></div>
+    <div class="tpl"><img class="zoom" data-cap="Template — Story promo 1080×1920" src="${img.tplSto}" alt="Template story promocional"><b>Story promo — 1080×1920</b><span>Pacifico de abertura, checklist de benefícios, CTA laranja full-width.</span></div>
   </div>
 </section>
 
@@ -386,6 +386,7 @@ Passeios de lancha em Paraty-RJ
   <span class="pacifico">Vem pra Paraty</span>
   Identidade visual desenvolvida pela Dose de Growth • agosto/2026
 </footer>
+${extras}
 </body></html>`;
 
 // artifact: Google Fonts por link; print: fontes locais
@@ -400,7 +401,102 @@ const printCss = `
     .mock{break-inside:avoid}
   }`;
 
-fs.writeFileSync(path.join(M, 'manual-artifact.html'), html(gfLink, ''));
+// camada interativa (só na versão artifact): lightbox-carrossel + animações
+const extras = `
+<style>
+  .zoom{cursor:zoom-in;transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s ease}
+  .zoom:hover{transform:translateY(-4px) scale(1.015);box-shadow:0 18px 50px rgba(0,0,0,.45)}
+  .hlc .zoom:hover{transform:scale(1.07);box-shadow:none}
+  .mposts .zoom:hover{transform:scale(1.04);box-shadow:none}
+  html.js .rv{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.16,1,.3,1)}
+  html.js .rv.in{opacity:1;transform:none}
+  html.js .hero>*{opacity:0;animation:vppUp .8s cubic-bezier(.16,1,.3,1) forwards}
+  html.js .hero .eyebrow{animation-delay:.05s}
+  html.js .hero img.lk{animation-delay:.22s}
+  html.js .hero p.tag{animation-delay:.42s}
+  html.js .hero .chips{animation-delay:.58s}
+  @keyframes vppUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  html.js .waves g{animation:vppDrift 26s ease-in-out infinite alternate}
+  @keyframes vppDrift{from{transform:translateX(-34px)}to{transform:translateX(34px)}}
+  #lb{position:fixed;inset:0;z-index:99;background:rgba(4,17,30,.94);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .28s ease}
+  #lb.open{opacity:1;pointer-events:auto}
+  #lb figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:16px;max-width:calc(100vw - 190px)}
+  #lbi{max-width:min(86vw,1000px);max-height:80vh;border-radius:16px;box-shadow:0 40px 120px rgba(0,0,0,.65);transform:scale(.94);opacity:0;transition:transform .3s cubic-bezier(.16,1,.3,1),opacity .3s ease}
+  #lb.open #lbi.show{transform:scale(1);opacity:1}
+  #lbc{font:500 15.5px Poppins,sans-serif;color:rgba(246,239,227,.88);letter-spacing:.5px;text-align:center;max-width:80vw}
+  .lbbtn{position:fixed;top:50%;transform:translateY(-50%);width:64px;height:64px;border-radius:50%;border:1.5px solid rgba(246,239,227,.28);background:rgba(11,45,72,.65);color:#F6EFE3;font-size:34px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:Poppins,sans-serif;transition:background .2s,border-color .2s,transform .2s}
+  .lbbtn:hover{background:#FF7A45;border-color:#FF7A45;transform:translateY(-50%) scale(1.08)}
+  #lbp{left:26px}#lbn{right:26px}
+  #lbx{top:24px;right:26px;left:auto;transform:none;width:52px;height:52px;font-size:22px}
+  #lbx:hover{transform:scale(1.08)}
+  #lbt{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);font:600 14px Poppins,sans-serif;letter-spacing:2px;color:rgba(246,239,227,.75);background:rgba(11,45,72,.65);border:1px solid rgba(246,239,227,.16);border-radius:999px;padding:8px 18px}
+  #lbhint{position:fixed;bottom:28px;right:28px;font:500 12.5px Poppins,sans-serif;color:rgba(246,239,227,.42)}
+  @media (max-width:760px){.lbbtn{width:48px;height:48px;font-size:26px}#lbp{left:8px}#lbn{right:8px}#lb figure{max-width:calc(100vw - 24px)}#lbi{max-width:94vw}#lbhint{display:none}}
+  @media (prefers-reduced-motion: reduce){
+    html.js .rv,html.js .hero>*{opacity:1 !important;transform:none !important;animation:none !important;transition:none !important}
+    html.js .waves g{animation:none !important}
+    .zoom,.zoom:hover{transform:none !important;transition:none !important}
+    #lbi,#lb{transition:none !important}
+  }
+</style>
+<div id="lb" role="dialog" aria-modal="true" aria-label="Visualização da arte">
+  <button class="lbbtn" id="lbx" aria-label="Fechar">✕</button>
+  <button class="lbbtn" id="lbp" aria-label="Anterior">‹</button>
+  <figure><img id="lbi" alt=""><figcaption id="lbc"></figcaption></figure>
+  <button class="lbbtn" id="lbn" aria-label="Próxima">›</button>
+  <div id="lbt"></div>
+  <div id="lbhint">← → navegam &nbsp;•&nbsp; Esc fecha</div>
+</div>
+<script>
+(function(){
+  document.documentElement.classList.add('js');
+  var items=[].slice.call(document.querySelectorAll('img.zoom'));
+  var lb=document.getElementById('lb'),lbi=document.getElementById('lbi'),
+      lbc=document.getElementById('lbc'),lbt=document.getElementById('lbt');
+  var cur=0,open=false,swapT=null;
+  function show(i){
+    cur=(i+items.length)%items.length;
+    var el=items[cur];
+    lbi.classList.remove('show');
+    clearTimeout(swapT);
+    swapT=setTimeout(function(){
+      lbi.src=el.src;lbi.alt=el.alt||'';
+      lbc.textContent=el.getAttribute('data-cap')||el.alt||'';
+      lbt.textContent=(cur+1)+' / '+items.length;
+      requestAnimationFrame(function(){requestAnimationFrame(function(){lbi.classList.add('show')})});
+    },110);
+  }
+  function openLb(i){open=true;lb.classList.add('open');document.body.style.overflow='hidden';show(i)}
+  function close(){open=false;lb.classList.remove('open');document.body.style.overflow=''}
+  items.forEach(function(el,i){el.addEventListener('click',function(){openLb(i)})});
+  document.getElementById('lbx').addEventListener('click',close);
+  document.getElementById('lbp').addEventListener('click',function(e){e.stopPropagation();show(cur-1)});
+  document.getElementById('lbn').addEventListener('click',function(e){e.stopPropagation();show(cur+1)});
+  lb.addEventListener('click',function(e){if(e.target===lb)close()});
+  document.addEventListener('keydown',function(e){
+    if(!open)return;
+    if(e.key==='Escape')close();
+    else if(e.key==='ArrowLeft')show(cur-1);
+    else if(e.key==='ArrowRight')show(cur+1);
+  });
+  var rvs=[].slice.call(document.querySelectorAll('.shead,.sdesc,.card,.sw,.lg,.tpl,.pc,.propbar,.plegend,.rules,.anote'));
+  rvs.forEach(function(el){el.classList.add('rv')});
+  if('IntersectionObserver' in window){
+    var seen=0;
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(en){
+        if(en.isIntersecting){
+          en.target.style.transitionDelay=(seen%4)*80+'ms';seen++;
+          en.target.classList.add('in');io.unobserve(en.target);
+        }
+      });
+    },{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+    rvs.forEach(function(el){io.observe(el)});
+  } else { rvs.forEach(function(el){el.classList.add('in')}) }
+})();
+</script>`;
+
+fs.writeFileSync(path.join(M, 'manual-artifact.html'), html(gfLink, '', extras));
 fs.writeFileSync(path.join(M, 'manual-print.html'), html(localLink, printCss));
 console.log('html ok');
 
