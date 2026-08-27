@@ -57,7 +57,7 @@ Arquivos woff2 locais em `fonts/` (usados pelos geradores; PT precisa dos subset
 
 ## Criativos de teste (Meta Ads)
 
-`ads/vpp-adXX-<angulo>-<formato>.jpg` — 16 artes em 10 ângulos (preco, privativo, roteiro, tradicao, urgencia, pordosol, grupo, incluso, depoimento, matematica), formatos feed 4:5 e story 9:16. Guardadas em JPEG no repo; `tools/ads_build.js` regenera os PNG 1080 full. Hipóteses de cada ângulo + plano de teste: matriz em `ads/matriz-criativos.html` (publicada em https://claude.ai/code/artifact/1bf16410-d525-4c86-9a53-03e3c7d33ca2). O depoimento do ad09 é ilustrativo — trocar por depoimento real. Novas variações: editar/duplicar blocos em `tools/ads_build.js`.
+`ads/vpp-adXX-<angulo>-<formato>.jpg` — 16 artes em 10 ângulos (preco, privativo, roteiro, tradicao, urgencia, pordosol, grupo, incluso, depoimento, matematica), formatos feed 4:5 e story 9:16. Guardadas em JPEG no repo; `tools/ads_build.js` regenera os PNG 1080 full. Hipóteses de cada ângulo + plano de teste: seção 08 do manual único (https://claude.ai/code/artifact/e67c8640-f904-442b-979a-f9b16263915a) — **este é o único link que circula com o cliente**; `ads/matriz-criativos.html` é só a versão standalone local. O depoimento do ad09 é ilustrativo — trocar por depoimento real. Novas variações: editar/duplicar blocos em `tools/ads_build.js`.
 
 ## Tom de voz
 

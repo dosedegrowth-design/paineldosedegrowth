@@ -19,6 +19,33 @@ const img = {
 };
 const capas = ['roteiros','frota','precos','depoimentos','reservas','paraty','promocoes','bastidores']
   .map(s => ({ s, d: b64(`capa-${s}.png`, 'image/png') }));
+
+// criativos de teste (thumbs gerados por matriz_build.js)
+const ATH = path.join(BRAND, 'ads', 'thumbs');
+const b64a = (f) => 'data:image/jpeg;base64,' + fs.readFileSync(path.join(ATH, f)).toString('base64');
+const angles = [
+  { id: 'ad01', nome: 'Preço direto', formatos: ['feed', 'story'], hip: 'Preço claro no criativo qualifica o clique — quem chama no Whats já sabe que é a partir de R$ 700.', func: 'Fundo de funil', slug: 'preco' },
+  { id: 'ad02', nome: 'Privativo / controle', formatos: ['feed'], hip: 'O gatilho é a flexibilidade: sem horário engessado, paradas à escolha. Fala com quem odeia excursão lotada.', func: 'Meio de funil', slug: 'privativo' },
+  { id: 'ad03', nome: 'Roteiro concreto', formatos: ['feed', 'story'], hip: 'Nomear as 5 paradas gera desejo e salvamento. Concretude vence promessa genérica.', func: 'Meio de funil', slug: 'roteiro' },
+  { id: 'ad04', nome: 'Tradição local', formatos: ['feed'], hip: '"A 3ª lancha de Paraty" — autoridade converte quem está comparando fornecedores.', func: 'Meio/fundo', slug: 'tradicao' },
+  { id: 'ad05', nome: 'Urgência de data', formatos: ['feed', 'story'], hip: 'Janela de decisão curta: pega quem já está em Paraty ou fechando o feriado. SEX/SÁB/DOM.', func: 'Fundo de funil', slug: 'urgencia' },
+  { id: 'ad06', nome: 'Pôr do sol (emoção)', formatos: ['feed', 'story'], hip: 'Emoção pura, quase sem texto. Alcance barato pra topo de funil e remarketing.', func: 'Topo de funil', slug: 'pordosol' },
+  { id: 'ad07', nome: 'Galera / social', formatos: ['feed', 'story'], hip: 'Feito pra marcar os amigos nos comentários — engajamento orgânico dentro do tráfego pago.', func: 'Topo/meio', slug: 'grupo' },
+  { id: 'ad08', nome: 'O que tá incluso', formatos: ['feed'], hip: 'Mata a objeção de valor: o recibo mostra tudo que os R$ 700 cobrem.', func: 'Fundo de funil', slug: 'incluso' },
+  { id: 'ad09', nome: 'Depoimento', formatos: ['feed', 'story'], hip: 'Prova social direta pra quem está em dúvida. Trocar o texto pelo depoimento real assim que tiver.', func: 'Meio/fundo', slug: 'depoimento' },
+  { id: 'ad10', nome: 'Matemática da galera', formatos: ['feed'], hip: 'Reenquadra o preço: R$ 700 ÷ 12 = menos de R$ 60 por pessoa. Destrava o público sensível a preço.', func: 'Fundo de funil', slug: 'matematica' },
+];
+const adCards = angles.map((a, i) => `
+  <div class="card ang">
+    <div class="ahead">
+      <span class="anum lilita">${String(i + 1).padStart(2, '0')}</span>
+      <div><h3 class="lilita">${a.nome}</h3><span class="afunc">${a.func}</span></div>
+      <span class="afmt">${a.formatos.map(f => f === 'feed' ? 'Feed 4:5' : 'Story 9:16').join(' + ')}</span>
+    </div>
+    <p class="ahip">${a.hip}</p>
+    <div class="aimgs">${a.formatos.map(f => `<img src="${b64a(`${a.id}-${f}.jpg`)}" alt="${a.nome} ${f}" class="${f}">`).join('')}</div>
+    <div class="afiles">${a.formatos.map(f => `<code>vpp-${a.id}-${a.slug}-${f}.png</code>`).join(' ')}</div>
+  </div>`).join('\n');
 const capaLabel = { roteiros:'Roteiros', frota:'Frota', precos:'Preços', depoimentos:'Depoimentos', reservas:'Reservas', paraty:'Paraty', promocoes:'Promoções', bastidores:'Bastidores' };
 
 const capaCircle = (c, size) => `<div class="hl"><div class="hlc" style="width:${size}px;height:${size}px"><img src="${c.d}" alt="Capa ${capaLabel[c.s]}"></div><span>${capaLabel[c.s]}</span></div>`;
@@ -139,6 +166,38 @@ ${fontsBlock}
 
   footer{margin-top:70px;border-top:1px solid var(--line);padding:34px 28px 46px;text-align:center;color:var(--sand-3);font-size:13px}
   footer .pacifico{color:var(--turq);font-size:20px;display:block;margin-bottom:8px}
+
+  /* criativos de teste */
+  .plan{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+  .pc{padding:24px 26px;break-inside:avoid}
+  .pc .obj{font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--turq);font-weight:600}
+  .pc h3{margin:6px 0 0;font-family:'Lilita One';font-weight:400;font-size:22px;color:var(--gold)}
+  .pc ul{margin:12px 0 0;padding-left:18px;color:var(--sand-2);font-size:14px}
+  .pc li{margin-bottom:7px}
+  .pc li b{color:var(--sand)}
+  .steps{counter-reset:s;margin-top:10px}
+  .step{display:flex;gap:18px;padding:15px 0;border-bottom:1px dashed var(--line);align-items:baseline}
+  .step:last-child{border-bottom:none}
+  .step::before{counter-increment:s;content:counter(s);font-family:'Lilita One';color:var(--orange);font-size:22px;min-width:26px}
+  .step b{color:var(--sand)}
+  .step span{color:var(--sand-2);font-size:14.5px}
+  .agrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+  .ang{padding:22px 24px;break-inside:avoid}
+  .ahead{display:flex;align-items:center;gap:14px}
+  .anum{color:var(--orange);font-size:19px}
+  .ahead h3{margin:0;font-size:22px;font-weight:400}
+  .afunc{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--turq);font-weight:600}
+  .afmt{margin-left:auto;font-size:11px;font-weight:600;color:var(--sand-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 12px;white-space:nowrap}
+  .ahip{color:var(--sand-2);font-size:13.5px;margin:12px 0 14px;line-height:1.55}
+  .aimgs{display:flex;gap:12px;align-items:flex-start}
+  .aimgs img{border-radius:12px;border:1px solid var(--line);max-width:100%}
+  .aimgs img.feed{width:62%}
+  .aimgs img.story{width:36%}
+  .aimgs img:only-child{width:75%;margin:0 auto;display:block}
+  .afiles{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+  .afiles code{font-family:'Poppins';font-size:11px;font-weight:600;color:var(--gold);background:rgba(255,184,77,.08);border-radius:8px;padding:4px 10px}
+  .anote{border-left:4px solid var(--orange);background:rgba(255,122,69,.07);border-radius:0 14px 14px 0;padding:16px 20px;color:var(--sand-2);font-size:14px;margin-top:24px}
+  .anote b{color:var(--sand)}
   ${printCss}
 </style></head>
 <body>
@@ -300,6 +359,25 @@ Passeios de lancha em Paraty-RJ
       <ul><li>Feed e story fecham sempre em <b>“Reserve pelo WhatsApp”</b> (pill laranja ou turquesa).</li></ul>
     </div>
   </div>
+</section>
+
+<section>
+  <div class="shead"><span class="snum">08</span><h2>Criativos de teste</h2></div>
+  <p class="sdesc">16 artes em 10 ângulos de mensagem, prontas pro Meta Ads — cada ângulo testa uma hipótese diferente de por que a pessoa fecha o passeio. Objetivo Mensagens (WhatsApp); avalia por custo por conversa iniciada, não por clique.</p>
+  <div class="plan">
+    <div class="card pc"><span class="obj">Conjunto A • oferta</span><h3>Preço na mesa</h3><ul><li><b>Preço direto</b> (feed + story)</li><li><b>O que tá incluso</b> (feed)</li><li><b>Matemática da galera</b> (feed)</li></ul></div>
+    <div class="card pc"><span class="obj">Conjunto B • desejo</span><h3>Roteiro e prova</h3><ul><li><b>Roteiro concreto</b> (feed + story)</li><li><b>Urgência de data</b> (feed + story)</li><li><b>Depoimento</b> (feed + story)</li></ul></div>
+    <div class="card pc"><span class="obj">Conjunto C • alcance</span><h3>Marca e emoção</h3><ul><li><b>Pôr do sol</b> (feed + story)</li><li><b>Galera / social</b> (feed + story)</li><li><b>Tradição</b> + <b>Privativo</b> (feed)</li></ul></div>
+  </div>
+  <div class="card" style="margin-top:14px;padding:8px 26px">
+    <div class="steps">
+      <div class="step"><div><b>Roda 3–5 dias</b> <span>com orçamento igual por conjunto, sem mexer no meio.</span></div></div>
+      <div class="step"><div><b>Mata o pior criativo de cada conjunto</b> <span>(maior custo por conversa) e deixa o resto rodar mais 3 dias.</span></div></div>
+      <div class="step"><div><b>Escala o vencedor</b> <span>subindo orçamento aos poucos (20–30% por vez) e criando variações dele.</span></div></div>
+    </div>
+  </div>
+  <div class="anote"><b>Antes de subir:</b> o depoimento do ângulo 9 é ilustrativo — trocar pelo texto de um cliente real. Fotos geradas por IA no clima de Paraty; quando houver fotos boas das lanchas reais, os fundos são refeitos pra ganhar ainda mais confiança.</div>
+  <div class="agrid" style="margin-top:26px">${adCards}</div>
 </section>
 
 </main>
