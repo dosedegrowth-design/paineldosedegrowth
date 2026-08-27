@@ -88,7 +88,7 @@ h1 .gold{color:#FFB84D}
     <h1 class="lilita">Passeio de lancha<br><span class="gold">em Paraty</span></h1>
     <div class="feats pop"><span><b>4 lanchas</b> na água</span><span>até <b>12 pessoas</b></span><span>roteiro <b>do seu jeito</b></span></div>
     <div class="priceRow">
-      <div class="price pop"><div class="apartir">A PARTIR DE</div><div class="valor">R$ 350</div><div class="pax">por pessoa</div></div>
+      <div class="price pop"><div class="apartir">A PARTIR DE</div><div class="valor">R$ 700</div><div class="pax">lancha privativa</div></div>
       <div class="cta pop">${waIcon} RESERVE PELO WHATSAPP</div>
     </div>
     <div class="foot pop">@vempraparaty &nbsp;•&nbsp; Paraty-RJ</div>

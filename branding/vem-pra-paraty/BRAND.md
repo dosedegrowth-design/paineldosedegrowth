@@ -8,6 +8,7 @@
 - **Instagram**: [@vempraparaty](https://www.instagram.com/vempraparaty/)
 - **Meta Ads**: conta "Vem Pra Paraty - 001" (`1760209501849653`) no business DD Growth
 - **Posicionamento**: acessível e animado — "passeio incrível que cabe no bolso". Convite, não anúncio.
+- **Preço mínimo oficial: R$ 700 (lancha privativa, o passeio)** — todo criativo com preço usa "a partir de R$ 700"; nunca inventar outro valor. Ângulo "matemática da galera": R$ 700 ÷ 12 = menos de R$ 60/pessoa.
 
 ## Paleta (fixa — não inventar cor nova)
 
@@ -51,8 +52,12 @@ Arquivos woff2 locais em `fonts/` (usados pelos geradores; PT precisa dos subset
 - `templates/template-carrossel-capa.png` — capa de carrossel 1080×1350: selo topo-esquerda, @ topo-direita, pill laranja de categoria, headline Lilita em 2 cores, "Arrasta pro lado" + dots.
 - `templates/template-flyer-promo.png` — flyer feed/ads 1080×1350: selo central, pill turquesa outline, headline, linha de benefícios, bloco de preço laranja rotacionado + CTA WhatsApp turquesa.
 - `templates/template-story-promo.png` — story 1080×1920: Pacifico de abertura, headline, checklist ✓, CTA laranja full-width.
-- `templates/foto-lancha-paraty-{a,b}.jpg` — fotos geradas (Maginific) pra fundo enquanto não há foto real boa. **Preferir fotos reais do cliente quando existirem.**
-- Valores/textos dos templates são ilustrativos.
+- `templates/foto-lancha-paraty-{a,b}.jpg`, `foto-aerea-paraty.jpg`, `foto-grupo-lancha.jpg`, `foto-casal-pordosol.jpg`, `foto-praia-deserta.jpg`, `foto-paraty-colonial.jpg` — fotos geradas (Maginific) pra fundo enquanto não há foto real boa. **Preferir fotos reais do cliente quando existirem.**
+- Textos dos templates são ilustrativos; preço sempre "a partir de R$ 700".
+
+## Criativos de teste (Meta Ads)
+
+`ads/vpp-adXX-<angulo>-<formato>.jpg` — 16 artes em 10 ângulos (preco, privativo, roteiro, tradicao, urgencia, pordosol, grupo, incluso, depoimento, matematica), formatos feed 4:5 e story 9:16. Guardadas em JPEG no repo; `tools/ads_build.js` regenera os PNG 1080 full. Hipóteses de cada ângulo + plano de teste: matriz em `ads/matriz-criativos.html` (publicada em https://claude.ai/code/artifact/1bf16410-d525-4c86-9a53-03e3c7d33ca2). O depoimento do ad09 é ilustrativo — trocar por depoimento real. Novas variações: editar/duplicar blocos em `tools/ads_build.js`.
 
 ## Tom de voz
 

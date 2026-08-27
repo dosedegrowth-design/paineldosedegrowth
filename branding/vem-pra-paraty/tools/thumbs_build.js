@@ -9,7 +9,7 @@ fs.mkdirSync(OUT, { recursive: true });
 
 // [src, out, width, format]
 const jobs = [
-  ['logo/final/logo-horizontal-fundo-navy.png', 'lockup.png', 980, 'png'],
+  ['logo/final/logo-horizontal-areia-alpha.png', 'lockup.png', 980, 'png'],
   ['logo/final/selo-principal-2048.png', 'selo.png', 460, 'png'],
   ['logo/final/selo-fundo-claro-2048.png', 'selo-claro.png', 460, 'png'],
   ['logo/final/selo-mono-branco-2048.png', 'selo-mono.png', 460, 'png'],
