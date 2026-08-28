@@ -211,6 +211,37 @@ ${fontsBlock}
   .cpy:hover{background:var(--orange)}
   .painel-link{color:var(--turq);font-weight:600;word-break:break-all}
   .kchip{display:inline-block;border:1.5px solid rgba(23,195,178,.4);color:var(--turq);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600;margin:4px 6px 0 0}
+
+  /* mobile */
+  @media (max-width:700px){
+    .wrap{padding:0 18px}
+    .hero{padding:52px 18px 42px}
+    .hero img.lk{width:94%}
+    .hero p.tag{font-size:15.5px}
+    section{padding:42px 0 6px}
+    .shead h2{font-size:26px}
+    .snum{font-size:17px}
+    .sub{font-size:21px;margin:36px 0 6px}
+    .type{grid-template-columns:1fr;gap:10px}
+    .type .sample{font-size:34px}
+    .type .meta{text-align:left}
+    .lg{padding:20px}
+    .lg.wide{flex-direction:column;gap:14px}
+    .lg.wide img{width:94%;max-width:none}
+    .hls{gap:14px;padding:22px 8px}
+    .ahead{flex-wrap:wrap;row-gap:6px}
+    .fmt,.afmt{margin-left:0}
+    .mock{padding:20px 16px 24px}
+    .mhead{gap:14px}
+    .mhead img{width:68px;height:68px}
+    .mstats{gap:14px;font-size:12px}
+    .mhls{gap:8px}
+    .propbar{height:16px}
+    .plegend{gap:12px;font-size:11.5px}
+    .cap{padding:18px 18px}
+    .pc{padding:20px 20px}
+    .step{gap:12px;padding:13px 0}
+  }
   ${printCss}
 </style></head>
 <body>
@@ -635,6 +666,13 @@ const extras = `
   document.getElementById('lbp').addEventListener('click',function(e){e.stopPropagation();show(cur-1)});
   document.getElementById('lbn').addEventListener('click',function(e){e.stopPropagation();show(cur+1)});
   lb.addEventListener('click',function(e){if(e.target===lb)close()});
+  var tx=null;
+  lb.addEventListener('touchstart',function(e){tx=e.changedTouches[0].clientX},{passive:true});
+  lb.addEventListener('touchend',function(e){
+    if(tx===null)return;
+    var dx=e.changedTouches[0].clientX-tx;tx=null;
+    if(Math.abs(dx)>48){if(dx<0)show(cur+1);else show(cur-1)}
+  },{passive:true});
   document.addEventListener('keydown',function(e){
     if(!open)return;
     if(e.key==='Escape')close();
