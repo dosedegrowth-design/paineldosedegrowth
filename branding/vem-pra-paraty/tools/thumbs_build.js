@@ -10,9 +10,9 @@ fs.mkdirSync(OUT, { recursive: true });
 // [src, out, width, format]
 const jobs = [
   ['logo/final/logo-horizontal-areia-alpha.png', 'lockup.png', 980, 'png'],
-  ['logo/final/selo-principal-2048.png', 'selo.png', 640, 'png'],
-  ['logo/final/selo-fundo-claro-2048.png', 'selo-claro.png', 640, 'png'],
-  ['logo/final/selo-mono-branco-2048.png', 'selo-mono.png', 640, 'png'],
+  ['logo/final/selo-principal-2048.png', 'selo.png', 900, 'png'],
+  ['logo/final/selo-fundo-claro-2048.png', 'selo-claro.png', 900, 'png'],
+  ['logo/final/selo-mono-branco-2048.png', 'selo-mono.png', 900, 'png'],
   ['capas/capa-roteiros.png', 'capa-roteiros.png', 480, 'png'],
   ['capas/capa-frota.png', 'capa-frota.png', 480, 'png'],
   ['capas/capa-precos.png', 'capa-precos.png', 480, 'png'],
