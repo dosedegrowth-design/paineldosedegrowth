@@ -45,7 +45,7 @@ Arquivos woff2 locais em `fonts/` (usados pelos geradores; PT precisa dos subset
 
 ## Capas de destaque
 
-`capas/capa-{roteiros,frota,precos,depoimentos,reservas,paraty,promocoes,bastidores}.png` — 1080×1920, ícone centralizado no anel, é só subir. Novo destaque? Gerar no mesmo sistema editando `tools/capas_build.js` (adicionar ícone no objeto `icons`).
+`capas/capa-{...}.png` — 1080×1920 (story). **`capas/quadradas/capa-<nome>-1080.png` — versão quadrada 1080×1080 com o círculo centralizado, a preferida pra subir direto como capa de destaque no IG.** Novo destaque? Gerar no mesmo sistema editando `tools/capas_build.js` (adicionar ícone no objeto `icons`).
 
 ## Templates (exemplos prontos)
 
