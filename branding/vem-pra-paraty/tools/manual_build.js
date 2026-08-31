@@ -356,11 +356,11 @@ ${fontsBlock}
         <div class="mstats" style="margin-top:8px"><span><b>—</b>posts</span><span><b>—</b>seguidores</span><span><b>—</b>seguindo</span></div>
       </div>
     </div>
-    <div class="mbio"><b>Vem pra Paraty 🚤</b>
-Passeios de lancha em Paraty-RJ
-🏝️ Praias e ilhas num dia inesquecível
-⚓ 4 lanchas • saídas todos os dias
-👇 Reserva rápida pelo WhatsApp</div>
+    <div class="mbio"><b>Vem pra Paraty | Passeio de Lancha</b>
+🚤 24 anos navegando Paraty • a 3ª lancha da cidade
+⛵ 4 lanchas próprias, de 18 a 33 pés
+🏝️ Ilhas, praias e pôr do sol
+👇 Reserve pelo WhatsApp</div>
     <div class="mbtns"><span class="mbtn">Reservar</span><span class="mbtn sec">Seguir</span><span class="mbtn sec">Mensagem</span></div>
     <div class="mhls">
       ${capas.slice(0, 5).map(c => capaCircle(c, 56)).join('\n      ')}
