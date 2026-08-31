@@ -47,6 +47,14 @@ const icons = {
     <rect x="10" y="30" width="50" height="40" rx="9"/>
     <path d="M60 44 L84 32 L84 68 L60 56"/>
     <circle cx="35" cy="50" r="7" stroke="${LARANJA}"/>`,
+  ilhas: `
+    <path d="M 46 64 Q 45 52 41 40"/>
+    <path d="M 41 40 Q 29 34 21 38"/>
+    <path d="M 41 40 Q 33 26 23 26"/>
+    <path d="M 41 40 Q 47 25 57 24"/>
+    <path d="M 41 40 Q 53 32 61 40"/>
+    <path d="M 22 66 Q 48 52 74 66"/>
+    <path d="M 26 78 Q 34 71 42 78 T 58 78 T 74 78" stroke="${LARANJA}"/>`,
 };
 
 const tpl = (iconSvg) => `<!doctype html>
