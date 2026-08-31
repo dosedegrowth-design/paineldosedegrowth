@@ -12,7 +12,7 @@ const angles = [
   { id: 'ad01', nome: 'Preço direto', formatos: ['feed', 'story'], hip: 'Preço claro no criativo qualifica o clique — quem chama no Whats já sabe que é a partir de R$ 700.', func: 'Fundo de funil', slug: 'preco' },
   { id: 'ad02', nome: 'Privativo / controle', formatos: ['feed'], hip: 'O gatilho é a flexibilidade: sem horário engessado, paradas à escolha. Fala com quem odeia excursão lotada.', func: 'Meio de funil', slug: 'privativo' },
   { id: 'ad03', nome: 'Roteiro concreto', formatos: ['feed', 'story'], hip: 'Nomear as 5 paradas gera desejo e salvamento. Concretude vence promessa genérica.', func: 'Meio de funil', slug: 'roteiro' },
-  { id: 'ad04', nome: 'Tradição local', formatos: ['feed'], hip: '"A 3ª lancha de Paraty" — autoridade converte quem está comparando fornecedores.', func: 'Meio/fundo', slug: 'tradicao' },
+  { id: 'ad04', nome: 'Tradição local', formatos: ['feed'], hip: '"Das primeiras lanchas de Paraty, +5.000 passeios" — autoridade converte quem está comparando fornecedores.', func: 'Meio/fundo', slug: 'tradicao' },
   { id: 'ad05', nome: 'Urgência de data', formatos: ['feed', 'story'], hip: 'Janela de decisão curta: pega quem já está em Paraty ou fechando o feriado. SEX/SÁB/DOM.', func: 'Fundo de funil', slug: 'urgencia' },
   { id: 'ad06', nome: 'Pôr do sol (emoção)', formatos: ['feed', 'story'], hip: 'Emoção pura, quase sem texto. Alcance barato pra topo de funil e remarketing.', func: 'Topo de funil', slug: 'pordosol' },
   { id: 'ad07', nome: 'Galera / social', formatos: ['feed', 'story'], hip: 'Feito pra marcar os amigos nos comentários — engajamento orgânico dentro do tráfego pago.', func: 'Topo/meio', slug: 'grupo' },

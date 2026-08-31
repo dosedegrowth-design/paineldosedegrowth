@@ -27,7 +27,7 @@ const angles = [
   { id: 'ad01', nome: 'Preço direto', formatos: ['feed', 'story'], hip: 'Preço claro no criativo qualifica o clique — quem chama no Whats já sabe que é a partir de R$ 700.', func: 'Fundo de funil', slug: 'preco' },
   { id: 'ad02', nome: 'Privativo / controle', formatos: ['feed'], hip: 'O gatilho é a flexibilidade: sem horário engessado, paradas à escolha. Fala com quem odeia excursão lotada.', func: 'Meio de funil', slug: 'privativo' },
   { id: 'ad03', nome: 'Roteiro concreto', formatos: ['feed', 'story'], hip: 'Nomear as 5 paradas gera desejo e salvamento. Concretude vence promessa genérica.', func: 'Meio de funil', slug: 'roteiro' },
-  { id: 'ad04', nome: 'Tradição local', formatos: ['feed'], hip: '"A 3ª lancha de Paraty" — autoridade converte quem está comparando fornecedores.', func: 'Meio/fundo', slug: 'tradicao' },
+  { id: 'ad04', nome: 'Tradição local', formatos: ['feed'], hip: '"Das primeiras lanchas de Paraty, +5.000 passeios" — autoridade converte quem está comparando fornecedores.', func: 'Meio/fundo', slug: 'tradicao' },
   { id: 'ad05', nome: 'Urgência de data', formatos: ['feed', 'story'], hip: 'Janela de decisão curta: pega quem já está em Paraty ou fechando o feriado. SEX/SÁB/DOM.', func: 'Fundo de funil', slug: 'urgencia' },
   { id: 'ad06', nome: 'Pôr do sol (emoção)', formatos: ['feed', 'story'], hip: 'Emoção pura, quase sem texto. Alcance barato pra topo de funil e remarketing.', func: 'Topo de funil', slug: 'pordosol' },
   { id: 'ad07', nome: 'Galera / social', formatos: ['feed', 'story'], hip: 'Feito pra marcar os amigos nos comentários — engajamento orgânico dentro do tráfego pago.', func: 'Topo/meio', slug: 'grupo' },
@@ -357,9 +357,9 @@ ${fontsBlock}
       </div>
     </div>
     <div class="mbio"><b>Vem pra Paraty | Passeio de Lancha</b>
-🚤 24 anos navegando Paraty • a 3ª lancha da cidade
+🚤 Das primeiras lanchas de Paraty • 24 anos de mar
+⭐ +5.000 passeios realizados
 ⛵ 4 lanchas próprias, de 18 a 33 pés
-🏝️ Ilhas, praias e pôr do sol
 👇 Reserve pelo WhatsApp</div>
     <div class="mbtns"><span class="mbtn">Reservar</span><span class="mbtn sec">Seguir</span><span class="mbtn sec">Mensagem</span></div>
     <div class="mhls">
@@ -497,9 +497,9 @@ A partir de R$ 700 o passeio. Pede teu orçamento no WhatsApp (link na bio).
 
 #VemPraParaty #Paraty #PasseioDeLancha #ParatyRJ #CostaVerde</div><button class="cpy">Copiar legenda</button></div>
 
-    <div class="card cap"><div class="caphead"><b>DIA 6 • História</b><span>arte: tradição (ad04 feed)</span></div><div class="captext">Quando o passeio de lancha virou moda em Paraty, a gente já estava na água — fomos a terceira lancha da cidade. ⚓
+    <div class="card cap"><div class="caphead"><b>DIA 6 • História</b><span>arte: tradição (ad04 feed)</span></div><div class="captext">Quando o passeio de lancha virou moda em Paraty, a gente já estava na água — somos das primeiras lanchas da cidade, há 24 anos no mar. ⚓
 
-De lá pra cá aprendemos o nome de cada praia, a hora de cada maré e o canto certo pra fugir do vento.
+Mais de 5.000 passeios depois, sabemos o nome de cada praia, a hora de cada maré e o canto certo pra fugir do vento.
 
 Vem navegar com quem conhece. 🌊
 

@@ -126,9 +126,9 @@ ads['ad04-tradicao-feed'] = [1080, 1350, `
   <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,32,58,.30),rgba(7,32,58,.05) 40%,rgba(7,32,58,.88) 78%,#07203A)"></div>
   <img class="selo-tl" src="${SELO}"><div class="handle pop">@vempraparaty</div>
   <div style="position:absolute;left:80px;right:80px;bottom:70px;text-align:center">
-    <div class="pac" style="font-size:54px;color:#FFB84D;transform:rotate(-2deg)">Desde o começo…</div>
-    <div class="lilita" style="font-size:86px;line-height:1.05;margin-top:14px">A <span style="color:#17C3B2">3ª lancha</span> a navegar<br>a baía de Paraty</div>
-    <div class="pop" style="font-weight:500;font-size:30px;color:rgba(246,239,227,.88);margin-top:22px;line-height:1.55">A gente conhece cada praia pelo nome —<br>e leva você nas melhores.</div>
+    <div class="pac" style="font-size:54px;color:#FFB84D;transform:rotate(-2deg)">Há 24 anos no mar…</div>
+    <div class="lilita" style="font-size:86px;line-height:1.05;margin-top:14px">Das <span style="color:#17C3B2">primeiras lanchas</span><br>da baía de Paraty</div>
+    <div class="pop" style="font-weight:500;font-size:30px;color:rgba(246,239,227,.88);margin-top:22px;line-height:1.55">Mais de <b style="color:#FFB84D">5.000 passeios</b> — a gente conhece<br>cada praia pelo nome.</div>
     <div style="margin-top:36px"><span class="cta or">${WA(40, '#fff')} CONHEÇA PELO MAR</span></div>
   </div>`];
 

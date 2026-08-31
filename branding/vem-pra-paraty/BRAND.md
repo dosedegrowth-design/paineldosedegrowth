@@ -4,7 +4,7 @@
 
 ## Cliente
 
-- **Negócio**: passeios de lancha em Paraty-RJ, **há 24 anos** — foi a **3ª lancha** a operar na cidade (história/tradição é diferencial). Dono: Agileu.
+- **Negócio**: passeios de lancha em Paraty-RJ, **há 24 anos** — **das primeiras lanchas** a operar na cidade, **mais de 5.000 passeios realizados**. REGRA DE MESSAGING: usar sempre "das primeiras lanchas de Paraty" (nunca "a 3ª lancha") + os números 24 anos e +5.000 passeios como prova. Dono: Agileu.
 - **Frota (4 lanchas próprias)**: duas de **18 pés**, uma de **24 pés**, uma de **33 pés**. Boa disponibilidade, preço competitivo.
 - **Instagram**: [@vempraparaty](https://www.instagram.com/vempraparaty/)
 - **Meta Ads**: conta "Vem Pra Paraty - 001" (`1760209501849653`) no business DD Growth
@@ -70,9 +70,9 @@ Bio sugerida do perfil:
 Campo Nome do perfil: `Vem pra Paraty | Passeio de Lancha` (busca do IG).
 
 ```
-🚤 24 anos navegando Paraty • a 3ª lancha da cidade
+🚤 Das primeiras lanchas de Paraty • 24 anos de mar
+⭐ +5.000 passeios realizados
 ⛵ 4 lanchas próprias, de 18 a 33 pés
-🏝️ Ilhas, praias e pôr do sol
 👇 Reserve pelo WhatsApp
 ```
 
