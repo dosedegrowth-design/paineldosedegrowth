@@ -4,7 +4,7 @@
 
 ## Cliente
 
-- **Negócio**: passeios de lancha em Paraty-RJ, **há 24 anos** — **das primeiras lanchas** a operar na cidade, **mais de 5.000 passeios realizados**. REGRA DE MESSAGING: usar sempre "das primeiras lanchas de Paraty" (nunca "a 3ª lancha") + os números 24 anos e +5.000 passeios como prova. Dono: Agileu.
+- **Negócio**: passeios de lancha em Paraty-RJ, **há 24 anos** — **das primeiras lanchas** a operar na cidade, **mais de 5.000 passeios realizados**. REGRA DE MESSAGING: tom de EMPRESA de turismo náutico, nunca "olhar de barqueiro" — número de lanchas e pés são informação interna de proposta comercial (WhatsApp), NUNCA aparecem em bio ou anúncio; publicamente usar "frota própria". Provas públicas: 24 anos, +5.000 passeios, "das primeiras lanchas de Paraty" (nunca "a 3ª lancha"). Capacidade "até 12 pessoas" pode aparecer (é informação útil pro cliente). Dono: Agileu.
 - **Frota (4 lanchas próprias)**: duas de **18 pés**, uma de **24 pés**, uma de **33 pés**. Boa disponibilidade, preço competitivo.
 - **Instagram**: [@vempraparaty](https://www.instagram.com/vempraparaty/)
 - **Meta Ads**: conta "Vem Pra Paraty - 001" (`1760209501849653`) no business DD Growth
@@ -70,9 +70,9 @@ Bio sugerida do perfil:
 Campo Nome do perfil: `Vem pra Paraty | Passeio de Lancha` (busca do IG).
 
 ```
-🚤 Das primeiras lanchas de Paraty • 24 anos de mar
+🚤 Turismo náutico em Paraty há 24 anos
 ⭐ +5.000 passeios realizados
-⛵ 4 lanchas próprias, de 18 a 33 pés
+🏝️ Roteiros privativos por ilhas e praias
 👇 Reserve pelo WhatsApp
 ```
 

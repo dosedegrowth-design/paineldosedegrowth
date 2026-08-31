@@ -258,7 +258,7 @@ ${fontsBlock}
     <img class="lk" src="${img.lockup}" alt="Logo Vem pra Paraty">
     <p class="tag">O convite pro mar de Paraty: paleta, logo, capas de destaque e templates prontos pra todo post, story e anúncio do <b>@vempraparaty</b>.</p>
     <div class="chips">
-      <div class="chip"><b>4 lanchas</b> na água</div>
+      <div class="chip"><b>24 anos</b> de mar</div>
       <div class="chip">Paraty • RJ</div>
       <div class="chip">Feed + Stories + Ads</div>
     </div>
@@ -357,9 +357,9 @@ ${fontsBlock}
       </div>
     </div>
     <div class="mbio"><b>Vem pra Paraty | Passeio de Lancha</b>
-🚤 Das primeiras lanchas de Paraty • 24 anos de mar
+🚤 Turismo náutico em Paraty há 24 anos
 ⭐ +5.000 passeios realizados
-⛵ 4 lanchas próprias, de 18 a 33 pés
+🏝️ Roteiros privativos por ilhas e praias
 👇 Reserve pelo WhatsApp</div>
     <div class="mbtns"><span class="mbtn">Reservar</span><span class="mbtn sec">Seguir</span><span class="mbtn sec">Mensagem</span></div>
     <div class="mhls">
@@ -562,7 +562,7 @@ Follow-up (24h sem resposta): "Oi, [nome]! Segurei a cotação da tua data até 
   <h3 class="sub">O que precisamos de você essa semana</h3>
   <div class="card" style="padding:8px 26px">
     <div class="steps">
-      <div class="step"><div><b>Fotos e vídeos reais das 4 lanchas</b> <span>— de celular serve; de manhã, com sol. Substituem as imagens geradas e aumentam conversão.</span></div></div>
+      <div class="step"><div><b>Fotos e vídeos reais da frota</b> <span>— de celular serve; de manhã, com sol. Substituem as imagens geradas e aumentam conversão.</span></div></div>
       <div class="step"><div><b>Nome e capacidade de cada lancha</b> <span>— vira conteúdo da capa "Frota" e dos posts.</span></div></div>
       <div class="step"><div><b>3 a 5 depoimentos reais</b> <span>— print de WhatsApp vale. Entram no lugar do depoimento ilustrativo do ângulo 9.</span></div></div>
       <div class="step"><div><b>Número oficial do WhatsApp de reservas</b> <span>— e quem responde (os anúncios apontam pra lá).</span></div></div>

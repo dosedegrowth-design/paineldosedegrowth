@@ -86,7 +86,7 @@ h1 .gold{color:#FFB84D}
   <div class="content">
     <span class="eyebrow pop">SAÍDAS TODOS OS DIAS</span>
     <h1 class="lilita">Passeio de lancha<br><span class="gold">em Paraty</span></h1>
-    <div class="feats pop"><span><b>4 lanchas</b> na água</span><span>até <b>12 pessoas</b></span><span>roteiro <b>do seu jeito</b></span></div>
+    <div class="feats pop"><span><b>frota própria</b></span><span>até <b>12 pessoas</b></span><span>roteiro <b>do seu jeito</b></span></div>
     <div class="priceRow">
       <div class="price pop"><div class="apartir">A PARTIR DE</div><div class="valor">R$ 700</div><div class="pax">lancha privativa</div></div>
       <div class="cta pop">${waIcon} RESERVE PELO WHATSAPP</div>
@@ -117,7 +117,7 @@ h1 .tq{color:#17C3B2}
     <span class="script">Bora pro mar?</span>
     <h1 class="lilita">Seu dia de lancha<br><span class="tq">em Paraty</span></h1>
     <div class="feats pop">
-      <div><span class="check">✓</span><b>4 lanchas</b> disponíveis</div>
+      <div><span class="check">✓</span><b>Frota própria</b> e equipe experiente</div>
       <div><span class="check">✓</span>Praias e ilhas da baía de Paraty</div>
       <div><span class="check">✓</span>Saída do cais &nbsp;•&nbsp; <b>disponibilidade hoje</b></div>
     </div>
