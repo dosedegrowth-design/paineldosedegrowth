@@ -19,9 +19,9 @@
 /* ————— Tokens: light (base) ————— */
 :root{
   --paper:#F7F4F0; --card:#FFFFFF; --card2:#EFEAE3; --inverse:#211C18; --inverse-ink:#F3F0EC;
-  --ink:#211C18; --ink2:#65594F; --muted:#95897D; --hair:#E4DDD3; --hair2:#D6CDC0;
+  --ink:#211C18; --ink2:#65594F; --muted:#7A6E62; --hair:#E4DDD3; --hair2:#D6CDC0;
   --accent:#F15839; --accent-ink:#BC3B1E; --accent-soft:rgba(241,88,57,.09);
-  --good:#1E7F4F; --good-soft:rgba(30,127,79,.10);
+  --good:#1A6F45; --good-soft:rgba(30,127,79,.10);
   --warn:#8F5B07; --warn-border:#D97706; --warn-soft:rgba(217,119,6,.09);
   --crit:#B3261E; --crit-border:#DC2626; --crit-soft:rgba(220,38,38,.07);
   --bar-a:#F15839; --bar-b:#B7ADA1;
@@ -32,7 +32,7 @@
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --paper:#171717; --card:#1F1E1C; --card2:#282622; --inverse:#26241F; --inverse-ink:#F3F0EC;
-    --ink:#F3F3F3; --ink2:#BDB4AA; --muted:#877E74; --hair:#302D29; --hair2:#3C3832;
+    --ink:#F3F3F3; --ink2:#BDB4AA; --muted:#9A9186; --hair:#302D29; --hair2:#3C3832;
     --accent:#F15839; --accent-ink:#FF8A6E; --accent-soft:rgba(241,88,57,.13);
     --good:#4CBE85; --good-soft:rgba(76,190,133,.12);
     --warn:#E8A33D; --warn-border:#B67716; --warn-soft:rgba(232,163,61,.10);
@@ -44,7 +44,7 @@
 /* ————— Tokens: dark (escolha explícita) ————— */
 :root[data-theme="dark"]{
   --paper:#171717; --card:#1F1E1C; --card2:#282622; --inverse:#26241F; --inverse-ink:#F3F0EC;
-  --ink:#F3F3F3; --ink2:#BDB4AA; --muted:#877E74; --hair:#302D29; --hair2:#3C3832;
+  --ink:#F3F3F3; --ink2:#BDB4AA; --muted:#9A9186; --hair:#302D29; --hair2:#3C3832;
   --accent:#F15839; --accent-ink:#FF8A6E; --accent-soft:rgba(241,88,57,.13);
   --good:#4CBE85; --good-soft:rgba(76,190,133,.12);
   --warn:#E8A33D; --warn-border:#B67716; --warn-soft:rgba(232,163,61,.10);
@@ -216,7 +216,7 @@ footer .note p{margin:0 0 8px;max-width:80ch}
 
 /* ————— Print ————— */
 @media print{
-  :root{--paper:#FFFFFF;--card:#FFFFFF;--card2:#F2EEE8;--ink:#211C18;--ink2:#65594F;--muted:#95897D;--hair:#DDD5CA;--hair2:#C9BFB2;--accent:#F15839;--accent-ink:#BC3B1E;--inverse:#211C18;--inverse-ink:#F3F0EC;--shadow:none}
+  :root,:root[data-theme="dark"],:root:not([data-theme="light"]){--paper:#FFFFFF;--card:#FFFFFF;--card2:#F2EEE8;--ink:#211C18;--ink2:#65594F;--muted:#7A6E62;--hair:#DDD5CA;--hair2:#C9BFB2;--accent:#F15839;--accent-ink:#BC3B1E;--inverse:#211C18;--inverse-ink:#F3F0EC;--good:#1A6F45;--good-soft:rgba(30,127,79,.10);--warn:#8F5B07;--warn-border:#D97706;--warn-soft:rgba(217,119,6,.09);--crit:#B3261E;--crit-border:#DC2626;--crit-soft:rgba(220,38,38,.07);--bar-a:#F15839;--bar-b:#B7ADA1;--shadow:none}
   body{font-size:12.5px}
   .brandbar{display:none}
   .kpi,.fstage,.tablewrap,.chart,.callout,.case,.plancol,.verdict{box-shadow:none;break-inside:avoid}
@@ -231,7 +231,7 @@ footer .note p{margin:0 0 8px;max-width:80ch}
 
 <header class="hero">
   <div class="wrap">
-    <div class="hero-brand" aria-label="Dose de Growth">
+    <div class="hero-brand">
       <svg width="34" height="34" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <path d="M24 2L43.6 13V35L24 46L4.4 35V13L24 2Z" fill="#F15839"/>
         <path d="M18 14L18 32L24 36L24 14L18 14Z" fill="#FFFFFF" fill-opacity="0.95"/>
@@ -364,7 +364,7 @@ footer .note p{margin:0 0 8px;max-width:80ch}
     <div class="tablewrap">
       <table>
         <caption>Auditoria de atribuição · CRM Kommo</caption>
-        <thead><tr><th>Origem no CRM</th><th class="n">Leads</th><th>O que a auditoria encontrou</th></tr></thead>
+        <thead><tr><th scope="col">Origem no CRM</th><th class="n" scope="col">Leads</th><th scope="col">O que a auditoria encontrou</th></tr></thead>
         <tbody>
           <tr><td>"Outros"</td><td class="n">564</td><td>78% é WhatsApp direto (Google Maps, site, fachada, boca a boca) + 42 leads de anúncio classificados errado</td></tr>
           <tr><td>"Sem origem"</td><td class="n">195</td><td>45% é DM de Instagram orgânico + 41% clientes que já existiam na base</td></tr>
@@ -387,7 +387,7 @@ footer .note p{margin:0 0 8px;max-width:80ch}
       <table>
         <caption>Custo por consulta realizada · por canal</caption>
         <thead>
-          <tr><th>Canal</th><th class="n">Investimento</th><th class="n">Consultas no CRM</th><th class="n">Custo real por consulta</th><th class="n">O que a plataforma sugere</th></tr>
+          <tr><th scope="col">Canal</th><th class="n" scope="col">Investimento</th><th class="n" scope="col">Consultas no CRM</th><th class="n" scope="col">Custo real por consulta</th><th class="n" scope="col">O que a plataforma sugere</th></tr>
         </thead>
         <tbody>
           <tr><td>Google Ads<span class="sub">Contas SP + São José</span></td><td class="n">R$ 9.906</td><td class="n">27</td><td class="n"><strong>R$ 367</strong></td><td class="n">R$ 14,42 / conversão</td></tr>
@@ -406,7 +406,7 @@ footer .note p{margin:0 0 8px;max-width:80ch}
       <table>
         <caption>Funil por unidade · CRM Kommo (01–28/08)</caption>
         <thead>
-          <tr><th>Unidade</th><th class="n">Leads</th><th class="n">Consultas</th><th class="n">Conversão</th><th class="n">Conversas largadas</th><th class="n">Só robô</th></tr>
+          <tr><th scope="col">Unidade</th><th class="n" scope="col">Leads</th><th class="n" scope="col">Consultas</th><th class="n" scope="col">Conversão</th><th class="n" scope="col">Conversas largadas</th><th class="n" scope="col">Só robô</th></tr>
         </thead>
         <tbody>
           <tr><td>Tatuapé</td><td class="n">233</td><td class="n">38</td><td class="n"><span class="pill good num">16,3%</span></td><td class="n">28%</td><td class="n">65%</td></tr>
@@ -540,7 +540,7 @@ footer .note p{margin:0 0 8px;max-width:80ch}
       <div class="tablewrap">
         <table>
           <caption>Campanhas · conta SP</caption>
-          <thead><tr><th>Campanha</th><th class="n">Investimento</th><th class="n">Conversões</th><th class="n">Custo/conv.</th><th>Leitura</th></tr></thead>
+          <thead><tr><th scope="col">Campanha</th><th class="n" scope="col">Investimento</th><th class="n" scope="col">Conversões</th><th class="n" scope="col">Custo/conv.</th><th scope="col">Leitura</th></tr></thead>
           <tbody>
             <tr><td>Pesquisa Dermatologia</td><td class="n">R$ 4.438</td><td class="n">174,67</td><td class="n">R$ 25,41</td><td>Carro-chefe; intenção alta e custo consistente</td></tr>
             <tr><td>Pesquisa Alergia</td><td class="n">R$ 2.280</td><td class="n">60,83</td><td class="n">R$ 37,48</td><td>Intenção alta, custo acima da Dermatologia</td></tr>
@@ -553,7 +553,7 @@ footer .note p{margin:0 0 8px;max-width:80ch}
       <div class="tablewrap">
         <table>
           <caption>Palavras-chave que mais converteram · conta SP</caption>
-          <thead><tr><th>Palavra-chave</th><th class="n">Conversões</th><th class="n">Custo/conv.</th></tr></thead>
+          <thead><tr><th scope="col">Palavra-chave</th><th class="n" scope="col">Conversões</th><th class="n" scope="col">Custo/conv.</th></tr></thead>
           <tbody>
             <tr><td>dermatologista veterinário</td><td class="n">117,67</td><td class="n">R$ 25,70</td></tr>
             <tr><td>veterinário especialista em alergia</td><td class="n">22</td><td class="n">—</td></tr>
@@ -574,7 +574,7 @@ footer .note p{margin:0 0 8px;max-width:80ch}
       <div class="tablewrap">
         <table>
           <caption>Campanhas · conta São José</caption>
-          <thead><tr><th>Campanha</th><th class="n">Investimento</th><th>Leitura</th></tr></thead>
+          <thead><tr><th scope="col">Campanha</th><th class="n" scope="col">Investimento</th><th scope="col">Leitura</th></tr></thead>
           <tbody>
             <tr><td>Pesquisa</td><td class="n">R$ 1.363</td><td>Intenção alta; concentra o investimento da praça</td></tr>
             <tr><td>Display</td><td class="n">R$ 446</td><td><span class="pill crit">Pausar</span> CPC de R$ 0,16, tráfego de baixa intenção, sem retorno</td></tr>
@@ -593,7 +593,7 @@ footer .note p{margin:0 0 8px;max-width:80ch}
       <div class="tablewrap">
         <table>
           <caption>Resultado por unidade · Meta Ads</caption>
-          <thead><tr><th>Unidade</th><th class="n">Investimento</th><th class="n">Conversas</th><th class="n">Custo/conversa</th><th>Leitura</th></tr></thead>
+          <thead><tr><th scope="col">Unidade</th><th class="n" scope="col">Investimento</th><th class="n" scope="col">Conversas</th><th class="n" scope="col">Custo/conversa</th><th scope="col">Leitura</th></tr></thead>
           <tbody>
             <tr><td>Campo Belo</td><td class="n">R$ 3.012,17</td><td class="n">179</td><td class="n">R$ 16,83</td><td>Remarketing; melhor eficiência da conta</td></tr>
             <tr><td>Tatuapé<span class="sub">R$ 3.293 aquisição + R$ 190 alcance</span></td><td class="n">R$ 3.484,08</td><td class="n">141</td><td class="n">R$ 23,36</td><td>Em transição de público desde 12/08 (abaixo)</td></tr>
@@ -608,7 +608,7 @@ footer .note p{margin:0 0 8px;max-width:80ch}
       <div class="tablewrap">
         <table>
           <caption>Públicos premium · Tatuapé (após 12/08)</caption>
-          <thead><tr><th>Público</th><th class="n">Investimento</th><th class="n">Conversas</th><th class="n">Custo/conversa</th></tr></thead>
+          <thead><tr><th scope="col">Público</th><th class="n" scope="col">Investimento</th><th class="n" scope="col">Conversas</th><th class="n" scope="col">Custo/conversa</th></tr></thead>
           <tbody>
             <tr><td>Bairros Nobres Anália Franco</td><td class="n">R$ 818</td><td class="n">28</td><td class="n">R$ 29,23</td></tr>
             <tr><td>Lookalike 1%</td><td class="n">R$ 785</td><td class="n">26</td><td class="n">R$ 30,20</td></tr>
@@ -627,7 +627,7 @@ footer .note p{margin:0 0 8px;max-width:80ch}
       <div class="tablewrap">
         <table>
           <caption>Funil por origem · CRM Kommo (01–28/08)</caption>
-          <thead><tr><th>Origem</th><th class="n">Leads</th><th class="n">Consultas</th><th class="n">Conversão</th><th class="n">Desqualificados</th><th class="n">1ª resposta</th></tr></thead>
+          <thead><tr><th scope="col">Origem</th><th class="n" scope="col">Leads</th><th class="n" scope="col">Consultas</th><th class="n" scope="col">Conversão</th><th class="n" scope="col">Desqualificados</th><th class="n" scope="col">1ª resposta</th></tr></thead>
           <tbody>
             <tr><td>Outros<span class="sub">78% WhatsApp direto: Maps, site, fachada, indicação informal</span></td><td class="n">564</td><td class="n">44</td><td class="n">7,8%</td><td class="n">49</td><td class="n">imediata</td></tr>
             <tr><td>Google Ads</td><td class="n">392</td><td class="n">27</td><td class="n">6,9%</td><td class="n">66</td><td class="n">imediata</td></tr>
