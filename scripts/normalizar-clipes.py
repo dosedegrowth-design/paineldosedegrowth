@@ -63,14 +63,15 @@ def main() -> None:
     if not arquivos:
         sys.exit(f"nenhum video em {entrada}")
 
-    for n, nome in enumerate(arquivos, 1):
+    for nome in arquivos:
         origem = os.path.join(entrada, nome)
         try:
             info = sonda(origem)
         except Exception as e:
             print(f"  ! {nome}: {e}", file=sys.stderr)
             continue
-        destino = os.path.join(saida, f"{n:02d}-{os.path.splitext(nome)[0][:40]}.mp4")
+        # preserva o nome original: os roteiros referenciam os clipes por nome
+        destino = os.path.join(saida, f"{os.path.splitext(nome)[0]}.mp4")
 
         # escala cobrindo o quadro e corta o excedente (sem tarja preta)
         vf = (f"scale={L}:{A}:force_original_aspect_ratio=increase,"

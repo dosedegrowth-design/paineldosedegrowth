@@ -1,0 +1,59 @@
+{
+  "formato": "vertical",
+  "pasta_base": "~/Movies/lancha-prontos",
+  "trecho": 4.0,
+  "transicao": "Dissolve",
+  "transicao_duracao": 0.5,
+  "volume_clipes": 0.12,
+  "musica_volume": 0.75,
+  "clipes": [
+    {
+      "arquivo": "WhatsApp_Video_20260827_at_12.28.53.mp4",
+      "inicio": 2.0,
+      "duracao": 4.0,
+      "legenda": "A bordo"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260827_at_12.25.28.mp4",
+      "inicio": 20.0,
+      "duracao": 4.0,
+      "legenda": "Tudo pronto pra você"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260827_at_06.05.48.mp4",
+      "inicio": 8.0,
+      "duracao": 4.0,
+      "legenda": "Churrasco na água"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260827_at_06.06.28.mp4",
+      "inicio": 2.0,
+      "duracao": 4.0,
+      "legenda": ""
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260828_at_15.44.23.mp4",
+      "inicio": 4.0,
+      "duracao": 4.0,
+      "legenda": "Parada pra banho"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260828_at_15.43.50.mp4",
+      "inicio": 0.5,
+      "duracao": 4.0,
+      "legenda": "Com quem você gosta"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260827_at_06.09.19.mp4",
+      "inicio": 3.0,
+      "duracao": 4.0,
+      "legenda": "Ilhas que poucos conhecem"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260827_at_06.10.08.mp4",
+      "inicio": 4.0,
+      "duracao": 4.0,
+      "legenda": "Reserve o seu dia"
+    }
+  ]
+}

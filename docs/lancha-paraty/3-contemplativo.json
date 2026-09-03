@@ -1,0 +1,47 @@
+{
+  "formato": "vertical",
+  "pasta_base": "~/Movies/lancha-prontos",
+  "trecho": 5.5,
+  "transicao": "Dissolve",
+  "transicao_duracao": 0.8,
+  "volume_clipes": 0.12,
+  "musica_volume": 0.75,
+  "clipes": [
+    {
+      "arquivo": "WhatsApp_Video_20260827_at_06.10.08.mp4",
+      "inicio": 1.0,
+      "duracao": 5.5,
+      "legenda": "Paraty acorda cedo"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260826_at_19.17.31.mp4",
+      "inicio": 4.0,
+      "duracao": 5.5,
+      "legenda": "Água transparente"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260827_at_06.09.19_2.mp4",
+      "inicio": 3.0,
+      "duracao": 5.5,
+      "legenda": ""
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260826_at_19.15.06.mp4",
+      "inicio": 8.0,
+      "duracao": 5.5,
+      "legenda": "Cardume no raso"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260826_at_19.16.02.mp4",
+      "inicio": 6.0,
+      "duracao": 5.5,
+      "legenda": "Praia de pedra"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260827_at_12.25.28.mp4",
+      "inicio": 4.0,
+      "duracao": 5.5,
+      "legenda": "Costa Verde"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "formato": "vertical",
+  "pasta_base": "~/Movies/lancha-prontos",
+  "trecho": 4.5,
+  "transicao": "Dissolve",
+  "transicao_duracao": 0.5,
+  "volume_clipes": 0.12,
+  "musica_volume": 0.75,
+  "clipes": [
+    {
+      "arquivo": "WhatsApp_Video_20260827_at_12.28.53.mp4",
+      "inicio": 1.0,
+      "duracao": 4.5,
+      "legenda": "Seu dia começa aqui"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260827_at_12.24.16.mp4",
+      "inicio": 3.0,
+      "duracao": 4.5,
+      "legenda": "Rumo às ilhas"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260826_at_16.43.51.mp4",
+      "inicio": 1.5,
+      "duracao": 4.5,
+      "legenda": "Mar aberto"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260826_at_19.17.31.mp4",
+      "inicio": 2.0,
+      "duracao": 4.5,
+      "legenda": "Água que dá pra ver o fundo"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260826_at_19.15.06.mp4",
+      "inicio": 4.0,
+      "duracao": 4.5,
+      "legenda": "E vida por todo lado"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260826_at_19.16.02.mp4",
+      "inicio": 3.0,
+      "duracao": 4.5,
+      "legenda": "Praias que só se chega de barco"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260827_at_06.05.48.mp4",
+      "inicio": 5.0,
+      "duracao": 4.5,
+      "legenda": "Almoço a bordo"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260827_at_06.10.08.mp4",
+      "inicio": 2.0,
+      "duracao": 4.5,
+      "legenda": "Até o sol se despedir"
+    }
+  ]
+}

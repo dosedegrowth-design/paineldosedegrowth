@@ -1,0 +1,59 @@
+{
+  "formato": "vertical",
+  "pasta_base": "~/Movies/lancha-prontos",
+  "trecho": 2.6,
+  "transicao": "Mix",
+  "transicao_duracao": 0.3,
+  "volume_clipes": 0.12,
+  "musica_volume": 0.75,
+  "clipes": [
+    {
+      "arquivo": "WhatsApp_Video_20260826_at_16.43.51.mp4",
+      "inicio": 2.0,
+      "duracao": 2.6,
+      "legenda": "Isso aqui é Paraty"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260827_at_06.05.48.mp4",
+      "inicio": 6.0,
+      "duracao": 2.6,
+      "legenda": "Churrasco a bordo"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260826_at_19.15.06.mp4",
+      "inicio": 5.0,
+      "duracao": 2.6,
+      "legenda": "Cardume no raso"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260826_at_19.17.31.mp4",
+      "inicio": 3.0,
+      "duracao": 2.6,
+      "legenda": "Água azul de verdade"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260826_at_16.47.24.mp4",
+      "inicio": 2.0,
+      "duracao": 2.6,
+      "legenda": ""
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260826_at_19.16.02.mp4",
+      "inicio": 4.0,
+      "duracao": 2.6,
+      "legenda": "Praia deserta"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260827_at_12.28.53.mp4",
+      "inicio": 8.0,
+      "duracao": 2.6,
+      "legenda": "Tudo isso num dia só"
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260827_at_06.10.08.mp4",
+      "inicio": 3.0,
+      "duracao": 2.6,
+      "legenda": "Bora?"
+    }
+  ]
+}
