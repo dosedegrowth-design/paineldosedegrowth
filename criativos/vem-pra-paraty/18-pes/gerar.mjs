@@ -85,10 +85,7 @@ async function carregarAtivos() {
   definirFontes(fontes);
   const b64 = async (rel) =>
     'data:image/png;base64,' + (await readFile(path.join(AQUI, rel))).toString('base64');
-  definirMarca({
-    selo: await b64('../marca/selo-principal.png'),
-    logo: await b64('../marca/logo-horizontal.png'),
-  });
+  definirMarca({ logo: await b64('../marca/logo-horizontal.png') });
 }
 
 async function main() {

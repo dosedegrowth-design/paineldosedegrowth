@@ -25,10 +25,8 @@ Cada achado traz evidência, fonte e confiança. Onde não houve fonte, está ma
 ## Como regerar as artes
 
 O pipeline de produção fica em `../18-pes/`. Ver o `README` de lá.
-Atenção: o motor de arte atual foi construído antes desta direção e ainda usa o
-registro tipográfico antigo (Lilita One pesada, selo de preço laranja, pill de
-categoria). Antes de produzir, ele precisa ser ajustado para o registro de
-campanha descrito na seção 12 do documento.
+O motor de arte já está no registro de campanha da seção 12: serifada leve em
+caixa alta, sem preço na imagem, sem selo, sem pill e sem CTA desenhado.
 
 ## Validade
 
