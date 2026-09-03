@@ -15,6 +15,7 @@ Ver docs/capcut-mcp.md para pre-requisitos e armadilhas conhecidas.
 """
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
@@ -30,17 +31,18 @@ FORMATOS = {
 
 EXEMPLO = {
     "formato": "vertical",
+    "pasta_base": "/Users/voce/Movies/lancha-paraty",
     "trecho": 4.5,
     "transicao": "Dissolve",
     "transicao_duracao": 0.6,
-    "musica": "/caminho/para/trilha.mp3",
+    "musica": "trilha.mp3",
     "musica_volume": 0.7,
     "volume_clipes": 0.15,
     "clipes": [
-        {"arquivo": "/caminho/lancha-saindo.mp4", "legenda": "Saindo do pier",  "inicio": 2.0},
-        {"arquivo": "/caminho/ilha-1.mp4",        "legenda": "Ilha do Araujo"},
-        {"arquivo": "/caminho/mar-aberto.mp4",    "legenda": "Mar aberto",      "inicio": 5.0},
-        {"arquivo": "/caminho/chegada.mp4",       "legenda": "Chegando em Paraty"},
+        {"arquivo": "lancha-saindo.mp4", "legenda": "Saindo do pier", "inicio": 2.0},
+        {"arquivo": "ilha-1.mp4",        "legenda": "Ilha do Araujo"},
+        {"arquivo": "mar-aberto.mp4",    "legenda": "Mar aberto",     "inicio": 5.0},
+        {"arquivo": "chegada.mp4",       "legenda": "Chegando em Paraty"},
     ],
 }
 
@@ -80,6 +82,16 @@ def main() -> None:
         sys.exit("use --roteiro roteiro.json (ou --exemplo para gerar um modelo)")
 
     r = json.load(open(args.roteiro, encoding="utf-8"))
+    base = os.path.expanduser(r.get("pasta_base", ""))
+
+    def caminho(nome: str) -> str:
+        """Resolve o nome do arquivo contra pasta_base, se nao for absoluto."""
+        nome = os.path.expanduser(nome)
+        p = nome if os.path.isabs(nome) else os.path.join(base, nome)
+        if not os.path.isfile(p):
+            sys.exit(f"arquivo nao encontrado: {p}")
+        return p
+
     largura, altura = FORMATOS[r.get("formato", "vertical")]
     trecho = float(r.get("trecho", 4.5))
     volume_clipes = float(r.get("volume_clipes", 0.15))
@@ -89,7 +101,8 @@ def main() -> None:
 
     posicao = 0.0
     for i, c in enumerate(r["clipes"]):
-        fonte = duracao(c["arquivo"])
+        arquivo = caminho(c["arquivo"])
+        fonte = duracao(arquivo)
         dur = float(c.get("duracao", trecho))
         inicio = float(c.get("inicio", 0.0))
         if inicio + dur > fonte:                    # nao passa do fim do arquivo
@@ -98,7 +111,7 @@ def main() -> None:
 
         video = {
             "draft_id": draft_id,
-            "video_url": c["arquivo"],
+            "video_url": arquivo,
             "start": round(inicio, 2),
             "end": round(inicio + dur, 2),
             "target_start": round(posicao, 2),
@@ -132,21 +145,21 @@ def main() -> None:
                 "width": largura,
                 "height": altura,
             })
-        print(f"  {posicao:6.2f}s  {c['arquivo'].split('/')[-1]:<28} "
+        print(f"  {posicao:6.2f}s  {os.path.basename(arquivo):<28} "
               f"[{inicio:.1f}-{inicio + dur:.1f}]  {c.get('legenda', '')}")
         posicao += dur
 
     if r.get("musica"):
         call("add_audio", {
             "draft_id": draft_id,
-            "audio_url": r["musica"],
+            "audio_url": caminho(r["musica"]),
             "start": 0,
             "end": round(posicao, 2),
             "target_start": 0,
             "volume": float(r.get("musica_volume", 0.7)),
             "track_name": "audio_main",
         })
-        print(f"  trilha: {r['musica'].split('/')[-1]} (vol {r.get('musica_volume', 0.7)})")
+        print(f"  trilha: {os.path.basename(r['musica'])} (vol {r.get('musica_volume', 0.7)})")
 
     salvar = {"draft_id": draft_id}
     if args.draft_folder:
