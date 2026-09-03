@@ -118,26 +118,50 @@ def camadas_texto(txt: dict, L: int, A: int, dur: float, fonte: str) -> str:
     fim = min(dur, ini + float(txt.get("duracao", dur - ini - 0.2)))
     fade = 0.35
 
+    # hierarquia intencional: a primeira linha e o titulo, as seguintes sao
+    # subtitulo em 78%. Sem isso a linha mais longa encolhe sozinha e a
+    # hierarquia vira acidente.
     render = []
-    for l in linhas:
+    for j, l in enumerate(linhas):
         t = espacar(l.upper() if estilo == "titulo" else l, espaca)
-        tam = base_tam
-        while medir(t, fonte, tam) > L * 0.84 and tam > int(A * 0.020):
+        tam = base_tam if j == 0 else int(base_tam * 0.78)
+        while medir(t, fonte, tam) > L * 0.84 and tam > int(A * 0.018):
             tam -= 1
         render.append((t, tam))
-    alt = int(max(t for _, t in render) * 1.55)
+    alt = int(render[0][1] * 1.45)
     y0 = POSICOES.get(txt.get("posicao", "baixo"), 0.70) * A - (len(render) - 1) * alt / 2
 
     f = ""
+    # veu em degrade atras do texto: branco sobre agua clara nao separa so com
+    # sombra. Oito faixas de opacidade decrescente aproximam um gradiente.
+    if txt.get("veu", True):
+        altura_veu = int(alt * (len(render) + 2.6))
+        topo = int(y0 - alt * 1.25)
+        faixas = 24
+        for k in range(faixas):
+            op = 0.30 * (1 - k / faixas) ** 1.7
+            h = max(1, altura_veu // faixas)
+            yk = topo + k * h
+            # espelha para escurecer tambem acima do texto
+            for yy in (yk, topo + altura_veu - (k + 1) * h):
+                f += (f",drawbox=x=0:y={yy}:w={L}:h={h}:color=black@{op:.3f}:t=fill"
+                      f":enable='between(t,{ini},{fim})'")
     for j, (t, tam) in enumerate(render):
         # opacidade animada: entra e sai em fade, sem salto
         alpha = (f"if(lt(t,{ini}),0,"
                  f"if(lt(t,{ini + fade}),(t-{ini})/{fade},"
                  f"if(lt(t,{fim - fade}),1,"
                  f"if(lt(t,{fim}),({fim}-t)/{fade},0))))")
+        # duas sombras: uma difusa para separar do fundo claro, outra fina
+        # logo abaixo para definir a letra. Sem contorno, que engrossa o texto.
+        for dx, dy, op in ((0, max(2, tam // 12), 0.5), (0, max(1, tam // 26), 0.9)):
+            f += (f",drawtext=fontfile={fonte}:text='{escapar(t)}'"
+                  f":fontcolor=white@0:fontsize={tam}"
+                  f":shadowcolor=black@{op}:shadowx={dx}:shadowy={dy}"
+                  f":x=(w-tw)/2:y={y0 + j * alt:.0f}"
+                  f":alpha='{alpha}'")
         f += (f",drawtext=fontfile={fonte}:text='{escapar(t)}'"
               f":fontcolor=white:fontsize={tam}"
-              f":shadowcolor=black@0.7:shadowx=0:shadowy={max(1, tam//22)}"
               f":x=(w-tw)/2:y={y0 + j * alt:.0f}"
               f":alpha='{alpha}'")
     return f

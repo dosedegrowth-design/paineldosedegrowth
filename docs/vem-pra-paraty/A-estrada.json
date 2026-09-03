@@ -131,7 +131,17 @@
         "ate": 1.0
       },
       "transicao": "Dissolve",
-      "transicao_dur": 0.5
+      "transicao_dur": 0.5,
+      "texto": {
+        "linhas": [
+          "A partir de R$ 999,99"
+        ],
+        "posicao": "rodape",
+        "inicio": 0.6,
+        "duracao": 1.8,
+        "tamanho": 1.0,
+        "estilo": "titulo"
+      }
     },
     {
       "arquivo": "WhatsApp_Video_20260827_at_06.10.08.mp4",
@@ -145,7 +155,7 @@
       "texto": {
         "linhas": [
           "Vem Pra Paraty",
-          "Fale no WhatsApp"
+          "Chame no WhatsApp"
         ],
         "posicao": "meio",
         "inicio": 0.4,

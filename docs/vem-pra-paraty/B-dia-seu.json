@@ -2,7 +2,7 @@
   "titulo": "B — O DIA É SEU",
   "formato": "vertical",
   "pasta_base": "~/Movies/lancha-prontos",
-  "narracao": "narracao-B.mp3",
+  "narracao": "narracao-B2.mp3",
   "narracao_atraso": 1.0,
   "narracao_volume": 1.0,
   "musica": "trilha-B-lifestyle.mp3",
@@ -23,7 +23,7 @@
     {
       "arquivo": "WhatsApp_Video_20260827_at_06.09.19_1.mp4",
       "inicio": 2.5,
-      "duracao": 1.8,
+      "duracao": 1.9,
       "movimento": {
         "tipo": "push",
         "de": 1.0,
@@ -33,7 +33,7 @@
     {
       "arquivo": "WhatsApp_Video_20260826_at_19.17.31.mp4",
       "inicio": 18.0,
-      "duracao": 2.5,
+      "duracao": 3.2,
       "movimento": {
         "tipo": "dir"
       }
@@ -52,7 +52,7 @@
           "Só o seu grupo"
         ],
         "posicao": "rodape",
-        "inicio": 0.6,
+        "inicio": 0.5,
         "duracao": 2.4,
         "tamanho": 1.0,
         "estilo": "titulo"
@@ -61,7 +61,7 @@
     {
       "arquivo": "WhatsApp_Video_20260827_at_12.25.28.mp4",
       "inicio": 20.5,
-      "duracao": 2.5,
+      "duracao": 3.1,
       "movimento": {
         "tipo": "push",
         "de": 1.0,
@@ -69,11 +69,11 @@
       },
       "texto": {
         "linhas": [
-          "[CAPACIDADE] pessoas a bordo"
+          "7 + 1 a bordo"
         ],
         "posicao": "rodape",
-        "inicio": 0.3,
-        "duracao": 2.0,
+        "inicio": 0.4,
+        "duracao": 2.4,
         "tamanho": 1.0,
         "estilo": "titulo"
       }
@@ -81,35 +81,65 @@
     {
       "arquivo": "WhatsApp_Video_20260826_at_16.43.51.mp4",
       "inicio": 0.0,
-      "duracao": 2.2,
+      "duracao": 2.9,
       "movimento": {
         "tipo": "push",
         "de": 1.0,
         "ate": 1.05
-      }
-    },
-    {
-      "arquivo": "WhatsApp_Video_20260827_at_12.24.16.mp4",
-      "inicio": 12.0,
-      "duracao": 3.3,
-      "movimento": {
-        "tipo": "dir"
       },
       "texto": {
         "linhas": [
-          "[ROTEIRO: ILHAS E PRAIAS]"
+          "Três roteiros"
         ],
-        "posicao": "rodape",
-        "inicio": 0.5,
-        "duracao": 2.4,
+        "posicao": "cima",
+        "inicio": 1.0,
+        "duracao": 1.6,
         "tamanho": 1.0,
         "estilo": "titulo"
       }
     },
     {
-      "arquivo": "WhatsApp_Video_20260827_at_06.05.48.mp4",
-      "inicio": 19.0,
-      "duracao": 3.7,
+      "arquivo": "WhatsApp_Video_20260828_at_15.44.23.mp4",
+      "inicio": 8.0,
+      "duracao": 2.4,
+      "movimento": {
+        "tipo": "push",
+        "de": 1.0,
+        "ate": 1.06
+      },
+      "texto": {
+        "linhas": [
+          "Lado sul da baía"
+        ],
+        "posicao": "rodape",
+        "inicio": 0.3,
+        "duracao": 1.9,
+        "tamanho": 1.0,
+        "estilo": "titulo"
+      }
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260827_at_12.24.16.mp4",
+      "inicio": 12.0,
+      "duracao": 3.9,
+      "movimento": {
+        "tipo": "dir"
+      },
+      "texto": {
+        "linhas": [
+          "Tartarugas na Ilha do Araújo"
+        ],
+        "posicao": "rodape",
+        "inicio": 0.6,
+        "duracao": 3.0,
+        "tamanho": 1.0,
+        "estilo": "titulo"
+      }
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260827_at_06.09.19_2.mp4",
+      "inicio": 3.5,
+      "duracao": 4.6,
       "movimento": {
         "tipo": "push",
         "de": 1.0,
@@ -117,11 +147,32 @@
       },
       "texto": {
         "linhas": [
-          "Churrasco a bordo"
+          "Saco do Mamanguá",
+          "O único fiorde do Brasil"
+        ],
+        "posicao": "meio",
+        "inicio": 1.0,
+        "duracao": 3.1,
+        "tamanho": 1.05,
+        "estilo": "titulo"
+      }
+    },
+    {
+      "arquivo": "WhatsApp_Video_20260827_at_06.05.48.mp4",
+      "inicio": 19.0,
+      "duracao": 3.8,
+      "movimento": {
+        "tipo": "push",
+        "de": 1.0,
+        "ate": 1.08
+      },
+      "texto": {
+        "linhas": [
+          "Almoço a bordo"
         ],
         "posicao": "cima",
-        "inicio": 0.6,
-        "duracao": 2.6,
+        "inicio": 0.8,
+        "duracao": 2.4,
         "tamanho": 1.0,
         "estilo": "titulo"
       }
@@ -137,9 +188,9 @@
       }
     },
     {
-      "arquivo": "WhatsApp_Video_20260828_at_15.44.23.mp4",
-      "inicio": 8.0,
-      "duracao": 2.6,
+      "arquivo": "WhatsApp_Video_20260826_at_19.16.02.mp4",
+      "inicio": 11.5,
+      "duracao": 2.8,
       "movimento": {
         "tipo": "push",
         "de": 1.0,
@@ -147,35 +198,25 @@
       }
     },
     {
-      "arquivo": "WhatsApp_Video_20260828_at_15.43.50.mp4",
-      "inicio": 1.0,
-      "duracao": 2.0,
-      "movimento": {
-        "tipo": "push",
-        "de": 1.0,
-        "ate": 1.05
-      }
-    },
-    {
       "arquivo": "WhatsApp_Video_20260827_at_06.10.08.mp4",
       "inicio": 1.0,
-      "duracao": 3.0,
+      "duracao": 4.0,
       "movimento": {
         "tipo": "pull",
-        "de": 1.07,
+        "de": 1.08,
         "ate": 1.0
       },
       "transicao": "Dissolve",
       "transicao_dur": 0.45,
       "texto": {
         "linhas": [
-          "Chame no WhatsApp",
-          "[VALOR DA DIÁRIA]"
+          "A partir de R$ 999,99",
+          "Chame no WhatsApp"
         ],
         "posicao": "meio",
-        "inicio": 0.3,
-        "duracao": 2.5,
-        "tamanho": 1.15,
+        "inicio": 0.6,
+        "duracao": 3.0,
+        "tamanho": 1.1,
         "estilo": "titulo"
       }
     }

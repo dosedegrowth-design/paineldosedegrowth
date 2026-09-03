@@ -3,21 +3,31 @@
 Duas peças verticais 1080x1920 construídas a partir de 18 clipes reais.
 Sem imagem de terceiros, sem material gerado: só o acervo da operação.
 
-## O que ainda falta e por quê
+## Produto
 
-Esta conversa nunca recebeu o briefing estratégico — posicionamento,
-capacidade das embarcações, preços, roteiros, público, análise de
-concorrência. Por isso **nenhum dado comercial foi inventado**. Os números
-entram como texto na tela, entre colchetes, e a narração nunca os menciona:
+Lancha de 18 pés, **7 + 1** a bordo, **a partir de R$ 999,99**.
 
-| Onde | Substituir por |
+Três roteiros:
+
+| Roteiro | Paradas |
 |---|---|
-| `[CAPACIDADE] pessoas a bordo` | número real de passageiros |
-| `[ROTEIRO: ILHAS E PRAIAS]` | nomes reais das paradas |
-| `[VALOR DA DIÁRIA]` | preço ou condição real |
+| **Baía de Paraty — lado sul** | Praia Vermelha · Ilha da Pescaria · Praia da Lula · Lago Azul · Ilha dos Cocos · Saco da Velha · Ilha Comprida de Paraty |
+| **Saco do Mamanguá** — único fiorde do Brasil | Praia do Buraco · Praia do Sobrado · Praia do Engenho · Praia do Cruzeiro (locação de Crepúsculo) · Ilha dos Cocos |
+| **Lado norte** | Ilha do Malvão · Ilha da Sapeca · Ilha Comprida · Ilha da Rapada · tartarugas na Ilha do Araújo · Ilha do Ventura · Ilha do Pico · Canto do Morro · almoço na Ilha do Araújo |
 
-Trocar o texto no JSON não exige regravar voz nenhuma. Foi por isso que a
-informação comercial foi para a tela, e não para a narração.
+Preço e capacidade aparecem **na tela**, não na narração: número se lê melhor
+do que se ouve, e trocar o valor não exige regravar voz.
+
+## As três peças
+
+| | Objetivo | Duração | Voz | Uso em Meta Ads |
+|---|---|---|---|---|
+| **A** — A estrada termina aqui | desejo | 25,8 s | masculina | topo de funil, público frio |
+| **B** — O dia é seu | conversão | 40,6 s | feminina | remarketing, quem já viu A ou C |
+| **C** — O único fiorde do Brasil | curiosidade | 29,0 s | terceira voz | topo, ângulo diferenciado |
+
+O fiorde ganhou peça própria porque é o diferencial mais forte do produto e
+nenhuma das dez referências de concorrentes usou esse ângulo.
 
 ## Leitura da concorrência
 
