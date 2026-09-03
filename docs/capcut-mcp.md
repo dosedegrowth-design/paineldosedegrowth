@@ -128,6 +128,13 @@ Pastas de rascunho por SO:
     início, a duração e a posição na **mesma** casa decimal antes de enviar e de
     acumular.
 
+11. **Rotação de metadado é ignorada, e o clipe entra deitado.** O servidor lê
+    a dimensão com `ffprobe -show_entries stream=width,height`
+    (`save_draft_impl.py:427`), que devolve a dimensão **codificada**. Vídeo de
+    celular gravado em pé costuma vir como `1280x720` com `rotation=-90`, e o
+    projeto registra `1280x720` para um clipe que na verdade exibe `720x1280`.
+    Normalize os clipes antes com `scripts/normalizar-clipes.py`.
+
 ## Não existe preview ao vivo
 
 O CapCut lê o `draft_info.json` quando abre o projeto — ele não observa o arquivo.
@@ -237,6 +244,20 @@ python3 scripts/capcut-montagem-percurso.py --auto ~/Movies/lancha-paraty \
     --variacoes ~/Movies/trilhas --alinhar-batida \
     --draft-folder "$HOME/Movies/CapCut/User Data/Projects/com.lveditor.draft"
 ```
+
+## Normalizar clipes antes da montagem
+
+`scripts/normalizar-clipes.py` aplica a rotação gravada no metadado, enquadra
+tudo no mesmo formato (escala cobrindo o quadro e corta o excedente, sem tarja)
+e reescreve sem metadado de rotação:
+
+```bash
+python3 scripts/normalizar-clipes.py ~/Movies/originais ~/Movies/prontos
+```
+
+Avisa quando o clipe de origem é menor que o formato de saída, porque aí a
+normalização amplia e perde nitidez. Rode isso sempre que o material vier de
+celular ou de WhatsApp.
 
 ## Análise de trilha
 
