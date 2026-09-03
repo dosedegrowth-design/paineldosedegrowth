@@ -105,11 +105,34 @@ Pastas de rascunho por SO:
 4. **Sem ffprobe, falha silenciosa.** O log mostra
    `using default values 1920x1080` e segue — qualquer corte por tempo sai errado.
 
-5. **Mídia entra por URL**, não por caminho local. Para arquivos locais, sirva
-   por HTTP (`python3 -m http.server`) ou suba num bucket.
+5. **Caminho local funciona.** Apesar do nome do campo ser `video_url`,
+   `downloader.py:114` testa `os.path.isfile()` antes e, se for arquivo local,
+   copia direto — sem HTTP, sem bucket. Passe `/Users/voce/Movies/clipe.mp4`
+   normalmente.
 
-6. **O download é preguiçoso.** `add_video` só registra a URL; o download real
-   acontece no `save_draft`.
+6. **O download é preguiçoso.** `add_video` só registra a origem; a cópia/download
+   real acontece no `save_draft`.
+
+7. **O rascunho vive em memória, e id desconhecido não dá erro.** O `DRAFT_CACHE`
+   (`draft_cache.py`) é um dict em memória do processo; nada vai pro disco antes do
+   `save_draft`. Pior: se você mandar um `draft_id` que o servidor não conhece,
+   `get_or_create_draft` **cria um rascunho novo vazio** e responde
+   `success: true` com um id diferente. Se o servidor reiniciar no meio do
+   trabalho, as chamadas seguintes vão silenciosamente para um rascunho novo.
+   Sempre confira o `draft_id` que volta em cada resposta.
+
+## Não existe preview ao vivo
+
+O CapCut lê o `draft_info.json` quando abre o projeto — ele não observa o arquivo.
+Então o ciclo é: montar → `save_draft` → (re)abrir o projeto no CapCut.
+
+**Feche o projeto no CapCut antes de rodar o `save_draft`.** O app mantém o estado
+em memória e pode sobrescrever o arquivo ao salvar ou fechar, descartando o que a
+API escreveu.
+
+Para preview sem abrir o app, é preciso `is_upload_draft: true` + `oss_config`
+preenchido; aí `generate_draft_url` devolve um link. Sem isso o `draft_url` das
+respostas volta vazio.
 
 ## Exemplo validado
 
@@ -148,6 +171,22 @@ call("save_draft", {"draft_id": did, "draft_folder": "<pasta de rascunhos do Cap
 Resultado conferido no `draft_info.json`: 14s totais, canvas 1080x1920,
 `video_main` com 2 segmentos (0-8s, 8-14s), `audio_main` 0-12s,
 `effect_01` 0-1.5s, `text_main` com 2 segmentos.
+
+## Script pronto: cortar em 3 trechos
+
+`scripts/capcut-cortar-3-partes.py` corta um vídeo em 3 trechos (começo, meio e
+fim), descarta as sobras, põe uma legenda em português sobre cada um e salva o
+rascunho direto na pasta do CapCut:
+
+```bash
+python3 scripts/capcut-cortar-3-partes.py \
+    --video "$HOME/Movies/meus-videos/meu-video.mp4" \
+    --draft-folder "$HOME/Movies/CapCut/User Data/Projects/com.lveditor.draft"
+```
+
+Ele lê a duração real com `ffprobe` e calcula os pontos de corte sozinho, então
+serve para qualquer vídeo. `--trecho` muda a duração de cada corte (padrão 5s).
+As legendas ficam na constante `LEGENDAS`, no topo do arquivo.
 
 ## Limitações no Claude Code na web
 
