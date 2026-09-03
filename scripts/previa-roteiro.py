@@ -3,8 +3,9 @@
 Renderiza um MP4 de previa a partir do mesmo roteiro.json que gera o projeto
 do CapCut. Serve para revisar a edicao antes de abrir o app.
 
-A previa sai sem audio: a trilha entra no CapCut. O que ela mostra e o corte,
-a ordem, as transicoes e as legendas.
+A previa leva o audio ambiente dos clipes, com cruzamento nas transicoes.
+Se o roteiro tiver "musica", ela entra por cima e o ambiente cai para
+"volume_clipes"; sem musica, o ambiente vai em volume cheio.
 
 Uso:
   python3 scripts/previa-roteiro.py roteiro.json previa.mp4
@@ -31,6 +32,7 @@ def main() -> None:
     p.add_argument("--altura", type=int, default=960, help="altura da previa")
     p.add_argument("--crf", type=int, default=30)
     p.add_argument("--fonte", default=FONTE)
+    p.add_argument("--sem-audio", action="store_true", help="renderiza mudo")
     a = p.parse_args()
 
     r = json.load(open(a.roteiro, encoding="utf-8"))
@@ -40,6 +42,17 @@ def main() -> None:
     t = float(r.get("transicao_duracao", 0.6)) if r.get("transicao") else 0.0
 
     clipes = r["clipes"]
+    musica = r.get("musica")
+    if musica:
+        musica = os.path.expanduser(musica)
+        if not os.path.isabs(musica):
+            musica = os.path.join(base, musica)
+        if not os.path.isfile(musica):
+            sys.exit(f"trilha nao encontrada: {musica}")
+    com_audio = not a.sem_audio
+    # sem trilha o ambiente e o unico som, entao vai cheio
+    vol_amb = float(r.get("volume_clipes", 0.15)) if musica else 1.0
+
     entradas, filtros, rotulos = [], [], []
     for i, c in enumerate(clipes):
         arq = os.path.expanduser(c["arquivo"])
@@ -60,6 +73,10 @@ def main() -> None:
                   f":enable='between(t,0.3,{max(0.4, dur - 0.3):.2f})'")
         filtros.append(f + f"[v{i}]")
         rotulos.append(f"[v{i}]")
+        if com_audio:
+            filtros.append(f"[{i}:a]aresample=44100,aformat=channel_layouts=stereo,"
+                           f"volume={vol_amb},afade=t=in:d=0.15,"
+                           f"afade=t=out:st={max(0.0, dur - 0.15):.2f}:d=0.15[a{i}]")
 
     if t > 0 and len(clipes) > 1:
         # encadeia xfade: cada corte entra dissolvendo no anterior
@@ -76,10 +93,41 @@ def main() -> None:
         filtros.append("".join(rotulos) + f"concat=n={len(clipes)}:v=1:a=0[vout]")
         mapa = "[vout]"
 
+    mapa_audio = None
+    if com_audio:
+        if len(clipes) == 1:
+            mapa_audio = "[a0]"
+        elif t > 0:
+            # o audio cruza junto com a imagem, na mesma duracao
+            atual = "[a0]"
+            for i in range(1, len(clipes)):
+                saida = f"[ax{i}]" if i < len(clipes) - 1 else "[amix]"
+                filtros.append(f"{atual}[a{i}]acrossfade=d={t}:c1=tri:c2=tri{saida}")
+                atual = saida
+            mapa_audio = "[amix]"
+        else:
+            filtros.append("".join(f"[a{i}]" for i in range(len(clipes)))
+                           + f"concat=n={len(clipes)}:v=0:a=1[amix]")
+            mapa_audio = "[amix]"
+
+        if musica:
+            idx = len(clipes)
+            entradas += ["-i", musica]
+            filtros.append(f"[{idx}:a]aresample=44100,aformat=channel_layouts=stereo,"
+                           f"volume={float(r.get('musica_volume', 0.7))}[trilha]")
+            filtros.append(f"{mapa_audio}[trilha]amix=inputs=2:duration=first:"
+                           f"dropout_transition=0[aout]")
+            mapa_audio = "[aout]"
+
     cmd = ["ffmpeg", "-y", "-v", "error", *entradas,
            "-filter_complex", ";".join(filtros), "-map", mapa,
            "-c:v", "libx264", "-crf", str(a.crf), "-preset", "veryfast",
-           "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-an", a.saida]
+           "-pix_fmt", "yuv420p", "-movflags", "+faststart"]
+    if mapa_audio:
+        cmd += ["-map", mapa_audio, "-c:a", "aac", "-b:a", "128k"]
+    else:
+        cmd += ["-an"]
+    cmd.append(a.saida)
     subprocess.run(cmd, check=True)
 
     dur = subprocess.run(["ffprobe", "-v", "error", "-show_entries",
