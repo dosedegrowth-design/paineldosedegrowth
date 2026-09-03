@@ -188,6 +188,38 @@ Ele lê a duração real com `ffprobe` e calcula os pontos de corte sozinho, ent
 serve para qualquer vídeo. `--trecho` muda a duração de cada corte (padrão 5s).
 As legendas ficam na constante `LEGENDAS`, no topo do arquivo.
 
+## Script pronto: montagem de percurso
+
+`scripts/capcut-montagem-percurso.py` monta vários clipes em sequência com
+transição, trilha por baixo e o nome do ponto sobre cada trecho.
+
+**Modo auto** — não precisa saber quantos clipes existem nem a duração de cada um.
+Ele varre a pasta, lê tudo com `ffprobe`, divide a duração da trilha entre os
+clipes encontrados, pula os primeiros 15% de cada um (câmera se acomodando) e
+avisa se algum clipe tem orientação diferente do formato escolhido:
+
+```bash
+python3 scripts/capcut-montagem-percurso.py --auto ~/Movies/lancha-paraty \
+    --musica ~/Movies/lancha-paraty/trilha.mp3 \
+    --salvar-roteiro roteiro.json --so-roteiro
+```
+
+A ordem padrão é alfabética, o que quase nunca é a ordem do percurso — use
+`--ordem data` ou reordene o `roteiro.json` na mão. Depois de revisar ordem e
+preencher as legendas:
+
+```bash
+python3 scripts/capcut-montagem-percurso.py --roteiro roteiro.json \
+    --draft-folder "$HOME/Movies/CapCut/User Data/Projects/com.lveditor.draft"
+```
+
+Opções: `--formato vertical|horizontal|quadrado`, `--trecho N` (segundos por
+clipe, sobrepõe o cálculo pela trilha), `--duracao-total N`, `--exemplo`
+(imprime um roteiro modelo).
+
+No roteiro, cada clipe aceita `inicio`, `duracao` e `legenda`; o topo aceita
+`transicao`, `volume_clipes` (som ambiente, padrão 0.15) e `musica_volume`.
+
 ## Limitações no Claude Code na web
 
 O container remoto é efêmero e o egress externo é filtrado por política da
