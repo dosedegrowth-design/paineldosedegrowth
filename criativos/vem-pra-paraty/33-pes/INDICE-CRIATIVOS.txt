@@ -1,0 +1,214 @@
+VEM PRA PARATY - LANCHA 33 PES
+Criativos de Meta Ads - setembro de 2026 - Dose de Growth
+
+48 arquivos: 24 em Feed 1080x1350 e 24 em Story 1080x1920.
+
+A LANCHA
+  Lotacao nas pecas: ate 15 lugares
+  Preco nas pecas: a partir de R$ 2.500 ate 9 pessoas, ou R$ 2.499,99
+  Esta lancha NAO vende preco por cabeca: R$ 2.500 / 9 = R$ 278, acima da compartilhada.
+  Vende banheiro a bordo, suite e 15 lugares.
+  PENDENTE: qual o valor acima de 9 pessoas.
+
+OS TRES REGISTROS
+  sobrio   - serifada leve sobre a foto, sem preco e sem CTA desenhado
+  forte    - bloco navy com preco, lotacao e CTA. Contraste alto
+  roteiro  - as paradas do dia numeradas, com preco e CTA
+
+AS VARIANTES DE PRECO
+  p2500   - R$ 2.500
+  p249999 - R$ 2.499,99
+  O registro sobrio nao tem preco na arte, entao nao tem variante.
+
+================================================================
+AS 9 PECAS
+================================================================
+
+01. BANHEIRO   [fundo]  publico: Familia, grupo grande, 35 a 55
+    hipotese: Banheiro e criterio de compra decisivo e ninguem no mercado o anuncia direito
+    foto: B   registros: sobrio, forte
+    frase na arte: BANHEIRO / A BORDO
+    titulo do anuncio: A lancha que tem banheiro
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [comparacao seca] Lancha de 18 pes nao tem banheiro. A compartilhada tambem nao. Esta de 33 pes tem, e tem suite.
+         Muda o dia inteiro: ninguem depende de parar numa praia com estrutura.
+         R$ 2.500 ate 9 pessoas, e o barco leva ate 15.
+         Me diz a data e quantos voces sao.
+      2) [a pergunta do direct] A pergunta que mais chega no direct e se tem banheiro a bordo. Nesta lancha, tem - e suite junto.
+         E o que faz o passeio funcionar com crianca, com idoso e com grupo grande.
+         Chama aqui pra ver as datas.
+      3) [o dia todo] Seis horas na agua mudam quando o banheiro esta a bordo e nao numa praia qualquer do caminho.
+         33 pes, suite, ate 15 lugares, marinheiro o dia inteiro.
+         Quer que eu monte o roteiro?
+
+02. QUINZE   [fundo]  publico: Grupo grande, empresa, familia estendida
+    hipotese: Grupo de mais de 8 hoje precisa alugar duas lanchas, e nao sabe que existe uma que resolve
+    foto: C   registros: sobrio, forte
+    frase na arte: QUINZE LUGARES / UM BARCO SO
+    titulo do anuncio: Cabe o grupo inteiro
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [o problema real] Grupo de mais de oito costuma ter que alugar duas lanchas e passar o dia gritando de um barco pro outro.
+         Nesta cabem 15 mais o marinheiro. Todo mundo junto.
+         R$ 2.500 cobre ate 9 pessoas; acima disso me chama que eu faco a conta.
+         Qual a data?
+      2) [numero seco] Quinze lugares mais o marinheiro, banheiro a bordo e suite. E a maior da frota.
+         Roteiro escolhido por voces, saida do cais de Paraty.
+         Me diz quantos vao que eu fecho o valor.
+      3) [ninguem fica de fora] Aquele grupo que nunca fecha porque nao cabe todo mundo: nesta lancha cabe.
+         Sao 15 lugares, com banheiro e suite a bordo.
+         Chama aqui com a data e o numero de pessoas.
+
+03. SUITE   [meio]  publico: Familia com crianca, 35 a 55
+    hipotese: Sombra fechada e lugar pra trocar de roupa valem mais que qualquer amenidade da lista
+    foto: B   registros: sobrio, forte
+    frase na arte: TEM SUITE / E SOMBRA DE VERDADE
+    titulo do anuncio: Suite e banheiro a bordo
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [usos concretos] Trocar de roupa sem acrobacia, crianca dormir depois do almoco, sair do sol de verdade. Isso e a suite.
+         Mais banheiro a bordo e ate 15 lugares.
+         R$ 2.500 ate 9 pessoas.
+         Me diz a data que eu confiro a agenda.
+      2) [o que a lista nao diz] Toldo e sombra de passagem. Suite e sombra de verdade, com porta, no meio de seis horas de sol.
+         33 pes, banheiro a bordo, ate 15 lugares.
+         Quer ver as datas livres?
+      3) [familia] Com crianca pequena o dia rende mais quando existe um lugar fechado pra ela dormir a bordo.
+         Suite, banheiro, sombra e marinheiro o dia inteiro.
+         Chama aqui pra montar o dia de voces.
+
+04. CELEBRACAO   [meio]  publico: Aniversario, despedida de solteiro
+    hipotese: A ocasiao e o que justifica juntar quinze pessoas e pagar por um barco grande
+    foto: D   registros: sobrio, forte
+    frase na arte: ANIVERSARIO / NO MEIO DA BAIA
+    titulo do anuncio: A data que merece um barco
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [a ocasiao] Quinze pessoas, o dia inteiro, sem horario pra sair e sem horario pra voltar. E esse o tamanho da data.
+         Banheiro a bordo, suite, gelo e som por conta de voces.
+         R$ 2.500 ate 9 pessoas.
+         Qual a data?
+      2) [logistica resolvida] Comemorar em restaurante todo mundo ja fez. Um barco de 33 pes so pro seu grupo, quase ninguem.
+         Cabe ate 15, tem banheiro e a bebida voces trazem.
+         Me chama com a data.
+      3) [despedida] Despedida de solteiro em lancha compartilhada e dividir o barco com quinze desconhecidos. Aqui nao.
+         O barco e de voces, o roteiro tambem, e cabem 15.
+         Chama aqui pra fechar.
+
+05. FAMILIA   [meio]  publico: Familia estendida com avos e criancas
+    hipotese: Familia de tres geracoes nao cabe numa lancha pequena e nao aguenta um dia sem banheiro
+    foto: A   registros: sobrio, forte
+    frase na arte: AVO, CRIANCA / E O DIA INTEIRO
+    titulo do anuncio: Familia inteira num barco so
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [tres geracoes] Familia de tres geracoes nao cabe numa lancha pequena, e nao aguenta seis horas sem banheiro.
+         Aqui sao 15 lugares, banheiro a bordo, suite e sombra.
+         A baia e fechada, entao o mar fica parado.
+         Me diz quantos vao.
+      2) [a baia ajuda] A baia de Paraty e agua abrigada. Com banheiro a bordo e suite, o dia funciona ate com crianca pequena.
+         Quinze lugares, marinheiro o dia inteiro.
+         Chama aqui pra ver as datas.
+      3) [quem sempre fica de fora] Sempre tem alguem que nao vai no passeio de barco. Nesta lancha essa pessoa vai.
+         Banheiro, suite, sombra fechada e mar parado.
+         Me conta a data e a idade da criancada.
+
+06. LOTADO   [meio]  publico: Todos
+    hipotese: A dor nao e preco, e lotacao. E esta foto faz a comparacao sozinha, sem headline
+    foto: C   registros: sobrio, forte
+    frase na arte: AQUI SAO QUINZE / E MAIS NINGUEM
+    titulo do anuncio: Sem dividir com ninguem
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [a foto fala] Ao fundo desta foto tem duas escunas. Em cada uma, dezenas de pessoas que nao se conhecem dividindo o mesmo dia.
+         Aqui sao no maximo 15, e sao todas do seu grupo.
+         Banheiro a bordo, suite e roteiro escolhido por voces.
+         Me diz a data e quantos vao.
+      2) [controle] Numa escuna voce segue o roteiro dela e volta na hora dela. Aqui voces decidem onde parar e por quanto tempo.
+         33 pes, ate 15 lugares, banheiro a bordo.
+         Chama aqui pra montar o dia.
+      3) [seca] O barco e de voces. Ninguem embarca no meio do caminho.
+         Quinze lugares, suite e banheiro.
+         R$ 2.500 ate 9 pessoas.
+         Qual a data?
+
+07. ROTA-SUL   [meio]  publico: Todos
+    hipotese: Itinerario numerado com nome proprio vence promessa generica de passeio
+    foto: A   registros: roteiro
+    paradas:
+      01. Praia Vermelha
+      02. Ilha da Pescaria
+      03. Praia da Lula
+      04. Lagoa Azul
+      05. Ilha dos Cocos
+      06. Saco da Velha
+      07. Ilha Comprida
+    titulo do anuncio: O lado sul da baia num dia
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [itinerario] Praia Vermelha, Ilha da Pescaria, Praia da Lula, Lagoa Azul, Ilha dos Cocos, Saco da Velha e Ilha Comprida.
+         Sete paradas no lado sul, na ordem que voces quiserem.
+         33 pes com banheiro a bordo, ate 15 lugares.
+         Quer esse roteiro?
+      2) [a parada que importa] A Lagoa Azul e a parada onde da pra ver o fundo de areia sem mascara. Esta no roteiro do lado sul.
+         Mais seis paradas, com banheiro a bordo pro dia inteiro.
+         Me diz a data.
+      3) [sem estrada] Cinco das sete paradas do lado sul nao tem estrada. So se chega de barco.
+         E o barco e so do seu grupo, com ate 15 lugares.
+         Chama aqui pra montar o dia.
+
+08. ROTA-MAMANGUA   [meio]  publico: Alto padrao
+    hipotese: O fiorde nomeado com as paradas listadas converte melhor que o fiorde solto
+    foto: B   registros: roteiro
+    paradas:
+      01. Praia do Buraco
+      02. Praia do Sobrado
+      03. Praia do Engenho
+      04. Praia do Cruzeiro
+      05. Ilha dos Cocos
+    titulo do anuncio: O Mamangua do seu jeito
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [o lugar] O Saco do Mamangua tem oito quilometros de mar parado entre duas paredes de serra. So se chega de barco.
+         Cinco paradas, com banheiro a bordo pro dia inteiro.
+         33 pes, ate 15 lugares.
+         Quer o roteiro do fiorde?
+      2) [referencia] A Praia do Cruzeiro, onde gravaram Crepusculo, e uma das cinco paradas do roteiro do Mamangua.
+         O fiorde inteiro num dia, com o barco so do seu grupo.
+         Me conta a data.
+      3) [silencio] No fundo do Mamangua o motor desliga e nao se ouve mais nada. E o roteiro mais silencioso que a gente faz.
+         Cinco paradas, suite e banheiro a bordo.
+         Chama aqui pra ver as datas.
+
+09. ROTA-NORTE   [meio]  publico: Familia
+    hipotese: Tartaruga e almoco em ilha sao os dois ganchos de familia, e estao no mesmo roteiro
+    foto: C   registros: roteiro
+    paradas:
+      01. Ilha do Malvao
+      02. Ilha da Sapeca
+      03. Ilha Comprida
+      04. Ilha da Rapada
+      05. Ilha do Araujo · almoco
+      06. Ilha do Ventura
+      07. Ilha do Pico
+      08. Canto do Morro
+    titulo do anuncio: Tartarugas e almoco na ilha
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [o gancho da crianca] No lado norte tem parada pra ver tartaruga na Ilha do Araujo e almoco na mesma ilha. Oito paradas no dia.
+         Com banheiro a bordo, o dia inteiro funciona com crianca.
+         33 pes, ate 15 lugares.
+         Quer esse roteiro?
+      2) [dia inteiro] Oito paradas, tartaruga na Ilha do Araujo e almoco em restaurante de ilha. E o roteiro do lado norte.
+         A baia e fechada e o barco tem banheiro e suite.
+         Me diz quantos vao e a data.
+      3) [sem garantia falsa] A parada das tartarugas e onde elas costumam aparecer. Aparecer e com elas, parar e com a gente.
+         Oito paradas no lado norte, com almoco na ilha.
+         Chama aqui pra fechar a data.
+
+================================================================
+COMO NOMEIA O ARQUIVO
+================================================================
+  vpp33-<numero>-<peca>-<registro>[-<preco>]-<formato>.png
+  ex: vpp33-01-banheiro-forte-p2500-feed.png

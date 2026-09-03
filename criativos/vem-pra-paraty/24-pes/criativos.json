@@ -1,0 +1,447 @@
+{
+  "prefixo": "vpp24",
+  "fotos": {
+    "A": "fotos/lancha24-a.jpg",
+    "B": "fotos/lancha24-b.jpg",
+    "C": "fotos/lancha24-c.jpg",
+    "D": "fotos/lancha24-d.jpg",
+    "E": "fotos/lancha24-e.jpg",
+    "F": "fotos/lancha24-f.jpg"
+  },
+  "padroes_arte": {
+    "lotacao_arte": "ATÉ 12",
+    "lotacao_label": "pessoas",
+    "cta_arte": "Reserve pelo WhatsApp"
+  },
+  "lancha": {
+    "pes": 24,
+    "lotacao": "12 passageiros + 1 marinheiro",
+    "minimo": 6,
+    "preco": "R$ 1.600, a lancha fechada",
+    "por_pessoa": "R$ 133 com o barco cheio de 12"
+  },
+  "estrategia": {
+    "posicao_na_frota": "É a lancha de melhor preço por pessoa da frota inteira. Com 12 a bordo sai a R$ 133 por cabeça, contra R$ 167 da 18 pés e R$ 278 da 33 pés.",
+    "o_argumento": "Um assento na lancha compartilhada de Paraty custa R$ 250. Esta, cheia, sai a R$ 133 — quase metade. É a versão mais forte da tese que sustenta a campanha, e nos 91 anúncios ativos da categoria ninguém faz essa conta.",
+    "onde_a_conta_vira": "O ponto de virada é 6,4 pessoas. Com 6 (o mínimo) dá R$ 267 e perde da compartilhada; do sétimo passageiro em diante ganha. A copy diz 'do sétimo em diante', que é exato e aguenta auditoria.",
+    "nunca_dizer": "Que sai por R$ 133 sem dizer que é com o barco cheio de 12. E nunca omitir o mínimo de 6: grupo de 3 ou 4 que chega no WhatsApp e descobre o mínimo depois é conversa perdida e cliente irritado."
+  },
+  "precos_em_teste": {
+    "p1600": "R$ 1.600",
+    "p159999": "R$ 1.599,99"
+  },
+  "regras": [
+    "A linha de apoio das peças de preço sempre carrega o mínimo: 'Mínimo de 6 pessoas. Cabe até 12.'",
+    "Modo sobrio: sem preço na arte, serifada leve, aposta em desejo.",
+    "Modo forte: preço e lotação na arte, bloco navy sólido, CTA desenhado.",
+    "Nos três: sem starburst, sem preço riscado, sem selo de desconto, sem emoji.",
+    "Nenhuma peça cita concorrente pelo nome. A comparação é sempre com a categoria."
+  ],
+  "criativos": [
+    {
+      "n": 1,
+      "key": "conta",
+      "angulo": "A conta que ganha",
+      "funil": "fundo",
+      "publico": "Grupo de 7 a 12",
+      "hipotese": "Com o barco cheio esta lancha custa metade de um assento na compartilhada, e ninguém está dizendo isso",
+      "foto": "E",
+      "ancora": "alto",
+      "frase": "CENTO E TRINTA\nE TRÊS POR PESSOA",
+      "local": "24 pés · lancha privativa",
+      "titulo": "Metade do preço de um assento",
+      "cta": "Enviar mensagem",
+      "posicao": {
+        "feed": "50% 55%",
+        "story": "50% 55%"
+      },
+      "forte": {
+        "frase": "R$ <em>133</em>\nPOR PESSOA",
+        "apoio": "Com o barco cheio de 12. Mínimo de 6."
+      },
+      "modos": [
+        "sobrio",
+        "forte"
+      ],
+      "textos": [
+        {
+          "rotulo": "a conta",
+          "primeira_linha": "Um assento na lancha compartilhada custa R$ 250. Esta lancha inteira, com doze a bordo, sai a R$ 133 por pessoa.",
+          "resto": "São R$ 1.600 a lancha fechada, mínimo de 6 pessoas e até 12.\nO roteiro quem escolhe são vocês.\nMe diz a data e quantos vão."
+        },
+        {
+          "rotulo": "quase metade",
+          "primeira_linha": "Fechando esta lancha com o grupo cheio, cada um paga quase metade do que custaria um lugar na compartilhada.",
+          "resto": "R$ 1.600 a lancha, 12 lugares, mínimo de 6.\nE ninguém embarca no meio do caminho.\nQual a data?"
+        },
+        {
+          "rotulo": "seca",
+          "primeira_linha": "R$ 1.600 a lancha inteira. Divide por doze e dá R$ 133 cada um.",
+          "resto": "Doze lugares mais o marinheiro, saída do cais de Paraty.\nChama aqui pra ver as datas."
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "key": "setimo",
+      "angulo": "Do sétimo em diante",
+      "funil": "fundo",
+      "publico": "Grupo de 7 a 12",
+      "hipotese": "Dizer o ponto exato de virada converte melhor que uma promessa vaga de economia",
+      "foto": "D",
+      "ancora": "alto",
+      "frase": "DO SÉTIMO\nEM DIANTE, GANHA",
+      "local": "24 pés · Baía de Paraty",
+      "titulo": "A partir de sete já compensa",
+      "cta": "Enviar mensagem",
+      "posicao": {
+        "feed": "56% 46%",
+        "story": "58% 44%"
+      },
+      "forte": {
+        "frase": "DO <em>SÉTIMO</em>\nEM DIANTE, GANHA",
+        "apoio": "Mínimo de 6 pessoas. Cabe até 12."
+      },
+      "modos": [
+        "sobrio",
+        "forte"
+      ],
+      "textos": [
+        {
+          "rotulo": "o número exato",
+          "primeira_linha": "Do sétimo passageiro em diante, fechar esta lancha sai mais barato por pessoa que um assento na compartilhada.",
+          "resto": "Com 7 dá R$ 229 cada um; com 12, R$ 133. A compartilhada custa R$ 250.\nR$ 1.600 a lancha, mínimo de 6.\nVocês são quantos?"
+        },
+        {
+          "rotulo": "faz a conta",
+          "primeira_linha": "Vocês são quantos? De sete pessoas pra cima, a lancha fechada é a opção mais barata por cabeça.",
+          "resto": "E ninguém divide o barco, nem o roteiro, nem o horário.\nMe diz a data que eu confiro a agenda."
+        },
+        {
+          "rotulo": "sem pegadinha",
+          "primeira_linha": "Com seis pessoas ainda não compensa pelo preço. Do sétimo em diante, compensa e sobra.",
+          "resto": "R$ 1.600 a lancha inteira, até 12 lugares.\nChama aqui com o número de gente e a data."
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "key": "doze",
+      "angulo": "Doze lugares",
+      "funil": "meio",
+      "publico": "Grupo grande, aniversário",
+      "hipotese": "Grupo de dez a doze não cabe numa lancha pequena e não quer pagar preço de barco grande",
+      "foto": "A",
+      "ancora": "alto",
+      "frase": "DOZE LUGARES\nUM BARCO SÓ",
+      "local": "24 pés · lancha privativa",
+      "titulo": "Cabe o grupo inteiro",
+      "cta": "Enviar mensagem",
+      "posicao": {
+        "feed": "55% 26%",
+        "story": "55% 30%"
+      },
+      "forte": {
+        "frase": "DOZE LUGARES\nUM <em>BARCO SÓ</em>",
+        "apoio": "Mínimo de 6 pessoas. Cabe até 12."
+      },
+      "modos": [
+        "sobrio",
+        "forte"
+      ],
+      "textos": [
+        {
+          "rotulo": "o meio-termo",
+          "primeira_linha": "Grupo de dez não cabe na lancha pequena e não precisa pagar preço de barco grande. Esta resolve os dois.",
+          "resto": "Doze lugares mais o marinheiro, R$ 1.600 a lancha fechada.\nMínimo de 6 pessoas.\nMe diz quantos vão."
+        },
+        {
+          "rotulo": "todo mundo junto",
+          "primeira_linha": "Doze pessoas num barco só, sem dividir o grupo em duas lanchas e sem gritar de um pro outro.",
+          "resto": "R$ 1.600 fechado, roteiro escolhido por vocês.\nQual a data?"
+        },
+        {
+          "rotulo": "número seco",
+          "primeira_linha": "Doze lugares, 24 pés, marinheiro a bordo o dia inteiro. R$ 1.600 a lancha.",
+          "resto": "Saída do cais de Paraty, mínimo de 6 pessoas.\nChama aqui pra fechar a data."
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "key": "sovoces",
+      "angulo": "Só vocês a bordo",
+      "funil": "meio",
+      "publico": "Todos",
+      "hipotese": "A dor não é preço, é lotação: ninguém quer dividir o dia com desconhecido",
+      "foto": "D",
+      "ancora": "alto",
+      "frase": "O BARCO INTEIRO\nÉ DE VOCÊS",
+      "local": "Privativa · saídas do cais de Paraty",
+      "titulo": "Sem dividir com ninguém",
+      "cta": "Enviar mensagem",
+      "posicao": {
+        "feed": "56% 46%",
+        "story": "58% 44%"
+      },
+      "forte": {
+        "frase": "O BARCO INTEIRO\nÉ DE <em>VOCÊS</em>",
+        "apoio": "Mínimo de 6 pessoas. Cabe até 12."
+      },
+      "modos": [
+        "sobrio",
+        "forte"
+      ],
+      "textos": [
+        {
+          "rotulo": "comparação",
+          "primeira_linha": "Na lancha compartilhada você divide o dia com dezenas de desconhecidos e segue o roteiro deles. Aqui não.",
+          "resto": "Doze lugares, e todos são do seu grupo.\nVocês escolhem a hora de sair e onde parar.\nMe diz a data e quantas pessoas."
+        },
+        {
+          "rotulo": "controle",
+          "primeira_linha": "Vocês escolhem a hora de sair, onde parar e quanto tempo ficar em cada praia. Ninguém mais embarca.",
+          "resto": "R$ 1.600 a lancha fechada, mínimo de 6 pessoas.\nQuer ver as datas livres?"
+        },
+        {
+          "rotulo": "seca",
+          "primeira_linha": "Doze lugares, e todos são do seu grupo. O marinheiro fica com vocês o dia inteiro.",
+          "resto": "Saída do cais de Paraty, roteiro escolhido por vocês.\nChama aqui pra fechar a data."
+        }
+      ]
+    },
+    {
+      "n": 5,
+      "key": "celebracao",
+      "angulo": "Aniversário e despedida",
+      "funil": "meio",
+      "publico": "Aniversário, despedida de solteiro",
+      "hipotese": "A ocasião é o que junta doze pessoas e justifica fechar um barco",
+      "foto": "B",
+      "ancora": "alto",
+      "frase": "ANIVERSÁRIO\nNO MEIO DA BAÍA",
+      "local": "24 pés · lancha privativa",
+      "titulo": "A data que merece um barco",
+      "cta": "Enviar mensagem",
+      "posicao": {
+        "feed": "52% 42%",
+        "story": "53% 40%"
+      },
+      "forte": {
+        "frase": "ANIVERSÁRIO\nNO <em>MEIO DA BAÍA</em>",
+        "apoio": "Mínimo de 6 pessoas. Cabe até 12."
+      },
+      "modos": [
+        "sobrio",
+        "forte"
+      ],
+      "textos": [
+        {
+          "rotulo": "a conta da turma",
+          "primeira_linha": "Doze amigos, o dia inteiro na baía, e cada um paga R$ 133. Dá pra comemorar por menos que um jantar.",
+          "resto": "R$ 1.600 a lancha fechada, som e bebida por conta de vocês.\nMínimo de 6 pessoas.\nQual a data?"
+        },
+        {
+          "rotulo": "despedida",
+          "primeira_linha": "Despedida de solteiro em barco compartilhado é dividir o dia com desconhecidos. Aqui o barco é de vocês.",
+          "resto": "Doze lugares, roteiro escolhido por vocês, sem horário engessado.\nMe chama com a data."
+        },
+        {
+          "rotulo": "sem horário",
+          "primeira_linha": "Sem horário pra sair e sem horário pra voltar. É esse o tamanho de uma data que merece um barco.",
+          "resto": "24 pés, até 12 lugares, R$ 1.600 fechado.\nChama aqui pra ver a agenda."
+        }
+      ]
+    },
+    {
+      "n": 6,
+      "key": "familia",
+      "angulo": "Família inteira",
+      "funil": "meio",
+      "publico": "Família estendida",
+      "hipotese": "Família de três gerações precisa de espaço e de mar calmo, e a baía entrega os dois",
+      "foto": "E",
+      "ancora": "alto",
+      "frase": "A FAMÍLIA INTEIRA\nNUM BARCO SÓ",
+      "local": "24 pés · Baía de Paraty",
+      "titulo": "Família inteira num barco só",
+      "cta": "Enviar mensagem",
+      "posicao": {
+        "feed": "60% 58%",
+        "story": "58% 56%"
+      },
+      "forte": {
+        "frase": "A FAMÍLIA INTEIRA\nNUM <em>BARCO SÓ</em>",
+        "apoio": "Mínimo de 6 pessoas. Cabe até 12."
+      },
+      "modos": [
+        "sobrio",
+        "forte"
+      ],
+      "textos": [
+        {
+          "rotulo": "três gerações",
+          "primeira_linha": "Avô, filho e neto no mesmo barco, e ainda sobra lugar. São doze, mais o marinheiro.",
+          "resto": "A baía de Paraty é água abrigada, então o mar fica parado o dia inteiro.\nR$ 1.600 a lancha, mínimo de 6.\nMe diz quantos vão."
+        },
+        {
+          "rotulo": "mar calmo",
+          "primeira_linha": "A baía é fechada e o mar fica parado. É o que faz o dia funcionar com criança e com quem enjoa.",
+          "resto": "Doze lugares, marinheiro a bordo, roteiro escolhido por vocês.\nQuer ver as datas?"
+        },
+        {
+          "rotulo": "a conta da família",
+          "primeira_linha": "Com a família cheia, doze pessoas, o dia inteiro de lancha sai a R$ 133 por cabeça.",
+          "resto": "R$ 1.600 a lancha fechada, mínimo de 6 pessoas.\nChama aqui pra montar o dia."
+        }
+      ]
+    },
+    {
+      "n": 7,
+      "key": "rota-sul",
+      "angulo": "Roteiro lado sul",
+      "funil": "meio",
+      "publico": "Todos",
+      "hipotese": "Itinerário numerado com nome próprio vence promessa genérica de passeio",
+      "foto": "C",
+      "olho": "Roteiro lado sul",
+      "titulo_arte": "SETE PARADAS\nNUM <em>DIA</em>",
+      "titulo": "O lado sul da baía num dia",
+      "cta": "Enviar mensagem",
+      "posicao": {
+        "feed": "50% 58%",
+        "story": "50% 58%"
+      },
+      "paradas": [
+        "Praia Vermelha",
+        "Ilha da Pescaria",
+        "Praia da Lula",
+        "Lagoa Azul",
+        "Ilha dos Cocos",
+        "Saco da Velha",
+        "Ilha Comprida"
+      ],
+      "modos": [
+        "roteiro"
+      ],
+      "textos": [
+        {
+          "rotulo": "itinerário",
+          "primeira_linha": "Praia Vermelha, Ilha da Pescaria, Praia da Lula, Lagoa Azul, Ilha dos Cocos, Saco da Velha e Ilha Comprida.",
+          "resto": "Sete paradas no lado sul, na ordem que vocês quiserem.\n24 pés, até 12 lugares, R$ 1.600 a lancha.\nQuer esse roteiro?"
+        },
+        {
+          "rotulo": "a parada que importa",
+          "primeira_linha": "A Lagoa Azul é a parada onde dá pra ver o fundo de areia sem máscara. Está no roteiro do lado sul.",
+          "resto": "Mais seis paradas, com o barco só do seu grupo.\nMe diz a data."
+        },
+        {
+          "rotulo": "sem estrada",
+          "primeira_linha": "Cinco das sete paradas do lado sul não têm estrada. Só se chega de barco.",
+          "resto": "E o barco é de vocês, com até 12 lugares.\nChama aqui pra montar o dia."
+        }
+      ]
+    },
+    {
+      "n": 8,
+      "key": "rota-mamangua",
+      "angulo": "Roteiro Mamanguá",
+      "funil": "meio",
+      "publico": "Alto padrão",
+      "hipotese": "O fiorde nomeado com as paradas listadas converte melhor que o fiorde solto",
+      "foto": "F",
+      "olho": "Roteiro Saco do Mamanguá",
+      "titulo_arte": "O ÚNICO <em>FIORDE</em>\nDO BRASIL",
+      "titulo": "O Mamanguá do seu jeito",
+      "cta": "Enviar mensagem",
+      "posicao": {
+        "feed": "50% 55%",
+        "story": "50% 52%"
+      },
+      "paradas": [
+        "Praia do Buraco",
+        "Praia do Sobrado",
+        "Praia do Engenho",
+        "Praia do Cruzeiro",
+        "Ilha dos Cocos"
+      ],
+      "modos": [
+        "roteiro"
+      ],
+      "nota_producao": "Conferir se a foto usada é mesmo do Saco do Mamanguá. Se não for, a linha de olho descreve o roteiro e não o lugar retratado.",
+      "textos": [
+        {
+          "rotulo": "o lugar",
+          "primeira_linha": "O Saco do Mamanguá tem oito quilômetros de mar parado entre duas paredes de serra. Só se chega de barco.",
+          "resto": "Praia do Buraco, do Sobrado, do Engenho, do Cruzeiro e Ilha dos Cocos.\n24 pés, até 12 lugares.\nQuer o roteiro do fiorde?"
+        },
+        {
+          "rotulo": "referência",
+          "primeira_linha": "A Praia do Cruzeiro, onde gravaram Crepúsculo, é uma das cinco paradas do roteiro do Mamanguá.",
+          "resto": "O fiorde inteiro num dia, com o barco só do seu grupo.\nMe conta a data."
+        },
+        {
+          "rotulo": "silêncio",
+          "primeira_linha": "No fundo do Mamanguá o motor desliga e não se ouve mais nada. É o roteiro mais silencioso que a gente faz.",
+          "resto": "Cinco paradas, R$ 1.600 a lancha fechada.\nChama aqui pra ver as datas."
+        }
+      ]
+    },
+    {
+      "n": 9,
+      "key": "rota-norte",
+      "angulo": "Roteiro lado norte",
+      "funil": "meio",
+      "publico": "Família",
+      "hipotese": "Tartaruga e almoço em ilha são os dois ganchos de família, e estão no mesmo roteiro",
+      "foto": "B",
+      "olho": "Roteiro lado norte",
+      "titulo_arte": "TARTARUGA\nE <em>ALMOÇO</em> NA ILHA",
+      "titulo": "Tartarugas e almoço na ilha",
+      "cta": "Enviar mensagem",
+      "posicao": {
+        "feed": "50% 45%",
+        "story": "50% 45%"
+      },
+      "paradas": [
+        "Ilha do Malvão",
+        "Ilha da Sapeca",
+        "Ilha Comprida",
+        "Ilha da Rapada",
+        "Ilha do Araújo · almoço",
+        "Ilha do Ventura",
+        "Ilha do Pico",
+        "Canto do Morro"
+      ],
+      "modos": [
+        "roteiro"
+      ],
+      "textos": [
+        {
+          "rotulo": "o gancho da criança",
+          "primeira_linha": "No lado norte tem parada pra ver tartaruga na Ilha do Araújo e almoço na mesma ilha. Oito paradas no dia.",
+          "resto": "Malvão, Sapeca, Ilha Comprida, Rapada, Ventura, Pico e Canto do Morro.\n24 pés, até 12 lugares.\nQuer esse roteiro?"
+        },
+        {
+          "rotulo": "dia inteiro",
+          "primeira_linha": "Oito paradas, tartaruga na Ilha do Araújo e almoço em restaurante de ilha. É o roteiro do lado norte.",
+          "resto": "A baía é fechada, então funciona bem com criança.\nMe diz quantos vão e a data."
+        },
+        {
+          "rotulo": "sem garantia falsa",
+          "primeira_linha": "A parada das tartarugas é onde elas costumam aparecer. Aparecer é com elas, parar é com a gente.",
+          "resto": "Oito paradas no lado norte, com almoço na ilha.\nChama aqui pra fechar a data."
+        }
+      ]
+    }
+  ],
+  "titulo_indice": "LANCHA 24 PES",
+  "ficha": [
+    "Lotacao nas pecas: ate 12 passageiros + 1 marinheiro",
+    "Minimo para sair: 6 pessoas",
+    "Preco nas pecas: a partir de R$ 1.600 ou R$ 1.599,99 (as duas variantes)",
+    "Conta por pessoa: R$ 1.600 / 12 = R$ 133. Com 6 sai R$ 267.",
+    "Ponto de virada: do setimo passageiro em diante ganha da compartilhada de R$ 250.",
+    "ATENCAO: uma das oito fotos que chegaram e de outro casco. Ver fotos/LEIA-ME.md."
+  ]
+}

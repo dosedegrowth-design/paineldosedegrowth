@@ -1,0 +1,215 @@
+VEM PRA PARATY - LANCHA 24 PES
+Criativos de Meta Ads - setembro de 2026 - Dose de Growth
+
+48 arquivos: 24 em Feed 1080x1350 e 24 em Story 1080x1920.
+
+A LANCHA
+  Lotacao nas pecas: ate 12 passageiros + 1 marinheiro
+  Minimo para sair: 6 pessoas
+  Preco nas pecas: a partir de R$ 1.600 ou R$ 1.599,99 (as duas variantes)
+  Conta por pessoa: R$ 1.600 / 12 = R$ 133. Com 6 sai R$ 267.
+  Ponto de virada: do setimo passageiro em diante ganha da compartilhada de R$ 250.
+  ATENCAO: uma das oito fotos que chegaram e de outro casco. Ver fotos/LEIA-ME.md.
+
+OS TRES REGISTROS
+  sobrio   - serifada leve sobre a foto, sem preco e sem CTA desenhado
+  forte    - bloco navy com preco, lotacao e CTA. Contraste alto
+  roteiro  - as paradas do dia numeradas, com preco e CTA
+
+AS VARIANTES DE PRECO
+  p1600   - R$ 1.600
+  p159999 - R$ 1.599,99
+  O registro sobrio nao tem preco na arte, entao nao tem variante.
+
+================================================================
+AS 9 PECAS
+================================================================
+
+01. CONTA   [fundo]  publico: Grupo de 7 a 12
+    hipotese: Com o barco cheio esta lancha custa metade de um assento na compartilhada, e ninguem esta dizendo isso
+    foto: E   registros: sobrio, forte
+    frase na arte: CENTO E TRINTA / E TRES POR PESSOA
+    titulo do anuncio: Metade do preco de um assento
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [a conta] Um assento na lancha compartilhada custa R$ 250. Esta lancha inteira, com doze a bordo, sai a R$ 133 por pessoa.
+         Sao R$ 1.600 a lancha fechada, minimo de 6 pessoas e ate 12.
+         O roteiro quem escolhe sao voces.
+         Me diz a data e quantos vao.
+      2) [quase metade] Fechando esta lancha com o grupo cheio, cada um paga quase metade do que custaria um lugar na compartilhada.
+         R$ 1.600 a lancha, 12 lugares, minimo de 6.
+         E ninguem embarca no meio do caminho.
+         Qual a data?
+      3) [seca] R$ 1.600 a lancha inteira. Divide por doze e da R$ 133 cada um.
+         Doze lugares mais o marinheiro, saida do cais de Paraty.
+         Chama aqui pra ver as datas.
+
+02. SETIMO   [fundo]  publico: Grupo de 7 a 12
+    hipotese: Dizer o ponto exato de virada converte melhor que uma promessa vaga de economia
+    foto: D   registros: sobrio, forte
+    frase na arte: DO SETIMO / EM DIANTE, GANHA
+    titulo do anuncio: A partir de sete ja compensa
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [o numero exato] Do setimo passageiro em diante, fechar esta lancha sai mais barato por pessoa que um assento na compartilhada.
+         Com 7 da R$ 229 cada um; com 12, R$ 133. A compartilhada custa R$ 250.
+         R$ 1.600 a lancha, minimo de 6.
+         Voces sao quantos?
+      2) [faz a conta] Voces sao quantos? De sete pessoas pra cima, a lancha fechada e a opcao mais barata por cabeca.
+         E ninguem divide o barco, nem o roteiro, nem o horario.
+         Me diz a data que eu confiro a agenda.
+      3) [sem pegadinha] Com seis pessoas ainda nao compensa pelo preco. Do setimo em diante, compensa e sobra.
+         R$ 1.600 a lancha inteira, ate 12 lugares.
+         Chama aqui com o numero de gente e a data.
+
+03. DOZE   [meio]  publico: Grupo grande, aniversario
+    hipotese: Grupo de dez a doze nao cabe numa lancha pequena e nao quer pagar preco de barco grande
+    foto: A   registros: sobrio, forte
+    frase na arte: DOZE LUGARES / UM BARCO SO
+    titulo do anuncio: Cabe o grupo inteiro
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [o meio-termo] Grupo de dez nao cabe na lancha pequena e nao precisa pagar preco de barco grande. Esta resolve os dois.
+         Doze lugares mais o marinheiro, R$ 1.600 a lancha fechada.
+         Minimo de 6 pessoas.
+         Me diz quantos vao.
+      2) [todo mundo junto] Doze pessoas num barco so, sem dividir o grupo em duas lanchas e sem gritar de um pro outro.
+         R$ 1.600 fechado, roteiro escolhido por voces.
+         Qual a data?
+      3) [numero seco] Doze lugares, 24 pes, marinheiro a bordo o dia inteiro. R$ 1.600 a lancha.
+         Saida do cais de Paraty, minimo de 6 pessoas.
+         Chama aqui pra fechar a data.
+
+04. SOVOCES   [meio]  publico: Todos
+    hipotese: A dor nao e preco, e lotacao: ninguem quer dividir o dia com desconhecido
+    foto: D   registros: sobrio, forte
+    frase na arte: O BARCO INTEIRO / E DE VOCES
+    titulo do anuncio: Sem dividir com ninguem
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [comparacao] Na lancha compartilhada voce divide o dia com dezenas de desconhecidos e segue o roteiro deles. Aqui nao.
+         Doze lugares, e todos sao do seu grupo.
+         Voces escolhem a hora de sair e onde parar.
+         Me diz a data e quantas pessoas.
+      2) [controle] Voces escolhem a hora de sair, onde parar e quanto tempo ficar em cada praia. Ninguem mais embarca.
+         R$ 1.600 a lancha fechada, minimo de 6 pessoas.
+         Quer ver as datas livres?
+      3) [seca] Doze lugares, e todos sao do seu grupo. O marinheiro fica com voces o dia inteiro.
+         Saida do cais de Paraty, roteiro escolhido por voces.
+         Chama aqui pra fechar a data.
+
+05. CELEBRACAO   [meio]  publico: Aniversario, despedida de solteiro
+    hipotese: A ocasiao e o que junta doze pessoas e justifica fechar um barco
+    foto: B   registros: sobrio, forte
+    frase na arte: ANIVERSARIO / NO MEIO DA BAIA
+    titulo do anuncio: A data que merece um barco
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [a conta da turma] Doze amigos, o dia inteiro na baia, e cada um paga R$ 133. Da pra comemorar por menos que um jantar.
+         R$ 1.600 a lancha fechada, som e bebida por conta de voces.
+         Minimo de 6 pessoas.
+         Qual a data?
+      2) [despedida] Despedida de solteiro em barco compartilhado e dividir o dia com desconhecidos. Aqui o barco e de voces.
+         Doze lugares, roteiro escolhido por voces, sem horario engessado.
+         Me chama com a data.
+      3) [sem horario] Sem horario pra sair e sem horario pra voltar. E esse o tamanho de uma data que merece um barco.
+         24 pes, ate 12 lugares, R$ 1.600 fechado.
+         Chama aqui pra ver a agenda.
+
+06. FAMILIA   [meio]  publico: Familia estendida
+    hipotese: Familia de tres geracoes precisa de espaco e de mar calmo, e a baia entrega os dois
+    foto: E   registros: sobrio, forte
+    frase na arte: A FAMILIA INTEIRA / NUM BARCO SO
+    titulo do anuncio: Familia inteira num barco so
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [tres geracoes] Avo, filho e neto no mesmo barco, e ainda sobra lugar. Sao doze, mais o marinheiro.
+         A baia de Paraty e agua abrigada, entao o mar fica parado o dia inteiro.
+         R$ 1.600 a lancha, minimo de 6.
+         Me diz quantos vao.
+      2) [mar calmo] A baia e fechada e o mar fica parado. E o que faz o dia funcionar com crianca e com quem enjoa.
+         Doze lugares, marinheiro a bordo, roteiro escolhido por voces.
+         Quer ver as datas?
+      3) [a conta da familia] Com a familia cheia, doze pessoas, o dia inteiro de lancha sai a R$ 133 por cabeca.
+         R$ 1.600 a lancha fechada, minimo de 6 pessoas.
+         Chama aqui pra montar o dia.
+
+07. ROTA-SUL   [meio]  publico: Todos
+    hipotese: Itinerario numerado com nome proprio vence promessa generica de passeio
+    foto: C   registros: roteiro
+    paradas:
+      01. Praia Vermelha
+      02. Ilha da Pescaria
+      03. Praia da Lula
+      04. Lagoa Azul
+      05. Ilha dos Cocos
+      06. Saco da Velha
+      07. Ilha Comprida
+    titulo do anuncio: O lado sul da baia num dia
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [itinerario] Praia Vermelha, Ilha da Pescaria, Praia da Lula, Lagoa Azul, Ilha dos Cocos, Saco da Velha e Ilha Comprida.
+         Sete paradas no lado sul, na ordem que voces quiserem.
+         24 pes, ate 12 lugares, R$ 1.600 a lancha.
+         Quer esse roteiro?
+      2) [a parada que importa] A Lagoa Azul e a parada onde da pra ver o fundo de areia sem mascara. Esta no roteiro do lado sul.
+         Mais seis paradas, com o barco so do seu grupo.
+         Me diz a data.
+      3) [sem estrada] Cinco das sete paradas do lado sul nao tem estrada. So se chega de barco.
+         E o barco e de voces, com ate 12 lugares.
+         Chama aqui pra montar o dia.
+
+08. ROTA-MAMANGUA   [meio]  publico: Alto padrao
+    hipotese: O fiorde nomeado com as paradas listadas converte melhor que o fiorde solto
+    foto: F   registros: roteiro
+    paradas:
+      01. Praia do Buraco
+      02. Praia do Sobrado
+      03. Praia do Engenho
+      04. Praia do Cruzeiro
+      05. Ilha dos Cocos
+    titulo do anuncio: O Mamangua do seu jeito
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [o lugar] O Saco do Mamangua tem oito quilometros de mar parado entre duas paredes de serra. So se chega de barco.
+         Praia do Buraco, do Sobrado, do Engenho, do Cruzeiro e Ilha dos Cocos.
+         24 pes, ate 12 lugares.
+         Quer o roteiro do fiorde?
+      2) [referencia] A Praia do Cruzeiro, onde gravaram Crepusculo, e uma das cinco paradas do roteiro do Mamangua.
+         O fiorde inteiro num dia, com o barco so do seu grupo.
+         Me conta a data.
+      3) [silencio] No fundo do Mamangua o motor desliga e nao se ouve mais nada. E o roteiro mais silencioso que a gente faz.
+         Cinco paradas, R$ 1.600 a lancha fechada.
+         Chama aqui pra ver as datas.
+
+09. ROTA-NORTE   [meio]  publico: Familia
+    hipotese: Tartaruga e almoco em ilha sao os dois ganchos de familia, e estao no mesmo roteiro
+    foto: B   registros: roteiro
+    paradas:
+      01. Ilha do Malvao
+      02. Ilha da Sapeca
+      03. Ilha Comprida
+      04. Ilha da Rapada
+      05. Ilha do Araujo · almoco
+      06. Ilha do Ventura
+      07. Ilha do Pico
+      08. Canto do Morro
+    titulo do anuncio: Tartarugas e almoco na ilha
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [o gancho da crianca] No lado norte tem parada pra ver tartaruga na Ilha do Araujo e almoco na mesma ilha. Oito paradas no dia.
+         Malvao, Sapeca, Ilha Comprida, Rapada, Ventura, Pico e Canto do Morro.
+         24 pes, ate 12 lugares.
+         Quer esse roteiro?
+      2) [dia inteiro] Oito paradas, tartaruga na Ilha do Araujo e almoco em restaurante de ilha. E o roteiro do lado norte.
+         A baia e fechada, entao funciona bem com crianca.
+         Me diz quantos vao e a data.
+      3) [sem garantia falsa] A parada das tartarugas e onde elas costumam aparecer. Aparecer e com elas, parar e com a gente.
+         Oito paradas no lado norte, com almoco na ilha.
+         Chama aqui pra fechar a data.
+
+================================================================
+COMO NOMEIA O ARQUIVO
+================================================================
+  vpp24-<numero>-<peca>-<registro>[-<preco>]-<formato>.png
+  ex: vpp24-01-conta-forte-p1600-feed.png

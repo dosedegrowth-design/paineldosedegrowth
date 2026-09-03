@@ -453,5 +453,12 @@
   "precos_em_teste": {
     "p1000": "R$ 1.000",
     "p99999": "R$ 999,99"
-  }
+  },
+  "titulo_indice": "LANCHA 18 PES (MESTRA 180)",
+  "ficha": [
+    "Modelo: Mestra 180, 18 pes",
+    "Lotacao nas pecas: ate 6 passageiros + 1 marinheiro",
+    "Preco nas pecas: a partir de R$ 1.000 ou R$ 999,99 (as duas variantes)",
+    "ATENCAO: a lotacao precisa de confirmacao. O briefing inicial dizia 7 + 1."
+  ]
 }
