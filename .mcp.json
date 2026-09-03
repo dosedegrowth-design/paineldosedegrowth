@@ -6,6 +6,10 @@
       "headers": {
         "x-api-key": "${API_KEY_21ST}"
       }
+    },
+    "capcut": {
+      "type": "sse",
+      "url": "http://127.0.0.1:9077/mcp"
     }
   }
 }
