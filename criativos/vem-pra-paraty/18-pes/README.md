@@ -1,7 +1,16 @@
 # Criativos estáticos — lancha 18 pés (Mestra 180)
 
-Seis peças de Meta Ads, cada uma em 1080×1350 (feed) e 1080×1920 (story).
-A direção está na Carta Náutica, em `../direcao/carta-nautica.html`.
+Seis peças de Meta Ads em dois registros, cada uma em 1080×1350 (feed) e
+1080×1920 (story). Vinte e quatro arquivos. A direção está na Carta Náutica,
+em `../direcao/carta-nautica.html`.
+
+| Registro | O que é | Aposta |
+|---|---|---|
+| **forte** | Foto em cima, bloco navy sólido embaixo com preço, lotação e CTA. Lilita One, laranja e turquesa | Contraste alto e clareza comercial imediata |
+| **sobrio** | Serifada leve sobre a foto, sem preço e sem CTA desenhado | Desejo e percepção de preço alto |
+
+Os dois estão no ar de propósito: a escolha entre eles é teste, não gosto.
+Mede-se por custo por conversa qualificada.
 
 ## Pra gerar os PNGs finais
 
@@ -26,6 +35,8 @@ nem redimensione as fotos antes: o corte de cada formato é feito aqui.
 Outras opções:
 
 ```bash
+node gerar.mjs --modo=forte           # só o registro com preço na arte
+node gerar.mjs --modo=sobrio          # só o registro sem preço na arte
 node gerar.mjs --so=feed              # só 1080×1350
 node gerar.mjs --so=story             # só 1080×1920
 node gerar.mjs --id=conta,fiorde      # só algumas peças
@@ -45,19 +56,22 @@ node gerar.mjs --id=conta,fiorde      # só algumas peças
 Título, CTA e as três variações de texto principal de cada peça estão em
 `criativos.json`, junto da hipótese que a peça testa.
 
-## O que o motor impõe
+## O que o motor impõe nos dois registros
 
-`arte.mjs` é o registro de campanha, não o do orgânico. Ele não deixa entrar
-preço na imagem, selo de desconto, pill de categoria, CTA desenhado nem sombra
-no texto. A frase é serifada leve em caixa alta com entreletra aberta, no
-máximo seis palavras, e a marca fica pequena num canto.
+Continua proibido, porque foi o que barateou as peças antigas: starburst, faixa
+diagonal, preço riscado, selo de desconto, linha pontilhada de recorte, emoji
+na arte e sombra dura no texto.
 
-O CTA não é desenhado de propósito: no anúncio ele é o botão do Meta, e no
-story é o sticker nativo. O preço vai no texto principal, sempre com a divisão
-por pessoa já feita.
+Zona segura de story respeitada nos dois: 250 px no topo, 320 px embaixo.
 
-Zona segura de story respeitada: 250 px no topo, 320 px embaixo. Quando a frase
-fica embaixo (`"ancora": "baixo"`), a marca sobe pro topo sozinha.
+No **sobrio**, quando a frase fica embaixo (`"ancora": "baixo"`), a marca sobe
+pro topo sozinha. No **forte**, o contraste não depende da foto: o texto cai
+sobre bloco navy sólido, o que resolve o problema de texto claro sobre água
+clara.
+
+⚠️ **Lotação a confirmar.** As peças dizem ATÉ 6 PESSOAS e a conta usa
+R$ 1.000 ÷ 6 = R$ 167. O briefing inicial dizia 7 + 1 marinheiro. Se forem
+7 passageiros, muda `lotacao_arte` e a conta dos textos da peça 01.
 
 ## Pra mexer
 

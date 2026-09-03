@@ -2,15 +2,15 @@
   "lancha": {
     "modelo": "Mestra 180",
     "pes": 18,
-    "lotacao": "7 passageiros + 1 marinheiro",
+    "lotacao": "6 passageiros + 1 marinheiro (CONFIRMAR: o briefing inicial dizia 7+1)",
     "preco": "a partir de R$ 1.000, a lancha fechada",
-    "por_pessoa": "menos de R$ 160 com o grupo cheio"
+    "por_pessoa": "R$ 167 com o grupo cheio de 6"
   },
   "regras": [
-    "A frase da arte tem no máximo 6 palavras. Nada mais de texto além da linha de local.",
-    "Preço nunca entra na imagem. Vai no texto principal, com a divisão por pessoa já feita.",
-    "CTA não é desenhado: é o botão do Meta no anúncio e o sticker nativo no story.",
-    "Nenhuma peça cita concorrente pelo nome. A comparação é sempre com a categoria."
+    "Modo sobrio: sem preco na arte, serifada leve, aposta em desejo.",
+    "Modo forte: preco e lotacao na arte, bloco navy solido, CTA desenhado.",
+    "Nos dois: sem starburst, sem preco riscado, sem selo de desconto, sem emoji.",
+    "Nenhuma peca cita concorrente pelo nome. A comparacao e sempre com a categoria."
   ],
   "criativos": [
     {
@@ -23,7 +23,7 @@
       "foto": "C",
       "porque_a_foto": "É a única que mostra os bancos do interior, e lugar é o argumento desta peça",
       "ancora": "alto",
-      "frase": "SETE LUGARES\nNENHUM ESTRANHO",
+      "frase": "SEIS LUGARES\nNENHUM ESTRANHO",
       "local": "Baía de Paraty · lancha privativa",
       "titulo": "A baía de Paraty só pra vocês",
       "cta": "Enviar mensagem",
@@ -34,20 +34,27 @@
       "textos": [
         {
           "rotulo": "conta",
-          "primeira_linha": "Um assento na lancha compartilhada custa R$ 250. Fechando a nossa com sete, dá menos de R$ 160 por pessoa.",
-          "resto": "A lancha fechada sai a partir de R$ 1.000 e leva 7 mais o marinheiro.\nO roteiro quem escolhe são vocês.\nMe diz a data e quantas pessoas que eu vejo se está livre."
+          "primeira_linha": "Um assento na lancha compartilhada custa R$ 250. Fechando a nossa com seis, dá R$ 167 por pessoa.",
+          "resto": "A lancha fechada sai a partir de R$ 1.000 e leva 6 mais o marinheiro.\nO roteiro quem escolhe são vocês.\nMe diz a data e quantas pessoas que eu vejo se está livre."
         },
         {
           "rotulo": "pergunta",
-          "primeira_linha": "Vocês são quantos? Do quarto passageiro em diante, fechar a lancha inteira sai mais barato que a compartilhada.",
-          "resto": "São 7 lugares mais o marinheiro, e o barco não para em mais nenhum lugar pra pegar gente.\nManda a data que eu confiro a agenda."
+          "primeira_linha": "Vocês são quantos? Do quinto passageiro em diante, fechar a lancha inteira sai mais barato que a compartilhada.",
+          "resto": "São 6 lugares mais o marinheiro, e o barco não para em mais nenhum lugar pra pegar gente.\nManda a data que eu confiro a agenda."
         },
         {
           "rotulo": "afirmação seca",
-          "primeira_linha": "A lancha é de vocês. Os sete lugares são de vocês. O roteiro também.",
+          "primeira_linha": "A lancha é de vocês. Os seis lugares são de vocês. O roteiro também.",
           "resto": "Saída do cais de Paraty, a partir de R$ 1.000 a lancha fechada.\nQuer ver as datas livres?"
         }
-      ]
+      ],
+      "forte": {
+        "frase": "A LANCHA INTEIRA\nSÓ DE <em>VOCÊS</em>",
+        "apoio": "Sem dividir com estranho. Sem roteiro fixo."
+      },
+      "preco_arte": "R$ 1.000",
+      "lotacao_arte": "ATÉ 6",
+      "cta_arte": "Reserve pelo WhatsApp"
     },
     {
       "n": 2,
@@ -71,7 +78,7 @@
         {
           "rotulo": "cena",
           "primeira_linha": "O Saco do Mamanguá tem oito quilômetros de mar parado entre duas paredes de serra. Chega-se de barco, e só.",
-          "resto": "Praia do Buraco, do Sobrado, do Engenho e a do Cruzeiro.\nLancha privativa, 7 lugares, saída do cais de Paraty.\nQuer o roteiro do fiorde?"
+          "resto": "Praia do Buraco, do Sobrado, do Engenho e a do Cruzeiro.\nLancha privativa, 6 lugares, saída do cais de Paraty.\nQuer o roteiro do fiorde?"
         },
         {
           "rotulo": "descoberta",
@@ -84,7 +91,14 @@
           "resto": "O roteiro do Mamanguá passa por ela, pelo Buraco, pelo Sobrado e pelo Engenho.\nChama aqui que eu te passo os horários."
         }
       ],
-      "nota_producao": "A foto A não é do Saco do Mamanguá. A linha de local descreve o roteiro, não o lugar retratado. Com uma foto real do fiorde esta peça fica muito mais forte."
+      "nota_producao": "A foto A não é do Saco do Mamanguá. A linha de local descreve o roteiro, não o lugar retratado. Com uma foto real do fiorde esta peça fica muito mais forte.",
+      "forte": {
+        "frase": "O ÚNICO <em>FIORDE</em>\nDO BRASIL",
+        "apoio": "Saco do Mamanguá. Só se chega de barco."
+      },
+      "preco_arte": "R$ 1.000",
+      "lotacao_arte": "ATÉ 6",
+      "cta_arte": "Reserve pelo WhatsApp"
     },
     {
       "n": 3,
@@ -113,14 +127,21 @@
         {
           "rotulo": "quem evita",
           "primeira_linha": "Quem enjoa em barco costuma cortar o passeio de lancha do roteiro. Aqui a baía é fechada e o mar fica parado.",
-          "resto": "Sete lugares, marinheiro a bordo o dia todo e toldo de sombra.\nQuer ver as datas?"
+          "resto": "Seis lugares, marinheiro a bordo o dia todo e toldo de sombra.\nQuer ver as datas?"
         },
         {
           "rotulo": "cena",
           "primeira_linha": "Sem mar aberto, sem onda batendo no costado. A baía de Paraty fica parada o dia inteiro.",
           "resto": "É o que faz o passeio funcionar com criança pequena e com quem não gosta de balanço.\nChama aqui pra montar o dia de vocês."
         }
-      ]
+      ],
+      "forte": {
+        "frase": "MAR <em>PARADO</em>\nO DIA INTEIRO",
+        "apoio": "Baía fechada. Dá pra levar criança e quem enjoa."
+      },
+      "preco_arte": "R$ 1.000",
+      "lotacao_arte": "ATÉ 6",
+      "cta_arte": "Reserve pelo WhatsApp"
     },
     {
       "n": 4,
@@ -144,7 +165,7 @@
         {
           "rotulo": "número",
           "primeira_linha": "São 4 horas de São Paulo pela Paraty-Cunha. Sai sexta à noite e no sábado de manhã você está na água.",
-          "resto": "Lancha privativa de 7 lugares, saída do cais de Paraty.\nMe diz o fim de semana que você vem que eu seguro a data."
+          "resto": "Lancha privativa de 6 lugares, saída do cais de Paraty.\nMe diz o fim de semana que você vem que eu seguro a data."
         },
         {
           "rotulo": "correção",
@@ -156,7 +177,14 @@
           "primeira_linha": "O fim de semana rende mais do que parece: quatro horas de estrada e a baía de Paraty começa.",
           "resto": "A lancha é privativa e o roteiro é escolhido por vocês.\nQuer ver o que dá pra fazer num sábado?"
         }
-      ]
+      ],
+      "forte": {
+        "frase": "<em>4 HORAS</em>\nDE SÃO PAULO",
+        "apoio": "Sai sexta à noite. No sábado você está na água."
+      },
+      "preco_arte": "R$ 1.000",
+      "lotacao_arte": "ATÉ 6",
+      "cta_arte": "Reserve pelo WhatsApp"
     },
     {
       "n": 5,
@@ -189,10 +217,17 @@
         },
         {
           "rotulo": "afirmação seca",
-          "primeira_linha": "Sete lugares, e todos são do seu grupo. O marinheiro fica com vocês o dia inteiro.",
+          "primeira_linha": "Seis lugares, e todos são do seu grupo. O marinheiro fica com vocês o dia inteiro.",
           "resto": "Saída do cais de Paraty, roteiro escolhido por vocês.\nChama aqui pra fechar a data."
         }
-      ]
+      ],
+      "forte": {
+        "frase": "SEU GRUPO\nE MAIS <em>NINGUÉM</em>",
+        "apoio": "Vocês escolhem a hora de sair e onde parar."
+      },
+      "preco_arte": "R$ 1.000",
+      "lotacao_arte": "ATÉ 6",
+      "cta_arte": "Reserve pelo WhatsApp"
     },
     {
       "n": 6,
@@ -216,7 +251,7 @@
         {
           "rotulo": "dado",
           "primeira_linha": "Setembro e outubro chovem menos da metade do que janeiro, e durante a semana a baía fica vazia.",
-          "resto": "É a melhor água do ano pra quem quer ver o fundo na Lagoa Azul.\nLancha privativa de 7 lugares.\nMe diz a data que eu confiro."
+          "resto": "É a melhor água do ano pra quem quer ver o fundo na Lagoa Azul.\nLancha privativa de 6 lugares.\nMe diz a data que eu confiro."
         },
         {
           "rotulo": "janela",
@@ -226,9 +261,16 @@
         {
           "rotulo": "contraste de temporada",
           "primeira_linha": "Praia cheia em Paraty é de dezembro em diante. Até outubro, o roteiro inteiro é praticamente de vocês.",
-          "resto": "Sete lugares, saída do cais de Paraty, a partir de R$ 1.000 a lancha fechada.\nChama aqui pra garantir o fim de semana."
+          "resto": "Seis lugares, saída do cais de Paraty, a partir de R$ 1.000 a lancha fechada.\nChama aqui pra garantir o fim de semana."
         }
-      ]
+      ],
+      "forte": {
+        "frase": "MAR LIMPO\n<em>PRAIA VAZIA</em>",
+        "apoio": "Setembro e outubro: a melhor água do ano."
+      },
+      "preco_arte": "R$ 1.000",
+      "lotacao_arte": "ATÉ 6",
+      "cta_arte": "Reserve pelo WhatsApp"
     }
   ]
 }

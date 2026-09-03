@@ -5,7 +5,9 @@
  *   node gerar.mjs            # renderiza tudo (feed + story)
  *   node gerar.mjs --so=feed  # só 1080x1350
  *   node gerar.mjs --so=story # só 1080x1920
- *   node gerar.mjs --id=matematica,casal
+ *   node gerar.mjs --id=conta,fiorde
+ *   node gerar.mjs --modo=forte   # só o registro com preço na arte
+ *   node gerar.mjs --modo=sobrio  # só o registro sem preço na arte
  *
  * Antes de rodar, coloque as três fotos reais em fotos/ com estes nomes:
  *   fotos/lancha18-a.jpg   (três-quartos traseiro, serra ao fundo, muito céu)
@@ -100,6 +102,7 @@ async function main() {
 
   const filtroId = args.id ? String(args.id).split(',') : null;
   const filtroFmt = args.so ? [String(args.so)] : ['feed', 'story'];
+  const modos = args.modo ? [String(args.modo)] : ['sobrio', 'forte'];
 
   const itens = dados.criativos.filter((c) => !filtroId || filtroId.includes(c.key));
   const faltando = [];
@@ -118,18 +121,19 @@ async function main() {
     if (!temFoto) faltando.push(`${c.key} → FOTO ${c.foto}`);
 
     for (const fmtKey of filtroFmt) {
-      const f = FORMATOS[fmtKey];
-      if (!f) throw new Error(`Formato desconhecido: ${fmtKey}`);
+     const f = FORMATOS[fmtKey];
+     if (!f) throw new Error(`Formato desconhecido: ${fmtKey}`);
 
-      const html = montarHTML({ ...c, foto_src }, fmtKey);
-      const nome = `vpp18-${String(c.n).padStart(2, '0')}-${c.key}-${fmtKey}`;
+     for (const modo of modos) {
+      const html = montarHTML({ ...c, foto_src }, fmtKey, modo);
+      const nome = `vpp18-${String(c.n).padStart(2, '0')}-${c.key}-${modo}-${fmtKey}`;
 
       // prévia navegável: mesmo HTML, com a foto por caminho relativo
       const fotoPrevia = temFoto ? `../${FOTOS[c.foto]}` : foto_src;
       // a prévia usa caminho relativo; o PNG usa o data URI acima
       await writeFile(
         path.join(AQUI, 'previa', `${nome}.html`),
-        montarHTML({ ...c, foto_src: fotoPrevia }, fmtKey),
+        montarHTML({ ...c, foto_src: fotoPrevia }, fmtKey, modo),
         'utf8'
       );
 
@@ -146,6 +150,7 @@ async function main() {
       await page.close();
       n++;
       process.stdout.write(`  ✓ ${nome}.png\n`);
+     }
     }
   }
 
