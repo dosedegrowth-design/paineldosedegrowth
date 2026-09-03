@@ -121,6 +121,13 @@ Pastas de rascunho por SO:
    trabalho, as chamadas seguintes vão silenciosamente para um rascunho novo.
    Sempre confira o `draft_id` que volta em cada resposta.
 
+10. **Arredondar só no envio causa sobreposição.** Se você acumula a posição na
+    timeline com precisão cheia mas arredonda `start`/`end` ao enviar, o segmento
+    fica alguns milissegundos mais longo que o passo e o `add_video` seguinte
+    falha com `New segment overlaps with existing segment [...]`. Quantize o
+    início, a duração e a posição na **mesma** casa decimal antes de enviar e de
+    acumular.
+
 ## Não existe preview ao vivo
 
 O CapCut lê o `draft_info.json` quando abre o projeto — ele não observa o arquivo.
@@ -216,6 +223,33 @@ python3 scripts/capcut-montagem-percurso.py --roteiro roteiro.json \
 Opções: `--formato vertical|horizontal|quadrado`, `--trecho N` (segundos por
 clipe, sobrepõe o cálculo pela trilha), `--duracao-total N`, `--exemplo`
 (imprime um roteiro modelo).
+
+**Corte no ritmo** — `--alinhar-batida` estima o andamento da trilha e ajusta a
+duração de cada clipe para um número inteiro de batidas, com o primeiro clipe
+absorvendo o intervalo até a primeira batida. Se o andamento vier com confiança
+baixa, ele avisa e cai no corte em blocos fixos.
+
+**Variações** — `--variacoes trilha1.mp3 trilha2.mp3 ...` (ou uma pasta) gera um
+rascunho por trilha, cada um com o ritmo de corte daquela faixa:
+
+```bash
+python3 scripts/capcut-montagem-percurso.py --auto ~/Movies/lancha-paraty \
+    --variacoes ~/Movies/trilhas --alinhar-batida \
+    --draft-folder "$HOME/Movies/CapCut/User Data/Projects/com.lveditor.draft"
+```
+
+## Análise de trilha
+
+`scripts/analisar_trilha.py` estima BPM, intervalo entre batidas e onde cai a
+primeira batida, usando só ffmpeg + numpy (fluxo espectral, autocorrelação com
+prior log-normal em 120 BPM e interpolação parabólica do pico):
+
+```bash
+python3 scripts/analisar_trilha.py trilha.mp3
+```
+
+Aferido contra clicks de andamento conhecido — 90, 100, 120, 128 e 140 BPM —
+com erro máximo de 0,2%.
 
 No roteiro, cada clipe aceita `inicio`, `duracao` e `legenda`; o topo aceita
 `transicao`, `volume_clipes` (som ambiente, padrão 0.15) e `musica_volume`.

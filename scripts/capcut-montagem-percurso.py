@@ -29,6 +29,8 @@ import time
 import urllib.request
 from typing import Optional
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 API = "http://127.0.0.1:9077"
 
 FORMATOS = {
@@ -87,9 +89,28 @@ def sonda(caminho: str) -> dict:
     }
 
 
+def grade_de_batida(musica: str, por_clipe: float) -> Optional[dict]:
+    """Ajusta a duracao de cada clipe para um numero inteiro de batidas."""
+    try:
+        from analisar_trilha import estimar
+        r = estimar(os.path.expanduser(musica))
+    except Exception as e:
+        print(f"  ! nao consegui analisar a trilha ({e}); corte em blocos fixos",
+              file=sys.stderr)
+        return None
+    if r["confianca"] < 0.8:
+        print(f"  ! andamento incerto ({r['bpm']} BPM, confianca "
+              f"{r['confianca']}); corte em blocos fixos", file=sys.stderr)
+        return None
+    batidas = max(2, int(round(por_clipe / r["intervalo_batida"])))
+    r["batidas_por_clipe"] = batidas
+    r["duracao_clipe"] = round(batidas * r["intervalo_batida"], 3)
+    return r
+
+
 def escanear(pasta: str, formato: str, musica: Optional[str],
              trecho: Optional[float], duracao_total: Optional[float],
-             ordem: str) -> dict:
+             ordem: str, alinhar_batida: bool = False) -> dict:
     """Varre a pasta e monta um roteiro sozinho."""
     pasta = os.path.expanduser(pasta)
     if not os.path.isdir(pasta):
@@ -126,6 +147,13 @@ def escanear(pasta: str, formato: str, musica: Optional[str],
         por_clipe = 4.5
     por_clipe = max(1.5, min(8.0, round(por_clipe, 2)))   # nem foto, nem tedio
 
+    batida = grade_de_batida(musica, por_clipe) if (alinhar_batida and musica) else None
+    if batida:
+        por_clipe = batida["duracao_clipe"]
+        print(f"  trilha em {batida['bpm']} BPM — {batida['batidas_por_clipe']} batidas "
+              f"por clipe ({por_clipe}s), primeira batida em "
+              f"{batida['primeira_batida']}s")
+
     esperado = FORMATOS[formato]
     clipes = []
     for caminho_arq, info in infos:
@@ -143,6 +171,9 @@ def escanear(pasta: str, formato: str, musica: Optional[str],
         if info["largura"] and (info["largura"] > info["altura"]) != (esperado[0] > esperado[1]):
             print(f"  ! {nome} e {info['largura']}x{info['altura']}, orientacao diferente "
                   f"do formato {formato} — vai sobrar tarja no CapCut", file=sys.stderr)
+
+    if batida:                       # o 1o clipe absorve o offset ate a 1a batida
+        clipes[0]["duracao"] = round(clipes[0]["duracao"] + batida["primeira_batida"], 3)
 
     roteiro = {
         "formato": formato,
@@ -167,55 +198,8 @@ def duracao(caminho: str) -> float:
     return float(saida.stdout.strip())
 
 
-def main() -> None:
-    p = argparse.ArgumentParser()
-    p.add_argument("--roteiro", help="arquivo JSON com o roteiro")
-    p.add_argument("--auto", metavar="PASTA",
-                   help="varre a pasta e monta o roteiro sozinho")
-    p.add_argument("--musica", default=None, help="trilha (modo --auto)")
-    p.add_argument("--formato", default="vertical", choices=list(FORMATOS),
-                   help="modo --auto (padrao vertical)")
-    p.add_argument("--trecho", type=float, default=None,
-                   help="segundos por clipe; sem isso divide pela duracao da trilha")
-    p.add_argument("--duracao-total", type=float, default=None,
-                   help="duracao final desejada, dividida entre os clipes")
-    p.add_argument("--ordem", default="nome", choices=["nome", "data"],
-                   help="ordem dos clipes no modo --auto")
-    p.add_argument("--salvar-roteiro", metavar="ARQ", default=None,
-                   help="grava o roteiro gerado para voce editar depois")
-    p.add_argument("--so-roteiro", action="store_true",
-                   help="mostra o roteiro e sai, sem montar")
-    p.add_argument("--exemplo", action="store_true", help="imprime um roteiro de exemplo")
-    p.add_argument("--draft-folder", default=None, help="pasta de rascunhos do CapCut")
-    args = p.parse_args()
-
-    if args.exemplo:
-        print(json.dumps(EXEMPLO, indent=2, ensure_ascii=False))
-        return
-    if not args.roteiro and not args.auto:
-        sys.exit("use --auto PASTA ou --roteiro roteiro.json (--exemplo mostra um modelo)")
-
-    if args.auto:
-        r = escanear(args.auto, args.formato, args.musica,
-                     args.trecho, args.duracao_total, args.ordem)
-        total = sum(c["duracao"] for c in r["clipes"])
-        print(f"{len(r['clipes'])} clipes encontrados | "
-              f"{r['clipes'][0]['duracao']:.2f}s cada | final {total:.2f}s\n")
-        for c in r["clipes"]:
-            print(f"  {c['arquivo']:<34} fonte {c['_fonte']:<18} "
-                  f"corte {c['inicio']:.1f}-{c['inicio'] + c['duracao']:.1f}")
-        print()
-        if args.salvar_roteiro:
-            with open(args.salvar_roteiro, "w", encoding="utf-8") as f:
-                json.dump(r, f, indent=2, ensure_ascii=False)
-            print(f"roteiro salvo em {args.salvar_roteiro} "
-                  f"(preencha as legendas e rode com --roteiro)\n")
-        if args.so_roteiro:
-            if not args.salvar_roteiro:
-                print(json.dumps(r, indent=2, ensure_ascii=False))
-            return
-    else:
-        r = json.load(open(args.roteiro, encoding="utf-8"))
+def montar(r: dict, draft_folder: Optional[str] = None) -> str:
+    """Monta o rascunho a partir do roteiro. Devolve o nome da pasta."""
     base = os.path.expanduser(r.get("pasta_base", ""))
 
     def caminho(nome: str) -> str:
@@ -243,12 +227,19 @@ def main() -> None:
             inicio = max(0.0, fonte - dur)
             dur = min(dur, fonte)
 
+        # quantiza tudo na mesma casa decimal ANTES de enviar e de acumular:
+        # arredondar so no envio faz o segmento ficar maior que o passo e
+        # invadir o proximo ("New segment overlaps with existing segment")
+        inicio = round(inicio, 3)
+        dur = round(dur, 3)
+        posicao = round(posicao, 3)
+
         video = {
             "draft_id": draft_id,
             "video_url": arquivo,
-            "start": round(inicio, 2),
-            "end": round(inicio + dur, 2),
-            "target_start": round(posicao, 2),
+            "start": inicio,
+            "end": round(inicio + dur, 3),
+            "target_start": posicao,
             "track_name": "video_main",
             "volume": volume_clipes,                # som ambiente baixo, musica lidera
             "width": largura,
@@ -263,8 +254,8 @@ def main() -> None:
             call("add_text", {
                 "draft_id": draft_id,
                 "text": c["legenda"],
-                "start": round(posicao + 0.3, 2),
-                "end": round(posicao + dur - 0.3, 2),
+                "start": round(posicao + 0.3, 3),
+                "end": round(posicao + dur - 0.3, 3),
                 "font": "Poppins_Bold",
                 "font_color": "#FFFFFF",
                 "font_size": 11,
@@ -281,14 +272,14 @@ def main() -> None:
             })
         print(f"  {posicao:6.2f}s  {os.path.basename(arquivo):<28} "
               f"[{inicio:.1f}-{inicio + dur:.1f}]  {c.get('legenda', '')}")
-        posicao += dur
+        posicao = round(posicao + dur, 3)
 
     if r.get("musica"):
         call("add_audio", {
             "draft_id": draft_id,
             "audio_url": caminho(r["musica"]),
             "start": 0,
-            "end": round(posicao, 2),
+            "end": round(posicao, 3),
             "target_start": 0,
             "volume": float(r.get("musica_volume", 0.7)),
             "track_name": "audio_main",
@@ -296,8 +287,8 @@ def main() -> None:
         print(f"  trilha: {os.path.basename(r['musica'])} (vol {r.get('musica_volume', 0.7)})")
 
     salvar = {"draft_id": draft_id}
-    if args.draft_folder:
-        salvar["draft_folder"] = args.draft_folder
+    if draft_folder:
+        salvar["draft_folder"] = draft_folder
     call("save_draft", salvar)
     for _ in range(300):
         status = call("query_draft_status", {"task_id": draft_id})
@@ -305,9 +296,106 @@ def main() -> None:
             break
         time.sleep(1)
 
-    print(f"\n{status['completed_files']}/{status['total_files']} arquivos | "
+    print(f"  {status['completed_files']}/{status['total_files']} arquivos | "
           f"duracao final {posicao:.2f}s")
-    print(f"PASTA DO RASCUNHO: {draft_id}")
+    print(f"  PASTA DO RASCUNHO: {draft_id}")
+    return draft_id
+
+
+def main() -> None:
+    p = argparse.ArgumentParser()
+    p.add_argument("--roteiro", help="arquivo JSON com o roteiro")
+    p.add_argument("--auto", metavar="PASTA",
+                   help="varre a pasta e monta o roteiro sozinho")
+    p.add_argument("--musica", default=None, help="trilha (modo --auto)")
+    p.add_argument("--formato", default="vertical", choices=list(FORMATOS),
+                   help="modo --auto (padrao vertical)")
+    p.add_argument("--trecho", type=float, default=None,
+                   help="segundos por clipe; sem isso divide pela duracao da trilha")
+    p.add_argument("--duracao-total", type=float, default=None,
+                   help="duracao final desejada, dividida entre os clipes")
+    p.add_argument("--ordem", default="nome", choices=["nome", "data"],
+                   help="ordem dos clipes no modo --auto")
+    p.add_argument("--alinhar-batida", action="store_true",
+                   help="ajusta a duracao dos cortes ao andamento da trilha")
+    p.add_argument("--variacoes", metavar="PASTA_OU_ARQS", nargs="+", default=None,
+                   help="uma trilha por variacao: gera um rascunho para cada")
+    p.add_argument("--salvar-roteiro", metavar="ARQ", default=None,
+                   help="grava o roteiro gerado para voce editar depois")
+    p.add_argument("--so-roteiro", action="store_true",
+                   help="mostra o roteiro e sai, sem montar")
+    p.add_argument("--exemplo", action="store_true", help="imprime um roteiro de exemplo")
+    p.add_argument("--draft-folder", default=None, help="pasta de rascunhos do CapCut")
+    args = p.parse_args()
+
+    if args.exemplo:
+        print(json.dumps(EXEMPLO, indent=2, ensure_ascii=False))
+        return
+    if not args.roteiro and not args.auto:
+        sys.exit("use --auto PASTA ou --roteiro roteiro.json (--exemplo mostra um modelo)")
+
+    if args.variacoes:
+        if not args.auto:
+            sys.exit("--variacoes exige --auto PASTA")
+        trilhas = []
+        for v in args.variacoes:
+            v = os.path.expanduser(v)
+            if os.path.isdir(v):
+                trilhas += sorted(os.path.join(v, n) for n in os.listdir(v)
+                                  if n.lower().endswith((".mp3", ".wav", ".m4a", ".aac")))
+            elif os.path.isfile(v):
+                trilhas.append(v)
+            else:
+                sys.exit(f"trilha nao encontrada: {v}")
+        if not trilhas:
+            sys.exit("nenhuma trilha encontrada para as variacoes")
+
+        pastas = []
+        for n, trilha in enumerate(trilhas, 1):
+            print(f"\n=== variacao {n}/{len(trilhas)}: {os.path.basename(trilha)}")
+            r = escanear(args.auto, args.formato, trilha, args.trecho,
+                         args.duracao_total, args.ordem, args.alinhar_batida)
+            total = sum(c["duracao"] for c in r["clipes"])
+            print(f"  {len(r['clipes'])} clipes | {r['clipes'][0]['duracao']}s cada "
+                  f"| final {total:.2f}s")
+            if args.salvar_roteiro:
+                nome = f"{os.path.splitext(args.salvar_roteiro)[0]}-{n}.json"
+                with open(nome, "w", encoding="utf-8") as f:
+                    json.dump(r, f, indent=2, ensure_ascii=False)
+                print(f"  roteiro salvo em {nome}")
+            if args.so_roteiro:
+                continue
+            pastas.append((os.path.basename(trilha), montar(r, args.draft_folder)))
+
+        if pastas:
+            print("\n=== rascunhos gerados")
+            for trilha, pasta in pastas:
+                print(f"  {trilha:<28} {pasta}")
+        return
+
+    if args.auto:
+        r = escanear(args.auto, args.formato, args.musica,
+                     args.trecho, args.duracao_total, args.ordem,
+                     args.alinhar_batida)
+        total = sum(c["duracao"] for c in r["clipes"])
+        print(f"{len(r['clipes'])} clipes encontrados | "
+              f"{r['clipes'][0]['duracao']:.2f}s cada | final {total:.2f}s\n")
+        for c in r["clipes"]:
+            print(f"  {c['arquivo']:<34} fonte {c['_fonte']:<18} "
+                  f"corte {c['inicio']:.1f}-{c['inicio'] + c['duracao']:.1f}")
+        print()
+        if args.salvar_roteiro:
+            with open(args.salvar_roteiro, "w", encoding="utf-8") as f:
+                json.dump(r, f, indent=2, ensure_ascii=False)
+            print(f"roteiro salvo em {args.salvar_roteiro} "
+                  f"(preencha as legendas e rode com --roteiro)\n")
+        if args.so_roteiro:
+            if not args.salvar_roteiro:
+                print(json.dumps(r, indent=2, ensure_ascii=False))
+            return
+    else:
+        r = json.load(open(args.roteiro, encoding="utf-8"))
+    return montar(r, args.draft_folder)
 
 
 if __name__ == "__main__":
