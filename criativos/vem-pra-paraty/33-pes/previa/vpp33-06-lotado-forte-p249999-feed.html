@@ -97,9 +97,11 @@
         background-position:center 44%;background-repeat:no-repeat;
         background-color:#0B2D48;
         filter:saturate(1.14) contrast(1.09)}
-  /* véu curto no topo, só para a marca não sumir no céu claro */
+  /* Véu do topo: tem que chegar até depois da marca, senão no story a zona
+     segura de 250 px empurra o logo pra fora do gradiente e ele some na areia. */
   .veu-topo{position:absolute;top:0;left:0;right:0;height:280px;
-        background:linear-gradient(180deg,rgba(4,20,31,.52),rgba(4,20,31,0))}
+        background:linear-gradient(180deg,rgba(4,20,31,.58) 0%,
+                   rgba(4,20,31,.46) 61%,rgba(4,20,31,0) 100%)}
 
   .marca{position:absolute;top:68px;left:68px;
          line-height:0;opacity:.97;

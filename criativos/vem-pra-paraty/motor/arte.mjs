@@ -139,6 +139,11 @@ const glifoWa = `<svg class="wa" viewBox="0 0 24 24" aria-hidden="true"><path fi
 function cssForte(c, f, s) {
   const pos = c.posicao?.[f.key] || 'center 50%';
   const hFoto = Math.round(f.h * s.foto);
+  /* O véu precisa cobrir a marca inteira: no story ela nasce depois dos 250 px
+     da zona segura, e um gradiente proporcional à foto acaba antes dela. */
+  const fimMarca = f.safeTop + s.margem + Math.round(s.logo * 0.34) + 26;
+  const veuAlt = Math.max(Math.round(hFoto * 0.34), fimMarca + 90);
+  const veuPlato = Math.round((fimMarca / veuAlt) * 100);
   return `
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{width:${f.w}px;height:${f.h}px;overflow:hidden}
@@ -152,9 +157,11 @@ function cssForte(c, f, s) {
         background-position:${pos};background-repeat:no-repeat;
         background-color:${PALETA.navy};
         filter:saturate(1.14) contrast(1.09)}
-  /* véu curto no topo, só para a marca não sumir no céu claro */
-  .veu-topo{position:absolute;top:0;left:0;right:0;height:${Math.round(hFoto*0.34)}px;
-        background:linear-gradient(180deg,rgba(4,20,31,.52),rgba(4,20,31,0))}
+  /* Véu do topo: tem que chegar até depois da marca, senão no story a zona
+     segura de 250 px empurra o logo pra fora do gradiente e ele some na areia. */
+  .veu-topo{position:absolute;top:0;left:0;right:0;height:${veuAlt}px;
+        background:linear-gradient(180deg,rgba(4,20,31,.58) 0%,
+                   rgba(4,20,31,.46) ${veuPlato}%,rgba(4,20,31,0) 100%)}
 
   .marca{position:absolute;top:${f.safeTop + s.margem}px;left:${s.margem}px;
          line-height:0;opacity:.97;
@@ -259,6 +266,11 @@ function escalaRoteiro(fmtKey, nParadas = 8) {
 function cssRoteiro(c, f, s) {
   const pos = c.posicao?.[f.key] || 'center 50%';
   const hFoto = Math.round(f.h * s.foto);
+  /* O véu precisa cobrir a marca inteira: no story ela nasce depois dos 250 px
+     da zona segura, e um gradiente proporcional à foto acaba antes dela. */
+  const fimMarca = f.safeTop + s.margem + Math.round(s.logo * 0.34) + 26;
+  const veuAlt = Math.max(Math.round(hFoto * 0.34), fimMarca + 90);
+  const veuPlato = Math.round((fimMarca / veuAlt) * 100);
   return `
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{width:${f.w}px;height:${f.h}px;overflow:hidden}
@@ -269,8 +281,9 @@ function cssRoteiro(c, f, s) {
         background-image:url('${c.foto_src}');background-size:cover;
         background-position:${pos};background-repeat:no-repeat;
         background-color:${PALETA.navy};filter:saturate(1.14) contrast(1.09)}
-  .veu-topo{position:absolute;top:0;left:0;right:0;height:${Math.round(hFoto*0.42)}px;
-        background:linear-gradient(180deg,rgba(4,20,31,.55),rgba(4,20,31,0))}
+  .veu-topo{position:absolute;top:0;left:0;right:0;height:${veuAlt}px;
+        background:linear-gradient(180deg,rgba(4,20,31,.58) 0%,
+                   rgba(4,20,31,.46) ${veuPlato}%,rgba(4,20,31,0) 100%)}
 
   .marca{position:absolute;top:${f.safeTop + s.margem}px;left:${s.margem}px;
          line-height:0;opacity:.97;

@@ -6,7 +6,9 @@
     "C": "fotos/lancha24-c.jpg",
     "D": "fotos/lancha24-d.jpg",
     "E": "fotos/lancha24-e.jpg",
-    "F": "fotos/lancha24-f.jpg"
+    "F": "fotos/lancha24-f.jpg",
+    "G": "fotos/lancha24-g.jpg",
+    "H": "fotos/lancha24-h.jpg"
   },
   "padroes_arte": {
     "lotacao_arte": "ATÉ 12",
@@ -45,15 +47,15 @@
       "funil": "fundo",
       "publico": "Grupo de 7 a 12",
       "hipotese": "Com o barco cheio esta lancha custa metade de um assento na compartilhada, e ninguém está dizendo isso",
-      "foto": "E",
+      "foto": "B",
       "ancora": "alto",
       "frase": "CENTO E TRINTA\nE TRÊS POR PESSOA",
       "local": "24 pés · lancha privativa",
       "titulo": "Metade do preço de um assento",
       "cta": "Enviar mensagem",
       "posicao": {
-        "feed": "50% 55%",
-        "story": "50% 55%"
+        "feed": "50% 62%",
+        "story": "50% 60%"
       },
       "forte": {
         "frase": "R$ <em>133</em>\nPOR PESSOA",
@@ -88,15 +90,15 @@
       "funil": "fundo",
       "publico": "Grupo de 7 a 12",
       "hipotese": "Dizer o ponto exato de virada converte melhor que uma promessa vaga de economia",
-      "foto": "D",
+      "foto": "A",
       "ancora": "alto",
       "frase": "DO SÉTIMO\nEM DIANTE, GANHA",
       "local": "24 pés · Baía de Paraty",
       "titulo": "A partir de sete já compensa",
       "cta": "Enviar mensagem",
       "posicao": {
-        "feed": "56% 46%",
-        "story": "58% 44%"
+        "feed": "50% 62%",
+        "story": "50% 60%"
       },
       "forte": {
         "frase": "DO <em>SÉTIMO</em>\nEM DIANTE, GANHA",
@@ -131,15 +133,15 @@
       "funil": "meio",
       "publico": "Grupo grande, aniversário",
       "hipotese": "Grupo de dez a doze não cabe numa lancha pequena e não quer pagar preço de barco grande",
-      "foto": "A",
+      "foto": "B",
       "ancora": "alto",
       "frase": "DOZE LUGARES\nUM BARCO SÓ",
       "local": "24 pés · lancha privativa",
       "titulo": "Cabe o grupo inteiro",
       "cta": "Enviar mensagem",
       "posicao": {
-        "feed": "55% 26%",
-        "story": "55% 30%"
+        "feed": "52% 66%",
+        "story": "52% 63%"
       },
       "forte": {
         "frase": "DOZE LUGARES\nUM <em>BARCO SÓ</em>",
@@ -174,7 +176,7 @@
       "funil": "meio",
       "publico": "Todos",
       "hipotese": "A dor não é preço, é lotação: ninguém quer dividir o dia com desconhecido",
-      "foto": "D",
+      "foto": "E",
       "ancora": "alto",
       "frase": "O BARCO INTEIRO\nÉ DE VOCÊS",
       "local": "Privativa · saídas do cais de Paraty",
@@ -217,7 +219,7 @@
       "funil": "meio",
       "publico": "Aniversário, despedida de solteiro",
       "hipotese": "A ocasião é o que junta doze pessoas e justifica fechar um barco",
-      "foto": "B",
+      "foto": "F",
       "ancora": "alto",
       "frase": "ANIVERSÁRIO\nNO MEIO DA BAÍA",
       "local": "24 pés · lancha privativa",
@@ -260,15 +262,15 @@
       "funil": "meio",
       "publico": "Família estendida",
       "hipotese": "Família de três gerações precisa de espaço e de mar calmo, e a baía entrega os dois",
-      "foto": "E",
+      "foto": "D",
       "ancora": "alto",
       "frase": "A FAMÍLIA INTEIRA\nNUM BARCO SÓ",
       "local": "24 pés · Baía de Paraty",
       "titulo": "Família inteira num barco só",
       "cta": "Enviar mensagem",
       "posicao": {
-        "feed": "60% 58%",
-        "story": "58% 56%"
+        "feed": "58% 56%",
+        "story": "56% 55%"
       },
       "forte": {
         "frase": "A FAMÍLIA INTEIRA\nNUM <em>BARCO SÓ</em>",
@@ -303,7 +305,7 @@
       "funil": "meio",
       "publico": "Todos",
       "hipotese": "Itinerário numerado com nome próprio vence promessa genérica de passeio",
-      "foto": "C",
+      "foto": "G",
       "olho": "Roteiro lado sul",
       "titulo_arte": "SETE PARADAS\nNUM <em>DIA</em>",
       "titulo": "O lado sul da baía num dia",
@@ -349,7 +351,7 @@
       "funil": "meio",
       "publico": "Alto padrão",
       "hipotese": "O fiorde nomeado com as paradas listadas converte melhor que o fiorde solto",
-      "foto": "F",
+      "foto": "H",
       "olho": "Roteiro Saco do Mamanguá",
       "titulo_arte": "O ÚNICO <em>FIORDE</em>\nDO BRASIL",
       "titulo": "O Mamanguá do seu jeito",
@@ -394,14 +396,14 @@
       "funil": "meio",
       "publico": "Família",
       "hipotese": "Tartaruga e almoço em ilha são os dois ganchos de família, e estão no mesmo roteiro",
-      "foto": "B",
+      "foto": "C",
       "olho": "Roteiro lado norte",
       "titulo_arte": "TARTARUGA\nE <em>ALMOÇO</em> NA ILHA",
       "titulo": "Tartarugas e almoço na ilha",
       "cta": "Enviar mensagem",
       "posicao": {
-        "feed": "50% 45%",
-        "story": "50% 45%"
+        "feed": "50% 55%",
+        "story": "50% 55%"
       },
       "paradas": [
         "Ilha do Malvão",
@@ -442,6 +444,6 @@
     "Preco nas pecas: a partir de R$ 1.600 ou R$ 1.599,99 (as duas variantes)",
     "Conta por pessoa: R$ 1.600 / 12 = R$ 133. Com 6 sai R$ 267.",
     "Ponto de virada: do setimo passageiro em diante ganha da compartilhada de R$ 250.",
-    "ATENCAO: uma das oito fotos que chegaram e de outro casco. Ver fotos/LEIA-ME.md."
+    "Casco branco com faixa preta, adesivo @VEM PRA PARATY e emblema de sol na proa."
   ]
 }

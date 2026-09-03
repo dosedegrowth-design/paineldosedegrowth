@@ -9,7 +9,7 @@ A LANCHA
   Preco nas pecas: a partir de R$ 1.600 ou R$ 1.599,99 (as duas variantes)
   Conta por pessoa: R$ 1.600 / 12 = R$ 133. Com 6 sai R$ 267.
   Ponto de virada: do setimo passageiro em diante ganha da compartilhada de R$ 250.
-  ATENCAO: uma das oito fotos que chegaram e de outro casco. Ver fotos/LEIA-ME.md.
+  Casco branco com faixa preta, adesivo @VEM PRA PARATY e emblema de sol na proa.
 
 OS TRES REGISTROS
   sobrio   - serifada leve sobre a foto, sem preco e sem CTA desenhado
@@ -27,7 +27,7 @@ AS 9 PECAS
 
 01. CONTA   [fundo]  publico: Grupo de 7 a 12
     hipotese: Com o barco cheio esta lancha custa metade de um assento na compartilhada, e ninguem esta dizendo isso
-    foto: E   registros: sobrio, forte
+    foto: B   registros: sobrio, forte
     frase na arte: CENTO E TRINTA / E TRES POR PESSOA
     titulo do anuncio: Metade do preco de um assento
     botao: Enviar mensagem
@@ -46,7 +46,7 @@ AS 9 PECAS
 
 02. SETIMO   [fundo]  publico: Grupo de 7 a 12
     hipotese: Dizer o ponto exato de virada converte melhor que uma promessa vaga de economia
-    foto: D   registros: sobrio, forte
+    foto: A   registros: sobrio, forte
     frase na arte: DO SETIMO / EM DIANTE, GANHA
     titulo do anuncio: A partir de sete ja compensa
     botao: Enviar mensagem
@@ -64,7 +64,7 @@ AS 9 PECAS
 
 03. DOZE   [meio]  publico: Grupo grande, aniversario
     hipotese: Grupo de dez a doze nao cabe numa lancha pequena e nao quer pagar preco de barco grande
-    foto: A   registros: sobrio, forte
+    foto: B   registros: sobrio, forte
     frase na arte: DOZE LUGARES / UM BARCO SO
     titulo do anuncio: Cabe o grupo inteiro
     botao: Enviar mensagem
@@ -82,7 +82,7 @@ AS 9 PECAS
 
 04. SOVOCES   [meio]  publico: Todos
     hipotese: A dor nao e preco, e lotacao: ninguem quer dividir o dia com desconhecido
-    foto: D   registros: sobrio, forte
+    foto: E   registros: sobrio, forte
     frase na arte: O BARCO INTEIRO / E DE VOCES
     titulo do anuncio: Sem dividir com ninguem
     botao: Enviar mensagem
@@ -100,7 +100,7 @@ AS 9 PECAS
 
 05. CELEBRACAO   [meio]  publico: Aniversario, despedida de solteiro
     hipotese: A ocasiao e o que junta doze pessoas e justifica fechar um barco
-    foto: B   registros: sobrio, forte
+    foto: F   registros: sobrio, forte
     frase na arte: ANIVERSARIO / NO MEIO DA BAIA
     titulo do anuncio: A data que merece um barco
     botao: Enviar mensagem
@@ -118,7 +118,7 @@ AS 9 PECAS
 
 06. FAMILIA   [meio]  publico: Familia estendida
     hipotese: Familia de tres geracoes precisa de espaco e de mar calmo, e a baia entrega os dois
-    foto: E   registros: sobrio, forte
+    foto: D   registros: sobrio, forte
     frase na arte: A FAMILIA INTEIRA / NUM BARCO SO
     titulo do anuncio: Familia inteira num barco so
     botao: Enviar mensagem
@@ -136,7 +136,7 @@ AS 9 PECAS
 
 07. ROTA-SUL   [meio]  publico: Todos
     hipotese: Itinerario numerado com nome proprio vence promessa generica de passeio
-    foto: C   registros: roteiro
+    foto: G   registros: roteiro
     paradas:
       01. Praia Vermelha
       02. Ilha da Pescaria
@@ -161,7 +161,7 @@ AS 9 PECAS
 
 08. ROTA-MAMANGUA   [meio]  publico: Alto padrao
     hipotese: O fiorde nomeado com as paradas listadas converte melhor que o fiorde solto
-    foto: F   registros: roteiro
+    foto: H   registros: roteiro
     paradas:
       01. Praia do Buraco
       02. Praia do Sobrado
@@ -184,7 +184,7 @@ AS 9 PECAS
 
 09. ROTA-NORTE   [meio]  publico: Familia
     hipotese: Tartaruga e almoco em ilha sao os dois ganchos de familia, e estao no mesmo roteiro
-    foto: B   registros: roteiro
+    foto: C   registros: roteiro
     paradas:
       01. Ilha do Malvao
       02. Ilha da Sapeca
