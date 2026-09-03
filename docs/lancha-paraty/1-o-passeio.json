@@ -11,49 +11,60 @@
       "arquivo": "WhatsApp_Video_20260827_at_12.28.53.mp4",
       "inicio": 1.0,
       "duracao": 4.5,
-      "legenda": "Seu dia começa aqui"
+      "legenda": "Começa aqui",
+      "posicao": "baixo"
     },
     {
       "arquivo": "WhatsApp_Video_20260827_at_12.24.16.mp4",
       "inicio": 3.0,
       "duracao": 4.5,
-      "legenda": "Rumo às ilhas"
+      "legenda": "Rumo às ilhas",
+      "posicao": "cima"
     },
     {
       "arquivo": "WhatsApp_Video_20260826_at_16.43.51.mp4",
       "inicio": 1.5,
       "duracao": 4.5,
-      "legenda": "Mar aberto"
+      "legenda": "Mar aberto",
+      "posicao": "meio",
+      "tamanho": 1.15
     },
     {
       "arquivo": "WhatsApp_Video_20260826_at_19.17.31.mp4",
       "inicio": 2.0,
       "duracao": 4.5,
-      "legenda": "Água que dá pra ver o fundo"
+      "legenda": "Água cristalina",
+      "posicao": "baixo"
     },
     {
       "arquivo": "WhatsApp_Video_20260826_at_19.15.06.mp4",
       "inicio": 4.0,
       "duracao": 4.5,
-      "legenda": "E vida por todo lado"
+      "legenda": "Vida no raso",
+      "posicao": "cima"
     },
     {
       "arquivo": "WhatsApp_Video_20260826_at_19.16.02.mp4",
       "inicio": 3.0,
       "duracao": 4.5,
-      "legenda": "Praias que só se chega de barco"
+      "legenda": "Só se chega de barco",
+      "posicao": "baixo"
     },
     {
       "arquivo": "WhatsApp_Video_20260827_at_06.05.48.mp4",
       "inicio": 5.0,
       "duracao": 4.5,
-      "legenda": "Almoço a bordo"
+      "legenda": "Almoço a bordo",
+      "posicao": "cima"
     },
     {
       "arquivo": "WhatsApp_Video_20260827_at_06.10.08.mp4",
       "inicio": 2.0,
       "duracao": 4.5,
-      "legenda": "Até o sol se despedir"
+      "legenda": "Chama no WhatsApp",
+      "posicao": "meio",
+      "tamanho": 1.35
     }
-  ]
+  ],
+  "musica": "trilha-1-passeio-corte.mp3"
 }

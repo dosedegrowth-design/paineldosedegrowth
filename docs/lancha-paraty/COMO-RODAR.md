@@ -49,19 +49,33 @@ projetos estarão lá.
 
 ## A trilha
 
-Os roteiros não têm música: o áudio em alta fica na biblioteca do CapCut, que a
-API não alcança. Adicione dentro do app, por cima. O som ambiente dos clipes já
-vai baixo (0.12) pra não brigar com a trilha.
+Os quatro MP3 deste pacote são trilhas originais, geradas para estas peças —
+sem risco de direitos autorais, que é o que costuma derrubar anúncio com áudio
+em alta. **Copie os quatro para a mesma pasta dos clipes normalizados**
+(`~/Movies/lancha-prontos`), senão o script para com "arquivo nao encontrado".
 
-Se você tiver o arquivo da música, dá pra colocar por aqui: acrescente
-`"musica": "trilha.mp3"` no JSON (o arquivo na mesma pasta dos clipes). Aí o
-corte pode ser alinhado ao ritmo com `--alinhar-batida`.
+Cada roteiro já aponta para a sua:
+
+| Variação | Trilha | Andamento |
+|---|---|---|
+| 1 · O Passeio | `trilha-1-passeio-corte.mp3` | 110 BPM, tropical house |
+| 2 · Gancho Rápido | `trilha-2-gancho-corte.mp3` | 125 BPM, pop energético |
+| 3 · Contemplativo | `trilha-3-contemplativo-corte.mp3` | ambiente, sem percussão no início |
+| 4 · Experiência | `trilha-4-experiencia-corte.mp3` | house solar |
+
+Todas já vêm cortadas no tamanho do vídeo, com fade no fim. O som ambiente dos
+clipes fica em 0.12 e a trilha em 0.75.
+
+Se preferir áudio em alta do CapCut, apague a linha `"musica"` do JSON e ponha
+a faixa dentro do app.
 
 ## Mudar alguma coisa
 
 Tudo está no JSON, é texto:
 
 - `legenda` — o texto sobre o trecho
+- `posicao` — `cima`, `meio` ou `baixo`
+- `tamanho` — multiplicador do tamanho da fonte (1.35 no CTA, por exemplo)
 - `inicio` — em que segundo do arquivo original o trecho começa
 - `duracao` — quanto tempo ele fica
 - `trecho` — duração padrão de todos os cortes

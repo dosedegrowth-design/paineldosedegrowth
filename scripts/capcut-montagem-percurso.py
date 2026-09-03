@@ -39,6 +39,9 @@ FORMATOS = {
     "quadrado": (1080, 1080),    # feed
 }
 
+# transform_y do CapCut: negativo sobe, positivo desce
+POSICOES = {"cima": -0.62, "meio": 0.0, "baixo": 0.62}
+
 EXEMPLO = {
     "formato": "vertical",
     "pasta_base": "/Users/voce/Movies/lancha-paraty",
@@ -258,8 +261,9 @@ def montar(r: dict, draft_folder: Optional[str] = None) -> str:
                 "end": round(posicao + dur - 0.3, 3),
                 "font": "Poppins_Bold",
                 "font_color": "#FFFFFF",
-                "font_size": 11,
-                "transform_y": 0.62,
+                "font_size": round(11 * float(c.get("tamanho", 1.0)), 1),
+                "transform_y": POSICOES.get(c.get("posicao", "baixo"),
+                                            POSICOES["baixo"]),
                 "border_color": "#000000",
                 "border_width": 12.0,
                 "intro_animation": "Fade_In",

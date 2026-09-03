@@ -11,49 +11,60 @@
       "arquivo": "WhatsApp_Video_20260826_at_16.43.51.mp4",
       "inicio": 2.0,
       "duracao": 2.6,
-      "legenda": "Isso aqui é Paraty"
+      "legenda": "Isso é Paraty",
+      "posicao": "meio",
+      "tamanho": 1.25
     },
     {
       "arquivo": "WhatsApp_Video_20260827_at_06.05.48.mp4",
       "inicio": 6.0,
       "duracao": 2.6,
-      "legenda": "Churrasco a bordo"
+      "legenda": "Churrasco a bordo",
+      "posicao": "cima"
     },
     {
       "arquivo": "WhatsApp_Video_20260826_at_19.15.06.mp4",
       "inicio": 5.0,
       "duracao": 2.6,
-      "legenda": "Cardume no raso"
+      "legenda": "Cardume no raso",
+      "posicao": "baixo"
     },
     {
       "arquivo": "WhatsApp_Video_20260826_at_19.17.31.mp4",
       "inicio": 3.0,
       "duracao": 2.6,
-      "legenda": "Água azul de verdade"
+      "legenda": "Água azul",
+      "posicao": "cima"
     },
     {
       "arquivo": "WhatsApp_Video_20260826_at_16.47.24.mp4",
       "inicio": 2.0,
       "duracao": 2.6,
-      "legenda": ""
+      "legenda": "",
+      "posicao": "baixo"
     },
     {
       "arquivo": "WhatsApp_Video_20260826_at_19.16.02.mp4",
       "inicio": 4.0,
       "duracao": 2.6,
-      "legenda": "Praia deserta"
+      "legenda": "Praia deserta",
+      "posicao": "meio"
     },
     {
       "arquivo": "WhatsApp_Video_20260827_at_12.28.53.mp4",
       "inicio": 8.0,
       "duracao": 2.6,
-      "legenda": "Tudo isso num dia só"
+      "legenda": "Tudo num dia",
+      "posicao": "cima"
     },
     {
       "arquivo": "WhatsApp_Video_20260827_at_06.10.08.mp4",
       "inicio": 3.0,
       "duracao": 2.6,
-      "legenda": "Bora?"
+      "legenda": "Chama no WhatsApp",
+      "posicao": "meio",
+      "tamanho": 1.35
     }
-  ]
+  ],
+  "musica": "trilha-2-gancho-corte.mp3"
 }

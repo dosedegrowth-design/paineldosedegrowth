@@ -17,12 +17,56 @@ import os
 import subprocess
 import sys
 
+try:
+    from PIL import ImageFont
+except ImportError:
+    ImageFont = None
+
 FONTE = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+
+# altura da legenda como fracao da altura do quadro
+POSICOES = {"cima": 0.16, "meio": 0.46, "baixo": 0.72}
 
 
 def escapar(t: str) -> str:
     """Escapa o texto para o filtro drawtext."""
     return t.replace("\\", "\\\\").replace(":", "\\:").replace("'", "’")
+
+
+def ajustar(texto: str, caminho_fonte: str, tam: int, largura_max: float):
+    """Quebra em ate 2 linhas e reduz a fonte ate caber na largura util.
+
+    Sem isso, um texto mais largo que o quadro vaza pelos dois lados, porque
+    drawtext centraliza com x=(w-tw)/2 e nao recorta nem quebra sozinho.
+    """
+    if ImageFont is None:                      # sem Pillow, nao ha como medir
+        return [texto], tam
+
+    def largura(t, f):
+        return f.getbbox(t)[2]
+
+    for escala in (1.0, 0.92, 0.84, 0.76, 0.7):
+        t = max(12, int(tam * escala))
+        f = ImageFont.truetype(caminho_fonte, t)
+        if largura(texto, f) <= largura_max:
+            return [texto], t
+        palavras = texto.split()
+        if len(palavras) < 2:
+            continue
+        # quebra no ponto que deixa as duas linhas mais equilibradas
+        melhor, dif = None, None
+        for i in range(1, len(palavras)):
+            a, b = " ".join(palavras[:i]), " ".join(palavras[i:])
+            la, lb = largura(a, f), largura(b, f)
+            if max(la, lb) > largura_max:
+                continue
+            d = abs(la - lb)
+            if dif is None or d < dif:
+                melhor, dif = (a, b), d
+        if melhor:
+            return list(melhor), t
+    f = ImageFont.truetype(caminho_fonte, max(12, int(tam * 0.7)))
+    return [texto], max(12, int(tam * 0.7))
 
 
 def main() -> None:
@@ -66,11 +110,19 @@ def main() -> None:
         f = (f"[{i}:v]scale={L}:{A}:force_original_aspect_ratio=increase,"
              f"crop={L}:{A},setsar=1,fps=30,format=yuv420p")
         if c.get("legenda"):
-            # contorno grosso para ler sobre mar e areia clara
-            f += (f",drawtext=fontfile={a.fonte}:text='{escapar(c['legenda'])}'"
-                  f":fontcolor=white:fontsize={A//22}:borderw={max(2, A//240)}"
-                  f":bordercolor=black@0.85:x=(w-tw)/2:y=h*0.72"
-                  f":enable='between(t,0.3,{max(0.4, dur - 0.3):.2f})'")
+            escala = float(c.get("tamanho", 1.0))
+            linhas, tam = ajustar(c["legenda"], a.fonte,
+                                  int(A // 22 * escala), L * 0.88)
+            alt_linha = int(tam * 1.25)
+            frac = POSICOES.get(c.get("posicao", "baixo"), POSICOES["baixo"])
+            base_y = frac * A - (len(linhas) - 1) * alt_linha / 2
+            for j, linha in enumerate(linhas):
+                # uma drawtext por linha: newline dentro do filtro e fragil
+                f += (f",drawtext=fontfile={a.fonte}:text='{escapar(linha)}'"
+                      f":fontcolor=white:fontsize={tam}:borderw={max(2, A//240)}"
+                      f":bordercolor=black@0.85:x=(w-tw)/2"
+                      f":y={base_y + j * alt_linha:.0f}"
+                      f":enable='between(t,0.3,{max(0.4, dur - 0.3):.2f})'")
         filtros.append(f + f"[v{i}]")
         rotulos.append(f"[v{i}]")
         if com_audio:
@@ -115,8 +167,12 @@ def main() -> None:
             entradas += ["-i", musica]
             filtros.append(f"[{idx}:a]aresample=44100,aformat=channel_layouts=stereo,"
                            f"volume={float(r.get('musica_volume', 0.7))}[trilha]")
+            # normalize=0: sem isso o amix divide o nivel pelo numero de
+            # entradas e a mistura sai varios dB abaixo do ambiente sozinho.
+            # O limitador segura o pico que essa soma pode gerar.
             filtros.append(f"{mapa_audio}[trilha]amix=inputs=2:duration=first:"
-                           f"dropout_transition=0[aout]")
+                           f"dropout_transition=0:normalize=0[amixado]")
+            filtros.append("[amixado]alimiter=limit=0.95:level=false[aout]")
             mapa_audio = "[aout]"
 
     cmd = ["ffmpeg", "-y", "-v", "error", *entradas,
