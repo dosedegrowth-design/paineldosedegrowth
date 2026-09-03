@@ -1,0 +1,247 @@
+VEM PRA PARATY - LANCHA 18 PES (MESTRA 180)
+Criativos de Meta Ads - setembro de 2026 - Dose de Growth
+
+48 arquivos: 24 em Feed 1080x1350 e 24 em Story 1080x1920.
+
+A LANCHA
+  Modelo: Mestra 180, 18 pes
+  Lotacao nas pecas: ate 6 passageiros + 1 marinheiro
+  Preco nas pecas: a partir de R$ 1.000 ou R$ 999,99 (as duas variantes)
+  ATENCAO: a lotacao precisa de confirmacao. O briefing inicial dizia 7 + 1.
+           Se forem 7 passageiros, as pecas e a conta por pessoa mudam.
+
+OS TRES REGISTROS
+  sobrio   - serifada leve sobre a foto, sem preco e sem CTA desenhado
+  forte    - bloco navy com preco, lotacao e CTA. Contraste alto
+  roteiro  - as paradas do dia numeradas, com preco e CTA
+
+AS DUAS VARIANTES DE PRECO
+  p1000   - R$ 1.000
+  p99999  - R$ 999,99
+  O registro sobrio nao tem preco na arte, entao nao tem variante.
+
+================================================================
+AS NOVE PECAS
+================================================================
+
+01. A CONTA INVERTIDA   [fundo]  publico: Grupo de 5 a 7
+    hipotese: Quem acha lancha privativa cara nunca comparou com o preço de um assento na compartilhada
+    foto: C   registros: sobrio, forte
+    titulo do anuncio: A baía de Paraty só pra vocês
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [conta] Um assento na lancha compartilhada custa R$ 250. Fechando a nossa com seis, dá R$ 167 por pessoa.
+         A lancha fechada sai a partir de R$ 1.000 e leva 6 mais o marinheiro.
+         O roteiro quem escolhe são vocês.
+         Me diz a data e quantas pessoas que eu vejo se está livre.
+      2) [pergunta] Vocês são quantos? Do quinto passageiro em diante, fechar a lancha inteira sai mais barato que a compartilhada.
+         São 6 lugares mais o marinheiro, e o barco não para em mais nenhum lugar pra pegar gente.
+         Manda a data que eu confiro a agenda.
+      3) [afirmação seca] A lancha é de vocês. Os seis lugares são de vocês. O roteiro também.
+         Saída do cais de Paraty, a partir de R$ 1.000 a lancha fechada.
+         Quer ver as datas livres?
+
+02. O FIORDE   [topo]  publico: Alto padrão
+    hipotese: Um lugar raro e nomeado gera mais desejo que sete praias listadas
+    foto: A   registros: sobrio, forte
+    titulo do anuncio: O Mamanguá do seu jeito
+    botao: Enviar mensagem
+    NOTA: A foto A não é do Saco do Mamanguá. A linha de local descreve o roteiro, não o lugar retratado. Com uma foto real do fiorde esta peça fica muito mais forte.
+    textos principais para testar:
+      1) [cena] O Saco do Mamanguá tem oito quilômetros de mar parado entre duas paredes de serra. Chega-se de barco, e só.
+         Praia do Buraco, do Sobrado, do Engenho e a do Cruzeiro.
+         Lancha privativa, 6 lugares, saída do cais de Paraty.
+         Quer o roteiro do fiorde?
+      2) [descoberta] Tem um braço de mar em Paraty que nenhuma estrada alcança. É o único fiorde do Brasil e o dia inteiro cabe nele.
+         A lancha é só do seu grupo e vocês decidem onde parar.
+         Me conta a data que eu monto o roteiro.
+      3) [referência] A Praia do Cruzeiro, onde gravaram Crepúsculo, fica no meio do único fiorde do Brasil. Dá pra parar nela.
+         O roteiro do Mamanguá passa por ela, pelo Buraco, pelo Sobrado e pelo Engenho.
+         Chama aqui que eu te passo os horários.
+
+03. MAR DE PISCINA   [meio]  publico: Família e 35 a 55
+    hipotese: Enjoo é objeção silenciosa e tem resposta geográfica que pode ser mostrada sem texto
+    foto: B   registros: sobrio, forte
+    titulo do anuncio: Água calma o dia inteiro
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [objeção de frente] A baía de Paraty é água abrigada. Não é mar aberto, e é por isso que dá pra levar criança e quem enjoa.
+         A lancha é privativa, então vocês param quando quiserem e pelo tempo que quiserem.
+         Me diz quantos vão e a idade da criançada.
+      2) [quem evita] Quem enjoa em barco costuma cortar o passeio de lancha do roteiro. Aqui a baía é fechada e o mar fica parado.
+         Seis lugares, marinheiro a bordo o dia todo e toldo de sombra.
+         Quer ver as datas?
+      3) [cena] Sem mar aberto, sem onda batendo no costado. A baía de Paraty fica parada o dia inteiro.
+         É o que faz o passeio funcionar com criança pequena e com quem não gosta de balanço.
+         Chama aqui pra montar o dia de vocês.
+
+04. QUATRO HORAS   [topo]  publico: Paulista de fim de semana
+    hipotese: A objeção do paulista é de rota, não de distância, e dizer o número desmonta ela
+    foto: A   registros: sobrio, forte
+    titulo do anuncio: Mais perto do que você pensa
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [número] São 4 horas de São Paulo pela Paraty-Cunha. Sai sexta à noite e no sábado de manhã você está na água.
+         Lancha privativa de 6 lugares, saída do cais de Paraty.
+         Me diz o fim de semana que você vem que eu seguro a data.
+      2) [correção] Paraty não é longe, é mal roteirizada. Pela estrada certa são 4 horas, e não as quase 7 do caminho óbvio.
+         Quem sai sexta à noite pega o sábado inteiro na baía.
+         Chama aqui que eu vejo a agenda do seu fim de semana.
+      3) [contraste] O fim de semana rende mais do que parece: quatro horas de estrada e a baía de Paraty começa.
+         A lancha é privativa e o roteiro é escolhido por vocês.
+         Quer ver o que dá pra fazer num sábado?
+
+05. SÓ VOCÊS A BORDO   [meio]  publico: Todos
+    hipotese: A dor não é preço, é lotação: ninguém quer dividir o dia com desconhecido
+    foto: B   registros: sobrio, forte
+    titulo do anuncio: Sem dividir com ninguém
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [comparação] Na lancha compartilhada você divide o dia com 10 a 19 desconhecidos e segue o roteiro deles. Aqui não.
+         São 7 lugares e todos são do seu grupo.
+         Vocês escolhem a hora de sair e onde parar.
+         Me diz a data e quantas pessoas.
+      2) [controle] Vocês escolhem a hora de sair, onde parar e quanto tempo ficar em cada praia. Ninguém mais embarca.
+         Lancha fechada a partir de R$ 1.000, com marinheiro a bordo o dia inteiro.
+         Quer ver as datas livres?
+      3) [afirmação seca] Seis lugares, e todos são do seu grupo. O marinheiro fica com vocês o dia inteiro.
+         Saída do cais de Paraty, roteiro escolhido por vocês.
+         Chama aqui pra fechar a data.
+
+06. SETEMBRO E OUTUBRO   [fundo]  publico: Todos
+    hipotese: Urgência honesta de clima converte melhor que urgência inventada de vaga
+    foto: C   registros: sobrio, forte
+    titulo do anuncio: A melhor janela do ano
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [dado] Setembro e outubro chovem menos da metade do que janeiro, e durante a semana a baía fica vazia.
+         É a melhor água do ano pra quem quer ver o fundo na Lagoa Azul.
+         Lancha privativa de 6 lugares.
+         Me diz a data que eu confiro.
+      2) [janela] A água mais limpa do ano em Paraty é agora, antes que a chuva de verão feche a visibilidade da baía.
+         A lancha é só do seu grupo e o roteiro é escolhido por vocês.
+         Quer ver o que ainda tem livre?
+      3) [contraste de temporada] Praia cheia em Paraty é de dezembro em diante. Até outubro, o roteiro inteiro é praticamente de vocês.
+         Seis lugares, saída do cais de Paraty, a partir de R$ 1.000 a lancha fechada.
+         Chama aqui pra garantir o fim de semana.
+
+07. ROTEIRO LADO SUL   [meio]  publico: Todos
+    hipotese: Itinerario numerado com nome proprio vence promessa generica de passeio
+    foto: C   registros: roteiro
+    paradas: Praia Vermelha | Ilha da Pescaria | Praia da Lula | Lagoa Azul | Ilha dos Cocos | Saco da Velha | Ilha Comprida
+    titulo do anuncio: O lado sul da baía num dia
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [itinerario] Praia Vermelha, Ilha da Pescaria, Praia da Lula, Lagoa Azul, Ilha dos Cocos, Saco da Velha e Ilha Comprida.
+         Sete paradas no lado sul da baía, na ordem que vocês quiserem.
+         Lancha privativa, 6 lugares, saída do cais de Paraty.
+         Quer esse roteiro?
+      2) [a parada que importa] A Lagoa Azul é a parada onde dá pra ver o fundo de areia sem máscara. Está no roteiro do lado sul.
+         Mais Praia Vermelha, Praia da Lula, Saco da Velha e Ilha dos Cocos.
+         Me diz a data que eu confiro a agenda.
+      3) [sem estrada] Cinco das sete paradas do lado sul não têm estrada. Só se chega de barco, e a lancha é só do seu grupo.
+         Vocês escolhem onde ficar mais tempo e onde nem parar.
+         Chama aqui pra montar o dia.
+
+08. ROTEIRO MAMANGUÁ   [meio]  publico: Alto padrão
+    hipotese: O fiorde nomeado com as paradas listadas converte melhor que o fiorde solto
+    foto: A   registros: roteiro
+    paradas: Praia do Buraco | Praia do Sobrado | Praia do Engenho | Praia do Cruzeiro | Ilha dos Cocos
+    titulo do anuncio: O Mamanguá do seu jeito
+    botao: Enviar mensagem
+    NOTA: Foto A nao e do Mamangua. Uma foto real do fiorde fortalece muito esta peca.
+    textos principais para testar:
+      1) [o lugar] O Saco do Mamanguá tem oito quilômetros de mar parado entre duas paredes de serra. Só se chega de barco.
+         Praia do Buraco, do Sobrado, do Engenho, do Cruzeiro e Ilha dos Cocos.
+         Lancha privativa, 6 lugares.
+         Quer o roteiro do fiorde?
+      2) [referencia] A Praia do Cruzeiro, onde gravaram Crepúsculo, é uma das cinco paradas do roteiro do Mamanguá.
+         O fiorde inteiro num dia, com a lancha só do seu grupo.
+         Me conta a data.
+      3) [silencio] No fundo do Mamanguá o motor desliga e não se ouve mais nada. É o roteiro mais silencioso que a gente faz.
+         Cinco paradas, seis lugares, saída do cais de Paraty.
+         Chama aqui pra ver as datas.
+
+09. ROTEIRO LADO NORTE   [meio]  publico: Família
+    hipotese: Tartaruga e almoco em ilha sao os dois ganchos de familia, e estao no mesmo roteiro
+    foto: B   registros: roteiro
+    paradas: Ilha do Malvão | Ilha da Sapeca | Ilha Comprida | Ilha da Rapada | Ilha do Araújo · almoço | Ilha do Ventura | Ilha do Pico | Canto do Morro
+    titulo do anuncio: Tartarugas e almoço na ilha
+    botao: Enviar mensagem
+    textos principais para testar:
+      1) [o gancho da crianca] No lado norte tem parada pra ver tartaruga na Ilha do Araújo e almoço na mesma ilha. Oito paradas no dia.
+         Malvão, Sapeca, Ilha Comprida, Rapada, Ventura, Pico e Canto do Morro.
+         Lancha privativa, 6 lugares.
+         Quer esse roteiro?
+      2) [dia inteiro] Oito paradas, tartaruga na Ilha do Araújo e almoço em restaurante de ilha. Esse é o roteiro do lado norte.
+         A baía é fechada, então funciona bem com criança.
+         Me diz quantos vão e a data.
+      3) [sem garantia falsa] A parada das tartarugas na Ilha do Araújo é onde elas costumam aparecer. Aparecer é com elas, parar é com a gente.
+         Oito paradas no lado norte, com almoço na ilha.
+         Chama aqui pra fechar a data.
+
+================================================================
+ARQUIVOS
+================================================================
+
+feed-1080x1350  (24 arquivos)
+  vpp18-01-conta-forte-p1000-feed.png
+  vpp18-01-conta-forte-p99999-feed.png
+  vpp18-01-conta-sobrio-feed.png
+  vpp18-02-fiorde-forte-p1000-feed.png
+  vpp18-02-fiorde-forte-p99999-feed.png
+  vpp18-02-fiorde-sobrio-feed.png
+  vpp18-03-piscina-forte-p1000-feed.png
+  vpp18-03-piscina-forte-p99999-feed.png
+  vpp18-03-piscina-sobrio-feed.png
+  vpp18-04-quatrohoras-forte-p1000-feed.png
+  vpp18-04-quatrohoras-forte-p99999-feed.png
+  vpp18-04-quatrohoras-sobrio-feed.png
+  vpp18-05-sovoces-forte-p1000-feed.png
+  vpp18-05-sovoces-forte-p99999-feed.png
+  vpp18-05-sovoces-sobrio-feed.png
+  vpp18-06-janela-forte-p1000-feed.png
+  vpp18-06-janela-forte-p99999-feed.png
+  vpp18-06-janela-sobrio-feed.png
+  vpp18-07-rota-sul-roteiro-p1000-feed.png
+  vpp18-07-rota-sul-roteiro-p99999-feed.png
+  vpp18-08-rota-mamangua-roteiro-p1000-feed.png
+  vpp18-08-rota-mamangua-roteiro-p99999-feed.png
+  vpp18-09-rota-norte-roteiro-p1000-feed.png
+  vpp18-09-rota-norte-roteiro-p99999-feed.png
+
+story-1080x1920  (24 arquivos)
+  vpp18-01-conta-forte-p1000-story.png
+  vpp18-01-conta-forte-p99999-story.png
+  vpp18-01-conta-sobrio-story.png
+  vpp18-02-fiorde-forte-p1000-story.png
+  vpp18-02-fiorde-forte-p99999-story.png
+  vpp18-02-fiorde-sobrio-story.png
+  vpp18-03-piscina-forte-p1000-story.png
+  vpp18-03-piscina-forte-p99999-story.png
+  vpp18-03-piscina-sobrio-story.png
+  vpp18-04-quatrohoras-forte-p1000-story.png
+  vpp18-04-quatrohoras-forte-p99999-story.png
+  vpp18-04-quatrohoras-sobrio-story.png
+  vpp18-05-sovoces-forte-p1000-story.png
+  vpp18-05-sovoces-forte-p99999-story.png
+  vpp18-05-sovoces-sobrio-story.png
+  vpp18-06-janela-forte-p1000-story.png
+  vpp18-06-janela-forte-p99999-story.png
+  vpp18-06-janela-sobrio-story.png
+  vpp18-07-rota-sul-roteiro-p1000-story.png
+  vpp18-07-rota-sul-roteiro-p99999-story.png
+  vpp18-08-rota-mamangua-roteiro-p1000-story.png
+  vpp18-08-rota-mamangua-roteiro-p99999-story.png
+  vpp18-09-rota-norte-roteiro-p1000-story.png
+  vpp18-09-rota-norte-roteiro-p99999-story.png
+
+================================================================
+COMO REGERAR
+================================================================
+Tudo sai do repositorio, na branch claude/vem-pra-paraty-meta-ads-b43uni,
+em criativos/vem-pra-paraty/18-pes/. Trocar um texto ou um preco e editar
+criativos.json e rodar: node gerar.mjs
+
+A direcao criativa completa esta na Carta Nautica, em
+criativos/vem-pra-paraty/direcao/carta-nautica.html

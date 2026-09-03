@@ -10,7 +10,8 @@
     "Modo sobrio: sem preco na arte, serifada leve, aposta em desejo.",
     "Modo forte: preco e lotacao na arte, bloco navy solido, CTA desenhado.",
     "Nos dois: sem starburst, sem preco riscado, sem selo de desconto, sem emoji.",
-    "Nenhuma peca cita concorrente pelo nome. A comparacao e sempre com a categoria."
+    "Nenhuma peca cita concorrente pelo nome. A comparacao e sempre com a categoria.",
+    "Roteiro: paradas numeradas. Listar praia nao diferencia, numerar o itinerario sim."
   ],
   "criativos": [
     {
@@ -54,7 +55,11 @@
       },
       "preco_arte": "R$ 1.000",
       "lotacao_arte": "ATÉ 6",
-      "cta_arte": "Reserve pelo WhatsApp"
+      "cta_arte": "Reserve pelo WhatsApp",
+      "modos": [
+        "sobrio",
+        "forte"
+      ]
     },
     {
       "n": 2,
@@ -98,7 +103,11 @@
       },
       "preco_arte": "R$ 1.000",
       "lotacao_arte": "ATÉ 6",
-      "cta_arte": "Reserve pelo WhatsApp"
+      "cta_arte": "Reserve pelo WhatsApp",
+      "modos": [
+        "sobrio",
+        "forte"
+      ]
     },
     {
       "n": 3,
@@ -141,7 +150,11 @@
       },
       "preco_arte": "R$ 1.000",
       "lotacao_arte": "ATÉ 6",
-      "cta_arte": "Reserve pelo WhatsApp"
+      "cta_arte": "Reserve pelo WhatsApp",
+      "modos": [
+        "sobrio",
+        "forte"
+      ]
     },
     {
       "n": 4,
@@ -184,7 +197,11 @@
       },
       "preco_arte": "R$ 1.000",
       "lotacao_arte": "ATÉ 6",
-      "cta_arte": "Reserve pelo WhatsApp"
+      "cta_arte": "Reserve pelo WhatsApp",
+      "modos": [
+        "sobrio",
+        "forte"
+      ]
     },
     {
       "n": 5,
@@ -227,7 +244,11 @@
       },
       "preco_arte": "R$ 1.000",
       "lotacao_arte": "ATÉ 6",
-      "cta_arte": "Reserve pelo WhatsApp"
+      "cta_arte": "Reserve pelo WhatsApp",
+      "modos": [
+        "sobrio",
+        "forte"
+      ]
     },
     {
       "n": 6,
@@ -270,7 +291,156 @@
       },
       "preco_arte": "R$ 1.000",
       "lotacao_arte": "ATÉ 6",
-      "cta_arte": "Reserve pelo WhatsApp"
+      "cta_arte": "Reserve pelo WhatsApp",
+      "modos": [
+        "sobrio",
+        "forte"
+      ]
+    },
+    {
+      "lotacao_arte": "ATÉ 6",
+      "cta_arte": "Reserve pelo WhatsApp",
+      "modos": [
+        "roteiro"
+      ],
+      "n": 7,
+      "key": "rota-sul",
+      "angulo": "Roteiro lado sul",
+      "funil": "meio",
+      "publico": "Todos",
+      "foto": "C",
+      "hipotese": "Itinerario numerado com nome proprio vence promessa generica de passeio",
+      "olho": "Roteiro lado sul",
+      "titulo_arte": "SETE PARADAS\nNUM <em>DIA</em>",
+      "posicao": {
+        "feed": "center 58%",
+        "story": "center 54%"
+      },
+      "paradas": [
+        "Praia Vermelha",
+        "Ilha da Pescaria",
+        "Praia da Lula",
+        "Lagoa Azul",
+        "Ilha dos Cocos",
+        "Saco da Velha",
+        "Ilha Comprida"
+      ],
+      "titulo": "O lado sul da baía num dia",
+      "textos": [
+        {
+          "rotulo": "itinerario",
+          "primeira_linha": "Praia Vermelha, Ilha da Pescaria, Praia da Lula, Lagoa Azul, Ilha dos Cocos, Saco da Velha e Ilha Comprida.",
+          "resto": "Sete paradas no lado sul da baía, na ordem que vocês quiserem.\nLancha privativa, 6 lugares, saída do cais de Paraty.\nQuer esse roteiro?"
+        },
+        {
+          "rotulo": "a parada que importa",
+          "primeira_linha": "A Lagoa Azul é a parada onde dá pra ver o fundo de areia sem máscara. Está no roteiro do lado sul.",
+          "resto": "Mais Praia Vermelha, Praia da Lula, Saco da Velha e Ilha dos Cocos.\nMe diz a data que eu confiro a agenda."
+        },
+        {
+          "rotulo": "sem estrada",
+          "primeira_linha": "Cinco das sete paradas do lado sul não têm estrada. Só se chega de barco, e a lancha é só do seu grupo.",
+          "resto": "Vocês escolhem onde ficar mais tempo e onde nem parar.\nChama aqui pra montar o dia."
+        }
+      ]
+    },
+    {
+      "lotacao_arte": "ATÉ 6",
+      "cta_arte": "Reserve pelo WhatsApp",
+      "modos": [
+        "roteiro"
+      ],
+      "n": 8,
+      "key": "rota-mamangua",
+      "angulo": "Roteiro Mamanguá",
+      "funil": "meio",
+      "publico": "Alto padrão",
+      "foto": "A",
+      "hipotese": "O fiorde nomeado com as paradas listadas converte melhor que o fiorde solto",
+      "olho": "Roteiro Saco do Mamanguá",
+      "titulo_arte": "O ÚNICO <em>FIORDE</em>\nDO BRASIL",
+      "posicao": {
+        "feed": "center 52%",
+        "story": "center 48%"
+      },
+      "paradas": [
+        "Praia do Buraco",
+        "Praia do Sobrado",
+        "Praia do Engenho",
+        "Praia do Cruzeiro",
+        "Ilha dos Cocos"
+      ],
+      "titulo": "O Mamanguá do seu jeito",
+      "nota_producao": "Foto A nao e do Mamangua. Uma foto real do fiorde fortalece muito esta peca.",
+      "textos": [
+        {
+          "rotulo": "o lugar",
+          "primeira_linha": "O Saco do Mamanguá tem oito quilômetros de mar parado entre duas paredes de serra. Só se chega de barco.",
+          "resto": "Praia do Buraco, do Sobrado, do Engenho, do Cruzeiro e Ilha dos Cocos.\nLancha privativa, 6 lugares.\nQuer o roteiro do fiorde?"
+        },
+        {
+          "rotulo": "referencia",
+          "primeira_linha": "A Praia do Cruzeiro, onde gravaram Crepúsculo, é uma das cinco paradas do roteiro do Mamanguá.",
+          "resto": "O fiorde inteiro num dia, com a lancha só do seu grupo.\nMe conta a data."
+        },
+        {
+          "rotulo": "silencio",
+          "primeira_linha": "No fundo do Mamanguá o motor desliga e não se ouve mais nada. É o roteiro mais silencioso que a gente faz.",
+          "resto": "Cinco paradas, seis lugares, saída do cais de Paraty.\nChama aqui pra ver as datas."
+        }
+      ]
+    },
+    {
+      "lotacao_arte": "ATÉ 6",
+      "cta_arte": "Reserve pelo WhatsApp",
+      "modos": [
+        "roteiro"
+      ],
+      "n": 9,
+      "key": "rota-norte",
+      "angulo": "Roteiro lado norte",
+      "funil": "meio",
+      "publico": "Família",
+      "foto": "B",
+      "hipotese": "Tartaruga e almoco em ilha sao os dois ganchos de familia, e estao no mesmo roteiro",
+      "olho": "Roteiro lado norte",
+      "titulo_arte": "TARTARUGA\nE <em>ALMOÇO</em> NA ILHA",
+      "posicao": {
+        "feed": "center 46%",
+        "story": "center 42%"
+      },
+      "paradas": [
+        "Ilha do Malvão",
+        "Ilha da Sapeca",
+        "Ilha Comprida",
+        "Ilha da Rapada",
+        "Ilha do Araújo · almoço",
+        "Ilha do Ventura",
+        "Ilha do Pico",
+        "Canto do Morro"
+      ],
+      "titulo": "Tartarugas e almoço na ilha",
+      "textos": [
+        {
+          "rotulo": "o gancho da crianca",
+          "primeira_linha": "No lado norte tem parada pra ver tartaruga na Ilha do Araújo e almoço na mesma ilha. Oito paradas no dia.",
+          "resto": "Malvão, Sapeca, Ilha Comprida, Rapada, Ventura, Pico e Canto do Morro.\nLancha privativa, 6 lugares.\nQuer esse roteiro?"
+        },
+        {
+          "rotulo": "dia inteiro",
+          "primeira_linha": "Oito paradas, tartaruga na Ilha do Araújo e almoço em restaurante de ilha. Esse é o roteiro do lado norte.",
+          "resto": "A baía é fechada, então funciona bem com criança.\nMe diz quantos vão e a data."
+        },
+        {
+          "rotulo": "sem garantia falsa",
+          "primeira_linha": "A parada das tartarugas na Ilha do Araújo é onde elas costumam aparecer. Aparecer é com elas, parar é com a gente.",
+          "resto": "Oito paradas no lado norte, com almoço na ilha.\nChama aqui pra fechar a data."
+        }
+      ]
     }
-  ]
+  ],
+  "precos_em_teste": {
+    "p1000": "R$ 1.000",
+    "p99999": "R$ 999,99"
+  }
 }

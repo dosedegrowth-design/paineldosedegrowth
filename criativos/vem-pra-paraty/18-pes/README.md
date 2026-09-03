@@ -7,10 +7,18 @@ em `../direcao/carta-nautica.html`.
 | Registro | O que é | Aposta |
 |---|---|---|
 | **forte** | Foto em cima, bloco navy sólido embaixo com preço, lotação e CTA. Lilita One, laranja e turquesa | Contraste alto e clareza comercial imediata |
+| **roteiro** | As paradas do dia numeradas, com preço e CTA | Concretude: itinerário nomeado vence promessa genérica |
 | **sobrio** | Serifada leve sobre a foto, sem preço e sem CTA desenhado | Desejo e percepção de preço alto |
 
-Os dois estão no ar de propósito: a escolha entre eles é teste, não gosto.
+Os três estão no ar de propósito: a escolha entre eles é teste, não gosto.
 Mede-se por custo por conversa qualificada.
+
+Duas variantes de preço nas artes que mostram preço: `p1000` (R$ 1.000) e
+`p99999` (R$ 999,99). São 48 arquivos no total.
+
+Cada peça declara em `criativos.json` quais registros aceita, no campo `modos`.
+As três peças de roteiro só fazem sentido no registro `roteiro`, porque
+dependem da lista de paradas.
 
 ## Pra gerar os PNGs finais
 
@@ -52,6 +60,9 @@ node gerar.mjs --id=conta,fiorde      # só algumas peças
 | 04 | Quatro horas | A | Quatro horas / de São Paulo | Topo |
 | 05 | Só vocês a bordo | B | A lancha inteira / é de vocês | Meio |
 | 06 | Setembro e outubro | C | Mar limpo / Praia vazia | Fundo |
+| 07 | Roteiro lado sul | C | Sete paradas num dia | Meio |
+| 08 | Roteiro Mamanguá | A | O único fiorde do Brasil | Meio |
+| 09 | Roteiro lado norte | B | Tartaruga e almoço na ilha | Meio |
 
 Título, CTA e as três variações de texto principal de cada peça estão em
 `criativos.json`, junto da hipótese que a peça testa.
@@ -79,7 +90,23 @@ R$ 1.000 ÷ 6 = R$ 167. O briefing inicial dizia 7 + 1 marinheiro. Se forem
 - **Ajustar o corte de uma foto:** o campo `posicao` de cada peça, um valor de
   `background-position` por formato. Suba a porcentagem pra mostrar mais água,
   desça pra mostrar mais céu.
-- **Mudar tamanho de tipo ou margem:** `escala()` em `arte.mjs`.
+- **Mudar tamanho de tipo ou margem:** `escala()`, `escalaForte()` ou
+  `escalaRoteiro()` em `arte.mjs`.
+- **Mudar as paradas de um roteiro:** o campo `paradas`. A altura do bloco se
+  recalcula sozinha pelo número de linhas, então não precisa mexer em layout.
+- **Trocar os preços em teste:** o campo `precos_em_teste` no topo do JSON.
+
+## Saída
+
+```
+out/feed-1080x1350/    24 arquivos
+out/story-1080x1920/   24 arquivos
+```
+
+Essas duas pastas espelham a organização no Drive, em
+`Vem Pra Paraty — Criativos / 18 pés — Mestra 180 /`.
+O `INDICE-CRIATIVOS.txt` lista as 48 peças com título, botão e os três textos
+principais de cada uma.
 
 As fontes ficam embutidas em `fontes/fontes-inline.css`, então o render sai
 igual em qualquer máquina, com ou sem internet.

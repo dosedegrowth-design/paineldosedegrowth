@@ -6,8 +6,8 @@
  *   node gerar.mjs --so=feed  # só 1080x1350
  *   node gerar.mjs --so=story # só 1080x1920
  *   node gerar.mjs --id=conta,fiorde
- *   node gerar.mjs --modo=forte   # só o registro com preço na arte
- *   node gerar.mjs --modo=sobrio  # só o registro sem preço na arte
+ *   node gerar.mjs --modo=forte          # um registro só (sobrio|forte|roteiro)
+ *   node gerar.mjs --preco=p99999        # uma variante de preço só
  *
  * Antes de rodar, coloque as três fotos reais em fotos/ com estes nomes:
  *   fotos/lancha18-a.jpg   (três-quartos traseiro, serra ao fundo, muito céu)
@@ -102,12 +102,20 @@ async function main() {
 
   const filtroId = args.id ? String(args.id).split(',') : null;
   const filtroFmt = args.so ? [String(args.so)] : ['feed', 'story'];
-  const modos = args.modo ? [String(args.modo)] : ['sobrio', 'forte'];
+  const filtroModo = args.modo ? String(args.modo).split(',') : null;
+  // Os preços em teste vêm do próprio JSON. O modo sóbrio não mostra preço na
+  // arte, então para ele uma variante basta.
+  const precos = dados.precos_em_teste || { p1000: 'R$ 1.000' };
+  const filtroPreco = args.preco ? String(args.preco).split(',') : Object.keys(precos);
 
   const itens = dados.criativos.filter((c) => !filtroId || filtroId.includes(c.key));
   const faltando = [];
 
-  await mkdir(path.join(AQUI, 'out'), { recursive: true });
+  /* As pastas de saída espelham a organização do Drive: uma por formato. */
+  const PASTA = { feed: 'feed-1080x1350', story: 'story-1080x1920' };
+  for (const sub of Object.values(PASTA)) {
+    await mkdir(path.join(AQUI, 'out', sub), { recursive: true });
+  }
   await mkdir(path.join(AQUI, 'previa'), { recursive: true });
 
   const browser = await chromium.launch({
@@ -120,13 +128,24 @@ async function main() {
     const foto_src = await resolverFoto(c.foto);
     if (!temFoto) faltando.push(`${c.key} → FOTO ${c.foto}`);
 
+    const modosDaPeca = (c.modos || ['forte']).filter(
+      (m) => !filtroModo || filtroModo.includes(m)
+    );
+
     for (const fmtKey of filtroFmt) {
      const f = FORMATOS[fmtKey];
      if (!f) throw new Error(`Formato desconhecido: ${fmtKey}`);
 
-     for (const modo of modos) {
-      const html = montarHTML({ ...c, foto_src }, fmtKey, modo);
-      const nome = `vpp18-${String(c.n).padStart(2, '0')}-${c.key}-${modo}-${fmtKey}`;
+     for (const modo of modosDaPeca) {
+      // sóbrio não estampa preço, então não faz sentido variar preço nele
+      const precosDoModo = modo === 'sobrio' ? [null] : filtroPreco;
+
+      for (const chavePreco of precosDoModo) {
+      const item = { ...c, foto_src };
+      if (chavePreco) item.preco_arte = precos[chavePreco];
+      const html = montarHTML(item, fmtKey, modo);
+      const nome = `vpp18-${String(c.n).padStart(2, '0')}-${c.key}-${modo}` +
+                   `${chavePreco ? '-' + chavePreco : ''}-${fmtKey}`;
 
       // prévia navegável: mesmo HTML, com a foto por caminho relativo
       const fotoPrevia = temFoto ? `../${FOTOS[c.foto]}` : foto_src;
@@ -144,18 +163,20 @@ async function main() {
       await page.setContent(html, { waitUntil: 'networkidle' });
       await page.evaluate(() => document.fonts.ready);
       await page.screenshot({
-        path: path.join(AQUI, 'out', `${nome}.png`),
+        path: path.join(AQUI, 'out', PASTA[fmtKey], `${nome}.png`),
         clip: { x: 0, y: 0, width: f.w, height: f.h },
       });
       await page.close();
       n++;
-      process.stdout.write(`  ✓ ${nome}.png\n`);
+      process.stdout.write(`  ✓ ${PASTA[fmtKey]}/${nome}.png\n`);
+      }
      }
     }
   }
 
   await browser.close();
-  console.log(`\n${n} arquivos em out/  ·  prévias navegáveis em previa/`);
+  console.log(`\n${n} arquivos em out/${''}  ·  prévias navegáveis em previa/`);
+  console.log(`   out/feed-1080x1350/  ·  out/story-1080x1920/`);
   if (faltando.length) {
     console.log(
       `\n⚠  Estas peças saíram com fundo de conferência porque a foto não está em fotos/:\n   ` +
