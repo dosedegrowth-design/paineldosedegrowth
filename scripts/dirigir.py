@@ -158,11 +158,16 @@ def camadas_texto(txt: dict, L: int, A: int, dur: float, fonte: str) -> str:
             f += (f",drawtext=fontfile={fonte}:text='{escapar(t)}'"
                   f":fontcolor=white@0:fontsize={tam}"
                   f":shadowcolor=black@{op}:shadowx={dx}:shadowy={dy}"
-                  f":x=(w-tw)/2:y={y0 + j * alt:.0f}"
+                  f":x=(w-tw)/2"
+                  f":y='{y0 + j * alt:.0f}+{max(3, tam//7)}"
+                  f"*(1-min(1,max(0,(t-{ini})/{fade})))'"
                   f":alpha='{alpha}'")
+        # sobe alguns pixels enquanto entra: o texto assenta, nao pisca
+        yb = y0 + j * alt
+        ye = f"{yb:.0f}+{max(3, tam//7)}*(1-min(1,max(0,(t-{ini})/{fade})))"
         f += (f",drawtext=fontfile={fonte}:text='{escapar(t)}'"
               f":fontcolor=white:fontsize={tam}"
-              f":x=(w-tw)/2:y={y0 + j * alt:.0f}"
+              f":x=(w-tw)/2:y='{ye}'"
               f":alpha='{alpha}'")
     return f
 
@@ -194,7 +199,10 @@ def previa(r: dict, base: str, saida: str, altura: int, crf: int, fonte: str) ->
         af = (f"aresample=44100,aformat=channel_layouts=stereo,volume={amb},"
               f"afade=t=in:d=0.12,afade=t=out:st={max(0.0, dur-0.12):.2f}:d=0.12")
         out = os.path.join(tmp, f"seg{i:02d}.mp4")
-        bruto = os.path.join(tmp, f"mov{i:02d}.mp4") if p.get("texto") else out
+        # o segundo passe roda quando ha texto ou grading: somar eq/curves ao
+        # zoompan no mesmo grafo tambem leva SIGKILL neste ambiente
+        segundo = bool(p.get("texto")) or r.get("grading", True)
+        bruto = os.path.join(tmp, f"mov{i:02d}.mp4") if segundo else out
         # movimento e texto em passagens separadas: zoompan junto com drawtext
         # derruba o ffmpeg por memoria neste ambiente
         subprocess.run(["ffmpeg", "-y", "-v", "error",
@@ -203,8 +211,16 @@ def previa(r: dict, base: str, saida: str, altura: int, crf: int, fonte: str) ->
                         "-c:v", "libx264", "-crf", str(max(16, crf - 6)),
                         "-preset", "veryfast", "-pix_fmt", "yuv420p",
                         "-c:a", "aac", "-b:a", "192k", "-ar", "44100", bruto], check=True)
-        if p.get("texto"):
-            camadas = camadas_texto(p["texto"], L, A, dur, fonte).lstrip(",")
+        if segundo:
+            camadas = ""
+            if r.get("grading", True):
+                # tratamento leve: contraste, um toque de saturacao, pretos
+                # levantados. Nada de azul neon — a agua continua agua.
+                camadas += ("eq=contrast=1.06:saturation=1.05:gamma=1.01,"
+                            "curves=all='0/0.015 0.25/0.245 0.75/0.765 1/1'")
+            if p.get("texto"):
+                t2 = camadas_texto(p["texto"], L, A, dur, fonte)
+                camadas = (camadas + t2) if camadas else t2.lstrip(",")
             subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", bruto,
                             "-vf", camadas, "-c:v", "libx264",
                             "-crf", str(max(18, crf - 4)), "-preset", "veryfast",
@@ -245,6 +261,7 @@ def previa(r: dict, base: str, saida: str, altura: int, crf: int, fonte: str) ->
     # passe 4: mistura de audio — ambiente + trilha abaixada sob a voz + voz
     entradas = ["-i", corte]
     filtros, mapa_a = [], "0:a"
+    efeitos = []
     idx = 1
     if r.get("musica"):
         entradas += ["-i", resolver(r["musica"], base)]
@@ -273,6 +290,26 @@ def previa(r: dict, base: str, saida: str, altura: int, crf: int, fonte: str) ->
         filtros.append("[0:a][mus]amix=inputs=2:duration=first:normalize=0[mx]")
         filtros.append("[mx]alimiter=limit=0.95:level=false[aout]")
         mapa_a = "[aout]"
+
+    # efeitos sonoros pontuais, cada um entrando no seu tempo
+    for e in r.get("sfx", []) or []:
+        entradas += ["-i", resolver(e["arquivo"], base)]
+        atraso_e = int(float(e.get("em", 0)) * 1000)
+        corte = f"atrim=0:{float(e['duracao'])}," if e.get("duracao") else ""
+        filtros.append(f"[{idx}:a]aresample=44100,aformat=channel_layouts=stereo,"
+                       f"{corte}asetpts=PTS-STARTPTS,"
+                       f"volume={float(e.get('volume', 0.5))},"
+                       f"afade=t=in:d=0.25,"
+                       f"afade=t=out:st={max(0.0, float(e.get('duracao', 3)) - 0.6):.2f}:d=0.6,"
+                       f"adelay={atraso_e}|{atraso_e}[sfx{idx}]")
+        efeitos.append(f"[sfx{idx}]")
+        idx += 1
+    if efeitos:
+        antes = mapa_a
+        filtros.append(f"{antes}{''.join(efeitos)}amix=inputs={1+len(efeitos)}"
+                       f":duration=first:dropout_transition=0:normalize=0[comsfx]")
+        filtros.append("[comsfx]alimiter=limit=0.95:level=false[afinal]")
+        mapa_a = "[afinal]"
 
     cmd = ["ffmpeg", "-y", "-v", "error", *entradas]
     if filtros:
