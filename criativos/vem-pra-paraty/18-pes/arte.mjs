@@ -97,8 +97,12 @@ function css(c, f, s) {
     color:rgba(242,237,227,.66);margin-top:${f.key === 'story' ? 34 : 30}px;
   }
 
+  /* A marca cai sobre céu claro numa peça e sobre areia noutra. O halo é o que
+     mantém ela legível nas duas sem virar sombra dura nem caixa de fundo. */
   .marca{position:absolute;left:${s.margem}px;
-         bottom:${f.safeBottom + s.margem}px;opacity:.92;line-height:0}
+         bottom:${f.safeBottom + s.margem}px;opacity:.95;line-height:0;
+         filter:drop-shadow(0 2px 16px rgba(4,20,31,.9))
+                drop-shadow(0 0 4px rgba(4,20,31,.65))}
   .marca img{width:${s.logo}px;display:block}
 
   /* quando a frase fica embaixo, a marca sobe pro topo pra não brigar */

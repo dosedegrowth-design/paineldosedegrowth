@@ -27,7 +27,10 @@
       "local": "Baía de Paraty · lancha privativa",
       "titulo": "A baía de Paraty só pra vocês",
       "cta": "Enviar mensagem",
-      "posicao": { "feed": "center 56%", "story": "center 53%" },
+      "posicao": {
+        "feed": "center 56%",
+        "story": "center 53%"
+      },
       "textos": [
         {
           "rotulo": "conta",
@@ -57,10 +60,13 @@
       "porque_a_foto": "O céu limpo no terço superior é a área livre planejada, e a serra ao fundo é o próprio assunto",
       "ancora": "alto",
       "frase": "O ÚNICO FIORDE\nDO BRASIL",
-      "local": "Saco do Mamanguá · Paraty",
+      "local": "Roteiro do Mamanguá · Paraty",
       "titulo": "O Mamanguá do seu jeito",
       "cta": "Enviar mensagem",
-      "posicao": { "feed": "center 55%", "story": "center 50%" },
+      "posicao": {
+        "feed": "center 55%",
+        "story": "center 50%"
+      },
       "textos": [
         {
           "rotulo": "cena",
@@ -77,7 +83,8 @@
           "primeira_linha": "A Praia do Cruzeiro, onde gravaram Crepúsculo, fica no meio do único fiorde do Brasil. Dá pra parar nela.",
           "resto": "O roteiro do Mamanguá passa por ela, pelo Buraco, pelo Sobrado e pelo Engenho.\nChama aqui que eu te passo os horários."
         }
-      ]
+      ],
+      "nota_producao": "A foto A não é do Saco do Mamanguá. A linha de local descreve o roteiro, não o lugar retratado. Com uma foto real do fiorde esta peça fica muito mais forte."
     },
     {
       "n": 3,
@@ -93,7 +100,10 @@
       "local": "Água abrigada o dia inteiro",
       "titulo": "Água calma o dia inteiro",
       "cta": "Enviar mensagem",
-      "posicao": { "feed": "center 44%", "story": "center 40%" },
+      "posicao": {
+        "feed": "center 44%",
+        "story": "center 40%"
+      },
       "textos": [
         {
           "rotulo": "objeção de frente",
@@ -126,7 +136,10 @@
       "local": "Paraty · Costa Verde",
       "titulo": "Mais perto do que você pensa",
       "cta": "Enviar mensagem",
-      "posicao": { "feed": "center 48%", "story": "center 44%" },
+      "posicao": {
+        "feed": "center 48%",
+        "story": "center 44%"
+      },
       "textos": [
         {
           "rotulo": "número",
@@ -159,7 +172,10 @@
       "local": "Privativa · saídas do cais de Paraty",
       "titulo": "Sem dividir com ninguém",
       "cta": "Enviar mensagem",
-      "posicao": { "feed": "center 50%", "story": "center 46%" },
+      "posicao": {
+        "feed": "center 50%",
+        "story": "center 46%"
+      },
       "textos": [
         {
           "rotulo": "comparação",
@@ -192,7 +208,10 @@
       "local": "Setembro e outubro em Paraty",
       "titulo": "A melhor janela do ano",
       "cta": "Enviar mensagem",
-      "posicao": { "feed": "center 50%", "story": "center 46%" },
+      "posicao": {
+        "feed": "center 50%",
+        "story": "center 46%"
+      },
       "textos": [
         {
           "rotulo": "dado",

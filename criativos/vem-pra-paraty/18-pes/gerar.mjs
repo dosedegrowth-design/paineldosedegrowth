@@ -18,7 +18,7 @@
 
 import { readFile, writeFile, mkdir, access } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { montarHTML, FORMATOS, definirFontes, definirMarca } from './arte.mjs';
@@ -72,11 +72,16 @@ function fundoConferencia(letra) {
   return 'data:image/svg+xml;base64,' + Buffer.from(svg).toString('base64');
 }
 
+/**
+ * A foto entra como data URI, não como file://: a página é montada com
+ * setContent, e o Chromium recusa subrecurso file:// nesse contexto.
+ */
 async function resolverFoto(letra) {
-  const rel = FOTOS[letra];
-  const abs = path.join(AQUI, rel);
-  if (existsSync(abs)) return pathToFileURL(abs).href;
-  return fundoConferencia(letra);
+  const abs = path.join(AQUI, FOTOS[letra]);
+  if (!existsSync(abs)) return fundoConferencia(letra);
+  const ext = path.extname(abs).toLowerCase();
+  const mime = ext === '.png' ? 'image/png' : ext === '.webp' ? 'image/webp' : 'image/jpeg';
+  return `data:${mime};base64,` + (await readFile(abs)).toString('base64');
 }
 
 /** Fontes e marcas entram embutidas: render igual em qualquer máquina, com ou sem internet. */
@@ -108,8 +113,9 @@ async function main() {
 
   let n = 0;
   for (const c of itens) {
+    const temFoto = existsSync(path.join(AQUI, FOTOS[c.foto]));
     const foto_src = await resolverFoto(c.foto);
-    if (foto_src.startsWith('data:')) faltando.push(`${c.key} → FOTO ${c.foto}`);
+    if (!temFoto) faltando.push(`${c.key} → FOTO ${c.foto}`);
 
     for (const fmtKey of filtroFmt) {
       const f = FORMATOS[fmtKey];
@@ -119,9 +125,8 @@ async function main() {
       const nome = `vpp18-${String(c.n).padStart(2, '0')}-${c.key}-${fmtKey}`;
 
       // prévia navegável: mesmo HTML, com a foto por caminho relativo
-      const fotoPrevia = existsSync(path.join(AQUI, FOTOS[c.foto]))
-        ? `../${FOTOS[c.foto]}`
-        : foto_src;
+      const fotoPrevia = temFoto ? `../${FOTOS[c.foto]}` : foto_src;
+      // a prévia usa caminho relativo; o PNG usa o data URI acima
       await writeFile(
         path.join(AQUI, 'previa', `${nome}.html`),
         montarHTML({ ...c, foto_src: fotoPrevia }, fmtKey),
