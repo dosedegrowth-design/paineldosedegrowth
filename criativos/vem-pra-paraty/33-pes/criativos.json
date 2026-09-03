@@ -1,0 +1,454 @@
+{
+  "prefixo": "vpp33",
+  "fotos": {
+    "A": "fotos/lancha33-a.jpg",
+    "B": "fotos/lancha33-b.jpg",
+    "C": "fotos/lancha33-c.jpg",
+    "D": "fotos/lancha33-d.jpg"
+  },
+  "padroes_arte": {
+    "lotacao_arte": "ATÉ 15",
+    "lotacao_label": "lugares",
+    "cta_arte": "Reserve pelo WhatsApp"
+  },
+  "lancha": {
+    "pes": 33,
+    "lotacao": "15 passageiros + 1 marinheiro",
+    "preco": "a partir de R$ 2.500, cobrindo até 9 pessoas",
+    "diferenciais": "banheiro a bordo e suíte",
+    "por_pessoa": "R$ 278 com 9 pessoas",
+    "PENDENTE": "Qual o valor acima de 9 pessoas, até os 15 lugares. Sem isso a peça não pode prometer preço para grupo grande."
+  },
+  "estrategia": {
+    "o_que_muda_em_relacao_a_18_pes": "A tese da campanha da 18 pés é que fechar a lancha sai mais barato por pessoa que um assento na compartilhada, que custa R$ 250. Essa tese NÃO serve aqui: R$ 2.500 dividido por 9 dá R$ 278 por pessoa, acima da compartilhada. A 33 pés precisa vender o que a compartilhada não tem como oferecer.",
+    "o_que_ela_vende": "Banheiro a bordo, suíte e 15 lugares. A pesquisa mostrou que banheiro é critério de compra tão forte que um concorrente colocou no nome do produto, e que nem a lancha compartilhada nem nenhuma de 18 pés tem um.",
+    "nunca_dizer": "Que R$ 2.500 leva 15 pessoas. O valor cobre até 9."
+  },
+  "precos_em_teste": {
+    "p2500": "R$ 2.500",
+    "p249999": "R$ 2.499,99"
+  },
+  "regras": [
+    "O chip diz ATÉ 15 lugares, que é a capacidade do barco, e o preço diz A PARTIR DE. A linha de apoio carrega a faixa: R$ 2.500 até 9 pessoas.",
+    "Modo sobrio: sem preço na arte, serifada leve, aposta em desejo.",
+    "Modo forte: preço e lotação na arte, bloco navy sólido, CTA desenhado.",
+    "Nos três: sem starburst, sem preço riscado, sem selo de desconto, sem emoji.",
+    "Nenhuma peça cita concorrente pelo nome. A comparação é sempre com a categoria."
+  ],
+  "notas_de_foto": {
+    "A": "POV deitado na proa: pernas no quadro, quatro mascaras de snorkel no estofado, baia aberta e ilha a frente, ceu limpo enorme. E a melhor das quatro: figura humana sem rosto, equipamento a vista e area livre planejada de sobra. 953x1280.",
+    "B": "Proa de frente, mostra a cabine, o estofado e o toldo. Barco vazio, entao funciona no modo forte, onde o bloco navy carrega a mensagem. 960x1280.",
+    "C": "POV do conves com DUAS ESCUNAS CHEIAS ao fundo e uma lancha lotada a esquerda. O argumento privativo x lotado esta dentro da foto: nao precisa de headline pra fazer a comparacao. 960x1280.",
+    "D": "Duas pessoas de pe na proa, bracos erguidos. Unica imagem de comemoracao. Menor resolucao das quatro, 768x1024, entao so em feed e com ressalva.",
+    "RESOLUCAO": "ATENCAO: as quatro fotos sao pequenas. Feed 1080x1350 exige esticar 1.12x (A, B, C) e 1.41x (D). Story 1080x1920 exige 1.50x (A, B, C) e 1.88x (D). As pecas de story vao sair visivelmente mais moles que as da lancha de 18 pes, cujos originais tinham 3024x4032. Foto nova em resolucao cheia resolve.",
+    "FALTA": "Nenhuma das quatro mostra o banheiro nem a suite, que sao os dois argumentos centrais desta lancha. Uma foto do interior destrava as pecas 01 e 03."
+  },
+  "criativos": [
+    {
+      "n": 1,
+      "key": "banheiro",
+      "angulo": "Banheiro a bordo",
+      "funil": "fundo",
+      "publico": "Família, grupo grande, 35 a 55",
+      "hipotese": "Banheiro é critério de compra decisivo e ninguém no mercado o anuncia direito",
+      "foto": "B",
+      "porque_a_foto": "Mostra a cabine, que é a estrutura de onde o banheiro faz parte",
+      "ancora": "alto",
+      "frase": "BANHEIRO\nA BORDO",
+      "local": "33 pés · Baía de Paraty",
+      "titulo": "A lancha que tem banheiro",
+      "cta": "Enviar mensagem",
+      "posicao": {
+        "feed": "center 52%",
+        "story": "center 48%"
+      },
+      "forte": {
+        "frase": "COM <em>BANHEIRO</em>\nA BORDO",
+        "apoio": "R$ 2.500 até 9 pessoas. Cabe até 15."
+      },
+      "modos": [
+        "sobrio",
+        "forte"
+      ],
+      "textos": [
+        {
+          "rotulo": "comparação seca",
+          "primeira_linha": "Lancha de 18 pés não tem banheiro. A compartilhada também não. Esta de 33 pés tem, e tem suíte.",
+          "resto": "Muda o dia inteiro: ninguém depende de parar numa praia com estrutura.\nR$ 2.500 até 9 pessoas, e o barco leva até 15.\nMe diz a data e quantos vocês são."
+        },
+        {
+          "rotulo": "a pergunta do direct",
+          "primeira_linha": "A pergunta que mais chega no direct é se tem banheiro a bordo. Nesta lancha, tem — e suíte junto.",
+          "resto": "É o que faz o passeio funcionar com criança, com idoso e com grupo grande.\nChama aqui pra ver as datas."
+        },
+        {
+          "rotulo": "o dia todo",
+          "primeira_linha": "Seis horas na água mudam quando o banheiro está a bordo e não numa praia qualquer do caminho.",
+          "resto": "33 pés, suíte, até 15 lugares, marinheiro o dia inteiro.\nQuer que eu monte o roteiro?"
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "key": "quinze",
+      "angulo": "Quinze lugares",
+      "funil": "fundo",
+      "publico": "Grupo grande, empresa, família estendida",
+      "hipotese": "Grupo de mais de 8 hoje precisa alugar duas lanchas, e não sabe que existe uma que resolve",
+      "foto": "C",
+      "porque_a_foto": "O conves em primeiro plano da a escala do espaco, que e o argumento",
+      "ancora": "alto",
+      "frase": "QUINZE LUGARES\nUM BARCO SÓ",
+      "local": "33 pés · lancha privativa",
+      "titulo": "Cabe o grupo inteiro",
+      "cta": "Enviar mensagem",
+      "posicao": {
+        "feed": "center 64%",
+        "story": "center 60%"
+      },
+      "forte": {
+        "frase": "QUINZE LUGARES\nUM <em>BARCO SÓ</em>",
+        "apoio": "R$ 2.500 até 9 pessoas. Cabe até 15."
+      },
+      "modos": [
+        "sobrio",
+        "forte"
+      ],
+      "textos": [
+        {
+          "rotulo": "o problema real",
+          "primeira_linha": "Grupo de mais de oito costuma ter que alugar duas lanchas e passar o dia gritando de um barco pro outro.",
+          "resto": "Nesta cabem 15 mais o marinheiro. Todo mundo junto.\nR$ 2.500 cobre até 9 pessoas; acima disso me chama que eu faço a conta.\nQual a data?"
+        },
+        {
+          "rotulo": "número seco",
+          "primeira_linha": "Quinze lugares mais o marinheiro, banheiro a bordo e suíte. É a maior da frota.",
+          "resto": "Roteiro escolhido por vocês, saída do cais de Paraty.\nMe diz quantos vão que eu fecho o valor."
+        },
+        {
+          "rotulo": "ninguém fica de fora",
+          "primeira_linha": "Aquele grupo que nunca fecha porque não cabe todo mundo: nesta lancha cabe.",
+          "resto": "São 15 lugares, com banheiro e suíte a bordo.\nChama aqui com a data e o número de pessoas."
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "key": "suite",
+      "angulo": "A suíte",
+      "funil": "meio",
+      "publico": "Família com criança, 35 a 55",
+      "hipotese": "Sombra fechada e lugar pra trocar de roupa valem mais que qualquer amenidade da lista",
+      "foto": "B",
+      "porque_a_foto": "A cabine aparece inteira, e é dela que se está falando",
+      "ancora": "alto",
+      "frase": "TEM SUÍTE\nE SOMBRA DE VERDADE",
+      "local": "33 pés · Baía de Paraty",
+      "titulo": "Suíte e banheiro a bordo",
+      "cta": "Enviar mensagem",
+      "posicao": {
+        "feed": "center 50%",
+        "story": "center 46%"
+      },
+      "forte": {
+        "frase": "TEM <em>SUÍTE</em>\nE SOMBRA DE VERDADE",
+        "apoio": "R$ 2.500 até 9 pessoas. Cabe até 15."
+      },
+      "modos": [
+        "sobrio",
+        "forte"
+      ],
+      "textos": [
+        {
+          "rotulo": "usos concretos",
+          "primeira_linha": "Trocar de roupa sem acrobacia, criança dormir depois do almoço, sair do sol de verdade. Isso é a suíte.",
+          "resto": "Mais banheiro a bordo e até 15 lugares.\nR$ 2.500 até 9 pessoas.\nMe diz a data que eu confiro a agenda."
+        },
+        {
+          "rotulo": "o que a lista não diz",
+          "primeira_linha": "Toldo é sombra de passagem. Suíte é sombra de verdade, com porta, no meio de seis horas de sol.",
+          "resto": "33 pés, banheiro a bordo, até 15 lugares.\nQuer ver as datas livres?"
+        },
+        {
+          "rotulo": "família",
+          "primeira_linha": "Com criança pequena o dia rende mais quando existe um lugar fechado pra ela dormir a bordo.",
+          "resto": "Suíte, banheiro, sombra e marinheiro o dia inteiro.\nChama aqui pra montar o dia de vocês."
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "key": "celebracao",
+      "angulo": "Aniversário e despedida",
+      "funil": "meio",
+      "publico": "Aniversário, despedida de solteiro",
+      "hipotese": "A ocasião é o que justifica juntar quinze pessoas e pagar por um barco grande",
+      "foto": "D",
+      "porque_a_foto": "Braços erguidos na proa é a imagem literal de comemoração",
+      "ancora": "alto",
+      "frase": "ANIVERSÁRIO\nNO MEIO DA BAÍA",
+      "local": "33 pés · lancha privativa",
+      "titulo": "A data que merece um barco",
+      "cta": "Enviar mensagem",
+      "posicao": {
+        "feed": "center 52%",
+        "story": "center 48%"
+      },
+      "forte": {
+        "frase": "ANIVERSÁRIO\nNO <em>MEIO DA BAÍA</em>",
+        "apoio": "R$ 2.500 até 9 pessoas. Cabe até 15."
+      },
+      "modos": [
+        "sobrio",
+        "forte"
+      ],
+      "textos": [
+        {
+          "rotulo": "a ocasião",
+          "primeira_linha": "Quinze pessoas, o dia inteiro, sem horário pra sair e sem horário pra voltar. É esse o tamanho da data.",
+          "resto": "Banheiro a bordo, suíte, gelo e som por conta de vocês.\nR$ 2.500 até 9 pessoas.\nQual a data?"
+        },
+        {
+          "rotulo": "logística resolvida",
+          "primeira_linha": "Comemorar em restaurante todo mundo já fez. Um barco de 33 pés só pro seu grupo, quase ninguém.",
+          "resto": "Cabe até 15, tem banheiro e a bebida vocês trazem.\nMe chama com a data."
+        },
+        {
+          "rotulo": "despedida",
+          "primeira_linha": "Despedida de solteiro em lancha compartilhada é dividir o barco com quinze desconhecidos. Aqui não.",
+          "resto": "O barco é de vocês, o roteiro também, e cabem 15.\nChama aqui pra fechar."
+        }
+      ],
+      "nota_producao": "Foto D e a de menor resolucao. Preferir feed; no story sai mole."
+    },
+    {
+      "n": 5,
+      "key": "familia",
+      "angulo": "Família inteira",
+      "funil": "meio",
+      "publico": "Família estendida com avós e crianças",
+      "hipotese": "Família de três gerações não cabe numa lancha pequena e não aguenta um dia sem banheiro",
+      "foto": "A",
+      "porque_a_foto": "Pernas no quadro e mascaras a vista: o dia em uso, sem rosto",
+      "ancora": "alto",
+      "frase": "AVÓ, CRIANÇA\nE O DIA INTEIRO",
+      "local": "33 pés · Baía de Paraty",
+      "titulo": "Família inteira num barco só",
+      "cta": "Enviar mensagem",
+      "posicao": {
+        "feed": "center 54%",
+        "story": "center 50%"
+      },
+      "forte": {
+        "frase": "AVÓ, CRIANÇA\nE O <em>DIA INTEIRO</em>",
+        "apoio": "R$ 2.500 até 9 pessoas. Cabe até 15."
+      },
+      "modos": [
+        "sobrio",
+        "forte"
+      ],
+      "textos": [
+        {
+          "rotulo": "três gerações",
+          "primeira_linha": "Família de três gerações não cabe numa lancha pequena, e não aguenta seis horas sem banheiro.",
+          "resto": "Aqui são 15 lugares, banheiro a bordo, suíte e sombra.\nA baía é fechada, então o mar fica parado.\nMe diz quantos vão."
+        },
+        {
+          "rotulo": "a baía ajuda",
+          "primeira_linha": "A baía de Paraty é água abrigada. Com banheiro a bordo e suíte, o dia funciona até com criança pequena.",
+          "resto": "Quinze lugares, marinheiro o dia inteiro.\nChama aqui pra ver as datas."
+        },
+        {
+          "rotulo": "quem sempre fica de fora",
+          "primeira_linha": "Sempre tem alguém que não vai no passeio de barco. Nesta lancha essa pessoa vai.",
+          "resto": "Banheiro, suíte, sombra fechada e mar parado.\nMe conta a data e a idade da criançada."
+        }
+      ]
+    },
+    {
+      "n": 6,
+      "key": "lotado",
+      "angulo": "Privativo x lotado",
+      "funil": "meio",
+      "publico": "Todos",
+      "hipotese": "A dor nao e preco, e lotacao. E esta foto faz a comparacao sozinha, sem headline",
+      "foto": "C",
+      "porque_a_foto": "As duas escunas cheias aparecem ao fundo do conves vazio. O argumento esta dentro da imagem",
+      "ancora": "alto",
+      "frase": "AQUI SÃO QUINZE\nE MAIS NINGUÉM",
+      "local": "Lancha privativa · Paraty",
+      "titulo": "Sem dividir com ninguém",
+      "cta": "Enviar mensagem",
+      "posicao": {
+        "feed": "center 44%",
+        "story": "center 40%"
+      },
+      "forte": {
+        "frase": "AQUI SÃO <em>QUINZE</em>\nE MAIS NINGUÉM",
+        "apoio": "R$ 2.500 até 9 pessoas. Cabe até 15."
+      },
+      "modos": [
+        "sobrio",
+        "forte"
+      ],
+      "textos": [
+        {
+          "rotulo": "a foto fala",
+          "primeira_linha": "Ao fundo desta foto tem duas escunas. Em cada uma, dezenas de pessoas que não se conhecem dividindo o mesmo dia.",
+          "resto": "Aqui são no máximo 15, e são todas do seu grupo.\nBanheiro a bordo, suíte e roteiro escolhido por vocês.\nMe diz a data e quantos vão."
+        },
+        {
+          "rotulo": "controle",
+          "primeira_linha": "Numa escuna você segue o roteiro dela e volta na hora dela. Aqui vocês decidem onde parar e por quanto tempo.",
+          "resto": "33 pés, até 15 lugares, banheiro a bordo.\nChama aqui pra montar o dia."
+        },
+        {
+          "rotulo": "seca",
+          "primeira_linha": "O barco é de vocês. Ninguém embarca no meio do caminho.",
+          "resto": "Quinze lugares, suíte e banheiro.\nR$ 2.500 até 9 pessoas.\nQual a data?"
+        }
+      ]
+    },
+    {
+      "n": 7,
+      "key": "rota-sul",
+      "angulo": "Roteiro lado sul",
+      "funil": "meio",
+      "publico": "Todos",
+      "hipotese": "Itinerário numerado com nome próprio vence promessa genérica de passeio",
+      "foto": "A",
+      "porque_a_foto": "Água verde e mata, que é a cara do lado sul",
+      "olho": "Roteiro lado sul",
+      "titulo_arte": "SETE PARADAS\nNUM <em>DIA</em>",
+      "titulo": "O lado sul da baía num dia",
+      "cta": "Enviar mensagem",
+      "posicao": {
+        "feed": "center 54%",
+        "story": "center 50%"
+      },
+      "paradas": [
+        "Praia Vermelha",
+        "Ilha da Pescaria",
+        "Praia da Lula",
+        "Lagoa Azul",
+        "Ilha dos Cocos",
+        "Saco da Velha",
+        "Ilha Comprida"
+      ],
+      "modos": [
+        "roteiro"
+      ],
+      "textos": [
+        {
+          "rotulo": "itinerário",
+          "primeira_linha": "Praia Vermelha, Ilha da Pescaria, Praia da Lula, Lagoa Azul, Ilha dos Cocos, Saco da Velha e Ilha Comprida.",
+          "resto": "Sete paradas no lado sul, na ordem que vocês quiserem.\n33 pés com banheiro a bordo, até 15 lugares.\nQuer esse roteiro?"
+        },
+        {
+          "rotulo": "a parada que importa",
+          "primeira_linha": "A Lagoa Azul é a parada onde dá pra ver o fundo de areia sem máscara. Está no roteiro do lado sul.",
+          "resto": "Mais seis paradas, com banheiro a bordo pro dia inteiro.\nMe diz a data."
+        },
+        {
+          "rotulo": "sem estrada",
+          "primeira_linha": "Cinco das sete paradas do lado sul não têm estrada. Só se chega de barco.",
+          "resto": "E o barco é só do seu grupo, com até 15 lugares.\nChama aqui pra montar o dia."
+        }
+      ]
+    },
+    {
+      "n": 8,
+      "key": "rota-mamangua",
+      "angulo": "Roteiro Mamanguá",
+      "funil": "meio",
+      "publico": "Alto padrão",
+      "hipotese": "O fiorde nomeado com as paradas listadas converte melhor que o fiorde solto",
+      "foto": "B",
+      "porque_a_foto": "Proa de frente com a mata fechada atrás, que é o enquadramento do fiorde",
+      "olho": "Roteiro Saco do Mamanguá",
+      "titulo_arte": "O ÚNICO <em>FIORDE</em>\nDO BRASIL",
+      "titulo": "O Mamanguá do seu jeito",
+      "cta": "Enviar mensagem",
+      "posicao": {
+        "feed": "center 48%",
+        "story": "center 44%"
+      },
+      "paradas": [
+        "Praia do Buraco",
+        "Praia do Sobrado",
+        "Praia do Engenho",
+        "Praia do Cruzeiro",
+        "Ilha dos Cocos"
+      ],
+      "modos": [
+        "roteiro"
+      ],
+      "nota_producao": "A foto B não é do Saco do Mamanguá. A linha de olho descreve o roteiro, não o lugar retratado.",
+      "textos": [
+        {
+          "rotulo": "o lugar",
+          "primeira_linha": "O Saco do Mamanguá tem oito quilômetros de mar parado entre duas paredes de serra. Só se chega de barco.",
+          "resto": "Cinco paradas, com banheiro a bordo pro dia inteiro.\n33 pés, até 15 lugares.\nQuer o roteiro do fiorde?"
+        },
+        {
+          "rotulo": "referência",
+          "primeira_linha": "A Praia do Cruzeiro, onde gravaram Crepúsculo, é uma das cinco paradas do roteiro do Mamanguá.",
+          "resto": "O fiorde inteiro num dia, com o barco só do seu grupo.\nMe conta a data."
+        },
+        {
+          "rotulo": "silêncio",
+          "primeira_linha": "No fundo do Mamanguá o motor desliga e não se ouve mais nada. É o roteiro mais silencioso que a gente faz.",
+          "resto": "Cinco paradas, suíte e banheiro a bordo.\nChama aqui pra ver as datas."
+        }
+      ]
+    },
+    {
+      "n": 9,
+      "key": "rota-norte",
+      "angulo": "Roteiro lado norte",
+      "funil": "meio",
+      "publico": "Família",
+      "hipotese": "Tartaruga e almoço em ilha são os dois ganchos de família, e estão no mesmo roteiro",
+      "foto": "C",
+      "porque_a_foto": "Gente a bordo combina com o roteiro mais familiar",
+      "olho": "Roteiro lado norte",
+      "titulo_arte": "TARTARUGA\nE <em>ALMOÇO</em> NA ILHA",
+      "titulo": "Tartarugas e almoço na ilha",
+      "cta": "Enviar mensagem",
+      "posicao": {
+        "feed": "center 52%",
+        "story": "center 48%"
+      },
+      "paradas": [
+        "Ilha do Malvão",
+        "Ilha da Sapeca",
+        "Ilha Comprida",
+        "Ilha da Rapada",
+        "Ilha do Araújo · almoço",
+        "Ilha do Ventura",
+        "Ilha do Pico",
+        "Canto do Morro"
+      ],
+      "modos": [
+        "roteiro"
+      ],
+      "textos": [
+        {
+          "rotulo": "o gancho da criança",
+          "primeira_linha": "No lado norte tem parada pra ver tartaruga na Ilha do Araújo e almoço na mesma ilha. Oito paradas no dia.",
+          "resto": "Com banheiro a bordo, o dia inteiro funciona com criança.\n33 pés, até 15 lugares.\nQuer esse roteiro?"
+        },
+        {
+          "rotulo": "dia inteiro",
+          "primeira_linha": "Oito paradas, tartaruga na Ilha do Araújo e almoço em restaurante de ilha. É o roteiro do lado norte.",
+          "resto": "A baía é fechada e o barco tem banheiro e suíte.\nMe diz quantos vão e a data."
+        },
+        {
+          "rotulo": "sem garantia falsa",
+          "primeira_linha": "A parada das tartarugas é onde elas costumam aparecer. Aparecer é com elas, parar é com a gente.",
+          "resto": "Oito paradas no lado norte, com almoço na ilha.\nChama aqui pra fechar a data."
+        }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,15 @@
 {
+  "prefixo": "vpp18",
+  "fotos": {
+    "A": "fotos/lancha18-a.jpg",
+    "B": "fotos/lancha18-b.jpg",
+    "C": "fotos/lancha18-c.jpg"
+  },
+  "padroes_arte": {
+    "lotacao_arte": "ATÉ 6",
+    "lotacao_label": "pessoas",
+    "cta_arte": "Reserve pelo WhatsApp"
+  },
   "lancha": {
     "modelo": "Mestra 180",
     "pes": 18,

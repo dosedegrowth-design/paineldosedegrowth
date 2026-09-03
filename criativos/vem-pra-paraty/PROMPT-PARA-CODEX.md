@@ -29,25 +29,32 @@ direcao/carta-nautica.html      direção criativa completa, 15 seções. LEIA P
 direcao/pesquisa/*.md           177 achados de pesquisa, com fonte por afirmação
 direcao/briefing-cliente.md     dados oficiais passados pelo cliente
 marca/                          selo e logo horizontal, PNG com transparência
-18-pes/arte.mjs                 motor de layout, três registros
-18-pes/gerar.mjs                renderiza os PNGs via Playwright
-18-pes/criativos.json           as nove peças: copy, foto, hipótese, paradas
-18-pes/fotos/                   três fotos reais da lancha, 3024x4032
-18-pes/INDICE-CRIATIVOS.txt     índice das 48 peças
+motor/arte.mjs                  motor de layout, três registros, comum a toda a frota
+motor/gerar.mjs                 renderiza os PNGs via Playwright
+18-pes/criativos.json           as nove peças da Mestra 180
+18-pes/fotos/                   três fotos reais, 3024x4032
+33-pes/criativos.json           as nove peças da lancha de 33 pés
+33-pes/fotos/                   quatro fotos reais, resolução baixa (ver README de lá)
 ```
+
+O motor é comum e cada lancha tem sua pasta. Para adicionar uma lancha nova:
+criar a pasta, escrever `criativos.json` com `prefixo`, `fotos` e `padroes_arte`,
+e jogar as fotos em `fotos/`. Não se mexe em código.
 
 ### Como rodar
 
 ```bash
 npm i -g playwright && playwright install chromium
-cd criativos/vem-pra-paraty/18-pes
-node gerar.mjs
+cd criativos/vem-pra-paraty/motor
+node gerar.mjs --lancha=18-pes
+node gerar.mjs --lancha=33-pes
 ```
 
-Saem 48 PNGs em `out/feed-1080x1350/` e `out/story-1080x1920/`. As fontes estão
-embutidas em `fontes/fontes-inline.css`, então o render sai igual em qualquer
-máquina, com ou sem internet. Flags: `--modo=sobrio|forte|roteiro`,
-`--preco=p1000|p99999`, `--so=feed|story`, `--id=conta,fiorde`.
+Saem 48 PNGs por lancha, em `<lancha>/out/feed-1080x1350/` e
+`<lancha>/out/story-1080x1920/`. As fontes estão embutidas em
+`motor/fontes/fontes-inline.css`, então o render sai igual em qualquer máquina,
+com ou sem internet. Flags: `--modo=sobrio|forte|roteiro`, `--preco=`,
+`--so=feed|story`, `--id=`.
 
 ### Regras que não se negociam
 
@@ -78,12 +85,17 @@ Elas vieram de pesquisa, não de gosto. Estão justificadas na Carta Náutica.
 Os três estão no ar de propósito: a escolha é teste A/B, medido por custo por
 conversa qualificada. Não elimine nenhum por preferência estética.
 
-### O argumento central da campanha
+### O argumento central, e por que ele muda por lancha
 
-Um assento na lancha compartilhada de Paraty custa R$ 250 por pessoa. Fechando a
-Mestra 180 inteira sai a partir de R$ 1.000, o que dá R$ 167 por pessoa com seis.
-**Nos 91 anúncios ativos da categoria, nenhum faz essa conta.** É a vaga
-principal. Toda copy de fundo de funil deve girar em torno dela.
+**18 pés:** um assento na lancha compartilhada de Paraty custa R$ 250 por pessoa.
+Fechando a Mestra 180 inteira sai a partir de R$ 1.000, o que dá R$ 167 por
+pessoa com seis. Nos 91 anúncios ativos da categoria, nenhum faz essa conta.
+
+**33 pés: essa conta não serve.** R$ 2.500 dividido por 9 dá R$ 278 por pessoa,
+acima da compartilhada. Vender esta lancha por preço por cabeça é perder a
+comparação de propósito. Ela vende banheiro a bordo, suíte e 15 lugares — coisas
+que a compartilhada não tem como oferecer. Antes de escrever copy para uma
+lancha nova, refaça essa divisão.
 
 ### Pendências abertas — trate como bloqueio, não como detalhe
 

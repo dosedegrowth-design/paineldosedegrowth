@@ -223,7 +223,7 @@ function montarForte(c, f, s) {
     ${apoio ? `<p class="apoio">${esc(apoio)}</p>` : ''}
     <div class="oferta">
       <div class="preco"><span>a partir de</span><b>${esc(c.preco_arte || 'R$ 1.000')}</b></div>
-      <div class="chip"><b>${esc(c.lotacao_arte || 'ATÉ 6')}</b><span>pessoas</span></div>
+      <div class="chip"><b>${esc(c.lotacao_arte || '')}</b><span>${esc(c.lotacao_label || 'pessoas')}</span></div>
     </div>
     <div class="cta">${glifoWa}${esc(c.cta_arte || 'Reserve pelo WhatsApp')}</div>
   </div>
@@ -351,7 +351,7 @@ function montarRoteiro(c, f, s) {
     <ul class="paradas">${paradas}</ul>
     <div class="oferta">
       <div class="preco"><span>a partir de</span><b>${esc(c.preco_arte || 'R$ 1.000')}</b></div>
-      <div class="chip"><b>${esc(c.lotacao_arte || 'ATÉ 6')}</b><span>pessoas</span></div>
+      <div class="chip"><b>${esc(c.lotacao_arte || '')}</b><span>${esc(c.lotacao_label || 'pessoas')}</span></div>
     </div>
     <div class="cta">${glifoWa}${esc(c.cta_arte || 'Reserve pelo WhatsApp')}</div>
   </div>

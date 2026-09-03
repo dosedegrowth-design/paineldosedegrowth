@@ -1,18 +1,16 @@
 #!/usr/bin/env node
 /**
- * Gera os PNGs finais dos criativos da lancha 18 pés.
+ * Gera os PNGs finais dos criativos, de qualquer lancha da frota.
  *
- *   node gerar.mjs            # renderiza tudo (feed + story)
- *   node gerar.mjs --so=feed  # só 1080x1350
- *   node gerar.mjs --so=story # só 1080x1920
- *   node gerar.mjs --id=conta,fiorde
- *   node gerar.mjs --modo=forte          # um registro só (sobrio|forte|roteiro)
- *   node gerar.mjs --preco=p99999        # uma variante de preço só
+ *   node gerar.mjs --lancha=18-pes       # obrigatório: qual lancha
+ *   node gerar.mjs --lancha=33-pes --so=feed
+ *   node gerar.mjs --lancha=18-pes --modo=forte    # sobrio|forte|roteiro
+ *   node gerar.mjs --lancha=18-pes --preco=p99999
+ *   node gerar.mjs --lancha=18-pes --id=conta,fiorde
  *
- * Antes de rodar, coloque as três fotos reais em fotos/ com estes nomes:
- *   fotos/lancha18-a.jpg   (três-quartos traseiro, serra ao fundo, muito céu)
- *   fotos/lancha18-b.jpg   (lateral, coqueiros, pessoas a bordo)
- *   fotos/lancha18-c.jpg   (lateral próxima, bancos do interior visíveis)
+ * Cada lancha tem sua pasta irmã desta, com criativos.json e fotos/. O mapa de
+ * fotos vem do próprio JSON, no campo `fotos`, então trocar de lancha não exige
+ * mexer em código.
  *
  * Sem as fotos o script ainda roda: entra um fundo de conferência no lugar,
  * pra você validar tipografia e diagramação antes de ter os arquivos.
@@ -26,7 +24,7 @@ import { createRequire } from 'node:module';
 import { montarHTML, FORMATOS, definirFontes, definirMarca } from './arte.mjs';
 
 const require = createRequire(import.meta.url);
-const AQUI = path.dirname(fileURLToPath(import.meta.url));
+const MOTOR = path.dirname(fileURLToPath(import.meta.url));
 
 /* playwright pode estar local ou global (npm i -g playwright) */
 function carregarPlaywright() {
@@ -53,11 +51,22 @@ const args = Object.fromEntries(
   })
 );
 
-const FOTOS = {
-  A: 'fotos/lancha18-a.jpg',
-  B: 'fotos/lancha18-b.jpg',
-  C: 'fotos/lancha18-c.jpg',
-};
+if (!args.lancha) {
+  console.error(
+    '\n✕ Falta dizer a lancha.\n' +
+    '  node gerar.mjs --lancha=18-pes\n' +
+    '  node gerar.mjs --lancha=33-pes\n'
+  );
+  process.exit(1);
+}
+const LANCHA = path.join(MOTOR, '..', String(args.lancha));
+if (!existsSync(path.join(LANCHA, 'criativos.json'))) {
+  console.error(`\n✕ Não achei ${path.join(String(args.lancha), 'criativos.json')}\n`);
+  process.exit(1);
+}
+
+/** O mapa de fotos é declarado no criativos.json de cada lancha. */
+let FOTOS = {};
 
 /** Fundo de conferência, usado só quando a foto real ainda não está na pasta. */
 function fundoConferencia(letra) {
@@ -79,7 +88,7 @@ function fundoConferencia(letra) {
  * setContent, e o Chromium recusa subrecurso file:// nesse contexto.
  */
 async function resolverFoto(letra) {
-  const abs = path.join(AQUI, FOTOS[letra]);
+  const abs = path.join(LANCHA, FOTOS[letra]);
   if (!existsSync(abs)) return fundoConferencia(letra);
   const ext = path.extname(abs).toLowerCase();
   const mime = ext === '.png' ? 'image/png' : ext === '.webp' ? 'image/webp' : 'image/jpeg';
@@ -88,24 +97,28 @@ async function resolverFoto(letra) {
 
 /** Fontes e marcas entram embutidas: render igual em qualquer máquina, com ou sem internet. */
 async function carregarAtivos() {
-  const fontes = await readFile(path.join(AQUI, 'fontes/fontes-inline.css'), 'utf8');
+  const fontes = await readFile(path.join(MOTOR, 'fontes/fontes-inline.css'), 'utf8');
   definirFontes(fontes);
   const b64 = async (rel) =>
-    'data:image/png;base64,' + (await readFile(path.join(AQUI, rel))).toString('base64');
+    'data:image/png;base64,' + (await readFile(path.join(MOTOR, rel))).toString('base64');
   definirMarca({ logo: await b64('../marca/logo-horizontal.png') });
 }
 
 async function main() {
   const { chromium } = carregarPlaywright();
   await carregarAtivos();
-  const dados = JSON.parse(await readFile(path.join(AQUI, 'criativos.json'), 'utf8'));
+  const dados = JSON.parse(await readFile(path.join(LANCHA, 'criativos.json'), 'utf8'));
+  FOTOS = dados.fotos || {};
+  const prefixo = dados.prefixo || String(args.lancha);
+  // Campos que valem para todas as peças da lancha: lotação no chip, CTA, etc.
+  const padroes = dados.padroes_arte || {};
 
   const filtroId = args.id ? String(args.id).split(',') : null;
   const filtroFmt = args.so ? [String(args.so)] : ['feed', 'story'];
   const filtroModo = args.modo ? String(args.modo).split(',') : null;
   // Os preços em teste vêm do próprio JSON. O modo sóbrio não mostra preço na
   // arte, então para ele uma variante basta.
-  const precos = dados.precos_em_teste || { p1000: 'R$ 1.000' };
+  const precos = dados.precos_em_teste || {};
   const filtroPreco = args.preco ? String(args.preco).split(',') : Object.keys(precos);
 
   const itens = dados.criativos.filter((c) => !filtroId || filtroId.includes(c.key));
@@ -114,9 +127,9 @@ async function main() {
   /* As pastas de saída espelham a organização do Drive: uma por formato. */
   const PASTA = { feed: 'feed-1080x1350', story: 'story-1080x1920' };
   for (const sub of Object.values(PASTA)) {
-    await mkdir(path.join(AQUI, 'out', sub), { recursive: true });
+    await mkdir(path.join(LANCHA, 'out', sub), { recursive: true });
   }
-  await mkdir(path.join(AQUI, 'previa'), { recursive: true });
+  await mkdir(path.join(LANCHA, 'previa'), { recursive: true });
 
   const browser = await chromium.launch({
     args: ['--force-color-profile=srgb', '--font-render-hinting=none'],
@@ -124,7 +137,7 @@ async function main() {
 
   let n = 0;
   for (const c of itens) {
-    const temFoto = existsSync(path.join(AQUI, FOTOS[c.foto]));
+    const temFoto = FOTOS[c.foto] && existsSync(path.join(LANCHA, FOTOS[c.foto]));
     const foto_src = await resolverFoto(c.foto);
     if (!temFoto) faltando.push(`${c.key} → FOTO ${c.foto}`);
 
@@ -141,17 +154,17 @@ async function main() {
       const precosDoModo = modo === 'sobrio' ? [null] : filtroPreco;
 
       for (const chavePreco of precosDoModo) {
-      const item = { ...c, foto_src };
+      const item = { ...padroes, ...c, foto_src };
       if (chavePreco) item.preco_arte = precos[chavePreco];
       const html = montarHTML(item, fmtKey, modo);
-      const nome = `vpp18-${String(c.n).padStart(2, '0')}-${c.key}-${modo}` +
+      const nome = `${prefixo}-${String(c.n).padStart(2, '0')}-${c.key}-${modo}` +
                    `${chavePreco ? '-' + chavePreco : ''}-${fmtKey}`;
 
       // prévia navegável: mesmo HTML, com a foto por caminho relativo
       const fotoPrevia = temFoto ? `../${FOTOS[c.foto]}` : foto_src;
       // a prévia usa caminho relativo; o PNG usa o data URI acima
       await writeFile(
-        path.join(AQUI, 'previa', `${nome}.html`),
+        path.join(LANCHA, 'previa', `${nome}.html`),
         montarHTML({ ...c, foto_src: fotoPrevia }, fmtKey, modo),
         'utf8'
       );
@@ -163,7 +176,7 @@ async function main() {
       await page.setContent(html, { waitUntil: 'networkidle' });
       await page.evaluate(() => document.fonts.ready);
       await page.screenshot({
-        path: path.join(AQUI, 'out', PASTA[fmtKey], `${nome}.png`),
+        path: path.join(LANCHA, 'out', PASTA[fmtKey], `${nome}.png`),
         clip: { x: 0, y: 0, width: f.w, height: f.h },
       });
       await page.close();
@@ -175,7 +188,7 @@ async function main() {
   }
 
   await browser.close();
-  console.log(`\n${n} arquivos em out/${''}  ·  prévias navegáveis em previa/`);
+  console.log(`\n${n} arquivos em ${args.lancha}/out/  ·  prévias em ${args.lancha}/previa/`);
   console.log(`   out/feed-1080x1350/  ·  out/story-1080x1920/`);
   if (faltando.length) {
     console.log(

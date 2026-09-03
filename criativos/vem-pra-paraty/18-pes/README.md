@@ -28,8 +28,8 @@ dependem da lista de paradas.
 #    fotos/lancha18-b.jpg   lateral, coqueiros, água espelhada
 #    fotos/lancha18-c.jpg   lateral próxima, bancos do interior visíveis
 
-# 2. rode
-node gerar.mjs
+# 2. rode, a partir da pasta motor/
+cd ../motor && node gerar.mjs --lancha=18-pes
 
 # saída: out/*.png  ·  prévias navegáveis: previa/*.html
 ```
@@ -43,7 +43,7 @@ nem redimensione as fotos antes: o corte de cada formato é feito aqui.
 Outras opções:
 
 ```bash
-node gerar.mjs --modo=forte           # só o registro com preço na arte
+node gerar.mjs --lancha=18-pes --modo=forte         # só o registro com preço na arte
 node gerar.mjs --modo=sobrio          # só o registro sem preço na arte
 node gerar.mjs --so=feed              # só 1080×1350
 node gerar.mjs --so=story             # só 1080×1920
