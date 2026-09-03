@@ -76,12 +76,9 @@
       }
     },
     {
-      "arquivo": "WhatsApp_Video_20260827_at_12.24.16.mp4",
-      "inicio": 12.0,
-      "duracao": 2.0,
-      "movimento": {
-        "tipo": "dir"
-      }
+      "arquivo": "web-aerea.mp4",
+      "inicio": 0.0,
+      "duracao": 2.6
     },
     {
       "arquivo": "WhatsApp_Video_20260827_at_06.09.19_1.mp4",
@@ -212,11 +209,13 @@
       }
     },
     {
-      "arquivo": "WhatsApp_Video_20260826_at_19.17.31.mp4",
-      "inicio": 18.0,
+      "arquivo": "web-praia.mp4",
+      "inicio": 4.0,
       "duracao": 2.4,
       "movimento": {
-        "tipo": "dir"
+        "tipo": "push",
+        "de": 1.0,
+        "ate": 1.05
       }
     },
     {

@@ -52,19 +52,16 @@
       }
     },
     {
-      "arquivo": "WhatsApp_Video_20260826_at_16.47.24.mp4",
-      "inicio": 0.2,
-      "duracao": 2.6,
-      "movimento": {
-        "tipo": "dir"
-      },
+      "arquivo": "web-aerea.mp4",
+      "inicio": 0.0,
+      "duracao": 3.3,
       "texto": {
         "linhas": [
           "Paraty"
         ],
         "posicao": "cima",
-        "inicio": 0.6,
-        "duracao": 1.6,
+        "inicio": 0.8,
+        "duracao": 1.8,
         "tamanho": 1.0,
         "estilo": "titulo"
       }
@@ -78,19 +75,19 @@
       }
     },
     {
-      "arquivo": "WhatsApp_Video_20260827_at_06.09.19_2.mp4",
-      "inicio": 3.5,
-      "duracao": 3.6,
+      "arquivo": "web-praia.mp4",
+      "inicio": 12.0,
+      "duracao": 2.8,
       "movimento": {
         "tipo": "push",
         "de": 1.0,
-        "ate": 1.08
+        "ate": 1.05
       }
     },
     {
       "arquivo": "WhatsApp_Video_20260828_at_14.45.17.mp4",
       "inicio": 2.5,
-      "duracao": 3.6,
+      "duracao": 2.6,
       "movimento": {
         "tipo": "dir"
       }
@@ -158,7 +155,7 @@
     {
       "arquivo": "WhatsApp_Video_20260827_at_06.10.08.mp4",
       "inicio": 1.0,
-      "duracao": 3.2,
+      "duracao": 4.0,
       "movimento": {
         "tipo": "pull",
         "de": 1.07,
