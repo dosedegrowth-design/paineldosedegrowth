@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="beam" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0" stop-color="#1B4DD8" stop-opacity="0.30"/>
+      <stop offset="1" stop-color="#1B4DD8" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="gHorizon" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#0B1C46" stop-opacity="0"/>
+      <stop offset="0.25" stop-color="#12307E" stop-opacity="0.9"/>
+      <stop offset="0.5" stop-color="#1B4DD8"/>
+      <stop offset="0.75" stop-color="#12307E" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#0B1C46" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(512 512) scale(1) translate(-512 -526)">
+    <!-- beam -->
+    <path d="M512 300 L788 560 L236 560 Z" fill="url(#beam)" opacity="0.55"/>
+    <!-- horizonte / curvatura da Terra -->
+    <path d="M200 824 A 520 520 0 0 1 824 824" fill="none" stroke="url(#gHorizon)"
+          stroke-width="28" stroke-linecap="round"/>
+    <!-- arcos de sinal -->
+    <path d="M749.8 514.1 A 320 320 0 0 1 274.2 514.1" fill="none" stroke="#5B8CF0"
+          stroke-width="30" stroke-linecap="round" opacity="0.55"/>
+    <path d="M686.6 457.2 A 235 235 0 0 1 337.4 457.2" fill="none" stroke="#1B4DD8"
+          stroke-width="32" stroke-linecap="round" opacity="0.82"/>
+    <path d="M623.5 400.4 A 150 150 0 0 1 400.5 400.4" fill="none" stroke="#0B1C46"
+          stroke-width="34" stroke-linecap="round"/>
+    <!-- satelite -->
+    <circle cx="512" cy="300" r="72" fill="#0B1C46" opacity="0.12"/>
+    <circle cx="512" cy="300" r="46" fill="#0B1C46" opacity="0.22"/>
+    <circle cx="512" cy="300" r="30" fill="#0B1C46"/>
+    <!-- estrelas -->
+    <circle cx="252" cy="300" r="9" fill="#5B8CF0" opacity="0.75"/>
+    <circle cx="792" cy="252" r="7" fill="#5B8CF0" opacity="0.6"/>
+    <circle cx="748" cy="366" r="5" fill="#1B4DD8" opacity="0.5"/>
+    <circle cx="304" cy="432" r="5" fill="#1B4DD8" opacity="0.45"/>
+  </g>
+
+</svg>
