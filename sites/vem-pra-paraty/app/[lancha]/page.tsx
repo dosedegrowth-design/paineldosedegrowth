@@ -81,7 +81,23 @@ export default async function LanchaPage({
           São sugestões, não pacotes. Sem prometer duração nem número de paradas.
         </p>
       </Secao>
-      <Secao n={4} titulo="O que vai a bordo" />
+      <Secao n={4} titulo="O que vai a bordo">
+        <ul className="grid gap-2 sm:grid-cols-2">
+          {dados.operacao.incluso.map((i) => (
+            <li key={i.item} className="flex gap-2">
+              <span className="text-[var(--vpp-agua)]">·</span>
+              {i.item}
+            </li>
+          ))}
+        </ul>
+        <p className="mt-5 max-w-prose text-sm text-[var(--vpp-neutro-2)]">
+          Comida e bebida ficam por conta de vocês — tragam o que quiserem.
+          O almoço nas ilhas é opcional e pago direto no restaurante.
+        </p>
+        <p className="mt-3 max-w-prose text-sm text-[var(--vpp-neutro)]">
+          Nas paradas e nas ilhas o pagamento costuma ser só em dinheiro.
+        </p>
+      </Secao>
       <Secao n={5} titulo="Privativo × dividir o barco" />
       <Secao n={6} titulo="As perguntas que ninguém responde" />
       <Secao n={7} titulo="“Vai ter barco no dia?”" />
@@ -164,7 +180,6 @@ function CtaFixo({ slug }: { slug: string }) {
 function Travas({ lancha }: { lancha: Lancha }) {
   const travas: [string, unknown][] = [
     ["Número do WhatsApp", dados.marca.whatsapp],
-    ["O que vai a bordo", dados.operacao.incluso],
     ["Política de chuva", dados.operacao.politica_chuva],
     ["Política de cancelamento", dados.operacao.politica_cancelamento],
     ["Nomes dos marinheiros", dados.operacao.marinheiros],

@@ -98,19 +98,34 @@ Ordenado por quanto quebra se ficar sem resposta.
 - ~~Preços e comparação de mercado~~ → a LP não fala de valores.
 
 **Trava a LP inteira**
-1. **O que vai a bordo**, item a item. É a única seção que não tem como ser
-   escrita por dedução, e sem ela a seção 4 fica vazia.
+- Nada. A seção 4 foi escrita.
 
 **Trava seções específicas**
-2. **Lotação da 18 pés: 6 ou 7?** O briefing diz 7+1, as 48 artes foram feitas
+1. **Combustível está incluso?** Não dá pra deduzir: a pesquisa achou que
+   combustível incluso **não é padrão do setor** — é um fork real de mercado e
+   quem cobra à parte cobra caro. Se está incluso, é item de venda forte, porque
+   fecha a ansiedade de upsell do público de SP. Se não está, precisa aparecer
+   antes da conversa pra não virar briga no cais.
+2. **Cooler com gelo vai a bordo?** É padrão do mercado, mas não foi dito. Importa
+   porque comida e bebida são por conta do cliente: sem cooler, "tragam o que
+   quiserem" vira problema prático.
+3. **Lotação da 18 pés: 6 ou 7?** O briefing diz 7+1, as 48 artes foram feitas
    com 6. Sem isso, a ficha da 18 pés não mostra lotação.
-3. **Política de chuva** e **de cancelamento**, com prazo. É o que mais gera
+4. **Política de chuva** e **de cancelamento**, com prazo. É o que mais gera
    conflito pós-venda no setor. Publicar desarma; omitir vira reclamação.
-4. **Nomes dos marinheiros** + uma foto de cada.
-5. **Documentos**: TIE da Capitania, vistoria da Marinha, habilitação do condutor.
-6. **Inventário de coletes infantis por faixa de peso** — sem isso não roda nada
+5. **Nomes dos marinheiros** + uma foto de cada.
+6. **Documentos**: TIE da Capitania, vistoria da Marinha, habilitação do condutor.
+7. **Inventário de coletes infantis por faixa de peso** — sem isso não roda nada
    de família, nem na LP nem no anúncio.
-7. **A foto `24-pes-a-confirmar-conves-cais.jpg` é o barco de 24?**
+8. **A foto `24-pes-a-confirmar-conves-cais.jpg` é o barco de 24?**
+
+**Escrito (8/set)**
+- **O que vai a bordo:** fruta, água, boias e snorkel (confirmados pelo cliente),
+  mais marinheiro (fato do produto — ele não ocupa vaga) e coletes salva-vidas
+  (exigência da Marinha, o barco não navega sem). Fruta merece destaque: nenhum
+  concorrente mapeado oferece. Comida e bebida por conta do cliente entram como
+  liberdade, não como custo — é assim que o setor vende. E o aviso de que nas
+  ilhas o pagamento costuma ser só em dinheiro, que ninguém dá.
 
 **Não trava, mas melhora muito**
 12. Foto do **banheiro e da suíte** da 33 pés — são os dois argumentos centrais

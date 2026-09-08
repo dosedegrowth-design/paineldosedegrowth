@@ -140,7 +140,34 @@
   ],
   "operacao": {
     "duracao_horas": null,
-    "incluso": "PENDENTE — confirmar item a item contra o pacote-padrão do mercado",
+    "incluso": [
+      {
+        "item": "Fruta a bordo",
+        "origem": "confirmado"
+      },
+      {
+        "item": "Água",
+        "origem": "confirmado"
+      },
+      {
+        "item": "Boias",
+        "origem": "confirmado"
+      },
+      {
+        "item": "Snorkel",
+        "origem": "confirmado"
+      },
+      {
+        "item": "Marinheiro",
+        "origem": "inerente",
+        "_nota": "A lotação de cada barco já é descrita como 'N passageiros + 1 marinheiro' e o marinheiro não ocupa vaga. É fato do produto, não suposição."
+      },
+      {
+        "item": "Coletes salva-vidas",
+        "origem": "normativo",
+        "_nota": "Exigência da Marinha, o barco não navega sem. Seguro afirmar. Colete INFANTIL é por faixa de peso e continua a confirmar."
+      }
+    ],
     "incluso_padrao_do_mercado": [
       "marinheiro",
       "combustível",
@@ -170,7 +197,13 @@
     "documentos": "PENDENTE — TIE da Capitania dos Portos, vistoria da Marinha, habilitação do condutor (Arrais/Mestre Amador). Prova documental disponível e não usada por ninguém no mercado. 'Frota própria' sem documento é só adjetivo.",
     "_duracao": "NAO AFIRMAR duração em horas nem número de paradas. Varia por roteiro, por grupo e por condição do dia. A LP trata roteiro como escolha do cliente, não como bloco fechado. Quem quiser o número exato pergunta no WhatsApp.",
     "roteiro_personalizado": true,
-    "_roteiro_personalizado": "Os três roteiros abaixo são sugestões, não pacotes. O cliente pode montar o dia dele. Isso já está na copy dos anúncios: 'O roteiro quem escolhe são vocês.'"
+    "_roteiro_personalizado": "Os três roteiros abaixo são sugestões, não pacotes. O cliente pode montar o dia dele. Isso já está na copy dos anúncios: 'O roteiro quem escolhe são vocês.'",
+    "incluso_a_confirmar": {
+      "combustivel": "NAO ASSUMIR. A pesquisa achou que combustível incluso NÃO é padrão do setor — é um fork real de mercado, e quem cobra à parte cobra caro. Se estiver incluso, é item de venda forte e fecha a ansiedade de upsell do público de SP. Se não estiver, precisa aparecer antes da conversa pra não virar briga.",
+      "cooler_com_gelo": "Padrão do mercado, mas não foi dito. Importa porque a comida e a bebida são por conta do cliente — sem cooler a bordo, 'traga o que quiser' vira problema.",
+      "fruta_como": "Fruta cortada, servida durante o passeio? Vale detalhar: nenhum concorrente mapeado oferece fruta. É pequeno e é diferencial de verdade."
+    },
+    "_incluso_regra": "Só vai pra página o que tem origem 'confirmado', 'inerente' ou 'normativo'. Nada de incluso_a_confirmar aparece na LP até virar resposta."
   },
   "conta_de_anuncios": {
     "id": "1760209501849653",
