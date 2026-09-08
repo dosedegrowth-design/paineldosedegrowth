@@ -20,82 +20,97 @@ A LP não inventa posicionamento. Ela é a versão longa do que os anúncios já
 
 ## A tese, em uma frase
 
-Fechar a lancha custa menos por pessoa do que um assento na lancha compartilhada
-— e **nenhum dos 19 anúncios ativos do mercado de Paraty faz essa conta**, nem
-publica preço. A LP existe pra sustentar essa conta com prova, porque a conta é
-o que o anúncio promete e o WhatsApp hoje não consegue provar em escala.
+**A LP não fala de valores.** Nenhum preço: nem o nosso, nem o de concorrente,
+nem conta por pessoa, nem "a partir de". Preço só no WhatsApp — que é, aliás, o
+que metade do mercado de Paraty já faz.
 
-Isso muda por lancha:
+Isso tira do jogo a comparação de preço que sustentava os criativos. O que
+sobra da pesquisa é mais difícil de copiar e não envelhece com a tabela:
 
-| Lancha | Preço | Por pessoa | Contra a compartilhada (R$ 250) | O que vende |
-|---|---|---|---|---|
-| 18 pés | R$ 1.000 | R$ 167 (com 6) / R$ 143 (com 7) | ganha | a conta |
-| 24 pés | R$ 1.600 | R$ 133 (cheio, 12) | ganha por larga margem | a conta, na versão mais forte |
-| 33 pés | R$ 2.500 | R$ 278 (com 9) | **perde** | banheiro, suíte, 15 lugares |
+**O barco é de vocês. Ninguém embarca no meio do caminho, e o roteiro é de quem
+fechou.**
 
-A 33 pés nunca entra na comparação de preço por cabeça. Se a LP colocar as três
-lado a lado numa tabela de "por pessoa", ela mata a própria lancha de maior ticket.
+A escuna e a lancha compartilhada não têm como oferecer isso — e a queixa
+dominante contra elas não é preço, é aglomeração e roteiro engessado, com
+relatos de 200 pessoas a bordo. Ganha-se por lotação, não por preço; sem preço
+na página, isso deixa de ser apoio e vira o eixo.
+
+Os sete argumentos que sobrevivem sem cifra estão em `dados/vpp.json`, em
+`argumentos_da_lp`: lotação, roteiro próprio, criança, banheiro, frota própria,
+o marinheiro pelo nome, e a baía abrigada.
+
+O que cada lancha vende, então:
+
+| Lancha | Vende |
+|---|---|
+| 18 pés | O barco inteiro pro grupo pequeno, roteiro escolhido por eles |
+| 24 pés | Doze lugares num barco só — resolve quem hoje se divide em dois barcos |
+| 33 pés | Banheiro a bordo e suíte, que ninguém na praça tem. Mais 15 lugares |
+
+Os preços continuam em `dados/vpp.json`, dentro de blocos `_interno_*`, só como
+contexto de estratégia. Se algum aparecer renderizado na página, é bug — tem
+varredura de cifra no build pra pegar isso.
 
 ## Estrutura proposta — e de onde cada seção veio
 
-Ordem por objeção, não por vaidade. Cada uma responde uma pergunta que a pesquisa
-achou no mercado real.
+Ordem por objeção, não por vaidade. Nenhuma seção usa número.
 
-1. **Hero — a conta** · a comparação que ninguém faz + CTA WhatsApp.
-2. **Escolha o barco** · 3 cards. Preço fechado, lotação, mínimo, por pessoa. A
-   linha de apoio do mínimo é obrigatória — é o que impede o lead de chegar no
-   WhatsApp achando que o valor é por pessoa. (pesq-objecoes 3)
-3. **Os três roteiros, com as paradas nomeadas** · roteiro nomeado responde a
-   pergunta que o lead faz antes de fechar. Sem prometer mangue nem cachoeira no
-   Mamanguá — lancha não entra lá. (briefing + pesq-objecoes 17)
-4. **O que está incluso, o que não está** · precisa listar os MESMOS itens do
-   pacote da compartilhada, senão o "mais barato" vira comparação de coisas
-   diferentes e cai com uma frase. (pesq-objecoes 18)
-5. **Privativo × compartilhada × escuna** · ganha-se por lotação, não por preço.
-   A escuna é a âncora de baixo real (R$ 110–130), não a compartilhada. (pesq-objecoes 4, pesq-precos 15)
-6. **As perguntas que ninguém responde** · criança conta como passageiro (inclusive
-   bebê de colo); marinheiro não ocupa vaga; ninguém embarca no meio do caminho;
-   banheiro (resolver pela parada, não pelo silêncio); enjoo (a baía é abrigada);
-   e se chover. (pesq-objecoes 3, 5, 6, 7, 8, 22)
-7. **"Vai ter barco no dia?"** · frota própria + documentação da Capitania.
-   O medo real não é se o passeio é bom, é se o barco existe. Metade do mercado é
-   agência revendendo barco de terceiro. Prova documental que ninguém usa. (pesq-objecoes 13, 25, 26)
+1. **O barco é de vocês** · a promessa central + CTA WhatsApp.
+2. **Escolha o barco** · 3 cards com pés, lotação, mínimo e banheiro. Sem preço.
+   O mínimo é obrigatório onde existe — grupo de 3 ou 4 que descobre o mínimo só
+   no WhatsApp é conversa perdida e cliente irritado. (pesq-objecoes 3)
+3. **Os roteiros** · três sugestões com as paradas nomeadas, mais roteiro
+   personalizado no mesmo peso. Roteiro nomeado responde a pergunta que o lead
+   faz antes de fechar. **Sem afirmar duração nem número de paradas** — varia por
+   roteiro, grupo e condição do dia. Sem prometer mangue nem cachoeira no
+   Mamanguá: lancha não entra lá. (briefing + pesq-objecoes 17)
+4. **O que vai a bordo** · a lista de itens, sem valor e sem comparação.
+5. **Privativo × dividir o barco** · lotação, roteiro e horário. A comparação é
+   sempre com a categoria ("a escuna", "a compartilhada"), nunca com empresa, e
+   agora nunca com preço. (pesq-objecoes 4)
+6. **As perguntas que ninguém responde** · criança conta como passageiro,
+   inclusive bebê de colo; a compartilhada proíbe menor de 6 anos e tem assento
+   demarcado, o que empurra família com filho pequeno pro privativo por
+   obrigação; marinheiro não ocupa vaga; banheiro resolvido pela parada, não pelo
+   silêncio; enjoo tem resposta geográfica, a baía é abrigada; e se chover.
+   (pesq-objecoes 3, 5, 6, 7, 8, 22)
+7. **"Vai ter barco no dia?"** · frota própria + documentação da Capitania. O
+   medo real não é se o passeio é bom, é se o barco existe. Metade do mercado é
+   agência revendendo barco de terceiro. Prova documental que ninguém usa.
+   (pesq-objecoes 13, 25, 26)
 8. **Quem leva vocês** · o marinheiro pelo primeiro nome, com foto. A unidade de
-   confiança do mercado é a pessoa, não a marca — e nenhum anúncio da praça usa isso. (pesq-objecoes 12)
-9. **Como reserva** · sinal, saldo no dia, aviso de dinheiro nas ilhas, política de
-   chuva e de cancelamento publicadas. Prazo generoso publicado é a garantia mais
-   barata de comprar. (pesq-objecoes 8, 11, 20, 27)
-10. **FAQ** + **CTA WhatsApp fixo** com mensagem pré-preenchida por lancha.
+   confiança do mercado é a pessoa, não a marca. (pesq-objecoes 12)
+9. **Como reserva** · como funciona o combinado, política de chuva e de
+   cancelamento publicadas, e o aviso de que nas ilhas o pagamento costuma ser só
+   em dinheiro. Valores e sinal ficam pra conversa. (pesq-objecoes 8, 20, 27)
+10. **FAQ** + **CTA WhatsApp fixo**, com mensagem pré-preenchida por lancha.
 
-Seção 8 e a foto de família só entram depois das pendências abaixo.
+Seção 8 e qualquer peça de família só entram depois das pendências abaixo.
 
 ## O que trava — responder antes de escrever copy final
 
 Ordenado por quanto quebra se ficar sem resposta.
 
+**Resolvido**
+- ~~Número do WhatsApp~~ → `+55 24 99915-6631`, já no JSON e no CTA.
+- ~~Duração e número de paradas~~ → decidido não afirmar. Varia, e cabe roteiro
+  personalizado. Some da LP e vira conversa.
+- ~~Preços e comparação de mercado~~ → a LP não fala de valores.
+
 **Trava a LP inteira**
-1. **Número do WhatsApp** em formato E.164, e se é o mesmo pras três lanchas.
-2. **Duração do passeio em horas** e **quantas paradas**. O padrão do mercado é
-   5–6h. Se o R$ 1.000 cobrir menos que 5h, a comparação de preço desmonta
-   inteira — o consumidor compara bloco fechado contra bloco fechado.
-3. **O que está incluso**, item a item, contra a lista padrão do mercado
-   (marinheiro, combustível, coletes, cooler com gelo, água mineral, máscara e
-   snorkel, flutuadores).
+1. **O que vai a bordo**, item a item. É a única seção que não tem como ser
+   escrita por dedução, e sem ela a seção 4 fica vazia.
 
 **Trava seções específicas**
-4. **Lotação da 18 pés: 6 ou 7?** O briefing diz 7+1, as 48 artes foram feitas com
-   6. Muda o selo das peças e a conta por pessoa (R$ 167 × R$ 143).
-5. **Preço da 33 pés acima de 9 pessoas**, até os 15 lugares. Sem isso a seção da
-   33 não promete preço pra grupo grande.
-6. **Sinal** (% e forma) e **parcelamento**. A 20%, a barreira do "R$ 1.000" vira
-   R$ 200 e o CTA fica muito mais fácil.
-7. **Política de chuva** e **de cancelamento**, com prazo. É o que mais gera
-   conflito pós-venda no setor.
-8. **Nomes dos marinheiros** + uma foto de cada.
-9. **Documentos**: TIE da Capitania, vistoria da Marinha, habilitação do condutor.
-10. **Inventário de coletes infantis por faixa de peso** — sem isso não roda nada
-    de família, nem na LP nem no anúncio.
-11. **A foto `24-pes-a-confirmar-conves-cais.jpg` é o barco de 24?**
+2. **Lotação da 18 pés: 6 ou 7?** O briefing diz 7+1, as 48 artes foram feitas
+   com 6. Sem isso, a ficha da 18 pés não mostra lotação.
+3. **Política de chuva** e **de cancelamento**, com prazo. É o que mais gera
+   conflito pós-venda no setor. Publicar desarma; omitir vira reclamação.
+4. **Nomes dos marinheiros** + uma foto de cada.
+5. **Documentos**: TIE da Capitania, vistoria da Marinha, habilitação do condutor.
+6. **Inventário de coletes infantis por faixa de peso** — sem isso não roda nada
+   de família, nem na LP nem no anúncio.
+7. **A foto `24-pes-a-confirmar-conves-cais.jpg` é o barco de 24?**
 
 **Não trava, mas melhora muito**
 12. Foto do **banheiro e da suíte** da 33 pés — são os dois argumentos centrais
@@ -114,6 +129,11 @@ Ordenado por quanto quebra se ficar sem resposta.
 - **Funil:** a campanha de Mensagens continua indo direto pro WhatsApp — não se
   mexe no que já converte. A de Tráfego, que hoje manda pro perfil do Instagram,
   passa a apontar pra LP.
+- **Sem valores na página** (8/set). Preço só no WhatsApp.
+  *Consequência aberta:* 96 das 144 artes têm selo de preço. Anúncio com cifra
+  levando pra página sem cifra é atrito. Ou as artes do registro "forte" são
+  regeradas sem selo (`node gerar.mjs`, um comando por lancha), ou a LP recebe só
+  o tráfego das peças do registro "sóbrio", que já não têm preço. A decidir.
 - **Domínio:** ainda não há domínio próprio. O projeto Vercel
   `vem-pra-paraty-proposta` que já existe no time é a proposta comercial, não
   esta LP — a LP precisa de projeto novo.

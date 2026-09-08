@@ -1,16 +1,23 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Lancha } from "@/lib/dados";
-import { BRL, ROTULO, SLUGS, dados, getLancha, pendente } from "@/lib/dados";
+import {
+  ROTULO,
+  SLUGS,
+  dados,
+  getLancha,
+  linkWhatsApp,
+  pendente,
+} from "@/lib/dados";
 
 export function generateStaticParams() {
   return SLUGS.map((lancha) => ({ lancha }));
 }
 
 /**
- * Esqueleto da LP. Cada <Secao> abaixo é uma das dez da estrutura do
- * BRIEFING-LP.md, na ordem por objeção. O conteúdo real entra por instrução —
- * o que já está aqui é a moldura, os dados ligados e o aviso do que trava.
+ * Esqueleto da LP. As dez seções seguem a ordem por objeção do BRIEFING-LP.md.
+ * Sem valores em lugar nenhum: o eixo é privativo × dividir o barco com
+ * estranho, vendido por lotação, roteiro e liberdade. Preço, só no WhatsApp.
  */
 export default async function LanchaPage({
   params,
@@ -22,7 +29,7 @@ export default async function LanchaPage({
   if (!lancha) notFound();
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-10">
+    <main className="mx-auto max-w-3xl px-6 py-10 pb-28">
       <nav className="flex gap-2 text-sm">
         {SLUGS.map((s) => (
           <Link
@@ -43,38 +50,74 @@ export default async function LanchaPage({
         <p className="text-sm tracking-wide text-[var(--vpp-neutro-2)]">
           {lancha.pes} pés · lancha privativa · saída do cais de Paraty
         </p>
-        <p className="mt-3 font-[family-name:var(--vpp-display)] text-5xl text-[var(--vpp-sol)]">
-          {BRL.format(lancha.preco_fechado)}
-        </p>
-        <p className="mt-1 text-[var(--vpp-neutro-2)]">a lancha fechada</p>
-        <p className="mt-4 max-w-prose text-lg">{lancha.vende}</p>
+        <h1 className="mt-3 max-w-prose font-[family-name:var(--vpp-serif)] text-4xl leading-tight">
+          {lancha.vende}
+        </h1>
+        <Ficha lancha={lancha} />
       </header>
 
-      <Secao n={1} titulo="Hero — a conta" />
+      <Secao n={1} titulo="O barco é de vocês" />
       <Secao n={2} titulo="Escolha o barco" />
-      <Secao n={3} titulo="Os três roteiros, com as paradas nomeadas">
+      <Secao n={3} titulo="Os roteiros">
         <ul className="space-y-3">
           {dados.roteiros.map((r) => (
             <li key={r.id}>
               <span className="font-medium">{r.nome}</span>
-              <span className="text-[var(--vpp-neutro-2)]">
-                {" "}
-                — {r.paradas.length} paradas
-              </span>
+              {r.paradas.length > 0 ? (
+                <span className="text-[var(--vpp-neutro-2)]">
+                  {" "}
+                  — {r.paradas.join(", ")}
+                </span>
+              ) : (
+                <span className="text-[var(--vpp-neutro-2)]">
+                  {" "}
+                  — monte o dia de vocês
+                </span>
+              )}
             </li>
           ))}
         </ul>
+        <p className="mt-4 text-sm text-[var(--vpp-neutro)]">
+          São sugestões, não pacotes. Sem prometer duração nem número de paradas.
+        </p>
       </Secao>
-      <Secao n={4} titulo="O que está incluso, o que não está" />
-      <Secao n={5} titulo="Privativo × compartilhada × escuna" />
+      <Secao n={4} titulo="O que vai a bordo" />
+      <Secao n={5} titulo="Privativo × dividir o barco" />
       <Secao n={6} titulo="As perguntas que ninguém responde" />
       <Secao n={7} titulo="“Vai ter barco no dia?”" />
       <Secao n={8} titulo="Quem leva vocês" />
       <Secao n={9} titulo="Como reserva" />
-      <Secao n={10} titulo="FAQ + CTA fixo" />
+      <Secao n={10} titulo="FAQ" />
 
       <Travas lancha={lancha} />
+      <CtaFixo slug={slug} />
     </main>
+  );
+}
+
+/** Os fatos do barco que podem ser ditos hoje. Nenhum deles é valor. */
+function Ficha({ lancha }: { lancha: Lancha }) {
+  const itens: string[] = [];
+  if (!pendente(lancha.lotacao)) itens.push(`Até ${lancha.lotacao} passageiros`);
+  if (lancha.marinheiro_ocupa_vaga === false)
+    itens.push("O marinheiro não ocupa vaga");
+  if (lancha.minimo) itens.push(`Mínimo de ${lancha.minimo} pessoas`);
+  if (lancha.banheiro) itens.push("Banheiro a bordo");
+  if ("suite" in lancha && lancha.suite) itens.push("Suíte");
+
+  if (!itens.length) return null;
+
+  return (
+    <ul className="mt-6 flex flex-wrap gap-2 text-sm">
+      {itens.map((i) => (
+        <li
+          key={i}
+          className="rounded-full border border-[var(--vpp-navy-600)] px-3 py-1"
+        >
+          {i}
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -104,17 +147,29 @@ function Secao({
   );
 }
 
+function CtaFixo({ slug }: { slug: string }) {
+  return (
+    <div className="fixed inset-x-0 bottom-0 border-t border-[var(--vpp-navy-600)] bg-[var(--vpp-navy-800)] p-4">
+      <a
+        href={linkWhatsApp(slug)}
+        className="mx-auto block max-w-sm rounded bg-[var(--vpp-zap)] px-6 py-3 text-center font-medium text-white"
+      >
+        Falar no WhatsApp
+      </a>
+    </div>
+  );
+}
+
 /** Lista o que ainda impede esta lancha de ir pro ar. Some quando zerar. */
 function Travas({ lancha }: { lancha: Lancha }) {
   const travas: [string, unknown][] = [
-    ["WhatsApp", dados.marca.whatsapp],
-    ["Duração do passeio", dados.operacao.duracao_horas],
-    ["O que está incluso", dados.operacao.incluso],
-    ["Sinal", dados.operacao.sinal],
+    ["Número do WhatsApp", dados.marca.whatsapp],
+    ["O que vai a bordo", dados.operacao.incluso],
     ["Política de chuva", dados.operacao.politica_chuva],
     ["Política de cancelamento", dados.operacao.politica_cancelamento],
-    ["Marinheiros", dados.operacao.marinheiros],
-    ["Documentos", dados.operacao.documentos],
+    ["Nomes dos marinheiros", dados.operacao.marinheiros],
+    ["Documentos da Capitania", dados.operacao.documentos],
+    ["Coletes infantis", dados.operacao.coletes_infantis],
     ["Lotação", lancha.lotacao],
   ];
   const abertas = travas.filter(([, v]) => pendente(v));
