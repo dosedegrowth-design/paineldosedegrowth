@@ -94,16 +94,41 @@ export default async function LanchaPage({
           Comida e bebida ficam por conta de vocês — tragam o que quiserem.
           O almoço nas ilhas é opcional e pago direto no restaurante.
         </p>
-        <p className="mt-3 max-w-prose text-sm text-[var(--vpp-neutro)]">
-          Nas paradas e nas ilhas o pagamento costuma ser só em dinheiro.
-        </p>
       </Secao>
       <Secao n={5} titulo="Privativo × dividir o barco" />
-      <Secao n={6} titulo="As perguntas que ninguém responde" />
-      <Secao n={7} titulo="“Vai ter barco no dia?”" />
-      <Secao n={8} titulo="Quem leva vocês" />
-      <Secao n={9} titulo="Como reserva" />
-      <Secao n={10} titulo="FAQ" />
+      <Secao n={6} titulo="As perguntas que ninguém responde">
+        <dl className="space-y-5">
+          {perguntas(lancha).map(([p, r]) => (
+            <div key={p}>
+              <dt className="font-medium">{p}</dt>
+              <dd className="mt-1 max-w-prose text-[var(--vpp-neutro-2)]">{r}</dd>
+            </div>
+          ))}
+        </dl>
+      </Secao>
+      <Secao n={7} titulo="“Vai ter barco no dia?”">
+        <p className="max-w-prose">
+          A frota é nossa. Boa parte de quem vende passeio em Paraty é agência
+          revendendo barco de terceiro — e é aí que o grupo chega no cais e
+          descobre que não tem embarcação. Aqui o barco que vocês reservam é o
+          barco que sai.
+        </p>
+      </Secao>
+      <Secao n={8} titulo="Como reserva">
+        <p className="max-w-prose">
+          Chamem no WhatsApp com a data e quantas pessoas vão. A gente confere a
+          agenda e combina o resto por lá.
+        </p>
+        <p className="mt-4 max-w-prose text-[var(--vpp-neutro-2)]">
+          {dados.operacao.politica_chuva} Isso vale tanto pra chuva quanto pra
+          mudança de planos.
+        </p>
+        <p className="mt-4 max-w-prose text-sm text-[var(--vpp-neutro)]">
+          Nas paradas e nas ilhas o pagamento costuma ser só em dinheiro — vale
+          levar trocado.
+        </p>
+      </Secao>
+      <Secao n={9} titulo="FAQ" />
 
       <Travas lancha={lancha} />
       <CtaFixo slug={slug} />
@@ -135,6 +160,42 @@ function Ficha({ lancha }: { lancha: Lancha }) {
       ))}
     </ul>
   );
+}
+
+/**
+ * As seis perguntas que a pesquisa achou no mercado real e que nenhum anúncio
+ * da praça responde. Duas delas variam por barco.
+ */
+function perguntas(lancha: Lancha): [string, string][] {
+  const cabem = pendente(lancha.lotacao)
+    ? "O marinheiro não ocupa vaga."
+    : `Até ${lancha.lotacao} passageiros, e o marinheiro não ocupa vaga.`;
+
+  return [
+    [
+      "Cabem quantas pessoas?",
+      `${cabem} Criança conta como passageiro, inclusive bebê de colo — não existe meia-vaga.`,
+    ],
+    [
+      "Tem colete pra criança?",
+      "Tem, por faixa de peso. É exigência da Marinha e vai a bordo.",
+    ],
+    [
+      "Vai ter mais alguém no barco?",
+      "Não. O barco é de vocês e do marinheiro. Ninguém embarca no meio do caminho, e o roteiro é de quem fechou.",
+    ],
+    [
+      "Tem banheiro a bordo?",
+      lancha.banheiro
+        ? "Tem, e ainda tem suíte — pra trocar de roupa, a criança dormir ou fugir do sol."
+        : "Não. O roteiro passa por praias e ilhas com estrutura, e a parada é combinada com o marinheiro.",
+    ],
+    [
+      "Dá enjoo?",
+      "A baía de Paraty é abrigada, com pouca onda. É bem diferente de navegar em mar aberto.",
+    ],
+    ["E se chover?", dados.operacao.politica_chuva ?? ""],
+  ];
 }
 
 function Secao({
@@ -182,9 +243,6 @@ function Travas({ lancha }: { lancha: Lancha }) {
     ["Número do WhatsApp", dados.marca.whatsapp],
     ["Política de chuva", dados.operacao.politica_chuva],
     ["Política de cancelamento", dados.operacao.politica_cancelamento],
-    ["Nomes dos marinheiros", dados.operacao.marinheiros],
-    ["Documentos da Capitania", dados.operacao.documentos],
-    ["Coletes infantis", dados.operacao.coletes_infantis],
     ["Lotação", lancha.lotacao],
   ];
   const abertas = travas.filter(([, v]) => pendente(v));

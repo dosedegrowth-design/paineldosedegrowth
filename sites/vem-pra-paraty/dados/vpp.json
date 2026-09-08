@@ -142,12 +142,32 @@
     "duracao_horas": null,
     "incluso": [
       {
-        "item": "Fruta a bordo",
+        "item": "Marinheiro",
+        "origem": "inerente",
+        "_nota": "Não ocupa vaga. Já é fato do produto na lotação de cada barco."
+      },
+      {
+        "item": "Combustível",
+        "origem": "confirmado",
+        "_nota": "Cliente: 'óbvio, isso nem precisa ser batido'. Entra na lista sem destaque. Fica a ressalva de que a pesquisa achou que combustível incluso NÃO é padrão do setor e que quem cobra à parte cobra caro — pode ser diferencial maior do que parece de dentro."
+      },
+      {
+        "item": "Coletes salva-vidas",
+        "origem": "normativo",
+        "_nota": "Exigência da Marinha. Inclui coletes infantis, confirmados pelo cliente."
+      },
+      {
+        "item": "Cooler com gelo",
         "origem": "confirmado"
       },
       {
         "item": "Água",
         "origem": "confirmado"
+      },
+      {
+        "item": "Fruta a bordo",
+        "origem": "confirmado",
+        "_nota": "Nenhum concorrente mapeado oferece fruta. É pequeno e é diferencial de verdade — merece destaque, não fila."
       },
       {
         "item": "Boias",
@@ -156,16 +176,6 @@
       {
         "item": "Snorkel",
         "origem": "confirmado"
-      },
-      {
-        "item": "Marinheiro",
-        "origem": "inerente",
-        "_nota": "A lotação de cada barco já é descrita como 'N passageiros + 1 marinheiro' e o marinheiro não ocupa vaga. É fato do produto, não suposição."
-      },
-      {
-        "item": "Coletes salva-vidas",
-        "origem": "normativo",
-        "_nota": "Exigência da Marinha, o barco não navega sem. Seguro afirmar. Colete INFANTIL é por faixa de peso e continua a confirmar."
       }
     ],
     "incluso_padrao_do_mercado": [
@@ -188,22 +198,20 @@
     "dinheiro_nas_ilhas": "Nas paradas o pagamento é frequentemente só em dinheiro. Ninguém avisa isso no anúncio — avisar antes é cuidado barato que gera resposta.",
     "sinal": "PENDENTE — padrão do mercado é 20% a 40% via PIX com saldo no dia. A 20%, o desembolso imediato da 18 pés vira R$ 200 e a barreira do 'R$ 1.000' cai.",
     "parcelamento": "PENDENTE — o maior anunciante usa 'Em Até 12x' no título. Parcelamento já é território disputado; preço não é.",
-    "politica_chuva": "PENDENTE — padrão do setor é aviso até 21h da véspera. É a regra que mais gera conflito pós-venda no mercado (há reclamação pública de reembolso negado). Publicar desarma; omitir vira reclamação.",
-    "politica_cancelamento": "PENDENTE — o campo mais desorganizado do mercado: varia de 24h (perde tudo) a 15 dias (devolve tudo). Prazo generoso publicado é a garantia mais barata de comprar.",
+    "politica_chuva": "Avisando com antecedência, a gente remarca.",
+    "politica_cancelamento": "Avisando com antecedência, a gente remarca.",
     "crianca_conta_como_passageiro": true,
     "_crianca": "Inclusive bebê de colo. Não existe meia-vaga. Precisa estar na LP antes de atrair família.",
-    "coletes_infantis": "PENDENTE — colete infantil é exigência normativa por FAIXA DE PESO. Confirmar o inventário antes de publicar qualquer seção de família.",
-    "marinheiros": "PENDENTE — nomes. A unidade de confiança do mercado de Paraty é o NOME DO MARINHEIRO: as avaliações 5 estrelas elogiam a pessoa pelo primeiro nome, quase nunca a marca.",
-    "documentos": "PENDENTE — TIE da Capitania dos Portos, vistoria da Marinha, habilitação do condutor (Arrais/Mestre Amador). Prova documental disponível e não usada por ninguém no mercado. 'Frota própria' sem documento é só adjetivo.",
+    "coletes_infantis": "Disponíveis a bordo, por faixa de peso.",
+    "marinheiros": null,
+    "documentos": null,
     "_duracao": "NAO AFIRMAR duração em horas nem número de paradas. Varia por roteiro, por grupo e por condição do dia. A LP trata roteiro como escolha do cliente, não como bloco fechado. Quem quiser o número exato pergunta no WhatsApp.",
     "roteiro_personalizado": true,
     "_roteiro_personalizado": "Os três roteiros abaixo são sugestões, não pacotes. O cliente pode montar o dia dele. Isso já está na copy dos anúncios: 'O roteiro quem escolhe são vocês.'",
-    "incluso_a_confirmar": {
-      "combustivel": "NAO ASSUMIR. A pesquisa achou que combustível incluso NÃO é padrão do setor — é um fork real de mercado, e quem cobra à parte cobra caro. Se estiver incluso, é item de venda forte e fecha a ansiedade de upsell do público de SP. Se não estiver, precisa aparecer antes da conversa pra não virar briga.",
-      "cooler_com_gelo": "Padrão do mercado, mas não foi dito. Importa porque a comida e a bebida são por conta do cliente — sem cooler a bordo, 'traga o que quiser' vira problema.",
-      "fruta_como": "Fruta cortada, servida durante o passeio? Vale detalhar: nenhum concorrente mapeado oferece fruta. É pequeno e é diferencial de verdade."
-    },
-    "_incluso_regra": "Só vai pra página o que tem origem 'confirmado', 'inerente' ou 'normativo'. Nada de incluso_a_confirmar aparece na LP até virar resposta."
+    "_incluso_regra": "Só vai pra página o que tem origem 'confirmado', 'inerente' ou 'normativo'. Nada de incluso_a_confirmar aparece na LP até virar resposta.",
+    "_politica_prazo": "Cliente definiu como 'com antecedência', sem prazo em horas ou dias. Fica assim na página. Vale insistir num número depois: a pesquisa apontou a política de chuva como o maior gerador de conflito pós-venda do setor, com reclamação pública de reembolso negado, e o padrão de mercado é um prazo fixo (aviso até 21h da véspera).",
+    "_documentos": "Cliente: sem necessidade de adicionar. Fora da LP.",
+    "_marinheiros": "Cliente: sem necessidade de adicionar. A seção 'Quem leva vocês' sai da LP. Fica registrado que a pesquisa apontou o primeiro nome do marinheiro como a unidade de confiança do mercado — as avaliações 5 estrelas elogiam a pessoa, quase nunca a marca. Se um dia quiser, é uma seção barata de montar."
   },
   "conta_de_anuncios": {
     "id": "1760209501849653",
@@ -275,8 +283,7 @@
     "roteiro": "O roteiro e de quem fechou o barco. A compartilhada e a escuna tem roteiro fixo. Tres sugestoes nomeadas mais roteiro personalizado.",
     "crianca": "A lancha compartilhada de Paraty proibe crianca menor de 6 anos e tem assento demarcado. Isso transforma familia com filho pequeno em publico que so pode comprar privativo. Nenhum anuncio da praca usa isso.",
     "banheiro": "Criterio de compra forte o bastante pra virar nome de produto em concorrente. So a 33 pes tem. Nas outras duas, resolver pela parada — nao pelo silencio.",
-    "frota_propria": "O medo real nao e se o passeio e bom, e se vai ter barco no dia. Metade do mercado e agencia revendendo barco de terceiro. Frota propria com documento da Capitania e a resposta estrutural.",
-    "marinheiro": "A unidade de confianca do mercado e o primeiro nome do marinheiro, nao a marca. As avaliacoes 5 estrelas elogiam a pessoa.",
+    "frota_propria": "O medo real não é se o passeio é bom, é se vai ter barco no dia. Metade do mercado de Paraty é agência revendendo barco de terceiro, e é aí que o cliente fica sem embarcação. Frota própria responde isso sozinha — sem precisar exibir documento.",
     "enjoo": "Resposta geografica: a baia de Paraty e abrigada, com pouca onda."
   }
 }

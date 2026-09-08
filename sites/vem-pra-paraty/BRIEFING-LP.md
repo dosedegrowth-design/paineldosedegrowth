@@ -87,51 +87,49 @@ Ordem por objeção, não por vaidade. Nenhuma seção usa número.
 
 Seção 8 e qualquer peça de família só entram depois das pendências abaixo.
 
-## O que trava — responder antes de escrever copy final
-
-Ordenado por quanto quebra se ficar sem resposta.
-
-**Resolvido**
-- ~~Número do WhatsApp~~ → `+55 24 99915-6631`, já no JSON e no CTA.
-- ~~Duração e número de paradas~~ → decidido não afirmar. Varia, e cabe roteiro
-  personalizado. Some da LP e vira conversa.
-- ~~Preços e comparação de mercado~~ → a LP não fala de valores.
+## O que trava — 8/set, fim do dia
 
 **Trava a LP inteira**
-- Nada. A seção 4 foi escrita.
+- Nada.
 
-**Trava seções específicas**
-1. **Combustível está incluso?** Não dá pra deduzir: a pesquisa achou que
-   combustível incluso **não é padrão do setor** — é um fork real de mercado e
-   quem cobra à parte cobra caro. Se está incluso, é item de venda forte, porque
-   fecha a ansiedade de upsell do público de SP. Se não está, precisa aparecer
-   antes da conversa pra não virar briga no cais.
-2. **Cooler com gelo vai a bordo?** É padrão do mercado, mas não foi dito. Importa
-   porque comida e bebida são por conta do cliente: sem cooler, "tragam o que
-   quiserem" vira problema prático.
-3. **Lotação da 18 pés: 6 ou 7?** O briefing diz 7+1, as 48 artes foram feitas
-   com 6. Sem isso, a ficha da 18 pés não mostra lotação.
-4. **Política de chuva** e **de cancelamento**, com prazo. É o que mais gera
-   conflito pós-venda no setor. Publicar desarma; omitir vira reclamação.
-5. **Nomes dos marinheiros** + uma foto de cada.
-6. **Documentos**: TIE da Capitania, vistoria da Marinha, habilitação do condutor.
-7. **Inventário de coletes infantis por faixa de peso** — sem isso não roda nada
-   de família, nem na LP nem no anúncio.
-8. **A foto `24-pes-a-confirmar-conves-cais.jpg` é o barco de 24?**
+**Trava uma seção**
+1. **Lotação da 18 pés: 6 ou 7?** O briefing do cliente diz 7+1, as 48 artes
+   foram feitas com 6. Enquanto não vier, a ficha e a pergunta "cabem quantas
+   pessoas?" da 18 pés saem sem número. As outras duas lanchas estão zeradas.
 
-**Escrito (8/set)**
-- **O que vai a bordo:** fruta, água, boias e snorkel (confirmados pelo cliente),
-  mais marinheiro (fato do produto — ele não ocupa vaga) e coletes salva-vidas
-  (exigência da Marinha, o barco não navega sem). Fruta merece destaque: nenhum
-  concorrente mapeado oferece. Comida e bebida por conta do cliente entram como
-  liberdade, não como custo — é assim que o setor vende. E o aviso de que nas
-  ilhas o pagamento costuma ser só em dinheiro, que ninguém dá.
+**Vale insistir, não bloqueia**
+2. **Prazo concreto pra chuva e cancelamento.** Ficou "avisando com
+   antecedência, a gente remarca". A pesquisa apontou a política de chuva como o
+   maior gerador de conflito pós-venda do setor — há reclamação pública de
+   reembolso negado — e o padrão de mercado é prazo fixo (aviso até 21h da
+   véspera). Um número aqui é a garantia mais barata de comprar.
+3. **A foto `24-pes-a-confirmar-conves-cais.jpg` é o barco de 24?** Ficou fora
+   das peças porque o convés de teca não bate com o casco das outras.
+4. **Foto do banheiro e da suíte da 33 pés**, e fotos dela em resolução cheia
+   (as quatro atuais têm 768–960px). São os dois argumentos centrais da lancha de
+   maior ticket e não aparecem em imagem nenhuma.
 
-**Não trava, mas melhora muito**
-12. Foto do **banheiro e da suíte** da 33 pés — são os dois argumentos centrais
-    dela e não aparecem em nenhuma das quatro fotos.
-13. Fotos novas da 33 pés em resolução cheia (as atuais têm 768–960px).
-14. Diária de foto de meio período, 11h–14h, com gente a bordo.
+**Escrito**
+- **O que vai a bordo:** marinheiro (não ocupa vaga), combustível, coletes
+  salva-vidas incluindo infantis por faixa de peso, cooler com gelo, água, fruta,
+  boias e snorkel. Comida e bebida por conta do cliente entram como liberdade, e
+  não como custo — é assim que o setor vende.
+- **As perguntas que ninguém responde:** quantas pessoas cabem (criança conta,
+  inclusive bebê de colo), colete infantil, ninguém embarca no meio do caminho,
+  banheiro, enjoo (a baía é abrigada) e chuva. Banheiro e lotação variam por barco.
+- **"Vai ter barco no dia?":** frota própria, sem exibir documento.
+- **Como reserva:** data e número de pessoas pelo WhatsApp, remarcação avisando
+  com antecedência, e o aviso de levar trocado porque nas ilhas costuma ser só
+  dinheiro.
+
+**Fora da LP, por decisão do cliente**
+- **Documentos da Capitania.** Sem necessidade.
+- **Seção "Quem leva vocês", com nome e foto dos marinheiros.** Sem necessidade.
+  Fica registrado que a pesquisa apontou o primeiro nome do marinheiro como a
+  unidade de confiança do mercado: as avaliações 5 estrelas elogiam a pessoa,
+  quase nunca a marca. Se um dia quiser, é uma seção barata de montar.
+
+A LP passou de dez seções pra nove.
 
 ## Decisões tomadas (8/set/2026)
 
