@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FrotaCoverflow } from "@/components/frota-coverflow";
 import { notFound } from "next/navigation";
 import type { Lancha } from "@/lib/dados";
 import {
@@ -57,7 +58,15 @@ export default async function LanchaPage({
       </header>
 
       <Secao n={1} titulo="O barco é de vocês" />
-      <Secao n={2} titulo="Escolha o barco" />
+      <Secao n={2} titulo="Escolha o barco">
+        <p className="text-sm text-[var(--vpp-neutro)]">
+          O marinheiro vai junto em todas e não ocupa vaga.
+        </p>
+      </Secao>
+      {/* Sai da coluna de leitura de propósito: o coverflow ocupa a largura toda. */}
+      <div className="-mx-6">
+        <FrotaCoverflow />
+      </div>
       <Secao n={3} titulo="Os roteiros">
         <ul className="space-y-3">
           {dados.roteiros.map((r) => (

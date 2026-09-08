@@ -21,7 +21,7 @@
       "marinheiro_ocupa_vaga": false,
       "minimo": null,
       "banheiro": false,
-      "vende": "O barco inteiro pro grupo, sem dividir com estranho. E a porta de entrada da frota: grupo pequeno, roteiro escolhido por eles.",
+      "vende": "O barco inteiro pro grupo, sem dividir com estranho. É a porta de entrada da frota: grupo pequeno, roteiro escolhido por vocês.",
       "fotos": [
         "18-pes-lancha18-a.jpg",
         "18-pes-lancha18-b.jpg",
@@ -41,8 +41,8 @@
       "marinheiro_ocupa_vaga": false,
       "minimo": 6,
       "banheiro": false,
-      "vende": "Doze lugares num barco so. Resolve o grupo que hoje precisa se dividir em dois barcos ou aceitar sentar junto de desconhecido.",
-      "nunca_dizer": "Nada de preco. E nunca omitir o minimo de 6 pessoas: grupo de 3 ou 4 que chega no WhatsApp e descobre o minimo depois e conversa perdida e cliente irritado.",
+      "vende": "Doze lugares num barco só. Resolve o grupo que hoje precisa se dividir em dois barcos ou aceitar sentar junto de desconhecido.",
+      "nunca_dizer": "Nada de preço. E nunca omitir o mínimo de 6 pessoas: grupo de 3 ou 4 que chega no WhatsApp e descobre o mínimo depois é conversa perdida e cliente irritado.",
       "fotos": [
         "24-pes-lancha24-a.jpg",
         "24-pes-lancha24-b.jpg",
@@ -68,7 +68,7 @@
       "minimo": null,
       "banheiro": true,
       "suite": true,
-      "vende": "Banheiro a bordo e suite — o que nem a compartilhada nem nenhuma lancha de 18 pes da praca tem. Mais 15 lugares.",
+      "vende": "Banheiro a bordo e suíte — o que nem a compartilhada nem nenhuma lancha de 18 pés da praça tem. Mais 15 lugares.",
       "fotos": [
         "33-pes-lancha33-a.jpg",
         "33-pes-lancha33-b.jpg",
@@ -230,7 +230,7 @@
     "geo": "Grande São Paulo",
     "_distancia": "Quatro horas de São Paulo — usado como ângulo criativo (peça 04 da 18 pés)."
   },
-  "_regra_de_ouro": "A LP NAO FALA DE VALORES. Nenhum preco na pagina: nem o nosso, nem o de concorrente, nem conta por pessoa, nem 'a partir de'. Preco so no WhatsApp. Os numeros abaixo vivem em blocos _interno_* apenas como contexto de estrategia — se aparecerem renderizados na pagina, e bug.",
+  "_regra_de_ouro": "A LP NÃO FALA DE VALORES. Nenhum preço na página: nem o nosso, nem o de concorrente, nem conta por pessoa, nem 'a partir de'. Preço só no WhatsApp. Os números vivem em blocos _interno_* apenas como contexto de estratégia — se aparecerem renderizados na página, é bug.",
   "exibir_precos": false,
   "_interno_mercado_nao_exibir": {
     "_validade": "Levantado em setembro de 2026. Revalidar antes de virar estação.",
@@ -276,14 +276,14 @@
     "clique_vai_pro_perfil": "Boa parte do leilão manda o clique pro PERFIL DO INSTAGRAM, não pro WhatsApp. Funil mais fraco que o proposto.",
     "sazonalidade": "Preço da lancha privativa sobe ~40% na alta temporada (dezembro a março, Réveillon e Carnaval). Janeiro é pico de chuva (até 500mm) e guias recomendam evitar jan/fev pra passeio de barco. Abril a outubro é a janela recomendada. A urgência é econômica, datada e verificável.",
     "enjoo": "Resposta geográfica, não farmacológica: a baía de Paraty é abrigada, com pouca onda. Os próprios operadores usam isso como argumento de segurança inclusive em dia de chuva.",
-    "_uso": "Contexto de estrategia. NENHUM desses numeros vai pra pagina. O que sobrevive na LP e o argumento sem cifra: lotacao, roteiro proprio, crianca, banheiro, frota propria."
+    "_uso": "Contexto de estratégia. NENHUM desses números vai pra página. O que sobrevive na LP é o argumento sem cifra: lotação, roteiro próprio, criança, banheiro, frota própria."
   },
   "argumentos_da_lp": {
-    "lotacao": "Ninguem embarca no meio do caminho. A queixa dominante contra escuna e aglomeracao, com relatos de 200 pessoas a bordo. Ganha-se por lotacao, nao por preco — e sem preco na pagina isso vira o eixo principal, nao mais o apoio.",
-    "roteiro": "O roteiro e de quem fechou o barco. A compartilhada e a escuna tem roteiro fixo. Tres sugestoes nomeadas mais roteiro personalizado.",
-    "crianca": "A lancha compartilhada de Paraty proibe crianca menor de 6 anos e tem assento demarcado. Isso transforma familia com filho pequeno em publico que so pode comprar privativo. Nenhum anuncio da praca usa isso.",
-    "banheiro": "Criterio de compra forte o bastante pra virar nome de produto em concorrente. So a 33 pes tem. Nas outras duas, resolver pela parada — nao pelo silencio.",
+    "lotacao": "Ninguém embarca no meio do caminho. A queixa dominante contra escuna é aglomeração, com relatos de 200 pessoas a bordo. Ganha-se por lotação, não por preço — e sem preço na página isso vira o eixo principal, não mais o apoio.",
+    "roteiro": "O roteiro é de quem fechou o barco. A compartilhada e a escuna têm roteiro fixo. Três sugestões nomeadas mais roteiro personalizado.",
+    "crianca": "A lancha compartilhada de Paraty proíbe criança menor de 6 anos e tem assento demarcado. Isso transforma família com filho pequeno em público que só pode comprar privativo. Nenhum anúncio da praça usa isso.",
+    "banheiro": "Critério de compra forte o bastante pra virar nome de produto em concorrente. Só a 33 pés tem. Nas outras duas, resolver pela parada — não pelo silêncio.",
     "frota_propria": "O medo real não é se o passeio é bom, é se vai ter barco no dia. Metade do mercado de Paraty é agência revendendo barco de terceiro, e é aí que o cliente fica sem embarcação. Frota própria responde isso sozinha — sem precisar exibir documento.",
-    "enjoo": "Resposta geografica: a baia de Paraty e abrigada, com pouca onda."
+    "enjoo": "Resposta geográfica: a baía de Paraty é abrigada, com pouca onda."
   }
 }
