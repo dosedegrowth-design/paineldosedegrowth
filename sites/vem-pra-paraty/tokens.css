@@ -1,0 +1,41 @@
+/* Vem Pra Paraty — tokens visuais da LP
+   Herdados da direção de arte dos 144 criativos de Meta Ads, pra o anúncio e a
+   página parecerem a mesma marca. Origem: criativos/vem-pra-paraty/motor/arte.mjs
+   e direcao/carta-nautica.html (branch claude/vem-pra-paraty-meta-ads-b43uni). */
+
+:root {
+  /* Navy — o bloco sólido do registro "forte" das artes. Base da página. */
+  --vpp-navy-900: #04141F;
+  --vpp-navy-800: #07203A;
+  --vpp-navy-700: #0A2438;
+  --vpp-navy-600: #0B2D48;
+
+  /* Areia — o creme das artes sóbrias. Fundo claro das seções de leitura. */
+  --vpp-areia:    #F6EFE3;
+  --vpp-areia-2:  #F2EDE3;
+
+  /* Água — turquesa da baía. Destaque e links. */
+  --vpp-agua:     #17C3B2;
+  --vpp-agua-esc: #0E9AA7;
+
+  /* Sol — laranja e amarelo do emblema da proa. Acento e preço. */
+  --vpp-sol:      #FF7A45;
+  --vpp-sol-claro:#FFB84D;
+
+  /* Neutros de apoio */
+  --vpp-neutro:   #5A7C8E;
+  --vpp-neutro-2: #8CA9B8;
+
+  /* WhatsApp — só no CTA. Nunca decorativo. */
+  --vpp-zap:      #1FA855;
+
+  /* Tipografia. Mesmas três famílias das artes. */
+  --vpp-serif:   'Source Serif 4', Georgia, 'Times New Roman', serif;  /* títulos, registro sóbrio */
+  --vpp-sans:    'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; /* corpo, dados, tabela */
+  --vpp-display: 'Lilita One', 'Arial Black', system-ui, sans-serif;   /* números de preço, uso raro */
+}
+
+/* Regras herdadas da direção de arte — valem na LP também.
+   Sem starburst. Sem preço riscado. Sem selo de desconto. Sem emoji.
+   Nenhuma menção a concorrente pelo nome: a comparação é sempre com a categoria
+   ("a lancha compartilhada", "a escuna"), nunca com a empresa. */

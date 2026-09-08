@@ -1,0 +1,146 @@
+{
+  "_leia": "Fonte única de verdade da LP. Nada de número solto no JSX. Campos com PENDENTE bloqueiam publicação da seção correspondente. Origem dos dados: criativos/vem-pra-paraty/direcao/ (branch claude/vem-pra-paraty-meta-ads-b43uni).",
+
+  "marca": {
+    "nome": "Vem Pra Paraty",
+    "instagram": "@vempraparaty",
+    "whatsapp": "PENDENTE — número E.164, ex: 5524999999999",
+    "cidade": "Paraty, RJ",
+    "saida": "Cais de Paraty",
+    "frota_propria": true,
+    "_frota_propria_por_que": "Pesquisa: a maior parte do mercado de Paraty é agência que revende barco de terceiro, e é exatamente aí que o cliente fica sem embarcação no dia. Frota própria é a resposta estrutural à reclamação nº1 do setor."
+  },
+
+  "frota": [
+    {
+      "id": "18-pes",
+      "modelo": "Mestra 180",
+      "pes": 18,
+      "lotacao": "PENDENTE — briefing do cliente diz 7+1; as 48 artes foram feitas com 6+1",
+      "lotacao_briefing": 7,
+      "lotacao_artes": 6,
+      "marinheiro_ocupa_vaga": false,
+      "minimo": null,
+      "preco_fechado": 1000,
+      "por_pessoa_com_6": 167,
+      "por_pessoa_com_7": 143,
+      "banheiro": false,
+      "vende": "A conta invertida: fechar a lancha custa menos por pessoa que um assento na compartilhada.",
+      "fotos": ["18-pes-lancha18-a.jpg", "18-pes-lancha18-b.jpg", "18-pes-lancha18-c.jpg"],
+      "qualidade_foto": "originais 3024x4032, ótimas"
+    },
+    {
+      "id": "24-pes",
+      "pes": 24,
+      "lotacao": 12,
+      "marinheiro_ocupa_vaga": false,
+      "minimo": 6,
+      "preco_fechado": 1600,
+      "por_pessoa_cheio": 133,
+      "ponto_de_virada": 6.4,
+      "banheiro": false,
+      "vende": "Melhor preço por pessoa da frota. Do sétimo passageiro em diante ganha da compartilhada.",
+      "nunca_dizer": "R$ 133 sem dizer que é com o barco cheio de 12. E nunca omitir o mínimo de 6.",
+      "fotos": ["24-pes-lancha24-a.jpg", "24-pes-lancha24-b.jpg", "24-pes-lancha24-c.jpg", "24-pes-lancha24-d.jpg", "24-pes-lancha24-e.jpg", "24-pes-lancha24-f.jpg", "24-pes-lancha24-g.jpg", "24-pes-lancha24-h.jpg"],
+      "foto_a_confirmar": "24-pes-a-confirmar-conves-cais.jpg — convés de teca que não bate com o casco das outras. É o barco de 24?"
+    },
+    {
+      "id": "33-pes",
+      "pes": 33,
+      "lotacao": 15,
+      "marinheiro_ocupa_vaga": false,
+      "minimo": null,
+      "preco_fechado": 2500,
+      "preco_cobre_ate": 9,
+      "preco_acima_de_9": "PENDENTE — sem isso nenhuma seção pode prometer preço para grupo grande",
+      "por_pessoa_com_9": 278,
+      "banheiro": true,
+      "suite": true,
+      "vende": "Não vende por preço por cabeça (R$ 278 perde da compartilhada de R$ 250). Vende banheiro a bordo, suíte e 15 lugares — o que a compartilhada não tem como oferecer.",
+      "fotos": ["33-pes-lancha33-a.jpg", "33-pes-lancha33-b.jpg", "33-pes-lancha33-c.jpg", "33-pes-lancha33-d.jpg"],
+      "qualidade_foto": "RUIM — originais de 768 a 960px. Não usar em hero nem full-bleed. Falta foto do banheiro e da suíte, que são os dois argumentos centrais."
+    }
+  ],
+
+  "roteiros": [
+    {
+      "id": "sul",
+      "nome": "Baía de Paraty, lado sul",
+      "paradas": ["Praia Vermelha", "Ilha da Pescaria", "Praia da Lula", "Lagoa Azul", "Ilha dos Cocos", "Saco da Velha", "Ilha Comprida de Paraty"]
+    },
+    {
+      "id": "mamangua",
+      "nome": "Saco do Mamanguá",
+      "chamada": "O único fiorde do Brasil",
+      "paradas": ["Praia do Buraco", "Praia do Sobrado", "Praia do Engenho", "Praia do Cruzeiro (locação do filme Crepúsculo)", "Ilha dos Cocos"],
+      "armadilha": "NÃO prometer o mangue nem a Cachoeira do Rio Grande: só se entra com embarcação SEM motor (caiaque/canoa) ou por trilha. Lancha não entra. Não há taxa de visitação.",
+      "preco": "O fiorde não cobra premium no mercado — mesmo bloco de horas e mesmo patamar dos roteiros de baía. O diferencial é narrativo, não tarifário."
+    },
+    {
+      "id": "norte",
+      "nome": "Lado norte",
+      "paradas": ["Ilha do Malvão", "Ilha da Sapeca", "Ilha Comprida", "Ilha da Rapada", "Tartarugas na Ilha do Araújo", "Ilha do Ventura", "Ilha do Pico", "Canto do Morro", "Almoço na Ilha do Araújo"]
+    }
+  ],
+
+  "operacao": {
+    "duracao_horas": "PENDENTE — padrão do mercado é 5 a 6h. Se o R$ 1.000 cobrir menos de 5h, a comparação de preço desmonta.",
+    "paradas_por_passeio": "PENDENTE — a percepção de valor está no número de praias, não só nas horas",
+    "incluso": "PENDENTE — confirmar item a item contra o pacote-padrão do mercado",
+    "incluso_padrao_do_mercado": ["marinheiro", "combustível", "coletes", "cooler com gelo", "água mineral", "máscara e snorkel", "flutuadores"],
+    "_por_que_confirmar": "A lancha compartilhada de R$ 250 inclui todos esses itens. Se a LP não listar os MESMOS itens, o '35% mais barato' vira comparação de coisas diferentes e o concorrente derruba com uma frase.",
+    "nao_incluso": ["petiscos", "bebidas", "almoço nas ilhas"],
+    "almoco": "Opcional, pago direto no restaurante da ilha. Não está incluso em NENHUM operador, nem privativo nem compartilhado — isso preserva a comparação de preço. Não numerar o valor.",
+    "comida_bebida": "Por conta do cliente é regra do setor e se vende como LIBERDADE, não como custo extra. Cooler com gelo já vai a bordo.",
+    "dinheiro_nas_ilhas": "Nas paradas o pagamento é frequentemente só em dinheiro. Ninguém avisa isso no anúncio — avisar antes é cuidado barato que gera resposta.",
+    "sinal": "PENDENTE — padrão do mercado é 20% a 40% via PIX com saldo no dia. A 20%, o desembolso imediato da 18 pés vira R$ 200 e a barreira do 'R$ 1.000' cai.",
+    "parcelamento": "PENDENTE — o maior anunciante usa 'Em Até 12x' no título. Parcelamento já é território disputado; preço não é.",
+    "politica_chuva": "PENDENTE — padrão do setor é aviso até 21h da véspera. É a regra que mais gera conflito pós-venda no mercado (há reclamação pública de reembolso negado). Publicar desarma; omitir vira reclamação.",
+    "politica_cancelamento": "PENDENTE — o campo mais desorganizado do mercado: varia de 24h (perde tudo) a 15 dias (devolve tudo). Prazo generoso publicado é a garantia mais barata de comprar.",
+    "crianca_conta_como_passageiro": true,
+    "_crianca": "Inclusive bebê de colo. Não existe meia-vaga. Precisa estar na LP antes de atrair família.",
+    "coletes_infantis": "PENDENTE — colete infantil é exigência normativa por FAIXA DE PESO. Confirmar o inventário antes de publicar qualquer seção de família.",
+    "marinheiros": "PENDENTE — nomes. A unidade de confiança do mercado de Paraty é o NOME DO MARINHEIRO: as avaliações 5 estrelas elogiam a pessoa pelo primeiro nome, quase nunca a marca.",
+    "documentos": "PENDENTE — TIE da Capitania dos Portos, vistoria da Marinha, habilitação do condutor (Arrais/Mestre Amador). Prova documental disponível e não usada por ninguém no mercado. 'Frota própria' sem documento é só adjetivo."
+  },
+
+  "mercado": {
+    "_validade": "Levantado em setembro de 2026. Revalidar antes de virar estação.",
+    "lancha_compartilhada_por_pessoa": 250,
+    "lancha_compartilhada_faixa": [230, 300],
+    "compartilhada_restricoes": "Proíbe criança menor de 6 anos, assento demarcado, mínimo de 4 pessoas pra confirmar a saída, sem banheiro. Isso empurra família com filho pequeno pro privativo por obrigação.",
+    "escuna_por_pessoa": [110, 130],
+    "_escuna": "É a âncora de baixo real, não a compartilhada. Faz o MESMO roteiro da baía sul em 6h. A queixa dominante é aglomeração e roteiro engessado, com relatos de 200 pessoas a bordo. Ganha-se por LOTAÇÃO, não por preço. A escuna tem desconto de criança e a lancha fechada não — pra família com filhos pequenos o abismo vira 2,6x.",
+    "concorrentes_18_pes": [
+      {"nome": "Arraia Tours", "preco": 1199, "obs": "só pro casal"},
+      {"nome": "Muana", "preco": 1500},
+      {"nome": "Lancha Alternativa 21", "pes": 21, "preco": 1900, "obs": "MESMA capacidade de 7 passageiros, 6h — o comparável apples-to-apples. A Mestra 180 fica 47% abaixo com o mesmo número de cabeças."},
+      {"nome": "Safari Boats — Caiçara Experience", "preco": 999, "obs": "5h, até 4 pessoas. O ponto de preço R$ 1.000 já está ocupado."}
+    ],
+    "faixa_21_26_pes": [1600, 2300],
+    "banheiro_como_produto": "Concorrente colocou 'com Toilet' no nome do produto. Nem a compartilhada nem nenhuma lancha de 18 pés da praça tem banheiro.",
+    "ninguem_publica_preco": "Nenhum dos 19 anúncios ATIVOS das 6 páginas que mais anunciam em Paraty traz preço no criativo. Zero. Metade do mercado manda pro WhatsApp pra orçamento.",
+    "clique_vai_pro_perfil": "Boa parte do leilão manda o clique pro PERFIL DO INSTAGRAM, não pro WhatsApp. Funil mais fraco que o proposto.",
+    "sazonalidade": "Preço da lancha privativa sobe ~40% na alta temporada (dezembro a março, Réveillon e Carnaval). Janeiro é pico de chuva (até 500mm) e guias recomendam evitar jan/fev pra passeio de barco. Abril a outubro é a janela recomendada. A urgência é econômica, datada e verificável.",
+    "enjoo": "Resposta geográfica, não farmacológica: a baía de Paraty é abrigada, com pouca onda. Os próprios operadores usam isso como argumento de segurança inclusive em dia de chuva."
+  },
+
+  "conta_de_anuncios": {
+    "id": "1760209501849653",
+    "nome": "Vem Pra Paraty - 001",
+    "business": "DD Growth",
+    "moeda": "BRL",
+    "campanhas": [
+      "DD - 🟡 - Mensagens WhatsApp - Reserva Lancha - Grande SP",
+      "DD - 🟢 - Tráfego - Visitas ao Perfil IG - Grande SP",
+      "DD - 🔵 - Alcance e Reconhecimento - Grande SP",
+      "[APAGAR - criada por engano] Leads WhatsApp"
+    ],
+    "_nota": "O funil hoje termina no WhatsApp. A LP entra entre o anúncio e a conversa, então precisa decidir: a LP substitui o destino do anúncio ou convive com o clique direto pro WhatsApp?"
+  },
+
+  "publico": {
+    "geo": "Grande São Paulo",
+    "_distancia": "Quatro horas de São Paulo — usado como ângulo criativo (peça 04 da 18 pés)."
+  }
+}
