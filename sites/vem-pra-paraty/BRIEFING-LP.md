@@ -103,17 +103,31 @@ Ordenado por quanto quebra se ficar sem resposta.
 13. Fotos novas da 33 pés em resolução cheia (as atuais têm 768–960px).
 14. Diária de foto de meio período, 11h–14h, com gente a bordo.
 
-## Decisões de produto ainda em aberto
+## Decisões tomadas (8/set/2026)
 
-- **A LP substitui o WhatsApp como destino do anúncio, ou convive?** Hoje a
-  campanha de Mensagens vai direto pra conversa. LP no meio esfria o lead mas
-  qualifica e permite remarketing. Opção provável: Mensagens continua direto,
-  a campanha de Tráfego (que hoje manda pro perfil do Instagram) passa a mandar pra LP.
-- **Uma LP com as três lanchas, ou uma por lancha?** Os criativos são por lancha
-  e o argumento de cada uma é diferente — a 33 pés inclusive contradiz a conta das
-  outras duas. Três páginas com um seletor no topo resolve sem canibalizar.
-- **Domínio.** Não existe domínio próprio mapeado. Vercel é o caminho, o projeto
-  `vem-pra-paraty-proposta` já existe no time (é a proposta comercial, não a LP).
+- **Onde mora:** aqui, em `sites/vem-pra-paraty/`, junto dos criativos e da
+  pesquisa. App Next 16.2.4 próprio, Tailwind v4, mesma config do painel.
+  Deploy num projeto Vercel novo com Root Directory apontando pra esta pasta.
+- **Escopo:** três páginas, uma por lancha (`/18-pes`, `/24-pes`, `/33-pes`),
+  com seletor no topo. `/` redireciona pra `/24-pes`, que é a de argumento mais
+  forte. Separar era obrigatório: a 33 pés contradiz a conta das outras duas.
+- **Funil:** a campanha de Mensagens continua indo direto pro WhatsApp — não se
+  mexe no que já converte. A de Tráfego, que hoje manda pro perfil do Instagram,
+  passa a apontar pra LP.
+- **Domínio:** ainda não há domínio próprio. O projeto Vercel
+  `vem-pra-paraty-proposta` que já existe no time é a proposta comercial, não
+  esta LP — a LP precisa de projeto novo.
+
+## Estado do esqueleto
+
+`npx next build` passa, gerando as três páginas estáticas. O que está no ar é a
+moldura: seletor de lancha, cabeçalho com preço vindo do JSON, as dez seções
+numeradas vazias e um bloco "Trava publicação" que lista sozinho as pendências
+que ainda faltam pra aquela lancha. Some quando os campos deixarem de ser
+PENDENTE.
+
+`next.config.ts` fixa `turbopack.root` nesta pasta — sem isso o Turbopack sobe
+até a raiz do repo e tenta compilar o `middleware.ts` do painel.
 
 ## Regras que a LP herda dos anúncios
 

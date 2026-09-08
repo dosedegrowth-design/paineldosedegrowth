@@ -1,0 +1,25 @@
+@import "tailwindcss";
+@import "../tokens.css";
+
+/* A LP herda a paleta e a tipografia dos 144 criativos de Meta Ads.
+   Os tokens ficam em tokens.css, na raiz do projeto, pra poderem ser lidos
+   também pelo motor de arte sem passar pelo build do Next. */
+
+@theme inline {
+  --color-navy-900: var(--vpp-navy-900);
+  --color-navy-800: var(--vpp-navy-800);
+  --color-navy-700: var(--vpp-navy-700);
+  --color-navy-600: var(--vpp-navy-600);
+  --color-areia: var(--vpp-areia);
+  --color-agua: var(--vpp-agua);
+  --color-sol: var(--vpp-sol);
+  --color-zap: var(--vpp-zap);
+  --font-serif: var(--vpp-serif);
+  --font-sans: var(--vpp-sans);
+}
+
+body {
+  background: var(--vpp-navy-900);
+  color: var(--vpp-areia);
+  font-family: var(--vpp-sans);
+}
