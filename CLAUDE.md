@@ -27,6 +27,7 @@
 | Repo GitHub | `dosedegrowth-design/paineldosedegrowth` |
 | Branch principal | `main` |
 | Domínio produção | `https://painel.dosedegrowth.com` (alias do Vercel — o antigo `paineltrafego.dosedegrowth.com.br` saiu do DNS) |
+| LP Carolina Kühn | `https://www.carolinakuhn.com.br` (domínio dela no registro.br, A → `76.76.21.21`; raiz reescreve pra `/carol` no middleware) |
 | Vercel project | `dose-de-growths-projects/paineldosedegrowth` |
 | Supabase project | `hkjukobqpjezhpxzplpj` (DDG, sa-east-1) |
 | Schema | `trafego_ddg` |
