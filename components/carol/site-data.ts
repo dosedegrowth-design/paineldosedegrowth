@@ -27,13 +27,15 @@ export const MOSTRAR_DEPOIMENTOS = false;
 export const DEPOIMENTOS: { nome: string; texto: string }[] = [];
 
 /* ---------- números — últimos 30 dias ---------- */
-/* Prints do Insights (10/ago/2026); interações/visitas/cliques do briefing. */
+/* Prints do Insights (10/ago/2026); interações/visitas/cliques do briefing.
+   Seguidores atualizados pela Carol em set/2026 ("mais de 5 mil em 30
+   dias") — quando ela mandar o print novo, atualizar o resto junto. */
 
 export const METRICAS = [
   { valor: "2,16 mi", rotulo: "visualizações", detalhe: "96,2% de público novo" },
   { valor: "1,26 mi", rotulo: "contas alcançadas", detalhe: "em 30 dias" },
   { valor: "431,8 mil", rotulo: "interações", detalhe: "288,4 mil contas engajadas" },
-  { valor: "+3.704", rotulo: "novos seguidores", detalhe: "em 30 dias" },
+  { valor: "+5 mil", rotulo: "novos seguidores", detalhe: "em 30 dias (set/2026)" },
   { valor: "98,2%", rotulo: "das views em Reels", detalhe: "vídeo é o formato dela" },
   { valor: "16.095", rotulo: "visitas ao perfil", detalhe: "476 cliques no link" },
 ] as const;
@@ -172,11 +174,11 @@ export const CAMINHOS = [
 ] as const;
 
 /* ---------- comunidade ---------- */
-/* Números do áudio da Carol (ago/2026). */
+/* Números da Carol (lista de espera atualizada por ela em set/2026). */
 
 export const COMUNIDADE_STATS = [
   { valor: "70", rotulo: "mulheres na comunidade", detalhe: "ativas no grupo do WhatsApp" },
-  { valor: "+93", rotulo: "na lista de espera", detalhe: "cerca de 170 mulheres no total" },
+  { valor: "+230", rotulo: "na lista de espera", detalhe: "mais de 300 mulheres no total" },
   { valor: "100%", rotulo: "conteúdo focado nelas", detalhe: "tudo que a Carol cria hoje" },
 ] as const;
 
@@ -211,11 +213,10 @@ export const FORMATOS_MARCAS = [
 /* ---------- serviços ---------- */
 
 export const SERVICOS = [
-  { icone: "Camera", titulo: "Fotografia profissional", texto: "Fotos autorais com olhar editorial — também como serviço à parte." },
   { icone: "Clapperboard", titulo: "Filmagem de alta qualidade", texto: "Captação pensada pra reter atenção nos 3 primeiros segundos." },
   { icone: "Film", titulo: "Edição profissional", texto: "Cortes, ritmo e legendas que seguram o viewer até o CTA." },
   { icone: "Lightbulb", titulo: "Conceitos e ideias", texto: "Criação estratégica: cada vídeo nasce de um objetivo de negócio." },
-  { icone: "Mic", titulo: "Narração e fala direta", texto: "Presença de câmera vinda do ballet — técnica, não improviso." },
+  { icone: "Mic", titulo: "Narração e fala direta", texto: "Presença de câmera vinda do balé — técnica, não improviso." },
   { icone: "ScrollText", titulo: "Roteiro", texto: "Escrita e leitura de roteiro com storytelling que converte." },
   { icone: "Quote", titulo: "Depoimentos", texto: "Testemunhos com tom real — o formato que mais gera confiança." },
   { icone: "PackageOpen", titulo: "Demonstração & unboxing", texto: "Produto em uso, primeira impressão e prova social autêntica." },

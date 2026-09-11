@@ -9,7 +9,7 @@ const LINKS = [
   { href: "#sobre", label: "Sobre" },
   { href: "#numeros", label: "Números" },
   { href: "#portfolio", label: "Portfólio" },
-  { href: "#fotografia", label: "Fotografia" },
+  { href: "#fotografia", label: "Ensaios" },
   { href: "#servicos", label: "Serviços" },
   { href: "#comunidade", label: "Comunidade" },
   { href: "#investimento", label: "Investimento" },

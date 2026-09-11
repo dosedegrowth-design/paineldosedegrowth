@@ -75,7 +75,7 @@ export function CarolNumeros() {
                 seguidores
               </p>
               <p className="carol-display mt-1 text-2xl text-[var(--carol-accent-light)]">
-                <CountUp value="+3.704" />
+                <CountUp value="+5 mil" />
               </p>
             </div>
           </Reveal>

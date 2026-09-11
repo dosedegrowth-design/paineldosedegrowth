@@ -50,8 +50,8 @@ export function CarolSobre() {
                 decide o que vai ao ar, não do lado de quem aparece.
               </p>
               <p>
-                Antes da publicidade, o palco: a presença de câmera vem da{" "}
-                <strong className="text-[var(--carol-ink)]">formação no ballet</strong> —
+                Antes da publicidade, o palco: a presença de câmera vem da sua{" "}
+                <strong className="text-[var(--carol-ink)]">atuação no balé</strong> —
                 e, além de criar, ela também atua como{" "}
                 <strong className="text-[var(--carol-ink)]">modelo</strong>.
                 Performance, expressão e disciplina são técnica, não improviso.

@@ -4,9 +4,9 @@ import { Reveal } from "./reveal";
 import { ORCAMENTO_URL } from "./site-data";
 import { PORTFOLIO_FOTOS } from "./portfolio-fotos";
 
-/* Portfólio fotográfico completo + fotografia/modelo como serviço à
-   parte — pedido da Carol no áudio, reforçado pelo Lucas: galeria de
-   verdade, com as 65 fotos profissionais navegáveis. */
+/* Portfólio de ensaios da Carol como MODELO — serviço à parte do UGC.
+   Pedido dela (set/2026): nada de "fotógrafa" na página; o que fica é
+   criadora de conteúdo, estrategista, modelo e bailarina. */
 export function CarolFotografia() {
   return (
     <section id="fotografia" className="bg-[var(--carol-bg-soft)] py-24 md:py-32">
@@ -15,22 +15,22 @@ export function CarolFotografia() {
           <Reveal className="max-w-2xl">
             <p className="carol-eyebrow flex items-center gap-2">
               <Camera className="h-3.5 w-3.5" />
-              Portfólio fotográfico · serviço à parte
+              Ensaios profissionais · serviço à parte
             </p>
             <h2 className="carol-display mt-4 text-4xl text-[var(--carol-ink)] md:text-5xl">
-              Fotografia profissional{" "}
+              Ensaios como{" "}
               <span className="carol-display-italic text-[var(--carol-accent-deep)]">
-                &amp; modelo
+                modelo
               </span>
             </h2>
             <p className="mt-5 text-[15px] leading-relaxed text-[var(--carol-muted)]">
               {PORTFOLIO_FOTOS.length} fotos de ensaios e campanhas reais.
-              Além do UGC, a Carol atende como{" "}
-              <strong className="text-[var(--carol-ink)]">fotógrafa</strong> —
-              e também do outro lado da lente, como{" "}
-              <strong className="text-[var(--carol-ink)]">modelo</strong>, com
-              a presença de cena que vem do ballet. Duas frentes contratáveis
-              separadamente do conteúdo em vídeo.
+              Além do conteúdo em vídeo, a Carol atua como{" "}
+              <strong className="text-[var(--carol-ink)]">modelo</strong> —
+              com a presença de cena que vem da sua atuação como{" "}
+              <strong className="text-[var(--carol-ink)]">bailarina</strong>.
+              Uma frente contratável à parte pra ensaios e campanhas da sua
+              marca.
             </p>
           </Reveal>
           <Reveal delay={0.08}>
@@ -41,7 +41,7 @@ export function CarolFotografia() {
               className="carol-btn carol-btn-primary !px-7 !py-3.5 !text-[13.5px]"
             >
               <Sparkle className="h-4 w-4" />
-              Orçar fotos ou campanha
+              Orçar ensaio ou campanha
             </a>
           </Reveal>
         </div>

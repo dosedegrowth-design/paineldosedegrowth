@@ -7,8 +7,8 @@ import { PORTFOLIO_FOTOS } from "./portfolio-fotos";
 
 const INICIAIS = 18;
 
-/* Portfólio fotográfico completo: masonry com as 65 fotos profissionais
-   da Carol + lightbox navegável (setas, teclado, contador). */
+/* Portfólio de ensaios: masonry com as 65 fotos profissionais da Carol
+   + lightbox navegável (setas, teclado, contador). */
 export function CarolGaleria() {
   const [todas, setTodas] = useState(false);
   const [aberta, setAberta] = useState<number | null>(null);

@@ -62,7 +62,7 @@ export function CarolHero() {
 
         <Reveal delay={0.24}>
           <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--carol-muted)]">
-            UGC creator, estrategista, fotógrafa e modelo. Conteúdo 100%
+            UGC creator, estrategista, modelo e bailarina. Conteúdo 100%
             focado em mulheres — e pensado pra gerar resultado.
           </p>
         </Reveal>
@@ -86,7 +86,7 @@ export function CarolHero() {
             {[
               { v: "2,16 mi", l: "visualizações / 30 dias" },
               { v: "1,26 mi", l: "contas alcançadas" },
-              { v: "+3,7 mil", l: "seguidores / 30 dias" },
+              { v: "+5 mil", l: "seguidores / 30 dias" },
             ].map((s) => (
               <div key={s.l} className="text-center">
                 <dt className="sr-only">{s.l}</dt>

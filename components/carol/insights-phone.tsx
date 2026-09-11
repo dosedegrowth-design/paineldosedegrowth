@@ -81,7 +81,7 @@ export function InsightsPhone({ className }: { className?: string }) {
         </div>
 
         <p className="px-4 pt-1 text-[9.5px] text-black/40">
-          Dados reais do Instagram Insights · 10/ago/2026
+          Dados reais do Instagram Insights · ago–set/2026
         </p>
       </div>
     </div>

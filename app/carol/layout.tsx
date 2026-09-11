@@ -6,7 +6,7 @@ import { IG_URL, TIKTOK_URL } from "@/components/carol/site-data";
 
 const TITLE = "Carolina Kühn — UGC Creator & Estrategista";
 const DESCRIPTION =
-  "8+ anos de estratégia nos bastidores de marcas como Nestlé, Itaú e Apple — agora na frente da câmera. UGC, fotografia, e uma comunidade de mulheres que confia. 2,16 mi de visualizações em 30 dias.";
+  "8+ anos de estratégia nos bastidores de marcas como Nestlé, Itaú e Apple — agora na frente da câmera. UGC, modelo e uma comunidade de mulheres que confia. 2,16 mi de visualizações em 30 dias.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://painel.dosedegrowth.com"),
@@ -36,12 +36,11 @@ const jsonLd = {
   name: "Carolina Kühn",
   jobTitle: "UGC Creator e Estrategista de Conteúdo",
   description:
-    "Publicitária com 8+ anos de mercado digital, UGC creator e fotógrafa. Atuou na estratégia e criação de conteúdo para Nestlé, Itaú, Caudalie, McDonald's, Apple, ONU e Clinique.",
+    "Publicitária com 8+ anos de mercado digital, UGC creator, modelo e bailarina. Atuou na estratégia e criação de conteúdo para Nestlé, Itaú, Caudalie, McDonald's, Apple, ONU e Clinique.",
   knowsAbout: [
     "UGC",
     "Marketing de influência",
     "Estratégia de conteúdo",
-    "Fotografia",
   ],
   sameAs: [IG_URL, TIKTOK_URL],
 };
