@@ -17,8 +17,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
-  // Subdomínio da LP da Carolina Kühn (carol.dosedegrowth.com): raiz mostra a LP
-  if (host.startsWith("carol.") && request.nextUrl.pathname === "/") {
+  // LP da Carolina Kühn: raiz mostra a LP tanto no subdomínio carol.*
+  // quanto no domínio próprio dela (carol*/daybycarol* — ex.:
+  // carolinakuhn.com.br, com ou sem www)
+  const bareHost = host.replace(/^www\./, "").toLowerCase();
+  if (
+    (bareHost.startsWith("carol") || bareHost.startsWith("daybycarol")) &&
+    request.nextUrl.pathname === "/"
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = "/carol";
     return NextResponse.rewrite(url);
