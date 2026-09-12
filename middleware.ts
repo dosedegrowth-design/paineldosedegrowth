@@ -21,12 +21,18 @@ export async function middleware(request: NextRequest) {
   // quanto no domínio próprio dela (carol*/daybycarol* — ex.:
   // carolinakuhn.com.br, com ou sem www)
   const bareHost = host.replace(/^www\./, "").toLowerCase();
-  if (
-    (bareHost.startsWith("carol") || bareHost.startsWith("daybycarol")) &&
-    request.nextUrl.pathname === "/"
-  ) {
+  const hostCarol =
+    bareHost.startsWith("carol") || bareHost.startsWith("daybycarol");
+  if (hostCarol && request.nextUrl.pathname === "/") {
     const url = request.nextUrl.clone();
     url.pathname = "/carol";
+    return NextResponse.rewrite(url);
+  }
+  // No domínio dela, /favicon.ico (que o root layout e os navegadores
+  // pedem direto) vira o ícone da Carol, não o do painel
+  if (hostCarol && request.nextUrl.pathname === "/favicon.ico") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/carol/favicon.ico";
     return NextResponse.rewrite(url);
   }
 
@@ -115,9 +121,10 @@ export const config = {
      * Match all paths except:
      * - _next/static (static files)
      * - _next/image (image optimization files)
-     * - favicon.ico
      * - public assets
+     * (favicon.ico passa pelo middleware de propósito: no domínio da
+     *  Carol ele é reescrito pro ícone dela — está em publicPaths)
      */
-    "/((?!_next/static|_next/image|favicon.ico|brand|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|brand|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

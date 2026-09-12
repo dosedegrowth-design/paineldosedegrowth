@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Favicon da LP da Carolina Kühn: florzinha da LP (botanicals.tsx)
+       em creme sobre verde musgo, paleta do carol.css -->
+  <rect width="64" height="64" rx="16" fill="#5f6c38"/>
+  <g fill="none" stroke="#f6f1e7" stroke-width="3.2" stroke-linecap="round">
+    <ellipse cx="32" cy="17.5" rx="7" ry="11.5"/>
+    <ellipse cx="32" cy="17.5" rx="7" ry="11.5" transform="rotate(72 32 32)"/>
+    <ellipse cx="32" cy="17.5" rx="7" ry="11.5" transform="rotate(144 32 32)"/>
+    <ellipse cx="32" cy="17.5" rx="7" ry="11.5" transform="rotate(216 32 32)"/>
+    <ellipse cx="32" cy="17.5" rx="7" ry="11.5" transform="rotate(288 32 32)"/>
+  </g>
+  <circle cx="32" cy="32" r="5" fill="#f6f1e7"/>
+</svg>
