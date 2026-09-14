@@ -1,0 +1,843 @@
+/* ============================================================
+   TAYSSA — Private Beauty Experience
+   Sistema de design próprio, escopado em .ty-scope.
+   Dia (público) = marfim. Noite (privado) = noir café.
+   Só transform / opacity / clip-path animam. Nada de layout.
+   ============================================================ */
+
+.ty-scope {
+  /* paleta */
+  --t-ivory: #f4efe8;
+  --t-bone: #e8e0d5;
+  --t-sand: #cdbfb0;
+  --t-umber: #6b5a4e;
+  --t-ink: #1a1512;
+  --t-noir: #100d0b;
+  --t-cassis: #6e2f45;
+  --t-cassis-soft: #a5647a;
+
+  /* semânticos — dia */
+  --t-bg: var(--t-ivory);
+  --t-bg-2: var(--t-bone);
+  --t-fg: var(--t-ink);
+  --t-fg-2: var(--t-umber);
+  --t-line: rgba(26, 21, 18, 0.14);
+  --t-line-strong: rgba(26, 21, 18, 0.32);
+  --t-accent: var(--t-cassis);
+  --t-accent-fg: #ffffff;
+  --t-photo: #d9cfc3;
+  --t-photo-2: #c4b6a7;
+  --t-ok: #4f7a5f;
+  --t-wait: #9a7b3f;
+
+  /* tipografia */
+  --t-font-display: "Montserrat", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --t-font-body: "Montserrat", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+
+  /* motion — uma física só */
+  --t-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+  --t-ease-micro: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --t-micro: 200ms;
+  --t-ui: 420ms;
+  --t-content: 820ms;
+  --t-section: 1050ms;
+  --t-cine: 1450ms;
+
+  /* layout */
+  --t-gutter: clamp(20px, 5vw, 72px);
+  --t-nav-h: 72px;
+  --t-max: 1600px;
+
+  background: var(--t-bg);
+  color: var(--t-fg);
+  font-family: var(--t-font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  color-scheme: light;
+  position: relative;
+}
+
+.ty-scope[data-theme="night"],
+.ty-night {
+  --t-bg: var(--t-noir);
+  --t-bg-2: #1a1512;
+  --t-fg: #f1eae1;
+  --t-fg-2: rgba(241, 234, 225, 0.62);
+  --t-line: rgba(241, 234, 225, 0.14);
+  --t-line-strong: rgba(241, 234, 225, 0.34);
+  --t-accent: var(--t-cassis-soft);
+  --t-accent-fg: #100d0b;
+  --t-photo: #2a2320;
+  --t-photo-2: #382f2a;
+  --t-ok: #86b396;
+  --t-wait: #d0b06a;
+  color-scheme: dark;
+}
+
+/* o body do app é escuro; aqui o chão acompanha o tema da experiência */
+body:has(.ty-scope) {
+  background: #f4efe8;
+}
+body:has(.ty-scope[data-theme="night"]) {
+  background: #100d0b;
+}
+
+@layer base {
+  .ty-scope * {
+    border-color: var(--t-line);
+  }
+}
+
+.ty-scope ::selection {
+  background: var(--t-accent);
+  color: var(--t-accent-fg);
+}
+
+.ty-scope a {
+  text-decoration: none;
+}
+.ty-scope a:not(.ty-btn) {
+  color: inherit;
+}
+/* Reset de botão em :where() — especificidade zero, para que qualquer
+   classe de componente (.ty-btn, .tyv-btn, .tyl__submit) vença o reset. */
+:where(.ty-scope) button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.ty-scope :focus-visible {
+  outline: 1.5px solid var(--t-accent);
+  outline-offset: 4px;
+}
+.ty-scope section[id] {
+  scroll-margin-top: var(--t-nav-h);
+}
+
+/* grão sutil (textura de papel/pele), fixo, sem custo de layout */
+.ty-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0.045;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.ty-scope[data-theme="night"] .ty-grain {
+  mix-blend-mode: screen;
+  opacity: 0.035;
+}
+/* escopo noturno aninhado (VIP/admin) traz o próprio grão */
+.ty-scope:has(> .ty-scope[data-theme="night"]) > .ty-grain {
+  display: none;
+}
+
+/* ---------- tipografia ---------- */
+
+.ty-display {
+  font-family: var(--t-font-display);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+.ty-display em,
+.ty-i {
+  font-family: var(--t-font-display);
+  font-style: normal;
+  font-weight: 200;
+  letter-spacing: -0.02em;
+}
+.ty-h {
+  font-family: var(--t-font-display);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+}
+.ty-h em {
+  font-style: normal;
+  font-weight: 200;
+}
+.ty-h-sm {
+  font-family: var(--t-font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.ty-h-sm em {
+  font-style: normal;
+  font-weight: 300;
+}
+.ty-eyebrow {
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--t-fg-2);
+}
+.ty-lead {
+  font-size: clamp(17px, 1.35vw, 21px);
+  line-height: 1.5;
+  font-weight: 400;
+}
+.ty-body {
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: var(--t-fg-2);
+}
+.ty-small {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--t-fg-2);
+}
+.ty-num {
+  font-variant-numeric: tabular-nums;
+}
+.ty-muted {
+  color: var(--t-fg-2);
+}
+.ty-accent {
+  color: var(--t-accent);
+}
+
+/* ---------- layout ---------- */
+
+.ty-container {
+  width: 100%;
+  max-width: var(--t-max);
+  margin: 0 auto;
+  padding-left: var(--t-gutter);
+  padding-right: var(--t-gutter);
+}
+.ty-section {
+  padding-block: clamp(88px, 12vw, 190px);
+}
+.ty-rule {
+  height: 1px;
+  background: var(--t-line);
+}
+.ty-rule-strong {
+  height: 1px;
+  background: var(--t-line-strong);
+}
+
+/* ---------- botões e links ---------- */
+
+.ty-btn {
+  --btn-fg: var(--t-fg);
+  --btn-bg: transparent;
+  --btn-hover-bg: var(--t-fg);
+  --btn-hover-fg: var(--t-bg);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  height: 54px;
+  padding: 0 24px;
+  font-size: 11.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--btn-fg);
+  background: var(--btn-bg);
+  border: 1px solid var(--t-line-strong);
+  border-radius: 2px;
+  overflow: hidden;
+  isolation: isolate;
+  white-space: nowrap;
+  transition:
+    color var(--t-ui) var(--t-ease-out),
+    border-color var(--t-ui) var(--t-ease-out),
+    opacity var(--t-micro);
+}
+.ty-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--btn-hover-bg);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform var(--t-ui) var(--t-ease-out);
+}
+@media (hover: hover) {
+  .ty-btn:hover {
+    color: var(--btn-hover-fg);
+    border-color: var(--btn-hover-bg);
+  }
+  .ty-btn:hover::before {
+    transform: scaleY(1);
+  }
+  .ty-btn:hover .ty-btn__arrow {
+    transform: translateX(6px);
+  }
+}
+.ty-btn:active {
+  transform: translateY(1px);
+}
+.ty-btn[disabled],
+.ty-btn[aria-disabled="true"] {
+  opacity: 0.45;
+  pointer-events: none;
+}
+.ty-btn--solid {
+  --btn-fg: var(--t-bg);
+  --btn-bg: var(--t-fg);
+  --btn-hover-bg: var(--t-accent);
+  --btn-hover-fg: var(--t-accent-fg);
+  border-color: var(--t-fg);
+}
+.ty-btn--accent {
+  --btn-fg: var(--t-accent-fg);
+  --btn-bg: var(--t-accent);
+  --btn-hover-bg: var(--t-fg);
+  --btn-hover-fg: var(--t-bg);
+  border-color: var(--t-accent);
+}
+.ty-btn--sm {
+  height: 42px;
+  padding: 0 16px;
+  font-size: 10.5px;
+  gap: 10px;
+}
+.ty-btn--xs {
+  height: 34px;
+  padding: 0 12px;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  gap: 8px;
+}
+.ty-btn--wide {
+  width: 100%;
+}
+.ty-btn__arrow {
+  position: relative;
+  display: inline-block;
+  width: 18px;
+  height: 1px;
+  background: currentColor;
+  transition: transform var(--t-ui) var(--t-ease-out);
+}
+.ty-btn__arrow::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: -3px;
+  width: 6px;
+  height: 6px;
+  border-top: 1px solid currentColor;
+  border-right: 1px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.ty-link {
+  position: relative;
+  display: inline-block;
+  color: inherit;
+}
+.ty-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--t-ui) var(--t-ease-out);
+}
+@media (hover: hover) {
+  .ty-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+.ty-link--on::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+.ty-link--caps {
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* ---------- campos ---------- */
+
+.ty-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ty-field__label {
+  font-size: 10.5px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--t-fg-2);
+}
+.ty-field__input {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--t-line-strong);
+  border-radius: 0;
+  padding: 12px 0;
+  font: inherit;
+  font-size: 17px;
+  color: var(--t-fg);
+  outline: none;
+  transition: border-color var(--t-ui) var(--t-ease-out), box-shadow var(--t-ui) var(--t-ease-out);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.ty-field__input::placeholder {
+  color: color-mix(in srgb, var(--t-fg) 32%, transparent);
+}
+.ty-field__input:focus {
+  border-bottom-color: var(--t-fg);
+  box-shadow: 0 1px 0 0 var(--t-fg);
+}
+.ty-scope .ty-field__input:focus-visible {
+  outline: none; /* o sublinhado que engrossa já é o foco */
+}
+.ty-field__input:disabled {
+  opacity: 0.5;
+}
+textarea.ty-field__input {
+  resize: vertical;
+  min-height: 84px;
+  line-height: 1.5;
+}
+select.ty-field__input {
+  padding-right: 28px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%236b5a4e' stroke-width='1.2'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 2px center;
+}
+.ty-scope[data-theme="night"] select.ty-field__input {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%23f1eae1' stroke-width='1.2'/%3E%3C/svg%3E");
+}
+.ty-scope[data-theme="night"] select.ty-field__input option {
+  background: #1a1512;
+  color: #f1eae1;
+}
+.ty-field--error .ty-field__input {
+  border-bottom-color: var(--t-accent);
+}
+.ty-field__error {
+  font-size: 12.5px;
+  color: var(--t-accent);
+}
+.ty-field__hint {
+  font-size: 12px;
+  color: var(--t-fg-2);
+}
+.ty-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+.ty-check input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--t-accent);
+}
+.ty-form-error {
+  padding: 14px 16px;
+  border: 1px solid var(--t-accent);
+  color: var(--t-accent);
+  font-size: 13.5px;
+  border-radius: 2px;
+}
+.ty-form-ok {
+  padding: 14px 16px;
+  border: 1px solid var(--t-ok);
+  color: var(--t-ok);
+  font-size: 13.5px;
+  border-radius: 2px;
+}
+
+/* ---------- fotografia real ---------- */
+
+.ty-photo {
+  position: relative;
+  overflow: hidden;
+  background: var(--t-photo);
+  isolation: isolate;
+}
+.ty-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ty-photo__ph {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, var(--t-photo) 0%, var(--t-photo-2) 100%);
+}
+.ty-photo__ph::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border: 1px solid color-mix(in srgb, var(--t-fg) 14%, transparent);
+  pointer-events: none;
+}
+.ty-photo__ph-label {
+  position: absolute;
+  left: 26px;
+  bottom: 24px;
+  font-size: 10px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--t-fg) 55%, transparent);
+}
+.ty-photo__caption {
+  position: absolute;
+  left: 16px;
+  bottom: 14px;
+  font-size: 10.5px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #f1eae1;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity var(--t-ui) var(--t-ease-out), transform var(--t-ui) var(--t-ease-out);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.4);
+}
+@media (hover: hover) {
+  .ty-photo:hover .ty-photo__caption {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.ty-photo--hover img {
+  transition: transform var(--t-section) var(--t-ease-out);
+}
+@media (hover: hover) {
+  .ty-photo--hover:hover img {
+    transform: scale(1.04);
+  }
+}
+
+/* ---------- status ---------- */
+
+.ty-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--t-fg-2);
+  white-space: nowrap;
+}
+.ty-status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+.ty-status--ok {
+  color: var(--t-ok);
+}
+.ty-status--wait {
+  color: var(--t-wait);
+}
+.ty-status--accent {
+  color: var(--t-accent);
+}
+.ty-status--off {
+  color: var(--t-fg-2);
+  opacity: 0.6;
+}
+.ty-status--fg {
+  color: var(--t-fg);
+}
+
+/* ---------- cursor ---------- */
+
+/* Seta pequena de verdade, do tamanho de sempre: nada de disco gigante
+   seguindo o mouse. Sobre o que é clicável ela ganha um cílio ao lado.
+   É cursor nativo do sistema (sem JS), então não atrasa nem pisca. */
+
+.ty-scope {
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Cpath d='M4.2 2 L4.2 17.2 L8.2 13.6 L10.4 18.8 L12.9 17.7 L10.7 12.7 L15.9 12.4 Z' fill='%231a1512' stroke='%23f4efe8' stroke-width='1.3' stroke-linejoin='round'/%3E%3C/svg%3E")
+      4 2,
+    auto;
+}
+
+.ty-scope[data-theme="night"],
+.ty-night {
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Cpath d='M4.2 2 L4.2 17.2 L8.2 13.6 L10.4 18.8 L12.9 17.7 L10.7 12.7 L15.9 12.4 Z' fill='%23f1eae1' stroke='%23100d0b' stroke-width='1.3' stroke-linejoin='round'/%3E%3C/svg%3E")
+      4 2,
+    auto;
+}
+
+/* clicável: a mesma seta, em ameixa, com três fios de cílio */
+.ty-scope a,
+.ty-scope button,
+.ty-scope [role="button"],
+.ty-scope label,
+.ty-scope summary {
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='26' viewBox='0 0 30 26'%3E%3Cpath d='M4.2 2 L4.2 17.2 L8.2 13.6 L10.4 18.8 L12.9 17.7 L10.7 12.7 L15.9 12.4 Z' fill='%236e2f45' stroke='%23f4efe8' stroke-width='1.3' stroke-linejoin='round'/%3E%3Cg fill='none' stroke='%236e2f45' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M17.6 6.2 q4.2 0.2 6.4 3'/%3E%3Cpath d='M18.4 3.6 q2.6 0 4.2 1.3'/%3E%3Cpath d='M17.9 9.2 q3.4 1 5 3.1'/%3E%3C/g%3E%3C/svg%3E")
+      4 2,
+    pointer;
+}
+
+.ty-scope[data-theme="night"] a,
+.ty-scope[data-theme="night"] button,
+.ty-scope[data-theme="night"] [role="button"],
+.ty-scope[data-theme="night"] label,
+.ty-night a,
+.ty-night button {
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='26' viewBox='0 0 30 26'%3E%3Cpath d='M4.2 2 L4.2 17.2 L8.2 13.6 L10.4 18.8 L12.9 17.7 L10.7 12.7 L15.9 12.4 Z' fill='%23a5647a' stroke='%23100d0b' stroke-width='1.3' stroke-linejoin='round'/%3E%3Cg fill='none' stroke='%23a5647a' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M17.6 6.2 q4.2 0.2 6.4 3'/%3E%3Cpath d='M18.4 3.6 q2.6 0 4.2 1.3'/%3E%3Cpath d='M17.9 9.2 q3.4 1 5 3.1'/%3E%3C/g%3E%3C/svg%3E")
+      4 2,
+    pointer;
+}
+
+/* campos de texto mantêm o cursor de digitação do sistema */
+.ty-scope input,
+.ty-scope textarea,
+.ty-scope select,
+.ty-scope [contenteditable] {
+  cursor: auto;
+}
+.ty-scope input[type="checkbox"],
+.ty-scope input[type="radio"],
+.ty-scope input[type="date"],
+.ty-scope select {
+  cursor: pointer;
+}
+.ty-scope [disabled],
+.ty-scope [aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+/* ---------- nav ---------- */
+
+.ty-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  height: var(--t-nav-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--t-gutter);
+  transition:
+    transform var(--t-section) var(--t-ease-out),
+    background-color var(--t-ui) var(--t-ease-out),
+    border-color var(--t-ui) var(--t-ease-out);
+  border-bottom: 1px solid transparent;
+}
+.ty-nav[data-hidden="true"] {
+  transform: translateY(-100%);
+}
+.ty-nav[data-solid="true"] {
+  background: color-mix(in srgb, var(--t-bg) 84%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-bottom-color: var(--t-line);
+}
+.ty-nav__brand {
+  font-family: var(--t-font-display);
+  font-size: 15px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* ---------- marca: a inicial + Tayssa Lash ---------- */
+.ty-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  line-height: 1;
+}
+.ty-brand__mark {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+  padding-left: 1px;
+}
+.ty-brand__name {
+  font-size: 14px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.ty-brand__name em {
+  font-style: normal;
+  font-weight: 200;
+}
+.ty-brand--sm .ty-brand__mark {
+  width: 24px;
+  height: 24px;
+  font-size: 11px;
+}
+.ty-brand--sm .ty-brand__name {
+  font-size: 11.5px;
+  letter-spacing: 0.22em;
+}
+.ty-nav__links {
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 2.4vw, 36px);
+}
+.ty-nav__links a,
+.ty-nav__links button {
+  font-size: 10.5px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.ty-nav--over {
+  color: #f1eae1;
+}
+
+/* ---------- loader / cortina ---------- */
+
+.ty-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--t-ink);
+  color: #f1eae1;
+  display: grid;
+  place-items: center;
+}
+.ty-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  background: var(--t-ink);
+  pointer-events: none;
+  will-change: clip-path;
+}
+
+/* ---------- pinned / sticky ---------- */
+
+.ty-pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+
+/* ---------- painéis (admin) ---------- */
+
+.ty-panel {
+  border: 1px solid var(--t-line);
+  border-radius: 2px;
+  padding: clamp(18px, 2.4vw, 28px);
+  background: color-mix(in srgb, var(--t-bg-2) 55%, transparent);
+}
+.ty-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+.ty-table th {
+  text-align: left;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--t-fg-2);
+  padding: 10px 12px 10px 0;
+  border-bottom: 1px solid var(--t-line-strong);
+  white-space: nowrap;
+}
+.ty-table td {
+  padding: 13px 12px 13px 0;
+  border-bottom: 1px solid var(--t-line);
+  vertical-align: top;
+}
+.ty-table tr:last-child td {
+  border-bottom: 0;
+}
+.ty-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.ty-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 0;
+  border-top: 1px solid var(--t-line-strong);
+}
+.ty-stat__n {
+  font-family: var(--t-font-display);
+  font-size: clamp(34px, 3.6vw, 52px);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.ty-stat__n--alert {
+  color: var(--t-accent);
+}
+
+/* ---------- utilidades ---------- */
+
+.ty-mask {
+  overflow: hidden;
+}
+/* só escondem; nunca redefinem o display do elemento */
+@media (max-width: 767px) {
+  .ty-hide-mobile {
+    display: none !important;
+  }
+}
+@media (min-width: 768px) {
+  .ty-hide-desktop {
+    display: none !important;
+  }
+}
+
+/* ---------- movimento reduzido ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .ty-scope *,
+  .ty-scope *::before,
+  .ty-scope *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .ty-grain {
+    display: none;
+  }
+}

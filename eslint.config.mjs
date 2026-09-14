@@ -7,6 +7,8 @@ const eslintConfig = defineConfig([
   ...nextTs,
   // Override default ignores of eslint-config-next.
   globalIgnores([
+    // Projeto vizinho: tem lint e build próprios (Vercel: tayssa-lash)
+    "tayssa-lash/**",
     // Default ignores of eslint-config-next:
     ".next/**",
     "out/**",
