@@ -139,7 +139,7 @@ function Caption({
       style={{ position: "absolute", top: 40, left: 0, right: 0, opacity, y, pointerEvents: "none" }}
       aria-hidden={index !== 0}
     >
-      <h3 className="ty-display" style={{ fontSize: "clamp(44px, 6vw, 104px)" }}>
+      <h3 className="ty-display" style={{ fontSize: "clamp(36px, 4.56vw, 64px)" }}>
         {frame.title}
       </h3>
       <p className="ty-body" style={{ marginTop: 14, fontSize: 16 }}>

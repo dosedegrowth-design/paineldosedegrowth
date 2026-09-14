@@ -34,7 +34,7 @@ export default async function ServicesAdminPage() {
                     {s.service_name} · {dateShort(s.service_date)}
                     {s.amount != null ? ` · ${currency(s.amount)}` : ""} · {s.points} pts
                   </span>
-                  {s.notes ? <span className="ty-small" style={{ display: "block", fontStyle: "italic" }}>“{s.notes}”</span> : null}
+                  {s.notes ? <span className="ty-small" style={{ display: "block", fontWeight: 300 }}>“{s.notes}”</span> : null}
                   <span className="ty-small" style={{ display: "block" }}>enviado {dateTime(s.submitted_at)}</span>
                 </div>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>

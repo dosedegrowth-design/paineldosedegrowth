@@ -42,10 +42,6 @@
   color: #f2e9df;
 }
 .tyl__brand {
-  font-family: var(--t-font-display);
-  font-size: 17px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
   min-height: 44px;
   display: inline-flex;
   align-items: center;
@@ -84,13 +80,15 @@
 }
 .tyl__title {
   font-family: var(--t-font-display);
-  font-size: clamp(38px, 11vw, 54px);
-  line-height: 0.98;
-  letter-spacing: -0.015em;
+  font-size: clamp(32px, 9vw, 44px);
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+  font-weight: 600;
   margin: 12px 0 22px;
 }
 .tyl__title em {
-  font-style: italic;
+  font-style: normal;
+  font-weight: 200;
 }
 .tyl form {
   display: grid;
@@ -168,11 +166,14 @@
 }
 .tyl__welcome p {
   font-family: var(--t-font-display);
-  font-size: clamp(38px, 11vw, 84px);
-  line-height: 1.02;
+  font-size: clamp(30px, 8.5vw, 60px);
+  line-height: 1.12;
+  letter-spacing: -0.04em;
+  font-weight: 600;
 }
 .tyl__welcome em {
-  font-style: italic;
+  font-style: normal;
+  font-weight: 200;
 }
 
 @media (min-width: 860px) {

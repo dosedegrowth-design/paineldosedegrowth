@@ -1,30 +1,31 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource-variable/bodoni-moda/standard.css";
-import "@fontsource-variable/bodoni-moda/standard-italic.css";
-import "@fontsource-variable/hanken-grotesk/index.css";
-import "@fontsource-variable/hanken-grotesk/wght-italic.css";
+import "@fontsource/montserrat/200.css";
+import "@fontsource/montserrat/300.css";
+import "@fontsource/montserrat/400.css";
+import "@fontsource/montserrat/500.css";
+import "@fontsource/montserrat/600.css";
 import "lenis/dist/lenis.css";
 import "./tayssa.css";
 import { PUBLIC_ORIGIN } from "@/lib/tayssa/config";
 import { SmoothScroll } from "@/components/tayssa/ui/smooth-scroll";
 import { TransitionProvider } from "@/components/tayssa/ui/transition";
 
-const TITLE = "Tayssa — Private Beauty Experience";
+const TITLE = "Tayssa Lash — Private Beauty Experience";
 const DESCRIPTION =
   "Cílios e embelezamento do olhar, com uma experiência privada para clientes selecionadas: fidelidade, indicação e aniversário.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(PUBLIC_ORIGIN),
-  title: { default: TITLE, template: "%s · Tayssa" },
+  title: { default: TITLE, template: "%s · Tayssa Lash" },
   description: DESCRIPTION,
-  applicationName: "Tayssa VIP",
+  applicationName: "Tayssa Lash",
   icons: { icon: "/tayssa/favicon.svg" },
   openGraph: {
     title: TITLE,
     description: DESCRIPTION,
     type: "website",
     locale: "pt_BR",
-    siteName: "Tayssa",
+    siteName: "Tayssa Lash",
   },
   robots: { index: true, follow: true },
 };

@@ -73,7 +73,7 @@ export function ReferralCta() {
           </ol>
         </div>
       </div>
-      <style>{`.ty-ref-title { font-size: clamp(38px, 4.8vw, 80px); }`}</style>
+      <style>{`.ty-ref-title { font-size: clamp(31px, 3.65vw, 50px); }`}</style>
     </section>
   );
 }

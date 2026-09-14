@@ -59,7 +59,7 @@ export function IntroLoader({ onDone }: { onDone: () => void }) {
               style={{
                 display: "flex",
                 gap: "0.06em",
-                fontSize: "clamp(40px, 8vw, 96px)",
+                fontSize: "clamp(33px, 6.08vw, 60px)",
                 letterSpacing: "0.18em",
                 paddingLeft: "0.18em",
               }}

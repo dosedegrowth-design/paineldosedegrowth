@@ -7,6 +7,7 @@ import { ROUTES } from "@/lib/tayssa/config";
 import { PHOTOS } from "@/lib/tayssa/photos";
 import type { ActionResult } from "@/lib/tayssa/types";
 import { RealPhoto } from "@/components/tayssa/ui/real-photo";
+import { TyBrand } from "@/components/tayssa/ui/brand";
 import { usePhotoAvailable } from "@/components/tayssa/ui/photo-availability";
 import { TyInput } from "@/components/tayssa/ui/field";
 import { TransitionLink, useTransitionNav } from "@/components/tayssa/ui/transition";
@@ -63,7 +64,7 @@ export function LoginExperience({ vipInfoUrl, next }: { vipInfoUrl: string; next
 
       <div className="tyl__top">
         <TransitionLink href={ROUTES.home} className="tyl__brand">
-          Tayssa
+          <TyBrand />
         </TransitionLink>
         <TransitionLink href={ROUTES.home} className="tyl__back">
           Voltar

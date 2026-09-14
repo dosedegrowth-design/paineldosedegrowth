@@ -75,7 +75,7 @@ export function LoyaltyCard({
     <>
       <div className="tyc">
         <div className="tyc__head">
-          <span className="tyc__brand">Tayssa</span>
+          <span className="tyc__brand">Tayssa <em>Lash</em></span>
           <span className="tyc__cycle">Cartão {String(cycle).padStart(2, "0")}</span>
         </div>
         <h2 className="tyc__title">

@@ -133,7 +133,7 @@ export function VipIntro({ benefits, vipInfoUrl }: { benefits: BenefitRow[]; vip
                   <span className="ty-num ty-muted" style={{ fontSize: 11, letterSpacing: "0.2em", paddingTop: 12 }}>
                     {p.n}
                   </span>
-                  <h3 className="ty-display" style={{ fontSize: "clamp(34px, 4vw, 66px)" }}>
+                  <h3 className="ty-display" style={{ fontSize: "clamp(28px, 3.04vw, 41px)" }}>
                     {p.title}
                   </h3>
                   <div style={{ gridColumn: isMobile ? "1 / -1" : undefined, paddingTop: isMobile ? 0 : 12 }}>
@@ -162,7 +162,7 @@ export function VipIntro({ benefits, vipInfoUrl }: { benefits: BenefitRow[]; vip
           }}
         >
           <Reveal>
-            <h3 className="ty-h" style={{ fontSize: "clamp(26px, 2.6vw, 40px)" }}>
+            <h3 className="ty-h" style={{ fontSize: "clamp(21px, 1.98vw, 25px)" }}>
               Como se entra
             </h3>
           </Reveal>
@@ -211,7 +211,7 @@ export function VipIntro({ benefits, vipInfoUrl }: { benefits: BenefitRow[]; vip
           </Reveal>
         </div>
       </div>
-      <style>{`.ty-vip-title { font-size: clamp(42px, 6vw, 104px); }`}</style>
+      <style>{`.ty-vip-title { font-size: clamp(34px, 4.56vw, 64px); }`}</style>
     </section>
   );
 }

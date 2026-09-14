@@ -4,6 +4,7 @@ import { requireClientPage } from "@/lib/tayssa/auth/guards";
 import { getSettings } from "@/lib/tayssa/settings";
 import { renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { BottomNav } from "@/components/tayssa/vip/bottom-nav";
+import { TyBrand } from "@/components/tayssa/ui/brand";
 
 export const metadata: Metadata = {
   title: "Meu VIP",
@@ -29,7 +30,7 @@ export default async function VipLayout({ children }: { children: React.ReactNod
       <div className="ty-grain" aria-hidden />
       <header className="tyv-page tyv-top">
         <span className="tyv-brand">
-          {settings.business.name}
+          <TyBrand size="sm" />
           {user.isVip ? <span className="tyv-vip-tag">VIP</span> : null}
         </span>
         <a

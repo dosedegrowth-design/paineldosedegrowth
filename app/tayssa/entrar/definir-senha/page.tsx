@@ -3,6 +3,7 @@ import { vipDb, isDbConfigured, logServerError } from "@/lib/tayssa/db";
 import { hashToken } from "@/lib/tayssa/auth/session";
 import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES } from "@/lib/tayssa/config";
+import { TyBrand } from "@/components/tayssa/ui/brand";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { SetPasswordForm } from "@/components/tayssa/auth/set-password-form";
 import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
@@ -66,7 +67,7 @@ export default async function SetPasswordPage({
       style={{ minHeight: "100svh", display: "flex", flexDirection: "column", justifyContent: "center", paddingBlock: 96 }}
     >
       <TransitionLink href={ROUTES.home} className="ty-nav__brand" style={{ position: "absolute", top: 24, left: "var(--t-gutter)" }}>
-        Tayssa
+        <TyBrand />
       </TransitionLink>
       {state.ok ? (
         <>
@@ -109,7 +110,7 @@ export default async function SetPasswordPage({
           </Reveal>
         </>
       )}
-      <style>{`.ty-setpw-title { font-size: clamp(40px, 5.6vw, 88px); }`}</style>
+      <style>{`.ty-setpw-title { font-size: clamp(33px, 4.26vw, 55px); }`}</style>
     </main>
   );
 }

@@ -122,7 +122,11 @@ export function Hero({
             as="h1"
             inView={false}
             play={ready}
-            lines={["Tayssa"]}
+            lines={[
+              <>
+                Tayssa <em>Lash</em>
+              </>,
+            ]}
             className="ty-display"
             lineClassName="ty-hero-title"
             delay={0.45}
@@ -187,7 +191,7 @@ export function Hero({
             <span className="ty-eyebrow" style={{ display: "block", marginBottom: 22 }}>
               Sobre
             </span>
-            <h2 className="ty-display" style={{ fontSize: "clamp(34px, 5.2vw, 84px)" }}>
+            <h2 className="ty-display" style={{ fontSize: "clamp(28px, 3.95vw, 52px)" }}>
               Cílios feitos
               <br />
               com calma,
@@ -225,8 +229,9 @@ export function Hero({
       </section>
 
       <style>{`
-        .ty-hero-title { font-size: clamp(76px, 17vw, 260px); letter-spacing: 0.02em; text-transform: uppercase; line-height: 0.86; }
-        .ty-hero-sub { font-size: clamp(22px, 2.6vw, 40px); margin-top: 10px; }
+        .ty-hero-title { font-size: clamp(52px, 10.5vw, 132px); letter-spacing: -0.02em; text-transform: uppercase; line-height: 0.94; }
+        .ty-hero-title em { letter-spacing: 0.01em; }
+        .ty-hero-sub { font-size: clamp(18px, 1.98vw, 25px); margin-top: 10px; }
       `}</style>
     </div>
   );

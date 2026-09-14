@@ -66,7 +66,7 @@ export function BenefitItem({
           : ""}
       </p>
       {item.admin_note && ["approved", "available", "rejected"].includes(status) ? (
-        <p className="tyv-sub" style={{ fontSize: 13, fontStyle: "italic", marginTop: 8 }}>
+        <p className="tyv-sub" style={{ fontSize: 13, fontWeight: 300, marginTop: 8 }}>
           Tayssa: “{item.admin_note}”
         </p>
       ) : null}

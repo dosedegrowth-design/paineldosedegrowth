@@ -1,5 +1,6 @@
 import type { BusinessSettings } from "@/lib/tayssa/config";
 import { ROUTES } from "@/lib/tayssa/config";
+import { TyBrand } from "@/components/tayssa/ui/brand";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 
@@ -17,7 +18,7 @@ export function PublicFooter({ business }: { business: BusinessSettings }) {
           paddingTop: 22,
         }}
       >
-        <span className="ty-nav__brand">{business.name}</span>
+        <TyBrand />
         <nav style={{ display: "flex", flexWrap: "wrap", gap: 22 }} aria-label="Links">
           <a href={business.instagram_url} target="_blank" rel="noopener noreferrer" className="ty-link ty-link--caps">
             Instagram

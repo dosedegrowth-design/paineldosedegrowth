@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES } from "@/lib/tayssa/config";
+import { TyBrand } from "@/components/tayssa/ui/brand";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
@@ -21,7 +22,7 @@ export default async function RestrictedPage() {
         style={{ minHeight: "100svh", display: "flex", flexDirection: "column", justifyContent: "center", paddingBlock: 96 }}
       >
         <TransitionLink href={ROUTES.home} className="ty-nav__brand" style={{ position: "absolute", top: 24, left: "var(--t-gutter)" }}>
-          Tayssa
+          <TyBrand />
         </TransitionLink>
         <Reveal>
           <span className="ty-eyebrow" style={{ display: "block", marginBottom: 20 }}>
@@ -49,7 +50,7 @@ export default async function RestrictedPage() {
             </TransitionLink>
           </div>
         </Reveal>
-        <style>{`.ty-restricted-title { font-size: clamp(36px, 5.4vw, 88px); }`}</style>
+        <style>{`.ty-restricted-title { font-size: clamp(30px, 4.1vw, 55px); }`}</style>
       </main>
     </div>
   );

@@ -122,7 +122,7 @@ export function Services({ services, scheduleUrl }: { services: ServiceRow[]; sc
                     <div>
                       <motion.h3
                         className="ty-display"
-                        style={{ fontSize: "clamp(28px, 3.6vw, 60px)", display: "inline-block" }}
+                        style={{ fontSize: "clamp(23px, 2.74vw, 37px)", display: "inline-block" }}
                         animate={{ x: active === i ? 10 : 0 }}
                         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                       >
@@ -202,7 +202,7 @@ export function Services({ services, scheduleUrl }: { services: ServiceRow[]; sc
         </motion.div>
       ) : null}
 
-      <style>{`.ty-services-title { font-size: clamp(44px, 5.6vw, 92px); }`}</style>
+      <style>{`.ty-services-title { font-size: clamp(36px, 4.26vw, 57px); }`}</style>
     </section>
   );
 }

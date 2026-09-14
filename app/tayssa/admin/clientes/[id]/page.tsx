@@ -203,8 +203,8 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                       {b.benefit?.name ?? "—"} · {b.cycle_key} · criado {dateShort(b.created_at)}
                       {b.expires_at ? ` · válido até ${dateShort(b.expires_at)}` : ""}
                     </span>
-                    {b.client_note ? <span className="ty-small" style={{ display: "block", fontStyle: "italic" }}>Ela: “{b.client_note}”</span> : null}
-                    {b.admin_note ? <span className="ty-small" style={{ display: "block", fontStyle: "italic" }}>Você: “{b.admin_note}”</span> : null}
+                    {b.client_note ? <span className="ty-small" style={{ display: "block", fontWeight: 300 }}>Ela: “{b.client_note}”</span> : null}
+                    {b.admin_note ? <span className="ty-small" style={{ display: "block", fontWeight: 300 }}>Você: “{b.admin_note}”</span> : null}
                   </div>
                   <BenefitActions id={b.id} status={b.status} defaultDays={settings.rules.benefit_validity_days} />
                 </li>

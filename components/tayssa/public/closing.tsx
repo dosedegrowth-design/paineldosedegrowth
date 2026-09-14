@@ -45,7 +45,7 @@ export function Closing({ scheduleUrl }: { scheduleUrl: string }) {
           </div>
         </Reveal>
       </div>
-      <style>{`.ty-close-title { font-size: clamp(44px, 8vw, 140px); }`}</style>
+      <style>{`.ty-close-title { font-size: clamp(36px, 6.08vw, 87px); }`}</style>
     </section>
   );
 }

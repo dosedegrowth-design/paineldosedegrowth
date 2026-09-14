@@ -48,7 +48,7 @@ export default async function ReferralsAdminPage() {
                     )}{" "}
                     · {r.source === "vip" ? "pelo VIP" : "pelo site"} · {dateShort(r.created_at)}
                   </span>
-                  {r.note ? <span className="ty-small" style={{ display: "block", fontStyle: "italic" }}>“{r.note}”</span> : null}
+                  {r.note ? <span className="ty-small" style={{ display: "block", fontWeight: 300 }}>“{r.note}”</span> : null}
                   {!r.referrer ? (
                     <span className="ty-small" style={{ display: "block", color: "var(--t-wait)" }}>
                       Quem indicou não tem conta: a indicação não soma em ninguém até você criar a conta dela com este telefone.

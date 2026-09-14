@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { ROUTES } from "@/lib/tayssa/config";
+import { TyBrand } from "@/components/tayssa/ui/brand";
 import { logoutAction } from "@/lib/tayssa/actions/auth";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 
@@ -36,8 +37,8 @@ export function AdminNav({
       }}
     >
       <div className="ty-container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 60 }}>
-        <TransitionLink href={ROUTES.admin} className="ty-nav__brand" style={{ display: "inline-flex", alignItems: "center", gap: 12, fontSize: 17 }}>
-          Tayssa
+        <TransitionLink href={ROUTES.admin} style={{ display: "inline-flex", alignItems: "center", gap: 12 }}>
+          <TyBrand size="sm" />
           <span className="ty-eyebrow" style={{ fontSize: 9.5, letterSpacing: "0.3em" }}>
             Admin
           </span>

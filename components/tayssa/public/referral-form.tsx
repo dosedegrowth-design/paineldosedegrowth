@@ -111,7 +111,7 @@ export function PublicReferralForm({ whatsapp, referTemplate }: { whatsapp: stri
           </motion.div>
         )}
       </AnimatePresence>
-      <style>{`.ty-ref-done { font-size: clamp(36px, 4.6vw, 72px); }`}</style>
+      <style>{`.ty-ref-done { font-size: clamp(30px, 3.5vw, 45px); }`}</style>
     </div>
   );
 }

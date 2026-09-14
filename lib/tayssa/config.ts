@@ -123,7 +123,7 @@ export type Settings = {
 
 export const DEFAULT_SETTINGS: Settings = {
   business: {
-    name: "Tayssa",
+    name: "Tayssa Lash",
     tagline: "Private Beauty Experience",
     specialty: "Cílios e embelezamento do olhar",
     whatsapp: "5511999827606",

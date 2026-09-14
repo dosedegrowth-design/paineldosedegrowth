@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getSettings } from "@/lib/tayssa/settings";
 import { getPublicBenefits } from "@/lib/tayssa/queries/catalog";
 import { ROUTES } from "@/lib/tayssa/config";
+import { TyBrand } from "@/components/tayssa/ui/brand";
 import { PublicReferralForm } from "@/components/tayssa/public/referral-form";
 import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
@@ -30,7 +31,7 @@ export default async function ReferPage() {
     <>
       <header className="ty-nav" data-solid="true">
         <TransitionLink href={ROUTES.home} className="ty-nav__brand">
-          Tayssa
+          <TyBrand />
         </TransitionLink>
         <TransitionLink href={ROUTES.login} className="ty-link ty-link--caps">
           Entrar
@@ -98,7 +99,7 @@ export default async function ReferPage() {
         </div>
       </main>
       <PublicFooter business={settings.business} />
-      <style>{`.ty-refpage-title { font-size: clamp(44px, 6vw, 96px); }`}</style>
+      <style>{`.ty-refpage-title { font-size: clamp(36px, 4.56vw, 60px); }`}</style>
     </>
   );
 }

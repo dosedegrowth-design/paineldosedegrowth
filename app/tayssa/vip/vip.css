@@ -41,10 +41,6 @@
   min-height: 56px;
 }
 .tyv-brand {
-  font-family: var(--t-font-display);
-  font-size: 17px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -63,13 +59,15 @@
 /* ---------- tipografia do app ---------- */
 .tyv-hello {
   font-family: var(--t-font-display);
-  font-size: clamp(34px, 9.5vw, 46px);
-  line-height: 1;
-  letter-spacing: -0.01em;
+  font-size: clamp(29px, 8vw, 38px);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  font-weight: 600;
   margin: 10px 0 6px;
 }
 .tyv-hello em {
-  font-style: italic;
+  font-style: normal;
+  font-weight: 200;
 }
 .tyv-sub {
   font-size: 15px;
@@ -78,12 +76,14 @@
 }
 .tyv-h2 {
   font-family: var(--t-font-display);
-  font-size: 24px;
-  line-height: 1.1;
+  font-size: 19px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-weight: 600;
 }
 .tyv-label {
-  font-size: 10.5px;
-  letter-spacing: 0.24em;
+  font-size: 10px;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   font-weight: 600;
   color: var(--t-fg-2);
@@ -91,6 +91,8 @@
 .tyv-num {
   font-family: var(--t-font-display);
   font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: -0.02em;
   line-height: 1;
 }
 
@@ -131,12 +133,15 @@
 }
 .tyv-stat__n {
   font-family: var(--t-font-display);
-  font-size: 44px;
+  font-size: 38px;
   line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
 }
 .tyv-stat__n small {
-  font-size: 16px;
+  font-size: 14px;
+  font-weight: 300;
   margin-left: 4px;
   color: var(--t-fg-2);
 }
@@ -319,7 +324,9 @@
 }
 .tyv-day__d {
   font-family: var(--t-font-display);
-  font-size: 26px;
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
   line-height: 1;
 }
 
@@ -384,7 +391,9 @@
 }
 .tyv-rank__pos {
   font-family: var(--t-font-display);
-  font-size: 22px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
   color: var(--t-fg-2);
 }
 .tyv-rank__row[data-me="true"] .tyv-rank__pos {
@@ -395,7 +404,9 @@
 }
 .tyv-rank__pts {
   font-family: var(--t-font-display);
-  font-size: 18px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }
 
@@ -572,9 +583,14 @@
 }
 .tyc__brand {
   font-family: var(--t-font-display);
-  font-size: 12px;
-  letter-spacing: 0.26em;
+  font-size: 11px;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
+  font-weight: 600;
+}
+.tyc__brand em {
+  font-style: normal;
+  font-weight: 200;
 }
 .tyc__cycle {
   font-size: 9.5px;
@@ -584,12 +600,15 @@
 }
 .tyc__title {
   font-family: var(--t-font-display);
-  font-size: 21px;
-  line-height: 1.15;
+  font-size: 18px;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  font-weight: 600;
   margin: 12px 0 2px;
 }
 .tyc__title em {
-  font-style: italic;
+  font-style: normal;
+  font-weight: 200;
 }
 .tyc__sub {
   font-size: 12.5px;
@@ -639,7 +658,8 @@
 }
 .tyc__n {
   font-family: var(--t-font-display);
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 500;
 }
 .tyc__foot {
   display: flex;
@@ -697,15 +717,18 @@
 }
 .tys__pts {
   font-family: var(--t-font-display);
-  font-size: 56px;
+  font-size: 48px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
   line-height: 1;
   color: var(--tyv-plum);
 }
 .tys__pts i {
   font-family: var(--t-font-body);
   font-style: normal;
-  font-size: 22px;
-  vertical-align: 16px;
+  font-weight: 300;
+  font-size: 20px;
+  vertical-align: 14px;
   margin-right: 3px;
   opacity: 0.65;
 }
@@ -764,9 +787,9 @@
 }
 .tyv-empty {
   font-family: var(--t-font-display);
-  font-style: italic;
-  font-size: 19px;
-  line-height: 1.35;
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.5;
   color: var(--t-fg-2);
 }
 .tyv-stack {

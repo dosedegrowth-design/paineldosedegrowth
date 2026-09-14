@@ -127,7 +127,7 @@ export function Details({ instagramUrl, handle }: { instagramUrl: string; handle
           <div style={{ flex: "none", width: "12vw" }} />
         </motion.div>
       </section>
-      <style>{`.ty-details-title { font-size: clamp(40px, 4.6vw, 76px); }`}</style>
+      <style>{`.ty-details-title { font-size: clamp(33px, 3.5vw, 47px); }`}</style>
     </div>
   );
 }

@@ -18,7 +18,7 @@ export function AdminHeader({
         <span className="ty-eyebrow" style={{ display: "block", marginBottom: 12 }}>
           {eyebrow}
         </span>
-        <h1 className="ty-display" style={{ fontSize: "clamp(32px, 4.4vw, 64px)" }}>
+        <h1 className="ty-display" style={{ fontSize: "clamp(26px, 3.34vw, 40px)" }}>
           {title}
         </h1>
         {lead ? (
@@ -66,7 +66,7 @@ export function Stat({ n, label, href, alert }: { n: number | string; label: str
 
 export function Empty({ children }: { children: ReactNode }) {
   return (
-    <p className="ty-body" style={{ fontStyle: "italic", fontFamily: "var(--t-font-display)", fontSize: 20 }}>
+    <p className="ty-body" style={{ fontFamily: "var(--t-font-display)", fontWeight: 300, fontSize: 17 }}>
       {children}
     </p>
   );

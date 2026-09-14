@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { ROUTES } from "@/lib/tayssa/config";
+import { TyBrand } from "@/components/tayssa/ui/brand";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { scrollToTarget } from "@/components/tayssa/ui/smooth-scroll";
 
@@ -50,8 +51,8 @@ export function PublicNav({ scheduleUrl }: { scheduleUrl: string }) {
         data-hidden={hidden}
         data-solid={solid && !open}
       >
-        <TransitionLink href={ROUTES.home} className="ty-nav__brand" aria-label="Tayssa — início">
-          Tayssa
+        <TransitionLink href={ROUTES.home} aria-label="Tayssa Lash — início">
+          <TyBrand />
         </TransitionLink>
 
         <nav className="ty-nav__links ty-hide-mobile" aria-label="Seções">
@@ -126,7 +127,7 @@ export function PublicNav({ scheduleUrl }: { scheduleUrl: string }) {
                     <TransitionLink
                       href={item.href}
                       className="ty-display"
-                      style={{ fontSize: "clamp(38px, 10vw, 56px)", display: "block" }}
+                      style={{ fontSize: "clamp(31px, 7.6vw, 35px)", display: "block" }}
                       onClick={() => setOpen(false)}
                     >
                       {item.label}
@@ -134,7 +135,7 @@ export function PublicNav({ scheduleUrl }: { scheduleUrl: string }) {
                   ) : (
                     <button
                       className="ty-display"
-                      style={{ fontSize: "clamp(38px, 10vw, 56px)", display: "block", textAlign: "left" }}
+                      style={{ fontSize: "clamp(31px, 7.6vw, 35px)", display: "block", textAlign: "left" }}
                       onClick={item.onClick}
                     >
                       {item.label}

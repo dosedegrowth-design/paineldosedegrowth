@@ -37,7 +37,7 @@ export default async function BenefitsAdminPage() {
           {b.benefit?.name ?? "—"} · {b.cycle_key} · {dateShort(b.created_at)}
           {b.expires_at ? ` · válido até ${dateShort(b.expires_at)}` : ""}
         </span>
-        {b.client_note ? <span className="ty-small" style={{ display: "block", fontStyle: "italic" }}>Ela: “{b.client_note}”</span> : null}
+        {b.client_note ? <span className="ty-small" style={{ display: "block", fontWeight: 300 }}>Ela: “{b.client_note}”</span> : null}
       </div>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>{actions}</div>
     </li>
