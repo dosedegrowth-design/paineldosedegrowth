@@ -16,6 +16,10 @@ export const metadata: Metadata = {
   },
   description: "Dashboard inteligente de tráfego pago — Dose de Growth",
   applicationName: "Tráfego DDG",
+  // Ícone declarado aqui (config) em vez de app/favicon.ico (file convention)
+  // porque o file convention da raiz vaza pra toda rota filha — inclusive as
+  // LPs de cliente, que têm ícone próprio. O arquivo vive em public/.
+  icons: { icon: "/favicon.ico" },
 };
 
 export const viewport: Viewport = {

@@ -18,6 +18,16 @@ export const metadata: Metadata = {
   applicationName: "Carolina Kühn",
   robots: { index: true, follow: true },
   alternates: { canonical: SITE_URL },
+  // Ícone próprio da Carol — sobrescreve o do painel herdado do root layout.
+  // URLs em /carol/ (e não /favicon.ico) pra não cair no cache de favicon
+  // que o navegador guarda por domínio.
+  icons: {
+    icon: [
+      { url: "/carol/icon.svg", type: "image/svg+xml", sizes: "any" },
+      { url: "/carol/favicon.ico", sizes: "48x48" },
+    ],
+    apple: { url: "/carol/apple-icon.png", sizes: "180x180" },
+  },
   openGraph: {
     title: TITLE,
     description: DESCRIPTION,
