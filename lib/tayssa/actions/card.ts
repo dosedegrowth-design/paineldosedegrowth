@@ -14,6 +14,7 @@ export type RevealResult = {
   serviceName: string;
   cardSize: number;
   filled: number;
+  /** verdadeiro só na raspada que fecha o cartão (nada dourado sobrando) */
   cardCompleted: boolean;
   /** título do presente quando a raspada fecha o cartão */
   rewardTitle: string | null;
@@ -52,10 +53,17 @@ export async function revealStampAction(input: { id: string }): Promise<ActionRe
 
     const { data: cardRow } = await db.from("loyalty_cards").select("*").eq("id", stamp.card_id).single();
     const card = cardRow as LoyaltyCardRow;
-    const { count } = await db
-      .from("loyalty_stamps")
-      .select("id", { count: "exact", head: true })
-      .eq("card_id", card.id);
+    const [{ count }, { count: pending }] = await Promise.all([
+      db.from("loyalty_stamps").select("id", { count: "exact", head: true }).eq("card_id", card.id),
+      db
+        .from("loyalty_stamps")
+        .select("id", { count: "exact", head: true })
+        .eq("card_id", card.id)
+        .is("revealed_at", null),
+    ]);
+    // a festa é da última raspada: enquanto sobrar carimbo dourado, cada
+    // revelação mostra só os pontos daquela visita
+    const closedNow = Boolean(card.completed_at) && (pending ?? 0) === 0;
     let rewardTitle: string | null = null;
     let rewardStatus: ClientBenefitRow["status"] | null = null;
     if (card.client_benefit_id) {
@@ -76,7 +84,7 @@ export async function revealStampAction(input: { id: string }): Promise<ActionRe
       serviceName: stamp.service_name,
       cardSize: card.card_size,
       filled: count ?? 0,
-      cardCompleted: Boolean(card.completed_at),
+      cardCompleted: closedNow,
       rewardTitle,
       rewardStatus,
     };
