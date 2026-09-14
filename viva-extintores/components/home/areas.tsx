@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { AREAS, type AreaSlug } from "@/lib/areas";
 import { Check, Seta } from "@/components/ui/icones";
+import { Linhas, Reveal } from "@/components/ui/motion";
 import { FotoReal } from "@/components/ui/foto-real";
 
 /**
@@ -50,13 +51,19 @@ export function AreasGrid({ titulo, texto }: { titulo: string; texto: string }) 
   return (
     <section className="v-section v-bib-sec" aria-labelledby="areas-titulo">
       <div className="v-wrap">
-        <div style={{ textAlign: "center" }}>
-          <h2 className="v-display v-h2" id="areas-titulo">
-            {titulo}
-          </h2>
-          <p className="v-body" style={{ marginTop: 10 }}>
-            {texto}
-          </p>
+        <div className="v-cab">
+          <div>
+            <p className="v-eyebrow">Áreas de atuação</p>
+            <Linhas
+              as="h2"
+              id="areas-titulo"
+              className="v-display v-h2 v-cab__titulo"
+              linhas={titulo.split(" | ")}
+            />
+          </div>
+          <Reveal className="v-cab__apoio" delay={0.12}>
+            <p className="v-body">{texto}</p>
+          </Reveal>
         </div>
 
         <div className="v-bib">
@@ -79,40 +86,46 @@ export function AreasGrid({ titulo, texto }: { titulo: string; texto: string }) 
                       <FotoReal
                         foto={a.cardFoto}
                         ratio="fill"
-                        zoom
-                        sizes="(max-width: 900px) 85vw, 30vw"
+                        sizes="(max-width: 900px) 80vw, 340px"
                         style={{ height: "100%" }}
                       />
                     </div>
 
+                    {/* estado fechado: número, nome da área e a seta */}
                     <div className="v-bib__body">
-                      <span className="v-bib__num">{a.numero}</span>
-                      <h3 className="v-display v-bib__titulo">
-                        {a.cardTitulo[0]}
-                        {a.cardTitulo[1] ? (
-                          <>
-                            <br />
-                            {a.cardTitulo[1]}
-                          </>
-                        ) : null}
-                      </h3>
-                      <div className="v-bib__detalhe">
-                        <p className="v-bib__resumo">{a.cardResumo}</p>
-                        <ul className="v-bib__itens">
-                          {a.itens.slice(0, 4).map((i) => (
-                            <li key={i}>
-                              <Check />
-                              <span>{i}</span>
-                            </li>
-                          ))}
-                        </ul>
-                        <span className="v-bib__ir">
-                          Abrir a página
-                          <Seta />
-                        </span>
+                      <div className="v-bib__texto">
+                        <span className="v-bib__num">{a.numero}</span>
+                        <h3 className="v-display v-bib__titulo">
+                          {a.cardTitulo[0]}
+                          {a.cardTitulo[1] ? (
+                            <>
+                              <br />
+                              {a.cardTitulo[1]}
+                            </>
+                          ) : null}
+                        </h3>
                       </div>
-
                       <span className="v-bib__go" aria-hidden>
+                        <Seta />
+                      </span>
+                    </div>
+
+                    {/* o "card sobre": sobe por dentro do quadrado no
+                        primeiro toque; o segundo abre a página */}
+                    <div className="v-bib__painel">
+                      <span className="v-bib__painel-num">{a.numero}</span>
+                      <h3 className="v-display v-bib__painel-titulo">{a.nome}</h3>
+                      <p className="v-bib__resumo">{a.cardResumo}</p>
+                      <ul className="v-bib__itens">
+                        {a.itens.slice(0, 4).map((i) => (
+                          <li key={i}>
+                            <Check />
+                            <span>{i}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <span className="v-bib__ir">
+                        Abrir a página
                         <Seta />
                       </span>
                     </div>

@@ -3,21 +3,11 @@ import Link from "next/link";
 import { SERVICOS, SERVICOS_PAGINA } from "@/lib/institucional";
 import { FOTOS } from "@/lib/photos";
 import { MENSAGENS, whatsappUrl } from "@/lib/whatsapp";
-import { ROUTES } from "@/lib/config";
 import { HeroPagina } from "@/components/secoes/hero-pagina";
 import { FaixaCta } from "@/components/secoes/faixa-cta";
 import { Fecho } from "@/components/secoes/fecho";
-import { Reveal } from "@/components/ui/motion";
-import {
-  IconeAlarme,
-  IconeBomba,
-  IconeDocumento,
-  IconeExtintor,
-  IconeRaio,
-  Pessoas,
-  Prancheta,
-  Seta,
-} from "@/components/ui/icones";
+import { Linhas, Reveal } from "@/components/ui/motion";
+import { Seta } from "@/components/ui/icones";
 
 export const metadata: Metadata = {
   title: "Serviços",
@@ -25,16 +15,14 @@ export const metadata: Metadata = {
     "Projetos, obras, regularização, manutenção, extintores e treinamento de brigada — os serviços da VIVA Extintores de ponta a ponta.",
 };
 
-const ICONES = {
-  bomba: IconeBomba,
-  alarme: IconeAlarme,
-  raio: IconeRaio,
-  documento: IconeDocumento,
-  extintor: IconeExtintor,
-  prancheta: Prancheta,
-  pessoas: Pessoas,
-};
-
+/**
+ * Serviços é um índice, não um mostruário.
+ *
+ * Sete caixas iguais não dizem nada: viram ruído. Aqui cada serviço é uma
+ * linha — número, nome grande, uma frase — e a linha inteira é o alvo do
+ * toque. Lê-se de cima a baixo, no polegar, sem precisar caçar qual
+ * cartão é qual.
+ */
 export default function Page() {
   return (
     <>
@@ -46,33 +34,46 @@ export default function Page() {
         foto={FOTOS.site.servicos}
       />
 
-      <section className="v-section">
+      <section className="v-section" aria-labelledby="servicos-titulo">
         <div className="v-wrap">
-          <h2 className="v-eyebrow">O que a VIVA executa</h2>
-          <ul className="v-cards">
+          <p className="v-eyebrow">O que a VIVA executa</p>
+          <Linhas
+            as="h2"
+            id="servicos-titulo"
+            className="v-display v-h2 v-indice__cab"
+            linhas={["Do projeto executivo à", "manutenção do que já existe"]}
+          />
+
+          <ol className="v-indice">
             {SERVICOS.map((s, i) => {
-              const Icone = ICONES[s.icone];
+              const conteudo = (
+                <>
+                  <span className="v-indice__n">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="v-indice__nome v-display">{s.titulo}</span>
+                  <span className="v-indice__txt">{s.texto}</span>
+                  <span className="v-indice__acao">
+                    {s.href ? <Seta /> : null}
+                  </span>
+                </>
+              );
               return (
-                <Reveal as="li" className="v-card" key={s.titulo} delay={i * 0.04}>
-                  <Icone />
-                  <h3 className="v-card__t">{s.titulo}</h3>
-                  <p className="v-card__x">{s.texto}</p>
+                <Reveal as="li" className="v-indice__item" key={s.titulo} delay={i * 0.04}>
                   {s.href ? (
-                    <Link className="v-card__link" href={s.href}>
-                      Ver obras reais
-                      <Seta />
+                    <Link href={s.href} className="v-indice__linha">
+                      {conteudo}
                     </Link>
-                  ) : null}
+                  ) : (
+                    <div className="v-indice__linha v-indice__linha--fixa">{conteudo}</div>
+                  )}
                 </Reveal>
               );
             })}
-          </ul>
+          </ol>
 
-          <p className="v-body" style={{ marginTop: 26 }}>
-            {SERVICOS_PAGINA.nota}{" "}
-            <Link href={ROUTES.portfolio} style={{ color: "var(--v-red)", fontWeight: 600 }}>
-              Ver o portfólio
-            </Link>
+          <p className="v-body" style={{ marginTop: "var(--s-4)" }}>
+            {SERVICOS_PAGINA.nota}
           </p>
         </div>
       </section>

@@ -34,7 +34,7 @@ export default function Page() {
       <Abas />
 
       <AreasGrid
-        titulo="Nossas áreas de atuação"
+        titulo="Cinco frentes | um responsável só"
         texto="Escolha o serviço e conheça nossos projetos, resultados e casos reais."
       />
 

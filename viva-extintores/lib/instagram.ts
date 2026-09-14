@@ -32,5 +32,8 @@ export const INSTAGRAM = {
  */
 export const POSTS: string[] = [];
 
-/** Quantos slots o bloco desenha enquanto não há permalink cadastrado. */
-export const POSTS_VAZIOS = 3;
+/**
+ * Sem permalink aqui, a seção do Instagram simplesmente não aparece no
+ * site. É de propósito: moldura vazia numa página que vai para o cliente
+ * lê como obra inacabada. Cole os links e a seção volta.
+ */

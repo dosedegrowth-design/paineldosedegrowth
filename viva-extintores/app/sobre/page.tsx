@@ -49,15 +49,16 @@ export default function Page() {
 
       <section className="v-section">
         <div className="v-wrap">
-          <h2 className="v-eyebrow">Por que a VIVA</h2>
-          <ul className="v-cards">
-            {SOBRE.pilares.map((p) => (
-              <li className="v-card" key={p.titulo}>
-                <h3 className="v-card__t">{p.titulo}</h3>
-                <p className="v-card__x">{p.texto}</p>
-              </li>
+          <p className="v-eyebrow">Por que a VIVA</p>
+          <ol className="v-pilares">
+            {SOBRE.pilares.map((p, i) => (
+              <Reveal as="li" className="v-pilar" key={p.titulo} delay={i * 0.06}>
+                <span className="v-pilar__n">{String(i + 1).padStart(2, "0")}</span>
+                <h3 className="v-display v-pilar__t">{p.titulo}</h3>
+                <p className="v-pilar__x">{p.texto}</p>
+              </Reveal>
             ))}
-          </ul>
+          </ol>
         </div>
       </section>
 

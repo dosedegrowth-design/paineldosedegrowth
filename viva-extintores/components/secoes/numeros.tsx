@@ -13,15 +13,15 @@ export function Numeros() {
     <section className="v-section v-section--tight" aria-label="A VIVA em números">
       <div className="v-wrap">
         <Reveal className="v-num">
-          <p className="v-num__nota">{NUMEROS_NOTA}</p>
           <ul className="v-num__lista v-cascata-in">
             {NUMEROS.map((n) => (
               <li key={n.rotulo}>
-                <Contador valor={n.valor} className="v-num__valor" />
+                <Contador valor={n.valor} className="v-num__valor v-display" />
                 <span className="v-num__rotulo">{n.rotulo}</span>
               </li>
             ))}
           </ul>
+          <p className="v-num__nota">{NUMEROS_NOTA}</p>
         </Reveal>
       </div>
     </section>

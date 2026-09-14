@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { INSTAGRAM, POSTS, POSTS_VAZIOS } from "@/lib/instagram";
+import { INSTAGRAM, POSTS } from "@/lib/instagram";
 import { Seta } from "@/components/ui/icones";
 
 declare global {
@@ -42,6 +42,12 @@ export function InstagramFaixa() {
     document.body.appendChild(s);
   }, []);
 
+  // Sem permalink cadastrado a seção inteira não existe. Três molduras
+  // vazias numa página que vai para o cliente leem como obra inacabada —
+  // pior do que a seção não estar lá. Basta colar os links em
+  // lib/instagram.ts que ela volta.
+  if (POSTS.length === 0) return null;
+
   return (
     <section className="v-section v-white" aria-labelledby="ig-titulo">
       <div className="v-wrap">
@@ -65,36 +71,21 @@ export function InstagramFaixa() {
           ) : null}
         </div>
 
-        {POSTS.length > 0 ? (
-          <ul className="v-ig">
-            {POSTS.map((url) => (
-              <li key={url}>
-                <blockquote
-                  className="instagram-media"
-                  data-instgrm-permalink={url}
-                  data-instgrm-version="14"
-                >
-                  <a href={url} target="_blank" rel="noopener noreferrer">
-                    Ver esta publicação no Instagram
-                  </a>
-                </blockquote>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <ul className="v-ig">
-            {Array.from({ length: POSTS_VAZIOS }).map((_, i) => (
-              <li className="v-vazio v-ig__vazio" key={i}>
-                <span className="v-vazio__tag">Post {i + 1} · a preencher</span>
-                <span className="v-vazio__txt">
-                  Cole em <code>lib/instagram.ts</code> o link de uma publicação
-                  real do perfil da VIVA (no post: “…” → “Copiar link”). O post
-                  aparece aqui de verdade e o clique leva para o Instagram.
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
+        <ul className="v-ig">
+          {POSTS.map((url) => (
+            <li key={url}>
+              <blockquote
+                className="instagram-media"
+                data-instgrm-permalink={url}
+                data-instgrm-version="14"
+              >
+                <a href={url} target="_blank" rel="noopener noreferrer">
+                  Ver esta publicação no Instagram
+                </a>
+              </blockquote>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );

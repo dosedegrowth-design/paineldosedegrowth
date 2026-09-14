@@ -19,6 +19,7 @@ export default function Page() {
         texto={HOME.hero.texto}
         aside={HOME.hero.aside}
         foto={FOTOS.site.hero}
+        grande
       >
         <div className="v-hero__cta">
           <Botao href={whatsappUrl(MENSAGENS.geral)}>{CTA_PRINCIPAL}</Botao>

@@ -16,6 +16,7 @@ export function HeroPagina({
   aside,
   foto,
   children,
+  grande = false,
 }: {
   sublinha?: string;
   titulo: readonly string[];
@@ -25,6 +26,8 @@ export function HeroPagina({
   aside: readonly string[];
   foto: FotoSlot;
   children?: ReactNode;
+  /** abertura do site: o título ocupa a tela */
+  grande?: boolean;
 }) {
   return (
     <section className="v-hero" aria-labelledby="titulo-pagina">
@@ -44,7 +47,7 @@ export function HeroPagina({
             <Linhas
               as="h1"
               id="titulo-pagina"
-              className="v-display v-h1 v-hero__title"
+              className={`v-display ${grande ? "v-xl" : "v-h1"} v-hero__title`}
               linhas={titulo}
               destaque={destaque}
               ponto={!destaque}

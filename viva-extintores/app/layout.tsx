@@ -12,7 +12,7 @@ import { disponibilidadeDeFotos } from "@/lib/photos-server";
 import { DisponibilidadeProvider } from "@/components/ui/disponibilidade";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
-import { WhatsappFlutuante } from "@/components/layout/whatsapp-float";
+import { BarraAcao } from "@/components/layout/barra-acao";
 import { ScrollSuave } from "@/components/ui/motion";
 
 const TITULO = "VIVA Extintores — Engenharia, prevenção e combate a incêndio";
@@ -51,7 +51,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Header />
           <main>{children}</main>
           <Footer />
-          <WhatsappFlutuante />
+          <BarraAcao />
         </DisponibilidadeProvider>
       </body>
     </html>

@@ -63,16 +63,55 @@ em CSS + IntersectionObserver, com a curva `--v-power3`.
 Sem banco, sem API, sem autenticação: onze páginas pré-renderizadas. Se
 aparecer vontade de adicionar backend, pare e pergunte.
 
-## Direção visual
+## Direção visual — o sistema
 
-O layout aprovado é **claro**: hero escuro com foto, barra de áreas em
-ladrilhos escuros com ícone (a ativa em vermelho), miolo em papel claro,
-faixas escuras de CTA e rodapé. O vermelho aparece com parcimônia, para
-marcar ação.
+Miolo claro, hero e faixas escuras. Mas o que segura o nível não é a
+paleta: é a disciplina.
 
-Evitar: cara de site genérico, excesso de ícone, card de estatística
-solto, excesso de texto, ilustração artificial, banco de imagem óbvio,
-visual de catálogo, elemento "promocional".
+**Neutros escolhidos, não herdados.** `#0b131b` puxa para o azul do aço,
+`#f4f4f1` é papel quente. Nada de preto puro nem cinza de navegador.
+
+**Um acento só.** O vermelho da marca. Verde e vermelho aparecem uma única
+vez, na inspeção da página 05, porque ali a cor é informação (conforme /
+não conforme). Em nenhum outro lugar se acrescenta cor.
+
+**Cinco degraus de tipo, e só** (`--t-xl` a `--t-label`). Display com
+entrelinha curta (0.86–0.9) e **tracking negativo** (−0.012em a −0.028em):
+título grande pede letra apertada, senão vira texto ampliado. Rótulo em
+caixa alta leva tracking positivo (0.2em).
+
+**O respiro é projeto.** A escala `--s-1` a `--s-6` manda no ritmo; seção
+usa `--s-6`. Seção apertada é o que faz site parecer painel administrativo.
+
+**Composição antes de caixa.** Card só quando o conteúdo é mesmo um
+objeto separável. Onde antes havia grade de cards hoje há composição
+aberta: `/servicos` é um índice de linhas (`.v-indice`), os pilares do
+`/sobre` são colunas com régua no topo (`.v-pilar`), os números são
+declaração (`.v-num`), não rótulo em caixinha.
+
+**Cabeçalho de seção é assimétrico** (`.v-cab`): título ancorado à
+esquerda, texto de apoio deslocado. Título centralizado com subtítulo
+embaixo é o gesto que denuncia template.
+
+**Duas curvas.** `--v-ease` para transição de estado, `--v-power3` para
+entrada. Não inventar uma terceira.
+
+Evitar: excesso de ícone, card de estatística solto, excesso de texto,
+ilustração artificial, banco de imagem óbvio, visual de catálogo,
+elemento "promocional", neon, glassmorphism, sombra pesada, borda em tudo.
+
+## Mobile é o produto
+
+O site é lido de pé, com uma mão. Mobile não é desktop encolhido:
+
+- A **barra de ação** (`components/layout/barra-acao.tsx`) vive na faixa
+  do polegar e só aparece depois que a abertura sai da tela — enquanto o
+  hero está visível, o CTA dele já resolve.
+- Alvo de toque mínimo de 52px.
+- A biblioteca das áreas corre na horizontal; nada de empilhar cinco
+  cards altos.
+- Onde não houver hover (`@media (hover: none)`), o que dependia dele
+  fica visível: a seta do índice, por exemplo.
 
 ## Regras que NÃO podem quebrar
 
@@ -116,7 +155,8 @@ Vieram do cliente. Não são preferência de estilo.
   hero.
 - **Os posts do Instagram são publicações reais**, incorporadas pelo
   permalink e clicáveis para o post. Nada de print nem de foto solta
-  imitando post.
+  imitando post. **Sem permalink, a seção não aparece** — moldura vazia
+  numa página que vai ao cliente lê como obra inacabada.
 - **Movimento: o padrão é visível.** `components/ui/motion.tsx` só esconde
   depois que o JavaScript monta (`data-motion="on"`), e `prefers-reduced-motion`
   desliga tudo. Nunca mandar `opacity: 0` no HTML do servidor.

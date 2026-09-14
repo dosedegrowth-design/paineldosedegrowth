@@ -4,6 +4,7 @@ import {
   useEffect,
   useRef,
   useState,
+  useMemo,
   useSyncExternalStore,
   type CSSProperties,
   type ReactNode,
@@ -211,37 +212,44 @@ export function Contador({ valor, className }: { valor: string; className?: stri
   const visivel = useNaTela(ref, ativo);
   const [texto, setTexto] = useState(valor);
 
-  // "+10.000" -> prefixo "+", número 10000, separador de milhar
-  const m = valor.match(/^(\D*)([\d.]+)(\D*)$/);
-  const alvo = m ? Number(m[2].replace(/\./g, "")) : null;
+  // "+10.000" -> prefixo "+", 10000, sufixo. Memorizado de propósito: sem
+  // isto o objeto do match nasce de novo a cada render, o effect reinicia
+  // a cada quadro e a contagem nunca sai do lugar.
+  const alvo = useMemo(() => {
+    const m = valor.match(/^(\D*)([\d.]+)(\D*)$/);
+    if (!m) return null;
+    return { prefixo: m[1], numero: Number(m[2].replace(/\./g, "")), sufixo: m[3] };
+  }, [valor]);
 
   useEffect(() => {
-    if (!ativo || !visivel || alvo === null || !m) return;
+    if (!ativo || !visivel || !alvo) return;
+    const { prefixo, numero, sufixo } = alvo;
+    // Começa em 40% do alvo, nunca em zero: um quadro que leia "+0 anos de
+    // experiência" é pior do que não animar.
+    const inicio = Math.round(numero * 0.4);
     const dur = 1100;
     let t0 = 0;
     let raf = 0;
     const passo = (t: number) => {
       if (!t0) t0 = t;
       const p = Math.min(1, (t - t0) / dur);
-      // mesma sensação da curva power3: rápido e assentando
-      const e = 1 - Math.pow(1 - p, 3);
-      const n = Math.round(alvo * e);
-      setTexto(`${m[1]}${n.toLocaleString("pt-BR")}${m[3]}`);
+      const e = 1 - Math.pow(1 - p, 3); // a mesma sensação da curva power3
+      const n = Math.round(inicio + (numero - inicio) * e);
+      setTexto(`${prefixo}${n.toLocaleString("pt-BR")}${sufixo}`);
       if (p < 1) raf = requestAnimationFrame(passo);
     };
     raf = requestAnimationFrame(passo);
     return () => cancelAnimationFrame(raf);
-  }, [ativo, visivel, alvo, m]);
+  }, [ativo, visivel, alvo]);
 
-  // Mostra sempre o valor final até a contagem começar de fato. Se o
-  // observador nunca disparar, o visitante lê o número certo em vez de um
-  // "+0" — número errado na tela é pior que animação perdida.
+  // Enquanto a contagem não começa, o que está na tela é o valor real.
   return (
     <span ref={ref} className={className}>
       {texto}
     </span>
   );
 }
+
 
 /* ------------------------------------------------------------------
    Parallax: a foto do hero anda mais devagar que a página

@@ -22,7 +22,7 @@ export const HOME = {
     aside: ["Segurança é", "o que nos move."],
   },
   areas: {
-    titulo: "Nossas principais áreas de atuação",
+    titulo: "Cinco frentes | um responsável só",
     texto:
       "Escolha uma área e conheça nossos projetos, diferenciais e casos reais.",
   },

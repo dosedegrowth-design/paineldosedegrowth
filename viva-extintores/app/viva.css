@@ -8,38 +8,66 @@
    ============================================================ */
 
 :root {
-  /* escuro — hero, cabeçalho, faixas */
-  --v-ink: #0c1620;
-  --v-ink-2: #12202c;
-  --v-ink-3: #1b2b39;
-
-  /* claro — o miolo do site */
-  --v-paper: #f2f3f5;
+  /* ----------------------------------------------------------------
+     Neutros escolhidos, não herdados. O escuro puxa para o azul do aço;
+     o claro é quente, não cinza de navegador. Um acento só: o vermelho
+     da marca. Verde e vermelho aparecem uma única vez, na inspeção,
+     porque ali a cor é informação (conforme / não conforme).
+     ---------------------------------------------------------------- */
+  --v-ink: #0b131b;
+  --v-ink-2: #111d27;
+  --v-ink-3: #1a2836;
+  --v-paper: #f4f4f1;
   --v-card: #ffffff;
-  --v-paper-3: #e7e9ec;
+  --v-paper-3: #e6e6e1;
 
-  /* marca */
   --v-red: #d8232a;
-  --v-red-hot: #e8353c;
+  --v-red-hot: #ec3239;
 
-  /* texto */
+  --v-ok: #1f8a3f;
+
   --v-on-dark: #ffffff;
-  --v-on-dark-soft: rgba(255, 255, 255, 0.76);
-  --v-on-dark-faint: rgba(255, 255, 255, 0.5);
-  --v-on-light: #16212b;
-  --v-on-light-soft: #5a6674;
+  --v-on-dark-soft: rgba(255, 255, 255, 0.74);
+  --v-on-dark-faint: rgba(255, 255, 255, 0.46);
+  --v-on-light: #0b131b;
+  --v-on-light-soft: #55606b;
 
-  /* linhas */
-  --v-line-d: rgba(255, 255, 255, 0.14);
-  --v-line-l: rgba(22, 33, 43, 0.13);
+  --v-line-d: rgba(255, 255, 255, 0.13);
+  --v-line-l: rgba(11, 19, 27, 0.12);
 
-  /* medidas */
-  --v-gutter: clamp(18px, 4.2vw, 56px);
-  --v-max: 1280px;
-  --v-header: 76px;
+  /* ----------------------------------------------------------------
+     Escala tipográfica — cinco degraus, e só. Display com entrelinha
+     curta e tracking NEGATIVO: título grande pede letra apertada, senão
+     parece texto ampliado em vez de tipografia desenhada.
+     ---------------------------------------------------------------- */
+  --t-xl: clamp(46px, 11.2vw, 136px);
+  --t-l: clamp(34px, 6.6vw, 80px);
+  --t-m: clamp(26px, 4vw, 48px);
+  --t-s: clamp(20px, 2.3vw, 29px);
+  --t-lead: clamp(17px, 1.65vw, 21px);
+  --t-body: 16.5px;
+  --t-label: 12.5px;
 
-  --v-ease: cubic-bezier(0.16, 1, 0.3, 1);
-  /* a mesma curva dos sites de estúdio: sai rápido e assenta devagar */
+  /* ----------------------------------------------------------------
+     Ritmo. O respiro é parte do projeto: seção grande é o que separa
+     produto de painel administrativo.
+     ---------------------------------------------------------------- */
+  --v-gutter: clamp(20px, 4.4vw, 64px);
+  --v-max: 1320px;
+  --v-header: 72px;
+
+  --s-1: clamp(8px, 1vw, 12px);
+  --s-2: clamp(14px, 1.6vw, 20px);
+  --s-3: clamp(22px, 2.6vw, 34px);
+  --s-4: clamp(34px, 4vw, 54px);
+  --s-5: clamp(52px, 6.4vw, 88px);
+  --s-6: clamp(72px, 10vw, 148px);
+
+  /* ----------------------------------------------------------------
+     Movimento. A primeira é a curva de transição — começa devagar,
+     resolve no meio, assenta. A segunda é a de entrada.
+     ---------------------------------------------------------------- */
+  --v-ease: cubic-bezier(0.55, 0.1, 0.26, 0.995);
   --v-power3: cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
@@ -47,9 +75,10 @@ body {
   background: var(--v-paper);
   color: var(--v-on-light);
   font-family: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
-  font-size: 16px;
-  line-height: 1.55;
+  font-size: var(--t-body);
+  line-height: 1.58;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 ::selection {
@@ -70,37 +99,34 @@ body {
   font-family: "Barlow Condensed", "Barlow", system-ui, sans-serif;
   font-weight: 700;
   text-transform: uppercase;
-  line-height: 0.96;
-  letter-spacing: 0.004em;
+  line-height: 0.9;
+  letter-spacing: -0.012em;
   text-wrap: balance;
 }
 
-.v-h1 {
-  font-size: clamp(34px, 5.4vw, 62px);
-}
+.v-h1 { font-size: var(--t-l); }
+.v-xl { font-size: var(--t-xl); line-height: 0.86; letter-spacing: -0.022em; }
+.v-h2 { font-size: var(--t-m); }
+.v-h3 { font-size: var(--t-s); letter-spacing: -0.004em; }
 
-.v-h2 {
-  font-size: clamp(26px, 3.3vw, 42px);
-}
-
-.v-h3 {
-  font-size: clamp(20px, 2vw, 27px);
-}
-
-/* ponto vermelho que fecha o título, como no layout aprovado */
+/* ponto vermelho que fecha o título */
 .v-dot::after {
   content: ".";
   color: var(--v-red);
 }
 
 .v-eyebrow {
-  font-family: "Barlow Condensed", "Barlow", sans-serif;
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: 0.2em;
+  font-family: "Barlow", sans-serif;
+  font-weight: 600;
+  font-size: var(--t-label);
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--v-red);
 }
+
+.v-eyebrow--calmo { color: var(--v-on-light-soft); }
+.v-dark .v-eyebrow--calmo,
+.v-hero .v-eyebrow--calmo { color: var(--v-on-dark-faint); }
 
 .v-sub {
   font-family: "Barlow", sans-serif;
@@ -110,23 +136,26 @@ body {
 }
 
 .v-lead {
-  font-size: clamp(15px, 1.25vw, 17px);
-  max-width: 58ch;
+  font-size: var(--t-lead);
+  line-height: 1.5;
+  max-width: 34ch;
 }
+
+.v-lead--largo { max-width: 52ch; }
 
 .v-body {
-  font-size: 15.5px;
+  font-size: var(--t-body);
   color: var(--v-on-light-soft);
+  max-width: 60ch;
 }
 
-/* frase vertical do canto do hero */
 .v-aside {
   font-family: "Barlow", sans-serif;
   font-weight: 500;
   text-transform: uppercase;
-  font-size: clamp(13px, 1.05vw, 15px);
-  letter-spacing: 0.06em;
-  line-height: 1.38;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
   color: var(--v-on-dark);
 }
 
@@ -134,7 +163,7 @@ body {
   content: "";
   display: block;
   width: 54px;
-  height: 3px;
+  height: 2px;
   background: var(--v-red);
   margin-top: 12px;
 }
@@ -144,17 +173,17 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-family: "Barlow Condensed", sans-serif;
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 0.14em;
+  font-family: "Barlow", sans-serif;
+  font-weight: 600;
+  font-size: var(--t-label);
+  letter-spacing: 0.2em;
   color: var(--v-on-light-soft);
 }
 
 .v-secnum::after {
   content: "";
   flex: none;
-  width: 54px;
+  width: 56px;
   height: 1px;
   background: var(--v-line-l);
 }
@@ -171,11 +200,11 @@ body {
 }
 
 .v-section {
-  padding-block: clamp(48px, 6.4vw, 84px);
+  padding-block: var(--s-6);
 }
 
 .v-section--tight {
-  padding-block: clamp(34px, 4.4vw, 56px);
+  padding-block: var(--s-5);
 }
 
 .v-dark {
@@ -680,58 +709,88 @@ body {
 .v-gal .v-photo { aspect-ratio: 1; }
 
 /* ------------------------------------------------------------
-   Números — linha fina dentro da narrativa, nunca quadradinho
+   Números — declaração, não rótulo
+
+   A figura é que carrega o peso: grande, condensada, apertada. O rótulo
+   fica pequeno embaixo. Nada de caixa, nada de régua vertical entre
+   colunas — o espaço já separa.
    ------------------------------------------------------------ */
 
 .v-num {
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 2fr);
-  gap: clamp(20px, 3.2vw, 52px);
-  align-items: center;
-  padding-block: clamp(20px, 2.4vw, 30px);
-  border-block: 1px solid var(--v-line-l);
-}
-
-.v-num__nota {
-  font-size: 15px;
-  line-height: 1.5;
-  color: var(--v-on-light-soft);
-  max-width: 34ch;
+  border-top: 1px solid var(--v-line-l);
+  padding-top: var(--s-4);
 }
 
 .v-num__lista {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: clamp(14px, 2vw, 30px);
-}
-
-.v-num__lista li {
-  border-inline-start: 1px solid var(--v-line-l);
-  padding-inline-start: clamp(12px, 1.6vw, 22px);
+  gap: var(--s-4) var(--s-3);
 }
 
 .v-num__valor {
   display: block;
-  font-family: "Barlow Condensed", sans-serif;
-  font-weight: 700;
-  font-size: clamp(26px, 2.6vw, 34px);
-  line-height: 1;
+  font-size: clamp(42px, 6.4vw, 92px);
+  line-height: 0.84;
+  letter-spacing: -0.028em;
   color: var(--v-on-light);
 }
 
 .v-num__rotulo {
   display: block;
-  margin-top: 5px;
-  font-size: 12.5px;
-  line-height: 1.3;
+  margin-top: var(--s-2);
+  font-size: 14px;
+  line-height: 1.35;
   color: var(--v-on-light-soft);
+  max-width: 18ch;
+}
+
+.v-num__nota {
+  margin-top: var(--s-4);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--v-on-light-soft);
+  max-width: 46ch;
 }
 
 .v-dark .v-num { border-color: var(--v-line-d); }
-.v-dark .v-num__nota,
-.v-dark .v-num__rotulo { color: var(--v-on-dark-soft); }
 .v-dark .v-num__valor { color: #fff; }
-.v-dark .v-num__lista li { border-color: var(--v-line-d); }
+.v-dark .v-num__rotulo,
+.v-dark .v-num__nota { color: var(--v-on-dark-soft); }
+
+/* ------------------------------------------------------------
+   Pilares — composição aberta, sem caixa
+   ------------------------------------------------------------ */
+
+.v-pilares {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-5) var(--s-5);
+  margin-top: var(--s-4);
+}
+
+.v-pilar { border-top: 2px solid var(--v-on-light); padding-top: var(--s-2); }
+
+.v-pilar__n {
+  font-family: "Barlow", sans-serif;
+  font-weight: 600;
+  font-size: var(--t-label);
+  letter-spacing: 0.2em;
+  color: var(--v-red);
+}
+
+.v-pilar__t {
+  margin-top: var(--s-2);
+  font-size: clamp(21px, 2.3vw, 30px);
+  line-height: 1;
+}
+
+.v-pilar__x {
+  margin-top: var(--s-2);
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: var(--v-on-light-soft);
+  max-width: 44ch;
+}
 
 /* ------------------------------------------------------------
    Faixa escura de CTA
@@ -821,15 +880,14 @@ body {
 /* ------------------------------------------------------------
    Biblioteca das cinco áreas
 
-   Dois toques: o primeiro abre o card, o segundo leva para a página.
-   No desktop o card aberto cresce e empurra os vizinhos; no celular os
-   cinco correm na horizontal com encaixe — biblioteca, não lista.
+   Card QUADRADO — sempre. A fileira corre na horizontal quando os cinco
+   não cabem, no desktop e no celular; é biblioteca, não lista e não
+   Reels. Abrir não deforma o quadrado: o detalhe sobe por dentro dele.
    ------------------------------------------------------------ */
 
 .v-bib {
   margin-top: clamp(26px, 3vw, 40px);
-  /* a biblioteca é a peça principal da página: ganha mais largura que o
-     resto do conteúdo, sem furar a goteira */
+  /* respira mais que o resto do conteúdo, sem furar a goteira */
   width: min(100vw - var(--v-gutter) * 2, 1520px);
   margin-inline: calc(50% - min(50vw - var(--v-gutter), 760px));
 }
@@ -838,161 +896,203 @@ body {
   display: flex;
   gap: clamp(10px, 1.1vw, 16px);
   align-items: stretch;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding-bottom: 6px;
+  /* a goteira acompanha a rolagem, para o primeiro e o último
+     não colarem na borda */
+  scroll-padding-inline: 2px;
 }
+
+.v-bib__trilho::-webkit-scrollbar { display: none; }
 
 .v-bib__item {
-  flex: 1 1 0;
-  min-width: 0;
-  transition: flex-grow 0.55s var(--v-ease);
+  flex: 0 0 clamp(252px, 23vw, 320px);
+  scroll-snap-align: start;
 }
-
-.v-bib__item[data-aberto="true"] { flex-grow: 2.6; }
 
 .v-bib__card {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  height: 100%;
-  min-height: clamp(460px, 40vw, 580px);
+  display: block;
+  /* quadrado, e ponto */
+  aspect-ratio: 1;
+  width: 100%;
   background: var(--v-ink);
   color: var(--v-on-dark);
   overflow: hidden;
   isolation: isolate;
 }
 
-.v-bib__media { position: absolute; inset: 0; z-index: -2; }
+.v-bib__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
 
 .v-bib__media .v-photo { position: absolute; inset: 0; }
-
-.v-bib__media .v-photo img { transition: transform 0.8s var(--v-ease); }
-
+.v-bib__media .v-photo img { transition: transform 1.1s var(--v-power3); }
 .v-bib__card:hover .v-bib__media .v-photo img { transform: scale(1.06); }
-
-/* o campo tonal do slot vazio sobe para o topo, longe do texto */
 .v-bib__media .v-photo__ph { justify-content: flex-start; }
 
+/* Véu só no rodapé do quadrado, o suficiente para o texto assentar. A
+   foto continua sendo foto — nada de escurecer o card inteiro. */
 .v-bib__card::after {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: -1;
-  background: linear-gradient(0deg, rgba(12, 22, 32, 0.97) 20%, rgba(12, 22, 32, 0.55) 58%, rgba(12, 22, 32, 0.12) 100%);
-  transition: background 0.45s var(--v-ease);
+  z-index: 1;
+  background: linear-gradient(
+    0deg,
+    rgba(10, 18, 27, 0.94) 0%,
+    rgba(10, 18, 27, 0.72) 26%,
+    rgba(10, 18, 27, 0.1) 52%,
+    rgba(10, 18, 27, 0) 70%
+  );
+  pointer-events: none;
 }
 
-.v-bib__item[data-aberto="true"] .v-bib__card::after {
-  background: linear-gradient(0deg, rgba(12, 22, 32, 0.98) 42%, rgba(12, 22, 32, 0.82) 72%, rgba(12, 22, 32, 0.35) 100%);
+.v-bib__body {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: clamp(16px, 1.5vw, 22px);
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
 }
 
-.v-bib__body { padding: clamp(18px, 1.7vw, 26px); }
+.v-bib__texto { min-width: 0; flex: 1 1 auto; }
 
 .v-bib__num {
+  display: block;
   font-family: "Barlow Condensed", sans-serif;
   font-weight: 700;
-  font-size: 17px;
-  letter-spacing: 0.16em;
+  font-size: 13px;
+  letter-spacing: 0.26em;
   color: var(--v-red);
+  margin-bottom: 7px;
 }
 
 .v-bib__titulo {
-  margin-top: 6px;
-  font-size: clamp(21px, 1.7vw, 27px);
+  font-size: clamp(19px, 1.5vw, 23px);
+  line-height: 0.98;
+  letter-spacing: 0.006em;
+  text-shadow: 0 1px 14px rgba(8, 14, 22, 0.55);
 }
 
-/* Fechado, o card mostra só o número e o nome da área — é uma lombada de
-   livro. O resumo e os itens chegam no primeiro toque, junto do detalhe:
-   é o que impede a fileira de virar cinco blocos de texto espremidos. */
-.v-bib__item:not([data-aberto="true"]) .v-bib__resumo { display: none; }
+/* a seta mora no canto, fora do caminho do texto */
+.v-bib__go {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  background: var(--v-red);
+  color: #fff;
+  transition: transform 0.35s var(--v-power3), background 0.25s;
+}
+
+.v-bib__go svg { width: 20px; height: 10px; }
+.v-bib__card:hover .v-bib__go { transform: translateX(4px); background: var(--v-red-hot); }
+
+/* ---- o "card sobre": sobe por dentro do quadrado ---- */
+
+.v-bib__painel {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  padding: clamp(16px, 1.5vw, 22px);
+  display: flex;
+  flex-direction: column;
+  background: rgba(10, 18, 27, 0.95);
+  backdrop-filter: blur(3px);
+  transform: translateY(101%);
+  transition: transform 0.55s var(--v-power3);
+  overflow: auto;
+  scrollbar-width: none;
+}
+
+.v-bib__painel::-webkit-scrollbar { display: none; }
+
+.v-bib__item[data-aberto="true"] .v-bib__painel { transform: translateY(0); }
+.v-bib__item[data-aberto="true"] .v-bib__body { opacity: 0; transition: opacity 0.2s; }
+
+.v-bib__painel-num {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.26em;
+  color: var(--v-red);
+}
+
+.v-bib__painel-titulo {
+  margin-top: 6px;
+  font-size: clamp(18px, 1.45vw, 22px);
+  line-height: 1;
+}
 
 .v-bib__resumo {
   margin-top: 10px;
-  font-size: 15px;
+  font-size: 13.5px;
   line-height: 1.5;
   color: var(--v-on-dark-soft);
 }
 
-/* o "card sobre" — só depois do primeiro toque */
-.v-bib__detalhe {
-  display: grid;
-  grid-template-rows: 0fr;
-  opacity: 0;
-  transition:
-    grid-template-rows 0.5s var(--v-ease),
-    opacity 0.4s var(--v-ease);
-}
-
-.v-bib__detalhe > * { min-height: 0; overflow: hidden; }
-
-.v-bib__item[data-aberto="true"] .v-bib__detalhe {
-  grid-template-rows: 1fr;
-  opacity: 1;
-}
-
 .v-bib__itens {
   display: grid;
-  gap: 8px;
-  margin-top: 18px;
-  padding-top: 18px;
+  gap: 7px;
+  margin-top: 14px;
+  padding-top: 14px;
   border-top: 1px solid var(--v-line-d);
 }
 
 .v-bib__itens li {
   display: flex;
-  gap: 10px;
+  gap: 9px;
   align-items: baseline;
-  font-size: 14px;
-  line-height: 1.4;
+  font-size: 13px;
+  line-height: 1.35;
   color: var(--v-on-dark-soft);
 }
 
 .v-bib__itens li svg {
   flex: none;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   color: var(--v-red);
-  transform: translateY(3px);
+  transform: translateY(2px);
 }
 
 .v-bib__ir {
   display: inline-flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
-  margin-top: 18px;
-  padding: 12px 20px;
+  margin-top: auto;
+  padding: 12px 16px;
   background: var(--v-red);
   color: #fff;
   font-family: "Barlow Condensed", sans-serif;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 14px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
-.v-bib__ir svg { width: 22px; height: 10px; }
+.v-bib__ir svg { width: 22px; height: 10px; flex: none; }
 
-/* a seta discreta de quando o card está fechado */
-.v-bib__go {
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  margin-top: 16px;
-  background: var(--v-red);
-  color: #fff;
-  transition: transform 0.3s var(--v-ease), opacity 0.3s var(--v-ease);
+/* ---- controles da fileira ---- */
+
+.v-bib__nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 20px;
 }
-
-.v-bib__go svg { width: 20px; height: 10px; }
-
-.v-bib__card:hover .v-bib__go { transform: translateX(5px); }
-
-.v-bib__item[data-aberto="true"] .v-bib__go {
-  display: none;
-}
-
-/* controles — só no celular */
-.v-bib__nav { display: none; }
 
 .v-bib__seta {
   display: grid;
@@ -1003,16 +1103,14 @@ body {
   border: 1px solid var(--v-line-l);
   color: var(--v-on-light);
   background: var(--v-card);
+  transition: border-color 0.2s, color 0.2s;
 }
 
+.v-bib__seta:hover { border-color: var(--v-red); color: var(--v-red); }
 .v-bib__seta:first-child svg { transform: rotate(180deg); }
 .v-bib__seta svg { width: 22px; height: 10px; }
 
-.v-bib__pontos {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
+.v-bib__pontos { display: flex; gap: 8px; align-items: center; }
 
 .v-bib__pontos button {
   width: 9px;
@@ -1025,6 +1123,10 @@ body {
 .v-bib__pontos button[aria-current="true"] {
   background: var(--v-red);
   transform: scale(1.35);
+}
+
+@media (max-width: 900px) {
+  .v-bib__item { flex: 0 0 78%; }
 }
 
 /* ------------------------------------------------------------
@@ -1571,34 +1673,6 @@ a:hover .v-photo--zoom img {
   .v-header__cta { display: none; }
   .v-burger { display: flex; }
 
-  /* A biblioteca: os cinco correm na horizontal, com encaixe. Não vira
-     lista rolando para baixo. */
-  .v-bib__trilho {
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    padding-bottom: 4px;
-  }
-
-  .v-bib__trilho::-webkit-scrollbar { display: none; }
-
-  .v-bib__item {
-    flex: 0 0 84%;
-    scroll-snap-align: center;
-  }
-
-  .v-bib__item[data-aberto="true"] { flex-grow: 0; }
-
-  .v-bib__card { min-height: clamp(440px, 96vw, 540px); }
-
-  .v-bib__nav {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 18px;
-    margin-top: 18px;
-  }
-
   /* a barra de áreas rola na horizontal — nenhuma área some */
   .v-tabs__list {
     grid-template-columns: repeat(5, minmax(136px, 1fr));
@@ -1607,16 +1681,18 @@ a:hover .v-photo--zoom img {
   }
   .v-tabs__list::-webkit-scrollbar { display: none; }
 
-  .v-hero__grid { grid-template-columns: 1fr; }
-  .v-hero__aside { text-align: left; order: -1; padding-top: 0; }
+  .v-hero__grid { grid-template-columns: 1fr; gap: var(--s-3); }
+  /* a frase lateral entra DEPOIS do bloco de texto: antes dele, disputava
+     a abertura com o título */
+  .v-hero__aside { text-align: left; order: 1; padding-top: var(--s-2); }
   .v-hero__aside .v-aside::after { margin-inline-start: 0; }
   .v-hero__scrim {
     background: linear-gradient(0deg, rgba(12, 22, 32, 0.95) 10%, rgba(12, 22, 32, 0.68) 60%, rgba(12, 22, 32, 0.5) 100%);
   }
 
   .v-gal { grid-template-columns: repeat(2, 1fr); }
-  .v-num { grid-template-columns: 1fr; }
   .v-num__lista { grid-template-columns: repeat(2, 1fr); }
+  .v-pilares { grid-template-columns: 1fr; gap: var(--s-4); }
   .v-docs,
   .v-estados { grid-template-columns: 1fr; }
   .v-provoca { grid-template-columns: 1fr; }
@@ -1747,4 +1823,182 @@ a:hover .v-photo--zoom img {
 
 @media (max-width: 560px) {
   .v-logo img { height: 32px; }
+}
+
+/* ------------------------------------------------------------
+   Índice editorial — usado onde antes havia grade de cards
+
+   Uma linha por item: número, nome grande, uma frase. A linha inteira é
+   alvo de toque, com altura confortável para o polegar. Sem caixa: a
+   régua entre as linhas já separa o suficiente.
+   ------------------------------------------------------------ */
+
+.v-indice__cab { margin-top: var(--s-2); }
+
+.v-indice {
+  margin-top: var(--s-4);
+  border-top: 1px solid var(--v-line-l);
+}
+
+.v-indice__item { border-bottom: 1px solid var(--v-line-l); }
+
+.v-indice__linha {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr) 44px;
+  grid-template-areas:
+    "n nome acao"
+    ". txt  acao";
+  align-items: baseline;
+  gap: 2px var(--s-2);
+  padding-block: var(--s-3);
+  color: inherit;
+  transition: background 0.4s var(--v-ease), padding-inline 0.4s var(--v-ease);
+}
+
+a.v-indice__linha:hover {
+  background: var(--v-card);
+  padding-inline: var(--s-2);
+}
+
+.v-indice__n {
+  grid-area: n;
+  font-family: "Barlow", sans-serif;
+  font-weight: 600;
+  font-size: var(--t-label);
+  letter-spacing: 0.2em;
+  color: var(--v-red);
+}
+
+.v-indice__nome {
+  grid-area: nome;
+  font-size: clamp(22px, 3.1vw, 40px);
+  line-height: 1;
+  transition: color 0.3s var(--v-ease);
+}
+
+a.v-indice__linha:hover .v-indice__nome { color: var(--v-red); }
+
+.v-indice__txt {
+  grid-area: txt;
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--v-on-light-soft);
+  max-width: 54ch;
+}
+
+.v-indice__acao {
+  grid-area: acao;
+  align-self: center;
+  justify-self: end;
+  color: var(--v-red);
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.35s var(--v-ease), transform 0.35s var(--v-ease);
+}
+
+.v-indice__acao svg { width: 34px; height: 12px; }
+
+a.v-indice__linha:hover .v-indice__acao { opacity: 1; transform: none; }
+
+/* no toque não existe hover: a seta fica sempre visível */
+@media (hover: none) {
+  .v-indice__acao { opacity: 1; transform: none; }
+}
+
+@media (max-width: 560px) {
+  .v-indice__linha {
+    grid-template-columns: 2.6rem minmax(0, 1fr) 28px;
+  }
+  .v-indice__acao svg { width: 24px; height: 10px; }
+}
+
+/* ------------------------------------------------------------
+   Cabeçalho de seção — assimétrico
+
+   Título centralizado com subtítulo embaixo é o gesto que faz uma página
+   parecer template. Aqui o título ancora à esquerda e o texto de apoio
+   entra deslocado, no terço da direita.
+   ------------------------------------------------------------ */
+
+.v-cab {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: var(--s-3) var(--s-5);
+  align-items: end;
+}
+
+.v-cab__titulo { margin-top: var(--s-2); }
+
+.v-cab__apoio { padding-bottom: 6px; }
+
+@media (max-width: 900px) {
+  .v-cab { grid-template-columns: 1fr; }
+  .v-cab__apoio { padding-bottom: 0; }
+}
+
+/* ------------------------------------------------------------
+   Barra de ação do celular — zona do polegar
+   ------------------------------------------------------------ */
+
+.v-barra { display: none; }
+
+@media (max-width: 900px) {
+  .v-barra {
+    position: fixed;
+    z-index: 70;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 10px;
+    padding: 10px var(--v-gutter) calc(10px + env(safe-area-inset-bottom, 0px));
+    background: rgba(11, 19, 27, 0.92);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--v-line-d);
+    transform: translateY(102%);
+    transition: transform 0.5s var(--v-ease);
+  }
+
+  .v-barra[data-visivel="true"] { transform: none; }
+
+  .v-barra__sec,
+  .v-barra__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    /* 52px: alvo de toque confortável, sem virar botão de tablet */
+    min-height: 52px;
+    padding-inline: 16px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 15.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .v-barra__sec {
+    color: var(--v-on-dark);
+    border: 1px solid var(--v-line-d);
+  }
+
+  .v-barra__cta {
+    background: var(--v-red);
+    color: #fff;
+  }
+
+  .v-barra__cta svg { width: 19px; height: 19px; flex: none; }
+  .v-barra__cta svg:last-child { width: 22px; height: 10px; }
+
+  .v-barra__cta:active { background: var(--v-red-hot); }
+
+  /* o rodapé não pode ficar embaixo da barra */
+  .v-footer__base { padding-bottom: 80px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v-barra { transition: none; }
 }
