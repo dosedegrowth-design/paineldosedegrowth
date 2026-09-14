@@ -52,13 +52,11 @@ export function TyLinkButton({
   arrow = false,
   wide = false,
   className,
-  cursor,
-}: Common & { href: string; cursor?: string }) {
+}: Common & { href: string }) {
   return (
     <TransitionLink
       href={href}
       className={classes(variant, size, wide, className)}
-      data-cursor={cursor}
     >
       <span>{children}</span>
       {arrow ? <span className="ty-btn__arrow" aria-hidden /> : null}
@@ -75,15 +73,13 @@ export function TyExternalButton({
   arrow = false,
   wide = false,
   className,
-  cursor,
-}: Common & { href: string; cursor?: string }) {
+}: Common & { href: string }) {
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
       className={classes(variant, size, wide, className)}
-      data-cursor={cursor}
     >
       <span>{children}</span>
       {arrow ? <span className="ty-btn__arrow" aria-hidden /> : null}

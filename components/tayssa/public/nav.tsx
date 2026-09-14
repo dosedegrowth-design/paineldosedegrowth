@@ -66,7 +66,7 @@ export function PublicNav({ scheduleUrl }: { scheduleUrl: string }) {
           <a href={scheduleUrl} target="_blank" rel="noopener noreferrer" className="ty-link">
             Agendar
           </a>
-          <TransitionLink href={ROUTES.login} className="ty-btn ty-btn--xs" data-cursor="Entrar">
+          <TransitionLink href={ROUTES.login} className="ty-btn ty-btn--xs">
             <span>Entrar</span>
           </TransitionLink>
         </nav>

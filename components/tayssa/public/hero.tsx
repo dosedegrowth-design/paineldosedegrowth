@@ -157,7 +157,6 @@ export function Hero({
                 rel="noopener noreferrer"
                 className="ty-btn ty-btn--sm"
                 style={{ color: "#f1eae1", borderColor: "rgba(241,234,225,0.5)" }}
-                data-cursor="Agendar"
               >
                 <span>Agendar</span>
                 <span className="ty-btn__arrow" aria-hidden />

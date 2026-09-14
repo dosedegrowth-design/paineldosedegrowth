@@ -112,7 +112,7 @@ export function LoginExperience({ vipInfoUrl, next }: { vipInfoUrl: string; next
               </div>
             ) : null}
             <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
-              <TyButton type="submit" variant="solid" arrow disabled={pending} data-cursor="Entrar">
+              <TyButton type="submit" variant="solid" arrow disabled={pending}>
                 {pending ? "Entrando…" : "Entrar"}
               </TyButton>
             </div>

@@ -41,7 +41,7 @@ export function ReferralCta() {
             <Reveal delay={0.2}>
               <div style={{ marginTop: 32 }}>
                 <Magnetic>
-                  <TyLinkButton href={ROUTES.refer} variant="solid" arrow cursor="Indicar">
+                  <TyLinkButton href={ROUTES.refer} variant="solid" arrow>
                     Indicar alguém
                   </TyLinkButton>
                 </Magnetic>

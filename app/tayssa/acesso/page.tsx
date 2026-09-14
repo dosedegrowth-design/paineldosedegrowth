@@ -40,7 +40,7 @@ export default async function RestrictedPage() {
             O acesso é liberado pela Tayssa, de acordo com a relação de cada cliente com o estúdio.
           </p>
           <div style={{ display: "flex", gap: 18, flexWrap: "wrap", marginTop: 28 }}>
-            <a href={url} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--solid" data-cursor="WhatsApp">
+            <a href={url} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--solid">
               <span>Quero saber mais</span>
               <span className="ty-btn__arrow" aria-hidden />
             </a>

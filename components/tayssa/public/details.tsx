@@ -71,7 +71,6 @@ export function Details({ instagramUrl, handle }: { instagramUrl: string; handle
           rel="noopener noreferrer"
           className="ty-link ty-link--caps"
           style={{ marginTop: 24, display: "inline-block" }}
-          data-cursor="Abrir"
         >
           Ver mais no Instagram
         </a>

@@ -33,7 +33,7 @@ export default async function BirthdayPage() {
             O acesso VIP é liberado pela Tayssa de acordo com a relação de cada cliente com o
             estúdio. Se quiser saber como funciona, fale com ela.
           </p>
-          <a href={infoUrl} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--solid" style={{ marginTop: 26 }} data-cursor="WhatsApp">
+          <a href={infoUrl} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--solid" style={{ marginTop: 26 }}>
             <span>Falar com Tayssa</span>
             <span className="ty-btn__arrow" aria-hidden />
           </a>
@@ -87,7 +87,7 @@ export default async function BirthdayPage() {
                 : "Na sua semana, o presente aparece aqui, liberado pela Tayssa."}
             </EmptyState>
             {b.inWindow ? (
-              <a href={requestUrl} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--sm ty-btn--solid" style={{ justifySelf: "start" }} data-cursor="WhatsApp">
+              <a href={requestUrl} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--sm ty-btn--solid" style={{ justifySelf: "start" }}>
                 <span>Quero agendar meu benefício</span>
                 <span className="ty-btn__arrow" aria-hidden />
               </a>

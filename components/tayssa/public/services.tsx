@@ -77,7 +77,7 @@ export function Services({ services, scheduleUrl }: { services: ServiceRow[]; sc
               </p>
               <div style={{ marginTop: 28 }}>
                 <Magnetic>
-                  <a href={scheduleUrl} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--sm" data-cursor="Agendar">
+                  <a href={scheduleUrl} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--sm">
                     <span>Agendar atendimento</span>
                     <span className="ty-btn__arrow" aria-hidden />
                   </a>
@@ -105,7 +105,6 @@ export function Services({ services, scheduleUrl }: { services: ServiceRow[]; sc
                         setOpenMobile(isOpen ? null : i);
                       }
                     }}
-                    data-cursor={fine ? "Ver" : undefined}
                     style={{
                       display: "grid",
                       gridTemplateColumns: "auto 1fr auto",

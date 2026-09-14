@@ -34,7 +34,7 @@ export function VipNav({ name, isVip, supportUrl }: { name: string; isVip: boole
         </TransitionLink>
         <div style={{ display: "flex", alignItems: "center", gap: 22 }}>
           <span className="ty-small ty-hide-mobile">{name}</span>
-          <a href={supportUrl} target="_blank" rel="noopener noreferrer" className="ty-link ty-link--caps ty-hide-mobile" data-cursor="WhatsApp">
+          <a href={supportUrl} target="_blank" rel="noopener noreferrer" className="ty-link ty-link--caps ty-hide-mobile">
             Falar com Tayssa
           </a>
           <form action={logoutAction}>

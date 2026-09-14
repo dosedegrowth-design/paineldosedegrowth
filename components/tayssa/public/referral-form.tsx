@@ -60,7 +60,7 @@ export function PublicReferralForm({ whatsapp, referTemplate }: { whatsapp: stri
             <TyTextarea label="Um recado (opcional)" name="note" rows={2} maxLength={500} placeholder="Ex.: ela quer fazer cílios pela primeira vez" />
             {err && !err.field ? <div className="ty-form-error" role="alert">{err.error}</div> : null}
             <div style={{ display: "flex", flexWrap: "wrap", gap: 18, alignItems: "center" }}>
-              <TyButton type="submit" variant="solid" arrow disabled={pending} data-cursor="Enviar">
+              <TyButton type="submit" variant="solid" arrow disabled={pending}>
                 {pending ? "Registrando…" : "Registrar indicação"}
               </TyButton>
               <span className="ty-small" style={{ maxWidth: 320 }}>
@@ -99,7 +99,6 @@ export function PublicReferralForm({ whatsapp, referTemplate }: { whatsapp: stri
                   target="_blank"
                   rel="noopener noreferrer"
                   className="ty-btn ty-btn--sm ty-btn--solid"
-                  data-cursor="WhatsApp"
                 >
                   <span>Avisar a Tayssa</span>
                   <span className="ty-btn__arrow" aria-hidden />

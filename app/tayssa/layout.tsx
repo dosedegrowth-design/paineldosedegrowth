@@ -7,7 +7,6 @@ import "lenis/dist/lenis.css";
 import "./tayssa.css";
 import { PUBLIC_ORIGIN } from "@/lib/tayssa/config";
 import { SmoothScroll } from "@/components/tayssa/ui/smooth-scroll";
-import { Cursor } from "@/components/tayssa/ui/cursor";
 import { TransitionProvider } from "@/components/tayssa/ui/transition";
 
 const TITLE = "Tayssa — Private Beauty Experience";
@@ -41,7 +40,6 @@ export default function TayssaLayout({ children }: { children: React.ReactNode }
     <div className="ty-scope" data-theme="day">
       <div className="ty-grain" aria-hidden />
       <SmoothScroll />
-      <Cursor />
       <TransitionProvider>{children}</TransitionProvider>
     </div>
   );

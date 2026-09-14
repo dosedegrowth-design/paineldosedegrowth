@@ -174,7 +174,7 @@ export function VipIntro({ benefits, vipInfoUrl }: { benefits: BenefitRow[]; vip
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 18, alignItems: "center", marginTop: 30 }}>
               <Magnetic>
-                <button className="ty-btn ty-btn--solid" onClick={() => setOpen((v) => !v)} aria-expanded={open} data-cursor="Abrir">
+                <button className="ty-btn ty-btn--solid" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
                   <span>Quero fazer parte</span>
                   <span className="ty-btn__arrow" aria-hidden />
                 </button>
@@ -200,7 +200,7 @@ export function VipIntro({ benefits, vipInfoUrl }: { benefits: BenefitRow[]; vip
                     <p className="ty-body" style={{ marginTop: 12 }}>
                       Fale com ela. Se fizer sentido, você recebe um convite com o seu acesso.
                     </p>
-                    <a href={vipInfoUrl} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--sm" style={{ marginTop: 22 }} data-cursor="WhatsApp">
+                    <a href={vipInfoUrl} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--sm" style={{ marginTop: 22 }}>
                       <span>Falar com Tayssa</span>
                       <span className="ty-btn__arrow" aria-hidden />
                     </a>

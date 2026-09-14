@@ -91,12 +91,12 @@ export function BenefitObject({
       {!locked ? (
         <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: 6 }}>
           {status === "available" ? (
-            <TyButton size="sm" variant="accent" arrow onClick={request} disabled={pending} data-cursor="Usar">
+            <TyButton size="sm" variant="accent" arrow onClick={request} disabled={pending}>
               {pending ? "Enviando…" : "Quero usar"}
             </TyButton>
           ) : null}
           {(status === "approved" || status === "requested") && whatsappUrl ? (
-            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--sm ty-btn--solid" data-cursor="WhatsApp">
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--sm ty-btn--solid">
               <span>Agendar pelo WhatsApp</span>
               <span className="ty-btn__arrow" aria-hidden />
             </a>

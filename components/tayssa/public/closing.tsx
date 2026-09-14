@@ -28,17 +28,17 @@ export function Closing({ scheduleUrl }: { scheduleUrl: string }) {
             }}
           >
             <Magnetic>
-              <TyExternalButton href={scheduleUrl} variant="solid" arrow cursor="WhatsApp">
+              <TyExternalButton href={scheduleUrl} variant="solid" arrow>
                 Agendar
               </TyExternalButton>
             </Magnetic>
             <Magnetic>
-              <button className="ty-btn" onClick={() => scrollToTarget("#vip")} data-cursor="VIP">
+              <button className="ty-btn" onClick={() => scrollToTarget("#vip")}>
                 <span>Conhecer o VIP</span>
               </button>
             </Magnetic>
             <Magnetic>
-              <TyLinkButton href={ROUTES.refer} cursor="Indicar">
+              <TyLinkButton href={ROUTES.refer}>
                 Indicar
               </TyLinkButton>
             </Magnetic>
