@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AnimatePresence } from "framer-motion";
@@ -45,32 +45,31 @@ export function LoyaltyCard({
   const router = useRouter();
   const [list, setList] = useState<CardStamp[]>(stamps);
   const [openId, setOpenId] = useState<string | null>(null);
-  const [touched, setTouched] = useState(false);
+  const touched = useRef(false);
 
   const filled = list.length;
   const unrevealed = list.filter((s) => !s.revealed);
   const missing = Math.max(0, size - filled);
   const open = list.find((s) => s.id === openId) ?? null;
 
-  const onRevealed = (id: string, result: RevealResult | null) => {
+  const onRevealed = useCallback((id: string, result: RevealResult | null) => {
     if (!result) return;
     setList((prev) => prev.map((s) => (s.id === id ? { ...s, revealed: true } : s)));
-    setTouched(true);
-  };
+    touched.current = true;
+  }, []);
 
-  const close = () => {
+  const close = useCallback(() => {
     setOpenId(null);
     // pontos, ranking e benefícios mudam junto: recarrega os dados do servidor
-    if (touched) {
-      setTouched(false);
+    if (touched.current) {
+      touched.current = false;
       router.refresh();
     }
-  };
+  }, [router]);
 
-  const next = () => {
-    const rest = list.filter((s) => !s.revealed && s.id !== openId);
-    setOpenId(rest[0]?.id ?? null);
-  };
+  const next = useCallback(() => {
+    setOpenId((current) => list.find((s) => !s.revealed && s.id !== current)?.id ?? null);
+  }, [list]);
 
   return (
     <>

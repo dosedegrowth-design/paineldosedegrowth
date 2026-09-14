@@ -69,6 +69,20 @@ export function ScratchSheet({
     });
   }, [open, stamp.id, onRevealed]);
 
+  // enquanto a folha está aberta, a página atrás não rola e ESC fecha
+  useEffect(() => {
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [onClose]);
+
   // folha dourada
   useEffect(() => {
     const canvas = canvasRef.current;
