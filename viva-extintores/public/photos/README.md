@@ -1,75 +1,61 @@
-# Fotos reais da VIVA
+# Imagens do site
 
-As fotos reais são o maior ativo do projeto. Enquanto o arquivo não
-estiver aqui, o site desenha um campo tonal com a descrição do que aquela
-foto precisa ser — **nunca** stock, ilustração ou imagem sintética.
+Duas procedências, e a diferença importa:
 
-**As fotos já aprovadas são as que entram.** Nenhum gerador substitui uma
-foto de obra real por banco de imagem.
+## Foto real da VIVA
 
-## Como colocar
+Veio do acervo do site atual (`dosedegrowth-design/vivaextintores`).
+Está em `00-site/`, `01-combate/`, `04-laudos/` e em parte da
+`05-relatorio/`.
 
-1. A VIVA entrega cinco lotes, um por área. Cada lote vira uma pasta aqui.
-2. Salve cada arquivo com **exatamente** o nome que `lib/photos.ts` espera
-   (`.jpg`, minúsculas).
+A legenda descreve **o que a foto mostra de fato**. Não atribuir a foto de
+um cliente ao nome de outro: as entregas de laudo estão legendadas por
+tipo de cliente (comércio, padaria, transportadora, estúdio), que é como o
+acervo da VIVA as identifica.
+
+## Imagem ilustrativa
+
+Gerada para a apresentação, porque a VIVA ainda não mandou foto dessas
+áreas. Está em `02-alarme/`, `03-spda/` e em parte da `05-relatorio/`.
+
+No site elas aparecem com a etiqueta **"Imagem ilustrativa"** no canto —
+ninguém pode confundir com obra executada pela VIVA. **São as primeiras a
+trocar quando as fotos reais chegarem.** Ao trocar, remova o
+`ilustrativa: true` do slot em `lib/photos.ts` e a etiqueta some sozinha.
+
+Prioridade de troca:
+1. `05-relatorio/hero.jpg` — o profissional de costas com prancheta é a
+   imagem central do conceito.
+2. `02-alarme/*` — centrais, detectores, sirenes, acionadores em obra.
+3. `03-spda/*` — captores, mastros, malha, descidas, terrômetro.
+4. `05-relatorio/conforme|falha|solucao` — o antes/depois da inspeção.
+
+## Como trocar
+
+1. Salve o arquivo com **exatamente** o nome que `lib/photos.ts` espera
+   (`.jpg`, minúsculas), na pasta da área.
+2. Tire o `ilustrativa: true` do slot, se houver.
 3. Pronto. Nenhum componente muda.
 
-Proporções: `hero` em 16:9 (mínimo 2000px de largura), `card` e `destaque`
-em 4:3, numeradas (`01`…`05`) em 1:1.
+Proporções: `hero` 16:9 (1920×1080), `card`/`destaque`/estados 4:3
+(1400×1050), numeradas 1:1 (1100×1100).
 
 ## As pastas
 
-### `00-site/` — institucional
-`hero.jpg` · `portfolio-hero.jpg` · `equipe.jpg` · `sobre.jpg` ·
-`servicos-hero.jpg` · `contato-hero.jpg`
+| Pasta | O que é |
+|---|---|
+| `00-site/` | institucional: abertura, portfólio, equipe, sede, serviços, contato |
+| `01-combate/` | bombas, barrilete, hidrantes, SPK — **fotos reais** |
+| `02-alarme/` | centrais, detectores, sirenes, acionadores — **ilustrativas** |
+| `03-spda/` | captores, descidas, cobertura, terrômetro — **ilustrativas** |
+| `04-laudos/` | entregas de documentação — **fotos reais** |
+| `05-relatorio/` | inspeção e manutenção — hero e estados ilustrativos, galeria real |
+| `instagram/` | prints de post, se algum dia forem usados no lugar do embed |
 
-O `hero.jpg` é a abertura do site: fotografia real e impactante de
-combate/proteção contra incêndio, atmosfera escura.
+## Acervo disponível e ainda não usado
 
-### `01-combate/` — Sistemas de combate a incêndio
-`hero.jpg` · `card.jpg` · `destaque.jpg` · `01.jpg` … `04.jpg`
-
-Bombas, casa de bombas, rede de hidrantes, SPK, painéis de comando,
-ligações trifásicas, tubulações, instalações concluídas.
-
-> **Não entra:** a obra industrial de recalque/teste de pressão que não
-> representa a VIVA.
-
-### `02-alarme/` — Alarme e detecção
-`hero.jpg` · `card.jpg` · `destaque.jpg` · `01.jpg` … `04.jpg`
-
-Centrais (inclusive a Ascael), detectores, sirene audiovisual, botoeira,
-infraestrutura, cabeamento, instalação real.
-
-> A versão aprovada é a que **substituiu a foto do fio pela obra de
-> detecção**. Não voltar a usar o cabo como imagem principal.
-
-### `03-spda/` — SPDA / para-raios
-`hero.jpg` · `card.jpg` · `destaque.jpg` · `01.jpg` … `05.jpg`
-
-Mastro e captor, cobertura, malha, cabos, descidas, sinalização,
-terrômetro, medições, execução.
-
-### `04-laudos/` — Laudos, CLCB e AVCB
-`hero.jpg` · `card.jpg` · `clcb.jpg` · `avcb.jpg` · `01.jpg` … `04.jpg`
-
-O profissional **de frente**, com o documento, em frente ao Ed. Araken de
-Moraes. Cury (**versão com a fachada ampliada**), Metrô Tamanduateí,
-Padaria Marabá, Banana's Outlet, Studio Rock Rock.
-
-> As legendas com nome de cliente estão em `lib/photos.ts` e precisam de
-> confirmação da VIVA antes de publicar.
-
-### `05-relatorio/` — Relatório Tecno-Fotográfico + manutenção
-`hero.jpg` · `card.jpg` · `conforme.jpg` · `falha.jpg` · `solucao.jpg` ·
-`01.jpg` … `05.jpg`
-
-Técnico em inspeção, prancheta, equipamentos, extintores, mangueiras,
-iluminação, situações corretas, situações com falha, manutenção.
-
-> O `hero.jpg` é a foto do profissional **de costas, com prancheta,
-> fazendo inspeção**. É a imagem central do conceito — não substituir por
-> ícone nem ilustração.
-
-### `instagram/`
-Prints de post, com os nomes definidos em `lib/instagram.ts`.
+O repositório do site atual da VIVA tem mais material que pode entrar:
+fotos de **treinamento de brigada** (combate ao fogo, mangueira, resgate,
+simulação, turma) — que servem para `/servicos` — e **logos de clientes**.
+Os logos ficaram de fora de propósito: a VIVA pediu para não montar parede
+de marcas nesta versão.

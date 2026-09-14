@@ -1,4 +1,5 @@
 import { NUMEROS, NUMEROS_NOTA } from "@/lib/numeros";
+import { Contador, Reveal } from "@/components/ui/motion";
 
 /**
  * Os números.
@@ -11,17 +12,17 @@ export function Numeros() {
   return (
     <section className="v-section v-section--tight" aria-label="A VIVA em números">
       <div className="v-wrap">
-        <div className="v-num">
+        <Reveal className="v-num">
           <p className="v-num__nota">{NUMEROS_NOTA}</p>
-          <ul className="v-num__lista">
+          <ul className="v-num__lista v-cascata-in">
             {NUMEROS.map((n) => (
               <li key={n.rotulo}>
-                <span className="v-num__valor">{n.valor}</span>
+                <Contador valor={n.valor} className="v-num__valor" />
                 <span className="v-num__rotulo">{n.rotulo}</span>
               </li>
             ))}
           </ul>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

@@ -39,6 +39,8 @@
   --v-header: 76px;
 
   --v-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  /* a mesma curva dos sites de estúdio: sai rápido e assenta devagar */
+  --v-power3: cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 body {
@@ -450,17 +452,6 @@ body {
   line-height: 1;
   flex: none;
 }
-
-.v-logo__mark {
-  font-family: "Barlow Condensed", sans-serif;
-  font-weight: 700;
-  font-size: 32px;
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
-  color: #fff;
-}
-
-.v-logo__mark span { color: var(--v-red); }
 
 .v-logo__sub {
   font-family: "Barlow Condensed", sans-serif;
@@ -1037,26 +1028,130 @@ body {
 }
 
 /* ------------------------------------------------------------
-   Reveal — sem JS, tudo aparece
+   Movimento
+
+   Regra de ouro: o padrão é VISÍVEL. Só quando o JavaScript monta e o
+   usuário não pediu menos movimento é que `data-motion="on"` aparece e
+   esconde o que ainda vai entrar. Sem JS, nada some.
    ------------------------------------------------------------ */
 
-.v-reveal[data-js="true"] {
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.75s var(--v-ease), transform 0.75s var(--v-ease);
+/* título: cada linha sobe de dentro da própria máscara */
+.v-linha {
+  display: block;
+  overflow: hidden;
 }
 
-.v-reveal[data-js="true"][data-shown="true"] {
+.v-linha__in {
+  display: block;
+  will-change: transform;
+}
+
+[data-motion="on"] > .v-linha > .v-linha__in {
+  transform: translateY(105%);
+  opacity: 0;
+  transition:
+    transform 1s var(--v-power3) var(--atraso, 0s),
+    opacity 0.7s var(--v-power3) var(--atraso, 0s);
+}
+
+[data-motion="on"][data-shown="true"] > .v-linha > .v-linha__in {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* bloco: entra subindo */
+.v-reveal[data-motion="on"] {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.9s var(--v-power3) var(--atraso, 0s),
+    transform 0.9s var(--v-power3) var(--atraso, 0s);
+}
+
+.v-reveal[data-motion="on"][data-shown="true"] {
   opacity: 1;
   transform: none;
 }
 
+/* cascata: os filhos entram um depois do outro */
+.v-cascata[data-motion="on"] > * {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.8s var(--v-power3),
+    transform 0.8s var(--v-power3);
+}
+
+.v-cascata[data-motion="on"][data-shown="true"] > * {
+  opacity: 1;
+  transform: none;
+}
+
+.v-cascata[data-motion="on"][data-shown="true"] > *:nth-child(1) { transition-delay: 0.02s; }
+.v-cascata[data-motion="on"][data-shown="true"] > *:nth-child(2) { transition-delay: 0.09s; }
+.v-cascata[data-motion="on"][data-shown="true"] > *:nth-child(3) { transition-delay: 0.16s; }
+.v-cascata[data-motion="on"][data-shown="true"] > *:nth-child(4) { transition-delay: 0.23s; }
+.v-cascata[data-motion="on"][data-shown="true"] > *:nth-child(5) { transition-delay: 0.30s; }
+.v-cascata[data-motion="on"][data-shown="true"] > *:nth-child(6) { transition-delay: 0.37s; }
+.v-cascata[data-motion="on"][data-shown="true"] > *:nth-child(7) { transition-delay: 0.44s; }
+.v-cascata[data-motion="on"][data-shown="true"] > *:nth-child(n + 8) { transition-delay: 0.5s; }
+
+/* foto que aproxima devagar no hover */
+.v-photo--zoom img {
+  transition: transform 1.1s var(--v-power3);
+}
+
+.v-photo--zoom:hover img,
+a:hover .v-photo--zoom img {
+  transform: scale(1.055);
+}
+
+/* etiqueta de imagem ilustrativa */
+.v-photo__ilus {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 9px;
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 600;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(12, 22, 32, 0.68);
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+/* linha vermelha que corre sob o título de seção */
+.v-regua {
+  display: block;
+  width: 62px;
+  height: 3px;
+  background: var(--v-red);
+  margin-top: 16px;
+  transform-origin: left;
+}
+
+[data-motion="on"] .v-regua {
+  transform: scaleX(0);
+  transition: transform 0.9s var(--v-power3) 0.25s;
+}
+
+[data-motion="on"][data-shown="true"] .v-regua {
+  transform: scaleX(1);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .v-reveal[data-js="true"] {
-    opacity: 1;
-    transform: none;
-    transition: none;
+  [data-motion="on"] > .v-linha > .v-linha__in,
+  .v-reveal[data-motion="on"],
+  .v-cascata[data-motion="on"] > *,
+  [data-motion="on"] .v-regua {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
   }
+  .v-photo--zoom img { transition: none; }
 }
 
 /* ------------------------------------------------------------
@@ -1531,8 +1626,7 @@ body {
 @media (max-width: 560px) {
   /* A assinatura do logo tem tracking largo (0.42em); em tela estreita
      ela sozinha estourava a barra do cabeçalho. */
-  .v-logo__mark { font-size: 26px; }
-  .v-logo__sub { font-size: 9px; letter-spacing: 0.2em; }
+  .v-logo__sub { font-size: 8.5px; letter-spacing: 0.16em; }
 
   .v-manut { grid-template-columns: repeat(2, 1fr); }
   .v-etapas,
@@ -1612,4 +1706,45 @@ body {
 
 @media (max-width: 900px) {
   .v-ig { grid-template-columns: 1fr; }
+}
+
+/* cascata dentro de um bloco que já é revelado (listas, galerias) */
+[data-motion="on"] .v-cascata-in > * {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.75s var(--v-power3),
+    transform 0.75s var(--v-power3);
+}
+
+[data-motion="on"][data-shown="true"] .v-cascata-in > * {
+  opacity: 1;
+  transform: none;
+}
+
+[data-motion="on"][data-shown="true"] .v-cascata-in > *:nth-child(1) { transition-delay: 0.06s; }
+[data-motion="on"][data-shown="true"] .v-cascata-in > *:nth-child(2) { transition-delay: 0.13s; }
+[data-motion="on"][data-shown="true"] .v-cascata-in > *:nth-child(3) { transition-delay: 0.20s; }
+[data-motion="on"][data-shown="true"] .v-cascata-in > *:nth-child(4) { transition-delay: 0.27s; }
+[data-motion="on"][data-shown="true"] .v-cascata-in > *:nth-child(5) { transition-delay: 0.34s; }
+[data-motion="on"][data-shown="true"] .v-cascata-in > *:nth-child(6) { transition-delay: 0.41s; }
+[data-motion="on"][data-shown="true"] .v-cascata-in > *:nth-child(n + 7) { transition-delay: 0.47s; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-motion="on"] .v-cascata-in > * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* a marca oficial no cabeçalho */
+.v-logo img {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 560px) {
+  .v-logo img { height: 32px; }
 }

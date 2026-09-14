@@ -1,7 +1,7 @@
 import { DOCUMENTOS, ETAPAS } from "@/lib/documentos";
 import { FOTOS } from "@/lib/photos";
 import { FotoReal } from "@/components/ui/foto-real";
-import { Reveal } from "@/components/ui/reveal";
+import { Reveal } from "@/components/ui/motion";
 
 /** Blocos próprios da página 04: os dois caminhos e o percurso até a aprovação. */
 export function BlocoDocumentos() {

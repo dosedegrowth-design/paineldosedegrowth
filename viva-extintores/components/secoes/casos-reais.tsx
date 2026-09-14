@@ -1,5 +1,5 @@
 import { SetaBaixo } from "@/components/ui/icones";
-import { Reveal } from "@/components/ui/reveal";
+import { Reveal } from "@/components/ui/motion";
 
 /**
  * A transição do fim de cada página de área.

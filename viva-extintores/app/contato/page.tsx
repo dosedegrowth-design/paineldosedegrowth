@@ -6,7 +6,7 @@ import { MENSAGENS, whatsappUrl } from "@/lib/whatsapp";
 import { HeroPagina } from "@/components/secoes/hero-pagina";
 import { Fecho } from "@/components/secoes/fecho";
 import { Botao } from "@/components/ui/botao";
-import { Reveal } from "@/components/ui/reveal";
+import { Reveal } from "@/components/ui/motion";
 
 export const metadata: Metadata = {
   title: "Contato",

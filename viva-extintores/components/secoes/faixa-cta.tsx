@@ -1,7 +1,7 @@
 import { CTA_PRINCIPAL } from "@/lib/config";
 import { Botao } from "@/components/ui/botao";
 import { Predio } from "@/components/ui/icones";
-import { Reveal } from "@/components/ui/reveal";
+import { Reveal } from "@/components/ui/motion";
 
 /** A faixa escura que fecha cada página antes da frase de fecho. */
 export function FaixaCta({

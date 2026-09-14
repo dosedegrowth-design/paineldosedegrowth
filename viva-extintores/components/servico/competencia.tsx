@@ -3,7 +3,7 @@ import { SELOS_AREA, SELO_OBRAS } from "@/lib/numeros";
 import { whatsappUrl } from "@/lib/whatsapp";
 import { Botao } from "@/components/ui/botao";
 import { FotoReal } from "@/components/ui/foto-real";
-import { Reveal } from "@/components/ui/reveal";
+import { Linhas, Reveal } from "@/components/ui/motion";
 import { Check, Engrenagem, Escudo, Pessoas } from "@/components/ui/icones";
 
 /**
@@ -18,18 +18,15 @@ export function Competencia({ area }: { area: Area }) {
 
         <Reveal className="v-comp">
           <div>
-            <h2 className="v-display v-h2" id="competencia-titulo">
-              {area.blocoTitulo[0]}
-              {area.blocoTitulo[1] ? (
-                <>
-                  <br />
-                  {area.blocoTitulo[1]}
-                </>
-              ) : null}
-            </h2>
+            <Linhas
+              as="h2"
+              id="competencia-titulo"
+              className="v-display v-h2"
+              linhas={area.blocoTitulo}
+            />
             <p className="v-body v-comp__intro">{area.blocoIntro}</p>
 
-            <ul className="v-list">
+            <ul className="v-list v-cascata-in">
               {area.itens.map((item) => (
                 <li key={item}>
                   <Check />
@@ -72,6 +69,7 @@ export function Competencia({ area }: { area: Area }) {
               <FotoReal
                 foto={area.destaque}
                 legenda
+                zoom
                 sizes="(max-width: 1080px) 100vw, 46vw"
               />
             </div>
@@ -80,12 +78,12 @@ export function Competencia({ area }: { area: Area }) {
 
         <Reveal>
           <ul
-            className="v-gal"
+            className="v-gal v-cascata-in"
             style={{ ["--cols" as string]: String(area.galeria.length) }}
           >
             {area.galeria.map((f) => (
               <li key={f.src}>
-                <FotoReal foto={f} legenda sizes="(max-width: 900px) 50vw, 20vw" />
+                <FotoReal foto={f} legenda zoom sizes="(max-width: 900px) 50vw, 20vw" />
               </li>
             ))}
           </ul>

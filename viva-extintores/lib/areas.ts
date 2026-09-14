@@ -196,13 +196,7 @@ export const AREAS: Area[] = [
     ctaRotulo: "Solicite uma análise técnica",
     ctaMensagem: "Olá! Vi o site da VIVA e quero falar sobre SPDA / para-raios.",
     destaque: FOTOS.spda.destaque,
-    galeria: [
-      FOTOS.spda.g1,
-      FOTOS.spda.g2,
-      FOTOS.spda.g3,
-      FOTOS.spda.g4,
-      FOTOS.spda.g5,
-    ],
+    galeria: [FOTOS.spda.g1, FOTOS.spda.g2, FOTOS.spda.g3, FOTOS.spda.g4],
 
     faixaTitulo: ["Proteção contra", "descargas atmosféricas."],
     faixaTexto:
@@ -253,7 +247,7 @@ export const AREAS: Area[] = [
     ctaMensagem:
       "Olá! Vi o site da VIVA e quero regularizar minha edificação (CLCB / AVCB).",
     destaque: FOTOS.laudos.avcb,
-    galeria: [FOTOS.laudos.o1, FOTOS.laudos.o2, FOTOS.laudos.o3, FOTOS.laudos.o4],
+    galeria: [FOTOS.laudos.g1, FOTOS.laudos.g2, FOTOS.laudos.g3, FOTOS.laudos.g4],
 
     faixaTitulo: ["Segurança, regularização", "e valorização para o seu imóvel."],
     faixaTexto:
@@ -302,13 +296,7 @@ export const AREAS: Area[] = [
     ctaMensagem:
       "Olá! Quero solicitar uma inspeção técnica e o Relatório Tecno-Fotográfico do meu prédio.",
     destaque: FOTOS.relatorio.conforme,
-    galeria: [
-      FOTOS.relatorio.m1,
-      FOTOS.relatorio.m2,
-      FOTOS.relatorio.m3,
-      FOTOS.relatorio.m4,
-      FOTOS.relatorio.m5,
-    ],
+    galeria: [FOTOS.relatorio.g1, FOTOS.relatorio.g2, FOTOS.relatorio.g3],
 
     faixaTitulo: ["Segurança é gestão.", "Prevenção é inteligência."],
     faixaTexto:

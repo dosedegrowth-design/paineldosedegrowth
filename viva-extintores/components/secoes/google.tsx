@@ -1,6 +1,6 @@
 import { GOOGLE, RELATOS } from "@/lib/prova-social";
 import { Estrela, Google as GoogleIcon } from "@/components/ui/icones";
-import { Reveal } from "@/components/ui/reveal";
+import { Reveal } from "@/components/ui/motion";
 
 /**
  * Selo do Google + relatos reais do Google Meu Negócio.

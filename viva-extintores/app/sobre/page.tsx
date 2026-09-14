@@ -8,7 +8,7 @@ import { Numeros } from "@/components/secoes/numeros";
 import { FaixaCta } from "@/components/secoes/faixa-cta";
 import { Fecho } from "@/components/secoes/fecho";
 import { FotoReal } from "@/components/ui/foto-real";
-import { Reveal } from "@/components/ui/reveal";
+import { Reveal } from "@/components/ui/motion";
 
 export const metadata: Metadata = {
   title: "Sobre nós",

@@ -54,7 +54,11 @@ de segurança contra incêndio e resolver."*
 
 Next.js 16 (App Router, Turbopack) · TypeScript estrito · **CSS puro**
 (sem Tailwind; tokens em `app/viva.css`) · Barlow + Barlow Condensed ·
-**sem dependência de runtime além de React/Next** · Vercel.
+Lenis (rolagem suave, carregado sob demanda) · Vercel.
+
+Movimento: sem GSAP. A gramática (linha que sobe de dentro da máscara,
+cascata, parallax por scroll, contador) está em `components/ui/motion.tsx`,
+em CSS + IntersectionObserver, com a curva `--v-power3`.
 
 Sem banco, sem API, sem autenticação: onze páginas pré-renderizadas. Se
 aparecer vontade de adicionar backend, pare e pergunte.
@@ -74,9 +78,16 @@ visual de catálogo, elemento "promocional".
 
 Vieram do cliente. Não são preferência de estilo.
 
-- **Nunca inventar.** Foto, obra, cliente, número, depoimento: se não veio
-  da VIVA, não entra. Onde falta, o site mostra "a preencher" — é assim de
-  propósito.
+- **Nunca passar imagem ilustrativa por obra da VIVA.** As áreas sem foto
+  real (alarme, SPDA e parte do relatório) usam imagem gerada, marcada com
+  `ilustrativa: true` em `lib/photos.ts`, o que faz aparecer a etiqueta
+  "Imagem ilustrativa" no canto. Não remover a etiqueta sem trocar o
+  arquivo pela foto real. Obra, cliente, número e depoimento continuam
+  valendo a regra antiga: se não veio da VIVA, não entra.
+- **Legenda descreve a foto que está ali.** As entregas de laudo são
+  legendadas por tipo de cliente (comércio, padaria, transportadora),
+  porque é assim que o acervo da VIVA as identifica — não colar nome de
+  cliente numa foto que é de outro.
 - **Só entram os números confirmados** (`lib/numeros.ts`): +15 anos,
   +10.000 laudos entregues, +30 obras entregues em 2026, +20 itens no
   Relatório. Os números dos mockups da agência são números de layout, não
@@ -106,6 +117,12 @@ Vieram do cliente. Não são preferência de estilo.
 - **Os posts do Instagram são publicações reais**, incorporadas pelo
   permalink e clicáveis para o post. Nada de print nem de foto solta
   imitando post.
+- **Movimento: o padrão é visível.** `components/ui/motion.tsx` só esconde
+  depois que o JavaScript monta (`data-motion="on"`), e `prefers-reduced-motion`
+  desliga tudo. Nunca mandar `opacity: 0` no HTML do servidor.
+- **Número na tela é sempre o número certo.** O contador mostra o valor
+  final até a contagem realmente começar — se o observador não disparar, o
+  visitante lê "+15", nunca "+0".
 - **Mobile reorganiza, não remove.** Nenhum conteúdo some para "caber".
 - **Sem JavaScript, a página aparece inteira.** O `<Reveal>` só esconde
   depois de montar (`data-js`). Nunca mandar `opacity: 0` no HTML do

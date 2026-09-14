@@ -7,7 +7,7 @@ import { ROUTES } from "@/lib/config";
 import { HeroPagina } from "@/components/secoes/hero-pagina";
 import { FaixaCta } from "@/components/secoes/faixa-cta";
 import { Fecho } from "@/components/secoes/fecho";
-import { Reveal } from "@/components/ui/reveal";
+import { Reveal } from "@/components/ui/motion";
 import {
   IconeAlarme,
   IconeBomba,

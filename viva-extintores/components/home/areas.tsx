@@ -79,6 +79,7 @@ export function AreasGrid({ titulo, texto }: { titulo: string; texto: string }) 
                       <FotoReal
                         foto={a.cardFoto}
                         ratio="fill"
+                        zoom
                         sizes="(max-width: 900px) 85vw, 30vw"
                         style={{ height: "100%" }}
                       />

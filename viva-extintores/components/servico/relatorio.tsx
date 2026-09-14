@@ -9,7 +9,7 @@ import {
 } from "@/lib/relatorio";
 import { FOTOS } from "@/lib/photos";
 import { FotoReal } from "@/components/ui/foto-real";
-import { Reveal } from "@/components/ui/reveal";
+import { Reveal } from "@/components/ui/motion";
 import {
   Alerta,
   Check,

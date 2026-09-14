@@ -13,6 +13,7 @@ import { DisponibilidadeProvider } from "@/components/ui/disponibilidade";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { WhatsappFlutuante } from "@/components/layout/whatsapp-float";
+import { ScrollSuave } from "@/components/ui/motion";
 
 const TITULO = "VIVA Extintores — Engenharia, prevenção e combate a incêndio";
 const DESCRICAO =
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="pt-BR">
       <body>
         <DisponibilidadeProvider value={fotos}>
+          <ScrollSuave />
           <Header />
           <main>{children}</main>
           <Footer />
