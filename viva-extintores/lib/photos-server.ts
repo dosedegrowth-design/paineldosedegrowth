@@ -1,7 +1,7 @@
 import "server-only";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { TODOS_OS_SLOTS } from "@/lib/photos";
+import { arquivo, TODOS_OS_SLOTS } from "@/lib/photos";
 
 /**
  * Quais fotos já existem em `public/photos/<lote>/`.
@@ -14,7 +14,8 @@ export function disponibilidadeDeFotos(): Record<string, boolean> {
   const publico = join(process.cwd(), "public");
   const mapa: Record<string, boolean> = {};
   for (const slot of TODOS_OS_SLOTS) {
-    mapa[slot.src] = existsSync(join(publico, slot.src));
+    // basta conferir um recorte: a receita gera todos de uma vez
+    mapa[slot.base] = existsSync(join(publico, arquivo(slot, "w")));
   }
   return mapa;
 }

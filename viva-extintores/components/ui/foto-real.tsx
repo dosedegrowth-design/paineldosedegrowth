@@ -1,20 +1,25 @@
 "use client";
 
-import Image from "next/image";
 import { useState, type CSSProperties } from "react";
-import type { FotoSlot } from "@/lib/photos";
+import { arquivo, conjunto, type Corte, type FotoSlot } from "@/lib/photos";
 import { useFotoDisponivel } from "@/components/ui/disponibilidade";
 
 /**
- * Foto com procedência explícita.
+ * Foto tratada, com procedência.
  *
- * Quando o slot é `ilustrativa`, a etiqueta aparece sobre a imagem: é
- * imagem de apresentação, não obra executada pela VIVA. Quem olha nunca
- * confunde as duas coisas — e é isso que permite mandar o site para o
- * cliente antes de as fotos reais chegarem.
+ * O arquivo servido é o que `scripts/grade.mjs` produziu: mesmo contraste,
+ * mesma saturação, mesmo recorte de todas as outras. É o que faz o acervo
+ * — celular em obra, foto de entrega, imagem de apresentação — parecer um
+ * corpo fotográfico só em vez de colagem.
  *
- * Se o arquivo sumir, o componente cai no campo tonal em vez de deixar um
- * buraco.
+ * `corte="auto"` troca o recorte no celular: retrato até 760px, paisagem
+ * daí para cima. É direção de arte de verdade, não a mesma imagem espremida.
+ *
+ * Quando o slot é ilustrativo a marca fica na legenda, discreta. Ela existe
+ * para ninguém confundir imagem de apresentação com obra da VIVA — mas não
+ * precisa gritar por cima da foto.
+ *
+ * Sem arquivo, cai no campo tonal. Nunca buraco, nunca imagem de banco.
  */
 export function FotoReal({
   foto,
@@ -23,6 +28,7 @@ export function FotoReal({
   sizes = "100vw",
   priority = false,
   legenda = false,
+  corte = "w",
   ratio,
   zoom = false,
 }: {
@@ -32,14 +38,17 @@ export function FotoReal({
   sizes?: string;
   priority?: boolean;
   legenda?: boolean;
+  /** recorte servido; "auto" = retrato no celular, paisagem no resto */
+  corte?: Corte | "auto";
   ratio?: number | "fill";
   /** aproxima devagar quando o contêiner recebe hover */
   zoom?: boolean;
 }) {
   const [erro, setErro] = useState(false);
-  const disponivel = useFotoDisponivel(foto.src);
+  const disponivel = useFotoDisponivel(foto.base);
   const faltando = erro || !disponivel;
-  const aspect = ratio === "fill" ? undefined : (ratio ?? foto.ratio);
+  const aspect = ratio === "fill" ? undefined : ratio;
+  const principal: Corte = corte === "auto" ? "w" : corte;
 
   return (
     <div
@@ -52,25 +61,36 @@ export function FotoReal({
           <span className="v-photo__ph-alt">{foto.legenda ?? foto.alt}</span>
         </div>
       ) : (
-        <Image
-          src={foto.src}
-          alt={foto.alt}
-          fill
-          sizes={sizes}
-          priority={priority}
-          onError={() => setErro(true)}
-          style={{ objectFit: "cover" }}
-        />
+        <picture>
+          {corte === "auto" ? (
+            <source media="(max-width: 760px)" srcSet={conjunto(foto, "p")} sizes={sizes} />
+          ) : null}
+          <source srcSet={conjunto(foto, principal)} sizes={sizes} />
+          <img
+            src={arquivo(foto, principal)}
+            alt={foto.alt}
+            loading={priority ? "eager" : "lazy"}
+            decoding={priority ? "sync" : "async"}
+            fetchPriority={priority ? "high" : undefined}
+            onError={() => setErro(true)}
+          />
+        </picture>
       )}
 
-      {foto.ilustrativa && !faltando ? (
-        <span className="v-photo__ilus" title="Imagem de apresentação — não é obra executada pela VIVA">
-          Imagem ilustrativa
+      {/* a marca de imagem ilustrativa aparece sempre — é regra do cliente,
+          não enfeite. A legenda descritiva é que é opcional. */}
+      {!faltando && (foto.ilustrativa || (legenda && foto.legenda)) ? (
+        <span className="v-photo__caption">
+          {legenda ? foto.legenda : null}
+          {foto.ilustrativa ? (
+            <em
+              className="v-photo__ilus"
+              title="Imagem de apresentação — não é obra executada pela VIVA"
+            >
+              {legenda && foto.legenda ? " · " : ""}imagem ilustrativa
+            </em>
+          ) : null}
         </span>
-      ) : null}
-
-      {legenda && foto.legenda && !faltando ? (
-        <span className="v-photo__caption">{foto.legenda}</span>
       ) : null}
     </div>
   );

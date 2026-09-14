@@ -4,7 +4,7 @@ import { FOTOS } from "@/lib/photos";
 import { MENSAGENS, whatsappUrl } from "@/lib/whatsapp";
 import { HeroPagina } from "@/components/secoes/hero-pagina";
 import { Abas } from "@/components/servico/abas";
-import { AreasGrid } from "@/components/home/areas";
+import { Frentes } from "@/components/home/frentes";
 import { Numeros } from "@/components/secoes/numeros";
 import { FaixaCta } from "@/components/secoes/faixa-cta";
 import { Fecho } from "@/components/secoes/fecho";
@@ -33,7 +33,7 @@ export default function Page() {
       />
       <Abas />
 
-      <AreasGrid
+      <Frentes
         titulo="Cinco frentes | um responsável só"
         texto="Escolha o serviço e conheça nossos projetos, resultados e casos reais."
       />

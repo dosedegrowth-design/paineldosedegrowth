@@ -17,7 +17,8 @@
  */
 
 export type FotoSlot = {
-  src: string;
+  /** caminho sem sufixo nem extensão: `/img/01-combate/card` */
+  base: string;
   alt: string;
   /** proporção largura/altura — vale para o layout e para o vazio */
   ratio: number;
@@ -27,10 +28,28 @@ export type FotoSlot = {
   ilustrativa?: true;
 };
 
+/**
+ * Os recortes que `scripts/grade.mjs` gera para cada foto. Dois tamanhos
+ * de cada, para o celular não baixar imagem de desktop.
+ */
+export type Corte = "w" | "p" | "q";
+
+const MENOR: Record<Corte, string> = { w: "ws", p: "ps", q: "qs" };
+const LARGURA: Record<Corte, [number, number]> = { w: [1100, 1800], p: [700, 1120], q: [560, 900] };
+
+export function arquivo(foto: FotoSlot, corte: Corte, pequeno = false) {
+  return `${foto.base}-${pequeno ? MENOR[corte] : corte}.webp`;
+}
+
+export function conjunto(foto: FotoSlot, corte: Corte) {
+  const [a, b] = LARGURA[corte];
+  return `${arquivo(foto, corte, true)} ${a}w, ${arquivo(foto, corte)} ${b}w`;
+}
+
 const lote =
   (pasta: string, ilustrativa?: true) =>
   (nome: string, alt: string, ratio: number, legenda?: string): FotoSlot => ({
-    src: `/photos/${pasta}/${nome}.jpg`,
+    base: `/img/${pasta}/${nome}`,
     alt,
     ratio,
     legenda,

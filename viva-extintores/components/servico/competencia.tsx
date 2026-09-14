@@ -82,7 +82,7 @@ export function Competencia({ area }: { area: Area }) {
             style={{ ["--cols" as string]: String(area.galeria.length) }}
           >
             {area.galeria.map((f) => (
-              <li key={f.src}>
+              <li key={f.base}>
                 <FotoReal foto={f} legenda zoom sizes="(max-width: 900px) 50vw, 20vw" />
               </li>
             ))}

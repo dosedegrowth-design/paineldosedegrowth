@@ -4,7 +4,9 @@ import { MENSAGENS, whatsappUrl } from "@/lib/whatsapp";
 import { Botao } from "@/components/ui/botao";
 import { CTA_PRINCIPAL } from "@/lib/config";
 import { HeroPagina } from "@/components/secoes/hero-pagina";
-import { AreasGrid } from "@/components/home/areas";
+import { Frentes } from "@/components/home/frentes";
+import { Abertura } from "@/components/secoes/abertura";
+import { Processo } from "@/components/secoes/processo";
 import { Numeros } from "@/components/secoes/numeros";
 import { FaixaCta } from "@/components/secoes/faixa-cta";
 import { Fecho } from "@/components/secoes/fecho";
@@ -26,9 +28,13 @@ export default function Page() {
         </div>
       </HeroPagina>
 
-      <AreasGrid titulo={HOME.areas.titulo} texto={HOME.areas.texto} />
+      <Abertura />
+
+      <Frentes titulo={HOME.areas.titulo} texto={HOME.areas.texto} />
 
       <Numeros />
+
+      <Processo />
 
       <FaixaCta
         titulo={HOME.faixa.titulo}

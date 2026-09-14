@@ -32,7 +32,14 @@ export function HeroPagina({
   return (
     <section className="v-hero" aria-labelledby="titulo-pagina">
       <Parallax className="v-hero__bg" intensidade={0.16}>
-        <FotoReal foto={foto} ratio="fill" priority sizes="100vw" style={{ height: "100%" }} />
+        <FotoReal
+          foto={foto}
+          corte="auto"
+          ratio="fill"
+          priority
+          sizes="100vw"
+          style={{ height: "100%" }}
+        />
       </Parallax>
       <div className="v-hero__scrim" />
 
@@ -58,6 +65,15 @@ export function HeroPagina({
               <p className="v-lead v-hero__text">{texto}</p>
             </Reveal>
             {children ? <Reveal delay={0.44} naEntrada>{children}</Reveal> : null}
+
+            {grande ? (
+              <Reveal delay={0.6} naEntrada>
+                <span className="v-hero__cue">
+                  <i aria-hidden />
+                  Role para conhecer
+                </span>
+              </Reveal>
+            ) : null}
           </div>
 
           <Reveal className="v-hero__aside" delay={0.5} naEntrada>

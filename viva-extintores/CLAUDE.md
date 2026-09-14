@@ -83,6 +83,19 @@ caixa alta leva tracking positivo (0.2em).
 **O respiro é projeto.** A escala `--s-1` a `--s-6` manda no ritmo; seção
 usa `--s-6`. Seção apertada é o que faz site parecer painel administrativo.
 
+**A fotografia passa toda pela mesma receita.** `scripts/grade.mjs` roda
+no `prebuild` e gera `public/img/**` a partir de `public/photos/**`: mesmo
+contraste, mesma saturação baixa, mesma base fria, três recortes fixos
+(3:2, 4:5, 1:1) em dois tamanhos cada. O acervo veio de origens diferentes
+— celular em obra, entrega na porta de um comércio amarelo, céu azul — e
+lado a lado cada uma puxava para um lado. É correção de cor e
+enquadramento, **não** retoque: nada entra nem sai da foto. Nenhum
+componente aponta para `/photos` direto; quem serve imagem é o
+`<FotoReal>`, que escolhe o recorte (`corte="auto"` troca para retrato no
+celular). Recorte automático errando? `ENQUADRAMENTO`, em `grade.mjs`,
+manda na mão — já é o caso de `04-laudos` (duas pessoas) e `03-spda`
+(céu aberto).
+
 **Composição antes de caixa.** Card só quando o conteúdo é mesmo um
 objeto separável. Onde antes havia grade de cards hoje há composição
 aberta: `/servicos` é um índice de linhas (`.v-indice`), os pilares do
@@ -119,9 +132,12 @@ Vieram do cliente. Não são preferência de estilo.
 
 - **Nunca passar imagem ilustrativa por obra da VIVA.** As áreas sem foto
   real (alarme, SPDA e parte do relatório) usam imagem gerada, marcada com
-  `ilustrativa: true` em `lib/photos.ts`, o que faz aparecer a etiqueta
-  "Imagem ilustrativa" no canto. Não remover a etiqueta sem trocar o
-  arquivo pela foto real. Obra, cliente, número e depoimento continuam
+  `ilustrativa: true` em `lib/photos.ts`. A marca aparece **sempre**, na
+  legenda ao pé da foto — discreta, mas presente mesmo quando a legenda
+  descritiva está desligada (`legenda={false}`). Ela saiu da etiqueta
+  preta no canto porque etiqueta gritando sobre a foto era o que mais
+  denunciava layout de template; o que não pode é sumir. Não remover sem
+  trocar o arquivo pela foto real. Obra, cliente, número e depoimento continuam
   valendo a regra antiga: se não veio da VIVA, não entra.
 - **Legenda descreve a foto que está ali.** As entregas de laudo são
   legendadas por tipo de cliente (comércio, padaria, transportadora),
@@ -145,11 +161,15 @@ Vieram do cliente. Não são preferência de estilo.
 - **O módulo de casos reais não é daqui.** Cada página de área fecha com
   "VEJA ALGUNS DOS NOSSOS CASOS REAIS" + seta, e para. A galeria é da
   agência e já existe.
-- **A biblioteca das cinco áreas tem dois toques.** O primeiro abre o card
-  e mostra do que a área trata; o segundo leva para a página. Não
+- **A biblioteca das cinco áreas tem dois toques.** O primeiro abre o
+  painel e mostra do que a área trata; o segundo leva para a página. Não
   transformar em link de um clique só.
-- **No celular a biblioteca corre na horizontal**, com encaixe e setas.
-  **Não** é lista rolando para baixo.
+- **A biblioteca corre na horizontal**, com encaixe e setas — no celular e
+  no desktop. **Não** é lista rolando para baixo e **não** é grade de
+  cards: painel alto, quase de página inteira, numa seção escura
+  (`components/home/frentes.tsx`). Card lado a lado obriga a comparar as
+  fotos entre si, e foi exatamente essa comparação que derrubou a versão
+  anterior. Sem ponto de carrossel, sem botão vermelho dentro do painel.
 - **Número nenhum na abertura.** Os números entram lá embaixo, numa linha
   fina dentro da narrativa — nunca quatro quadradinhos logo abaixo do
   hero.
@@ -179,6 +199,14 @@ Vieram do cliente. Não são preferência de estilo.
 - Na faixa escura de CTA, o botão precisa de `grid-column: 1 / -1` no
   mobile: senão ele engorda a coluna `auto` e o título fica abaixo do
   próprio min-content, vazando na horizontal.
+
+## Ritmo da página-mãe
+
+Claro e escuro se alternam, e é isso que dá profundidade: capa escura →
+abertura clara (a tese, `components/secoes/abertura.tsx`) → as cinco
+frentes escuras → números → como trabalhamos (`processo.tsx`) → faixa
+escura de CTA → fecho → rodapé. Duas seções escuras coladas viram uma
+massa preta com um vazio no meio — foi o que a primeira versão fez.
 
 ## Dev
 

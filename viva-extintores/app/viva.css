@@ -40,7 +40,7 @@
      curta e tracking NEGATIVO: título grande pede letra apertada, senão
      parece texto ampliado em vez de tipografia desenhada.
      ---------------------------------------------------------------- */
-  --t-xl: clamp(46px, 11.2vw, 136px);
+  --t-xl: clamp(42px, 8.2vw, 104px);
   --t-l: clamp(34px, 6.6vw, 80px);
   --t-m: clamp(26px, 4vw, 48px);
   --t-s: clamp(20px, 2.3vw, 29px);
@@ -291,7 +291,14 @@ body {
   background: var(--v-paper-3);
 }
 
+.v-photo picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .v-photo img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -353,17 +360,37 @@ body {
   color: var(--v-on-dark-faint);
 }
 
-/* legenda em chip escuro, canto inferior esquerdo */
+/* legenda discreta, sobre um véu que nasce da própria foto — não é chip.
+   A marca de imagem ilustrativa mora aqui: precisa ser legível, não
+   precisa gritar por cima da imagem. */
 .v-photo__caption {
   position: absolute;
   left: 0;
+  right: 0;
   bottom: 0;
-  max-width: 92%;
-  padding: 7px 12px;
-  font-size: 12.5px;
-  line-height: 1.25;
-  color: #fff;
-  background: rgba(12, 22, 32, 0.88);
+  padding: 26px 14px 10px;
+  font-size: 12px;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.92);
+  background: linear-gradient(to top, rgba(7, 13, 19, 0.82), rgba(7, 13, 19, 0));
+  pointer-events: none;
+}
+
+.v-photo__ilus {
+  font-style: normal;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.v-photo__ilus::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin-right: 6px;
+  margin-bottom: 1px;
+  border: 1px solid currentColor;
+  transform: rotate(45deg);
 }
 
 /* ------------------------------------------------------------
@@ -517,16 +544,53 @@ body {
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(90deg, rgba(12, 22, 32, 0.96) 0%, rgba(12, 22, 32, 0.82) 44%, rgba(12, 22, 32, 0.25) 100%),
-    linear-gradient(0deg, rgba(12, 22, 32, 0.8) 0%, rgba(12, 22, 32, 0.15) 55%);
+    linear-gradient(90deg, rgba(9, 16, 24, 0.86) 0%, rgba(9, 16, 24, 0.58) 46%, rgba(9, 16, 24, 0.06) 100%),
+    linear-gradient(0deg, rgba(9, 16, 24, 0.82) 0%, rgba(9, 16, 24, 0) 56%);
 }
 
+/* A abertura ocupa a tela e o texto assenta embaixo: sobra céu para a
+   fotografia respirar, em vez de o título comer a imagem inteira. */
 .v-hero__grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: clamp(20px, 4vw, 56px);
-  align-items: start;
-  padding-block: clamp(44px, 6.4vw, 78px);
+  align-items: end;
+  min-height: min(92svh, 860px);
+  padding-block: clamp(96px, 12vw, 150px) clamp(44px, 6vw, 76px);
+}
+
+.v-hero__title { max-width: 16ch; }
+
+/* convite para rolar — a página avisa que continua */
+.v-hero__cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: clamp(30px, 4vw, 48px);
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--v-on-dark-faint);
+}
+
+.v-hero__cue i {
+  display: block;
+  width: 64px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--v-red) 40%, rgba(255, 255, 255, 0.18) 40%);
+  background-size: 250% 100%;
+  animation: v-cue 2.6s var(--v-ease) infinite;
+}
+
+@keyframes v-cue {
+  0% { background-position: 100% 0; }
+  60%, 100% { background-position: 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v-hero__cue i { animation: none; }
 }
 
 .v-hero__title { margin-top: 14px; }
@@ -878,255 +942,329 @@ body {
 }
 
 /* ------------------------------------------------------------
-   Biblioteca das cinco áreas
+   Abertura — a tese, em coluna estreita
 
-   Card QUADRADO — sempre. A fileira corre na horizontal quando os cinco
-   não cabem, no desktop e no celular; é biblioteca, não lista e não
-   Reels. Abrir não deforma o quadrado: o detalhe sobe por dentro dele.
+   Respiro claro entre a capa escura e as frentes escuras. Texto grande
+   numa medida curta (o olho lê linha de 60 caracteres, não de 120) e uma
+   foto vertical ao lado, deslocada para baixo.
    ------------------------------------------------------------ */
 
-.v-bib {
-  margin-top: clamp(26px, 3vw, 40px);
-  /* respira mais que o resto do conteúdo, sem furar a goteira */
-  width: min(100vw - var(--v-gutter) * 2, 1520px);
-  margin-inline: calc(50% - min(50vw - var(--v-gutter), 760px));
-}
-
-.v-bib__trilho {
-  display: flex;
-  gap: clamp(10px, 1.1vw, 16px);
-  align-items: stretch;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  padding-bottom: 6px;
-  /* a goteira acompanha a rolagem, para o primeiro e o último
-     não colarem na borda */
-  scroll-padding-inline: 2px;
-}
-
-.v-bib__trilho::-webkit-scrollbar { display: none; }
-
-.v-bib__item {
-  flex: 0 0 clamp(252px, 23vw, 320px);
-  scroll-snap-align: start;
-}
-
-.v-bib__card {
-  position: relative;
-  display: block;
-  /* quadrado, e ponto */
-  aspect-ratio: 1;
-  width: 100%;
-  background: var(--v-ink);
-  color: var(--v-on-dark);
-  overflow: hidden;
-  isolation: isolate;
-}
-
-.v-bib__media {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-.v-bib__media .v-photo { position: absolute; inset: 0; }
-.v-bib__media .v-photo img { transition: transform 1.1s var(--v-power3); }
-.v-bib__card:hover .v-bib__media .v-photo img { transform: scale(1.06); }
-.v-bib__media .v-photo__ph { justify-content: flex-start; }
-
-/* Véu só no rodapé do quadrado, o suficiente para o texto assentar. A
-   foto continua sendo foto — nada de escurecer o card inteiro. */
-.v-bib__card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: linear-gradient(
-    0deg,
-    rgba(10, 18, 27, 0.94) 0%,
-    rgba(10, 18, 27, 0.72) 26%,
-    rgba(10, 18, 27, 0.1) 52%,
-    rgba(10, 18, 27, 0) 70%
-  );
-  pointer-events: none;
-}
-
-.v-bib__body {
-  position: absolute;
-  z-index: 2;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: clamp(16px, 1.5vw, 22px);
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
-}
-
-.v-bib__texto { min-width: 0; flex: 1 1 auto; }
-
-.v-bib__num {
-  display: block;
-  font-family: "Barlow Condensed", sans-serif;
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: 0.26em;
-  color: var(--v-red);
-  margin-bottom: 7px;
-}
-
-.v-bib__titulo {
-  font-size: clamp(19px, 1.5vw, 23px);
-  line-height: 0.98;
-  letter-spacing: 0.006em;
-  text-shadow: 0 1px 14px rgba(8, 14, 22, 0.55);
-}
-
-/* a seta mora no canto, fora do caminho do texto */
-.v-bib__go {
-  flex: none;
+.v-abertura__grid {
   display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  background: var(--v-red);
-  color: #fff;
-  transition: transform 0.35s var(--v-power3), background 0.25s;
+  grid-template-columns: minmax(0, 1fr) clamp(260px, 30vw, 400px);
+  gap: clamp(30px, 5vw, 80px);
+  align-items: start;
 }
 
-.v-bib__go svg { width: 20px; height: 10px; }
-.v-bib__card:hover .v-bib__go { transform: translateX(4px); background: var(--v-red-hot); }
-
-/* ---- o "card sobre": sobe por dentro do quadrado ---- */
-
-.v-bib__painel {
-  position: absolute;
-  z-index: 3;
-  inset: 0;
-  padding: clamp(16px, 1.5vw, 22px);
-  display: flex;
-  flex-direction: column;
-  background: rgba(10, 18, 27, 0.95);
-  backdrop-filter: blur(3px);
-  transform: translateY(101%);
-  transition: transform 0.55s var(--v-power3);
-  overflow: auto;
-  scrollbar-width: none;
+.v-abertura__titulo {
+  margin-top: 16px;
+  max-width: 14ch;
 }
 
-.v-bib__painel::-webkit-scrollbar { display: none; }
+.v-abertura__p {
+  margin-top: clamp(20px, 2.4vw, 30px);
+  max-width: 54ch;
+  color: var(--v-on-light);
+}
 
-.v-bib__item[data-aberto="true"] .v-bib__painel { transform: translateY(0); }
-.v-bib__item[data-aberto="true"] .v-bib__body { opacity: 0; transition: opacity 0.2s; }
+.v-abertura__media { padding-top: clamp(10px, 5vw, 64px); }
 
-.v-bib__painel-num {
+/* a frase que fecha, atravessada por uma régua: é declaração, não legenda */
+.v-abertura__nota {
+  margin-top: clamp(40px, 5vw, 72px);
+  padding-top: clamp(20px, 2.4vw, 30px);
+  border-top: 1px solid var(--v-line-l);
+}
+
+.v-abertura__nota p {
+  max-width: 46ch;
+  margin-left: auto;
   font-family: "Barlow Condensed", sans-serif;
-  font-weight: 700;
+  font-size: clamp(19px, 2vw, 26px);
+  font-weight: 600;
+  line-height: 1.22;
+  text-align: right;
+  color: var(--v-on-light);
+}
+
+@media (max-width: 900px) {
+  .v-abertura__grid { grid-template-columns: 1fr; }
+  .v-abertura__media { padding-top: 0; }
+  .v-abertura__nota p { margin-left: 0; text-align: left; }
+}
+
+/* ------------------------------------------------------------
+   Como trabalhamos — índice de etapas
+
+   Régua atravessando a página, número à esquerda. Sem ícone e sem
+   caixinha: a quarta grade de cards é o que transforma site em template.
+   ------------------------------------------------------------ */
+
+.v-passos {
+  margin-top: clamp(26px, 3.4vw, 44px);
+  border-top: 1px solid var(--v-line-l);
+}
+
+.v-passo {
+  display: grid;
+  grid-template-columns: clamp(58px, 7vw, 104px) minmax(0, 15ch) minmax(0, 1fr);
+  gap: clamp(14px, 2.6vw, 44px);
+  align-items: baseline;
+  padding-block: clamp(22px, 2.8vw, 36px);
+  border-bottom: 1px solid var(--v-line-l);
+}
+
+.v-passo__n {
+  font-family: "Barlow Condensed", sans-serif;
   font-size: 13px;
-  letter-spacing: 0.26em;
+  font-weight: 700;
+  letter-spacing: 0.24em;
   color: var(--v-red);
 }
 
-.v-bib__painel-titulo {
-  margin-top: 6px;
-  font-size: clamp(18px, 1.45vw, 22px);
+.v-passo__titulo {
+  font-size: clamp(20px, 2.1vw, 30px);
   line-height: 1;
 }
 
-.v-bib__resumo {
-  margin-top: 10px;
-  font-size: 13.5px;
+.v-passo__texto {
+  max-width: 58ch;
+  color: var(--v-on-light-soft);
+}
+
+@media (max-width: 760px) {
+  .v-passo {
+    grid-template-columns: clamp(44px, 12vw, 64px) minmax(0, 1fr);
+    align-items: start;
+    row-gap: 8px;
+  }
+  .v-passo__texto { grid-column: 2; }
+}
+
+/* ------------------------------------------------------------
+   As cinco frentes — a biblioteca
+
+   Deixou de ser grade de cards. Painel alto, quase de página inteira,
+   correndo na horizontal: cada foto é lida sozinha, sem ser comparada
+   com a vizinha. A seção inteira é escura — é ali que a fotografia
+   tratada tem mais presença, e é a única virada de fundo da página.
+   ------------------------------------------------------------ */
+
+.v-frentes {
+  background: var(--v-ink);
+  color: var(--v-on-dark);
+}
+
+.v-frentes .v-cab__titulo { color: var(--v-on-dark); }
+.v-frentes .v-cab__apoio .v-body { color: var(--v-on-dark-soft); }
+
+.v-frentes__trilho {
+  display: flex;
+  gap: 2px;
+  margin-top: clamp(30px, 3.6vw, 52px);
+  padding-inline: var(--v-gutter);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.v-frentes__trilho::-webkit-scrollbar { display: none; }
+
+.v-frente {
+  flex: 0 0 min(30vw, 430px);
+  min-width: 0;
+  scroll-snap-align: center;
+}
+
+.v-frente__link {
+  position: relative;
+  display: block;
+  height: clamp(430px, 40vw, 560px);
+  overflow: hidden;
+  isolation: isolate;
+  color: var(--v-on-dark);
+  background: var(--v-ink-2);
+}
+
+.v-frente__foto { position: absolute; inset: 0; }
+
+.v-frente__foto img {
+  transition: transform 1.4s var(--v-power3), filter 0.6s var(--v-ease);
+}
+
+.v-frente__link:hover .v-frente__foto img { transform: scale(1.045); }
+
+/* o escuro que segura o texto — gradiente, não barra */
+.v-frente__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(7, 13, 19, 0.92) 0%,
+    rgba(7, 13, 19, 0.55) 26%,
+    rgba(7, 13, 19, 0) 58%
+  );
+  transition: opacity 0.5s var(--v-ease);
+}
+
+.v-frente__pe {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 2;
+  display: block;
+  padding: clamp(18px, 2vw, 26px);
+  transition: transform 0.6s var(--v-power3), opacity 0.3s var(--v-ease);
+}
+
+.v-frente__num {
+  display: block;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  color: var(--v-red-hot);
+}
+
+.v-frente__nome {
+  display: block;
+  margin-top: 8px;
+  font-size: clamp(22px, 1.9vw, 28px);
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+.v-frente__dica {
+  display: block;
+  margin-top: 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--v-on-dark-faint);
+}
+
+/* ---- o painel que sobe no primeiro toque ---- */
+
+.v-frente__sobre {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: clamp(18px, 2vw, 26px);
+  background: linear-gradient(to top, rgba(7, 13, 19, 0.97) 40%, rgba(7, 13, 19, 0.72));
+  opacity: 0;
+  transform: translateY(14px);
+  pointer-events: none;
+  transition: opacity 0.45s var(--v-ease), transform 0.6s var(--v-power3);
+}
+
+.v-frente[data-aberto="true"] .v-frente__sobre { opacity: 1; transform: translateY(0); }
+.v-frente[data-aberto="true"] .v-frente__pe { transform: translateY(6px); opacity: 0; }
+.v-frente[data-aberto="true"] .v-frente__link::after { opacity: 0; }
+
+.v-frente__resumo {
+  font-size: 15px;
   line-height: 1.5;
   color: var(--v-on-dark-soft);
 }
 
-.v-bib__itens {
-  display: grid;
-  gap: 7px;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid var(--v-line-d);
+.v-frente__itens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
-.v-bib__itens li {
-  display: flex;
-  gap: 9px;
-  align-items: baseline;
-  font-size: 13px;
-  line-height: 1.35;
+.v-frente__itens span {
+  padding: 5px 10px;
+  border: 1px solid var(--v-line-d);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
   color: var(--v-on-dark-soft);
 }
 
-.v-bib__itens li svg {
-  flex: none;
-  width: 14px;
-  height: 14px;
-  color: var(--v-red);
-  transform: translateY(2px);
-}
-
-.v-bib__ir {
+.v-frente__ir {
   display: inline-flex;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
-  margin-top: auto;
-  padding: 12px 16px;
-  background: var(--v-red);
-  color: #fff;
+  padding-top: 4px;
   font-family: "Barlow Condensed", sans-serif;
+  font-size: 15px;
   font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
+  color: var(--v-on-dark);
 }
 
-.v-bib__ir svg { width: 22px; height: 10px; flex: none; }
+.v-frente__ir svg { width: 26px; height: 10px; flex: none; }
 
-/* ---- controles da fileira ---- */
+/* ---- régua, contador e as duas setas ---- */
 
-.v-bib__nav {
+.v-frentes__barra {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 18px;
-  margin-top: 20px;
+  gap: clamp(16px, 2vw, 28px);
+  margin-top: clamp(20px, 2.4vw, 32px);
 }
 
-.v-bib__seta {
+.v-frentes__conta {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  color: var(--v-on-dark-faint);
+  flex: none;
+}
+
+.v-frentes__conta b { color: var(--v-on-dark); font-weight: 700; }
+
+.v-frentes__regua {
+  position: relative;
+  flex: 1 1 auto;
+  height: 1px;
+  background: var(--v-line-d);
+  overflow: hidden;
+}
+
+.v-frentes__regua i {
+  position: absolute;
+  inset: 0;
+  background: var(--v-red);
+  transform-origin: left center;
+  transition: transform 0.6s var(--v-power3);
+}
+
+.v-frentes__setas { display: flex; gap: 10px; flex: none; }
+
+.v-frentes__setas button {
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
-  flex: none;
-  border: 1px solid var(--v-line-l);
-  color: var(--v-on-light);
-  background: var(--v-card);
-  transition: border-color 0.2s, color 0.2s;
+  width: 52px;
+  height: 52px;
+  border: 1px solid var(--v-line-d);
+  color: var(--v-on-dark);
+  transition: border-color 0.25s, color 0.25s, opacity 0.25s;
 }
 
-.v-bib__seta:hover { border-color: var(--v-red); color: var(--v-red); }
-.v-bib__seta:first-child svg { transform: rotate(180deg); }
-.v-bib__seta svg { width: 22px; height: 10px; }
+.v-frentes__setas button:hover:not(:disabled) { border-color: var(--v-on-dark); }
+.v-frentes__setas button:disabled { opacity: 0.28; cursor: default; }
+.v-frentes__setas button:first-child svg { transform: rotate(180deg); }
+.v-frentes__setas button svg { width: 24px; height: 10px; }
 
-.v-bib__pontos { display: flex; gap: 8px; align-items: center; }
-
-.v-bib__pontos button {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--v-line-l);
-  transition: background 0.25s, transform 0.25s;
+@media (max-width: 760px) {
+  .v-frente { flex: 0 0 84vw; }
+  .v-frente__link { height: min(68vh, 560px); }
+  .v-frentes__trilho { gap: 8px; }
 }
 
-.v-bib__pontos button[aria-current="true"] {
-  background: var(--v-red);
-  transform: scale(1.35);
-}
-
-@media (max-width: 900px) {
-  .v-bib__item { flex: 0 0 78%; }
+/* sem hover (toque), a dica e o gradiente já contam a história */
+@media (hover: none) {
+  .v-frente__dica { color: var(--v-on-dark-soft); }
 }
 
 /* ------------------------------------------------------------
