@@ -1,4 +1,8 @@
 import type { MetadataRoute } from "next";
+
+/** Nada aqui depende de requisição: é arquivo, não rota dinâmica.
+ *  Declarar isso é o que permite a exportação estática do site. */
+export const dynamic = "force-static";
 import { AREAS } from "@/lib/areas";
 import { MENU, publicUrl } from "@/lib/config";
 
