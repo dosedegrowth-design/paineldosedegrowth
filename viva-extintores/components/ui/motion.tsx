@@ -41,7 +41,7 @@ function assinar(aviso: () => void) {
  * que o HTML sai visível. No cliente, depende de o usuário não ter pedido
  * menos movimento; se ele mudar a preferência, isto reage sozinho.
  */
-function useMovimento() {
+export function useMovimento() {
   return useSyncExternalStore(
     assinar,
     () => !window.matchMedia(CONSULTA).matches,

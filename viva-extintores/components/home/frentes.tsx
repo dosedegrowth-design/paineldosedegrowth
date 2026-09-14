@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AREAS, type AreaSlug } from "@/lib/areas";
 import { FotoReal } from "@/components/ui/foto-real";
-import { Linhas, Reveal } from "@/components/ui/motion";
+import { Linhas, Reveal, useMovimento } from "@/components/ui/motion";
 import { Seta } from "@/components/ui/icones";
 
 /**
@@ -31,7 +31,10 @@ import { Seta } from "@/components/ui/icones";
 export function Frentes({ titulo, texto }: { titulo: string; texto: string }) {
   const [aberto, setAberto] = useState<AreaSlug | null>(null);
   const [indice, setIndice] = useState(0);
+  const [entrou, setEntrou] = useState(false);
   const trilho = useRef<HTMLUListElement>(null);
+  const secao = useRef<HTMLElement>(null);
+  const movimento = useMovimento();
 
   /** 1º clique abre o painel; 2º deixa o link seguir. */
   function aoClicar(e: React.MouseEvent, slug: AreaSlug) {
@@ -60,14 +63,32 @@ export function Frentes({ titulo, texto }: { titulo: string; texto: string }) {
         const i = Number((visivel.target as HTMLElement).dataset.indice);
         if (!Number.isNaN(i)) setIndice(i);
       },
-      { root: el, threshold: [0.5, 0.75, 1] },
+      { root: el, threshold: [0.25, 0.5, 0.75, 1] },
     );
     for (const filho of Array.from(el.children)) observador.observe(filho);
     return () => observador.disconnect();
   }, []);
 
+  /* Os cinco painéis sobem em cascata quando a seção entra na tela — e só
+     então, senão a entrada acontece fora do campo de visão e ninguém vê. */
+  useEffect(() => {
+    const el = secao.current;
+    if (!el) return;
+    const observador = new IntersectionObserver(
+      ([entrada]) => {
+        if (entrada?.isIntersecting) {
+          setEntrou(true);
+          observador.disconnect();
+        }
+      },
+      { threshold: 0.12 },
+    );
+    observador.observe(el);
+    return () => observador.disconnect();
+  }, []);
+
   return (
-    <section className="v-section v-frentes" aria-labelledby="frentes-titulo">
+    <section className="v-section v-frentes" aria-labelledby="frentes-titulo" ref={secao}>
       <div className="v-wrap">
         <div className="v-cab">
           <div>
@@ -85,7 +106,12 @@ export function Frentes({ titulo, texto }: { titulo: string; texto: string }) {
         </div>
       </div>
 
-      <ul className="v-frentes__trilho" ref={trilho}>
+      <ul
+        className="v-frentes__trilho"
+        ref={trilho}
+        data-motion={movimento ? "on" : undefined}
+        data-shown={entrou ? "true" : undefined}
+      >
         {AREAS.map((a, i) => {
           const estaAberto = aberto === a.slug;
           return (

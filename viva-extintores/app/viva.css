@@ -1071,6 +1071,23 @@ body {
   scroll-snap-align: center;
 }
 
+.v-frentes__trilho[data-motion="on"] .v-frente {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.7s var(--v-power3), transform 0.9s var(--v-power3);
+}
+
+.v-frentes__trilho[data-motion="on"][data-shown="true"] .v-frente {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.v-frentes__trilho[data-motion="on"][data-shown="true"] .v-frente:nth-child(1) { transition-delay: 0.04s; }
+.v-frentes__trilho[data-motion="on"][data-shown="true"] .v-frente:nth-child(2) { transition-delay: 0.12s; }
+.v-frentes__trilho[data-motion="on"][data-shown="true"] .v-frente:nth-child(3) { transition-delay: 0.2s; }
+.v-frentes__trilho[data-motion="on"][data-shown="true"] .v-frente:nth-child(4) { transition-delay: 0.28s; }
+.v-frentes__trilho[data-motion="on"][data-shown="true"] .v-frente:nth-child(5) { transition-delay: 0.36s; }
+
 .v-frente__link {
   position: relative;
   display: block;
@@ -1301,6 +1318,17 @@ body {
     transform 0.9s var(--v-power3) var(--atraso, 0s);
 }
 
+/* a foto entra abrindo: começa um pouco maior e assenta junto com o
+   texto. É o movimento que faz a imagem parecer viva sem truque. */
+.v-reveal[data-motion="on"] .v-photo img {
+  transform: scale(1.08);
+  transition: transform 1.5s var(--v-power3) var(--atraso, 0s);
+}
+
+.v-reveal[data-motion="on"][data-shown="true"] .v-photo img {
+  transform: scale(1);
+}
+
 .v-reveal[data-motion="on"][data-shown="true"] {
   opacity: 1;
   transform: none;
@@ -1378,7 +1406,9 @@ a:hover .v-photo--zoom img {
 @media (prefers-reduced-motion: reduce) {
   [data-motion="on"] > .v-linha > .v-linha__in,
   .v-reveal[data-motion="on"],
+  .v-reveal[data-motion="on"] .v-photo img,
   .v-cascata[data-motion="on"] > *,
+  .v-frentes__trilho[data-motion="on"] .v-frente,
   [data-motion="on"] .v-regua {
     opacity: 1 !important;
     transform: none !important;
