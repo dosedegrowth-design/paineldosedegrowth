@@ -232,6 +232,35 @@ git push origin main
 - **Marina Saleme posts boostados Instagram**: Meta Marketing API não devolve insights de campanhas LINK_CLICKS criadas via app do Instagram (botão "Promover"). Solução é integrar Shopify direto pra puxar receita real.
 - **Acesso básico Google Ads API**: 15k operações/dia, 1k GETs de conta/dia. Pra produção precisa "Acesso padrão".
 
+## Tayssa VIP — Private Beauty Experience (`/tayssa`)
+
+Produto separado dentro deste repo (subdomínio `tayssa.dosedegrowth.com`, também em `painel.dosedegrowth.com/tayssa`). Clube privado de clientes de uma profissional de beleza: site público editorial + área VIP autenticada + admin. **Não reaproveita** componentes de nenhuma outra LP. Direção de design em `docs/tayssa/DESIGN.md`.
+
+| Recurso | Onde |
+|---|---|
+| Rotas | `app/tayssa/*` — público (`/`, `/indicar`, `/entrar`, `/entrar/definir-senha`, `/acesso`), VIP (`/vip/*`), admin (`/admin/*`) |
+| Componentes | `components/tayssa/{ui,public,auth,vip,admin}` |
+| Domínio | `lib/tayssa/*` — `auth/` (scrypt + sessão em cookie `tayssa_vip_session` + tabela `sessions`), `actions/` (server actions, Zod, audit), `queries/`, `rules.ts` (puro, testado), `engine.ts` (elegibilidade) |
+| Banco | schema **`vip`** no projeto DDG (`supabase/migrations/20260914000000_vip_init.sql`). RLS ligado sem policies: só service_role acessa |
+| Middleware | host `tayssa.*` → rewrite de todo path para `/tayssa/...`; `/tayssa/vip*` e `/tayssa/admin*` sem cookie → `/tayssa/entrar` |
+| Fotos reais | `public/tayssa/photos/` com os nomes de `lib/tayssa/photos.ts`; sem arquivo, o slot mostra campo tonal (nunca imagem sintética) |
+| Testes | `node --experimental-strip-types --test lib/tayssa/rules.test.ts` |
+
+Regras que NÃO podem quebrar:
+- **Nenhum benefício é concedido automaticamente.** O sistema cria `client_benefits` em `pending_validation`; só o admin muda para `available`.
+- Atendimentos registrados pela cliente ficam `pending` até o admin confirmar; só então somam pontos.
+- Indicação só conta em `approved`; a mesma pessoa (telefone) só conta uma vez; auto-indicação e cliente antiga são inválidas.
+- Cliente nunca acessa dado de outra: tudo é derivado da sessão (`assertClient()`), sem IDs na URL.
+
+Operação:
+- Admin cria cliente em `/tayssa/admin/clientes/novo` → gera link único de primeiro acesso (7 dias) → envia por WhatsApp. Nenhuma senha aparece na tela.
+- Conta admin: login `admin@tayssa.vip` (troque o e-mail no perfil se quiser). Primeiro acesso via link gerado no seed (ver histórico do chat/sessão que criou); para gerar outro: `insert into vip.password_tokens (user_id, token_hash, purpose, expires_at)` com `token_hash = sha256(token)`.
+- Usa as mesmas envs do painel (`NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`). Opcional: `NEXT_PUBLIC_TAYSSA_ORIGIN` (default `https://tayssa.dosedegrowth.com`).
+
+Gotchas:
+- O schema `vip` precisa estar em **Exposed schemas** do PostgREST. Foi adicionado via `alter role authenticator set pgrst.db_schemas = '..., vip'` + `notify pgrst, 'reload config'`. Se alguém salvar a lista pelo dashboard do Supabase (Settings → API), confira se `vip` continua lá.
+- ⚠️ Nessa mesma checagem, `trafego_ddg` **não está** na lista de schemas expostos (`pgrst.db_schemas`) — as queries `.schema("trafego_ddg")` do painel retornam PGRST106 na REST. Não foi alterado por estar fora do escopo do Tayssa.
+
 ## Documentação relacionada
 
 - `AGENTS.md` — regra crítica sobre Next.js 16 (não confiar em training data)

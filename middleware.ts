@@ -3,19 +3,70 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
 type CookieSet = { name: string; value: string; options?: CookieOptions };
 
+const TAYSSA_SESSION_COOKIE = "tayssa_vip_session";
+
+/**
+ * Primeira barreira da área privada da Tayssa: sem cookie de sessão, nem
+ * chega a renderizar. A verificação de verdade (sessão válida, papel,
+ * conta ativa) acontece no servidor, em lib/tayssa/auth/guards.ts.
+ *
+ * `appPath` é sempre o caminho interno (/tayssa/...); `stripPrefix` é true
+ * no subdomínio, onde a URL que a pessoa vê não tem o prefixo.
+ */
+function tayssaGuard(
+  request: NextRequest,
+  appPath: string,
+  stripPrefix: boolean
+): NextResponse | null {
+  const isPrivate = appPath.startsWith("/tayssa/vip") || appPath.startsWith("/tayssa/admin");
+  if (!isPrivate) return null;
+  if (request.cookies.get(TAYSSA_SESSION_COOKIE)?.value) return null;
+  const url = request.nextUrl.clone();
+  url.pathname = stripPrefix ? "/entrar" : "/tayssa/entrar";
+  url.search = "";
+  return NextResponse.redirect(url);
+}
+
 /**
  * Middleware de auth.
  * Skeleton — quando Supabase Auth estiver configurado em produção,
  * descomentar a verificação de sessão.
  */
 export async function middleware(request: NextRequest) {
-  // Subdomínio da LP da Tayssa (tayssa.dosedegrowth.com): raiz mostra a LP
+  // Subdomínio da Tayssa (tayssa.dosedegrowth.com): todo caminho vira
+  // /tayssa/<caminho> — a experiência inteira (pública, VIP e admin) vive
+  // em app/tayssa. Links internos continuam com o prefixo /tayssa, que
+  // também funciona no subdomínio.
   const host = request.headers.get("host") ?? "";
-  if (host.startsWith("tayssa.") && request.nextUrl.pathname === "/") {
-    const url = request.nextUrl.clone();
-    url.pathname = "/tayssa";
-    return NextResponse.rewrite(url);
+  const { pathname } = request.nextUrl;
+  if (host.startsWith("tayssa.")) {
+    if (pathname === "/favicon.ico") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/tayssa/favicon.svg";
+      return NextResponse.rewrite(url);
+    }
+    // No subdomínio a URL é limpa (/vip), mas quem já chegar com /tayssa/vip
+    // também funciona — os dois caminhos levam ao mesmo lugar.
+    const alreadyPrefixed = pathname === "/tayssa" || pathname.startsWith("/tayssa/");
+    const internal = pathname.startsWith("/_next") || pathname.startsWith("/api");
+    if (!internal) {
+      const appPath = alreadyPrefixed
+        ? pathname
+        : pathname === "/"
+          ? "/tayssa"
+          : `/tayssa${pathname}`;
+      const guard = tayssaGuard(request, appPath, !alreadyPrefixed);
+      if (guard) return guard;
+      if (!alreadyPrefixed) {
+        const url = request.nextUrl.clone();
+        url.pathname = appPath;
+        return NextResponse.rewrite(url);
+      }
+    }
   }
+  // Domínio do painel: mesma barreira, com o prefixo /tayssa na URL
+  const guarded = tayssaGuard(request, pathname, false);
+  if (guarded) return guarded;
 
   // LP da Carolina Kühn: raiz mostra a LP tanto no subdomínio carol.*
   // quanto no domínio próprio dela (carol*/daybycarol* — ex.:

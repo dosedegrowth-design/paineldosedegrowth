@@ -1,0 +1,62 @@
+"use client";
+
+import { createContext, useContext, useState } from "react";
+import type { Settings } from "@/lib/tayssa/config";
+import type { BenefitRow, ServiceRow } from "@/lib/tayssa/types";
+import { whatsappUrl } from "@/lib/tayssa/whatsapp";
+import { IntroLoader } from "@/components/tayssa/public/intro-loader";
+import { PublicNav } from "@/components/tayssa/public/nav";
+import { Hero } from "@/components/tayssa/public/hero";
+import { WorkSequence } from "@/components/tayssa/public/work-sequence";
+import { Services } from "@/components/tayssa/public/services";
+import { Details } from "@/components/tayssa/public/details";
+import { VipIntro } from "@/components/tayssa/public/vip-intro";
+import { ReferralCta } from "@/components/tayssa/public/referral-cta";
+import { Closing } from "@/components/tayssa/public/closing";
+import { PublicFooter } from "@/components/tayssa/public/footer";
+
+const IntroCtx = createContext(false);
+export const useIntroReady = () => useContext(IntroCtx);
+
+/**
+ * A experiência pública inteira. Uma só narrativa em scroll:
+ * entrada → hero vira cartão → trabalho (pin) → serviços → detalhes
+ * (trilho horizontal) → a luz abaixa → VIP → indicação → fechamento.
+ */
+export function PublicExperience({
+  settings,
+  services,
+  benefits,
+}: {
+  settings: Settings;
+  services: ServiceRow[];
+  benefits: BenefitRow[];
+}) {
+  const [ready, setReady] = useState(false);
+  const wa = settings.whatsapp;
+  const phone = settings.business.whatsapp;
+  const links = {
+    schedule: whatsappUrl(phone, wa.public_schedule),
+    vipInfo: whatsappUrl(phone, wa.public_vip_info),
+    refer: whatsappUrl(phone, wa.public_refer),
+    instagram: settings.business.instagram_url,
+    handle: settings.business.instagram_handle,
+  };
+
+  return (
+    <IntroCtx.Provider value={ready}>
+      <IntroLoader onDone={() => setReady(true)} />
+      <PublicNav scheduleUrl={links.schedule} />
+      <main>
+        <Hero business={settings.business} scheduleUrl={links.schedule} />
+        <WorkSequence />
+        <Services services={services} scheduleUrl={links.schedule} />
+        <Details instagramUrl={links.instagram} handle={links.handle} />
+        <VipIntro benefits={benefits} vipInfoUrl={links.vipInfo} />
+        <ReferralCta />
+        <Closing scheduleUrl={links.schedule} />
+      </main>
+      <PublicFooter business={settings.business} />
+    </IntroCtx.Provider>
+  );
+}
