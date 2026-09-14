@@ -202,11 +202,15 @@ Vieram do cliente. Não são preferência de estilo.
 
 ## Ritmo da página-mãe
 
-Claro e escuro se alternam, e é isso que dá profundidade: capa escura →
-abertura clara (a tese, `components/secoes/abertura.tsx`) → as cinco
-frentes escuras → números → como trabalhamos (`processo.tsx`) → faixa
-escura de CTA → fecho → rodapé. Duas seções escuras coladas viram uma
-massa preta com um vazio no meio — foi o que a primeira versão fez.
+Capa escura → as cinco frentes escuras → números → como trabalhamos
+(`processo.tsx`) → faixa escura de CTA → fecho → rodapé.
+
+Houve uma seção clara de abertura entre a capa e as frentes ("Pegamos o
+problema e resolvemos", com a foto da equipe). **O cliente pediu para
+tirar** — não repor sem ele pedir. O que ela resolvia continua valendo:
+duas seções escuras coladas deixam uma faixa preta morta no meio. Por
+isso `.v-hero + .v-frentes` encurta o topo. Mexeu na ordem das seções?
+Confira esse encosto de novo.
 
 ## Dev
 

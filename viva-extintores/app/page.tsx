@@ -5,7 +5,6 @@ import { Botao } from "@/components/ui/botao";
 import { CTA_PRINCIPAL } from "@/lib/config";
 import { HeroPagina } from "@/components/secoes/hero-pagina";
 import { Frentes } from "@/components/home/frentes";
-import { Abertura } from "@/components/secoes/abertura";
 import { Processo } from "@/components/secoes/processo";
 import { Numeros } from "@/components/secoes/numeros";
 import { FaixaCta } from "@/components/secoes/faixa-cta";
@@ -27,8 +26,6 @@ export default function Page() {
           <Botao href={whatsappUrl(MENSAGENS.geral)}>{CTA_PRINCIPAL}</Botao>
         </div>
       </HeroPagina>
-
-      <Abertura />
 
       <Frentes titulo={HOME.areas.titulo} texto={HOME.areas.texto} />
 

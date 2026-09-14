@@ -78,23 +78,6 @@ export const SOBRE = {
   },
 } as const;
 
-/* ---------------- Abertura da página-mãe ---------------- */
-
-/**
- * O primeiro texto depois da capa. Não é "quem somos": é a tese da
- * empresa, escrita como se fala. Nada de adjetivo — o que convence aqui
- * é o problema estar descrito com precisão.
- */
-export const ABERTURA = {
-  eyebrow: "O que a VIVA resolve",
-  titulo: ["Pegamos o problema", "e resolvemos."],
-  paragrafos: [
-    "Segurança contra incêndio quase nunca chega até a gente inteira. Chega em pedaços: o projeto foi com um, a obra parou no meio com outro, o laudo venceu e ninguém sabe quem responde.",
-    "A VIVA faz as três partes. O engenheiro que assina o projeto é o mesmo que acompanha a obra e entrega a documentação aprovada no Corpo de Bombeiros. Um responsável só, do diagnóstico à manutenção.",
-  ],
-  destaque: "Do comércio de esquina ao condomínio antigo e à planta industrial — inclusive nos casos que ninguém quis pegar.",
-} as const;
-
 /* ---------------- Como trabalhamos ---------------- */
 
 export const PROCESSO = {

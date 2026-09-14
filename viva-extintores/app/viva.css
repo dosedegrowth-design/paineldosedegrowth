@@ -934,58 +934,6 @@ body {
 }
 
 /* ------------------------------------------------------------
-   Abertura — a tese, em coluna estreita
-
-   Respiro claro entre a capa escura e as frentes escuras. Texto grande
-   numa medida curta (o olho lê linha de 60 caracteres, não de 120) e uma
-   foto vertical ao lado, deslocada para baixo.
-   ------------------------------------------------------------ */
-
-.v-abertura__grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(260px, 30vw, 400px);
-  gap: clamp(30px, 5vw, 80px);
-  align-items: start;
-}
-
-.v-abertura__titulo {
-  margin-top: 16px;
-  max-width: 14ch;
-}
-
-.v-abertura__p {
-  margin-top: clamp(20px, 2.4vw, 30px);
-  max-width: 54ch;
-  color: var(--v-on-light);
-}
-
-.v-abertura__media { padding-top: clamp(10px, 5vw, 64px); }
-
-/* a frase que fecha, atravessada por uma régua: é declaração, não legenda */
-.v-abertura__nota {
-  margin-top: clamp(40px, 5vw, 72px);
-  padding-top: clamp(20px, 2.4vw, 30px);
-  border-top: 1px solid var(--v-line-l);
-}
-
-.v-abertura__nota p {
-  max-width: 46ch;
-  margin-left: auto;
-  font-family: "Barlow Condensed", sans-serif;
-  font-size: clamp(19px, 2vw, 26px);
-  font-weight: 600;
-  line-height: 1.22;
-  text-align: right;
-  color: var(--v-on-light);
-}
-
-@media (max-width: 900px) {
-  .v-abertura__grid { grid-template-columns: 1fr; }
-  .v-abertura__media { padding-top: 0; }
-  .v-abertura__nota p { margin-left: 0; text-align: left; }
-}
-
-/* ------------------------------------------------------------
    Como trabalhamos — índice de etapas
 
    Régua atravessando a página, número à esquerda. Sem ícone e sem
@@ -1046,6 +994,10 @@ body {
   background: var(--v-ink);
   color: var(--v-on-dark);
 }
+
+/* logo depois da capa, escuro encostando em escuro: sem encurtar o topo
+   sobra uma faixa preta morta entre as duas seções */
+.v-hero + .v-frentes { padding-top: clamp(40px, 5.4vw, 76px); }
 
 .v-frentes .v-cab__titulo { color: var(--v-on-dark); }
 .v-frentes .v-cab__apoio .v-body { color: var(--v-on-dark-soft); }
