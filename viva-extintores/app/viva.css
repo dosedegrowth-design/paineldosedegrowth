@@ -1368,6 +1368,11 @@ body {
 }
 
 @media (max-width: 560px) {
+  /* A assinatura do logo tem tracking largo (0.42em); em tela estreita
+     ela sozinha estourava a barra do cabeçalho. */
+  .v-logo__mark { font-size: 26px; }
+  .v-logo__sub { font-size: 9px; letter-spacing: 0.2em; }
+
   .v-manut { grid-template-columns: repeat(2, 1fr); }
   .v-etapas,
   .v-etapas--3 { grid-template-columns: 1fr; }
