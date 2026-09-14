@@ -9,6 +9,7 @@ export function HeroServico({ area }: { area: Area }) {
       <Parallax className="v-hero__bg" intensidade={0.16}>
         <FotoReal
           foto={area.heroFoto}
+          corte="auto"
           ratio="fill"
           priority
           sizes="100vw"

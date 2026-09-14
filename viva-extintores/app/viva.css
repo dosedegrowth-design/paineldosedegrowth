@@ -711,53 +711,46 @@ body {
 
 .v-comp__cta { margin-top: 26px; }
 
-/* trio de selos à direita do texto */
-.v-selos {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(10px, 1.4vw, 20px);
-  text-align: center;
+/* as marcas da área — duas afirmações e o número, em linhas.
+   Saíram os três ícones em caixinha: eram o gesto mais "template" da
+   página, e ícone não prova execução. Foto prova. */
+.v-marcas {
+  border-top: 1px solid var(--v-line-l);
 }
 
-.v-selo {
-  padding-inline: 8px;
-  border-inline-start: 1px solid var(--v-line-l);
+.v-marcas li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  padding-block: clamp(11px, 1.3vw, 16px);
+  border-bottom: 1px solid var(--v-line-l);
 }
 
-.v-selo:first-child { border-inline-start: 0; }
-
-.v-selo svg {
-  width: 34px;
-  height: 34px;
-  margin: 0 auto 10px;
-  color: var(--v-on-light);
-}
-
-.v-selo__t {
+.v-marcas b {
   font-family: "Barlow Condensed", sans-serif;
   font-weight: 700;
-  font-size: 14.5px;
-  letter-spacing: 0.08em;
+  font-size: clamp(16px, 1.5vw, 19px);
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  line-height: 1.2;
-}
-
-.v-selo__n {
-  font-family: "Barlow Condensed", sans-serif;
-  font-weight: 700;
-  font-size: 34px;
-  line-height: 1;
   color: var(--v-on-light);
 }
 
-.v-selo__x {
-  font-size: 12.5px;
-  line-height: 1.25;
+.v-marcas span {
+  font-size: 13.5px;
+  line-height: 1.3;
+  text-align: right;
   color: var(--v-on-light-soft);
-  margin-top: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
+
+.v-marcas__n b {
+  font-size: clamp(30px, 3vw, 40px);
+  letter-spacing: -0.01em;
+  line-height: 0.9;
+  color: var(--v-red);
+}
+
+.v-comp__foto { margin-top: clamp(20px, 2.6vw, 34px); }
 
 /* ------------------------------------------------------------
    Galeria de obra

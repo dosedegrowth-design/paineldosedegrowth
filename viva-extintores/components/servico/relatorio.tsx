@@ -94,6 +94,8 @@ export function BlocoRelatorio() {
                   <div className="v-estado__foto">
                     <FotoReal
                       foto={FOTO_ESTADO[e.chave]}
+                      corte="p"
+                      legenda
                       sizes="(max-width: 900px) 100vw, 30vw"
                     />
                     <span className="v-estado__selo">

@@ -47,8 +47,11 @@ export function FotoReal({
   const [erro, setErro] = useState(false);
   const disponivel = useFotoDisponivel(foto.base);
   const faltando = erro || !disponivel;
-  const aspect = ratio === "fill" ? undefined : ratio;
   const principal: Corte = corte === "auto" ? "w" : corte;
+  // sem proporção explícita, vale a do recorte servido — assim a caixa e a
+  // imagem têm a mesma forma e não há corte por cima de corte
+  const PROPORCAO: Record<Corte, number> = { w: 3 / 2, p: 4 / 5, q: 1 };
+  const aspect = ratio === "fill" ? undefined : (ratio ?? PROPORCAO[principal]);
 
   return (
     <div

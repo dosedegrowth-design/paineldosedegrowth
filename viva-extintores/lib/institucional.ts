@@ -18,13 +18,13 @@ export const HOME = {
     eyebrow: "VIVA Extintores",
     titulo: ["Soluções completas", "em segurança", "contra incêndio"],
     texto:
-      "Projetos, instalações, laudos, manutenções e treinamentos com qualidade, responsabilidade e resultados reais.",
+      "Projeto, obra, regularização e manutenção do sistema de incêndio da sua edificação — com um responsável só, do diagnóstico à documentação aprovada.",
     aside: ["Segurança é", "o que nos move."],
   },
   areas: {
     titulo: "Cinco frentes | um responsável só",
     texto:
-      "Escolha uma área e conheça nossos projetos, diferenciais e casos reais.",
+      "Cada frente tem página própria: o que entra no escopo, como a obra é executada e as fotos do que já foi entregue.",
   },
   sobre: {
     eyebrow: "Sobre a VIVA",
@@ -34,7 +34,7 @@ export const HOME = {
   },
   faixa: {
     titulo: ["Mais que obras.", "Tranquilidade."],
-    texto: "Fale com a nossa equipe e encontre a solução ideal para o seu imóvel ou empresa.",
+    texto: "Conte o que está acontecendo na sua edificação. A gente avalia e devolve um caminho técnico claro — o que fazer, em que ordem e por quê.",
   },
   fecho: "VIVA Extintores. Protegendo pessoas, patrimônios e o seu futuro.",
 } as const;

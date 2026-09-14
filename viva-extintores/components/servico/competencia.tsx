@@ -4,7 +4,7 @@ import { whatsappUrl } from "@/lib/whatsapp";
 import { Botao } from "@/components/ui/botao";
 import { FotoReal } from "@/components/ui/foto-real";
 import { Linhas, Reveal } from "@/components/ui/motion";
-import { Check, Engrenagem, Escudo, Pessoas } from "@/components/ui/icones";
+import { Check } from "@/components/ui/icones";
 
 /**
  * O bloco de competência: o que a VIVA faz nesta área, a foto de obra ao
@@ -41,33 +41,25 @@ export function Competencia({ area }: { area: Area }) {
           </div>
 
           <div>
-            <ul className="v-selos">
-              <li className="v-selo">
-                <Engrenagem />
-                <p className="v-selo__t">
-                  {SELOS_AREA[0].titulo}
-                  <br />
-                  {SELOS_AREA[0].subtitulo}
-                </p>
-              </li>
-              <li className="v-selo">
-                <Escudo />
-                <p className="v-selo__t">
-                  {SELOS_AREA[1].titulo}
-                  <br />
-                  {SELOS_AREA[1].subtitulo}
-                </p>
-              </li>
-              <li className="v-selo">
-                <Pessoas />
-                <p className="v-selo__n">{SELO_OBRAS.valor}</p>
-                <p className="v-selo__x">{SELO_OBRAS.rotulo}</p>
+            {/* sem ícone e sem caixinha: duas afirmações e o único número
+                confirmado da área, separados por régua */}
+            <ul className="v-marcas">
+              {SELOS_AREA.map((selo) => (
+                <li key={selo.titulo}>
+                  <b>{selo.titulo}</b>
+                  <span>{selo.subtitulo}</span>
+                </li>
+              ))}
+              <li className="v-marcas__n">
+                <b>{SELO_OBRAS.valor}</b>
+                <span>{SELO_OBRAS.rotulo}</span>
               </li>
             </ul>
 
-            <div style={{ marginTop: "clamp(18px, 2.2vw, 28px)" }}>
+            <div className="v-comp__foto">
               <FotoReal
                 foto={area.destaque}
+                corte="w"
                 legenda
                 zoom
                 sizes="(max-width: 1080px) 100vw, 46vw"
@@ -83,7 +75,7 @@ export function Competencia({ area }: { area: Area }) {
           >
             {area.galeria.map((f) => (
               <li key={f.base}>
-                <FotoReal foto={f} legenda zoom sizes="(max-width: 900px) 50vw, 20vw" />
+                <FotoReal foto={f} corte="q" legenda zoom sizes="(max-width: 900px) 50vw, 20vw" />
               </li>
             ))}
           </ul>

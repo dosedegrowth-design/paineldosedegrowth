@@ -76,16 +76,16 @@ export const AREAS: Area[] = [
       "Bombas de incêndio, redes de hidrantes, SPK, painéis de comando e ligações trifásicas.",
     cardFoto: FOTOS.combate.card,
 
-    heroSublinha: "Projetos entregues: bombas de incêndio, SPK e hidrantes",
+    heroSublinha: "Bombas de incêndio, hidrantes e SPK",
     heroTitulo: ["Sistemas de", "combate a incêndio"],
     heroAside: ["Segurança é", "infraestrutura", "que funciona."],
     heroTexto:
-      "Projetos, instalações e adequações de sistemas de bombeamento, redes de hidrantes e SPK, com qualidade, segurança e conformidade com as normas técnicas.",
+      "A casa de bombas, a rede de hidrantes e o SPK só aparecem no dia em que falham. A VIVA dimensiona, executa, comissiona e documenta — da tubulação à ligação trifásica.",
     heroFoto: FOTOS.combate.hero,
 
-    blocoTitulo: ["Obras reais em", "clientes satisfeitos!"],
+    blocoTitulo: ["O que entra", "nessa obra"],
     blocoIntro:
-      "Projetos, adequações e instalações completas de sistemas de bombeamento, redes de hidrantes e SPK, atendendo às exigências do Corpo de Bombeiros e às normas técnicas vigentes.",
+      "Sistema de bombeamento, rede de hidrantes e chuveiros automáticos dimensionados para a edificação, executados dentro das normas técnicas e das exigências do Corpo de Bombeiros.",
     itens: [
       "Casas de bombas e conjuntos completos",
       "Redes de hidrantes e mangotinhos",
@@ -99,10 +99,10 @@ export const AREAS: Area[] = [
     destaque: FOTOS.combate.destaque,
     galeria: [FOTOS.combate.g1, FOTOS.combate.g2, FOTOS.combate.g3, FOTOS.combate.g4],
 
-    faixaTitulo: ["Soluções em", "prevenção de incêndio."],
+    faixaTitulo: ["O seu sistema aguenta", "o dia em que precisar?"],
     faixaTexto:
-      "Fale com a nossa equipe e veja como podemos desenvolver a solução ideal para o seu edifício.",
-    fraseFecho: "Obras reais, segurança em cada detalhe.",
+      "A gente avalia o que está instalado hoje e devolve por escrito o que falta, em que ordem e por quê.",
+    fraseFecho: "Sistema comissionado é sistema que responde na hora.",
 
     seo: {
       titulo: "Sistemas de combate a incêndio",
@@ -125,16 +125,16 @@ export const AREAS: Area[] = [
       "Centrais, detectores, sirenes, botoeiras, infraestrutura e cabeamento — sistema completo, instalado e testado.",
     cardFoto: FOTOS.alarme.card,
 
-    heroSublinha: "Obras de alarme e detecção de incêndio",
+    heroSublinha: "Centrais, detectores, sirenes e botoeiras",
     heroTitulo: ["Alarmes e", "detecção de incêndio"],
     heroAside: ["Detecção", "que salva vidas."],
     heroTexto:
-      "Projetos, instalações e adequações de sistemas de alarme e detecção de incêndio, com tecnologia, confiabilidade e conformidade com as normas técnicas.",
+      "Detectar cedo é o que separa o susto do sinistro. A VIVA instala central, detectores, sirenes, botoeiras e toda a infraestrutura — e testa ponto a ponto antes de entregar.",
     heroFoto: FOTOS.alarme.hero,
 
-    blocoTitulo: ["Obras de alarme", "e detecção de incêndio"],
+    blocoTitulo: ["O que entra", "nessa obra"],
     blocoIntro:
-      "Projetos, instalações e adequações completas de sistemas de alarme e detecção de incêndio, com equipamentos certificados e atendimento às normas técnicas vigentes.",
+      "Central, dispositivos, infraestrutura e cabeamento de um sistema de alarme e detecção — instalados, comissionados e documentados conforme as normas técnicas.",
     itens: [
       "Centrais de alarme e detecção",
       "Instalação de dispositivos (botoeiras, sirenes e detectores)",
@@ -149,10 +149,10 @@ export const AREAS: Area[] = [
     destaque: FOTOS.alarme.destaque,
     galeria: [FOTOS.alarme.g1, FOTOS.alarme.g2, FOTOS.alarme.g3, FOTOS.alarme.g4],
 
-    faixaTitulo: ["Sistemas inteligentes", "para mais segurança."],
+    faixaTitulo: ["Detectar cedo", "custa menos."],
     faixaTexto:
-      "Fale com a nossa equipe e veja como podemos desenvolver a solução ideal para o seu edifício.",
-    fraseFecho: "Tecnologia e segurança para o seu dia a dia.",
+      "Fale com a equipe técnica e veja o que a sua edificação precisa para identificar um princípio de incêndio a tempo.",
+    fraseFecho: "Alarme bom toca na hora certa — e só na hora certa.",
 
     seo: {
       titulo: "Alarme e detecção de incêndio",
@@ -175,16 +175,16 @@ export const AREAS: Area[] = [
       "Projeto, execução, aterramento e medição de sistemas de proteção contra descargas atmosféricas.",
     cardFoto: FOTOS.spda.card,
 
-    heroSublinha: "Obras de SPDA — para-raios",
+    heroSublinha: "Captores, descidas, aterramento e medição",
     heroTitulo: ["SPDA", "para-raios"],
     heroAside: ["Mais segurança", "para o seu", "patrimônio."],
     heroTexto:
-      "Projetos, instalações e adequações de Sistemas de Proteção contra Descargas Atmosféricas (SPDA), com segurança, tecnologia e conformidade com as normas técnicas.",
+      "Para-raios não é enfeite de cobertura: é caminho controlado para a descarga. A VIVA dimensiona, executa, mede o aterramento e emite o laudo conforme a NBR 5419.",
     heroFoto: FOTOS.spda.hero,
 
-    blocoTitulo: ["Obras de SPDA", "e para-raios"],
+    blocoTitulo: ["O que entra", "nessa obra"],
     blocoIntro:
-      "Instalação e manutenção de sistemas de para-raios, com equipe especializada, equipamentos certificados e total conformidade com as normas vigentes (NBR 5419).",
+      "Dimensionamento, captores, descidas, aterramento e equalização — com medição e laudo conforme a NBR 5419, inclusive em edificação que já está de pé.",
     itens: [
       "Projetos e dimensionamento de SPDA",
       "Instalação de captores, mastros e descidas",
@@ -198,10 +198,10 @@ export const AREAS: Area[] = [
     destaque: FOTOS.spda.destaque,
     galeria: [FOTOS.spda.g1, FOTOS.spda.g2, FOTOS.spda.g3, FOTOS.spda.g4],
 
-    faixaTitulo: ["Proteção contra", "descargas atmosféricas."],
+    faixaTitulo: ["A descarga procura", "o caminho mais fácil."],
     faixaTexto:
-      "Fale com a nossa equipe e veja como podemos desenvolver a solução ideal para o seu edifício.",
-    fraseFecho: "Segurança para hoje. Tranquilidade sempre.",
+      "O trabalho da VIVA é garantir que esse caminho seja o SPDA, e não a estrutura do seu prédio.",
+    fraseFecho: "Medição feita, laudo na mão, patrimônio protegido.",
 
     seo: {
       titulo: "SPDA e para-raios",
@@ -224,16 +224,16 @@ export const AREAS: Area[] = [
       "Regularização de edificações comerciais, condomínios e empresas junto ao Corpo de Bombeiros.",
     cardFoto: FOTOS.laudos.card,
 
-    heroSublinha: "Entrega de laudos, CLCB e AVCB",
+    heroSublinha: "Regularização junto ao Corpo de Bombeiros",
     heroTitulo: ["Do projeto", "à aprovação."],
     heroAside: ["Regularização", "que valoriza", "o seu imóvel."],
     heroTexto:
-      "Regularização de edificações comerciais, condomínios e empresas junto ao Corpo de Bombeiros, com projetos, obras e toda a documentação técnica.",
+      "CLCB e AVCB não saem de um formulário: saem de projeto, obra e documentação batendo com o que está construído. A VIVA faz as três partes e acompanha até a aprovação.",
     heroFoto: FOTOS.laudos.hero,
 
-    blocoTitulo: ["AVCB e CLCB em comércios,", "condomínios e empresas"],
+    blocoTitulo: ["Do levantamento", "à aprovação"],
     blocoIntro:
-      "Elaboração de projetos, execução de obras e entrega de laudos completos para obtenção do CLCB e AVCB, garantindo a segurança, a conformidade legal e a tranquilidade do seu negócio.",
+      "Levantamento técnico, projeto, ART, execução das adequações e acompanhamento junto ao Corpo de Bombeiros até a emissão do CLCB ou do AVCB.",
     itens: [
       "Levantamento técnico e diagnóstico",
       "Elaboração de projetos e ART/RRT",
@@ -249,10 +249,10 @@ export const AREAS: Area[] = [
     destaque: FOTOS.laudos.avcb,
     galeria: [FOTOS.laudos.g1, FOTOS.laudos.g2, FOTOS.laudos.g3, FOTOS.laudos.g4],
 
-    faixaTitulo: ["Segurança, regularização", "e valorização para o seu imóvel."],
+    faixaTitulo: ["Regularizar é", "destravar o imóvel."],
     faixaTexto:
-      "Conte com a nossa equipe e garanta a aprovação do seu AVCB ou CLCB com agilidade e segurança.",
-    fraseFecho: "Obras reais. Documentação aprovada. Clientes satisfeitos.",
+      "Comércio sem CLCB não abre as portas; condomínio sem AVCB trava seguro e financiamento. Conte a sua situação e receba o caminho por escrito.",
+    fraseFecho: "Documentação aprovada é obra que bate com o papel.",
 
     seo: {
       titulo: "Laudos, CLCB e AVCB",
@@ -279,12 +279,12 @@ export const AREAS: Area[] = [
     heroTitulo: ["A real situação do seu", "sistema de incêndio."],
     heroAside: ["Inspeção técnica hoje.", "Mais segurança sempre."],
     heroTexto:
-      "Mais de 20 itens de segurança contra incêndio verificados, registrados e documentados. O Relatório Tecno-Fotográfico apresenta ao síndico e ao empresário o cenário real dos sistemas de combate a incêndio da edificação, identificando equipamentos em conformidade, necessidades de manutenção e pontos que exigem correção — ajudando a manter o AVCB e a segurança em dia.",
+      "Mais de 20 itens do sistema de incêndio verificados em campo, fotografados um a um e classificados: o que está conforme, o que precisa de manutenção e o que exige correção. O síndico e o gestor passam a decidir com o cenário real na mão.",
     heroFoto: FOTOS.relatorio.hero,
 
-    blocoTitulo: ["Do diagnóstico à solução.", "Mais controle, menos riscos."],
+    blocoTitulo: ["Do diagnóstico", "à correção"],
     blocoIntro:
-      "O relatório avalia visualmente e tecnicamente os principais itens do sistema de segurança contra incêndio, com fotos, status e recomendações, permitindo decisões assertivas e planejamento de manutenções.",
+      "Cada item é verificado em campo, registrado em foto e classificado. O relatório vira plano de ação com prioridade e custo — e a VIVA executa as correções.",
     itens: [
       "Levantamento em campo",
       "Registro fotográfico de cada item",
@@ -298,10 +298,10 @@ export const AREAS: Area[] = [
     destaque: FOTOS.relatorio.conforme,
     galeria: [FOTOS.relatorio.g1, FOTOS.relatorio.g2, FOTOS.relatorio.g3],
 
-    faixaTitulo: ["Segurança é gestão.", "Prevenção é inteligência."],
+    faixaTitulo: ["Ter AVCB não é", "ter sistema funcionando."],
     faixaTexto:
-      "Equipe técnica especializada. Relatórios claros. Soluções completas.",
-    fraseFecho: "Segurança não é apenas ter AVCB. É manter o sistema funcionando.",
+      "Peça a inspeção técnica e veja, item por item, em que estado está o sistema da sua edificação hoje.",
+    fraseFecho: "Segurança não é ter o documento. É manter o sistema de pé.",
 
     seo: {
       titulo: "Relatório Tecno-Fotográfico e manutenção",

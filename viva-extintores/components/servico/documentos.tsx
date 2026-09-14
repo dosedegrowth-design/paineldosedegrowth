@@ -24,6 +24,7 @@ export function BlocoDocumentos() {
                 <div className="v-doc__foto">
                   <FotoReal
                     foto={i === 0 ? FOTOS.laudos.clcb : FOTOS.laudos.avcb}
+                    corte="w"
                     legenda
                     sizes="(max-width: 900px) 100vw, 40vw"
                   />

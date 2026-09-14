@@ -40,7 +40,7 @@ export default function Page() {
                 {SOBRE.historia.texto}
               </p>
             </div>
-            <FotoReal foto={FOTOS.site.equipe} sizes="(max-width: 1080px) 100vw, 46vw" />
+            <FotoReal foto={FOTOS.site.equipe} corte="w" legenda sizes="(max-width: 1080px) 100vw, 46vw" />
           </Reveal>
         </div>
       </section>
