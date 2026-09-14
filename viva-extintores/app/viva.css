@@ -631,46 +631,45 @@ body {
 .v-tabs__list {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
   padding-bottom: clamp(16px, 2vw, 24px);
 }
 
 .v-tab {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  text-align: center;
-  padding: 18px 10px;
-  background: var(--v-ink-2);
-  border: 1px solid var(--v-line-d);
+  display: block;
+  padding: clamp(14px, 1.6vw, 20px) clamp(10px, 1.2vw, 16px) clamp(14px, 1.6vw, 20px) 0;
+  border-top: 2px solid var(--v-line-d);
+  color: var(--v-on-dark-faint);
+  transition: color 0.25s var(--v-ease), border-color 0.25s var(--v-ease);
+}
+
+.v-tab__n {
+  display: block;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+}
+
+.v-tab__nome {
+  display: block;
+  margin-top: 8px;
   font-family: "Barlow Condensed", sans-serif;
   font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 0.08em;
+  font-size: clamp(13.5px, 1.15vw, 16px);
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   line-height: 1.16;
-  color: var(--v-on-dark-soft);
-  transition: background 0.22s, color 0.22s, border-color 0.22s;
 }
 
-.v-tab svg {
-  width: 26px;
-  height: 26px;
-  flex: none;
-}
-
-.v-tab:hover {
-  background: var(--v-ink-3);
-  color: #fff;
-}
+.v-tab:hover { color: var(--v-on-dark); border-color: rgba(255, 255, 255, 0.35); }
 
 .v-tab[aria-current="page"] {
-  background: var(--v-red);
+  color: var(--v-on-dark);
   border-color: var(--v-red);
-  color: #fff;
 }
+
+.v-tab[aria-current="page"] .v-tab__n { color: var(--v-red); }
+
 
 /* ------------------------------------------------------------
    Bloco de competência
@@ -1836,7 +1835,7 @@ a:hover .v-photo--zoom img {
 
   /* a barra de áreas rola na horizontal — nenhuma área some */
   .v-tabs__list {
-    grid-template-columns: repeat(5, minmax(136px, 1fr));
+    grid-template-columns: repeat(5, minmax(150px, 1fr));
     overflow-x: auto;
     scrollbar-width: none;
   }
@@ -1848,7 +1847,7 @@ a:hover .v-photo--zoom img {
   .v-hero__aside { text-align: left; order: 1; padding-top: var(--s-2); }
   .v-hero__aside .v-aside::after { margin-inline-start: 0; }
   .v-hero__scrim {
-    background: linear-gradient(0deg, rgba(12, 22, 32, 0.95) 10%, rgba(12, 22, 32, 0.68) 60%, rgba(12, 22, 32, 0.5) 100%);
+    background: linear-gradient(0deg, rgba(9, 16, 24, 0.94) 6%, rgba(9, 16, 24, 0.6) 52%, rgba(9, 16, 24, 0.24) 100%);
   }
 
   .v-gal { grid-template-columns: repeat(2, 1fr); }
