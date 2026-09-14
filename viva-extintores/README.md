@@ -92,19 +92,20 @@ Em ordem de impacto:
    de cada arquivo está em `public/photos/README.md`. As duas mais
    importantes: a abertura da home (§5) e a foto do profissional em
    inspeção, de costas, com prancheta (§13 — não trocar por ícone).
-3. **Confirmar "15 anos" ou "20 anos" de mercado.** O briefing cita os dois.
-   Está publicado o menor. Trocar em `lib/numeros.ts`.
-4. **Confirmar os números** +5.000 AVCBs e +2.000 obras (§15: todos devem
+3. **Confirmar os números** +5.000 AVCBs e +2.000 obras (§15: todos devem
    ser confirmados pela VIVA antes da publicação).
-5. **Selo e relatos do Google.** Link do perfil, nota, total e três
+4. **Selo e relatos do Google.** Link do perfil, nota, total e três
    avaliações copiadas do Google Meu Negócio, em `lib/prova-social.ts`.
-6. **Confirmar as legendas com nome de cliente** na página 04 (Cury,
+5. **Confirmar as legendas com nome de cliente** na página 04 (Cury,
    Padaria Piemonte, Metrô Tamanduateí, Edifício Araken) em `lib/photos.ts`.
-7. **Janelas de casos reais e vídeos** em `lib/casos.ts`.
-8. **Instagram**: os posts em `lib/instagram.ts`, ou o token da Graph API
+6. **Janelas de casos reais e vídeos** em `lib/casos.ts`.
+7. **Instagram**: os posts em `lib/instagram.ts`, ou o token da Graph API
    para puxar o feed de verdade.
-9. **Logo oficial em SVG.** Hoje a marca é desenhada em texto no
+8. **Logo oficial em SVG.** Hoje a marca é desenhada em texto no
    `components/ui/logo.tsx` — é trocar o miolo por um `<Image>`.
+
+Já resolvido: **tempo de mercado**. São 16 anos; publicado como "mais de
+15 anos", conforme a VIVA pediu.
 
 ## Deploy na Vercel
 

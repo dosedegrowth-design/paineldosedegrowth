@@ -4,10 +4,10 @@
  * Regra dura: NUNCA INVENTAR NÚMEROS. Os três abaixo vieram do briefing
  * da VIVA — não foram calculados nem estimados aqui.
  *
- * ⚠️ PENDENTE DE CONFIRMAÇÃO: o briefing cita "20 anos no mercado" num
- * trecho e "mais de 15 anos no mercado" no outro. Está publicado o número
- * menor (o mais conservador). A VIVA precisa confirmar qual vale antes de
- * a página ir ao ar — é trocar a string aqui, mais nada.
+ * Tempo de mercado: CONFIRMADO. O briefing se contradizia ("20 anos" num
+ * trecho, "mais de 15" no outro); a VIVA confirmou 16 anos de mercado e
+ * pediu para publicar "mais de 15". É o que está no ar — continua
+ * verdadeiro por mais quatro anos, sem precisar de manutenção.
  *
  * E eles não aparecem em quatro quadradinhos: entram como prova dentro da
  * narrativa, numa faixa fina (§15 rejeitou o "site de academia").
@@ -18,6 +18,7 @@ export type Numero = { valor: string; rotulo: string };
 export const NUMEROS: Numero[] = [
   { valor: "+5.000", rotulo: "AVCBs entregues" },
   { valor: "+2.000", rotulo: "obras executadas" },
+  // 16 anos de mercado, confirmado pela VIVA — publicado como "+15"
   { valor: "+15", rotulo: "anos de mercado" },
 ];
 
