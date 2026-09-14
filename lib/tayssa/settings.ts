@@ -31,6 +31,8 @@ export const getSettings = cache(async (): Promise<Settings> => {
       rules: merge(DEFAULT_SETTINGS.rules, byKey.rules),
       birthday: merge(DEFAULT_SETTINGS.birthday, byKey.birthday),
       whatsapp: merge(DEFAULT_SETTINGS.whatsapp, byKey.whatsapp),
+      loyalty: merge(DEFAULT_SETTINGS.loyalty, byKey.loyalty),
+      booking: merge(DEFAULT_SETTINGS.booking, byKey.booking),
     };
   } catch (e) {
     logServerError("settings.get", e);

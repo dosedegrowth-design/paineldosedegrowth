@@ -13,11 +13,9 @@ export const ROUTES = {
   setPassword: "/tayssa/entrar/definir-senha",
   restricted: "/tayssa/acesso",
   vip: "/tayssa/vip",
-  vipJourney: "/tayssa/vip/jornada",
-  vipReferrals: "/tayssa/vip/indicacoes",
+  vipCard: "/tayssa/vip/cartao",
+  vipBook: "/tayssa/vip/agendar",
   vipBenefits: "/tayssa/vip/beneficios",
-  vipBirthday: "/tayssa/vip/aniversario",
-  vipHistory: "/tayssa/vip/historico",
   vipProfile: "/tayssa/vip/perfil",
   admin: "/tayssa/admin",
   adminClients: "/tayssa/admin/clientes",
@@ -93,11 +91,34 @@ export type WhatsappTemplates = {
   inactive_outreach: string;
 };
 
+export type LoyaltySettings = {
+  /** posições do cartão (uma por visita confirmada) */
+  card_size: number;
+  card_reward_title: string;
+  card_reward_description: string;
+};
+
+export type BookingSettings = {
+  /** 0 = domingo … 6 = sábado */
+  weekdays: number[];
+  /** horários "HH:MM" oferecidos em cada dia */
+  slots: string[];
+  /** antecedência mínima para marcar */
+  lead_hours: number;
+  /** até quantos dias à frente a cliente enxerga */
+  horizon_days: number;
+  default_duration_min: number;
+  /** quantos horários futuros uma cliente pode ter ao mesmo tempo */
+  max_open_per_client: number;
+};
+
 export type Settings = {
   business: BusinessSettings;
   rules: RulesSettings;
   birthday: BirthdaySettings;
   whatsapp: WhatsappTemplates;
+  loyalty: LoyaltySettings;
+  booking: BookingSettings;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -141,5 +162,19 @@ export const DEFAULT_SETTINGS: Settings = {
       "Oi, Tayssa! Aqui é {name} e quero agendar meu benefício de aniversário.",
     inactive_outreach:
       "Oi, {name}! Faz um tempinho que não te vejo por aqui. Que tal marcarmos sua próxima manutenção?",
+  },
+  loyalty: {
+    card_size: 8,
+    card_reward_title: "Cartão completo",
+    card_reward_description:
+      "Um presente escolhido pela Tayssa por completar as 8 visitas do seu cartão.",
+  },
+  booking: {
+    weekdays: [1, 2, 3, 4, 5, 6],
+    slots: ["09:00", "10:30", "12:00", "13:30", "15:00", "16:30", "18:00"],
+    lead_hours: 12,
+    horizon_days: 30,
+    default_duration_min: 90,
+    max_open_per_client: 2,
   },
 };

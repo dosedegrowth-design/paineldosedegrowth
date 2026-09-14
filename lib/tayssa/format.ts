@@ -69,3 +69,40 @@ export function firstName(name: string): string {
 export function plural(n: number, one: string, many: string): string {
   return n === 1 ? one : many;
 }
+
+const WEEKDAYS = [
+  "domingo",
+  "segunda-feira",
+  "terça-feira",
+  "quarta-feira",
+  "quinta-feira",
+  "sexta-feira",
+  "sábado",
+];
+
+const WEEKDAYS_SHORT = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
+
+/** "sexta-feira" */
+export function weekdayLong(v: string | Date): string {
+  return WEEKDAYS[toDate(v).getDay()];
+}
+
+/** "sex" */
+export function weekdayShort(v: string | Date): string {
+  return WEEKDAYS_SHORT[toDate(v).getDay()];
+}
+
+/** "09:00" a partir de "09:00:00" */
+export function hhmm(time: string): string {
+  return time.slice(0, 5);
+}
+
+/** "hoje", "amanhã" ou "sexta, 19 de setembro" */
+export function dayLabel(v: string | Date, today = new Date()): string {
+  const d = toDate(v);
+  const base = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const diff = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() - base.getTime()) / 86400000);
+  if (diff === 0) return "hoje";
+  if (diff === 1) return "amanhã";
+  return `${weekdayShort(d)}, ${dateLong(d)}`;
+}

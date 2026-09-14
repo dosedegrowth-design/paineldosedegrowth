@@ -103,7 +103,9 @@ body:has(.ty-scope[data-theme="night"]) {
 .ty-scope a:not(.ty-btn) {
   color: inherit;
 }
-.ty-scope button {
+/* Reset de botão em :where() — especificidade zero, para que qualquer
+   classe de componente (.ty-btn, .tyv-btn, .tyl__submit) vença o reset. */
+:where(.ty-scope) button {
   font: inherit;
   color: inherit;
   background: none;

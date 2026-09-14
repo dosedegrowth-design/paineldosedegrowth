@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import "./vip.css";
 import { requireClientPage } from "@/lib/tayssa/auth/guards";
 import { getSettings } from "@/lib/tayssa/settings";
 import { renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
-import { VipNav } from "@/components/tayssa/vip/nav";
+import { BottomNav } from "@/components/tayssa/vip/bottom-nav";
 
 export const metadata: Metadata = {
   title: "Meu VIP",
@@ -13,7 +14,8 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 /**
- * Espaço privado. Noite. A verificação de sessão acontece aqui E em cada
+ * O app da cliente. Mobile primeiro: uma coluna, topo enxuto, cinco
+ * destinos no rodapé. A verificação de sessão acontece aqui E em cada
  * página/action (DAL) — o layout só garante o redirecionamento.
  */
 export default async function VipLayout({ children }: { children: React.ReactNode }) {
@@ -23,12 +25,28 @@ export default async function VipLayout({ children }: { children: React.ReactNod
     renderTemplate(settings.whatsapp.vip_support, { name: user.displayName })
   );
   return (
-    <div className="ty-scope" data-theme="night">
+    <div className="ty-scope tyv" data-theme="night">
       <div className="ty-grain" aria-hidden />
-      <VipNav name={user.displayName} isVip={user.isVip} supportUrl={supportUrl} />
-      <main className="ty-container" style={{ paddingTop: "clamp(40px, 6vw, 88px)", paddingBottom: "clamp(80px, 10vw, 140px)" }}>
-        {children}
-      </main>
+      <header className="tyv-page tyv-top">
+        <span className="tyv-brand">
+          {settings.business.name}
+          {user.isVip ? <span className="tyv-vip-tag">VIP</span> : null}
+        </span>
+        <a
+          href={supportUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="tyv-icon-btn"
+          aria-label="Falar com a Tayssa no WhatsApp"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden>
+            <path d="M20 11.5a7.5 7.5 0 0 1-11 6.6L4.5 19.5l1.4-4.3A7.5 7.5 0 1 1 20 11.5z" />
+            <path d="M9 9.6c.3 1.6 2.2 3.7 3.9 4.2" />
+          </svg>
+        </a>
+      </header>
+      <main className="tyv-page">{children}</main>
+      <BottomNav />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "./entrar.css";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/tayssa/auth/session";
 import { getSettings } from "@/lib/tayssa/settings";

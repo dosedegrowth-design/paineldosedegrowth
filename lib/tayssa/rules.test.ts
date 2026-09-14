@@ -15,9 +15,9 @@ import { normalizeBrPhone, formatBrPhone } from "./phone.ts";
 import { renderTemplate, whatsappUrl } from "./whatsapp.ts";
 
 const benefits = [
-  { id: "a", key: "loyalty_100", name: "Primeiro marco", description: null, threshold: 100, active: true, type: "loyalty" as const },
-  { id: "b", key: "loyalty_250", name: "Cliente de casa", description: null, threshold: 250, active: true, type: "loyalty" as const },
-  { id: "c", key: "referral_reward", name: "Indicação", description: null, threshold: 3, active: true, type: "referral" as const },
+  { id: "a", key: "loyalty_100", name: "Primeiro marco", description: null, threshold: 100, threshold_unit: "points" as const, active: true, type: "loyalty" as const },
+  { id: "b", key: "loyalty_250", name: "Cliente de casa", description: null, threshold: 250, threshold_unit: "points" as const, active: true, type: "loyalty" as const },
+  { id: "c", key: "referral_reward", name: "Indicação", description: null, threshold: 3, threshold_unit: "referrals" as const, active: true, type: "referral" as const },
 ];
 
 test("fidelidade: progresso entre marcos", () => {

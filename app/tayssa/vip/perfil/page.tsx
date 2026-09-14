@@ -1,49 +1,105 @@
 import { requireClientPage } from "@/lib/tayssa/auth/guards";
+import { getClientServiceHistory } from "@/lib/tayssa/queries/client";
+import { getActiveServices } from "@/lib/tayssa/queries/catalog";
+import { logoutAction } from "@/lib/tayssa/actions/auth";
+import { toISODate } from "@/lib/tayssa/rules";
 import { dateLong } from "@/lib/tayssa/format";
-import { VIP_STATUS_LABEL } from "@/lib/tayssa/types";
-import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
-import { VipSection } from "@/components/tayssa/vip/section";
-import { ChangePasswordForm, ProfileForm } from "@/components/tayssa/vip/forms";
+import { SERVICE_STATUS_LABEL, VIP_STATUS_LABEL } from "@/lib/tayssa/types";
+import { ChangePasswordForm, ProfileForm, SubmitServiceForm } from "@/components/tayssa/vip/forms";
 
 export default async function ProfilePage() {
   const user = await requireClientPage();
+  const [history, services] = await Promise.all([getClientServiceHistory(user.id), getActiveServices()]);
   const p = user.profile;
+  const approved = history.filter((s) => s.status === "approved");
+
   return (
     <>
-      <div style={{ paddingBottom: "clamp(40px, 6vw, 88px)" }}>
-        <Reveal>
-          <span className="ty-eyebrow" style={{ display: "block", marginBottom: 20 }}>
-            Perfil
-          </span>
-        </Reveal>
-        <MaskedLines as="h1" inView={false} className="ty-display" lineClassName="ty-vip-title" lines={[user.name, <em key="e">{p ? VIP_STATUS_LABEL[p.vip_status] : "Cliente"}</em>]} />
-        <Reveal delay={0.35}>
-          <dl style={{ margin: "26px 0 0", display: "grid", gap: 8, maxWidth: 480 }}>
-            <Row k="E-mail" v={user.email} />
-            <Row k="Aniversário" v={p?.birthday ? dateLong(p.birthday) : "Não cadastrado. Conte para a Tayssa."} />
-            <Row k="VIP desde" v={p?.vip_since ? dateLong(p.vip_since, true) : "—"} />
-          </dl>
-        </Reveal>
-      </div>
+      <h1 className="tyv-hello">{user.displayName}</h1>
+      <p className="tyv-sub">{p ? VIP_STATUS_LABEL[p.vip_status] : "Cliente"} · {user.email}</p>
 
-      <VipSection eyebrow="Dados" title={<>Como você <em>prefere</em></>}>
-        <ProfileForm nickname={user.nickname} phone={user.phone} />
-      </VipSection>
-      <VipSection eyebrow="Segurança" title={<>Sua <em>senha</em></>}>
-        <ChangePasswordForm />
-      </VipSection>
-      <style>{`.ty-vip-title { font-size: clamp(36px, 5.2vw, 84px); }`}</style>
+      <section className="tyv-section">
+        <div className="tyv-panel">
+          <div className="tyv-row">
+            <span className="tyv-label">Aniversário</span>
+            <span style={{ fontSize: 15 }}>{p?.birthday ? dateLong(p.birthday) : "não cadastrado"}</span>
+          </div>
+          <div className="tyv-row">
+            <span className="tyv-label">VIP desde</span>
+            <span style={{ fontSize: 15 }}>{p?.vip_since ? dateLong(p.vip_since, true) : "—"}</span>
+          </div>
+          <div className="tyv-row">
+            <span className="tyv-label">Visitas confirmadas</span>
+            <span className="tyv-num" style={{ fontSize: 20 }}>
+              {approved.length}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section className="tyv-section">
+        <div className="tyv-section-head">
+          <h2 className="tyv-h2">Meus dados</h2>
+        </div>
+        <div className="tyv-panel">
+          <ProfileForm nickname={user.nickname} phone={user.phone} />
+        </div>
+      </section>
+
+      <section className="tyv-section">
+        <div className="tyv-section-head">
+          <h2 className="tyv-h2">Histórico</h2>
+          <span className="tyv-label">{history.length} registros</span>
+        </div>
+        <div className="tyv-panel">
+          {history.length ? (
+            history.slice(0, 12).map((s) => (
+              <div key={s.id} className="tyv-row">
+                <div>
+                  <p style={{ fontSize: 15 }}>{s.service_name}</p>
+                  <p className="tyv-sub" style={{ fontSize: 12.5 }}>
+                    {dateLong(s.service_date)} · {SERVICE_STATUS_LABEL[s.status]}
+                  </p>
+                </div>
+                <span className="tyv-num" style={{ fontSize: 18, opacity: s.status === "approved" ? 1 : 0.45 }}>
+                  {s.status === "approved" ? `+${s.points}` : "—"}
+                </span>
+              </div>
+            ))
+          ) : (
+            <p className="tyv-empty">Seu histórico começa na primeira visita confirmada.</p>
+          )}
+        </div>
+      </section>
+
+      <section className="tyv-section">
+        <div className="tyv-section-head">
+          <h2 className="tyv-h2">Registrar visita</h2>
+        </div>
+        <div className="tyv-panel">
+          <p className="tyv-sub" style={{ fontSize: 13.5, marginBottom: 18 }}>
+            Esteve aqui e o atendimento não apareceu? Registre que a Tayssa confirma. Nada conta antes disso.
+          </p>
+          <SubmitServiceForm services={services} todayISO={toISODate(new Date())} />
+        </div>
+      </section>
+
+      <section className="tyv-section">
+        <div className="tyv-section-head">
+          <h2 className="tyv-h2">Senha</h2>
+        </div>
+        <div className="tyv-panel">
+          <ChangePasswordForm />
+        </div>
+      </section>
+
+      <section className="tyv-section">
+        <form action={logoutAction}>
+          <button type="submit" className="tyv-btn tyv-btn--ghost">
+            Sair da minha conta
+          </button>
+        </form>
+      </section>
     </>
-  );
-}
-
-function Row({ k, v }: { k: string; v: string }) {
-  return (
-    <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: 12, padding: "8px 0", borderTop: "1px solid var(--t-line)" }}>
-      <dt className="ty-eyebrow" style={{ fontSize: 10 }}>
-        {k}
-      </dt>
-      <dd style={{ margin: 0, fontSize: 15 }}>{v}</dd>
-    </div>
   );
 }

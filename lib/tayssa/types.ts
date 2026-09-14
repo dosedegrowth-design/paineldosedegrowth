@@ -133,6 +133,65 @@ export type ClientBenefitRow = {
   updated_at: string;
 };
 
+export type LoyaltyCardRow = {
+  id: string;
+  client_id: string;
+  cycle_number: number;
+  card_size: number;
+  opened_at: string;
+  completed_at: string | null;
+  client_benefit_id: string | null;
+};
+
+export type LoyaltyStampRow = {
+  id: string;
+  card_id: string;
+  client_id: string;
+  position: number;
+  client_service_id: string | null;
+  service_name: string;
+  points: number;
+  stamped_at: string;
+  revealed_at: string | null;
+};
+
+/** Carimbo como a interface precisa dele (server -> client). */
+export type CardStamp = {
+  id: string;
+  position: number;
+  serviceName: string;
+  points: number;
+  revealed: boolean;
+  /** data do atendimento que gerou o carimbo */
+  date: string;
+};
+
+export type AppointmentStatus = "requested" | "confirmed" | "done" | "cancelled" | "no_show";
+
+export type AppointmentRow = {
+  id: string;
+  client_id: string;
+  service_id: string | null;
+  service_name: string;
+  scheduled_date: string; // YYYY-MM-DD
+  scheduled_time: string; // HH:MM:SS
+  duration_min: number;
+  status: AppointmentStatus;
+  client_note: string | null;
+  admin_note: string | null;
+  client_service_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export const APPOINTMENT_STATUS_LABEL: Record<AppointmentStatus, string> = {
+  requested: "Aguardando confirmação",
+  confirmed: "Confirmado",
+  done: "Realizado",
+  cancelled: "Cancelado",
+  no_show: "Não compareceu",
+};
+
 export type BlackoutRow = {
   id: string;
   name: string;

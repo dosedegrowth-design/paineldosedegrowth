@@ -1,13 +1,18 @@
 import { requireClientPage } from "@/lib/tayssa/auth/guards";
-import { getClientOverview } from "@/lib/tayssa/queries/client";
+import { getClientOverview, getClientReferrals } from "@/lib/tayssa/queries/client";
 import { renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
-import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
-import { BenefitObject } from "@/components/tayssa/vip/benefit-object";
-import { VipSection, EmptyState } from "@/components/tayssa/vip/section";
+import { dateLong, plural } from "@/lib/tayssa/format";
+import { REFERRAL_STATUS_LABEL } from "@/lib/tayssa/types";
+import { BenefitItem } from "@/components/tayssa/vip/benefit-item";
+import { VipReferralForm } from "@/components/tayssa/vip/forms";
 
+/**
+ * Tudo que a cliente pode ganhar, em uma tela: o que já é dela, o que
+ * está em validação, o aniversário e as indicações que abrem o próximo.
+ */
 export default async function BenefitsPage() {
   const user = await requireClientPage();
-  const o = await getClientOverview(user);
+  const [o, referrals] = await Promise.all([getClientOverview(user), getClientReferrals(user.id)]);
   const phone = o.settings.business.whatsapp;
   const wa = o.settings.whatsapp;
 
@@ -18,66 +23,143 @@ export default async function BenefitsPage() {
   const link = (title: string, type: string | undefined) =>
     whatsappUrl(
       phone,
-      renderTemplate(type === "birthday" ? wa.birthday_request : wa.benefit_request, { name: user.displayName, benefit: title })
+      renderTemplate(type === "birthday" ? wa.birthday_request : wa.benefit_request, {
+        name: user.displayName,
+        benefit: title,
+      })
     );
 
   return (
     <>
-      <div style={{ paddingBottom: "clamp(40px, 6vw, 88px)" }}>
-        <Reveal>
-          <span className="ty-eyebrow" style={{ display: "block", marginBottom: 20 }}>
-            Benefícios
-          </span>
-        </Reveal>
-        <MaskedLines
-          as="h1"
-          inView={false}
-          className="ty-display"
-          lineClassName="ty-vip-title"
-          lines={
-            active.length
-              ? [`Você desbloqueou ${active.length}.`, <em key="e">Quando quiser, é seu.</em>]
-              : ["Seu próximo benefício", <em key="e">está no caminho.</em>]
-          }
-        />
-      </div>
+      <h1 className="tyv-hello">
+        Seus <em>benefícios</em>.
+      </h1>
+      <p className="tyv-sub">
+        {active.length
+          ? `${active.length} ${plural(active.length, "desbloqueado", "desbloqueados")} esperando você.`
+          : "Cada visita, cada indicação e seu aniversário abrem algo por aqui."}
+      </p>
 
-      <VipSection eyebrow="Desbloqueados" title={<>Para <em>usar</em></>}>
-        {active.length ? (
-          <div>
+      {active.length ? (
+        <section className="tyv-section">
+          <div className="tyv-section-head">
+            <h2 className="tyv-h2">Para usar</h2>
+          </div>
+          <div className="tyv-stack">
             {active.map((b) => (
-              <BenefitObject key={b.id} item={b} isVip={user.isVip} whatsappUrl={link(b.title, b.benefit?.type)} />
+              <BenefitItem key={b.id} item={b} isVip={user.isVip} whatsappUrl={link(b.title, b.benefit?.type)} />
             ))}
           </div>
-        ) : (
-          <EmptyState>Continue sua jornada. Seu próximo benefício está mais perto do que parece.</EmptyState>
-        )}
-      </VipSection>
+        </section>
+      ) : null}
 
       {validating.length ? (
-        <VipSection
-          eyebrow="Em validação"
-          title={<>A Tayssa está <em>confirmando</em></>}
-          aside={<p className="ty-body" style={{ maxWidth: 360 }}>Você alcançou o marco. A Tayssa confere e libera.</p>}
-        >
-          <div>
+        <section className="tyv-section">
+          <div className="tyv-section-head">
+            <h2 className="tyv-h2">Em validação</h2>
+            <span className="tyv-label">a Tayssa confirma</span>
+          </div>
+          <div className="tyv-stack">
             {validating.map((b) => (
-              <BenefitObject key={b.id} item={b} isVip={user.isVip} />
+              <BenefitItem key={b.id} item={b} isVip={user.isVip} />
             ))}
           </div>
-        </VipSection>
+        </section>
       ) : null}
 
-      {past.length ? (
-        <VipSection eyebrow="Histórico" title={<>O que você já <em>viveu</em></>}>
-          <div>
-            {past.map((b) => (
-              <BenefitObject key={b.id} item={b} isVip={user.isVip} />
+      {!active.length && !validating.length ? (
+        <section className="tyv-section">
+          <div className="tyv-panel">
+            <p className="tyv-empty">
+              Seu próximo benefício está mais perto do que parece: o cartão completo é o primeiro deles.
+            </p>
+          </div>
+        </section>
+      ) : null}
+
+      <section className="tyv-section">
+        <div className="tyv-section-head">
+          <h2 className="tyv-h2">Aniversário</h2>
+          {user.isVip ? <span className="tyv-label">experiência VIP</span> : null}
+        </div>
+        <div className="tyv-panel">
+          {!user.isVip ? (
+            <p className="tyv-empty">Esse benefício faz parte da experiência VIP. O acesso é liberado pela Tayssa.</p>
+          ) : !o.birthday ? (
+            <p className="tyv-empty">Conte sua data de aniversário para a Tayssa. Ela cadastra, e sua semana aparece aqui.</p>
+          ) : o.birthday.inWindow ? (
+            <p className="tyv-sub" style={{ fontSize: 15 }}>
+              É a sua semana. A Tayssa libera seu presente por aqui.
+            </p>
+          ) : (
+            <p className="tyv-sub" style={{ fontSize: 15 }}>
+              Seu aniversário é em {dateLong(o.birthday.nextDate)}. Na sua semana, uma experiência escolhida pela Tayssa
+              para você.
+            </p>
+          )}
+          {o.blackout ? (
+            <p className="tyv-sub" style={{ fontSize: 12.5, marginTop: 10 }}>
+              Em {o.blackout.name} a agenda tem restrições até {dateLong(o.blackout.endsOn)}.
+            </p>
+          ) : null}
+        </div>
+      </section>
+
+      <section className="tyv-section">
+        <div className="tyv-section-head">
+          <h2 className="tyv-h2">Indicações</h2>
+          <span className="tyv-label">
+            {o.referral.inCycle} de {o.referral.threshold}
+          </span>
+        </div>
+        <div className="tyv-panel">
+          <p className="tyv-sub" style={{ fontSize: 14.5 }}>
+            {o.referral.approved === 0
+              ? `Indique ${o.referral.threshold} pessoas e a Tayssa libera “${o.referral.rewardTitle}”.`
+              : o.referral.remaining === o.referral.threshold
+                ? `Rodada completa. Você já liberou ${o.referral.cyclesEarned} ${plural(o.referral.cyclesEarned, "benefício", "benefícios")} de indicação.`
+                : `${plural(o.referral.remaining, "Falta", "Faltam")} ${o.referral.remaining} ${plural(o.referral.remaining, "indicação confirmada", "indicações confirmadas")} para “${o.referral.rewardTitle}”.`}
+          </p>
+          <div className="tyv-dots" style={{ marginTop: 14 }}>
+            {Array.from({ length: o.referral.threshold }, (_, i) => (
+              <i key={i} data-on={i < o.referral.inCycle} />
             ))}
           </div>
-        </VipSection>
+          <div className="tyv-divider" />
+          <VipReferralForm />
+        </div>
+
+        {referrals.length ? (
+          <div className="tyv-panel" style={{ marginTop: 12 }}>
+            {referrals.slice(0, 6).map((r) => (
+              <div key={r.id} className="tyv-row">
+                <div>
+                  <p style={{ fontSize: 15 }}>{r.referred_name}</p>
+                  <p className="tyv-sub" style={{ fontSize: 12.5 }}>
+                    {dateLong(r.created_at)}
+                  </p>
+                </div>
+                <span className={`tyv-badge ${r.status === "approved" ? "" : "tyv-badge--quiet"}`}>
+                  {REFERRAL_STATUS_LABEL[r.status]}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </section>
+
+      {past.length ? (
+        <section className="tyv-section">
+          <div className="tyv-section-head">
+            <h2 className="tyv-h2">Já viveu</h2>
+          </div>
+          <div className="tyv-stack">
+            {past.slice(0, 4).map((b) => (
+              <BenefitItem key={b.id} item={b} isVip={user.isVip} />
+            ))}
+          </div>
+        </section>
       ) : null}
-      <style>{`.ty-vip-title { font-size: clamp(36px, 5.2vw, 84px); }`}</style>
     </>
   );
 }

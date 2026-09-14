@@ -5,7 +5,7 @@ import { vipDb } from "@/lib/tayssa/db";
 import { assertAdmin, assertClient } from "@/lib/tayssa/auth/guards";
 import { logAudit } from "@/lib/tayssa/audit";
 import { ROUTES } from "@/lib/tayssa/config";
-import { syncLoyaltyEligibility } from "@/lib/tayssa/engine";
+import { stampVisit, syncLoyaltyEligibility } from "@/lib/tayssa/engine";
 import {
   adminServiceEntrySchema,
   reviewSchema,
@@ -129,6 +129,13 @@ export async function adminAddServiceAction(
       entityId: row.id,
       meta: { client_id: input.client_id, points: input.points_override ?? service.point_value },
     });
+    // visita confirmada: carimbo no cartão + marcos de pontos
+    await stampVisit(input.client_id, {
+      id: row.id,
+      service_name: service.name,
+      points: input.points_override ?? service.point_value,
+      reviewed_at: now,
+    });
     await syncLoyaltyEligibility(input.client_id);
     revalidatePath(ROUTES.admin, "layout");
     revalidatePath(ROUTES.vip, "layout");
@@ -176,7 +183,15 @@ export async function adminReviewServiceAction(input: {
       entityId: parsed.id,
       meta: { client_id: row.client_id, points, note: parsed.note },
     });
-    if (input.decision === "approve") await syncLoyaltyEligibility(row.client_id);
+    if (input.decision === "approve") {
+      await stampVisit(row.client_id, {
+        id: row.id,
+        service_name: row.service_name,
+        points,
+        reviewed_at: new Date().toISOString(),
+      });
+      await syncLoyaltyEligibility(row.client_id);
+    }
     revalidatePath(ROUTES.admin, "layout");
     revalidatePath(ROUTES.vip, "layout");
     return undefined;

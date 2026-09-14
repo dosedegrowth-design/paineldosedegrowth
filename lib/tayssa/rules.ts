@@ -39,11 +39,19 @@ export function loyaltyProgress(
   points: number,
   loyaltyBenefits: Pick<
     BenefitRow,
-    "id" | "key" | "name" | "description" | "threshold" | "active" | "type"
+    "id" | "key" | "name" | "description" | "threshold" | "active" | "type" | "threshold_unit"
   >[]
 ): LoyaltyProgress {
+  // só marcos em PONTOS entram na jornada; o cartão (unidade "services")
+  // tem ciclo próprio
   const milestones: Milestone[] = loyaltyBenefits
-    .filter((b) => b.active && b.type === "loyalty" && (b.threshold ?? 0) > 0)
+    .filter(
+      (b) =>
+        b.active &&
+        b.type === "loyalty" &&
+        (b.threshold ?? 0) > 0 &&
+        (b.threshold_unit ?? "points") === "points"
+    )
     .map((b) => ({
       benefitId: b.id,
       key: b.key,
@@ -238,6 +246,45 @@ export function isInactive(
 ): boolean {
   const d = daysSince(lastServiceISO, today);
   return d === null ? true : d >= inactivityDays;
+}
+
+// ------------------------------------------------------------
+// Agenda (puro): dias e horários que a cliente pode escolher
+// ------------------------------------------------------------
+
+export type BookableDay = { iso: string; weekday: number; date: Date };
+
+/** Dias abertos dentro do horizonte, a partir de hoje. */
+export function bookableDays(
+  today: Date,
+  booking: { weekdays: number[]; horizon_days: number }
+): BookableDay[] {
+  const out: BookableDay[] = [];
+  for (let i = 0; i <= booking.horizon_days; i++) {
+    const d = addDays(today, i);
+    if (!booking.weekdays.includes(d.getDay())) continue;
+    out.push({ iso: toISODate(d), weekday: d.getDay(), date: d });
+  }
+  return out;
+}
+
+/** "HH:MM" -> minutos desde meia-noite */
+export function timeToMinutes(hhmm: string): number {
+  const [h, m] = hhmm.slice(0, 5).split(":").map(Number);
+  return (h ?? 0) * 60 + (m ?? 0);
+}
+
+/** O horário ainda respeita a antecedência mínima? */
+export function slotIsBookable(
+  dateISO: string,
+  hhmm: string,
+  now: Date,
+  leadHours: number
+): boolean {
+  const d = parseISODate(dateISO);
+  const [h, m] = hhmm.slice(0, 5).split(":").map(Number);
+  const slot = new Date(d.getFullYear(), d.getMonth(), d.getDate(), h ?? 0, m ?? 0);
+  return slot.getTime() - now.getTime() >= leadHours * 60 * 60 * 1000;
 }
 
 // ------------------------------------------------------------
