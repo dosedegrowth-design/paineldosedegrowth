@@ -269,6 +269,28 @@ Gotchas:
 - O reset de botão do Tayssa usa `:where(.ty-scope) button` (especificidade zero) — se voltar a ser `.ty-scope button`, todo botão sólido perde fundo e borda.
 - ⚠️ Nessa mesma checagem, `trafego_ddg` **não está** na lista de schemas expostos (`pgrst.db_schemas`) — as queries `.schema("trafego_ddg")` do painel retornam PGRST106 na REST. Não foi alterado por estar fora do escopo do Tayssa.
 
+## VIVA Extintores — Portfólio (`viva-extintores/`)
+
+Projeto **próprio** de um cliente da DDG, dentro deste repositório mas com
+`package.json`, build, lint e deploy separados — igual ao `tayssa-lash/`.
+O painel o ignora no `tsconfig.json` e no `eslint.config.mjs` da raiz.
+
+| Recurso | Onde |
+|---|---|
+| Pasta | `viva-extintores/` (leia o `CLAUDE.md` de lá antes de mexer) |
+| O que é | Portfólio comercial da VIVA: 1 página-mãe + 5 páginas de área |
+| Stack | Next 16 · TS · **CSS puro** (sem Tailwind) · sem banco, sem API |
+| Vercel | projeto próprio, Root Directory `viva-extintores` |
+| Domínio | a definir |
+
+Gotcha: `next.config.ts` fixa `turbopack.root` na pasta. Sem isso o build
+sobe um nível e passa a usar o `postcss.config` e o `middleware` do painel.
+
+Regras do cliente que não podem quebrar (briefing): as cinco páginas
+continuam cinco; nada de foto, obra, cliente, número ou depoimento
+inventado; foto real vem antes de ícone e de ilustração; sem CREA em lugar
+nenhum. O detalhamento está no `viva-extintores/CLAUDE.md`.
+
 ## Documentação relacionada
 
 - `AGENTS.md` — regra crítica sobre Next.js 16 (não confiar em training data)

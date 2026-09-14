@@ -1,0 +1,15 @@
+import type { Metadata } from "next";
+import { area } from "@/lib/areas";
+import { PaginaServico } from "@/components/servico/pagina";
+
+const A = area("alarme-e-deteccao");
+
+export const metadata: Metadata = {
+  title: A.seo.titulo,
+  description: A.seo.descricao,
+};
+
+/** PÁGINA 02 — Alarme e detecção de incêndio (§9). */
+export default function Page() {
+  return <PaginaServico area={A} />;
+}
