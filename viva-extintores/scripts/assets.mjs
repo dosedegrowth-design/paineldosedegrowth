@@ -1,12 +1,12 @@
 // Baixa as fotos reais (public/photos e public/brand) do repositório público
-// quando elas não vieram junto do código — é o caso de um deploy por upload
-// de arquivos, em que só o fonte sobe e os binários ficam no Git.
+// quando elas não vieram junto do código — é o caso do deploy de preview, em
+// que só o fonte sobe e os binários ficam no Git do painel.
 //
 // Rodando local (as fotos já estão na pasta), o script não faz nada.
 
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, renameSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readdirSync, rmSync } from "node:fs";
+import { writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -30,40 +30,38 @@ const REPO = process.env.VIVA_ASSETS_REPO ?? "dosedegrowth-design/paineldosedegr
 const REF = process.env.VIVA_ASSETS_REF ?? "claude/sweet-cori-tutfes";
 const url = `https://codeload.github.com/${REPO}/tar.gz/refs/heads/${REF}`;
 
-const temp = mkdtempSync(join(tmpdir(), "viva-assets-"));
-const tarball = join(temp, "repo.tar.gz");
-
 console.log(`[assets] baixando ${faltando.join(", ")} de ${REPO}@${REF}`);
 
 const resposta = await fetch(url);
 if (!resposta.ok) {
   throw new Error(`[assets] download falhou: ${resposta.status} ${resposta.statusText}`);
 }
-const { writeFile } = await import("node:fs/promises");
+
+// O tarball fica dentro do projeto: /tmp costuma ser outro dispositivo e o
+// tar extrai direto no destino, sem mover arquivo entre discos (EXDEV).
+const tarball = join(raiz, ".assets.tar.gz");
 await writeFile(tarball, Buffer.from(await resposta.arrayBuffer()));
 
-execFileSync(
-  "tar",
-  [
-    "-xzf",
-    tarball,
-    "-C",
-    temp,
-    "--wildcards",
-    ...faltando.map((pasta) => `*/viva-extintores/public/${pasta}/*`),
-  ],
-  { stdio: "inherit" },
-);
-
-const extraido = readdirSync(temp).find((nome) => nome.startsWith("paineldosedegrowth-"));
-if (!extraido) throw new Error("[assets] tarball sem a pasta esperada");
-
-for (const pasta of faltando) {
-  const origem = join(temp, extraido, "viva-extintores", "public", pasta);
-  const alvo = join(publico, pasta);
-  rmSync(alvo, { recursive: true, force: true });
-  renameSync(origem, alvo);
-  console.log(`[assets] public/${pasta}: ${readdirSync(alvo).length} itens`);
+try {
+  execFileSync(
+    "tar",
+    [
+      "-xzf",
+      tarball,
+      "-C",
+      publico,
+      "--strip-components=3",
+      "--wildcards",
+      ...faltando.map((pasta) => `*/viva-extintores/public/${pasta}/*`),
+    ],
+    { stdio: "inherit" },
+  );
+} finally {
+  rmSync(tarball, { force: true });
 }
 
-rmSync(temp, { recursive: true, force: true });
+for (const pasta of faltando) {
+  const alvo = join(publico, pasta);
+  if (!existsSync(alvo)) throw new Error(`[assets] public/${pasta} não veio no tarball`);
+  console.log(`[assets] public/${pasta}: ${readdirSync(alvo).length} itens`);
+}
