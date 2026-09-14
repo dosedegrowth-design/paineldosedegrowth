@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { vipDb, isDbConfigured } from "@/lib/tayssa/db";
+import { vipDb, isDbConfigured, logServerError } from "@/lib/tayssa/db";
 import { hashToken } from "@/lib/tayssa/auth/session";
 import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES } from "@/lib/tayssa/config";
@@ -15,14 +15,27 @@ export const metadata: Metadata = {
 
 type TokenState = { ok: true; name: string; purpose: "setup" | "reset" } | { ok: false };
 
+/**
+ * A cliente só vê "válido" ou "não vale mais" — mas uma falha de banco não
+ * pode se disfarçar de link expirado em silêncio: o erro técnico vai pro log.
+ */
 async function checkToken(token: string | undefined): Promise<TokenState> {
-  if (!token || !isDbConfigured()) return { ok: false };
+  if (!token) return { ok: false };
+  if (!isDbConfigured()) {
+    logServerError("setPassword.check", "Supabase não configurado neste ambiente");
+    return { ok: false };
+  }
   try {
-    const { data } = await vipDb()
+    const { data, error } = await vipDb()
       .from("password_tokens")
-      .select("expires_at, used_at, purpose, user:users(name, nickname, status)")
+      // `password_tokens` tem duas FKs para `users` (user_id e created_by):
+      // sem nomear a constraint, o PostgREST recusa o embed por ambiguidade.
+      .select(
+        "expires_at, used_at, purpose, user:users!password_tokens_user_id_fkey(name, nickname, status)"
+      )
       .eq("token_hash", hashToken(token))
       .maybeSingle();
+    if (error) throw new Error(error.message);
     const row = data as unknown as {
       expires_at: string;
       used_at: string | null;
@@ -32,7 +45,8 @@ async function checkToken(token: string | undefined): Promise<TokenState> {
     if (!row || row.used_at || new Date(row.expires_at).getTime() < Date.now()) return { ok: false };
     if (!row.user || row.user.status !== "active") return { ok: false };
     return { ok: true, name: row.user.nickname?.trim() || row.user.name.split(" ")[0], purpose: row.purpose };
-  } catch {
+  } catch (e) {
+    logServerError("setPassword.check", e);
     return { ok: false };
   }
 }

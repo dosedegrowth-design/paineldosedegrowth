@@ -131,11 +131,18 @@ export async function setPasswordAction(
       confirm: str(formData, "confirm"),
     });
     const db = vipDb();
-    const { data } = await db
+    const { data, error: lookupError } = await db
       .from("password_tokens")
-      .select("id, user_id, expires_at, used_at, user:users(id, role, status)")
+      // FK nomeada: `password_tokens` aponta para `users` por user_id e por
+      // created_by, e o embed sem o nome da constraint é rejeitado.
+      .select(
+        "id, user_id, expires_at, used_at, user:users!password_tokens_user_id_fkey(id, role, status)"
+      )
       .eq("token_hash", hashToken(input.token))
       .maybeSingle();
+    // falha de banco não pode virar "link expirado": runAction registra e
+    // mostra a mensagem genérica, sem confundir a cliente
+    if (lookupError) throw new Error(lookupError.message);
     const row = data as unknown as {
       id: string;
       user_id: string;
