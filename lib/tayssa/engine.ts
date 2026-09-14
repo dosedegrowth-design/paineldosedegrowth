@@ -244,7 +244,18 @@ export async function getCardState(clientId: string): Promise<CardState> {
   if (error) throw new Error(error.message);
   const all = (cards ?? []) as LoyaltyCardRow[];
   const completedCards = all.filter((c) => c.completed_at).length;
-  const latest = all[0] ?? null;
+
+  // Carimbo por raspar nunca fica para trás: se o cartão anterior ainda
+  // tem dourado, é ele que aparece — a cliente termina de raspar (e ganha
+  // a revelação do presente) antes de seguir para o cartão novo.
+  const { data: pending } = await db
+    .from("loyalty_stamps")
+    .select("card_id")
+    .eq("client_id", clientId)
+    .is("revealed_at", null);
+  const pendingCards = new Set(((pending ?? []) as { card_id: string }[]).map((r) => r.card_id));
+  const latest =
+    [...all].reverse().find((c) => pendingCards.has(c.id)) ?? all[0] ?? null;
 
   if (!latest) {
     return { card: null, stamps: [], size, filled: 0, unrevealed: 0, cycle: 1, completed: false, completedCards, reward: null };
