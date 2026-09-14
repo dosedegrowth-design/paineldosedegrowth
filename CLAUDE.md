@@ -238,19 +238,26 @@ Produto separado dentro deste repo (subdomínio `tayssa.dosedegrowth.com`, tamb�
 
 | Recurso | Onde |
 |---|---|
-| Rotas | `app/tayssa/*` — público (`/`, `/indicar`, `/entrar`, `/entrar/definir-senha`, `/acesso`), VIP (`/vip/*`), admin (`/admin/*`) |
+| Rotas | `app/tayssa/*` — público (`/`, `/indicar`, `/entrar`, `/entrar/definir-senha`, `/acesso`), VIP (`/vip`, `/vip/cartao`, `/vip/agendar`, `/vip/beneficios`, `/vip/perfil`), admin (`/admin/*`) |
 | Componentes | `components/tayssa/{ui,public,auth,vip,admin}` |
 | Domínio | `lib/tayssa/*` — `auth/` (scrypt + sessão em cookie `tayssa_vip_session` + tabela `sessions`), `actions/` (server actions, Zod, audit), `queries/`, `rules.ts` (puro, testado), `engine.ts` (elegibilidade) |
-| Banco | schema **`vip`** no projeto DDG (`supabase/migrations/20260914000000_vip_init.sql`). RLS ligado sem policies: só service_role acessa |
+| Banco | schema **`vip`** no projeto DDG (`supabase/migrations/20260914000000_vip_init.sql` + `20260914120000_vip_card_booking.sql`). RLS ligado sem policies: só service_role acessa |
+| App da cliente | mobile primeiro: `app/tayssa/vip/vip.css` (classes `tyv-*`, cartão `tyc-*`, raspadinha `tys-*`) + nav fixa em `components/tayssa/vip/bottom-nav.tsx` |
+| Cartão | `vip.loyalty_cards` + `vip.loyalty_stamps`. Visita confirmada pela Tayssa → `stampVisit()` cria o carimbo oculto; a cliente raspa (`revealStampAction`) e vê os pontos. Cartão cheio → benefício `card_complete` em `pending_validation` |
+| Agenda | `vip.appointments`. Regras em `settings.booking` (dias, horários, antecedência, limite em aberto). Pedido nasce `requested`; a Tayssa confirma |
 | Middleware | host `tayssa.*` → rewrite de todo path para `/tayssa/...`; `/tayssa/vip*` e `/tayssa/admin*` sem cookie → `/tayssa/entrar` |
 | Fotos reais | `public/tayssa/photos/` com os nomes de `lib/tayssa/photos.ts`; sem arquivo, o slot mostra campo tonal (nunca imagem sintética) |
 | Testes | `node --experimental-strip-types --test lib/tayssa/rules.test.ts` |
+
+Datas: o servidor roda em UTC — use `nowInBusinessTz()` (`lib/tayssa/format.ts`) em qualquer lógica de "hoje", nunca `new Date()` cru.
 
 Regras que NÃO podem quebrar:
 - **Nenhum benefício é concedido automaticamente.** O sistema cria `client_benefits` em `pending_validation`; só o admin muda para `available`.
 - Atendimentos registrados pela cliente ficam `pending` até o admin confirmar; só então somam pontos.
 - Indicação só conta em `approved`; a mesma pessoa (telefone) só conta uma vez; auto-indicação e cliente antiga são inválidas.
 - Cliente nunca acessa dado de outra: tudo é derivado da sessão (`assertClient()`), sem IDs na URL.
+- Raspar o carimbo não cria nada: o carimbo (e os pontos) já existem desde a confirmação da Tayssa. Revelar só marca `revealed_at`.
+- O ranking mostra só o primeiro nome e a vizinhança de posições — nunca contato, e-mail ou histórico de outra cliente.
 
 Operação:
 - Admin cria cliente em `/tayssa/admin/clientes/novo` → gera link único de primeiro acesso (7 dias) → envia por WhatsApp. Nenhuma senha aparece na tela.
@@ -259,6 +266,7 @@ Operação:
 
 Gotchas:
 - O schema `vip` precisa estar em **Exposed schemas** do PostgREST. Foi adicionado via `alter role authenticator set pgrst.db_schemas = '..., vip'` + `notify pgrst, 'reload config'`. Se alguém salvar a lista pelo dashboard do Supabase (Settings → API), confira se `vip` continua lá.
+- O reset de botão do Tayssa usa `:where(.ty-scope) button` (especificidade zero) — se voltar a ser `.ty-scope button`, todo botão sólido perde fundo e borda.
 - ⚠️ Nessa mesma checagem, `trafego_ddg` **não está** na lista de schemas expostos (`pgrst.db_schemas`) — as queries `.schema("trafego_ddg")` do painel retornam PGRST106 na REST. Não foi alterado por estar fora do escopo do Tayssa.
 
 ## Documentação relacionada
