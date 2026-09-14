@@ -54,7 +54,7 @@
      ---------------------------------------------------------------- */
   --v-gutter: clamp(20px, 4.4vw, 64px);
   --v-max: 1320px;
-  --v-header: 72px;
+  --v-header: 64px;
 
   --s-1: clamp(8px, 1vw, 12px);
   --s-2: clamp(14px, 1.6vw, 20px);
@@ -405,19 +405,23 @@ body {
   border-bottom: 1px solid var(--v-line-d);
 }
 
+/* Três colunas fixas: marca, menu, ação. Era flex com tudo empurrado
+   para a direita — marca de um lado, seis links e um botão vermelho
+   amontoados do outro. A coluna do meio é elástica e é ela que dá o ar. */
 .v-header__bar {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: clamp(14px, 2.4vw, 32px);
+  column-gap: clamp(24px, 5vw, 80px);
   min-height: var(--v-header);
-  padding-block: 10px;
+  padding-block: 8px;
 }
 
 .v-header__nav {
   display: flex;
   align-items: center;
-  gap: clamp(12px, 1.6vw, 24px);
-  margin-inline-start: auto;
+  justify-content: flex-end;
+  gap: clamp(16px, 2.2vw, 34px);
 }
 
 .v-navlink {
@@ -442,7 +446,8 @@ body {
 }
 
 .v-burger {
-  margin-inline-start: auto;
+  grid-column: 3;
+  justify-self: end;
   display: none;
   width: 44px;
   height: 44px;
@@ -1024,8 +1029,8 @@ body {
 
 .v-frentes__trilho[data-motion="on"] .v-frente {
   opacity: 0;
-  transform: translateY(26px);
-  transition: opacity 0.7s var(--v-power3), transform 0.9s var(--v-power3);
+  transform: translateY(54px);
+  transition: opacity 0.85s var(--v-power3), transform 1.15s var(--v-power3);
 }
 
 .v-frentes__trilho[data-motion="on"][data-shown="true"] .v-frente {
@@ -1033,11 +1038,11 @@ body {
   transform: translateY(0);
 }
 
-.v-frentes__trilho[data-motion="on"][data-shown="true"] .v-frente:nth-child(1) { transition-delay: 0.04s; }
-.v-frentes__trilho[data-motion="on"][data-shown="true"] .v-frente:nth-child(2) { transition-delay: 0.12s; }
-.v-frentes__trilho[data-motion="on"][data-shown="true"] .v-frente:nth-child(3) { transition-delay: 0.2s; }
-.v-frentes__trilho[data-motion="on"][data-shown="true"] .v-frente:nth-child(4) { transition-delay: 0.28s; }
-.v-frentes__trilho[data-motion="on"][data-shown="true"] .v-frente:nth-child(5) { transition-delay: 0.36s; }
+.v-frentes__trilho[data-motion="on"][data-shown="true"] .v-frente:nth-child(1) { transition-delay: 0.05s; }
+.v-frentes__trilho[data-motion="on"][data-shown="true"] .v-frente:nth-child(2) { transition-delay: 0.17s; }
+.v-frentes__trilho[data-motion="on"][data-shown="true"] .v-frente:nth-child(3) { transition-delay: 0.29s; }
+.v-frentes__trilho[data-motion="on"][data-shown="true"] .v-frente:nth-child(4) { transition-delay: 0.41s; }
+.v-frentes__trilho[data-motion="on"][data-shown="true"] .v-frente:nth-child(5) { transition-delay: 0.53s; }
 
 .v-frente__link {
   position: relative;
@@ -1263,22 +1268,26 @@ body {
 /* bloco: entra subindo */
 .v-reveal[data-motion="on"] {
   opacity: 0;
-  transform: translateY(26px);
+  transform: translateY(44px);
   transition:
-    opacity 0.9s var(--v-power3) var(--atraso, 0s),
-    transform 0.9s var(--v-power3) var(--atraso, 0s);
+    opacity 1.05s var(--v-power3) var(--atraso, 0s),
+    transform 1.15s var(--v-power3) var(--atraso, 0s);
 }
 
 /* a foto entra abrindo: começa um pouco maior e assenta junto com o
    texto. É o movimento que faz a imagem parecer viva sem truque. */
-.v-reveal[data-motion="on"] .v-photo img {
-  transform: scale(1.08);
-  transition: transform 1.5s var(--v-power3) var(--atraso, 0s);
+.v-reveal[data-motion="on"] .v-photo {
+  clip-path: inset(22% 0 0 0);
+  transition: clip-path 1.25s var(--v-power3) var(--atraso, 0s);
 }
 
-.v-reveal[data-motion="on"][data-shown="true"] .v-photo img {
-  transform: scale(1);
+.v-reveal[data-motion="on"] .v-photo img {
+  transform: scale(1.16);
+  transition: transform 1.7s var(--v-power3) var(--atraso, 0s);
 }
+
+.v-reveal[data-motion="on"][data-shown="true"] .v-photo { clip-path: inset(0 0 0 0); }
+.v-reveal[data-motion="on"][data-shown="true"] .v-photo img { transform: scale(1); }
 
 .v-reveal[data-motion="on"][data-shown="true"] {
   opacity: 1;
@@ -1288,10 +1297,10 @@ body {
 /* cascata: os filhos entram um depois do outro */
 .v-cascata[data-motion="on"] > * {
   opacity: 0;
-  transform: translateY(22px);
+  transform: translateY(34px);
   transition:
-    opacity 0.8s var(--v-power3),
-    transform 0.8s var(--v-power3);
+    opacity 0.9s var(--v-power3),
+    transform 1s var(--v-power3);
 }
 
 .v-cascata[data-motion="on"][data-shown="true"] > * {
@@ -1357,12 +1366,14 @@ a:hover .v-photo--zoom img {
 @media (prefers-reduced-motion: reduce) {
   [data-motion="on"] > .v-linha > .v-linha__in,
   .v-reveal[data-motion="on"],
+  .v-reveal[data-motion="on"] .v-photo,
   .v-reveal[data-motion="on"] .v-photo img,
   .v-cascata[data-motion="on"] > *,
   .v-frentes__trilho[data-motion="on"] .v-frente,
   [data-motion="on"] .v-regua {
     opacity: 1 !important;
     transform: none !important;
+    clip-path: none !important;
     transition: none !important;
   }
   .v-photo--zoom img { transition: none; }
@@ -1784,6 +1795,9 @@ a:hover .v-photo--zoom img {
   .v-header__nav { display: none; }
   .v-header__cta { display: none; }
   .v-burger { display: flex; }
+  /* sem menu e sem botão, a marca fica à esquerda e o traço à direita —
+     nada de logo boiando no meio de uma barra vazia */
+  .v-header__bar { grid-template-columns: auto minmax(0, 1fr) auto; }
 
   /* a barra de áreas rola na horizontal — nenhuma área some */
   .v-tabs__list {
@@ -1814,14 +1828,10 @@ a:hover .v-photo--zoom img {
 @media (max-width: 560px) {
   /* A assinatura do logo tem tracking largo (0.42em); em tela estreita
      ela sozinha estourava a barra do cabeçalho. */
-  .v-logo__sub { font-size: 8.5px; letter-spacing: 0.16em; }
 
   .v-manut { grid-template-columns: repeat(2, 1fr); }
   .v-etapas,
   .v-etapas--3 { grid-template-columns: 1fr; }
-  .v-selos { grid-template-columns: repeat(3, 1fr); gap: 6px; }
-  .v-selo { padding-inline: 2px; }
-  .v-selo__n { font-size: 26px; }
   .v-float span { display: none; }
   .v-float { padding: 15px; }
 }
@@ -1922,6 +1932,7 @@ a:hover .v-photo--zoom img {
   [data-motion="on"] .v-cascata-in > * {
     opacity: 1 !important;
     transform: none !important;
+    clip-path: none !important;
     transition: none !important;
   }
 }

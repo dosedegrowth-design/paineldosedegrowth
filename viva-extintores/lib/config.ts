@@ -28,6 +28,19 @@ export const ROUTES = {
   casos: "#casos-reais",
 } as const;
 
+/**
+ * Para onde aponta a chamada "Veja alguns dos nossos casos reais".
+ *
+ * A galeria de casos é da agência e já existe — não se reconstrói aqui.
+ * Enquanto o endereço dela não for ligado, a chamada NÃO aparece: título
+ * e seta apontando para o nada é faixa vazia no fim de toda página de
+ * área, e página que vai ao cliente com faixa vazia lê como obra
+ * inacabada. Mesma regra dos posts do Instagram.
+ *
+ * Ligar = preencher esta env com a URL (ou âncora) da galeria.
+ */
+export const CASOS_REAIS_URL = process.env.NEXT_PUBLIC_VIVA_CASOS ?? "";
+
 /** O menu, na ordem do layout aprovado. */
 export const MENU = [
   { rotulo: "Início", href: ROUTES.home },

@@ -26,7 +26,10 @@ import {
  * 2. **`prefers-reduced-motion` desliga tudo.** Sem exceção.
  */
 
-const MARGEM = "-12% 0px -8% 0px";
+/* O elemento precisa estar bem dentro da tela para a entrada começar:
+   disparando cedo demais, a animação termina antes de o visitante
+   chegar nela e o efeito é o de "não tem animação nenhuma". */
+const MARGEM = "-10% 0px -18% 0px";
 
 const CONSULTA = "(prefers-reduced-motion: reduce)";
 

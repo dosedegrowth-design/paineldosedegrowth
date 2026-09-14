@@ -158,9 +158,12 @@ Vieram do cliente. Não são preferência de estilo.
 - Mantém "engenheiro especialista" / "bombeiro especialista em obras".
 - **Sem parede de logos de clientes.** Se um cliente aparecer naturalmente
   numa foto de obra, tudo bem; seção de logos, não.
-- **O módulo de casos reais não é daqui.** Cada página de área fecha com
-  "VEJA ALGUNS DOS NOSSOS CASOS REAIS" + seta, e para. A galeria é da
-  agência e já existe.
+- **O módulo de casos reais não é daqui.** A galeria é da agência e já
+  existe. A chamada "VEJA ALGUNS DOS NOSSOS CASOS REAIS" + seta fecha a
+  página de área — **mas só quando houver destino**: sem
+  `NEXT_PUBLIC_VIVA_CASOS`, a seção não aparece. Título e seta apontando
+  para o nada eram uma faixa vazia no fim das cinco páginas, e foi o
+  cliente que apontou. Mesma regra dos posts do Instagram.
 - **A biblioteca das cinco áreas tem dois toques.** O primeiro abre o
   painel e mostra do que a área trata; o segundo leva para a página. Não
   transformar em link de um clique só.
@@ -196,6 +199,10 @@ Vieram do cliente. Não são preferência de estilo.
 - Custom property definida em `style={{"--cols": …}}` **vence** a media
   query. Nas grades responsivas, sobrescreva `grid-template-columns`
   direto, não o `--cols`.
+- O cabeçalho é grade de três colunas (marca · menu · ação), não flex. Em
+  flex, os seis links e o botão vermelho se amontoavam à direita e a
+  assinatura embaixo da marca esticava a barra. A assinatura saiu do
+  cabeçalho (`<Logo assinatura />` só onde fizer sentido).
 - Na faixa escura de CTA, o botão precisa de `grid-column: 1 / -1` no
   mobile: senão ele engorda a coluna `auto` e o título fica abaixo do
   próprio min-content, vazando na horizontal.
