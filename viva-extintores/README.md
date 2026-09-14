@@ -72,7 +72,7 @@ Nenhum texto está escondido dentro de componente. Tudo mora em `lib/`:
 | `lib/relatorio.ts` | página 05: provocação, itens, manutenção |
 | `lib/documentos.ts` | página 04: CLCB, AVCB e as etapas |
 | `lib/prova-social.ts` | selo do Google e relatos do Google Meu Negócio |
-| `lib/instagram.ts` | posts do Instagram |
+| `lib/instagram.ts` | permalinks das publicações reais do Instagram |
 | `lib/photos.ts` | o manifesto de fotos (arquivo, alt, legenda) |
 | `lib/config.ts` | rotas, menu, marca e contatos (via env) |
 
@@ -113,7 +113,9 @@ de contato.
 5. **Confirmar as legendas com nome de cliente** na área 04 (Cury, Padaria
    Marabá, Metrô Tamanduateí, Ed. Araken de Moraes, Banana's Outlet,
    Studio Rock Rock) em `lib/photos.ts`.
-6. **Instagram**: posts em `lib/instagram.ts` ou o token da Graph API.
+6. **Instagram**: colar em `lib/instagram.ts` os permalinks das
+   publicações (no post: "…" → "Copiar link"). Elas são incorporadas de
+   verdade e o clique leva para o Instagram.
 7. **Logo oficial em SVG.** Hoje a marca é desenhada em texto em
    `components/ui/logo.tsx` — é trocar o miolo por um `<Image>`.
 8. **Conteúdo institucional**: Sobre nós e Contato estão com a estrutura

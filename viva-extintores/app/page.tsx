@@ -14,9 +14,8 @@ export default function Page() {
   return (
     <>
       <HeroPagina
-        sublinha={HOME.hero.sublinha}
+        sublinha={HOME.hero.eyebrow}
         titulo={HOME.hero.titulo}
-        destaque={HOME.hero.destaque}
         texto={HOME.hero.texto}
         aside={HOME.hero.aside}
         foto={FOTOS.site.hero}
@@ -26,9 +25,9 @@ export default function Page() {
         </div>
       </HeroPagina>
 
-      <Numeros />
-
       <AreasGrid titulo={HOME.areas.titulo} texto={HOME.areas.texto} />
+
+      <Numeros />
 
       <FaixaCta
         titulo={HOME.faixa.titulo}

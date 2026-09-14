@@ -689,39 +689,58 @@ body {
 .v-gal .v-photo { aspect-ratio: 1; }
 
 /* ------------------------------------------------------------
-   Faixa de números
+   Números — linha fina dentro da narrativa, nunca quadradinho
    ------------------------------------------------------------ */
 
 .v-num {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1px;
-  background: var(--v-line-d);
-  border-block: 1px solid var(--v-line-d);
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 2fr);
+  gap: clamp(20px, 3.2vw, 52px);
+  align-items: center;
+  padding-block: clamp(20px, 2.4vw, 30px);
+  border-block: 1px solid var(--v-line-l);
 }
 
-.v-num__item {
-  background: var(--v-ink);
-  padding: clamp(20px, 2.4vw, 30px) clamp(14px, 1.8vw, 24px);
-  text-align: center;
+.v-num__nota {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--v-on-light-soft);
+  max-width: 34ch;
+}
+
+.v-num__lista {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(14px, 2vw, 30px);
+}
+
+.v-num__lista li {
+  border-inline-start: 1px solid var(--v-line-l);
+  padding-inline-start: clamp(12px, 1.6vw, 22px);
 }
 
 .v-num__valor {
   display: block;
   font-family: "Barlow Condensed", sans-serif;
   font-weight: 700;
-  font-size: clamp(30px, 3.2vw, 42px);
+  font-size: clamp(26px, 2.6vw, 34px);
   line-height: 1;
-  color: #fff;
+  color: var(--v-on-light);
 }
 
 .v-num__rotulo {
   display: block;
-  margin-top: 8px;
-  font-size: 13.5px;
+  margin-top: 5px;
+  font-size: 12.5px;
   line-height: 1.3;
-  color: var(--v-on-dark-soft);
+  color: var(--v-on-light-soft);
 }
+
+.v-dark .v-num { border-color: var(--v-line-d); }
+.v-dark .v-num__nota,
+.v-dark .v-num__rotulo { color: var(--v-on-dark-soft); }
+.v-dark .v-num__valor { color: #fff; }
+.v-dark .v-num__lista li { border-color: var(--v-line-d); }
 
 /* ------------------------------------------------------------
    Faixa escura de CTA
@@ -809,95 +828,213 @@ body {
 }
 
 /* ------------------------------------------------------------
-   Cards das cinco áreas (página-mãe)
+   Biblioteca das cinco áreas
+
+   Dois toques: o primeiro abre o card, o segundo leva para a página.
+   No desktop o card aberto cresce e empurra os vizinhos; no celular os
+   cinco correm na horizontal com encaixe — biblioteca, não lista.
    ------------------------------------------------------------ */
 
-.v-areas {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: clamp(10px, 1.2vw, 16px);
-  margin-top: 24px;
+.v-bib {
+  margin-top: clamp(26px, 3vw, 40px);
+  /* a biblioteca é a peça principal da página: ganha mais largura que o
+     resto do conteúdo, sem furar a goteira */
+  width: min(100vw - var(--v-gutter) * 2, 1520px);
+  margin-inline: calc(50% - min(50vw - var(--v-gutter), 760px));
 }
 
-.v-area {
+.v-bib__trilho {
+  display: flex;
+  gap: clamp(10px, 1.1vw, 16px);
+  align-items: stretch;
+}
+
+.v-bib__item {
+  flex: 1 1 0;
+  min-width: 0;
+  transition: flex-grow 0.55s var(--v-ease);
+}
+
+.v-bib__item[data-aberto="true"] { flex-grow: 2.6; }
+
+.v-bib__card {
   position: relative;
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
   height: 100%;
+  min-height: clamp(460px, 40vw, 580px);
   background: var(--v-ink);
   color: var(--v-on-dark);
   overflow: hidden;
   isolation: isolate;
-  transition: transform 0.35s var(--v-ease);
 }
 
-.v-area:hover { transform: translateY(-4px); }
+.v-bib__media { position: absolute; inset: 0; z-index: -2; }
 
-.v-area__media {
-  position: relative;
-  flex: 1 1 auto;
-  min-height: 190px;
-}
+.v-bib__media .v-photo { position: absolute; inset: 0; }
 
-.v-area__media .v-photo { position: absolute; inset: 0; }
+.v-bib__media .v-photo img { transition: transform 0.8s var(--v-ease); }
 
-/* O texto do card sobe por cima da foto. Quando a foto ainda não existe,
-   a legenda do campo tonal ia parar embaixo do título — por isso aqui ela
-   sobe para o topo do recorte. */
-.v-area__media .v-photo__ph { justify-content: flex-start; }
+.v-bib__card:hover .v-bib__media .v-photo img { transform: scale(1.06); }
 
-.v-area__media .v-photo img { transition: transform 0.7s var(--v-ease); }
+/* o campo tonal do slot vazio sobe para o topo, longe do texto */
+.v-bib__media .v-photo__ph { justify-content: flex-start; }
 
-.v-area:hover .v-area__media .v-photo img { transform: scale(1.05); }
-
-.v-area__media::after {
+.v-bib__card::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(0deg, rgba(12, 22, 32, 0.95) 6%, rgba(12, 22, 32, 0.1) 62%);
+  z-index: -1;
+  background: linear-gradient(0deg, rgba(12, 22, 32, 0.97) 20%, rgba(12, 22, 32, 0.55) 58%, rgba(12, 22, 32, 0.12) 100%);
+  transition: background 0.45s var(--v-ease);
 }
 
-.v-area__body {
-  position: relative;
-  z-index: 1;
-  margin-top: -84px;
-  padding: 0 18px 18px;
+.v-bib__item[data-aberto="true"] .v-bib__card::after {
+  background: linear-gradient(0deg, rgba(12, 22, 32, 0.98) 42%, rgba(12, 22, 32, 0.82) 72%, rgba(12, 22, 32, 0.35) 100%);
 }
 
-.v-area__num {
+.v-bib__body { padding: clamp(18px, 1.7vw, 26px); }
+
+.v-bib__num {
   font-family: "Barlow Condensed", sans-serif;
   font-weight: 700;
-  font-size: 16px;
-  letter-spacing: 0.14em;
+  font-size: 17px;
+  letter-spacing: 0.16em;
   color: var(--v-red);
 }
 
-.v-area__title {
-  margin-top: 4px;
-  font-size: clamp(17px, 1.35vw, 20px);
+.v-bib__titulo {
+  margin-top: 6px;
+  font-size: clamp(21px, 1.7vw, 27px);
 }
 
-.v-area__resume {
-  margin-top: 8px;
-  font-size: 13.5px;
-  line-height: 1.45;
+/* Fechado, o card mostra só o número e o nome da área — é uma lombada de
+   livro. O resumo e os itens chegam no primeiro toque, junto do detalhe:
+   é o que impede a fileira de virar cinco blocos de texto espremidos. */
+.v-bib__item:not([data-aberto="true"]) .v-bib__resumo { display: none; }
+
+.v-bib__resumo {
+  margin-top: 10px;
+  font-size: 15px;
+  line-height: 1.5;
   color: var(--v-on-dark-soft);
 }
 
-.v-area__go {
-  margin-top: 14px;
-  width: 34px;
-  height: 34px;
+/* o "card sobre" — só depois do primeiro toque */
+.v-bib__detalhe {
   display: grid;
-  place-items: center;
-  background: var(--v-red);
-  color: #fff;
-  transition: transform 0.3s var(--v-ease);
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.5s var(--v-ease),
+    opacity 0.4s var(--v-ease);
 }
 
-.v-area__go svg { width: 18px; height: 9px; }
+.v-bib__detalhe > * { min-height: 0; overflow: hidden; }
 
-.v-area:hover .v-area__go { transform: translateX(5px); }
+.v-bib__item[data-aberto="true"] .v-bib__detalhe {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.v-bib__itens {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--v-line-d);
+}
+
+.v-bib__itens li {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--v-on-dark-soft);
+}
+
+.v-bib__itens li svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--v-red);
+  transform: translateY(3px);
+}
+
+.v-bib__ir {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 12px 20px;
+  background: var(--v-red);
+  color: #fff;
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.v-bib__ir svg { width: 22px; height: 10px; }
+
+/* a seta discreta de quando o card está fechado */
+.v-bib__go {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  margin-top: 16px;
+  background: var(--v-red);
+  color: #fff;
+  transition: transform 0.3s var(--v-ease), opacity 0.3s var(--v-ease);
+}
+
+.v-bib__go svg { width: 20px; height: 10px; }
+
+.v-bib__card:hover .v-bib__go { transform: translateX(5px); }
+
+.v-bib__item[data-aberto="true"] .v-bib__go {
+  display: none;
+}
+
+/* controles — só no celular */
+.v-bib__nav { display: none; }
+
+.v-bib__seta {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border: 1px solid var(--v-line-l);
+  color: var(--v-on-light);
+  background: var(--v-card);
+}
+
+.v-bib__seta:first-child svg { transform: rotate(180deg); }
+.v-bib__seta svg { width: 22px; height: 10px; }
+
+.v-bib__pontos {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.v-bib__pontos button {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--v-line-l);
+  transition: background 0.25s, transform 0.25s;
+}
+
+.v-bib__pontos button[aria-current="true"] {
+  background: var(--v-red);
+  transform: scale(1.35);
+}
 
 /* ------------------------------------------------------------
    Reveal — sem JS, tudo aparece
@@ -1322,7 +1459,6 @@ body {
   .v-manut { grid-template-columns: repeat(4, 1fr); }
   .v-etapas,
   .v-etapas--3 { grid-template-columns: repeat(2, 1fr); }
-  .v-areas { grid-template-columns: repeat(2, 1fr); }
   /* sobrescreve a propriedade, não o --cols: o inline venceria a media */
   .v-gal { grid-template-columns: repeat(3, 1fr); }
 
@@ -1340,9 +1476,33 @@ body {
   .v-header__cta { display: none; }
   .v-burger { display: flex; }
 
-  /* as cinco áreas empilham 01…05, sem perder foto nem texto */
-  .v-areas { grid-template-columns: 1fr; }
-  .v-area__media { min-height: 0; aspect-ratio: 16 / 9; }
+  /* A biblioteca: os cinco correm na horizontal, com encaixe. Não vira
+     lista rolando para baixo. */
+  .v-bib__trilho {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+
+  .v-bib__trilho::-webkit-scrollbar { display: none; }
+
+  .v-bib__item {
+    flex: 0 0 84%;
+    scroll-snap-align: center;
+  }
+
+  .v-bib__item[data-aberto="true"] { flex-grow: 0; }
+
+  .v-bib__card { min-height: clamp(440px, 96vw, 540px); }
+
+  .v-bib__nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 18px;
+  }
 
   /* a barra de áreas rola na horizontal — nenhuma área some */
   .v-tabs__list {
@@ -1360,7 +1520,8 @@ body {
   }
 
   .v-gal { grid-template-columns: repeat(2, 1fr); }
-  .v-num { grid-template-columns: repeat(2, 1fr); }
+  .v-num { grid-template-columns: 1fr; }
+  .v-num__lista { grid-template-columns: repeat(2, 1fr); }
   .v-docs,
   .v-estados { grid-template-columns: 1fr; }
   .v-provoca { grid-template-columns: 1fr; }
@@ -1390,3 +1551,65 @@ body {
 .v-estrelas svg { width: 15px; height: 15px; }
 .v-estrela--on { color: #f5a623; }
 .v-estrela--off { color: var(--v-line-l); }
+
+/* ------------------------------------------------------------
+   Instagram — publicações reais incorporadas
+   ------------------------------------------------------------ */
+
+.v-ig__cab {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.v-ig {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(12px, 1.4vw, 18px);
+  margin-top: 22px;
+  align-items: start;
+}
+
+/* o incorporador do Instagram traz margem e largura próprias */
+.v-ig .instagram-media {
+  margin: 0 !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* sem o script do Instagram, o blockquote vira um cartão com link */
+.v-ig blockquote:not([data-instgrm-rendered]) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+  padding: 24px;
+  text-align: center;
+  border: 1px solid var(--v-line-l);
+  background: var(--v-card);
+}
+
+.v-ig blockquote:not([data-instgrm-rendered]) a {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v-red);
+}
+
+.v-ig__vazio { min-height: 240px; }
+
+.v-ig__vazio code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  background: var(--v-paper-3);
+  padding: 1px 5px;
+}
+
+@media (max-width: 900px) {
+  .v-ig { grid-template-columns: 1fr; }
+}

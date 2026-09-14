@@ -1,21 +1,20 @@
 /**
- * Instagram (§ "Puxar o instagram importante").
+ * Instagram — posts reais do perfil da VIVA.
  *
- * Hoje o bloco leva para o perfil e mostra os posts que a VIVA escolher,
- * como imagem em `public/photos/`. Quando a VIVA liberar o token da
- * Instagram Graph API, dá para trocar `POSTS` por uma busca no feed sem
- * mexer no componente — a forma do dado é a mesma.
+ * Aqui entram **permalinks de publicações reais**. O site renderiza o
+ * post de verdade, pelo incorporador oficial do Instagram, e o clique
+ * leva para a publicação. Nada de print, nada de foto solta imitando
+ * post.
+ *
+ * Caminho para pegar o permalink: abrir a publicação no Instagram →
+ * "..." → "Copiar link".
+ *
+ * Quando a VIVA liberar o token da Graph API dá para trocar esta lista
+ * por uma busca no feed (`/me/media?fields=permalink`), sem mexer no
+ * componente: a forma do dado é a mesma.
  */
 
 import { CONTATO } from "@/lib/config";
-
-export type Post = {
-  /** arquivo em public/photos/instagram/ (sem extensão) */
-  imagem: string;
-  legenda: string;
-  /** permalink do post */
-  url: string;
-};
 
 export const INSTAGRAM = {
   /** ⚠️ confirmar com a VIVA (env NEXT_PUBLIC_VIVA_INSTAGRAM) */
@@ -25,5 +24,13 @@ export const INSTAGRAM = {
     : "",
 } as const;
 
-/** Vazio = o bloco mostra as janelas a preencher, sem inventar post. */
-export const POSTS: Post[] = [];
+/**
+ * Permalinks das publicações a exibir, na ordem.
+ * Ex.: "https://www.instagram.com/p/CxxxxxxxxxX/"
+ *
+ * Vazio = o bloco mostra o espaço a preencher, sem inventar post.
+ */
+export const POSTS: string[] = [];
+
+/** Quantos slots o bloco desenha enquanto não há permalink cadastrado. */
+export const POSTS_VAZIOS = 3;

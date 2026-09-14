@@ -95,8 +95,18 @@ Vieram do cliente. Não são preferência de estilo.
 - **O módulo de casos reais não é daqui.** Cada página de área fecha com
   "VEJA ALGUNS DOS NOSSOS CASOS REAIS" + seta, e para. A galeria é da
   agência e já existe.
-- **Mobile reorganiza, não remove.** Os cinco blocos empilham 01→05 com
-  foto, texto e hierarquia.
+- **A biblioteca das cinco áreas tem dois toques.** O primeiro abre o card
+  e mostra do que a área trata; o segundo leva para a página. Não
+  transformar em link de um clique só.
+- **No celular a biblioteca corre na horizontal**, com encaixe e setas.
+  **Não** é lista rolando para baixo.
+- **Número nenhum na abertura.** Os números entram lá embaixo, numa linha
+  fina dentro da narrativa — nunca quatro quadradinhos logo abaixo do
+  hero.
+- **Os posts do Instagram são publicações reais**, incorporadas pelo
+  permalink e clicáveis para o post. Nada de print nem de foto solta
+  imitando post.
+- **Mobile reorganiza, não remove.** Nenhum conteúdo some para "caber".
 - **Sem JavaScript, a página aparece inteira.** O `<Reveal>` só esconde
   depois de montar (`data-js`). Nunca mandar `opacity: 0` no HTML do
   servidor.

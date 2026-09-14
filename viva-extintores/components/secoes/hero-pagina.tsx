@@ -16,7 +16,7 @@ export function HeroPagina({
   foto,
   children,
 }: {
-  sublinha: string;
+  sublinha?: string;
   titulo: readonly string[];
   /** última linha, em vermelho */
   destaque?: string;
@@ -35,15 +35,22 @@ export function HeroPagina({
       <div className="v-wrap">
         <div className="v-hero__grid">
           <div>
-            <p className="v-eyebrow">{sublinha}</p>
+            {sublinha ? <p className="v-eyebrow">{sublinha}</p> : null}
             <h1 className="v-display v-h1 v-hero__title" id="titulo-pagina">
-              {titulo.map((l, i) => (
-                <span key={i}>
-                  {l}
-                  <br />
+              {titulo.map((l, i) => {
+                const ultima = !destaque && i === titulo.length - 1;
+                return (
+                  <span key={i} className={ultima ? "v-dot" : undefined}>
+                    {l}
+                    {ultima ? null : <br />}
+                  </span>
+                );
+              })}
+              {destaque ? (
+                <span className="v-dot" style={{ color: "var(--v-red)" }}>
+                  {destaque.replace(/\.$/, "")}
                 </span>
-              ))}
-              {destaque ? <span style={{ color: "var(--v-red)" }}>{destaque}</span> : null}
+              ) : null}
             </h1>
             <p className="v-lead v-hero__text">{texto}</p>
             {children}

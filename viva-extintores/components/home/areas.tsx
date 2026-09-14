@@ -1,65 +1,158 @@
+"use client";
+
 import Link from "next/link";
-import { AREAS } from "@/lib/areas";
-import { Seta } from "@/components/ui/icones";
+import { useRef, useState } from "react";
+import { AREAS, type AreaSlug } from "@/lib/areas";
+import { Check, Seta } from "@/components/ui/icones";
 import { FotoReal } from "@/components/ui/foto-real";
-import { Reveal } from "@/components/ui/reveal";
 
 /**
- * As cinco portas de entrada do portfólio.
+ * A biblioteca das cinco áreas.
  *
- * São CINCO — a lista é fechada. Cada card leva para a página própria
- * daquela área; esta grade é índice, não resumo. No celular empilha
- * 01…05 sem perder foto nem texto.
+ * Dois toques, de propósito: o primeiro abre o card e mostra do que a
+ * área trata; o segundo leva para a página completa. Quem já sabe o que
+ * quer chega em dois cliques; quem está só olhando não é jogado para
+ * dentro de uma página sem contexto.
+ *
+ * Sem JavaScript o card continua sendo um link direto para a página — não
+ * se perde nada, só o passo intermediário.
+ *
+ * No celular é biblioteca: os cinco cards correm na horizontal, com
+ * encaixe e setas. Não é lista rolando para baixo.
  */
-export function AreasGrid({
-  titulo,
-  texto,
-}: {
-  titulo: string;
-  texto: string;
-}) {
-  return (
-    <section className="v-section" aria-labelledby="areas-titulo">
-      <div className="v-wrap" style={{ textAlign: "center" }}>
-        <h2 className="v-display v-h2" id="areas-titulo">
-          {titulo}
-        </h2>
-        <p className="v-body" style={{ marginTop: 10 }}>
-          {texto}
-        </p>
+export function AreasGrid({ titulo, texto }: { titulo: string; texto: string }) {
+  const [aberto, setAberto] = useState<AreaSlug | null>(null);
+  const [indice, setIndice] = useState(0);
+  const trilho = useRef<HTMLUListElement>(null);
 
-        <ul className="v-areas" style={{ textAlign: "left" }}>
-          {AREAS.map((a, i) => (
-            <Reveal as="li" key={a.slug} delay={i * 0.05}>
-              <Link className="v-area" href={a.href}>
-                <div className="v-area__media">
-                  <FotoReal
-                    foto={a.cardFoto}
-                    ratio="fill"
-                    sizes="(max-width: 900px) 100vw, (max-width: 1080px) 50vw, 250px"
-                    style={{ height: "100%" }}
+  /** 1º clique abre o card; 2º deixa o link seguir para a página. */
+  function aoClicar(e: React.MouseEvent, slug: AreaSlug) {
+    if (aberto === slug) return; // segue o link
+    e.preventDefault();
+    setAberto(slug);
+  }
+
+  function irPara(i: number) {
+    const el = trilho.current;
+    if (!el) return;
+    const alvo = el.children[i] as HTMLElement | undefined;
+    if (!alvo) return;
+    el.scrollTo({ left: alvo.offsetLeft - el.offsetLeft, behavior: "smooth" });
+  }
+
+  function aoRolar() {
+    const el = trilho.current;
+    if (!el) return;
+    const largura = el.scrollWidth / AREAS.length;
+    setIndice(Math.min(AREAS.length - 1, Math.round(el.scrollLeft / largura)));
+  }
+
+  return (
+    <section className="v-section v-bib-sec" aria-labelledby="areas-titulo">
+      <div className="v-wrap">
+        <div style={{ textAlign: "center" }}>
+          <h2 className="v-display v-h2" id="areas-titulo">
+            {titulo}
+          </h2>
+          <p className="v-body" style={{ marginTop: 10 }}>
+            {texto}
+          </p>
+        </div>
+
+        <div className="v-bib">
+          <ul className="v-bib__trilho" ref={trilho} onScroll={aoRolar}>
+            {AREAS.map((a) => {
+              const estaAberto = aberto === a.slug;
+              return (
+                <li
+                  className="v-bib__item"
+                  key={a.slug}
+                  data-aberto={estaAberto ? "true" : undefined}
+                >
+                  <Link
+                    href={a.href}
+                    className="v-bib__card"
+                    aria-expanded={estaAberto}
+                    onClick={(e) => aoClicar(e, a.slug)}
+                  >
+                    <div className="v-bib__media">
+                      <FotoReal
+                        foto={a.cardFoto}
+                        ratio="fill"
+                        sizes="(max-width: 900px) 85vw, 30vw"
+                        style={{ height: "100%" }}
+                      />
+                    </div>
+
+                    <div className="v-bib__body">
+                      <span className="v-bib__num">{a.numero}</span>
+                      <h3 className="v-display v-bib__titulo">
+                        {a.cardTitulo[0]}
+                        {a.cardTitulo[1] ? (
+                          <>
+                            <br />
+                            {a.cardTitulo[1]}
+                          </>
+                        ) : null}
+                      </h3>
+                      <div className="v-bib__detalhe">
+                        <p className="v-bib__resumo">{a.cardResumo}</p>
+                        <ul className="v-bib__itens">
+                          {a.itens.slice(0, 4).map((i) => (
+                            <li key={i}>
+                              <Check />
+                              <span>{i}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        <span className="v-bib__ir">
+                          Abrir a página
+                          <Seta />
+                        </span>
+                      </div>
+
+                      <span className="v-bib__go" aria-hidden>
+                        <Seta />
+                      </span>
+                    </div>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+
+          {/* controles da biblioteca — só aparecem no celular */}
+          <div className="v-bib__nav">
+            <button
+              type="button"
+              className="v-bib__seta"
+              aria-label="Área anterior"
+              onClick={() => irPara(Math.max(0, indice - 1))}
+            >
+              <Seta />
+            </button>
+            <ol className="v-bib__pontos">
+              {AREAS.map((a, i) => (
+                <li key={a.slug}>
+                  <button
+                    type="button"
+                    aria-label={`Ir para ${a.nome}`}
+                    aria-current={i === indice ? "true" : undefined}
+                    onClick={() => irPara(i)}
                   />
-                </div>
-                <div className="v-area__body">
-                  <span className="v-area__num">{a.numero}</span>
-                  <h3 className="v-display v-area__title">
-                    {a.cardTitulo[0]}
-                    {a.cardTitulo[1] ? (
-                      <>
-                        <br />
-                        {a.cardTitulo[1]}
-                      </>
-                    ) : null}
-                  </h3>
-                  <p className="v-area__resume">{a.cardResumo}</p>
-                  <span className="v-area__go">
-                    <Seta />
-                  </span>
-                </div>
-              </Link>
-            </Reveal>
-          ))}
-        </ul>
+                </li>
+              ))}
+            </ol>
+            <button
+              type="button"
+              className="v-bib__seta"
+              aria-label="Próxima área"
+              onClick={() => irPara(Math.min(AREAS.length - 1, indice + 1))}
+            >
+              <Seta />
+            </button>
+          </div>
+        </div>
       </div>
     </section>
   );

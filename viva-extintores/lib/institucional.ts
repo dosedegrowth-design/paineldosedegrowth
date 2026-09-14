@@ -11,13 +11,14 @@ import { ROUTES } from "@/lib/config";
 /* ---------------- Início ---------------- */
 
 export const HOME = {
+  // A abertura segue a referência aprovada: eyebrow curto, título de três
+  // linhas fechado com o ponto vermelho, uma frase e o CTA. Nada de
+  // número aqui — eles entram lá embaixo, dentro da narrativa.
   hero: {
     eyebrow: "VIVA Extintores",
-    sublinha: "Engenharia, prevenção e combate a incêndio",
-    titulo: ["Segurança em obras,", "laudos e treinamentos", "que entregam"],
-    destaque: "resultados reais.",
+    titulo: ["Soluções completas", "em segurança", "contra incêndio"],
     texto:
-      "Projetos, instalações, manutenções, laudos e treinamentos com responsabilidade técnica e aprovação no Corpo de Bombeiros.",
+      "Projetos, instalações, laudos, manutenções e treinamentos com qualidade, responsabilidade e resultados reais.",
     aside: ["Segurança é", "o que nos move."],
   },
   areas: {
