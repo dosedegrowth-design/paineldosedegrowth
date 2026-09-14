@@ -10,20 +10,20 @@ import { Seta } from "@/components/ui/icones";
 /**
  * As cinco frentes — a biblioteca.
  *
- * Deixou de ser grade de cards. Card colocado lado a lado obriga a
- * comparar as fotos entre si, e o acervo da VIVA não aguenta essa
- * comparação: uma é obra de celular, outra é entrega na porta de um
- * comércio amarelo, outra é céu azul. Em painel alto, quase de página
- * inteira, cada foto é lida sozinha — e o tratamento comum resolve o
- * resto.
+ * Regras do cliente, e as três são inegociáveis:
  *
- * O que continua igual, porque é regra do cliente:
- *
+ * - **QUADRADO.** Painel alto "parece Reels" e já foi reprovado. Os
+ *   quadrados são grandes (até 520px) e, se os cinco não couberem, a
+ *   fileira corre na horizontal. Deformar o quadrado para caber, nunca.
  * - **dois toques.** O primeiro abre o painel e conta do que a área
  *   trata; o segundo abre a página. Sem JavaScript, o link vale de
  *   primeira e nada se perde.
  * - **no celular corre na horizontal**, com encaixe. Não é lista
  *   rolando para baixo.
+ *
+ * O que mudou em relação à primeira versão foi o resto: a seção é
+ * escura (as fotos tratadas têm mais presença ali), e saíram o ponto de
+ * carrossel, o botão vermelho dentro do card e o canto arredondado.
  *
  * O que saiu: ponto de carrossel, botão vermelho dentro do card, canto
  * arredondado, sombra. Régua fina, contador e duas setas de contorno.
@@ -129,10 +129,10 @@ export function Frentes({ titulo, texto }: { titulo: string; texto: string }) {
               >
                 <FotoReal
                   foto={a.cardFoto}
-                  corte="p"
+                  corte="q"
                   className="v-frente__foto"
                   ratio="fill"
-                  sizes="(max-width: 760px) 84vw, 22vw"
+                  sizes="(max-width: 760px) 84vw, 40vw"
                   style={{ height: "100%" }}
                 />
 

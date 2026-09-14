@@ -167,12 +167,15 @@ Vieram do cliente. Não são preferência de estilo.
 - **A biblioteca das cinco áreas tem dois toques.** O primeiro abre o
   painel e mostra do que a área trata; o segundo leva para a página. Não
   transformar em link de um clique só.
+- **O card da biblioteca é QUADRADO — sempre.** Formato alto "parece
+  Reels" e já foi reprovado pelo cliente uma vez; foi reprovado de novo
+  quando voltou. `aspect-ratio: 1`, grande (até 520px), e se os cinco não
+  couberem a fileira corre na horizontal. Nunca esticar o quadrado para
+  caber mais.
 - **A biblioteca corre na horizontal**, com encaixe e setas — no celular e
-  no desktop. **Não** é lista rolando para baixo e **não** é grade de
-  cards: painel alto, quase de página inteira, numa seção escura
-  (`components/home/frentes.tsx`). Card lado a lado obriga a comparar as
-  fotos entre si, e foi exatamente essa comparação que derrubou a versão
-  anterior. Sem ponto de carrossel, sem botão vermelho dentro do painel.
+  no desktop. **Não** é lista rolando para baixo. A seção é escura, e sem
+  ponto de carrossel, sem botão vermelho dentro do card e sem canto
+  arredondado (`components/home/frentes.tsx`).
 - **Número nenhum na abertura.** Os números entram lá embaixo, numa linha
   fina dentro da narrativa — nunca quatro quadradinhos logo abaixo do
   hero.

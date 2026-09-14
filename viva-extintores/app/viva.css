@@ -1021,8 +1021,11 @@ body {
 
 .v-frentes__trilho::-webkit-scrollbar { display: none; }
 
+/* QUADRADO — regra do cliente, não preferência. Painel alto "parece
+   Reels", e isso já foi reprovado uma vez. Se os cinco não couberem, a
+   fileira corre na horizontal; o que não pode é deformar o quadrado. */
 .v-frente {
-  flex: 0 0 min(30vw, 430px);
+  flex: 0 0 min(40vw, 520px);
   min-width: 0;
   scroll-snap-align: center;
 }
@@ -1047,7 +1050,7 @@ body {
 .v-frente__link {
   position: relative;
   display: block;
-  height: clamp(430px, 40vw, 560px);
+  aspect-ratio: 1;
   overflow: hidden;
   isolation: isolate;
   color: var(--v-on-dark);
@@ -1224,7 +1227,6 @@ body {
 
 @media (max-width: 760px) {
   .v-frente { flex: 0 0 84vw; }
-  .v-frente__link { height: min(68vh, 560px); }
   .v-frentes__trilho { gap: 8px; }
 }
 
