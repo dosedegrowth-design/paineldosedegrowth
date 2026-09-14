@@ -109,13 +109,33 @@ Já resolvido: **tempo de mercado**. São 16 anos; publicado como "mais de
 
 ## Deploy na Vercel
 
-Projeto **separado** do painel, no mesmo repositório:
+Projeto **separado** do painel, no mesmo repositório — e separado também
+do projeto `vivaextintores` que já existe na conta, que aponta para outro
+repositório (`dosedegrowth-design/vivaextintores`) e não deve ser tocado.
 
-1. Novo projeto na Vercel a partir de `dosedegrowth-design/paineldosedegrowth`
-2. **Root Directory:** `viva-extintores`
-3. Framework: Next.js (detecta sozinho) · Node 20+
-4. Variáveis de ambiente: as cinco da tabela acima
-5. Domínio: apontar o subdomínio escolhido para o projeto
+No painel da Vercel, time **Dose de Growth's projects**:
+
+1. **Add New → Project** → importar `dosedegrowth-design/paineldosedegrowth`
+2. **Project Name:** `viva-extintores-portfolio`
+3. **Root Directory:** `viva-extintores`
+4. Framework: Next.js (detecta sozinho) · Node 20+
+5. **Deploy**
+6. Depois, em **Settings → Git → Production Branch**, trocar `main` por
+   `claude/sweet-cori-tutfes`
+7. Variáveis de ambiente: as cinco da tabela acima
+8. Domínio: apontar o subdomínio escolhido para o projeto
+
+O passo 6 é obrigatório **enquanto o portfólio viver na branch**: a pasta
+`viva-extintores/` não existe na `main`, então o build de produção falha
+com "Root Directory does not exist" até a branch virar a produção (ou ser
+mesclada na main).
+
+Verificado: clone limpo da branch + `npm ci` + `next build` compila as 6
+páginas. É exatamente o que a Vercel roda.
+
+> Não dá para criar esse projeto por API/MCP com a conexão atual: a Vercel
+> responde `403 — You don't have permission to create a project`. É papel
+> de Owner do time; pelo painel, funciona.
 
 O `turbopack.root` em `next.config.ts` prende a raiz nesta pasta — sem
 isso o build sobe um nível e passa a usar o `postcss.config` e o
