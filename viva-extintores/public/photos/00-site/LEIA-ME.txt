@@ -1,0 +1,2 @@
+Lote de fotos desta área. Os nomes esperados estão no README da pasta acima
+e em lib/photos.ts. Sem o arquivo, o site mostra o campo "a inserir".

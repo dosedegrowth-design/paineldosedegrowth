@@ -1,77 +1,63 @@
 /**
- * Conteúdo exclusivo da página 05 — Relatório Tecno-Fotográfico (§12, §14).
+ * Conteúdo exclusivo da página 05 — Relatório Tecno-Fotográfico.
  *
- * Esta é a área diferenciadora da VIVA. Não é "manutenção de extintores":
- * é diagnóstico documentado do sistema de incêndio da edificação, que
- * naturalmente leva à capacidade da VIVA de executar a correção.
+ * É a área diferenciadora da VIVA e o chamariz comercial. Não é "uma
+ * página de extintores": é o diagnóstico documentado do sistema de
+ * incêndio da edificação, que naturalmente leva à capacidade da VIVA de
+ * executar a correção. Relatório e manutenção são UMA página.
  */
 
 export const PROVOCACAO = {
   titulo: "Seu AVCB está em dia. Mas o seu sistema de incêndio também está?",
   texto:
-    "O AVCB comprova que a edificação foi regularizada. O Relatório Tecno-Fotográfico mostra a realidade de hoje: o que está funcionando, o que falhou e o que precisa de manutenção antes de virar problema.",
+    "O AVCB comprova a regularização. O Relatório Tecno-Fotográfico mostra a situação real da edificação no dia a dia.",
 } as const;
 
 export const ESTADOS = [
   {
     chave: "conforme" as const,
     rotulo: "Em conformidade",
-    texto: "Equipamento em perfeito estado, dentro da validade e da norma.",
+    texto: "Equipamento em perfeito estado, dentro da norma.",
   },
   {
     chave: "falha" as const,
     rotulo: "Falha identificada",
-    texto: "Irregularidade registrada e documentada para correção.",
+    texto: "Irregularidades registradas com fotos e descrição técnica.",
+  },
+  {
+    chave: "solucao" as const,
+    rotulo: "Solução VIVA",
+    texto: "Correção, substituição e manutenção com equipe especializada.",
   },
 ];
 
-/** §12 — "mais de 20 itens verificados, registrados e documentados". */
+/** Mais de 20 itens verificados, registrados e documentados. */
 export const ITENS_AVALIADOS = [
-  "Extintores: validade, carga e lacre",
-  "Mangueiras e testes hidrostáticos",
-  "Hidrantes, abrigos e acessórios",
-  "Pressão e vazão da rede",
-  "Bomba de incêndio e casa de bombas",
-  "Chuveiros automáticos (SPK)",
-  "Central de alarme e detecção",
-  "Detectores de fumaça e temperatura",
-  "Acionadores manuais e sirenes",
+  "Extintores (validade, carga, fixação)",
+  "Mangueiras e hidrantes",
   "Iluminação de emergência",
   "Sinalização de emergência",
-  "Portas corta-fogo",
+  "Alarmes e detecção de fumaça",
+  "Portas corta-fogo e compartimentação",
+  "Casa de bombas e pressurização",
+  "SPDA (para-raios)",
   "Rotas de fuga e saídas de emergência",
-  "Escadas e antecâmaras",
-  "SPDA e aterramento",
-  "Quadros elétricos e proteções",
-  "Documentação e validade do AVCB",
 ];
 
-/** Frase que fecha a lista sem inflar número (§ "parar de acrescentar muito"). */
-export const ITENS_NOTA = "E os demais itens exigidos para a sua edificação.";
+export const ITENS_NOTA = "E muito mais.";
 
-/** §14 — a VIVA identifica o problema e também executa a solução. */
+/** A VIVA não apenas identifica: também fornece, substitui e mantém. */
 export const MANUTENCAO = [
-  "Recarga e substituição de extintores",
-  "Mangueiras: teste hidrostático e troca",
-  "Iluminação de emergência",
-  "Sinalização de emergência",
-  "Hidrantes, abrigos e acessórios",
-  "Equipamentos de combate a incêndio",
-  "Portas corta-fogo",
-  "Demais itens de segurança contra incêndio",
+  { icone: "extintor" as const, titulo: "Extintores", nota: "Recarga e substituição" },
+  { icone: "mangueira" as const, titulo: "Mangueiras", nota: "Inspeção e teste" },
+  { icone: "luz" as const, titulo: "Iluminação de emergência" },
+  { icone: "saida" as const, titulo: "Sinalização", nota: "Fotoluminescente" },
+  { icone: "hidrante" as const, titulo: "Hidrantes e acessórios" },
+  { icone: "alarme" as const, titulo: "Alarmes e detecção" },
+  { icone: "porta" as const, titulo: "Portas corta-fogo" },
+  { icone: "prancheta" as const, titulo: "Adequações e obras" },
 ];
 
-/** Extintores, recarga e produtos — fecha o ciclo do diagnóstico. */
-export const PRODUTOS = {
-  titulo: "Extintores, recarga e produtos",
-  texto:
-    "A VIVA identifica o problema no relatório e também executa a solução: venda, recarga, substituição e manutenção dos equipamentos de combate a incêndio, com os registros e a validade em dia.",
-  itens: [
-    "Venda de extintores novos",
-    "Recarga e manutenção de extintores",
-    "Substituição de equipamento vencido ou condenado",
-    "Mangueiras, esguichos e acessórios de hidrante",
-    "Luminárias e placas de sinalização de emergência",
-    "Reposição programada, com controle de validade",
-  ],
-} as const;
+export const MANUTENCAO_TITULO = "Manutenção preventiva completa";
+export const MANUTENCAO_TEXTO =
+  "A VIVA não apenas identifica as irregularidades. Também fornece, substitui, mantém e regulariza os equipamentos necessários.";

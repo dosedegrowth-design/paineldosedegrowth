@@ -1,35 +1,43 @@
-import { FAIXA } from "@/lib/home";
+import { HOME } from "@/lib/institucional";
+import { FOTOS } from "@/lib/photos";
 import { MENSAGENS, whatsappUrl } from "@/lib/whatsapp";
-import { HeroHome } from "@/components/home/hero";
+import { Botao } from "@/components/ui/botao";
+import { CTA_PRINCIPAL } from "@/lib/config";
+import { HeroPagina } from "@/components/secoes/hero-pagina";
 import { AreasGrid } from "@/components/home/areas";
-import { Sobre } from "@/components/home/sobre";
+import { Numeros } from "@/components/secoes/numeros";
 import { FaixaCta } from "@/components/secoes/faixa-cta";
-import { ProvaGoogle } from "@/components/secoes/google";
+import { Fecho } from "@/components/secoes/fecho";
 import { InstagramFaixa } from "@/components/secoes/instagram";
 
-/**
- * PÁGINA 0 — Portfólio. A porta de entrada (§4, §25).
- *
- * Fluxo do §22: entende o que é a VIVA, vê as cinco especialidades,
- * clica numa delas. Aqui não se resume nem se repete o conteúdo das
- * cinco páginas — esta é o índice.
- */
 export default function Page() {
   return (
     <>
-      <HeroHome />
-      <AreasGrid />
+      <HeroPagina
+        sublinha={HOME.hero.sublinha}
+        titulo={HOME.hero.titulo}
+        destaque={HOME.hero.destaque}
+        texto={HOME.hero.texto}
+        aside={HOME.hero.aside}
+        foto={FOTOS.site.hero}
+      >
+        <div className="v-hero__cta">
+          <Botao href={whatsappUrl(MENSAGENS.geral)}>{CTA_PRINCIPAL}</Botao>
+        </div>
+      </HeroPagina>
+
+      <Numeros />
+
+      <AreasGrid titulo={HOME.areas.titulo} texto={HOME.areas.texto} />
 
       <FaixaCta
-        titulo={FAIXA.titulo}
-        texto={FAIXA.texto}
-        cta={FAIXA.cta}
+        titulo={HOME.faixa.titulo}
+        texto={HOME.faixa.texto}
         href={whatsappUrl(MENSAGENS.geral)}
       />
 
-      <Sobre />
-      <ProvaGoogle />
       <InstagramFaixa />
+      <Fecho frase={HOME.fecho} />
     </>
   );
 }

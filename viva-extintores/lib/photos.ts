@@ -1,12 +1,15 @@
 /**
- * Fotografia real — manifesto de slots (§20 do briefing).
+ * Fotografia real — manifesto de slots.
  *
- * Prioridade: obra real > equipamento real > equipe real > documentação
- * real > imagem genérica. Enquanto o arquivo não existir em
- * `public/photos/`, o <FotoReal> desenha um campo tonal com a legenda —
- * nunca stock, nunca ilustração, nunca imagem sintética (§13, §24).
+ * As fotos chegam da VIVA em cinco lotes, um por área, e é assim que os
+ * arquivos ficam organizados em `public/photos/`. Enquanto o arquivo não
+ * existir, o <FotoReal> desenha um campo tonal com a descrição — nunca
+ * stock, nunca ilustração, nunca imagem sintética.
  *
- * Trocar a foto = trocar o arquivo. Nenhum componente precisa mudar.
+ * As fotos já aprovadas são as que entram. Nenhum gerador substitui uma
+ * foto de obra real por banco de imagem.
+ *
+ * Trocar a foto = trocar o arquivo. Nenhum componente muda.
  */
 
 export type FotoSlot = {
@@ -18,100 +21,131 @@ export type FotoSlot = {
   legenda?: string;
 };
 
-const b = "/photos";
+/** lote = a pasta que a VIVA entrega. */
+const lote = (pasta: string) =>
+  (nome: string, alt: string, ratio: number, legenda?: string): FotoSlot => ({
+    src: `/photos/${pasta}/${nome}.jpg`,
+    alt,
+    ratio,
+    legenda,
+  });
 
-const foto = (
-  nome: string,
-  alt: string,
-  ratio: number,
-  legenda?: string,
-): FotoSlot => ({ src: `${b}/${nome}.jpg`, alt, ratio, legenda });
+const site = lote("00-site");
+const f01 = lote("01-combate");
+const f02 = lote("02-alarme");
+const f03 = lote("03-spda");
+const f04 = lote("04-laudos");
+const f05 = lote("05-relatorio");
 
 export const FOTOS = {
   // ---------------------------------------------------------------
-  // Página 0 — portfólio
+  // 00 — institucional e página-mãe
   // ---------------------------------------------------------------
-  home: {
-    hero: foto(
-      "home-hero",
-      "Equipe VIVA em obra de segurança contra incêndio",
+  site: {
+    hero: site("hero", "Equipe VIVA em obra de segurança contra incêndio", 16 / 9),
+    portfolio: site(
+      "portfolio-hero",
+      "Obra de combate a incêndio executada pela VIVA",
       16 / 9,
     ),
+    equipe: site("equipe", "Equipe técnica da VIVA em campo", 4 / 3),
+    sobre: site("sobre", "Engenheiro da VIVA em vistoria técnica", 4 / 3),
+    servicos: site("servicos-hero", "Sistemas de segurança contra incêndio", 16 / 9),
+    contato: site("contato-hero", "Equipe VIVA atendendo um cliente", 16 / 9),
   },
 
   // ---------------------------------------------------------------
-  // 01 — Sistemas de combate a incêndio
+  // 01 — Combate a incêndio (bombas, hidrantes, SPK, painéis)
   // ---------------------------------------------------------------
   combate: {
-    hero: foto("combate-hero", "Casa de bombas de incêndio executada pela VIVA", 16 / 9),
-    card: foto("combate-card", "Conjunto de bombas de incêndio", 4 / 3),
-    destaque: foto("combate-destaque", "Rede de SPK instalada pela VIVA", 4 / 3, "Rede de SPK — instalação"),
-    g1: foto("combate-01", "Tubulação da rede de SPK", 1, "Tubulação para rede de SPK"),
-    g2: foto("combate-02", "Válvula de hidrante", 1, "Válvula para hidrantes"),
-    g3: foto("combate-03", "Casa de bombas durante a instalação", 1, "Casa de bombas — instalação"),
-    g4: foto("combate-04", "Abrigo de hidrante instalado", 1, "Abrigo de hidrante"),
+    hero: f01("hero", "Casa de bombas de incêndio executada pela VIVA", 16 / 9),
+    card: f01("card", "Conjunto de bombas de incêndio", 4 / 3),
+    destaque: f01("destaque", "Rede de SPK instalada pela VIVA", 4 / 3, "Rede de SPK – instalação"),
+    g1: f01("01", "Tubulações para rede de hidrantes", 1, "Tubulações para rede de hidrantes"),
+    g2: f01("02", "Válvula para hidrantes", 1, "Válvula para hidrantes"),
+    g3: f01("03", "Casa de bombas durante a instalação", 1, "Casa de bombas – instalação"),
+    g4: f01("04", "Abrigo de hidrante instalado", 1, "Abrigo de hidrante"),
   },
 
   // ---------------------------------------------------------------
   // 02 — Alarme e detecção
+  // A versão que vale é a que substituiu a foto do fio pela obra de
+  // detecção. Não voltar a usar o cabo como imagem principal.
   // ---------------------------------------------------------------
   alarme: {
-    hero: foto("alarme-hero", "Obra de sistema de alarme e detecção de incêndio", 16 / 9),
-    card: foto("alarme-card", "Detector de fumaça instalado", 4 / 3),
-    destaque: foto("alarme-destaque", "Central de alarme de incêndio em instalação", 4 / 3, "Central de alarme — instalação · obra real"),
-    g1: foto("alarme-01", "Acionador manual e sinalização de alarme", 1, "Acionador e sinalização — obra real"),
-    g2: foto("alarme-02", "Botoeira de alarme durante a instalação", 1, "Botoeira de alarme — instalação"),
-    g3: foto("alarme-03", "Sirene audiovisual instalada", 1, "Sirene audiovisual — obra real"),
-    g4: foto("alarme-04", "Detector de fumaça durante a instalação", 1, "Detector de fumaça — instalação"),
+    hero: f02("hero", "Botoeira de alarme de incêndio instalada", 16 / 9),
+    card: f02("card", "Detector de fumaça instalado", 4 / 3),
+    destaque: f02(
+      "destaque",
+      "Central de alarme de incêndio instalada pela VIVA",
+      4 / 3,
+      "Central de alarme de incêndio – obra real",
+    ),
+    g1: f02("01", "Infraestrutura e cabeamento do sistema de alarme", 1, "Infraestrutura e cabeamento de alarme – obra real"),
+    g2: f02("02", "Botoeira de alarme durante a instalação", 1, "Botoeira de alarme – instalação"),
+    g3: f02("03", "Sirene audiovisual instalada", 1, "Sirene audiovisual – obra real"),
+    g4: f02("04", "Detector de fumaça durante a instalação", 1, "Detector de fumaça – instalação"),
   },
 
   // ---------------------------------------------------------------
   // 03 — SPDA / para-raios
   // ---------------------------------------------------------------
   spda: {
-    hero: foto("spda-hero", "Sistema de SPDA executado em cobertura", 16 / 9),
-    card: foto("spda-card", "Mastro de para-raios em cobertura", 4 / 3),
-    destaque: foto("spda-destaque", "Captor tipo Franklin com sinalização", 4 / 3, "Captor tipo Franklin com sinalização — obra real"),
-    g1: foto("spda-01", "Instalação de condutor de descida", 1, "Instalação de condutor — obra real"),
-    g2: foto("spda-02", "Torre de para-raios", 1, "Torre de para-raios — obra real"),
-    g3: foto("spda-03", "Sistema de SPDA em cobertura", 1, "Sistema de SPDA em cobertura"),
-    g4: foto("spda-04", "Detalhe do captor instalado", 1, "Detalhe do captor — obra real"),
+    hero: f03("hero", "Técnico da VIVA em obra de SPDA na cobertura", 16 / 9),
+    card: f03("card", "Mastro de para-raios em cobertura", 4 / 3),
+    destaque: f03(
+      "destaque",
+      "Captor tipo Franklin com sinalização",
+      4 / 3,
+      "Captor tipo Franklin com sinalização – obra real",
+    ),
+    g1: f03("01", "Instalação de condutor de descida", 1, "Instalação de condutor – obra real"),
+    g2: f03("02", "Torre de para-raios", 1, "Torre de para-raios – obra real"),
+    g3: f03("03", "Sistema de SPDA em cobertura", 1, "Sistema de SPDA em cobertura"),
+    g4: f03("04", "Medição de aterramento com terrômetro", 1, "Medição de aterramento – obra real"),
+    g5: f03("05", "Detalhe do captor instalado", 1, "Detalhe do captor – obra real"),
   },
 
   // ---------------------------------------------------------------
   // 04 — Laudos, CLCB e AVCB
+  // Legendas com nome de cliente: confirmar com a VIVA antes de publicar.
+  // A foto da Cury é a versão com a fachada ampliada.
   // ---------------------------------------------------------------
   laudos: {
-    hero: foto(
-      "laudos-hero",
-      "Profissional da VIVA com a documentação aprovada em frente à edificação",
+    hero: f04(
+      "hero",
+      "Profissional da VIVA de frente com a documentação aprovada, no Ed. Araken de Moraes",
       16 / 9,
     ),
-    card: foto("laudos-card", "Vistoria técnica com documentação", 4 / 3),
-    clcb: foto("laudos-clcb", "CLCB emitido", 3 / 4, "CLCB entregue"),
-    avcb: foto("laudos-avcb", "AVCB emitido", 3 / 4, "AVCB aprovado"),
-    // Legendas com nome de cliente: ⚠️ confirmar com a VIVA antes de publicar.
-    o1: foto("laudos-obra-01", "Obra de regularização executada pela VIVA", 1, "Cury — regularização"),
-    o2: foto("laudos-obra-02", "Obra de regularização executada pela VIVA", 1, "Padaria Piemonte — CLCB entregue"),
-    o3: foto("laudos-obra-03", "Obra de adequação executada pela VIVA", 1, "Metrô Tamanduateí — adequação e obra"),
-    o4: foto("laudos-obra-04", "Edificação com AVCB aprovado pela VIVA", 1, "Edifício Araken — AVCB aprovado"),
+    card: f04("card", "Entrega de documentação aprovada", 4 / 3),
+    clcb: f04("clcb", "CLCB entregue ao cliente", 4 / 3, "Banana's Outlet — CLCB entregue"),
+    avcb: f04("avcb", "AVCB entregue ao cliente", 4 / 3, "Ed. Araken de Moraes — AVCB entregue"),
+    o1: f04("01", "Fachada da Cury", 1, "Cury — projeto e regularização"),
+    o2: f04("02", "Entrega de CLCB na Padaria Marabá", 1, "Padaria Marabá — CLCB entregue"),
+    o3: f04("03", "Adequações e obras no Metrô Tamanduateí", 1, "Metrô Tamanduateí — adequações e obras"),
+    o4: f04("04", "Studio Rock Rock regularizado", 1, "Studio Rock Rock — regularizado"),
   },
 
   // ---------------------------------------------------------------
   // 05 — Relatório Tecno-Fotográfico + manutenção
+  // A foto do profissional de costas, com prancheta, é a imagem central
+  // do conceito. Não substituir por ícone nem ilustração.
   // ---------------------------------------------------------------
   relatorio: {
-    hero: foto(
-      "relatorio-hero",
+    hero: f05(
+      "hero",
       "Profissional da VIVA em inspeção técnica, de costas, com prancheta",
       16 / 9,
     ),
-    card: foto("relatorio-card", "Inspeção técnica com registro fotográfico", 4 / 3),
-    conforme: foto("relatorio-conforme", "Equipamento em conformidade registrado na inspeção", 4 / 3, "Em conformidade"),
-    falha: foto("relatorio-falha", "Irregularidade registrada na inspeção", 4 / 3, "Falha identificada"),
-    m1: foto("relatorio-manut-01", "Inspeção em empresa", 1, "Inspeção — empresa"),
-    m2: foto("relatorio-manut-02", "Página do relatório com registro fotográfico", 1, "Registro fotográfico do laudo"),
-    m3: foto("relatorio-manut-03", "Plano de manutenção entregue ao cliente", 1, "Plano de ação — entrega"),
+    card: f05("card", "Inspeção técnica com registro fotográfico", 4 / 3),
+    conforme: f05("conforme", "Extintor em conformidade registrado na inspeção", 4 / 3, "Em conformidade"),
+    falha: f05("falha", "Extintor com irregularidade registrada na inspeção", 4 / 3, "Falha identificada"),
+    solucao: f05("solucao", "Manutenção de extintor pela equipe VIVA", 4 / 3, "Solução VIVA"),
+    m1: f05("01", "Inspeção em empresa e indústria", 1, "Inspeção em empresas e indústrias"),
+    m2: f05("02", "Identificação de riscos durante a inspeção", 1, "Identificação de riscos"),
+    m3: f05("03", "Detector de fumaça verificado na inspeção", 1, "Detectores de fumaça"),
+    m4: f05("04", "Porta corta-fogo verificada na inspeção", 1, "Compartimentação"),
+    m5: f05("05", "Documentação e plano de ação entregues", 1, "Documentação e plano de ação"),
   },
 } as const;
 

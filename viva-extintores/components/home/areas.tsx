@@ -5,21 +5,30 @@ import { FotoReal } from "@/components/ui/foto-real";
 import { Reveal } from "@/components/ui/reveal";
 
 /**
- * As cinco portas de entrada (§6). Três em cima, duas embaixo no desktop;
- * 01 a 05 uma abaixo da outra no celular, sem perder foto nem texto (§21).
+ * As cinco portas de entrada do portfólio.
  *
- * Cada card leva para a página própria daquela área — a inicial é índice,
- * não resumo (§7).
+ * São CINCO — a lista é fechada. Cada card leva para a página própria
+ * daquela área; esta grade é índice, não resumo. No celular empilha
+ * 01…05 sem perder foto nem texto.
  */
-export function AreasGrid() {
+export function AreasGrid({
+  titulo,
+  texto,
+}: {
+  titulo: string;
+  texto: string;
+}) {
   return (
     <section className="v-section" aria-labelledby="areas-titulo">
-      <div className="v-wrap">
-        <h2 className="v-eyebrow" id="areas-titulo">
-          Cinco áreas de atuação
+      <div className="v-wrap" style={{ textAlign: "center" }}>
+        <h2 className="v-display v-h2" id="areas-titulo">
+          {titulo}
         </h2>
+        <p className="v-body" style={{ marginTop: 10 }}>
+          {texto}
+        </p>
 
-        <ul className="v-areas" style={{ marginTop: 20 }}>
+        <ul className="v-areas" style={{ textAlign: "left" }}>
           {AREAS.map((a, i) => (
             <Reveal as="li" key={a.slug} delay={i * 0.05}>
               <Link className="v-area" href={a.href}>
@@ -27,7 +36,7 @@ export function AreasGrid() {
                   <FotoReal
                     foto={a.cardFoto}
                     ratio="fill"
-                    sizes="(max-width: 900px) 100vw, (max-width: 1340px) 40vw, 440px"
+                    sizes="(max-width: 900px) 100vw, (max-width: 1080px) 50vw, 250px"
                     style={{ height: "100%" }}
                   />
                 </div>
@@ -43,7 +52,9 @@ export function AreasGrid() {
                     ) : null}
                   </h3>
                   <p className="v-area__resume">{a.cardResumo}</p>
-                  <Seta className="v-area__go" />
+                  <span className="v-area__go">
+                    <Seta />
+                  </span>
                 </div>
               </Link>
             </Reveal>

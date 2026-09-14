@@ -1,19 +1,20 @@
 @AGENTS.md
 
-# VIVA Extintores — Portfólio digital
+# VIVA Extintores — site
 
 > Leia este arquivo inteiro antes de mexer no projeto.
 
 ## O que é
 
-Portfólio comercial da VIVA Extintores, para síndicos, administradoras,
-empresários, gestores prediais, parceiros e indicações. É um **link de
-apresentação** — inclusive para parceiros publicarem no site deles.
+O **site** da VIVA Extintores. Não é um portfólio avulso: é um site
+institucional completo, e o portfólio é a parte dele com mais conteúdo —
+a que prova execução com fotografia de obra real.
 
-**Não é página institucional. É ferramenta de venda.**
+Seis páginas de site (Início, Sobre nós, Serviços, Portfólio, Clientes,
+Contato) e, dentro de Portfólio, a página-mãe mais **cinco** páginas
+completas, uma por área de atuação.
 
-Lógica da experiência: PROBLEMA → COMPETÊNCIA DA VIVA → PROVA (foto real)
-→ CREDIBILIDADE (números) → AÇÃO (WhatsApp).
+Se alguém disser "é só um portfólio", está errado. É um site.
 
 ## Posicionamento
 
@@ -21,8 +22,24 @@ A VIVA **não** é "a empresa que vende e recarrega extintor". É engenharia
 especializada em segurança contra incêndio, que atua do diagnóstico e do
 projeto até a execução, a regularização e a manutenção.
 
-O visitante precisa pensar: *"essa empresa consegue pegar o meu problema de
-segurança contra incêndio e resolver."*
+O visitante precisa pensar: *"essa empresa consegue pegar o meu problema
+de segurança contra incêndio e resolver."*
+
+## As cinco áreas — a lista é fechada
+
+| # | Área | Rota |
+|---|---|---|
+| 01 | Sistemas de Combate a Incêndio | `/portfolio/combate-a-incendio` |
+| 02 | Alarme e Detecção de Incêndio | `/portfolio/alarme-e-deteccao` |
+| 03 | SPDA / Para-raios | `/portfolio/spda-para-raios` |
+| 04 | Laudos, CLCB e AVCB | `/portfolio/laudos-clcb-avcb` |
+| 05 | Relatório Tecno-Fotográfico + Manutenção | `/portfolio/relatorio-tecno-fotografico` |
+
+- São **cinco**. Não vira seis.
+- **Treinamento de Brigada não entra aqui** — vive em `/servicos`.
+- **Relatório Tecno-Fotográfico e Manutenção são UMA página**, não duas.
+- **Não criar página genérica de "Projetos e Laudos"** por fora da 04.
+- O nome da 04 é *Laudos, CLCB e AVCB*.
 
 ## Endereços
 
@@ -39,59 +56,62 @@ Next.js 16 (App Router, Turbopack) · TypeScript estrito · **CSS puro**
 (sem Tailwind; tokens em `app/viva.css`) · Barlow + Barlow Condensed ·
 **sem dependência de runtime além de React/Next** · Vercel.
 
-Não tem banco, não tem API, não tem autenticação. É estático: seis páginas
-pré-renderizadas. Se aparecer vontade de adicionar backend, pare e pergunte.
+Sem banco, sem API, sem autenticação: onze páginas pré-renderizadas. Se
+aparecer vontade de adicionar backend, pare e pergunte.
 
-## Estrutura
+## Direção visual
 
-```
-/                              página-mãe: índice das 5 áreas
-/combate-a-incendio            01 — bombas, hidrantes, SPK, painéis
-/alarme-e-deteccao             02 — centrais, detectores, sirenes
-/spda-para-raios               03 — SPDA, aterramento, medição
-/laudos-clcb-avcb              04 — regularização, CLCB e AVCB
-/relatorio-tecno-fotografico   05 — diagnóstico + manutenção + produtos
-```
+O layout aprovado é **claro**: hero escuro com foto, barra de áreas em
+ladrilhos escuros com ícone (a ativa em vermelho), miolo em papel claro,
+faixas escuras de CTA e rodapé. O vermelho aparece com parcimônia, para
+marcar ação.
 
-`components/servico/pagina.tsx` é o esqueleto comum das cinco. O que é só
-de uma página entra como `children` (hoje: `documentos.tsx` na 04 e
-`relatorio.tsx` na 05).
+Evitar: cara de site genérico, excesso de ícone, card de estatística
+solto, excesso de texto, ilustração artificial, banco de imagem óbvio,
+visual de catálogo, elemento "promocional".
 
 ## Regras que NÃO podem quebrar
 
-Vieram do briefing do cliente. Não são preferência de estilo.
+Vieram do cliente. Não são preferência de estilo.
 
-- **As cinco páginas são cinco.** Não resumir, não fundir numa página
-  gigante, não deixar todas iguais. A inicial é índice, não resumo.
 - **Nunca inventar.** Foto, obra, cliente, número, depoimento: se não veio
-  da VIVA, não entra. Onde falta, o site mostra o campo "a preencher" — é
-  assim de propósito.
+  da VIVA, não entra. Onde falta, o site mostra "a preencher" — é assim de
+  propósito.
+- **Só entram os números confirmados** (`lib/numeros.ts`): +15 anos,
+  +10.000 laudos entregues, +30 obras entregues em 2026, +20 itens no
+  Relatório. Os números dos mockups da agência são números de layout, não
+  fatos. Estão pendentes de validação final da VIVA.
 - **Foto real > ícone > ilustração.** Jamais substituir a fotografia de
   obra por desenho para "deixar clean". Já foi rejeitado uma vez.
 - **A foto do profissional em inspeção (de costas, com prancheta) é o
   coração da página 05.** Não trocar.
+- Na área 02, vale a versão que **substituiu a foto do fio pela obra de
+  detecção**.
+- Na área 04, a foto da Cury é a **versão com a fachada ampliada**.
 - **Sem CREA** em ilustração, selo ou texto, em lugar nenhum do site.
 - Mantém "engenheiro especialista" / "bombeiro especialista em obras".
-- **Números não viram quatro quadradinhos.** Entram como prova dentro da
-  narrativa, na faixa fina (`components/secoes/numeros.tsx`).
-- **"VEJA ALGUNS DOS NOSSOS CASOS REAIS ↓" fecha as cinco páginas.** A
-  frase, a seta, e para. Abaixo, poucas janelas — não é catálogo infinito.
+- **Sem parede de logos de clientes.** Se um cliente aparecer naturalmente
+  numa foto de obra, tudo bem; seção de logos, não.
+- **O módulo de casos reais não é daqui.** Cada página de área fecha com
+  "VEJA ALGUNS DOS NOSSOS CASOS REAIS" + seta, e para. A galeria é da
+  agência e já existe.
 - **Mobile reorganiza, não remove.** Os cinco blocos empilham 01→05 com
-  foto, texto e hierarquia. Nada de cortar conteúdo para "caber".
+  foto, texto e hierarquia.
 - **Sem JavaScript, a página aparece inteira.** O `<Reveal>` só esconde
   depois de montar (`data-js`). Nunca mandar `opacity: 0` no HTML do
-  servidor: página de captação com conteúdo preso atrás de JS é lead
-  perdido e buscador cego.
+  servidor.
 - **Todo texto mora em `lib/`.** Não enfiar conteúdo dentro de componente.
 
-## Estética
+## Armadilhas já pagas
 
-Empresa forte, engenharia, obra, confiabilidade. Preto azulado + vermelho
-VIVA + branco; a fotografia é a cor da página.
-
-Evitar: cara de site genérico, excesso de ícone, card de estatística solto,
-excesso de texto, ilustração artificial, banco de imagem óbvio, visual de
-catálogo, elemento "promocional".
+- `next.config.ts` fixa `turbopack.root` nesta pasta. Sem isso o build
+  sobe um nível e usa o `postcss.config` e o `middleware` do painel.
+- Custom property definida em `style={{"--cols": …}}` **vence** a media
+  query. Nas grades responsivas, sobrescreva `grid-template-columns`
+  direto, não o `--cols`.
+- Na faixa escura de CTA, o botão precisa de `grid-column: 1 / -1` no
+  mobile: senão ele engorda a coluna `auto` e o título fica abaixo do
+  próprio min-content, vazando na horizontal.
 
 ## Dev
 
@@ -102,10 +122,6 @@ npm run lint        # manter sempre 0
 npm run build
 ```
 
-`next.config.ts` fixa `turbopack.root` nesta pasta — sem isso o build sobe
-um nível e usa o `postcss.config` e o `middleware` do painel, e quebra.
-
 ## Git
 
-Mesmo repositório do painel. Commit tocando só em `viva-extintores/`
-(fora as exclusões na raiz, que já estão feitas).
+Mesmo repositório do painel. Commit tocando só em `viva-extintores/`.

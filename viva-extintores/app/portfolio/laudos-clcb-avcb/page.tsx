@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
 import { area } from "@/lib/areas";
 import { PaginaServico } from "@/components/servico/pagina";
+import { BlocoDocumentos } from "@/components/servico/documentos";
 
-const A = area("combate-a-incendio");
+const A = area("laudos-clcb-avcb");
 
 export const metadata: Metadata = {
   title: A.seo.titulo,
   description: A.seo.descricao,
 };
 
-/** PÁGINA 01 — Sistemas de combate a incêndio (§8). */
 export default function Page() {
-  return <PaginaServico area={A} />;
+  return <PaginaServico area={A}>
+      <BlocoDocumentos />
+    </PaginaServico>;
 }

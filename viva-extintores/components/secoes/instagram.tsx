@@ -11,7 +11,7 @@ import { Reveal } from "@/components/ui/reveal";
  */
 export function InstagramFaixa() {
   return (
-    <section className="v-section v-section--tight" aria-labelledby="ig-titulo">
+    <section className="v-section v-white" aria-labelledby="ig-titulo">
       <div className="v-wrap">
         <Reveal>
           <div
@@ -25,7 +25,7 @@ export function InstagramFaixa() {
           >
             <div>
               <p className="v-eyebrow">Instagram</p>
-              <h2 className="v-display v-h3" id="ig-titulo" style={{ marginTop: 10 }}>
+              <h2 className="v-display v-h3" id="ig-titulo" style={{ marginTop: 8 }}>
                 Obra nova toda semana
               </h2>
             </div>
@@ -34,47 +34,37 @@ export function InstagramFaixa() {
                 href={INSTAGRAM.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="v-navlink"
-                style={{ display: "inline-flex", alignItems: "center", gap: 10 }}
+                className="v-card__link"
               >
                 Seguir {INSTAGRAM.handle}
-                <Seta className="v-btn__arrow" />
+                <Seta />
               </a>
             ) : null}
           </div>
 
-          <ul className="v-janelas" style={{ marginTop: 22 }}>
+          <ul className="v-gal" style={{ ["--cols" as string]: "3" }}>
             {POSTS.length > 0
               ? POSTS.slice(0, 3).map((p) => (
                   <li key={p.url}>
-                    <a
-                      className="v-janela"
-                      href={p.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ display: "block" }}
-                    >
-                      <div className="v-photo" style={{ aspectRatio: "4 / 3" }}>
+                    <a href={p.url} target="_blank" rel="noopener noreferrer">
+                      <div className="v-photo" style={{ aspectRatio: "1" }}>
                         <Image
                           src={`/photos/instagram/${p.imagem}.jpg`}
                           alt={p.legenda}
                           fill
-                          sizes="(max-width: 900px) 100vw, 33vw"
+                          sizes="(max-width: 900px) 50vw, 30vw"
                           style={{ objectFit: "cover" }}
                         />
-                      </div>
-                      <div className="v-janela__cap">
-                        <p className="v-janela__local">{p.legenda}</p>
                       </div>
                     </a>
                   </li>
                 ))
               : Array.from({ length: 3 }).map((_, i) => (
-                  <li className="v-vazio" key={i} style={{ aspectRatio: "4 / 3" }}>
+                  <li className="v-vazio" key={i} style={{ aspectRatio: "1" }}>
                     <span className="v-vazio__tag">Post {i + 1} · a preencher</span>
                     <span className="v-vazio__txt">
-                      Post real do perfil da VIVA — ou o feed da Graph API,
-                      quando o token estiver liberado.
+                      Post real do perfil da VIVA — ou o feed da Graph API, quando o
+                      token estiver liberado.
                     </span>
                   </li>
                 ))}

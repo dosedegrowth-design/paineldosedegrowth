@@ -3,39 +3,29 @@ import { FOTOS } from "@/lib/photos";
 import { FotoReal } from "@/components/ui/foto-real";
 import { Reveal } from "@/components/ui/reveal";
 
-/**
- * Exclusivo da página 04 (§11): dois caminhos de regularização e o
- * percurso até a aprovação. "Da análise e projeto à execução e aprovação."
- */
+/** Blocos próprios da página 04: os dois caminhos e o percurso até a aprovação. */
 export function BlocoDocumentos() {
   return (
-    <section className="v-section v-section--tight" aria-labelledby="docs-titulo">
+    <section className="v-section v-white" aria-labelledby="docs-titulo">
       <div className="v-wrap">
         <Reveal>
           <p className="v-eyebrow" id="docs-titulo">
             Qual é o seu caso
           </p>
 
-          <ul className="v-docs" style={{ marginTop: 20 }}>
+          <ul className="v-docs" style={{ marginTop: 18 }}>
             {DOCUMENTOS.map((d, i) => (
               <li className="v-doc" key={d.sigla}>
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "minmax(0,1fr) 108px",
-                    gap: 18,
-                    alignItems: "start",
-                  }}
-                >
-                  <div>
-                    <p className="v-doc__sigla">{d.sigla}</p>
-                    <p className="v-doc__nome">{d.nome}</p>
-                    <p className="v-doc__para">{d.para}</p>
-                    <p className="v-doc__texto">{d.texto}</p>
-                  </div>
+                <div className="v-doc__cab">
+                  <p className="v-doc__sigla">{d.sigla}</p>
+                  <p className="v-doc__para">{d.para}</p>
+                </div>
+                <p className="v-doc__texto">{d.texto}</p>
+                <div className="v-doc__foto">
                   <FotoReal
                     foto={i === 0 ? FOTOS.laudos.clcb : FOTOS.laudos.avcb}
-                    sizes="108px"
+                    legenda
+                    sizes="(max-width: 900px) 100vw, 40vw"
                   />
                 </div>
               </li>

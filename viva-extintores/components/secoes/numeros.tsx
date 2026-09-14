@@ -1,19 +1,22 @@
-import { NUMEROS, NUMEROS_NOTA } from "@/lib/numeros";
+import { NUMEROS } from "@/lib/numeros";
 
 /**
- * §15 — número como prova de experiência dentro da narrativa, numa faixa
- * fina. Nunca quatro quadradinhos de "+500 clientes".
+ * A faixa de números. Só entram os que a VIVA confirmou — os números que
+ * apareceram nos mockups da agência não são fatos.
  */
-export function Numeros({ nota = true }: { nota?: boolean }) {
+export function Numeros() {
   return (
-    <div className="v-num">
-      {NUMEROS.map((n) => (
-        <p className="v-num__item" key={n.rotulo}>
-          <span className="v-num__valor">{n.valor}</span>
-          <span className="v-num__rotulo">{n.rotulo}</span>
-        </p>
-      ))}
-      {nota ? <p className="v-num__nota">{NUMEROS_NOTA}</p> : null}
-    </div>
+    <section className="v-dark" aria-label="A VIVA em números">
+      <div className="v-wrap" style={{ paddingInline: 0 }}>
+        <ul className="v-num">
+          {NUMEROS.map((n) => (
+            <li className="v-num__item" key={n.rotulo}>
+              <span className="v-num__valor">{n.valor}</span>
+              <span className="v-num__rotulo">{n.rotulo}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
   );
 }

@@ -269,7 +269,7 @@ Gotchas:
 - O reset de botão do Tayssa usa `:where(.ty-scope) button` (especificidade zero) — se voltar a ser `.ty-scope button`, todo botão sólido perde fundo e borda.
 - ⚠️ Nessa mesma checagem, `trafego_ddg` **não está** na lista de schemas expostos (`pgrst.db_schemas`) — as queries `.schema("trafego_ddg")` do painel retornam PGRST106 na REST. Não foi alterado por estar fora do escopo do Tayssa.
 
-## VIVA Extintores — Portfólio (`viva-extintores/`)
+## VIVA Extintores — site (`viva-extintores/`)
 
 Projeto **próprio** de um cliente da DDG, dentro deste repositório mas com
 `package.json`, build, lint e deploy separados — igual ao `tayssa-lash/`.
@@ -278,18 +278,23 @@ O painel o ignora no `tsconfig.json` e no `eslint.config.mjs` da raiz.
 | Recurso | Onde |
 |---|---|
 | Pasta | `viva-extintores/` (leia o `CLAUDE.md` de lá antes de mexer) |
-| O que é | Portfólio comercial da VIVA: 1 página-mãe + 5 páginas de área |
+| O que é | O **site** da VIVA: Início, Sobre nós, Serviços, Portfólio, Clientes e Contato — e dentro de Portfólio, a página-mãe + 5 páginas de área |
 | Stack | Next 16 · TS · **CSS puro** (sem Tailwind) · sem banco, sem API |
 | Vercel | projeto próprio, Root Directory `viva-extintores` |
 | Domínio | a definir |
 
+Não é "um portfólio": é um site, e o portfólio é a parte dele com mais
+conteúdo.
+
 Gotcha: `next.config.ts` fixa `turbopack.root` na pasta. Sem isso o build
 sobe um nível e passa a usar o `postcss.config` e o `middleware` do painel.
 
-Regras do cliente que não podem quebrar (briefing): as cinco páginas
-continuam cinco; nada de foto, obra, cliente, número ou depoimento
-inventado; foto real vem antes de ícone e de ilustração; sem CREA em lugar
-nenhum. O detalhamento está no `viva-extintores/CLAUDE.md`.
+Regras do cliente que não podem quebrar: as cinco áreas do portfólio
+continuam cinco (Treinamento de Brigada fica em Serviços; Relatório
+Tecno-Fotográfico e Manutenção são uma página só); nada de foto, obra,
+cliente, número ou depoimento inventado; foto real vem antes de ícone e de
+ilustração; sem CREA em lugar nenhum; sem parede de logos. O detalhamento
+está no `viva-extintores/CLAUDE.md`.
 
 ## Documentação relacionada
 

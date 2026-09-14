@@ -1,27 +1,43 @@
 /**
- * Números (§15 do briefing).
+ * Números.
  *
- * Regra dura: NUNCA INVENTAR NÚMEROS. Os três abaixo vieram do briefing
- * da VIVA — não foram calculados nem estimados aqui.
+ * Regra dura: NUNCA INVENTAR NÚMERO. Os quatro abaixo são os únicos que
+ * saíram da boca da VIVA. Os que apareceram nos mockups da agência
+ * (+3.000 clientes, +1.500 obras, +300 sistemas, +150 edificações,
+ * +1.200 relatórios, 100% conformidade…) NÃO entram: são números de
+ * layout, não fatos confirmados.
  *
- * Tempo de mercado: CONFIRMADO. O briefing se contradizia ("20 anos" num
- * trecho, "mais de 15" no outro); a VIVA confirmou 16 anos de mercado e
- * pediu para publicar "mais de 15". É o que está no ar — continua
- * verdadeiro por mais quatro anos, sem precisar de manutenção.
+ * ⚠️ PENDENTE DE VALIDAÇÃO FINAL DA VIVA. Quando a lista definitiva
+ * chegar, é trocar aqui — nenhum componente muda.
  *
- * E eles não aparecem em quatro quadradinhos: entram como prova dentro da
- * narrativa, numa faixa fina (§15 rejeitou o "site de academia").
+ * "+15 anos": a VIVA confirmou 16 anos e pediu para publicar "mais de
+ * 15". Continua verdadeiro por mais quatro anos, sem manutenção.
  */
 
 export type Numero = { valor: string; rotulo: string };
 
+/** A faixa da página-mãe e do institucional. */
 export const NUMEROS: Numero[] = [
-  { valor: "+5.000", rotulo: "AVCBs entregues" },
-  { valor: "+2.000", rotulo: "obras executadas" },
-  // 16 anos de mercado, confirmado pela VIVA — publicado como "+15"
-  { valor: "+15", rotulo: "anos de mercado" },
+  { valor: "+15", rotulo: "anos de experiência" },
+  { valor: "+10.000", rotulo: "laudos entregues" },
+  { valor: "+30", rotulo: "obras entregues em 2026" },
+  { valor: "+20", rotulo: "itens no Relatório Tecno-Fotográfico" },
 ];
 
-/** Frase leve que acompanha os números (§ "tratar de forma leve e real"). */
+/**
+ * O trio de selos que aparece ao lado do texto em cada página de área.
+ * Dois são qualitativos; o terceiro é o único número por página que a
+ * VIVA confirmou.
+ */
+export const SELOS_AREA = [
+  { titulo: "Projetos", subtitulo: "personalizados" },
+  { titulo: "Execução", subtitulo: "com qualidade" },
+] as const;
+
+export const SELO_OBRAS = {
+  valor: "+30",
+  rotulo: "obras entregues em 2026",
+} as const;
+
 export const NUMEROS_NOTA =
   "O que já entregamos, sem adjetivo: obra executada, documentação aprovada e cliente atendido.";

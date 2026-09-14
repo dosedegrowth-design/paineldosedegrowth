@@ -1,14 +1,13 @@
 import Link from "next/link";
 import { AREAS } from "@/lib/areas";
-import { CONTATO, MARCA, ROUTES } from "@/lib/config";
+import { CONTATO, MARCA, MENU, ROUTES } from "@/lib/config";
 import { INSTAGRAM } from "@/lib/instagram";
 
-/** Rodapé + seção de contato (é para onde o CTA cai enquanto não há WhatsApp). */
 export function Footer() {
   const temContato = Boolean(CONTATO.whatsapp || CONTATO.telefone || CONTATO.email);
 
   return (
-    <footer className="v-footer" id="contato">
+    <footer className="v-footer">
       <div className="v-wrap">
         <div className="v-footer__grid">
           <div>
@@ -16,21 +15,21 @@ export function Footer() {
             <h2 className="v-display v-h3" style={{ marginTop: 14 }}>
               Fale com a nossa
               <br />
-              equipe técnica<span style={{ color: "var(--v-red)" }}>.</span>
+              <span className="v-dot">equipe técnica</span>
             </h2>
-            <p className="v-body" style={{ marginTop: 14, maxWidth: "42ch" }}>
-              Conte o que está acontecendo no seu edifício. A gente avalia e
+            <p className="v-body" style={{ marginTop: 14, maxWidth: "40ch", color: "var(--v-on-dark-soft)" }}>
+              Conte o que está acontecendo na sua edificação. A gente avalia e
               devolve um caminho técnico claro.
             </p>
           </div>
 
           <div>
-            <p className="v-footer__label">Áreas</p>
+            <p className="v-footer__label">Portfólio</p>
             <ul className="v-footer__list">
               {AREAS.map((a) => (
                 <li key={a.slug}>
                   <Link href={a.href}>
-                    {a.numero} · {a.cardTitulo.filter(Boolean).join(" ")}
+                    {a.numero} · {a.nome}
                   </Link>
                 </li>
               ))}
@@ -38,22 +37,27 @@ export function Footer() {
           </div>
 
           <div>
-            <p className="v-footer__label">Contato</p>
+            <p className="v-footer__label">Site</p>
+            <ul className="v-footer__list">
+              {MENU.map((m) => (
+                <li key={m.href}>
+                  <Link href={m.href}>{m.rotulo}</Link>
+                </li>
+              ))}
+            </ul>
+
+            <p className="v-footer__label" style={{ marginTop: 24 }}>
+              Contato
+            </p>
             <ul className="v-footer__list">
               {CONTATO.telefone ? (
                 <li>
-                  <a href={`tel:${CONTATO.telefone.replace(/\D/g, "")}`}>
-                    {CONTATO.telefone}
-                  </a>
+                  <a href={`tel:${CONTATO.telefone.replace(/\D/g, "")}`}>{CONTATO.telefone}</a>
                 </li>
               ) : null}
               {CONTATO.whatsapp ? (
                 <li>
-                  <a
-                    href={`https://wa.me/${CONTATO.whatsapp}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                  <a href={`https://wa.me/${CONTATO.whatsapp}`} target="_blank" rel="noopener noreferrer">
                     WhatsApp
                   </a>
                 </li>
@@ -71,11 +75,13 @@ export function Footer() {
                 </li>
               ) : null}
               {!temContato ? (
-                <li className="v-vazio" style={{ minHeight: 0, display: "block" }}>
-                  <span className="v-vazio__tag">A preencher</span>
-                  <span className="v-vazio__txt" style={{ display: "block", marginTop: 6 }}>
-                    Telefone, WhatsApp, e-mail e Instagram da VIVA — definir nas
-                    variáveis de ambiente (ver README).
+                <li>
+                  <span className="v-vazio">
+                    <span className="v-vazio__tag">A preencher</span>
+                    <span className="v-vazio__txt">
+                      Telefone, WhatsApp, e-mail e Instagram da VIVA — definir nas
+                      variáveis de ambiente (ver README).
+                    </span>
                   </span>
                 </li>
               ) : null}
@@ -84,24 +90,13 @@ export function Footer() {
         </div>
       </div>
 
-      <p className="v-footer__frase">{MARCA.frase}</p>
-
-      <div className="v-wrap" style={{ paddingBlock: 18 }}>
-        <p
-          style={{
-            fontSize: 13,
-            color: "var(--v-on-dark-faint)",
-            display: "flex",
-            gap: 16,
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-          }}
-        >
+      <div className="v-wrap">
+        <div className="v-footer__base">
           <span>
-            © {new Date().getFullYear()} {MARCA.nome}
+            © {new Date().getFullYear()} {MARCA.nome} · {MARCA.assinatura}
           </span>
-          <Link href={ROUTES.home}>Portfólio</Link>
-        </p>
+          <Link href={ROUTES.portfolio}>Portfólio</Link>
+        </div>
       </div>
     </footer>
   );

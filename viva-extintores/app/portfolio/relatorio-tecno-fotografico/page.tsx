@@ -10,11 +10,8 @@ export const metadata: Metadata = {
   description: A.seo.descricao,
 };
 
-/** PÁGINA 05 — Relatório Tecno-Fotográfico + manutenção (§12, §14). */
 export default function Page() {
-  return (
-    <PaginaServico area={A}>
+  return <PaginaServico area={A}>
       <BlocoRelatorio />
-    </PaginaServico>
-  );
+    </PaginaServico>;
 }

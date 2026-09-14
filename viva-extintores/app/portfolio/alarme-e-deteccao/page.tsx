@@ -9,7 +9,6 @@ export const metadata: Metadata = {
   description: A.seo.descricao,
 };
 
-/** PÁGINA 02 — Alarme e detecção de incêndio (§9). */
 export default function Page() {
-  return <PaginaServico area={A} />;
+  return <PaginaServico area={A}></PaginaServico>;
 }

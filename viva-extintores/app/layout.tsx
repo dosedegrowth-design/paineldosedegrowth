@@ -16,7 +16,7 @@ import { WhatsappFlutuante } from "@/components/layout/whatsapp-float";
 
 const TITULO = "VIVA Extintores — Engenharia, prevenção e combate a incêndio";
 const DESCRICAO =
-  "Portfólio da VIVA Extintores: projetos, obras, regularização e manutenção de sistemas de segurança contra incêndio — combate, detecção, SPDA, CLCB/AVCB e relatório tecno-fotográfico.";
+  "Projetos, obras, regularização e manutenção de sistemas de segurança contra incêndio: combate, detecção, SPDA, CLCB/AVCB e Relatório Tecno-Fotográfico.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(PUBLIC_ORIGIN),
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#070c13",
+  themeColor: "#0c1620",
   width: "device-width",
   initialScale: 1,
 };
