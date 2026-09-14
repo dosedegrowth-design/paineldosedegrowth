@@ -9,6 +9,7 @@ import { ROUTES } from "@/lib/tayssa/config";
 import { getSettings } from "@/lib/tayssa/settings";
 import { bookableDays, slotIsBookable, toISODate } from "@/lib/tayssa/rules";
 import { isoDateField } from "@/lib/tayssa/validation";
+import { nowInBusinessTz } from "@/lib/tayssa/format";
 import { BusinessError, runAction } from "@/lib/tayssa/actions/_helpers";
 import type { ActionResult, AppointmentRow, ServiceRow } from "@/lib/tayssa/types";
 
@@ -44,7 +45,7 @@ export async function createAppointmentAction(input: {
     const db = vipDb();
     const settings = await getSettings();
     const b = settings.booking;
-    const now = new Date();
+    const now = nowInBusinessTz();
 
     const { data: s } = await db.from("services").select("*").eq("id", parsed.service_id).maybeSingle();
     const service = s as ServiceRow | null;

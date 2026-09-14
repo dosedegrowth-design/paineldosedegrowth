@@ -70,6 +70,28 @@ export function plural(n: number, one: string, many: string): string {
   return n === 1 ? one : many;
 }
 
+/**
+ * Fuso da casa. O servidor roda em UTC; sem isso, à noite o Brasil já
+ * estaria "amanhã" para o sistema e a cliente leria a data errada.
+ */
+export const BUSINESS_TZ = "America/Sao_Paulo";
+
+/** Agora, com os campos (dia, hora) no relógio de parede da casa. */
+export function nowInBusinessTz(base: Date = new Date()): Date {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: BUSINESS_TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).formatToParts(base);
+  const v = (t: string) => Number(parts.find((p) => p.type === t)?.value ?? 0);
+  return new Date(v("year"), v("month") - 1, v("day"), v("hour") % 24, v("minute"), v("second"));
+}
+
 const WEEKDAYS = [
   "domingo",
   "segunda-feira",
@@ -98,7 +120,7 @@ export function hhmm(time: string): string {
 }
 
 /** "hoje", "amanhã" ou "sexta, 19 de setembro" */
-export function dayLabel(v: string | Date, today = new Date()): string {
+export function dayLabel(v: string | Date, today = nowInBusinessTz()): string {
   const d = toDate(v);
   const base = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   const diff = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() - base.getTime()) / 86400000);

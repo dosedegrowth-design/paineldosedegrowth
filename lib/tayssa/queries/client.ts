@@ -20,6 +20,7 @@ import type {
   ClientServiceRow,
   ReferralRow,
 } from "@/lib/tayssa/types";
+import { nowInBusinessTz } from "@/lib/tayssa/format";
 import type { Settings } from "@/lib/tayssa/config";
 
 export type ClientBenefitView = ClientBenefitRow & {
@@ -80,7 +81,7 @@ export const getClientOverview = cache(async (user: SessionUser): Promise<Client
     rewardDescription: referralBenefit?.description ?? null,
   };
 
-  const today = new Date();
+  const today = nowInBusinessTz();
   const birthday =
     user.profile?.birthday
       ? birthdayInfo(

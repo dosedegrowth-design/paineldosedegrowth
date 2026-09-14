@@ -3,7 +3,7 @@ import { getClientServiceHistory } from "@/lib/tayssa/queries/client";
 import { getActiveServices } from "@/lib/tayssa/queries/catalog";
 import { logoutAction } from "@/lib/tayssa/actions/auth";
 import { toISODate } from "@/lib/tayssa/rules";
-import { dateLong } from "@/lib/tayssa/format";
+import { dateLong, nowInBusinessTz } from "@/lib/tayssa/format";
 import { SERVICE_STATUS_LABEL, VIP_STATUS_LABEL } from "@/lib/tayssa/types";
 import { ChangePasswordForm, ProfileForm, SubmitServiceForm } from "@/components/tayssa/vip/forms";
 
@@ -80,7 +80,7 @@ export default async function ProfilePage() {
           <p className="tyv-sub" style={{ fontSize: 13.5, marginBottom: 18 }}>
             Esteve aqui e o atendimento não apareceu? Registre que a Tayssa confirma. Nada conta antes disso.
           </p>
-          <SubmitServiceForm services={services} todayISO={toISODate(new Date())} />
+          <SubmitServiceForm services={services} todayISO={toISODate(nowInBusinessTz())} />
         </div>
       </section>
 

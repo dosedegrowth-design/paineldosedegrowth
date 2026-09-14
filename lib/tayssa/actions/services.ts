@@ -11,6 +11,7 @@ import {
   reviewSchema,
   serviceSubmissionSchema,
 } from "@/lib/tayssa/validation";
+import { nowInBusinessTz } from "@/lib/tayssa/format";
 import { BusinessError, runAction, str } from "@/lib/tayssa/actions/_helpers";
 import type { ActionResult, ClientServiceRow, ServiceRow } from "@/lib/tayssa/types";
 
@@ -22,7 +23,7 @@ async function getService(id: string): Promise<ServiceRow> {
 }
 
 function notInFuture(iso: string) {
-  const today = new Date();
+  const today = nowInBusinessTz();
   const todayISO = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
   if (iso > todayISO) throw new BusinessError("A data não pode ser no futuro.", "service_date");
 }

@@ -6,6 +6,7 @@ import { getActiveServices } from "@/lib/tayssa/queries/catalog";
 import { getCardState, type CardState } from "@/lib/tayssa/engine";
 import { getClientOverview, type ClientOverview } from "@/lib/tayssa/queries/client";
 import { bookableDays, slotIsBookable, toISODate } from "@/lib/tayssa/rules";
+import { nowInBusinessTz } from "@/lib/tayssa/format";
 import type { SessionUser } from "@/lib/tayssa/auth/session";
 import type { AppointmentRow, CardStamp, LoyaltyStampRow, ServiceRow, UserRow } from "@/lib/tayssa/types";
 
@@ -41,7 +42,7 @@ export const getAppointments = cache(async (clientId: string): Promise<Appointme
     .limit(60);
   if (error) throw new Error(error.message);
   const all = (data ?? []) as AppointmentRow[];
-  const today = toISODate(new Date());
+  const today = toISODate(nowInBusinessTz());
   const upcoming = all
     .filter((a) => ["requested", "confirmed"].includes(a.status) && a.scheduled_date >= today)
     .sort((a, b) => (a.scheduled_date + a.scheduled_time).localeCompare(b.scheduled_date + b.scheduled_time));
@@ -62,7 +63,7 @@ export type DayAvailability = {
 export const getAvailability = cache(async (): Promise<{ days: DayAvailability[]; services: ServiceRow[] }> => {
   const settings = await getSettings();
   const b = settings.booking;
-  const now = new Date();
+  const now = nowInBusinessTz();
   const days = bookableDays(now, b);
   if (!days.length) return { days: [], services: [] };
 
