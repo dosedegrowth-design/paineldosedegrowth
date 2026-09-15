@@ -17,8 +17,10 @@ export const HOME = {
   hero: {
     eyebrow: "VIVA Extintores",
     titulo: ["Soluções completas", "em segurança", "contra incêndio"],
-    texto:
-      "Projeto, obra, regularização e manutenção do sistema de incêndio da sua edificação — com um responsável só, do diagnóstico à documentação aprovada.",
+    // frase do Felipe, literal: "vamos escrever: da execução do projeto
+    // executivo às obras corretivas e preventivas do seu edifício"
+    texto: "Da execução do projeto executivo às obras corretivas e preventivas do seu edifício.",
+    cta: "Solicite uma análise técnica",
     aside: ["Segurança é", "o que nos move."],
   },
   areas: {

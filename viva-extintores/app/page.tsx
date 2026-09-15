@@ -2,7 +2,6 @@ import { HOME } from "@/lib/institucional";
 import { FOTOS } from "@/lib/photos";
 import { MENSAGENS, whatsappUrl } from "@/lib/whatsapp";
 import { Botao } from "@/components/ui/botao";
-import { CTA_PRINCIPAL } from "@/lib/config";
 import { HeroPagina } from "@/components/secoes/hero-pagina";
 import { Frentes } from "@/components/home/frentes";
 import { Processo } from "@/components/secoes/processo";
@@ -23,7 +22,7 @@ export default function Page() {
         grande
       >
         <div className="v-hero__cta">
-          <Botao href={whatsappUrl(MENSAGENS.geral)}>{CTA_PRINCIPAL}</Botao>
+          <Botao href={whatsappUrl(MENSAGENS.geral)}>{HOME.hero.cta}</Botao>
         </div>
       </HeroPagina>
 

@@ -37,9 +37,11 @@ export const ROUTES = {
  * área, e página que vai ao cliente com faixa vazia lê como obra
  * inacabada. Mesma regra dos posts do Instagram.
  *
- * Ligar = preencher esta env com a URL (ou âncora) da galeria.
+ * Enquanto a galeria não migra, o destino é a que está no ar hoje, no site
+ * atual — é a "janela" que o Felipe disse que o marketing já tem.
  */
-export const CASOS_REAIS_URL = process.env.NEXT_PUBLIC_VIVA_CASOS ?? "";
+export const CASOS_REAIS_URL =
+  process.env.NEXT_PUBLIC_VIVA_CASOS ?? "https://www.vivaextintores.com.br/portfolio";
 
 /** O menu, na ordem do layout aprovado. */
 export const MENU = [
@@ -60,20 +62,21 @@ export function publicUrl(path: string): string {
 }
 
 /**
- * Contato. ⚠️ CONFIRMAR COM A VIVA antes de publicar.
- * Vem das envs justamente para não haver número chutado no código.
+ * Contato. Os padrões são os dados que a VIVA já publica no site atual
+ * (vivaextintores.com.br): WhatsApp/telefone, e-mail e Instagram. Nada foi
+ * chutado — foi lido de lá. As envs continuam mandando, se existirem.
  */
 export const CONTATO = {
-  /** dígitos com DDI+DDD, ex.: "5511999999999" */
-  whatsapp: process.env.NEXT_PUBLIC_VIVA_WHATSAPP ?? "",
-  telefone: process.env.NEXT_PUBLIC_VIVA_TELEFONE ?? "",
-  email: process.env.NEXT_PUBLIC_VIVA_EMAIL ?? "",
-  instagram: process.env.NEXT_PUBLIC_VIVA_INSTAGRAM ?? "",
+  /** dígitos com DDI+DDD */
+  whatsapp: process.env.NEXT_PUBLIC_VIVA_WHATSAPP ?? "5511942925865",
+  telefone: process.env.NEXT_PUBLIC_VIVA_TELEFONE ?? "(11) 94292-5865",
+  email: process.env.NEXT_PUBLIC_VIVA_EMAIL ?? "contato@vivaextintores.com.br",
+  instagram: process.env.NEXT_PUBLIC_VIVA_INSTAGRAM ?? "viva_extintores",
 } as const;
 
 export const MARCA = {
   nome: "VIVA Extintores",
-  assinatura: "Projetos e Segurança Contra Incêndio",
+  assinatura: "Engenharia • Prevenção • Combate a Incêndio",
   frase: "VIVA Extintores. Protegendo pessoas, patrimônios e o seu futuro.",
   posicionamento: "Engenharia, prevenção e combate a incêndio",
 } as const;

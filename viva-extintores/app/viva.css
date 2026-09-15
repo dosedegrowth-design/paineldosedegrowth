@@ -514,14 +514,29 @@ body {
   flex: none;
 }
 
+/* No cabeçalho a assinatura fica AO LADO da marca, separada por um traço —
+   "logo à esquerda e à direita uma assinatura curta", nas palavras do
+   cliente. Embaixo da marca ela esticava a barra e brigava com o menu. */
+.v-header .v-logo {
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+}
+
 .v-logo__sub {
   font-family: "Barlow Condensed", sans-serif;
-  font-size: 10px;
+  font-size: 10.5px;
   font-weight: 600;
-  letter-spacing: 0.42em;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
+  white-space: nowrap;
   color: var(--v-on-dark-faint);
-  margin-top: 4px;
+  padding-left: 14px;
+  border-left: 1px solid var(--v-line-d);
+}
+
+@media (max-width: 1180px) {
+  .v-header .v-logo__sub { display: none; }
 }
 
 /* ------------------------------------------------------------
