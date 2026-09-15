@@ -7,7 +7,7 @@ import { PHOTOS } from "@/lib/photos";
 export type PhotoAvailability = Record<string, boolean>;
 
 /**
- * Quais fotos reais já existem em public/tayssa/photos.
+ * Quais fotos reais já existem em public/photos.
  * Evita pedir ao otimizador de imagem um arquivo que não está lá: o slot
  * já nasce como campo tonal, sem flash nem 400 no console.
  */

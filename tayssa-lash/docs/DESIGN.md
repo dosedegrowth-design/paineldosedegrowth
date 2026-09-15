@@ -118,7 +118,7 @@ Depois de extraído o vocabulário: **as referências são esquecidas.** O layou
 
 ## 8. Fotografia real — slots
 
-As fotos reais do `@1.tayssa` entram em `public/tayssa/photos/` com os nomes definidos em `lib/tayssa/photos.ts`. Enquanto o arquivo não existe, o slot renderiza um campo tonal com a legenda "foto real · @1.tayssa" — nunca imagem sintética, nunca stock.
+As fotos reais do `@1.tayssa` entram em `public/photos/` com os nomes definidos em `lib/photos.ts`. Enquanto o arquivo não existe, o slot renderiza um campo tonal com a legenda "foto real · @1.tayssa" — nunca imagem sintética, nunca stock.
 
 | Slot | Uso | Proporção |
 |---|---|---|

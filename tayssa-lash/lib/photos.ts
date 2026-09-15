@@ -1,7 +1,7 @@
 /**
  * Fotografia real — manifesto de slots.
  *
- * As fotos do @1.tayssa entram em `public/tayssa/photos/` com estes nomes.
+ * As fotos do @1.tayssa entram em `public/photos/` com estes nomes.
  * Enquanto o arquivo não existe, o componente <RealPhoto> renderiza um
  * campo tonal com legenda — nunca imagem sintética, nunca stock.
  *
