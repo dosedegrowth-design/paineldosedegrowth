@@ -16,6 +16,19 @@ completas, uma por área de atuação.
 
 Se alguém disser "é só um portfólio", está errado. É um site.
 
+## A fonte da verdade do conteúdo
+
+O cliente (Felipe, dono da VIVA) construiu as cinco páginas num chat de
+horas com o ChatGPT e mandou o link compartilhado. Está decodificado em
+`docs/chat-do-cliente.md` (o share é um app JS; o texto foi extraído do
+turbo-stream). **Tudo que ele ditou ali vale mais que qualquer reescrita
+nossa** — já foi reescrito uma vez "para melhorar" e teve que voltar. As
+frases dele estão em `lib/areas.ts` e `lib/institucional.ts`, marcadas.
+
+Dados de contato (`lib/config.ts`) vieram do site atual da VIVA, não de
+chute: WhatsApp/telefone (11) 94292-5865, contato@vivaextintores.com.br,
+@viva_extintores.
+
 ## Posicionamento
 
 A VIVA **não** é "a empresa que vende e recarrega extintor". É engenharia
@@ -47,8 +60,10 @@ de segurança contra incêndio e resolver."*
 |---|---|
 | Pasta | `viva-extintores/` dentro do `dosedegrowth-design/paineldosedegrowth` |
 | Build/lint/deploy | próprios — o painel exclui esta pasta no `tsconfig.json` e no `eslint.config.mjs` da raiz |
-| Vercel | projeto próprio, Root Directory `viva-extintores` |
-| Produção | a definir |
+| Espelho | branch `novo-site` do repo `dosedegrowth-design/vivaextintores` (só o fonte; fotos vêm do painel no build) |
+| **Provisório (público)** | **https://dosedegrowth-design.github.io/vivaextintores/** — GitHub Pages, branch `gh-pages`, publicado pela Action `pages.yml` a cada push na `novo-site` |
+| Vercel | `vivaextintores` é o site ANTIGO em produção (`main` → vivaextintores.com.br). Não subir produção ali sem aprovação. Preview da `novo-site` existe, mas fica atrás do login da Vercel (plano Hobby, não configurável) |
+| Produção do site novo | a definir — quando aprovar, projeto Vercel próprio com produção na `novo-site` |
 
 ## Stack
 
@@ -143,7 +158,9 @@ Vieram do cliente. Não são preferência de estilo.
   legendadas por tipo de cliente (comércio, padaria, transportadora),
   porque é assim que o acervo da VIVA as identifica — não colar nome de
   cliente numa foto que é de outro.
-- **Só entram os números confirmados** (`lib/numeros.ts`): +15 anos,
+- **Só entram os números confirmados** (`lib/numeros.ts`): +15 anos
+  (o Felipe fala em "20 anos" e "16 anos" no chat; o Lucas mandou publicar
+  "mais de 15" — vale o Lucas),
   +10.000 laudos entregues, +30 obras entregues em 2026, +20 itens no
   Relatório. Os números dos mockups da agência são números de layout, não
   fatos. Estão pendentes de validação final da VIVA.
