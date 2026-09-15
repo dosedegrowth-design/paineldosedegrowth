@@ -35,6 +35,8 @@ export default function Page() {
       <FaixaCta
         titulo={HOME.faixa.titulo}
         texto={HOME.faixa.texto}
+        itens={HOME.faixa.itens}
+        cta={HOME.faixa.cta}
         href={whatsappUrl(MENSAGENS.geral)}
       />
 

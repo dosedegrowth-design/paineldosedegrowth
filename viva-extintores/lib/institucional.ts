@@ -34,9 +34,18 @@ export const HOME = {
     texto:
       "A VIVA atua desde o diagnóstico e o projeto até a execução, a regularização e a manutenção dos sistemas de segurança contra incêndio. Engenharia, obra e documentação na mesma casa — para o síndico, o gestor e o empresário tratarem com um responsável só.",
   },
+  // a faixa é a da página-mãe aprovada pelo cliente: título, os quatro
+  // diferenciais em linha e o botão. Sem ícone por item — é texto.
   faixa: {
-    titulo: ["Mais que obras.", "Tranquilidade."],
+    titulo: ["Segurança, regularização", "e valorização para o seu imóvel."],
     texto: "Conte o que está acontecendo na sua edificação. A gente avalia e devolve um caminho técnico claro — o que fazer, em que ordem e por quê.",
+    itens: [
+      "Atendimento personalizado",
+      "Conformidade com as normas",
+      "Equipe técnica especializada",
+      "Soluções para todos os portes",
+    ],
+    cta: "Fale com um especialista",
   },
   fecho: "VIVA Extintores. Protegendo pessoas, patrimônios e o seu futuro.",
 } as const;

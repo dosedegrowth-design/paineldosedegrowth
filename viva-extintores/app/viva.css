@@ -899,6 +899,34 @@ body {
   font-size: 15px;
 }
 
+/* os quatro diferenciais da página-mãe aprovada: linha de texto com
+   régua entre os itens, por cima de um fio. Sem ícone. */
+.v-faixa__itens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px clamp(18px, 3vw, 44px);
+  padding-block: clamp(16px, 2vw, 24px) clamp(22px, 2.6vw, 34px);
+  border-top: 1px solid var(--v-line-d);
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--v-on-dark-soft);
+}
+
+.v-faixa__itens li { position: relative; }
+
+.v-faixa__itens li + li::before {
+  content: "";
+  position: absolute;
+  left: calc(-1 * clamp(9px, 1.5vw, 22px));
+  top: 0.15em;
+  width: 1px;
+  height: 1em;
+  background: var(--v-line-d);
+}
+
 /* ------------------------------------------------------------
    Frase de fecho + casos reais
    ------------------------------------------------------------ */
