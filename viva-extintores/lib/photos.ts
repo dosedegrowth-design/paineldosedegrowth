@@ -41,7 +41,7 @@ const LARGURA: Record<Corte, [number, number]> = { w: [1100, 1800], p: [700, 112
  * `next/link` e `next/image` aplicam o basePath sozinhos; `<img>` cru, não.
  * Tudo que vai para `src`/`srcset` passa por aqui e recebe o prefixo.
  */
-const PREFIXO = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+export const PREFIXO = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 /** caminho relativo à pasta `public/` — para conferir se o arquivo existe */
 export function arquivoLocal(foto: FotoSlot, corte: Corte, pequeno = false) {
