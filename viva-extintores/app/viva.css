@@ -410,9 +410,9 @@ body {
    amontoados do outro. A coluna do meio é elástica e é ela que dá o ar. */
 .v-header__bar {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(max-content, 1fr) auto;
   align-items: center;
-  column-gap: clamp(24px, 5vw, 80px);
+  column-gap: clamp(20px, 3.5vw, 64px);
   min-height: var(--v-header);
   padding-block: 8px;
 }
@@ -425,6 +425,7 @@ body {
 }
 
 .v-navlink {
+  white-space: nowrap;
   font-family: "Barlow Condensed", "Barlow", sans-serif;
   font-weight: 600;
   font-size: 15px;
@@ -514,15 +515,10 @@ body {
   flex: none;
 }
 
-/* No cabeçalho a assinatura fica AO LADO da marca, separada por um traço —
-   "logo à esquerda e à direita uma assinatura curta", nas palavras do
-   cliente. Embaixo da marca ela esticava a barra e brigava com o menu. */
-.v-header .v-logo {
-  flex-direction: row;
-  align-items: center;
-  gap: 14px;
-}
-
+/* A assinatura NÃO entra no cabeçalho: marca + seis links + botão já
+   ocupam a barra inteira (1320px) e ela entrava por baixo do menu. As
+   pranchas aprovadas pelo cliente também não a têm no cabeçalho — só a
+   marca, o menu e o botão. Ela vive no rodapé. */
 .v-logo__sub {
   font-family: "Barlow Condensed", sans-serif;
   font-size: 10.5px;
@@ -535,9 +531,7 @@ body {
   border-left: 1px solid var(--v-line-d);
 }
 
-@media (max-width: 1180px) {
-  .v-header .v-logo__sub { display: none; }
-}
+
 
 /* ------------------------------------------------------------
    Hero

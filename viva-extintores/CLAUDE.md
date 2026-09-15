@@ -220,9 +220,11 @@ Vieram do cliente. Não são preferência de estilo.
   query. Nas grades responsivas, sobrescreva `grid-template-columns`
   direto, não o `--cols`.
 - O cabeçalho é grade de três colunas (marca · menu · ação), não flex. Em
-  flex, os seis links e o botão vermelho se amontoavam à direita e a
-  assinatura embaixo da marca esticava a barra. A assinatura saiu do
-  cabeçalho (`<Logo assinatura />` só onde fizer sentido).
+  flex, os seis links e o botão vermelho se amontoavam à direita. **A
+  assinatura não cabe no cabeçalho**: a barra tem 1320px e marca + seis
+  links + botão já ocupam tudo — ao lado da marca ela entrava por baixo
+  do menu (aconteceu, o cliente viu). As pranchas aprovadas não a têm
+  ali. Fica no rodapé. Links do menu são `white-space: nowrap`.
 - Na faixa escura de CTA, o botão precisa de `grid-column: 1 / -1` no
   mobile: senão ele engorda a coluna `auto` e o título fica abaixo do
   próprio min-content, vazando na horizontal.

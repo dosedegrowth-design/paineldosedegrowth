@@ -32,7 +32,7 @@ export function Header() {
     <header className="v-header">
       <div className="v-wrap">
         <div className="v-header__bar">
-          <Logo assinatura />
+          <Logo />
 
           <nav className="v-header__nav" aria-label="Navegação principal">
             {MENU.map((m) => (
