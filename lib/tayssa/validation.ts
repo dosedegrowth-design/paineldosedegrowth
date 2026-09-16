@@ -108,6 +108,31 @@ export const profileUpdateSchema = z.object({
 
 // ---------------- Admin ----------------
 
+/** Pedido de acesso feito pela própria cliente, no site. */
+export const signupSchema = z
+  .object({
+    name: z.string().trim().min(2, "Conte seu nome").max(120),
+    email: emailField,
+    phone: phoneField,
+    password: passwordField,
+    confirm: z.string(),
+    birthday: z
+      .string()
+      .trim()
+      .optional()
+      .transform((v) => v || null)
+      .refine((v) => !v || /^\d{4}-\d{2}-\d{2}$/.test(v), "Data inválida"),
+    message: z.string().trim().max(300).optional().transform((v) => v || null),
+  })
+  .refine((v) => v.password === v.confirm, { message: "As senhas não conferem", path: ["confirm"] });
+
+export const reviewSignupSchema = z.object({
+  id: z.string().uuid(),
+  decision: z.enum(["approve", "reject"]),
+  note: z.string().trim().max(300).optional().transform((v) => v || null),
+  vip: z.boolean().optional(),
+});
+
 export const adminClientSchema = z.object({
   name: trimmed(120),
   email: emailField,

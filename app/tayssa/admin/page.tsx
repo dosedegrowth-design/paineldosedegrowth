@@ -13,7 +13,7 @@ import { TyLinkButton } from "@/components/tayssa/ui/button";
 export default async function AdminHome() {
   const admin = await requireAdminPage();
   const [o, settings] = await Promise.all([getAdminOverview(), getSettings()]);
-  const needs = o.pendingServices + o.referralsInProgress + o.benefitsToValidate + o.benefitsRequested;
+  const needs = o.pendingSignups.length + o.pendingServices + o.referralsInProgress + o.benefitsToValidate + o.benefitsRequested;
 
   return (
     <>
@@ -25,6 +25,7 @@ export default async function AdminHome() {
       />
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "0 28px" }}>
+        <Stat n={o.pendingSignups.length} label="Pedidos de acesso" href={ROUTES.adminClients} alert={o.pendingSignups.length > 0} />
         <Stat n={o.pendingServices} label="Atendimentos a confirmar" href={ROUTES.adminServices} alert={o.pendingServices > 0} />
         <Stat n={o.referralsInProgress} label="Indicações em andamento" href={ROUTES.adminReferrals} alert={o.referralsInProgress > 0} />
         <Stat n={o.benefitsToValidate} label="Benefícios a validar" href={ROUTES.adminBenefits} alert={o.benefitsToValidate > 0} />
@@ -34,6 +35,26 @@ export default async function AdminHome() {
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "0 clamp(28px, 4vw, 64px)", marginTop: 24 }}>
+        {o.pendingSignups.length ? (
+          <AdminBlock title="Pedidos de acesso" aside={<TransitionLink href={ROUTES.adminClients} className="ty-link ty-link--caps">Ver todos</TransitionLink>}>
+            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+              {o.pendingSignups.slice(0, 6).map((c) => (
+                <li key={c.user.id} style={{ display: "flex", justifyContent: "space-between", gap: 12, padding: "10px 0", borderTop: "1px solid var(--t-line)", alignItems: "center" }}>
+                  <div>
+                    <TransitionLink href={ROUTES.adminClient(c.user.id)} className="ty-link">{c.user.name}</TransitionLink>
+                    <span className="ty-small" style={{ display: "block" }}>
+                      {c.user.requested_at ? `pediu em ${dateTime(c.user.requested_at)}` : "pedido de acesso"}
+                      {c.user.signup_message ? ` · “${c.user.signup_message.slice(0, 60)}${c.user.signup_message.length > 60 ? "…" : ""}”` : ""}
+                    </span>
+                  </div>
+                  <TransitionLink href={ROUTES.adminClient(c.user.id)} className="ty-link ty-link--caps">
+                    Revisar
+                  </TransitionLink>
+                </li>
+              ))}
+            </ul>
+          </AdminBlock>
+        ) : null}
         <AdminBlock title="Aniversários nos próximos 7 dias" aside={<TransitionLink href={ROUTES.adminBirthdays} className="ty-link ty-link--caps">Ver mês</TransitionLink>}>
           {o.birthdaysThisWeek.length ? (
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>

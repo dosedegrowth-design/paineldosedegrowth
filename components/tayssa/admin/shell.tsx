@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { Reveal } from "@/components/tayssa/ui/reveal";
 
 export function AdminHeader({
   eyebrow,
@@ -14,7 +13,7 @@ export function AdminHeader({
 }) {
   return (
     <div style={{ paddingBlock: "clamp(28px, 4vw, 56px) clamp(22px, 3vw, 40px)", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-end", gap: 20 }}>
-      <Reveal>
+      <div>
         <span className="ty-eyebrow" style={{ display: "block", marginBottom: 12 }}>
           {eyebrow}
         </span>
@@ -26,7 +25,7 @@ export function AdminHeader({
             {lead}
           </p>
         ) : null}
-      </Reveal>
+      </div>
       {actions ? <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>{actions}</div> : null}
     </div>
   );

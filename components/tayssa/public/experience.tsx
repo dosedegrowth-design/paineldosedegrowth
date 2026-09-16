@@ -52,7 +52,7 @@ export function PublicExperience({
         <WorkSequence />
         <Services services={services} scheduleUrl={links.schedule} />
         <Details instagramUrl={links.instagram} handle={links.handle} />
-        <VipIntro benefits={benefits} vipInfoUrl={links.vipInfo} />
+        <VipIntro benefits={benefits} />
         <ReferralCta />
         <Closing scheduleUrl={links.schedule} />
       </main>

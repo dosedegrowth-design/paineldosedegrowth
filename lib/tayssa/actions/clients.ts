@@ -1,22 +1,17 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { randomBytes } from "node:crypto";
 import { vipDb } from "@/lib/tayssa/db";
 import { assertAdmin } from "@/lib/tayssa/auth/guards";
 import { hashToken, newToken, revokeAllSessions } from "@/lib/tayssa/auth/session";
 import { logAudit } from "@/lib/tayssa/audit";
+import { referralCode } from "@/lib/tayssa/codes";
 import { PASSWORD_TOKEN_DAYS, ROUTES, publicUrl } from "@/lib/tayssa/config";
-import { adminClientSchema } from "@/lib/tayssa/validation";
+import { adminClientSchema, reviewSignupSchema } from "@/lib/tayssa/validation";
+import { getSettings } from "@/lib/tayssa/settings";
+import { renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { BusinessError, bool, runAction, str } from "@/lib/tayssa/actions/_helpers";
 import type { ActionResult, UserRow, UserStatus } from "@/lib/tayssa/types";
-
-function referralCode(): string {
-  // 6 chars legíveis (sem 0/O/1/I)
-  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  const bytes = randomBytes(6);
-  return Array.from(bytes, (b) => alphabet[b % alphabet.length]).join("");
-}
 
 function revalidateAdmin() {
   revalidatePath(ROUTES.admin, "layout");
@@ -211,6 +206,74 @@ export async function adminSetClientStatusAction(input: {
     });
     revalidateAdmin();
     return undefined;
+  });
+}
+
+export type SignupReview = {
+  status: UserStatus;
+  /** link de WhatsApp com a mensagem de boas-vindas, quando aprovada e com telefone */
+  welcomeUrl: string | null;
+};
+
+/**
+ * A Tayssa revisa um pedido de acesso. Aprovar abre a conta (a senha a
+ * cliente já escolheu no cadastro); recusar fecha com uma nota interna.
+ */
+export async function adminReviewSignupAction(input: {
+  id: string;
+  decision: "approve" | "reject";
+  note?: string;
+  vip?: boolean;
+}): Promise<ActionResult<SignupReview>> {
+  return runAction("clients.reviewSignup", async () => {
+    const admin = await assertAdmin();
+    const parsed = reviewSignupSchema.parse(input);
+    const db = vipDb();
+    const { data } = await db
+      .from("users")
+      .select("id, status, name, nickname, phone")
+      .eq("id", parsed.id)
+      .eq("role", "client")
+      .maybeSingle();
+    const u = data as Pick<UserRow, "id" | "status" | "name" | "nickname" | "phone"> | null;
+    if (!u) throw new BusinessError("Pedido não encontrado.");
+    if (u.status !== "pending") throw new BusinessError("Esse pedido já foi revisado.");
+
+    const now = new Date().toISOString();
+    const status: UserStatus = parsed.decision === "approve" ? "active" : "rejected";
+    const { error } = await db
+      .from("users")
+      .update({ status, reviewed_at: now, reviewed_by: admin.id, review_note: parsed.note })
+      .eq("id", u.id);
+    if (error) throw new Error(error.message);
+
+    if (parsed.decision === "approve" && parsed.vip) {
+      await db
+        .from("client_profiles")
+        .update({ vip_status: "active", vip_since: now })
+        .eq("user_id", u.id);
+    }
+
+    await logAudit({
+      actorId: admin.id,
+      actorRole: "admin",
+      action: parsed.decision === "approve" ? "signup_approved" : "signup_rejected",
+      entityType: "user",
+      entityId: u.id,
+      meta: { note: parsed.note, vip: Boolean(parsed.vip) },
+    });
+    revalidateAdmin();
+
+    let welcomeUrl: string | null = null;
+    if (parsed.decision === "approve" && u.phone) {
+      const settings = await getSettings();
+      const name = (u.nickname ?? u.name).trim().split(/\s+/)[0];
+      welcomeUrl = whatsappUrl(
+        u.phone,
+        renderTemplate(settings.signup.welcome_template, { name, url: publicUrl(ROUTES.login) })
+      );
+    }
+    return { status, welcomeUrl };
   });
 }
 

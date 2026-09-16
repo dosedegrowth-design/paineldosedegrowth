@@ -103,6 +103,8 @@ export const listClients = cache(async (): Promise<ClientSummary[]> => {
 });
 
 export type AdminOverview = {
+  /** pediram acesso pelo site e esperam a Tayssa */
+  pendingSignups: ClientSummary[];
   totalClients: number;
   vipActive: number;
   pendingServices: number;
@@ -137,7 +139,10 @@ export const getAdminOverview = cache(async (): Promise<AdminOverview> => {
     return info.daysUntil >= 0 && info.daysUntil <= 7;
   });
   return {
-    totalClients: clients.length,
+    pendingSignups: clients
+      .filter((c) => c.user.status === "pending")
+      .sort((a, b) => (a.user.requested_at ?? "").localeCompare(b.user.requested_at ?? "")),
+    totalClients: clients.filter((c) => c.user.status !== "pending" && c.user.status !== "rejected").length,
     vipActive: clients.filter((c) => c.profile?.vip_status === "active").length,
     pendingServices: pendingRes.count ?? 0,
     referralsInProgress: refRes.count ?? 0,

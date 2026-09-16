@@ -10,6 +10,8 @@ export const ROUTES = {
   home: "/tayssa",
   refer: "/tayssa/indicar",
   login: "/tayssa/entrar",
+  signup: "/tayssa/cadastro",
+  pending: "/tayssa/aguardando",
   setPassword: "/tayssa/entrar/definir-senha",
   restricted: "/tayssa/acesso",
   vip: "/tayssa/vip",
@@ -112,6 +114,13 @@ export type BookingSettings = {
   max_open_per_client: number;
 };
 
+export type SignupSettings = {
+  /** cadastro pelo site aberto? (a aprovação continua sendo da Tayssa) */
+  open: boolean;
+  /** mensagem de boas-vindas ao aprovar — {name}, {url} */
+  welcome_template: string;
+};
+
 export type Settings = {
   business: BusinessSettings;
   rules: RulesSettings;
@@ -119,6 +128,7 @@ export type Settings = {
   whatsapp: WhatsappTemplates;
   loyalty: LoyaltySettings;
   booking: BookingSettings;
+  signup: SignupSettings;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -176,5 +186,10 @@ export const DEFAULT_SETTINGS: Settings = {
     horizon_days: 30,
     default_duration_min: 90,
     max_open_per_client: 2,
+  },
+  signup: {
+    open: true,
+    welcome_template:
+      "Oi, {name}! Seu acesso ao Tayssa Lash foi liberado. Entre por aqui: {url}",
   },
 };

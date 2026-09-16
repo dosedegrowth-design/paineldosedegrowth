@@ -8,10 +8,13 @@ import type { ActionResult } from "@/lib/tayssa/types";
 /** Erro de regra de negócio com mensagem humana (vai direto pra UI). */
 export class BusinessError extends Error {
   field?: string;
-  constructor(message: string, field?: string) {
+  /** motivo legível por máquina, para a interface escolher a tela certa */
+  code?: string;
+  constructor(message: string, field?: string, code?: string) {
     super(message);
     this.name = "BusinessError";
     this.field = field;
+    this.code = code;
   }
 }
 
@@ -32,7 +35,7 @@ export async function runAction<T = undefined>(
       return { ok: false, error: message, field };
     }
     if (e instanceof BusinessError) {
-      return { ok: false, error: e.message, field: e.field };
+      return { ok: false, error: e.message, field: e.field, code: e.code };
     }
     if (e instanceof AuthError) {
       return { ok: false, error: e.message };

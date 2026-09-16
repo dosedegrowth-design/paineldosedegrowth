@@ -67,6 +67,9 @@ export function PublicNav({ scheduleUrl }: { scheduleUrl: string }) {
           <a href={scheduleUrl} target="_blank" rel="noopener noreferrer" className="ty-link">
             Agendar
           </a>
+          <TransitionLink href={ROUTES.signup} className="ty-link">
+            Pedir acesso
+          </TransitionLink>
           <TransitionLink href={ROUTES.login} className="ty-btn ty-btn--xs">
             <span>Entrar</span>
           </TransitionLink>
@@ -115,6 +118,7 @@ export function PublicNav({ scheduleUrl }: { scheduleUrl: string }) {
               {[
                 ...SECTIONS.map((s) => ({ label: s.label, onClick: () => go(s.id) })),
                 { label: "Indicar", href: ROUTES.refer },
+                { label: "Pedir acesso", href: ROUTES.signup },
                 { label: "Entrar no VIP", href: ROUTES.login },
               ].map((item, i) => (
                 <motion.li
