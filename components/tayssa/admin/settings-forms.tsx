@@ -6,8 +6,11 @@ import {
   toggleBlackoutAction,
   updateBenefitConfigAction,
   updateBirthdaySettingsAction,
+  updateBookingSettingsAction,
   updateBusinessSettingsAction,
+  updateLoyaltySettingsAction,
   updateRulesSettingsAction,
+  updateSignupSettingsAction,
   updateWhatsappTemplatesAction,
   upsertCatalogServiceAction,
 } from "@/lib/tayssa/actions/settings";
@@ -210,5 +213,89 @@ export function BlackoutList({ items }: { items: BlackoutRow[] }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+const WEEKDAY_LABELS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+
+/** Disponibilidade: o que a cliente enxerga ao marcar. Muda na hora. */
+export function BookingForm({ value }: { value: Settings["booking"] }) {
+  const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateBookingSettingsAction, null);
+  return (
+    <form action={action} noValidate style={{ display: "grid", gap: 18, maxWidth: 640 }}>
+      <div>
+        <span className="ty-field__label" style={{ display: "block", marginBottom: 10 }}>
+          Dias abertos
+        </span>
+        <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+          {WEEKDAY_LABELS.map((label, d) => (
+            <TyCheckbox key={d} name="weekdays" value={String(d)} label={label} defaultChecked={value.weekdays.includes(d)} />
+          ))}
+        </div>
+      </div>
+      <TyTextarea
+        label="Horários oferecidos (um por linha, HH:MM)"
+        name="slots"
+        rows={7}
+        defaultValue={value.slots.join("\n")}
+        hint="Cada horário vale para todos os dias abertos. Horário já ocupado some sozinho para as clientes."
+      />
+      <div style={{ display: "grid", gap: 18, gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}>
+        <TyInput label="Antecedência mínima (horas)" name="lead_hours" inputMode="numeric" defaultValue={String(value.lead_hours)} />
+        <TyInput label="Dias à frente" name="horizon_days" inputMode="numeric" defaultValue={String(value.horizon_days)} />
+        <TyInput label="Duração padrão (min)" name="default_duration_min" inputMode="numeric" defaultValue={String(value.default_duration_min)} />
+        <TyInput label="Horários em aberto por cliente" name="max_open_per_client" inputMode="numeric" defaultValue={String(value.max_open_per_client)} />
+      </div>
+      <Feedback state={state} />
+      <div>
+        <TyButton type="submit" size="sm" variant="solid" disabled={pending}>
+          {pending ? "Salvando…" : "Salvar disponibilidade"}
+        </TyButton>
+      </div>
+    </form>
+  );
+}
+
+/** O cartão: quantas visitas e qual o presente ao fechar. */
+export function LoyaltyForm({ value }: { value: Settings["loyalty"] }) {
+  const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateLoyaltySettingsAction, null);
+  return (
+    <form action={action} noValidate style={{ display: "grid", gap: 18, maxWidth: 640 }}>
+      <div style={{ display: "grid", gap: 18, gridTemplateColumns: "minmax(120px, 1fr) minmax(200px, 2fr)" }}>
+        <TyInput label="Visitas por cartão" name="card_size" inputMode="numeric" defaultValue={String(value.card_size)} hint="Vale para cartões novos; o cartão aberto de cada cliente mantém o tamanho com que nasceu." />
+        <TyInput label="Nome do presente (a cliente vê)" name="card_reward_title" defaultValue={value.card_reward_title} required />
+      </div>
+      <TyTextarea label="Descrição do presente" name="card_reward_description" rows={2} defaultValue={value.card_reward_description} maxLength={300} />
+      <Feedback state={state} />
+      <div>
+        <TyButton type="submit" size="sm" variant="solid" disabled={pending}>
+          {pending ? "Salvando…" : "Salvar cartão"}
+        </TyButton>
+      </div>
+    </form>
+  );
+}
+
+/** Cadastro pelo site: aberto/fechado e a mensagem de boas-vindas ao aprovar. */
+export function SignupForm({ value }: { value: Settings["signup"] }) {
+  const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateSignupSettingsAction, null);
+  return (
+    <form action={action} noValidate style={{ display: "grid", gap: 18, maxWidth: 640 }}>
+      <TyCheckbox name="open" label="Aceitar pedidos de acesso pelo site (cada pedido continua passando por você)" defaultChecked={value.open} />
+      <TyTextarea
+        label="Mensagem de boas-vindas ao aprovar ({name} e {url})"
+        name="welcome_template"
+        rows={3}
+        defaultValue={value.welcome_template}
+        maxLength={400}
+        hint="Abre no WhatsApp com o nome dela e o link de entrada já preenchidos."
+      />
+      <Feedback state={state} />
+      <div>
+        <TyButton type="submit" size="sm" variant="solid" disabled={pending}>
+          {pending ? "Salvando…" : "Salvar cadastro"}
+        </TyButton>
+      </div>
+    </form>
   );
 }

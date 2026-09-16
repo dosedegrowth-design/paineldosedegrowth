@@ -58,10 +58,11 @@ export default async function BookPage() {
                   <p style={{ fontSize: 15 }}>{a.service_name}</p>
                   <p className="tyv-sub" style={{ fontSize: 12.5 }}>
                     {a.scheduled_date.split("-").reverse().join("/")} · {a.scheduled_time.slice(0, 5)}
+                    {a.status === "cancelled" && a.admin_note ? ` · ${a.admin_note}` : ""}
                   </p>
                 </div>
                 <span className="tyv-badge tyv-badge--quiet">
-                  {a.status === "done" ? "Realizado" : a.status === "cancelled" ? "Cancelado" : "Encerrado"}
+                  {a.status === "done" ? "Realizado" : a.status === "cancelled" ? "Cancelado" : a.status === "no_show" ? "Não compareceu" : "Encerrado"}
                 </span>
               </div>
             ))}

@@ -142,7 +142,16 @@ export function LoyaltyCard({
   const reduced = useReducedMotion() ?? false;
   const fine = useFinePointer();
   const [list, setList] = useState<CardStamp[]>(stamps);
-  const [openId, setOpenId] = useState<string | null>(null);
+  // depois de fechar um cartão o servidor manda o próximo: a lista local
+  // segue os carimbos novos em vez de ficar presa aos antigos
+  const [seenStamps, setSeenStamps] = useState(stamps);
+  if (seenStamps !== stamps) {
+    setSeenStamps(stamps);
+    setList(stamps);
+  }
+  // o carimbo aberto na raspadinha é guardado inteiro: se o servidor
+  // trocar o cartão no meio (fechou o 1, veio o 2), a folha não some
+  const [open, setOpen] = useState<CardStamp | null>(null);
   const [side, setSide] = useState<Side>(initialSide);
   const touched = useRef(false);
 
@@ -172,7 +181,6 @@ export function LoyaltyCard({
   const filled = list.length;
   const unrevealed = list.filter((s) => !s.revealed);
   const missing = Math.max(0, size - filled);
-  const open = list.find((s) => s.id === openId) ?? null;
   const sinceYear = memberSince ? new Date(memberSince).getFullYear() : NaN;
 
   const flip = useCallback(() => {
@@ -204,7 +212,7 @@ export function LoyaltyCard({
   }, []);
 
   const close = useCallback(() => {
-    setOpenId(null);
+    setOpen(null);
     // pontos, ranking e benefícios mudam junto: recarrega os dados do servidor
     if (touched.current) {
       touched.current = false;
@@ -213,8 +221,8 @@ export function LoyaltyCard({
   }, [router]);
 
   const next = useCallback(() => {
-    setOpenId((current) => list.find((s) => !s.revealed && s.id !== current)?.id ?? null);
-  }, [list]);
+    setOpen(list.find((s) => !s.revealed && s.id !== open?.id) ?? null);
+  }, [list, open]);
 
   const caption = unrevealed.length
     ? `${unrevealed.length} ${plural(unrevealed.length, "carimbo novo", "carimbos novos")} no verso — toque para virar`
@@ -235,7 +243,7 @@ export function LoyaltyCard({
           className="tyc3__slot"
           data-state="new"
           data-noflip
-          onClick={() => setOpenId(stamp.id)}
+          onClick={() => setOpen(stamp)}
           aria-label={`Raspar o carimbo ${position}`}
         >
           <span className="tyc3__n">{position}</span>

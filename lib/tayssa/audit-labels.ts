@@ -10,6 +10,7 @@ const LABELS: Record<string, string> = {
   appointment_confirmed: "Horário confirmado",
   appointment_done: "Atendimento realizado (agenda)",
   appointment_cancelled_by_admin: "Horário cancelado pela Tayssa",
+  appointment_no_show: "Cliente não compareceu",
   photo_added: "Foto adicionada",
   photo_updated: "Foto atualizada",
   photo_archived: "Foto arquivada",

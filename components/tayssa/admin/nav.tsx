@@ -9,6 +9,7 @@ import { TransitionLink } from "@/components/tayssa/ui/transition";
 const LINKS = [
   { href: ROUTES.admin, label: "Visão geral", key: "" },
   { href: ROUTES.adminClients, label: "Clientes", key: "clients" },
+  { href: ROUTES.adminAgenda, label: "Agenda", key: "appointments" },
   { href: ROUTES.adminServices, label: "Atendimentos", key: "services" },
   { href: ROUTES.adminReferrals, label: "Indicações", key: "referrals" },
   { href: ROUTES.adminBenefits, label: "Benefícios", key: "benefits" },
@@ -22,7 +23,7 @@ export function AdminNav({
   attention,
 }: {
   name: string;
-  attention: { services: number; referrals: number; benefits: number; birthdays: number };
+  attention: { appointments: number; services: number; referrals: number; benefits: number; birthdays: number };
 }) {
   const pathname = usePathname();
   return (

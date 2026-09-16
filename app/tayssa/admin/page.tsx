@@ -3,7 +3,8 @@ import { getAdminOverview } from "@/lib/tayssa/queries/admin";
 import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES } from "@/lib/tayssa/config";
 import { renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
-import { dateShort, dateTime, dayMonth } from "@/lib/tayssa/format";
+import { dateShort, dateTime, dayMonth, hhmm } from "@/lib/tayssa/format";
+import { APPOINTMENT_STATUS_LABEL } from "@/lib/tayssa/types";
 import { auditLabel } from "@/lib/tayssa/audit-labels";
 import { AdminBlock, AdminHeader, Empty, Stat } from "@/components/tayssa/admin/shell";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
@@ -13,7 +14,7 @@ import { TyLinkButton } from "@/components/tayssa/ui/button";
 export default async function AdminHome() {
   const admin = await requireAdminPage();
   const [o, settings] = await Promise.all([getAdminOverview(), getSettings()]);
-  const needs = o.pendingSignups.length + o.pendingServices + o.referralsInProgress + o.benefitsToValidate + o.benefitsRequested;
+  const needs = o.pendingSignups.length + o.appointmentsRequested + o.appointmentsToClose + o.pendingServices + o.referralsInProgress + o.benefitsToValidate + o.benefitsRequested;
 
   return (
     <>
@@ -26,6 +27,7 @@ export default async function AdminHome() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "0 28px" }}>
         <Stat n={o.pendingSignups.length} label="Pedidos de acesso" href={ROUTES.adminClients} alert={o.pendingSignups.length > 0} />
+        <Stat n={o.appointmentsRequested} label="Horários a confirmar" href={ROUTES.adminAgenda} alert={o.appointmentsRequested > 0} />
         <Stat n={o.pendingServices} label="Atendimentos a confirmar" href={ROUTES.adminServices} alert={o.pendingServices > 0} />
         <Stat n={o.referralsInProgress} label="Indicações em andamento" href={ROUTES.adminReferrals} alert={o.referralsInProgress > 0} />
         <Stat n={o.benefitsToValidate} label="Benefícios a validar" href={ROUTES.adminBenefits} alert={o.benefitsToValidate > 0} />
@@ -55,6 +57,33 @@ export default async function AdminHome() {
             </ul>
           </AdminBlock>
         ) : null}
+        <AdminBlock title="Agenda de hoje" aside={<TransitionLink href={ROUTES.adminAgenda} className="ty-link ty-link--caps">Ver agenda</TransitionLink>}>
+          {o.agendaToday.length ? (
+            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+              {o.agendaToday.map((a) => (
+                <li key={a.id} style={{ display: "flex", justifyContent: "space-between", gap: 12, padding: "10px 0", borderTop: "1px solid var(--t-line)", alignItems: "center" }}>
+                  <div>
+                    <span className="ty-num" style={{ fontWeight: 600, marginRight: 10 }}>{hhmm(a.scheduled_time)}</span>
+                    {a.client ? (
+                      <TransitionLink href={ROUTES.adminClient(a.client.id)} className="ty-link">{a.client.name}</TransitionLink>
+                    ) : (
+                      "Cliente"
+                    )}
+                    <span className="ty-small" style={{ display: "block" }}>
+                      {a.service_name} · {APPOINTMENT_STATUS_LABEL[a.status].toLowerCase()}
+                    </span>
+                  </div>
+                  <TransitionLink href={ROUTES.adminAgenda} className="ty-link ty-link--caps">
+                    {a.status === "requested" ? "Confirmar" : "Abrir"}
+                  </TransitionLink>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <Empty>{o.appointmentsToClose ? `Nada hoje — mas ${o.appointmentsToClose} ${o.appointmentsToClose === 1 ? "horário passado espera" : "horários passados esperam"} fechamento.` : "Nenhum horário hoje."}</Empty>
+          )}
+        </AdminBlock>
+
         <AdminBlock title="Aniversários nos próximos 7 dias" aside={<TransitionLink href={ROUTES.adminBirthdays} className="ty-link ty-link--caps">Ver mês</TransitionLink>}>
           {o.birthdaysThisWeek.length ? (
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>

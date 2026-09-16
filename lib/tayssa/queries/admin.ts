@@ -1,5 +1,6 @@
 import "server-only";
 import { cache } from "react";
+import { nowInBusinessTz } from "@/lib/tayssa/format";
 import { vipDb } from "@/lib/tayssa/db";
 import { getSettings } from "@/lib/tayssa/settings";
 import { getPublicBenefits } from "@/lib/tayssa/queries/catalog";
@@ -23,6 +24,7 @@ import type {
   ClientServiceRow,
   ReferralRow,
   UserRow,
+  AppointmentRow,
 } from "@/lib/tayssa/types";
 
 type UserWithProfile = UserRow & { client_profiles: ClientProfileRow | ClientProfileRow[] | null };
@@ -102,9 +104,71 @@ export const listClients = cache(async (): Promise<ClientSummary[]> => {
   });
 });
 
+// ------------------------------------------------------------
+// Agenda
+// ------------------------------------------------------------
+
+export type AppointmentWithClient = AppointmentRow & {
+  client: Pick<UserRow, "id" | "name" | "nickname" | "phone"> | null;
+};
+
+export type Agenda = {
+  /** hoje, no fuso da casa (YYYY-MM-DD) */
+  today: string;
+  /** pedidos esperando a Tayssa (de hoje em diante) */
+  requested: AppointmentWithClient[];
+  /** o dia de hoje: pedidos e confirmados */
+  todayList: AppointmentWithClient[];
+  /** confirmados de amanhã em diante */
+  upcoming: AppointmentWithClient[];
+  /** já passaram e ninguém fechou: realizado ou não compareceu */
+  toClose: AppointmentWithClient[];
+  /** encerrados recentes */
+  past: AppointmentWithClient[];
+};
+
+function shiftDays(base: Date, n: number): Date {
+  const d = new Date(base);
+  d.setDate(d.getDate() + n);
+  return d;
+}
+
+export const getAgenda = cache(async (): Promise<Agenda> => {
+  const now = nowInBusinessTz();
+  const today = toISODate(now);
+  const { data, error } = await vipDb()
+    .from("appointments")
+    .select("*, client:users!appointments_client_id_fkey(id, name, nickname, phone)")
+    .gte("scheduled_date", toISODate(shiftDays(now, -45)))
+    .lte("scheduled_date", toISODate(shiftDays(now, 120)))
+    .order("scheduled_date")
+    .order("scheduled_time")
+    .limit(500);
+  if (error) throw new Error(error.message);
+  const all = (data ?? []) as AppointmentWithClient[];
+  const open = (a: AppointmentWithClient) => a.status === "requested" || a.status === "confirmed";
+  return {
+    today,
+    requested: all.filter((a) => a.status === "requested" && a.scheduled_date >= today),
+    todayList: all.filter((a) => open(a) && a.scheduled_date === today),
+    upcoming: all.filter((a) => a.status === "confirmed" && a.scheduled_date > today),
+    toClose: all.filter((a) => open(a) && a.scheduled_date < today),
+    past: all
+      .filter((a) => !open(a))
+      .sort((a, b) => (b.scheduled_date + b.scheduled_time).localeCompare(a.scheduled_date + a.scheduled_time))
+      .slice(0, 40),
+  };
+});
+
 export type AdminOverview = {
   /** pediram acesso pelo site e esperam a Tayssa */
   pendingSignups: ClientSummary[];
+  /** pedidos de horário esperando confirmação */
+  appointmentsRequested: number;
+  /** a agenda de hoje (pedidos e confirmados) */
+  agendaToday: AppointmentWithClient[];
+  /** horários que já passaram sem fechamento */
+  appointmentsToClose: number;
   totalClients: number;
   vipActive: number;
   pendingServices: number;
@@ -119,8 +183,9 @@ export type AdminOverview = {
 
 export const getAdminOverview = cache(async (): Promise<AdminOverview> => {
   const db = vipDb();
-  const [clients, pendingRes, refRes, benRes, auditRes] = await Promise.all([
+  const [clients, agenda, pendingRes, refRes, benRes, auditRes] = await Promise.all([
     listClients(),
+    getAgenda(),
     db.from("client_services").select("id", { count: "exact", head: true }).eq("status", "pending"),
     db
       .from("referrals")
@@ -142,6 +207,9 @@ export const getAdminOverview = cache(async (): Promise<AdminOverview> => {
     pendingSignups: clients
       .filter((c) => c.user.status === "pending")
       .sort((a, b) => (a.user.requested_at ?? "").localeCompare(b.user.requested_at ?? "")),
+    appointmentsRequested: agenda.requested.length,
+    agendaToday: agenda.todayList,
+    appointmentsToClose: agenda.toClose.length,
     totalClients: clients.filter((c) => c.user.status !== "pending" && c.user.status !== "rejected").length,
     vipActive: clients.filter((c) => c.profile?.vip_status === "active").length,
     pendingServices: pendingRes.count ?? 0,

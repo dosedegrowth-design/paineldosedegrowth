@@ -16,7 +16,7 @@ const benefitsCatalog = [
 const svc = (id: string, date: string, status: "approved" | "pending" | "rejected", points = 25) =>
   ({ id, client_id: "me", service_id: null, service_name: "Manutenção", service_date: date, amount: null, points, status, notes: null, submitted_by: "admin" as const, submitted_at: date, reviewed_by: null, reviewed_at: null, review_note: null });
 const ben = (id: string, status: ClientBenefitStatus, dates: Partial<Pick<ClientBenefitRow, "available_at" | "eligible_at" | "created_at" | "redeemed_at" | "requested_at" | "approved_at" | "updated_at">>): ClientBenefitRow =>
-  ({ id, client_id: "me", benefit_id: "x", cycle_key: "k", status, title: `Benefício ${id}`, description: null, eligible_at: null, available_at: null, requested_at: null, approved_at: null, redeemed_at: null, rejected_at: null, expires_at: null, client_note: null, admin_note: null, created_by: null, created_at: "2026-01-01T00:00:00Z", updated_at: "2026-01-01T00:00:00Z", ...dates });
+  ({ id, client_id: "me", benefit_id: "x", cycle_key: "k", status, title: `Benefício ${id}`, description: null, eligible_at: "2026-01-01T00:00:00Z", available_at: null, requested_at: null, approved_at: null, redeemed_at: null, rejected_at: null, expires_at: null, client_note: null, admin_note: null, created_by: null, created_at: "2026-01-01T00:00:00Z", updated_at: "2026-01-01T00:00:00Z", ...dates });
 const apt = (id: string, date: string, status: AppointmentStatus): AppointmentRow =>
   ({ id, client_id: "me", service_id: null, service_name: "Aplicação", scheduled_date: date, scheduled_time: "14:00:00", duration_min: 90, status, client_note: null, admin_note: null, client_service_id: null, created_at: "", updated_at: "" });
 

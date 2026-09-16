@@ -47,6 +47,11 @@ export function AppointmentList({ items }: { items: AppointmentRow[] }) {
             <span className={`tyv-badge ${a.status === "confirmed" ? "" : "tyv-badge--quiet"}`} style={{ marginTop: 8 }}>
               {APPOINTMENT_STATUS_LABEL[a.status]}
             </span>
+            {a.admin_note ? (
+              <p className="tyv-sub" style={{ fontSize: 12.5, marginTop: 8 }}>
+                Tayssa: “{a.admin_note}”
+              </p>
+            ) : null}
           </div>
           {confirming === a.id ? (
             <div style={{ display: "grid", gap: 6, justifyItems: "end" }}>

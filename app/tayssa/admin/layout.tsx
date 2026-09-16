@@ -13,12 +13,13 @@ export const dynamic = "force-dynamic";
 
 async function attentionCounts() {
   const db = vipDb();
-  const [s, r, b] = await Promise.all([
+  const [a, s, r, b] = await Promise.all([
+    db.from("appointments").select("id", { count: "exact", head: true }).eq("status", "requested"),
     db.from("client_services").select("id", { count: "exact", head: true }).eq("status", "pending"),
     db.from("referrals").select("id", { count: "exact", head: true }).in("status", ["pending", "contacted", "scheduled", "completed"]),
     db.from("client_benefits").select("id", { count: "exact", head: true }).in("status", ["pending_validation", "requested"]),
   ]);
-  return { services: s.count ?? 0, referrals: r.count ?? 0, benefits: b.count ?? 0, birthdays: 0 };
+  return { appointments: a.count ?? 0, services: s.count ?? 0, referrals: r.count ?? 0, benefits: b.count ?? 0, birthdays: 0 };
 }
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
