@@ -13,6 +13,7 @@ import { MilestoneMoment, type Moment } from "@/components/vip/milestone-moment"
 import { buildTimeline } from "@/lib/timeline";
 import { toCardStamps } from "@/lib/queries/vip";
 import { getPhotoLibrary } from "@/lib/queries/photos";
+import { getPhotoAvailability } from "@/lib/photos-server";
 import { assignPhotos } from "@/lib/photos";
 
 /**
@@ -21,8 +22,13 @@ import { assignPhotos } from "@/lib/photos";
  */
 export default async function VipHome() {
   const user = await requireClientPage();
-  const [{ overview: o, card, appointments, ranking }, library] = await Promise.all([getVipHome(user), getPhotoLibrary()]);
-  const photos = assignPhotos(library).card;
+  const [{ overview: o, card, appointments, ranking }, library, available] = await Promise.all([
+    getVipHome(user),
+    getPhotoLibrary(),
+    getPhotoAvailability(),
+  ]);
+  // só fotos que existem: biblioteca sempre; estáticas se o arquivo está lá (senão a frente nasce tonal, sem 404)
+  const photos = assignPhotos(library).card.filter((p) => available[p.src] ?? true);
 
   const activeBenefits = o.benefits.filter((b) => ["available", "requested", "approved"].includes(b.status));
   const validating = o.benefits.filter((b) => b.status === "pending_validation");
