@@ -1,6 +1,7 @@
 /** Ações do audit_log em linguagem humana (admin). */
 const LABELS: Record<string, string> = {
   login: "Entrou",
+  login_link: "Entrou por link",
   signup_requested: "Pediu acesso pelo site",
   signup_approved: "Pedido de acesso aprovado",
   signup_rejected: "Pedido de acesso recusado",
