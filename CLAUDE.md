@@ -262,6 +262,10 @@ Regras que NÃO podem quebrar:
 - O ranking mostra só o primeiro nome e a vizinhança de posições — nunca contato, e-mail ou histórico de outra cliente.
 
 Operação:
+- **Entrada por link** (`/tayssa/entrar/link?t=<token>`): abre a sessão sem digitar senha. Dois tipos, na coluna `purpose` de `vip.password_tokens`:
+  - `magic` — convite de uso único (a Tayssa manda para uma cliente). É queimado antes de abrir a sessão.
+  - `demo` — link de teste: abre quantas vezes quiser, em quantos aparelhos quiser, até vencer. Cada aparelho ganha a própria sessão.
+  Gerar: `token` aleatório, guarda só `sha256(token)` em `token_hash`, com `expires_at`. Revogar = apagar a linha (as sessões já abertas continuam; para cortá-las, `vip.sessions`).
 - Admin cria cliente em `/tayssa/admin/clientes/novo` → gera link único de primeiro acesso (7 dias) → envia por WhatsApp. Nenhuma senha aparece na tela.
 - Cliente de demonstração em produção: `cliente01@demo.tayssa` (senha combinada no chat; carimbos para raspar).
 - Conta admin: login `admin@tayssa.vip` (troque o e-mail no perfil se quiser). Primeiro acesso via link gerado no seed (ver histórico do chat/sessão que criou); para gerar outro: `insert into vip.password_tokens (user_id, token_hash, purpose, expires_at)` com `token_hash = sha256(token)`.
