@@ -159,6 +159,6 @@ export function assignPhotos(library: LibraryPhoto[]): PhotoAssignment {
     work,
     details,
     byService,
-    card: slots.slice(0, 6),
+    card: slots.length ? slots.slice(0, 6) : [PHOTOS.hero, PHOTOS.work01, PHOTOS.work02, PHOTOS.work03],
   };
 }

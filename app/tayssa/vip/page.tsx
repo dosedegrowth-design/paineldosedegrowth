@@ -7,6 +7,8 @@ import { APPOINTMENT_STATUS_LABEL } from "@/lib/tayssa/types";
 import { LoyaltyCard } from "@/components/tayssa/vip/loyalty-card";
 import { RankingList } from "@/components/tayssa/vip/ranking-list";
 import { toCardStamps } from "@/lib/tayssa/queries/vip";
+import { getPhotoLibrary } from "@/lib/tayssa/queries/photos";
+import { assignPhotos } from "@/lib/tayssa/photos";
 
 /**
  * A casa da cliente. Uma tela, de cima para baixo, na ordem do que ela
@@ -14,7 +16,8 @@ import { toCardStamps } from "@/lib/tayssa/queries/vip";
  */
 export default async function VipHome() {
   const user = await requireClientPage();
-  const { overview: o, card, appointments, ranking } = await getVipHome(user);
+  const [{ overview: o, card, appointments, ranking }, library] = await Promise.all([getVipHome(user), getPhotoLibrary()]);
+  const photos = assignPhotos(library).card;
 
   const activeBenefits = o.benefits.filter((b) => ["available", "requested", "approved"].includes(b.status));
   const validating = o.benefits.filter((b) => b.status === "pending_validation");
@@ -45,6 +48,10 @@ export default async function VipHome() {
           completedCards={card.completedCards}
           rewardTitle={o.settings.loyalty.card_reward_title}
           rewardStatus={card.reward?.status ?? null}
+          photos={photos}
+          holderName={user.displayName}
+          memberSince={user.profile?.vip_since ?? null}
+          isVip={user.isVip}
           withLink
         />
       </div>
