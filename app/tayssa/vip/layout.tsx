@@ -4,6 +4,7 @@ import { requireClientPage } from "@/lib/tayssa/auth/guards";
 import { getSettings } from "@/lib/tayssa/settings";
 import { renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { BottomNav } from "@/components/tayssa/vip/bottom-nav";
+import { PageEnter } from "@/components/tayssa/vip/page-enter";
 import { TyBrand } from "@/components/tayssa/ui/brand";
 
 export const metadata: Metadata = {
@@ -46,7 +47,9 @@ export default async function VipLayout({ children }: { children: React.ReactNod
           </svg>
         </a>
       </header>
-      <main className="tyv-page">{children}</main>
+      <main className="tyv-page">
+        <PageEnter>{children}</PageEnter>
+      </main>
       <BottomNav />
     </div>
   );

@@ -146,6 +146,108 @@
   color: var(--t-fg-2);
 }
 
+/* ---------- entrada de tela ---------- */
+.tyv-enter {
+  animation: tyv-enter 520ms var(--t-ease-out) both;
+}
+@keyframes tyv-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---------- esqueleto (loading) ---------- */
+.tyv-skel {
+  display: block;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--tyv-surface) 25%, var(--tyv-surface-2) 50%, var(--tyv-surface) 75%);
+  background-size: 200% 100%;
+  animation: tyv-skel 1.5s ease-in-out infinite;
+}
+.tyv-skel--card {
+  aspect-ratio: 1.586;
+  border-radius: 22px;
+  margin-top: 22px;
+}
+@keyframes tyv-skel {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+/* ---------- o momento do marco ---------- */
+.tyv-moment {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 16px 12px 16px 18px;
+  border-radius: var(--tyv-radius);
+  border: 1px solid color-mix(in srgb, var(--tyv-gold) 45%, transparent);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--tyv-gold) 14%, transparent),
+    color-mix(in srgb, var(--t-accent) 10%, transparent)
+  );
+  overflow: hidden;
+  isolation: isolate;
+}
+.tyv-moment__line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #e8cfa0, #a5647a);
+}
+.tyv-moment::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.08) 45%, transparent 60%);
+  background-size: 250% 100%;
+  animation: tyv-moment-sheen 3.2s ease-in-out 1s 2;
+}
+@keyframes tyv-moment-sheen {
+  from { background-position: 120% 0; }
+  to { background-position: -120% 0; }
+}
+.tyv-moment__body {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.tyv-moment__title {
+  font-family: var(--t-font-display);
+  font-size: 18px;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.tyv-moment .tyv-link {
+  margin-top: 4px;
+  justify-self: start;
+}
+.tyv-moment__close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--t-fg-2);
+  font-size: 22px;
+  line-height: 1;
+  align-self: start;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tyv-enter,
+  .tyv-skel,
+  .tyv-moment::after {
+    animation: none;
+  }
+}
+
 /* ---------- painel de números: anel + contadores ---------- */
 .tyv-kpis {
   display: grid;

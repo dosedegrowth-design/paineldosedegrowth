@@ -2,13 +2,14 @@ import Link from "next/link";
 import { requireClientPage } from "@/lib/tayssa/auth/guards";
 import { getVipHome } from "@/lib/tayssa/queries/vip";
 import { ROUTES } from "@/lib/tayssa/config";
-import { dayLabel, dateLong, hhmm, nowInBusinessTz, plural } from "@/lib/tayssa/format";
+import { dayLabel, dateLong, hhmm, isWithinHours, nowInBusinessTz, plural } from "@/lib/tayssa/format";
 import { APPOINTMENT_STATUS_LABEL } from "@/lib/tayssa/types";
 import { LoyaltyCard } from "@/components/tayssa/vip/loyalty-card";
 import { RankingList } from "@/components/tayssa/vip/ranking-list";
 import { CountUp } from "@/components/tayssa/vip/count-up";
 import { ProgressRing } from "@/components/tayssa/vip/progress-ring";
 import { Timeline } from "@/components/tayssa/vip/timeline";
+import { MilestoneMoment, type Moment } from "@/components/tayssa/vip/milestone-moment";
 import { buildTimeline } from "@/lib/tayssa/timeline";
 import { toCardStamps } from "@/lib/tayssa/queries/vip";
 import { getPhotoLibrary } from "@/lib/tayssa/queries/photos";
@@ -26,6 +27,13 @@ export default async function VipHome() {
   const activeBenefits = o.benefits.filter((b) => ["available", "requested", "approved"].includes(b.status));
   const validating = o.benefits.filter((b) => b.status === "pending_validation");
   const next = appointments.next;
+  // algo novo com um benefício dela nas últimas 72h? liberado fala mais alto que alcançado
+  const released = o.benefits.find((b) => b.status === "available" && isWithinHours(b.available_at, 72));
+  const reached = o.benefits.find((b) => b.status === "pending_validation" && isWithinHours(b.eligible_at ?? b.created_at, 72));
+  const fresh = released ?? reached;
+  const moment: Moment | null = fresh
+    ? { id: `${fresh.id}:${fresh.status}`, kind: fresh === released ? "released" : "reached", title: fresh.title }
+    : null;
   const timeline = buildTimeline({
     services: o.recentServices,
     benefits: o.benefits,
@@ -51,6 +59,8 @@ export default async function VipHome() {
         Olá, <em>{user.displayName}</em>.
       </h1>
       <p className="tyv-sub">{status}</p>
+
+      {moment ? <MilestoneMoment moment={moment} /> : null}
 
       <div style={{ marginTop: 22 }}>
         <LoyaltyCard
