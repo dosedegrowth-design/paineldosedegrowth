@@ -87,6 +87,28 @@ A cadastro/aprovação → B imagens → C cartão 3D → D dashboard → E admi
 
 Jornadas verificadas no navegador (Playwright, 360/390/430/1280/1440, com movimento reduzido também): cadastro → aprovação → boas-vindas; upload → biblioteca → site; giro do cartão → 4 raspadas → cartão 2; agenda: pedido → confirmação → realizado → pontos, carimbo e recado chegando na cliente; configurações salvando e refletindo na agenda.
 
+## Verificação em produção (16/set/2026, `painel.dosedegrowth.com`)
+
+Sem navegador na conta da Tayssa, as telas foram lidas como um navegador
+sem JS (formulários de server action) e, para o que exige clique, por um
+navegador real passando pelo proxy da sessão.
+
+- Cliente demo (`cliente01@demo.tayssa`): início, cartão, agendar,
+  benefícios e perfil abrem; cartão físico com frente e verso no HTML do
+  servidor, 4 carimbos dourados esperando raspagem, anel de pontos,
+  contadores e a jornada.
+- Público: site, `/cadastro` em passos e `/aguardando` no ar; `/vip` e
+  `/admin` sem sessão voltam para a entrada; sessão de cliente em
+  `/admin` cai em `/acesso`.
+- Admin (conta temporária `qa-temp@tayssa.vip`, criada e **apagada** no
+  fim): visão geral com pedidos e agenda do dia, `/admin/agenda` com a
+  disponibilidade da casa, configurações com Agenda/Cartão/Cadastro, e
+  **upload real**: a foto subiu para o bucket `tayssa-fotos`, abriu pela
+  URL pública, apareceu na biblioteca e passou a ser usada no site.
+  Depois a foto foi apagada pelo próprio painel (sai do Storage, não só
+  do banco) e a conta temporária, suas sessões e seu rastro de auditoria
+  foram removidos — banco e bucket voltaram a zero foto, 1 admin.
+
 ## Ainda em aberto (depende do Lucas ou de dado real)
 
 - Repositório e projeto Vercel próprios para `tayssa-lash/` (a plataforma barrou a criação por aqui): importar o repo do painel na Vercel com **Root Directory `tayssa-lash`** + as 2 envs, ou criar o repo `tayssa-lash` e dar acesso ao app. Depois apontar `tayssa.dosedegrowth.com` e tirar `/tayssa` do painel.
