@@ -17,13 +17,15 @@ const FRAMES: { n: string; title: string; text: string; photo: PhotoSlot }[] = [
  * A seção prende por 3 telas. Cada foto entra por máscara de baixo pra
  * cima e assume o quadro; a legenda troca em sincronia. Ao final, solta.
  */
-export function WorkSequence() {
+export function WorkSequence({ photos }: { photos?: PhotoSlot[] }) {
+  // biblioteca primeiro; onde faltar, o slot estático de cada quadro
+  const frames = FRAMES.map((f, i) => ({ ...f, photo: photos?.[i] ?? f.photo }));
   const ref = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
 
   return (
-    <div id="trabalho" ref={ref} style={{ height: `${FRAMES.length * 100 + 60}vh`, position: "relative" }}>
+    <div id="trabalho" ref={ref} style={{ height: `${frames.length * 100 + 60}vh`, position: "relative" }}>
       <section className="ty-pin" aria-label="Trabalho">
         <div
           className="ty-container"
@@ -42,10 +44,10 @@ export function WorkSequence() {
             <span className="ty-eyebrow" style={{ display: "block", marginBottom: isMobile ? 12 : 26 }}>
               Trabalho
             </span>
-            {FRAMES.map((f, i) => (
-              <Caption key={f.n} frame={f} index={i} progress={scrollYProgress} total={FRAMES.length} />
+            {frames.map((f, i) => (
+              <Caption key={f.n} frame={f} index={i} progress={scrollYProgress} total={frames.length} />
             ))}
-            <Counter progress={scrollYProgress} total={FRAMES.length} />
+            <Counter progress={scrollYProgress} total={frames.length} />
           </div>
 
           {/* pilha de fotos */}
@@ -59,8 +61,8 @@ export function WorkSequence() {
               justifySelf: isMobile ? "center" : "end",
             }}
           >
-            {FRAMES.map((f, i) => (
-              <Frame key={f.n} frame={f} index={i} progress={scrollYProgress} total={FRAMES.length} />
+            {frames.map((f, i) => (
+              <Frame key={f.n} frame={f} index={i} progress={scrollYProgress} total={frames.length} />
             ))}
           </div>
         </div>

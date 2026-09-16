@@ -13,6 +13,7 @@ const LINKS = [
   { href: ROUTES.adminReferrals, label: "Indicações", key: "referrals" },
   { href: ROUTES.adminBenefits, label: "Benefícios", key: "benefits" },
   { href: ROUTES.adminBirthdays, label: "Aniversários", key: "birthdays" },
+  { href: ROUTES.adminPhotos, label: "Fotos", key: "photos" },
   { href: ROUTES.adminSettings, label: "Configurações", key: "settings" },
 ];
 

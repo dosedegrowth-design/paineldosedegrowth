@@ -173,6 +173,25 @@ export type CardStamp = {
   date: string;
 };
 
+/** Foto da biblioteca central: um upload, vários consumidores. */
+export type PhotoRow = {
+  id: string;
+  storage_path: string;
+  public_url: string;
+  /** volume/estilo de cílios (ex.: "Volume brasileiro") */
+  lash_style: string;
+  caption: string | null;
+  alt: string;
+  width: number | null;
+  height: number | null;
+  status: "active" | "archived";
+  featured: boolean;
+  sort_order: number;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type AppointmentStatus = "requested" | "confirmed" | "done" | "cancelled" | "no_show";
 
 export type AppointmentRow = {

@@ -93,3 +93,72 @@ export const PHOTOS = {
 } satisfies Record<string, PhotoSlot>;
 
 export type PhotoKey = keyof typeof PHOTOS;
+
+/** Foto da biblioteca (banco) no formato que <RealPhoto> consome. */
+export type LibraryPhoto = {
+  id: string;
+  public_url: string;
+  lash_style: string;
+  caption: string | null;
+  alt: string;
+  width: number | null;
+  height: number | null;
+  featured: boolean;
+};
+
+export function slotFromPhoto(p: LibraryPhoto, ratio?: number): PhotoSlot {
+  const natural = p.width && p.height ? p.width / p.height : undefined;
+  return {
+    src: p.public_url,
+    alt: p.alt,
+    ratio: ratio ?? natural ?? 4 / 5,
+    caption: p.caption ?? p.lash_style,
+  };
+}
+
+export type PhotoAssignment = {
+  hero: PhotoSlot;
+  entrance: PhotoSlot;
+  work: PhotoSlot[];
+  details: PhotoSlot[];
+  byService: Record<string, PhotoSlot>;
+  /** sequência para a frente do cartão (destaques primeiro) */
+  card: PhotoSlot[];
+};
+
+const SERVICE_KEYWORDS: Record<string, string[]> = {
+  "manutencao-cilios": ["manuten"],
+  "design-sobrancelhas": ["sobrancelh", "brow"],
+  "lip-spa": ["lip", "lábio", "labio"],
+  "limpeza-de-pele": ["limpeza", "pele", "skin"],
+  "aplicacao-cilios": ["volume", "fio", "cílio", "cilio", "lash"],
+};
+
+/**
+ * Distribui a biblioteca pelos lugares do site. Regra simples e
+ * previsível: destaques primeiro; cada lugar recebe as próximas fotos;
+ * onde faltar, entra o slot estático (que vira campo tonal se não houver
+ * arquivo). A Tayssa só sobe a foto — aqui ela encontra o lugar.
+ */
+export function assignPhotos(library: LibraryPhoto[]): PhotoAssignment {
+  const ordered = [...library].sort((a, b) => Number(b.featured) - Number(a.featured));
+  const slots = ordered.map((p) => slotFromPhoto(p));
+  const take = (n: number, from: number) => slots.slice(from, from + n);
+  const hero = slots[0] ?? PHOTOS.hero;
+  const work = [0, 1, 2].map((i) => take(1, 1 + i)[0] ?? [PHOTOS.work01, PHOTOS.work02, PHOTOS.work03][i]);
+  const detailStatics = [PHOTOS.detail01, PHOTOS.detail02, PHOTOS.detail03, PHOTOS.detail04, PHOTOS.detail05, PHOTOS.detail06];
+  const details = detailStatics.map((st, i) => take(1, 4 + i)[0] ?? st);
+  const byService: Record<string, PhotoSlot> = {};
+  for (const [slug, words] of Object.entries(SERVICE_KEYWORDS)) {
+    const hit = ordered.find((p) => words.some((w) => p.lash_style.toLowerCase().includes(w)));
+    if (hit) byService[slug] = slotFromPhoto(hit, 3 / 4);
+  }
+  return {
+    hero,
+    entrance: slots[1] ?? slots[0] ?? PHOTOS.entrance,
+    work,
+    details,
+    byService,
+    card: slots.slice(0, 6),
+  };
+}

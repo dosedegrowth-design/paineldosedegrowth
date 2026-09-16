@@ -22,7 +22,8 @@ const ITEMS: { photo: PhotoSlot; w: number; offset: number; kind: "foto" | "publ
  * na horizontal enquanto a página desce. A tipografia fica ancorada.
  * No mobile o trilho é um scroll horizontal nativo (gesto deliberado).
  */
-export function Details({ instagramUrl, handle }: { instagramUrl: string; handle: string }) {
+export function Details({ instagramUrl, handle, photos }: { instagramUrl: string; handle: string; photos?: PhotoSlot[] }) {
+  const items = ITEMS.map((it, i) => ({ ...it, photo: photos?.[i] ?? it.photo }));
   const isMobile = useIsMobile();
   const reduced = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
@@ -92,7 +93,7 @@ export function Details({ instagramUrl, handle }: { instagramUrl: string; handle
             WebkitOverflowScrolling: "touch",
           }}
         >
-          {ITEMS.map((it, i) => (
+          {items.map((it, i) => (
             <div key={i} style={{ flex: "none", width: `${Math.max(56, it.w * 2.2)}vw`, scrollSnapAlign: "start" }}>
               <RealPhoto photo={it.photo} sizes="70vw" showCaption />
               <span className="ty-small" style={{ display: "block", marginTop: 8, letterSpacing: "0.18em", textTransform: "uppercase", fontSize: 10 }}>
@@ -121,7 +122,7 @@ export function Details({ instagramUrl, handle }: { instagramUrl: string; handle
           }}
         >
           {head}
-          {ITEMS.map((it, i) => (
+          {items.map((it, i) => (
             <RailItem key={i} item={it} index={i} progress={scrollYProgress} />
           ))}
           <div style={{ flex: "none", width: "12vw" }} />

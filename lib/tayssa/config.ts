@@ -28,6 +28,8 @@ export const ROUTES = {
   adminBenefits: "/tayssa/admin/beneficios",
   adminBirthdays: "/tayssa/admin/aniversarios",
   adminSettings: "/tayssa/admin/configuracoes",
+  adminPhotos: "/tayssa/admin/fotos",
+  adminAgenda: "/tayssa/admin/agenda",
 } as const;
 
 /** Nome do cookie de sessão (próprio, não usa Supabase Auth). */
@@ -37,6 +39,16 @@ export const PASSWORD_TOKEN_DAYS = 7;
 export const LOGIN_MAX_ATTEMPTS = 8;
 export const LOGIN_WINDOW_MINUTES = 15;
 export const MIN_PASSWORD_LENGTH = 8;
+
+/** Biblioteca de fotos (Supabase Storage, bucket público). */
+export const PHOTO_BUCKET = "tayssa-fotos";
+export const PHOTO_MAX_BYTES = 10 * 1024 * 1024;
+export const PHOTO_TYPES: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/avif": "avif",
+};
 
 /** URL pública canônica (subdomínio). Caminhos internos continuam /tayssa/... */
 export const PUBLIC_ORIGIN =

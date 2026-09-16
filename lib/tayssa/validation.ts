@@ -133,6 +133,14 @@ export const reviewSignupSchema = z.object({
   vip: z.boolean().optional(),
 });
 
+/** Metadados de uma foto da biblioteca. */
+export const photoMetaSchema = z.object({
+  lash_style: z.string().trim().min(2, "Diga o volume ou estilo").max(80),
+  caption: z.string().trim().max(120).optional().transform((v) => v || null),
+  alt: z.string().trim().max(200).optional().transform((v) => v || null),
+  featured: z.boolean().optional(),
+});
+
 export const adminClientSchema = z.object({
   name: trimmed(120),
   email: emailField,
