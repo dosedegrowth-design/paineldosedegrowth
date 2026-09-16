@@ -4,11 +4,11 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 /**
  * Cliente Supabase do schema `vip`, com service role.
  * NUNCA importar em client components. Toda autorização é feita no
- * servidor (lib/tayssa/auth/guards.ts) antes de tocar no banco.
+ * servidor (lib/auth/guards.ts) antes de tocar no banco.
  */
 
 // Sem tipos gerados do schema: o client é "solto" e cada query faz cast
-// explícito para os tipos de lib/tayssa/types.ts.
+// explícito para os tipos de lib/types.ts.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type VipClient = SupabaseClient<any, "vip", "vip", any, any>;
 

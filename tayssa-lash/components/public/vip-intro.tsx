@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { useEffect, useRef } from "react";
+import { useMotionValueEvent, useScroll, useTransform } from "framer-motion";
 import { ROUTES } from "@/lib/config";
 import type { BenefitRow } from "@/lib/types";
 import { MaskedLines, Reveal } from "@/components/ui/reveal";
@@ -44,11 +44,9 @@ const PRIVILEGES = [
  * marfim a noir. Não é um bloco escuro: é a página escurecendo.
  * Privilégios como tipografia + linhas, não cards.
  */
-export function VipIntro({ benefits, vipInfoUrl }: { benefits: BenefitRow[]; vipInfoUrl: string }) {
+export function VipIntro({ benefits }: { benefits: BenefitRow[] }) {
   const ref = useRef<HTMLElement>(null);
   const isMobile = useIsMobile();
-  const reduced = useReducedMotion();
-  const [open, setOpen] = useState(false);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 95%", "start 30%"] });
   const t = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
@@ -168,46 +166,20 @@ export function VipIntro({ benefits, vipInfoUrl }: { benefits: BenefitRow[]; vip
           </Reveal>
           <Reveal delay={0.1}>
             <p className="ty-body" style={{ maxWidth: 520, fontSize: 16 }}>
-              O acesso é liberado pela Tayssa para clientes com relação estabelecida
-              com o estúdio. Não existe cadastro aberto. Quem recebe o convite
-              recebe também um acesso só seu.
+              Você pede, a Tayssa revisa e libera. O cadastro é um pedido de
+              acesso, não uma porta aberta: nada entra sem a aprovação dela.
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 18, alignItems: "center", marginTop: 30 }}>
               <Magnetic>
-                <button className="ty-btn ty-btn--solid" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
-                  <span>Quero fazer parte</span>
+                <TransitionLink href={ROUTES.signup} className="ty-btn ty-btn--solid">
+                  <span>Pedir acesso</span>
                   <span className="ty-btn__arrow" aria-hidden />
-                </button>
+                </TransitionLink>
               </Magnetic>
               <TransitionLink href={ROUTES.login} className="ty-link ty-link--caps">
                 Já sou VIP · Entrar
               </TransitionLink>
             </div>
-            <AnimatePresence initial={false}>
-              {open ? (
-                <motion.div
-                  key="how"
-                  initial={reduced ? false : { height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                  style={{ overflow: "hidden" }}
-                >
-                  <div style={{ paddingTop: 28, borderTop: "1px solid var(--t-line)", marginTop: 28, maxWidth: 520 }}>
-                    <p className="ty-lead" style={{ fontSize: 18 }}>
-                      Seu acesso à experiência VIP é liberado pela Tayssa para clientes elegíveis.
-                    </p>
-                    <p className="ty-body" style={{ marginTop: 12 }}>
-                      Fale com ela. Se fizer sentido, você recebe um convite com o seu acesso.
-                    </p>
-                    <a href={vipInfoUrl} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--sm" style={{ marginTop: 22 }}>
-                      <span>Falar com Tayssa</span>
-                      <span className="ty-btn__arrow" aria-hidden />
-                    </a>
-                  </div>
-                </motion.div>
-              ) : null}
-            </AnimatePresence>
           </Reveal>
         </div>
       </div>

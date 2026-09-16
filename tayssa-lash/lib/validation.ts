@@ -108,6 +108,39 @@ export const profileUpdateSchema = z.object({
 
 // ---------------- Admin ----------------
 
+/** Pedido de acesso feito pela própria cliente, no site. */
+export const signupSchema = z
+  .object({
+    name: z.string().trim().min(2, "Conte seu nome").max(120),
+    email: emailField,
+    phone: phoneField,
+    password: passwordField,
+    confirm: z.string(),
+    birthday: z
+      .string()
+      .trim()
+      .optional()
+      .transform((v) => v || null)
+      .refine((v) => !v || /^\d{4}-\d{2}-\d{2}$/.test(v), "Data inválida"),
+    message: z.string().trim().max(300).optional().transform((v) => v || null),
+  })
+  .refine((v) => v.password === v.confirm, { message: "As senhas não conferem", path: ["confirm"] });
+
+export const reviewSignupSchema = z.object({
+  id: z.string().uuid(),
+  decision: z.enum(["approve", "reject"]),
+  note: z.string().trim().max(300).optional().transform((v) => v || null),
+  vip: z.boolean().optional(),
+});
+
+/** Metadados de uma foto da biblioteca. */
+export const photoMetaSchema = z.object({
+  lash_style: z.string().trim().min(2, "Diga o volume ou estilo").max(80),
+  caption: z.string().trim().max(120).optional().transform((v) => v || null),
+  alt: z.string().trim().max(200).optional().transform((v) => v || null),
+  featured: z.boolean().optional(),
+});
+
 export const adminClientSchema = z.object({
   name: trimmed(120),
   email: emailField,
@@ -232,6 +265,35 @@ export const whatsappTemplatesSchema = z.object({
   benefit_request: z.string().trim().min(1).max(300),
   birthday_request: z.string().trim().min(1).max(300),
   inactive_outreach: z.string().trim().min(1).max(300),
+});
+
+// ---------------- Agenda (admin) ----------------
+
+export const appointmentReviewSchema = z.object({
+  id: z.string().uuid(),
+  note: z.string().trim().max(500).optional().transform((v) => v || null),
+});
+
+const hhmmField = z.string().trim().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Horário no formato HH:MM");
+
+export const bookingSettingsSchema = z.object({
+  weekdays: z.array(z.coerce.number().int().min(0).max(6)).min(1, "Escolha pelo menos um dia").transform((v) => [...new Set(v)].sort()),
+  slots: z.array(hhmmField).min(1, "Informe pelo menos um horário").max(24).transform((v) => [...new Set(v)].sort()),
+  lead_hours: z.coerce.number().int().min(0).max(168),
+  horizon_days: z.coerce.number().int().min(1).max(120),
+  default_duration_min: z.coerce.number().int().min(15).max(480),
+  max_open_per_client: z.coerce.number().int().min(1).max(10),
+});
+
+export const loyaltySettingsSchema = z.object({
+  card_size: z.coerce.number().int().min(2).max(20),
+  card_reward_title: trimmed(80),
+  card_reward_description: z.string().trim().max(300),
+});
+
+export const signupSettingsSchema = z.object({
+  open: z.boolean(),
+  welcome_template: z.string().trim().min(1).max(400),
 });
 
 /** Primeiro erro de um ZodError em linguagem humana. */

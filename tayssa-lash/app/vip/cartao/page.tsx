@@ -5,10 +5,13 @@ import { toCardStamps } from "@/lib/queries/vip";
 import { dateLong, plural } from "@/lib/format";
 import { BENEFIT_STATUS_LABEL } from "@/lib/types";
 import { LoyaltyCard } from "@/components/vip/loyalty-card";
+import { getPhotoLibrary } from "@/lib/queries/photos";
+import { assignPhotos } from "@/lib/photos";
 
 export default async function CardPage() {
   const user = await requireClientPage();
-  const [card, settings] = await Promise.all([getCardState(user.id), getSettings()]);
+  const [card, settings, library] = await Promise.all([getCardState(user.id), getSettings(), getPhotoLibrary()]);
+  const photos = assignPhotos(library).card;
   const stamps = toCardStamps(card.stamps);
   const revealed = stamps.filter((s) => s.revealed).sort((a, b) => b.position - a.position);
 
@@ -19,7 +22,7 @@ export default async function CardPage() {
       </h1>
       <p className="tyv-sub">
         {card.unrevealed
-          ? `Toque no dourado para raspar. ${card.unrevealed} ${plural(card.unrevealed, "carimbo espera", "carimbos esperam")} você.`
+          ? `Vire o cartão e raspe o dourado. ${card.unrevealed} ${plural(card.unrevealed, "carimbo espera", "carimbos esperam")} você no verso.`
           : `A cada ${card.size} visitas confirmadas, um presente escolhido pela Tayssa.`}
       </p>
 
@@ -31,6 +34,10 @@ export default async function CardPage() {
           completedCards={card.completedCards}
           rewardTitle={settings.loyalty.card_reward_title}
           rewardStatus={card.reward?.status ?? null}
+          photos={photos}
+          holderName={user.displayName}
+          memberSince={user.profile?.vip_since ?? null}
+          isVip={user.isVip}
         />
       </div>
 

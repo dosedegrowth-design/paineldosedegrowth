@@ -238,16 +238,18 @@ Produto separado dentro deste repo (subdomínio `tayssa.dosedegrowth.com`, tamb�
 
 | Recurso | Onde |
 |---|---|
-| Rotas | `app/tayssa/*` — público (`/`, `/indicar`, `/entrar`, `/entrar/definir-senha`, `/acesso`), VIP (`/vip`, `/vip/cartao`, `/vip/agendar`, `/vip/beneficios`, `/vip/perfil`), admin (`/admin/*`) |
+| Rotas | `app/tayssa/*` — público (`/`, `/indicar`, `/cadastro`, `/aguardando`, `/entrar`, `/entrar/definir-senha`, `/acesso`), VIP (`/vip`, `/vip/cartao`, `/vip/agendar`, `/vip/beneficios`, `/vip/perfil`), admin (`/admin/*` — inclui `/admin/agenda` e `/admin/fotos`) |
 | Componentes | `components/tayssa/{ui,public,auth,vip,admin}` |
 | Domínio | `lib/tayssa/*` — `auth/` (scrypt + sessão em cookie `tayssa_vip_session` + tabela `sessions`), `actions/` (server actions, Zod, audit), `queries/`, `rules.ts` (puro, testado), `engine.ts` (elegibilidade) |
-| Banco | schema **`vip`** no projeto DDG (`supabase/migrations/20260914000000_vip_init.sql` + `20260914120000_vip_card_booking.sql`). RLS ligado sem policies: só service_role acessa |
+| Banco | schema **`vip`** no projeto DDG (`supabase/migrations/20260914000000_vip_init.sql` + `20260914120000_vip_card_booking.sql` + `20260916000000_vip_signup_photos_agenda.sql`: `users.status` ganha `pending/rejected` + campos de cadastro, tabela `vip.photos`, bucket `tayssa-fotos`, `appointments.reviewed_*`, `settings.signup`). RLS ligado sem policies: só service_role acessa |
+| Cadastro | `/cadastro` cria a cliente em `pending` (nada de sessão). A Tayssa aprova/recusa na ficha (`adminReviewSignupAction`) e manda as boas-vindas pelo WhatsApp (`settings.signup.welcome_template`, precisa conter `{url}`). Aberto/fechado em Configurações → Cadastro |
+| Fotos | `vip.photos` + Storage `tayssa-fotos` (público). A Tayssa sobe em `/admin/fotos` com estilo/volume; `assignPhotos()` (`lib/tayssa/photos.ts`) distribui para herói, sequência, detalhes, serviços (palavra-chave) e frente do cartão. Sem foto → campo tonal, nunca imagem inventada |
 | App da cliente | mobile primeiro: `app/tayssa/vip/vip.css` (classes `tyv-*`, cartão `tyc-*`, raspadinha `tys-*`) + nav fixa em `components/tayssa/vip/bottom-nav.tsx` |
-| Cartão | `vip.loyalty_cards` + `vip.loyalty_stamps`. Visita confirmada pela Tayssa → `stampVisit()` cria o carimbo oculto; a cliente raspa (`revealStampAction`) e vê os pontos. Cartão cheio → benefício `card_complete` em `pending_validation` |
-| Agenda | `vip.appointments`. Regras em `settings.booking` (dias, horários, antecedência, limite em aberto). Pedido nasce `requested`; a Tayssa confirma |
+| Cartão | `vip.loyalty_cards` + `vip.loyalty_stamps`. Visita confirmada pela Tayssa → `stampVisit()` cria o carimbo oculto; a cliente raspa (`revealStampAction`) e vê os pontos. Cartão cheio → benefício `card_complete` em `pending_validation`. Na tela é um cartão físico (`components/tayssa/vip/loyalty-card.tsx`): frente com fotos + nome, giro 3D, verso com as posições |
+| Agenda | `vip.appointments`. Regras em `settings.booking` (editáveis em Configurações → Agenda). Pedido nasce `requested`; a Tayssa confirma/recusa/cancela em `/admin/agenda`; "Realizado" registra a visita confirmada (`lib/tayssa/visits.ts` → pontos + carimbo) e liga `client_service_id` |
 | Middleware | host `tayssa.*` → rewrite de todo path para `/tayssa/...`; `/tayssa/vip*` e `/tayssa/admin*` sem cookie → `/tayssa/entrar` |
 | Fotos reais | `public/tayssa/photos/` com os nomes de `lib/tayssa/photos.ts`; sem arquivo, o slot mostra campo tonal (nunca imagem sintética) |
-| Testes | `node --experimental-strip-types --test lib/tayssa/rules.test.ts` |
+| Testes | `node --experimental-strip-types --test lib/tayssa/rules.test.ts lib/tayssa/timeline.test.ts` |
 
 Datas: o servidor roda em UTC — use `nowInBusinessTz()` (`lib/tayssa/format.ts`) em qualquer lógica de "hoje", nunca `new Date()` cru.
 
@@ -261,12 +263,15 @@ Regras que NÃO podem quebrar:
 
 Operação:
 - Admin cria cliente em `/tayssa/admin/clientes/novo` → gera link único de primeiro acesso (7 dias) → envia por WhatsApp. Nenhuma senha aparece na tela.
+- Cliente de demonstração em produção: `cliente01@demo.tayssa` (senha combinada no chat; carimbos para raspar).
 - Conta admin: login `admin@tayssa.vip` (troque o e-mail no perfil se quiser). Primeiro acesso via link gerado no seed (ver histórico do chat/sessão que criou); para gerar outro: `insert into vip.password_tokens (user_id, token_hash, purpose, expires_at)` com `token_hash = sha256(token)`.
 - Usa as mesmas envs do painel (`NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`). Opcional: `NEXT_PUBLIC_TAYSSA_ORIGIN` (default `https://tayssa.dosedegrowth.com`).
 
 Gotchas:
 - O schema `vip` precisa estar em **Exposed schemas** do PostgREST. Foi adicionado via `alter role authenticator set pgrst.db_schemas = '..., vip'` + `notify pgrst, 'reload config'`. Se alguém salvar a lista pelo dashboard do Supabase (Settings → API), confira se `vip` continua lá.
 - O reset de botão do Tayssa usa `:where(.ty-scope) button` (especificidade zero) — se voltar a ser `.ty-scope button`, todo botão sólido perde fundo e borda.
+- Cartão 3D: as duas faces ficam `translateZ(1px)` à frente do corpo, cada uma do seu lado. Coplanares, o Chromium perde o hit-test perto de 180° (o dourado não abre). O giro é uma mola presa a [0, 180].
+- `tayssa-lash/` é espelho mecânico: rode `node scratchpad/sync-standalone.mjs`-equivalente (copiar `app/components/lib/public/docs/tayssa` + migrations `*vip*`, trocar `@/lib/tayssa/`→`@/lib/`, `@/components/tayssa/`→`@/components/`, `"/tayssa/`→`"/`) — nunca edite o espelho à mão.
 - ⚠️ Nessa mesma checagem, `trafego_ddg` **não está** na lista de schemas expostos (`pgrst.db_schemas`) — as queries `.schema("trafego_ddg")` do painel retornam PGRST106 na REST. Não foi alterado por estar fora do escopo do Tayssa.
 
 ## Documentação relacionada

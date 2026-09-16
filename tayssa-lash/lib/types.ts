@@ -4,7 +4,7 @@
  */
 
 export type UserRole = "client" | "admin";
-export type UserStatus = "active" | "inactive" | "suspended";
+export type UserStatus = "pending" | "active" | "inactive" | "suspended" | "rejected";
 export type VipStatus = "none" | "active" | "suspended";
 export type ServiceStatus = "pending" | "approved" | "rejected";
 export type ReferralStatus =
@@ -36,6 +36,13 @@ export type UserRow = {
   status: UserStatus;
   last_login_at: string | null;
   created_by: string | null;
+  /** 'self' = pediu acesso pelo site; 'admin' = a Tayssa cadastrou */
+  signup_source: "admin" | "self";
+  signup_message: string | null;
+  requested_at: string | null;
+  reviewed_at: string | null;
+  reviewed_by: string | null;
+  review_note: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -166,6 +173,25 @@ export type CardStamp = {
   date: string;
 };
 
+/** Foto da biblioteca central: um upload, vários consumidores. */
+export type PhotoRow = {
+  id: string;
+  storage_path: string;
+  public_url: string;
+  /** volume/estilo de cílios (ex.: "Volume brasileiro") */
+  lash_style: string;
+  caption: string | null;
+  alt: string;
+  width: number | null;
+  height: number | null;
+  status: "active" | "archived";
+  featured: boolean;
+  sort_order: number;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type AppointmentStatus = "requested" | "confirmed" | "done" | "cancelled" | "no_show";
 
 export type AppointmentRow = {
@@ -215,7 +241,7 @@ export type AuditRow = {
 /** Resultado padrão das server actions. */
 export type ActionResult<T = undefined> =
   | ({ ok: true } & (T extends undefined ? { data?: undefined } : { data: T }))
-  | { ok: false; error: string; field?: string };
+  | { ok: false; error: string; field?: string; code?: string };
 
 // ------------------------------------------------------------
 // Rótulos (linguagem humana, sem jargão técnico)
@@ -269,7 +295,9 @@ export const VIP_STATUS_LABEL: Record<VipStatus, string> = {
 };
 
 export const USER_STATUS_LABEL: Record<UserStatus, string> = {
+  pending: "Aguardando aprovação",
   active: "Ativa",
   inactive: "Inativa",
   suspended: "Suspensa",
+  rejected: "Recusada",
 };
