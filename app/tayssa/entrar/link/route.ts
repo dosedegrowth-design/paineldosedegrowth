@@ -8,12 +8,16 @@ import type { UserRole, UserStatus } from "@/lib/tayssa/types";
 export const dynamic = "force-dynamic";
 
 /**
- * Entrada por link: a Tayssa manda um link e a cliente entra sem digitar
- * senha. O link vale uma vez só, expira, e é guardado no banco apenas
- * como hash — quem vê a linha não consegue entrar com ela.
+ * Entrada por link — dois tipos, guardados do mesmo jeito (só o hash
+ * vive no banco) e os dois com validade:
  *
- * Link inválido, vencido ou já usado não conta história: manda para a
- * tela de entrada normal.
+ *   magic · convite. Vale UMA entrada: é queimado antes de abrir a
+ *           sessão. É o que a Tayssa manda para uma cliente.
+ *   demo  · teste. Abre quantas vezes quiser, em quantos aparelhos
+ *           quiser, até expirar. Cada aparelho ganha a própria sessão.
+ *
+ * Link inválido, vencido ou já usado não conta história: volta para a
+ * tela de entrada.
  */
 export async function GET(request: NextRequest) {
   const token = request.nextUrl.searchParams.get("t")?.trim();
@@ -26,34 +30,41 @@ export async function GET(request: NextRequest) {
       .from("password_tokens")
       .select("id, user_id, purpose, used_at, expires_at, user:users!password_tokens_user_id_fkey(role, status)")
       .eq("token_hash", hashToken(token))
-      .eq("purpose", "magic")
+      .in("purpose", ["magic", "demo"])
       .maybeSingle();
     if (error) throw new Error(error.message);
 
     const row = data as unknown as {
       id: string;
       user_id: string;
+      purpose: "magic" | "demo";
       used_at: string | null;
       expires_at: string;
       user: { role: UserRole; status: UserStatus } | null;
     } | null;
 
-    if (!row || row.used_at || new Date(row.expires_at) < new Date()) return fail();
+    if (!row || new Date(row.expires_at) < new Date()) return fail();
+    if (row.purpose === "magic" && row.used_at) return fail();
     if (!row.user || row.user.status !== "active") return fail();
 
-    // queima o link antes de abrir a sessão: um link, uma entrada
-    const { error: burnError } = await db
-      .from("password_tokens")
-      .update({ used_at: new Date().toISOString() })
-      .eq("id", row.id)
-      .is("used_at", null);
-    if (burnError) throw new Error(burnError.message);
+    if (row.purpose === "magic") {
+      // convite: queima antes de abrir a sessão — um link, uma entrada
+      const { error: burnError } = await db
+        .from("password_tokens")
+        .update({ used_at: new Date().toISOString() })
+        .eq("id", row.id)
+        .is("used_at", null);
+      if (burnError) throw new Error(burnError.message);
+    } else {
+      // teste: não queima, só registra a última vez que alguém entrou
+      await db.from("password_tokens").update({ used_at: new Date().toISOString() }).eq("id", row.id);
+    }
 
     await createSession(row.user_id);
     await logAudit({
       actorId: row.user_id,
       actorRole: row.user.role === "admin" ? "admin" : "client",
-      action: "login_link",
+      action: row.purpose === "demo" ? "login_link_demo" : "login_link",
       entityType: "user",
       entityId: row.user_id,
     });
