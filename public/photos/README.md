@@ -21,4 +21,4 @@ o site mostra um campo tonal no lugar (nunca imagem sintética). Trocar a foto
 | `vip.jpg` | Reservado (boas-vindas VIP) | 16:10 | ≥ 1800px |
 
 JPG ou WebP. O Next otimiza e gera os tamanhos responsivos automaticamente.
-Legendas e textos alternativos ficam em `lib/tayssa/photos.ts`.
+Legendas e textos alternativos ficam em `lib/photos.ts`.

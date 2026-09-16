@@ -33,6 +33,7 @@ export const getSettings = cache(async (): Promise<Settings> => {
       whatsapp: merge(DEFAULT_SETTINGS.whatsapp, byKey.whatsapp),
       loyalty: merge(DEFAULT_SETTINGS.loyalty, byKey.loyalty),
       booking: merge(DEFAULT_SETTINGS.booking, byKey.booking),
+      signup: merge(DEFAULT_SETTINGS.signup, byKey.signup),
     };
   } catch (e) {
     logServerError("settings.get", e);

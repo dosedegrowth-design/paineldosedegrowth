@@ -10,6 +10,8 @@ export const ROUTES = {
   home: "/",
   refer: "/indicar",
   login: "/entrar",
+  signup: "/cadastro",
+  pending: "/aguardando",
   setPassword: "/entrar/definir-senha",
   restricted: "/acesso",
   vip: "/vip",
@@ -26,6 +28,8 @@ export const ROUTES = {
   adminBenefits: "/admin/beneficios",
   adminBirthdays: "/admin/aniversarios",
   adminSettings: "/admin/configuracoes",
+  adminPhotos: "/admin/fotos",
+  adminAgenda: "/admin/agenda",
 } as const;
 
 /** Nome do cookie de sessão (próprio, não usa Supabase Auth). */
@@ -36,13 +40,29 @@ export const LOGIN_MAX_ATTEMPTS = 8;
 export const LOGIN_WINDOW_MINUTES = 15;
 export const MIN_PASSWORD_LENGTH = 8;
 
-/** URL pública canônica (subdomínio). Caminhos internos continuam /tayssa/... */
+/** Biblioteca de fotos (Supabase Storage, bucket público). */
+export const PHOTO_BUCKET = "tayssa-fotos";
+export const PHOTO_MAX_BYTES = 10 * 1024 * 1024;
+export const PHOTO_TYPES: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/avif": "avif",
+};
+
+/** URL pública canônica (subdomínio). Caminhos internos são os mesmos */
 export const PUBLIC_ORIGIN =
   process.env.NEXT_PUBLIC_TAYSSA_ORIGIN ?? "https://tayssa.dosedegrowth.com";
 
-/** URL absoluta de uma rota interna. */
+/**
+ * URL absoluta de uma rota interna. No subdomínio `tayssa.*` o middleware
+ * reescreve `/x` -> `/x`, então o prefixo sai do link público.
+ */
 export function publicUrl(path: string): string {
-  return `${PUBLIC_ORIGIN.replace(/\/$/, "")}${path}`;
+  const origin = PUBLIC_ORIGIN.replace(/\/$/, "");
+  const host = origin.replace(/^https?:\/\//, "");
+  const p = host.startsWith("tayssa.") ? path.replace(/^\/tayssa(?=\/|$)/, "") || "/" : path;
+  return `${origin}${p}`;
 }
 
 // ------------------------------------------------------------
@@ -106,6 +126,13 @@ export type BookingSettings = {
   max_open_per_client: number;
 };
 
+export type SignupSettings = {
+  /** cadastro pelo site aberto? (a aprovação continua sendo da Tayssa) */
+  open: boolean;
+  /** mensagem de boas-vindas ao aprovar — {name}, {url} */
+  welcome_template: string;
+};
+
 export type Settings = {
   business: BusinessSettings;
   rules: RulesSettings;
@@ -113,6 +140,7 @@ export type Settings = {
   whatsapp: WhatsappTemplates;
   loyalty: LoyaltySettings;
   booking: BookingSettings;
+  signup: SignupSettings;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -170,5 +198,10 @@ export const DEFAULT_SETTINGS: Settings = {
     horizon_days: 30,
     default_duration_min: 90,
     max_open_per_client: 2,
+  },
+  signup: {
+    open: true,
+    welcome_template:
+      "Oi, {name}! Seu acesso ao Tayssa Lash foi liberado. Entre por aqui: {url}",
   },
 };

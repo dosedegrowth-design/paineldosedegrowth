@@ -2,11 +2,18 @@ import Link from "next/link";
 import { requireClientPage } from "@/lib/auth/guards";
 import { getVipHome } from "@/lib/queries/vip";
 import { ROUTES } from "@/lib/config";
-import { dayLabel, dateLong, hhmm, plural } from "@/lib/format";
+import { dayLabel, dateLong, hhmm, isWithinHours, nowInBusinessTz, plural } from "@/lib/format";
 import { APPOINTMENT_STATUS_LABEL } from "@/lib/types";
 import { LoyaltyCard } from "@/components/vip/loyalty-card";
 import { RankingList } from "@/components/vip/ranking-list";
+import { CountUp } from "@/components/vip/count-up";
+import { ProgressRing } from "@/components/vip/progress-ring";
+import { Timeline } from "@/components/vip/timeline";
+import { MilestoneMoment, type Moment } from "@/components/vip/milestone-moment";
+import { buildTimeline } from "@/lib/timeline";
 import { toCardStamps } from "@/lib/queries/vip";
+import { getPhotoLibrary } from "@/lib/queries/photos";
+import { assignPhotos } from "@/lib/photos";
 
 /**
  * A casa da cliente. Uma tela, de cima para baixo, na ordem do que ela
@@ -14,11 +21,27 @@ import { toCardStamps } from "@/lib/queries/vip";
  */
 export default async function VipHome() {
   const user = await requireClientPage();
-  const { overview: o, card, appointments, ranking } = await getVipHome(user);
+  const [{ overview: o, card, appointments, ranking }, library] = await Promise.all([getVipHome(user), getPhotoLibrary()]);
+  const photos = assignPhotos(library).card;
 
   const activeBenefits = o.benefits.filter((b) => ["available", "requested", "approved"].includes(b.status));
   const validating = o.benefits.filter((b) => b.status === "pending_validation");
   const next = appointments.next;
+  // algo novo com um benefício dela nas últimas 72h? liberado fala mais alto que alcançado
+  const released = o.benefits.find((b) => b.status === "available" && isWithinHours(b.available_at, 72));
+  const reached = o.benefits.find((b) => b.status === "pending_validation" && isWithinHours(b.eligible_at ?? b.created_at, 72));
+  const fresh = released ?? reached;
+  const moment: Moment | null = fresh
+    ? { id: `${fresh.id}:${fresh.status}`, kind: fresh === released ? "released" : "reached", title: fresh.title }
+    : null;
+  const timeline = buildTimeline({
+    services: o.recentServices,
+    benefits: o.benefits,
+    appointments: appointments.upcoming,
+    birthday: o.birthday,
+    loyalty: o.loyalty,
+    today: nowInBusinessTz(),
+  });
 
   const status = card.unrevealed
     ? `Você tem ${card.unrevealed} ${plural(card.unrevealed, "carimbo novo", "carimbos novos")} no cartão.`
@@ -37,6 +60,8 @@ export default async function VipHome() {
       </h1>
       <p className="tyv-sub">{status}</p>
 
+      {moment ? <MilestoneMoment moment={moment} /> : null}
+
       <div style={{ marginTop: 22 }}>
         <LoyaltyCard
           cycle={card.cycle}
@@ -45,37 +70,59 @@ export default async function VipHome() {
           completedCards={card.completedCards}
           rewardTitle={o.settings.loyalty.card_reward_title}
           rewardStatus={card.reward?.status ?? null}
+          photos={photos}
+          holderName={user.displayName}
+          memberSince={user.profile?.vip_since ?? null}
+          isVip={user.isVip}
           withLink
         />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 18 }}>
-        <div className="tyv-panel">
-          <span className="tyv-label">Pontos</span>
-          <p className="tyv-stat__n" style={{ marginTop: 8 }}>
-            {o.points}
-          </p>
-          <p className="tyv-sub" style={{ fontSize: 12.5, marginTop: 6 }}>
-            {o.loyalty.next
-              ? `faltam ${o.loyalty.pointsToNext} para “${o.loyalty.next.title}”`
-              : o.points > 0
-                ? "todos os marcos alcançados"
-                : "sua primeira visita começa aqui"}
+      <div className="tyv-kpis">
+        <div className="tyv-panel tyv-kpi tyv-kpi--ring">
+          <ProgressRing
+            progress={o.loyalty.next ? o.loyalty.progressToNext : o.points > 0 ? 1 : 0}
+            label={`${o.points} pontos${o.loyalty.next ? `, faltam ${o.loyalty.pointsToNext} para ${o.loyalty.next.title}` : ""}`}
+          >
+            <CountUp value={o.points} className="tyv-ring__n" />
+            <span className="tyv-ring__unit">pontos</span>
+          </ProgressRing>
+          <p className="tyv-kpi__foot" style={{ marginTop: 10 }}>
+            {o.loyalty.next ? (
+              <>
+                faltam <strong>{o.loyalty.pointsToNext}</strong> para {o.loyalty.next.title}
+              </>
+            ) : o.points > 0 ? (
+              "todos os marcos alcançados"
+            ) : (
+              "sua primeira visita começa aqui"
+            )}
           </p>
         </div>
-        <div className="tyv-panel">
-          <span className="tyv-label">Ranking</span>
-          <p className="tyv-stat__n" style={{ marginTop: 8 }}>
-            {ranking.position}
-            <small>de {ranking.total}</small>
-          </p>
-          <p className="tyv-sub" style={{ fontSize: 12.5, marginTop: 6 }}>
-            {ranking.total <= 1
-              ? "primeira do clube"
-              : ranking.toClimb > 0
-                ? `${ranking.toClimb} pontos para subir`
-                : "você lidera o ranking"}
-          </p>
+        <div className="tyv-kpi-col">
+          <div className="tyv-panel tyv-kpi">
+            <span className="tyv-label">Ranking</span>
+            <p className="tyv-stat__n">
+              <CountUp value={ranking.position} />
+              <small>de {ranking.total}</small>
+            </p>
+            <p className="tyv-kpi__foot">
+              {ranking.total <= 1
+                ? "primeira do clube"
+                : ranking.toClimb > 0
+                  ? `${ranking.toClimb} ${plural(ranking.toClimb, "ponto", "pontos")} para subir`
+                  : "você lidera o ranking"}
+            </p>
+          </div>
+          <div className="tyv-panel tyv-kpi">
+            <span className="tyv-label">Visitas</span>
+            <p className="tyv-stat__n">
+              <CountUp value={o.approvedCount} />
+            </p>
+            <p className="tyv-kpi__foot">
+              {o.lastServiceDate ? `última em ${dateLong(o.lastServiceDate)}` : "confirmadas pela Tayssa"}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -150,28 +197,16 @@ export default async function VipHome() {
 
       <section className="tyv-section">
         <div className="tyv-section-head">
-          <h2 className="tyv-h2">Últimas visitas</h2>
+          <h2 className="tyv-h2">Sua jornada</h2>
           <Link href={ROUTES.vipProfile} className="tyv-link" style={{ opacity: 0.75 }}>
             Histórico
           </Link>
         </div>
         <div className="tyv-panel">
-          {o.recentServices.length ? (
-            o.recentServices.slice(0, 3).map((s) => (
-              <div key={s.id} className="tyv-row">
-                <div>
-                  <p style={{ fontSize: 15 }}>{s.service_name}</p>
-                  <p className="tyv-sub" style={{ fontSize: 12.5 }}>
-                    {dateLong(s.service_date)}
-                  </p>
-                </div>
-                <span className="tyv-num" style={{ fontSize: 18, opacity: s.status === "approved" ? 1 : 0.45 }}>
-                  {s.status === "approved" ? `+${s.points}` : "—"}
-                </span>
-              </div>
-            ))
+          {timeline.upcoming.length || timeline.recent.length ? (
+            <Timeline data={timeline} />
           ) : (
-            <p className="tyv-empty">Sua primeira visita confirmada abre o cartão.</p>
+            <p className="tyv-empty">Sua primeira visita confirmada abre a jornada.</p>
           )}
         </div>
       </section>

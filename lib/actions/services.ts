@@ -6,6 +6,7 @@ import { assertAdmin, assertClient } from "@/lib/auth/guards";
 import { logAudit } from "@/lib/audit";
 import { ROUTES } from "@/lib/config";
 import { stampVisit, syncLoyaltyEligibility } from "@/lib/engine";
+import { registerVisit } from "@/lib/visits";
 import {
   adminServiceEntrySchema,
   reviewSchema,
@@ -102,42 +103,15 @@ export async function adminAddServiceAction(
     });
     notInFuture(input.service_date);
     const service = await getService(input.service_id);
-    const now = new Date().toISOString();
-    const { data, error } = await vipDb()
-      .from("client_services")
-      .insert({
-        client_id: input.client_id,
-        service_id: service.id,
-        service_name: service.name,
-        service_date: input.service_date,
-        amount: input.amount,
-        points: input.points_override ?? service.point_value,
-        status: "approved",
-        notes: input.notes,
-        submitted_by: "admin",
-        reviewed_by: admin.id,
-        reviewed_at: now,
-      })
-      .select("id")
-      .single();
-    if (error) throw new Error(error.message);
-    const row = data as { id: string };
-    await logAudit({
-      actorId: admin.id,
-      actorRole: "admin",
-      action: "service_added",
-      entityType: "client_service",
-      entityId: row.id,
-      meta: { client_id: input.client_id, points: input.points_override ?? service.point_value },
+    const row = await registerVisit({
+      adminId: admin.id,
+      clientId: input.client_id,
+      service,
+      serviceDate: input.service_date,
+      amount: input.amount,
+      points: input.points_override,
+      notes: input.notes,
     });
-    // visita confirmada: carimbo no cartão + marcos de pontos
-    await stampVisit(input.client_id, {
-      id: row.id,
-      service_name: service.name,
-      points: input.points_override ?? service.point_value,
-      reviewed_at: now,
-    });
-    await syncLoyaltyEligibility(input.client_id);
     revalidatePath(ROUTES.admin, "layout");
     revalidatePath(ROUTES.vip, "layout");
     return { id: row.id };

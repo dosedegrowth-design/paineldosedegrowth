@@ -3,6 +3,7 @@
 import { createContext, useContext, useState } from "react";
 import type { Settings } from "@/lib/config";
 import type { BenefitRow, ServiceRow } from "@/lib/types";
+import type { PhotoAssignment } from "@/lib/photos";
 import { whatsappUrl } from "@/lib/whatsapp";
 import { IntroLoader } from "@/components/public/intro-loader";
 import { PublicNav } from "@/components/public/nav";
@@ -27,10 +28,12 @@ export function PublicExperience({
   settings,
   services,
   benefits,
+  photos,
 }: {
   settings: Settings;
   services: ServiceRow[];
   benefits: BenefitRow[];
+  photos?: PhotoAssignment;
 }) {
   const [ready, setReady] = useState(false);
   const wa = settings.whatsapp;
@@ -48,11 +51,11 @@ export function PublicExperience({
       <IntroLoader onDone={() => setReady(true)} />
       <PublicNav scheduleUrl={links.schedule} />
       <main>
-        <Hero business={settings.business} scheduleUrl={links.schedule} />
-        <WorkSequence />
-        <Services services={services} scheduleUrl={links.schedule} />
-        <Details instagramUrl={links.instagram} handle={links.handle} />
-        <VipIntro benefits={benefits} vipInfoUrl={links.vipInfo} />
+        <Hero business={settings.business} scheduleUrl={links.schedule} photo={photos?.hero} />
+        <WorkSequence photos={photos?.work} />
+        <Services services={services} scheduleUrl={links.schedule} photoBySlug={photos?.byService} />
+        <Details instagramUrl={links.instagram} handle={links.handle} photos={photos?.details} />
+        <VipIntro benefits={benefits} />
         <ReferralCta />
         <Closing scheduleUrl={links.schedule} />
       </main>

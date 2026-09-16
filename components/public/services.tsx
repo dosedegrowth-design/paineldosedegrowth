@@ -31,7 +31,15 @@ const FALLBACK: ServiceRow[] = [
  * segue o cursor enquanto a linha está sob o mouse; no mobile, o toque
  * abre a foto dentro da linha.
  */
-export function Services({ services, scheduleUrl }: { services: ServiceRow[]; scheduleUrl: string }) {
+export function Services({
+  services,
+  scheduleUrl,
+  photoBySlug,
+}: {
+  services: ServiceRow[];
+  scheduleUrl: string;
+  photoBySlug?: Record<string, PhotoSlot>;
+}) {
   const list = (services.length ? services : FALLBACK).filter((s) => s.slug !== "outro");
   const fine = useFinePointer();
   const isMobile = useIsMobile();
@@ -88,7 +96,7 @@ export function Services({ services, scheduleUrl }: { services: ServiceRow[]; sc
 
           <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
             {list.map((s, i) => {
-              const photo = PHOTO_BY_SLUG[s.slug] ?? PHOTOS.work01;
+              const photo = photoBySlug?.[s.slug] ?? PHOTO_BY_SLUG[s.slug] ?? PHOTOS.work01;
               const isOpen = openMobile === i;
               return (
                 <Reveal key={s.id} as="li" delay={i * 0.05} amount={0.3}>
@@ -195,7 +203,7 @@ export function Services({ services, scheduleUrl }: { services: ServiceRow[]; sc
                 transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
                 style={{ boxShadow: "0 30px 60px -30px rgba(26,21,18,0.55)" }}
               >
-                <RealPhoto photo={PHOTO_BY_SLUG[list[active]?.slug] ?? PHOTOS.work01} sizes="260px" />
+                <RealPhoto photo={photoBySlug?.[list[active]?.slug] ?? PHOTO_BY_SLUG[list[active]?.slug] ?? PHOTOS.work01} sizes="260px" />
               </motion.div>
             ) : null}
           </AnimatePresence>

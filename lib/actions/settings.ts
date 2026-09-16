@@ -9,9 +9,12 @@ import {
   benefitConfigSchema,
   birthdaySettingsSchema,
   blackoutSchema,
+  bookingSettingsSchema,
   businessSettingsSchema,
   catalogServiceSchema,
+  loyaltySettingsSchema,
   rulesSettingsSchema,
+  signupSettingsSchema,
   whatsappTemplatesSchema,
 } from "@/lib/validation";
 import { BusinessError, bool, list, runAction, str } from "@/lib/actions/_helpers";
@@ -100,6 +103,57 @@ export async function updateWhatsappTemplatesAction(_p: ActionResult | null, fd:
       Object.fromEntries(keys.map((k) => [k, str(fd, k)]))
     );
     await saveSetting("whatsapp", input, admin.id);
+    return undefined;
+  });
+}
+
+/** Agenda: dias, horários e regras de antecedência que a cliente enxerga ao marcar. */
+export async function updateBookingSettingsAction(_p: ActionResult | null, fd: FormData): Promise<ActionResult> {
+  return runAction("settings.booking", async () => {
+    const admin = await assertAdmin();
+    const slots = str(fd, "slots")
+      .split(/[\n,;]+/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+    const input = bookingSettingsSchema.parse({
+      weekdays: list(fd, "weekdays"),
+      slots,
+      lead_hours: str(fd, "lead_hours"),
+      horizon_days: str(fd, "horizon_days"),
+      default_duration_min: str(fd, "default_duration_min"),
+      max_open_per_client: str(fd, "max_open_per_client"),
+    });
+    await saveSetting("booking", input, admin.id);
+    return undefined;
+  });
+}
+
+/** Cartão de fidelidade: tamanho (vale para cartões novos) e o presente ao fechar. */
+export async function updateLoyaltySettingsAction(_p: ActionResult | null, fd: FormData): Promise<ActionResult> {
+  return runAction("settings.loyalty", async () => {
+    const admin = await assertAdmin();
+    const input = loyaltySettingsSchema.parse({
+      card_size: str(fd, "card_size"),
+      card_reward_title: str(fd, "card_reward_title"),
+      card_reward_description: str(fd, "card_reward_description"),
+    });
+    await saveSetting("loyalty", input, admin.id);
+    return undefined;
+  });
+}
+
+/** Cadastro pelo site: aberto ou fechado, e a mensagem de boas-vindas ao aprovar. */
+export async function updateSignupSettingsAction(_p: ActionResult | null, fd: FormData): Promise<ActionResult> {
+  return runAction("settings.signup", async () => {
+    const admin = await assertAdmin();
+    const input = signupSettingsSchema.parse({
+      open: bool(fd, "open"),
+      welcome_template: str(fd, "welcome_template"),
+    });
+    if (!input.welcome_template.includes("{url}")) {
+      throw new BusinessError("A mensagem precisa conter {url} — é por ali que a cliente entra.", "welcome_template");
+    }
+    await saveSetting("signup", input, admin.id);
     return undefined;
   });
 }

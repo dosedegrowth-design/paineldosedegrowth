@@ -7,9 +7,12 @@ import {
   BirthdayForm,
   BlackoutForm,
   BlackoutList,
+  BookingForm,
   BusinessForm,
   CatalogServiceForm,
+  LoyaltyForm,
   RulesForm,
+  SignupForm,
   WhatsappForm,
 } from "@/components/admin/settings-forms";
 
@@ -40,6 +43,18 @@ export default async function SettingsAdminPage() {
         {benefits.map((b) => (
           <BenefitConfigForm key={b.id} benefit={b} />
         ))}
+      </AdminBlock>
+
+      <AdminBlock id="agenda" title="Agenda" aside="dias e horários que a cliente vê ao marcar">
+        <BookingForm value={settings.booking} />
+      </AdminBlock>
+
+      <AdminBlock id="cartao" title="Cartão de fidelidade" aside="cada visita confirmada carimba uma posição">
+        <LoyaltyForm value={settings.loyalty} />
+      </AdminBlock>
+
+      <AdminBlock id="cadastro" title="Cadastro pelo site" aside="quem pede acesso espera a sua aprovação">
+        <SignupForm value={settings.signup} />
       </AdminBlock>
 
       <AdminBlock title="Regras gerais">

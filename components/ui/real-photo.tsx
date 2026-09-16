@@ -7,7 +7,7 @@ import { usePhotoAvailable } from "@/components/ui/photo-availability";
 
 /**
  * Foto real com fallback honesto: se o arquivo ainda não existe em
- * public/tayssa/photos, mostra um campo tonal com legenda. Nunca inventa
+ * public/photos, mostra um campo tonal com legenda. Nunca inventa
  * imagem. Trocar a foto = trocar o arquivo.
  */
 export function RealPhoto({

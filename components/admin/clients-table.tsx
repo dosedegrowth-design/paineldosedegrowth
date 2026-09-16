@@ -4,17 +4,19 @@ import { useMemo, useState } from "react";
 import type { ClientSummary } from "@/lib/queries/admin";
 import { ROUTES } from "@/lib/config";
 import { dateShort } from "@/lib/format";
-import { VIP_STATUS_LABEL } from "@/lib/types";
+import { USER_STATUS_LABEL, VIP_STATUS_LABEL } from "@/lib/types";
 import { TransitionLink } from "@/components/ui/transition";
 import { StatusText } from "@/components/ui/status";
 
 export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
   const [q, setQ] = useState("");
-  const [only, setOnly] = useState<"all" | "vip" | "attention" | "inactive">("all");
+  const pendingCount = clients.filter((c) => c.user.status === "pending").length;
+  const [only, setOnly] = useState<"all" | "pending" | "vip" | "attention" | "inactive">(pendingCount ? "pending" : "all");
   const list = useMemo(() => {
     const s = q.trim().toLowerCase();
     return clients.filter((c) => {
       if (s && !`${c.user.name} ${c.user.nickname ?? ""} ${c.user.email} ${c.user.phone ?? ""}`.toLowerCase().includes(s)) return false;
+      if (only === "pending") return c.user.status === "pending";
       if (only === "vip") return c.profile?.vip_status === "active";
       if (only === "attention") return c.pendingServices > 0 || c.benefitsPendingValidation > 0;
       if (only === "inactive") return c.inactive;
@@ -33,6 +35,7 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
           {(
             [
               ["all", "Todas"],
+              ["pending", pendingCount ? `Pedidos (${pendingCount})` : "Pedidos"],
               ["vip", "VIP"],
               ["attention", "Com pendência"],
               ["inactive", "Inativas"],
@@ -65,7 +68,9 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
                   </TransitionLink>
                   <span className="ty-small" style={{ display: "block" }}>
                     {c.user.email}
-                    {c.user.status !== "active" ? ` · conta ${c.user.status === "inactive" ? "desativada" : "suspensa"}` : ""}
+                    {c.user.status !== "active" ? (
+                      <span style={{ color: c.user.status === "pending" ? "var(--t-accent)" : undefined }}> · {USER_STATUS_LABEL[c.user.status].toLowerCase()}</span>
+                    ) : null}
                   </span>
                 </td>
                 <td>

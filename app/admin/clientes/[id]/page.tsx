@@ -4,9 +4,10 @@ import { getClientDetail } from "@/lib/queries/admin";
 import { getActiveServices, getPublicBenefits } from "@/lib/queries/catalog";
 import { getSettings } from "@/lib/settings";
 import { toISODate } from "@/lib/rules";
-import { currency, dateLong, dateShort, dateTime } from "@/lib/format";
+import { currency, dateLong, dateShort, dateTime, isWithinHours } from "@/lib/format";
 import { formatBrPhone } from "@/lib/phone";
-import { whatsappUrl } from "@/lib/whatsapp";
+import { renderTemplate, whatsappUrl } from "@/lib/whatsapp";
+import { ROUTES, publicUrl } from "@/lib/config";
 import { auditLabel } from "@/lib/audit-labels";
 import { VIP_STATUS_LABEL, USER_STATUS_LABEL } from "@/lib/types";
 import { adminSetClientStatusAction, adminSetVipAction, adminRevokeSessionsAction } from "@/lib/actions/clients";
@@ -20,6 +21,7 @@ import {
 import { AdminBlock, AdminHeader, Empty, Stat } from "@/components/admin/shell";
 import { ActionButton, NoteAction } from "@/components/admin/controls";
 import { AccessLinkPanel, AdminServiceEntryForm, ClientEditForm, GrantCustomBenefitForm, ReleaseBirthdayForm } from "@/components/admin/forms";
+import { SignupReviewPanel } from "@/components/admin/signup-review";
 import { BenefitStatusText, ReferralStatusText, ServiceStatusText, StatusText } from "@/components/ui/status";
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -66,6 +68,34 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
         <Stat n={d.summary.pendingServices + d.summary.benefitsPendingValidation} label="Pendências" alert={d.summary.pendingServices + d.summary.benefitsPendingValidation > 0} />
       </div>
 
+      {user.signup_source === "self" && user.status !== "pending" && isWithinHours(user.reviewed_at, 48) ? (
+        <AdminBlock title="Pedido de acesso" aside={<span className="ty-small">revisado em {dateTime(user.reviewed_at)}</span>}>
+          <p className="ty-lead" style={{ fontSize: 18 }}>
+            {user.status === "rejected" ? "Recusado." : `${(user.nickname ?? user.name).split(" ")[0]} já pode entrar.`}
+          </p>
+          <p className="ty-body" style={{ marginTop: 6 }}>
+            {user.status === "rejected"
+              ? "A conta ficou marcada como recusada. Se mudar de ideia, reative em “Conta”."
+              : "A conta está ativa. Ela entra com o e-mail e a senha que escolheu no cadastro — o botão de boas-vindas está em “Conta”."}
+          </p>
+          {user.review_note ? (
+            <p className="ty-small" style={{ marginTop: 8, fontWeight: 300 }}>Sua nota: “{user.review_note}”</p>
+          ) : null}
+        </AdminBlock>
+      ) : null}
+      {user.status === "pending" ? (
+        <AdminBlock title="Pedido de acesso">
+          <SignupReviewPanel
+            id={user.id}
+            name={user.name}
+            email={user.email}
+            phone={user.phone}
+            message={user.signup_message}
+            requestedAt={user.requested_at}
+          />
+        </AdminBlock>
+      ) : null}
+
       <AdminBlock title="Acesso e VIP">
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 32 }}>
           <div style={{ display: "grid", gap: 12 }}>
@@ -108,6 +138,22 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                   Reativar conta
                 </ActionButton>
               )}
+              {user.signup_source === "self" && user.status === "active" && user.phone ? (
+                <a
+                  href={whatsappUrl(
+                    user.phone,
+                    renderTemplate(settings.signup.welcome_template, {
+                      name: (user.nickname ?? user.name).trim().split(/\s+/)[0],
+                      url: publicUrl(ROUTES.login),
+                    })
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ty-btn ty-btn--xs ty-btn--solid"
+                >
+                  <span>Boas-vindas no WhatsApp</span>
+                </a>
+              ) : null}
               {d.activeSessions > 0 ? (
                 <ActionButton action={adminRevokeSessionsAction} args={{ id: user.id }}>
                   Encerrar sessões ({d.activeSessions})

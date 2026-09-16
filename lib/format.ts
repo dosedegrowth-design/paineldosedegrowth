@@ -128,3 +128,9 @@ export function dayLabel(v: string | Date, today = nowInBusinessTz()): string {
   if (diff === 1) return "amanhã";
   return `${weekdayShort(d)}, ${dateLong(d)}`;
 }
+
+/** Aconteceu nas últimas N horas? (null = não aconteceu) */
+export function isWithinHours(iso: string | null | undefined, hours: number): boolean {
+  if (!iso) return false;
+  return Date.now() - new Date(iso).getTime() < hours * 3600 * 1000;
+}

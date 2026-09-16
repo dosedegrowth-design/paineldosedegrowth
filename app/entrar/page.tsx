@@ -26,7 +26,7 @@ export default async function LoginPage({
     getPhotoAvailability(),
   ]);
   if (user) redirect(user.role === "admin" ? ROUTES.admin : ROUTES.vip);
-  const next = params.next?.startsWith("/") && !params.next.startsWith("//") ? params.next : undefined;
+  const next = params.next?.startsWith("/") ? params.next : undefined;
   return (
     <PhotoAvailabilityProvider value={photos}>
       <LoginExperience

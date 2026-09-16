@@ -4,6 +4,7 @@ import { requireClientPage } from "@/lib/auth/guards";
 import { getSettings } from "@/lib/settings";
 import { renderTemplate, whatsappUrl } from "@/lib/whatsapp";
 import { BottomNav } from "@/components/vip/bottom-nav";
+import { PageEnter } from "@/components/vip/page-enter";
 import { TyBrand } from "@/components/ui/brand";
 
 export const metadata: Metadata = {
@@ -46,7 +47,9 @@ export default async function VipLayout({ children }: { children: React.ReactNod
           </svg>
         </a>
       </header>
-      <main className="tyv-page">{children}</main>
+      <main className="tyv-page">
+        <PageEnter>{children}</PageEnter>
+      </main>
       <BottomNav />
     </div>
   );

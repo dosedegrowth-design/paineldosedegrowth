@@ -27,11 +27,11 @@ npm run build
 
 | Pasta | O que tem |
 |---|---|
-| `app/` | rotas: público (`/`, `/indicar`, `/entrar`, `/acesso`), cliente (`/vip/*`), admin (`/admin/*`) |
+| `app/` | rotas: público (`/`, `/indicar`, `/cadastro`, `/aguardando`, `/entrar`, `/acesso`), cliente (`/vip/*`), admin (`/admin/*`, com `/admin/agenda` e `/admin/fotos`) |
 | `components/` | `public/`, `auth/`, `vip/`, `admin/`, `ui/` |
 | `lib/` | `auth/` (scrypt + sessão), `actions/` (server actions), `queries/`, `rules.ts` (puro, testado), `engine.ts` (elegibilidade) |
 | `supabase/migrations/` | schema `vip` em ordem de aplicação |
-| `public/photos/` | fotos reais (sem arquivo, o slot mostra campo tonal — nunca imagem sintética) |
+| `public/photos/` | fallback estático das fotos; as reais sobem por `/admin/fotos` para o bucket `tayssa-fotos` (sem foto, o slot mostra campo tonal — nunca imagem sintética) |
 
 ## Env
 

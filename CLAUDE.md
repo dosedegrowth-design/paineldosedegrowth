@@ -9,11 +9,14 @@
 Clube privado das clientes da Tayssa (cílios e embelezamento do olhar).
 Três produtos numa base só:
 
-1. **Site público** — editorial, mobile primeiro, com indicação aberta.
-2. **App da cliente** (`/vip`) — cartão de fidelidade com raspadinha,
-   agenda, benefícios, ranking e perfil.
-3. **Painel da Tayssa** (`/admin`) — ela valida tudo: atendimentos,
-   indicações, benefícios, aniversários, clientes e configurações.
+1. **Site público** — editorial, mobile primeiro, com indicação aberta e
+   pedido de acesso (`/cadastro` → a Tayssa aprova).
+2. **App da cliente** (`/vip`) — cartão de fidelidade físico (frente com
+   fotos, giro 3D, verso com raspadinha), agenda, benefícios, ranking,
+   jornada e perfil.
+3. **Painel da Tayssa** (`/admin`) — ela valida tudo: pedidos de acesso,
+   agenda (`/admin/agenda`), atendimentos, indicações, benefícios,
+   aniversários, fotos (`/admin/fotos`), clientes e configurações.
 
 Saiu de dentro do `paineldosedegrowth` para ter repositório, deploy e
 domínio próprios.
@@ -67,10 +70,18 @@ client_benefits (pending_validation)  →  a Tayssa libera em Benefícios
 - Cartão: `vip.loyalty_cards` + `vip.loyalty_stamps`. `getCardState()`
   mostra o cartão mais antigo que ainda tem carimbo por raspar — dourado
   nunca fica para trás quando o cartão seguinte abre.
-- Agenda: `vip.appointments`. Regras em `settings.booking` (dias,
-  horários, antecedência, limite em aberto). O pedido nasce `requested`.
+- Agenda: `vip.appointments`. Regras em `settings.booking` (editáveis em
+  Configurações → Agenda). O pedido nasce `requested`; a Tayssa confirma,
+  recusa ou cancela em `/admin/agenda`; "Realizado" registra a visita
+  confirmada (`lib/visits.ts` → pontos + carimbo).
+- Fotos: `vip.photos` + Storage `tayssa-fotos` (público). Sobem em
+  `/admin/fotos`; `assignPhotos()` (`lib/photos.ts`) distribui para o site
+  e para a frente do cartão. Sem foto → campo tonal.
+- Cadastro: `/cadastro` cria `users.status = pending`; a Tayssa aprova na
+  ficha e manda as boas-vindas (`settings.signup`).
 - Elegibilidade e ciclos: `lib/engine.ts` + `lib/rules.ts` (puro e
-  testado em `lib/rules.test.ts`).
+  testado em `lib/rules.test.ts`); jornada em `lib/timeline.ts`
+  (`lib/timeline.test.ts`).
 
 ## Datas
 
@@ -88,8 +99,13 @@ Brasil já está no dia seguinte para o sistema.
   exigem a constraint no select — ex.: `users!password_tokens_user_id_fkey`.
 - O reset de botão usa `:where(.ty-scope) button` (especificidade zero).
   Se virar `.ty-scope button`, todo botão sólido perde fundo e borda.
-- Fotos: trocar a foto = trocar o arquivo em `public/photos/` com o nome
-  de `lib/photos.ts`. Nada de redesenho.
+- Fotos: a biblioteca (`vip.photos`) manda; os arquivos em
+  `public/photos/` são só o fallback estático.
+- Cartão 3D: as faces ficam `translateZ(1px)` à frente do corpo, cada uma
+  do seu lado — coplanares, o Chromium perde o hit-test perto de 180°.
+- Este projeto é espelho mecânico de `paineldosedegrowth/app|components|lib/tayssa`
+  enquanto o repo próprio não existe: não edite aqui à mão, edite no painel
+  e re-espelhe.
 
 ## Operação
 

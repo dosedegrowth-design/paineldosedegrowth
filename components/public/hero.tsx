@@ -12,7 +12,7 @@ import {
 } from "framer-motion";
 import type { BusinessSettings } from "@/lib/config";
 import { ROUTES } from "@/lib/config";
-import { PHOTOS } from "@/lib/photos";
+import { PHOTOS, type PhotoSlot } from "@/lib/photos";
 import { RealPhoto } from "@/components/ui/real-photo";
 import { MaskedLines } from "@/components/ui/reveal";
 import { TransitionLink } from "@/components/ui/transition";
@@ -32,9 +32,12 @@ const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 export function Hero({
   business,
   scheduleUrl,
+  photo,
 }: {
   business: BusinessSettings;
   scheduleUrl: string;
+  /** foto de destaque da biblioteca; sem ela, o slot estático */
+  photo?: PhotoSlot;
 }) {
   const ready = useIntroReady();
   const reduced = useReducedMotion();
@@ -81,7 +84,7 @@ export function Hero({
           transition={{ duration: 1.6, ease: EASE, delay: 0.15 }}
         >
           <motion.div style={{ position: "absolute", inset: "-4%", scale: photoScale, x: sx, y: sy }}>
-            <RealPhoto photo={PHOTOS.hero} ratio="fill" priority sizes="100vw" style={{ height: "100%" }} />
+            <RealPhoto photo={photo ?? PHOTOS.hero} ratio="fill" priority sizes="100vw" style={{ height: "100%" }} />
             <div
               aria-hidden
               style={{

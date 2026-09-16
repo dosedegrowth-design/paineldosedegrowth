@@ -121,7 +121,22 @@ export function LoginExperience({ vipInfoUrl, next }: { vipInfoUrl: string; next
           />
 
           <AnimatePresence>
-            {serverError ? (
+            {serverError && (serverError.code === "pending" || serverError.code === "rejected") ? (
+              <motion.div
+                className="tyl__note"
+                role="status"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4, ease: EASE }}
+              >
+                <span className="tyl__eyebrow">{serverError.code === "pending" ? "Pedido em análise" : "Acesso não liberado"}</span>
+                <p style={{ fontSize: 14.5, lineHeight: 1.5 }}>{serverError.error}</p>
+                <a href={vipInfoUrl} target="_blank" rel="noopener noreferrer" className="tyl__link">
+                  Falar com a Tayssa
+                </a>
+              </motion.div>
+            ) : serverError ? (
               <motion.div
                 className="ty-form-error"
                 role="alert"
@@ -142,10 +157,10 @@ export function LoginExperience({ vipInfoUrl, next }: { vipInfoUrl: string; next
         </form>
 
         <div className="tyl__foot">
-          <p>Seu acesso é criado pela Tayssa. Recebeu um link? Ele abre a tela de definir senha.</p>
-          <a href={vipInfoUrl} target="_blank" rel="noopener noreferrer" className="tyl__link">
-            Ainda não tenho acesso
-          </a>
+          <p>Ainda não tem acesso? Peça o seu — a Tayssa revisa e libera pessoalmente.</p>
+          <TransitionLink href={ROUTES.signup} className="tyl__link">
+            Pedir acesso
+          </TransitionLink>
         </div>
       </motion.div>
 
