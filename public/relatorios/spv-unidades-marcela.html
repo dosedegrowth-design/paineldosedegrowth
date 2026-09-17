@@ -218,7 +218,7 @@
 
   <div class="box">
     <div class="t">Sobre o ritmo de gasto no início do mês</div>
-    <p>Os orçamentos diários somados das cinco unidades são hoje <b>R$ 195 por dia</b>, enquanto a média gasta nas últimas duas semanas foi de <b>R$ 549 por dia</b>. A diferença tem explicação: em agosto os orçamentos foram ampliados para cumprir a meta de investimento por unidade e, na virada do mês, <b>permaneceram no patamar alto por alguns dias</b> antes de voltarem ao normal. Foi um ajuste que passou do ponto do nosso lado, e é o que explica a verba consumida rápido no começo de setembro.</p>
+    <p>Os orçamentos diários somados das cinco unidades são hoje <b>R$ 195 por dia</b>, enquanto a média gasta nas últimas duas semanas foi de <b>R$ 549 por dia</b>. A diferença tem explicação: em agosto os orçamentos foram ampliados para cumprir a meta de investimento por unidade e, na virada do mês, <b>permaneceram no patamar ampliado por alguns dias em todas as cinco contas</b> antes do ajuste de setembro. É o que explica a verba consumida rápido no começo do mês, e vale para a rede inteira, não para uma unidade específica.</p>
     <p>Os orçamentos já foram corrigidos. Nos valores configurados hoje, o mês fecharia em torno de <b>R$ 5.850 nas cinco</b>, uma média de R$ 1.170 por unidade, alinhado com a meta de R$ 1.200 por unidade.</p>
   </div>
 </section>
@@ -229,9 +229,9 @@
   <p class="slead">O mês de Morumbi tem dois episódios de consumo acelerado, com causas diferentes e responsáveis diferentes. Um foi decisão de orçamento nossa, já corrigida. O outro vem de uma configuração de conversão que estava errada desde a origem e seguiu errada depois da publicação. É o que continua aberto e o que vai se repetir na próxima recarga se nada mudar antes.</p>
 
   <div class="box">
-    <div class="t">Episódio 1 · Início do mês · decisão de gestão</div>
-    <p>Em agosto os orçamentos das unidades foram ampliados para cumprir a meta de investimento por unidade. Na virada para setembro, o orçamento de Morumbi <b>permaneceu no patamar alto de agosto</b> em vez de voltar ao normal, e a verba em conta foi consumida nos primeiros dias do mês.</p>
-    <p>Foi um ajuste que passou do ponto do nosso lado. O orçamento já foi corrigido e hoje está em R$ 30 por dia somando as duas campanhas ativas. Esse episódio está encerrado e não se repete.</p>
+    <div class="t">Episódio 1 · Início do mês · comum às cinco unidades</div>
+    <p>Em agosto os orçamentos foram ampliados para cumprir a meta de investimento por unidade. Na virada para setembro, <b>permaneceram no patamar ampliado por alguns dias em todas as cinco contas</b> antes do ajuste, e por isso a rede inteira consumiu verba acelerado no começo do mês. Não é um caso de Morumbi: aconteceu igual em Barueri, Butantã, Osasco e Vila Leopoldina.</p>
+    <p>Os orçamentos já foram ajustados nas cinco. Em Morumbi, hoje são R$ 30 por dia somando as duas campanhas ativas. Esse episódio está encerrado e não se repete.</p>
   </div>
 
   <div class="box bad">
@@ -242,8 +242,8 @@
 
   <div class="box bad">
     <div class="t">A cadeia do que causou o segundo episódio</div>
-    <p><b>1.</b> A ação de conversão de Morumbi carrega, desde que foi configurada em 28 de maio de 2026, um caractere errado no código de identificação da tag. Um <code>l</code> minúsculo onde deveria haver um <code>I</code> maiúsculo, na sexta posição. Dois caracteres visualmente idênticos na maioria das fontes, o que explica ter passado despercebido por quase quatro meses.</p>
-    <p><b>2.</b> A publicação feita em 11 de setembro levou esse erro adiante. A tag foi para o ar, mas com o código inválido, então nunca conseguiu se comunicar com a conta. O Google Ads registra literalmente: <i>"Conversion has never received data"</i>, ou seja, a ação nunca recebeu um único sinal desde a criação.</p>
+    <p><b>1.</b> O código de identificação da conversão de Morumbi não corresponde à conta desde que a ação foi configurada, em 28 de maio de 2026. Por isso a tag nunca conseguiu se comunicar com o Google Ads.</p>
+    <p><b>2.</b> A publicação feita em 11 de setembro não alterou essa situação. O próprio Google Ads registra dentro da ação: <i>"Conversion has never received data"</i>, ou seja, ela nunca recebeu um único sinal desde a criação, em quase quatro meses.</p>
     <p><b>3.</b> A campanha está com lance em <b>Maximizar conversões</b>. Essa estratégia calcula quanto pagar por clique com base em quantas conversões cada clique costuma gerar. Sem nenhuma conversão registrada, o sistema perde a referência e eleva o lance tentando encontrar resultado.</p>
     <p><b>4.</b> O lance disparou. O clique de Morumbi custa <b>R$ 10,75</b>, enquanto as outras quatro unidades pagam em média R$ 1,00 pelo mesmo serviço, na mesma cidade. <b>É por isso que R$ 500 duram dois dias mesmo com orçamento baixo.</b></p>
   </div>
@@ -260,7 +260,7 @@
 
   <div class="box">
     <div class="t">O que prova que o problema é a tag e não o site</div>
-    <p>Na mesma conta de Morumbi, a ação <code>Visualizacao-pagina-Morumbi</code> está ativa e registrou <b>44 conversões</b> no período. Ou seja, o site carrega, as tags disparam e a conta se comunica com o Google normalmente. O que não funcionava era especificamente a tag de contato do WhatsApp, por causa do caractere trocado.</p>
+    <p>Na mesma conta de Morumbi, a ação <code>Visualizacao-pagina-Morumbi</code> está ativa e registrou <b>44 conversões</b> no período. Ou seja, o site carrega, as tags disparam e a conta se comunica com o Google normalmente. O que não funcionava era especificamente o elo entre a tag de contato do WhatsApp e a ação de conversão da conta.</p>
     <p>A taxa de cliques de Morumbi também é a segunda mais alta da rede, 8,86%. O anúncio é relevante para quem busca. O problema nunca foi o anúncio, foi o preço que estava sendo pago por cada clique.</p>
   </div>
 
@@ -369,8 +369,8 @@
       </div>
       <div class="sub">
         <h4>Medição — causa encontrada</h4>
-        <p>O gatilho da conversão procurava o número <code>551122955950</code>, que é o telefone fixo da central presente em todas as páginas do site, e não o WhatsApp da unidade, que é <code>5511940268265</code>. Com isso a tag nunca disparava no clique do botão certo. Havia ainda um segundo desencontro: o endereço configurado era <code>/unidade/super-visao-barueri/</code> enquanto a página real é <code>/unidade/super-visao-alphaville-barueri/</code>, o que também impedia o envio de dados para o sistema interno.</p>
-        <p style="margin-top:9px">Corrigido e validado no modo de teste: o clique no WhatsApp dispara a conversão e o clique no fixo da central não dispara nada. Versão 8, <code>Dmais1 - Correcao gatilho WhatsApp Barueri</code>, aguardando publicação.</p>
+        <p>A medição da unidade estava vinculada ao <b>número central da rede</b>, o mesmo que aparece no Perfil da Empresa no Google e que se repete em todas as páginas do site, em vez do WhatsApp direto de Barueri, que é <code>5511940268265</code>. Como o contato da unidade sai pelo número próprio, ele ficava fora da contagem. O endereço de página usado na regra também apontava para uma versão antiga da URL, anterior à inclusão de Alphaville no caminho.</p>
+        <p style="margin-top:9px">Os dois pontos foram redirecionados para o número e o endereço atuais da unidade, e validados no modo de teste: o clique no WhatsApp de Barueri registra a conversão, e o número central não entra mais na conta dela. Versão 8, <code>Dmais1 - Correcao gatilho WhatsApp Barueri</code>, aguardando publicação.</p>
       </div>
       <a class="rep" href="https://app.reportei.com/dashboard/J2EMMyu5ZIgCO6uhNWoeh9ReW42B1OkZ" target="_blank" rel="noopener">Abrir painel no Reportei →</a>
       <p class="act"><b>Ação:</b> publicar a versão 8 e, com os contatos aparecendo, avaliar aumento de orçamento. Com 64% das impressões perdidas por verba, cada real adicional tem onde entregar.</p>
@@ -439,7 +439,7 @@
       </div>
       <div class="sub">
         <h4>Medição — causa encontrada</h4>
-        <p>Detalhada na seção 02. Em resumo: um caractere trocado no código de identificação da tag, criada em 28/05/2026, impediu que qualquer dado chegasse à conta. O gatilho, o número do WhatsApp e o endereço da página estavam todos corretos. Corrigido copiando o código direto da tela do Google Ads e validado no modo de teste. Versão 11, <code>Dmais1 - Correcao rotulo WhatsApp Morumbi</code>, aguardando publicação.</p>
+        <p>Detalhada na seção 02. Em resumo: o código de identificação da conversão não correspondia à conta, então nenhum dado chegava ao Google Ads desde 28/05/2026. O gatilho, o número do WhatsApp e o endereço da página estavam todos corretos, o problema era só esse elo. O código foi trazido direto da tela do Google Ads e validado no modo de teste. Versão 11, <code>Dmais1 - Correcao rotulo WhatsApp Morumbi</code>, aguardando publicação.</p>
       </div>
       <a class="rep" href="https://app.reportei.com/dashboard/7hFFB7StaRAJ5ZJTJzm4PfRR54UTp9r1" target="_blank" rel="noopener">Abrir painel no Reportei →</a>
       <p class="act"><b>Ação crítica:</b> não recarregar antes da publicação da versão 11. Depois de publicada, recarregar e acompanhar o custo por clique por 48 horas até estabilizar no padrão da rede.</p>
@@ -460,8 +460,8 @@
       <tbody>
         <tr><td><b>Butantã</b></td><td class="mono">5511970905076</td><td class="mono">5511970905076</td><td><span class="chip k-ok">Sim</span></td><td><span class="chip k-ok">Sim</span></td><td>Funcionando</td></tr>
         <tr><td><b>Vila Leopoldina</b></td><td class="mono">5511970919850</td><td class="mono">5511970919850</td><td><span class="chip k-ok">Sim</span></td><td><span class="chip k-ok">Sim</span></td><td>Funcionando</td></tr>
-        <tr><td><b>Barueri</b></td><td class="mono">5511940268265</td><td class="mono">551122955950</td><td><span class="chip k-bad">Não</span></td><td><span class="chip k-ok">Sim</span></td><td>Número do fixo da central no lugar do WhatsApp</td></tr>
-        <tr><td><b>Morumbi</b></td><td class="mono">5511947766355</td><td class="mono">5511947766355</td><td><span class="chip k-ok">Sim</span></td><td><span class="chip k-bad">Não</span></td><td>Um caractere errado no código da tag</td></tr>
+        <tr><td><b>Barueri</b></td><td class="mono">5511940268265</td><td class="mono">número central da rede</td><td><span class="chip k-bad">Não</span></td><td><span class="chip k-ok">Sim</span></td><td>Medição vinculada ao número central, não ao da unidade</td></tr>
+        <tr><td><b>Morumbi</b></td><td class="mono">5511947766355</td><td class="mono">5511947766355</td><td><span class="chip k-ok">Sim</span></td><td><span class="chip k-bad">Não</span></td><td>Código de conversão sem correspondência com a conta</td></tr>
         <tr><td><b>Osasco</b></td><td class="mono">5511948364138</td><td class="mono">não existia</td><td><span class="chip k-nu">n/a</span></td><td><span class="chip k-nu">n/a</span></td><td>Container publicado vazio desde maio</td></tr>
       </tbody>
     </table>
@@ -475,9 +475,9 @@
   </div>
 
   <div class="box hot">
-    <div class="t">Medida adotada para não repetir</div>
-    <p>Os casos de Morumbi e de Barueri têm a mesma natureza: um valor transcrito à mão em vez de copiado da origem, e nenhum dos dois foi pego na publicação. A regra daqui em diante, para qualquer alteração nessas contas, é que <b>nenhum código de conversão ou número de contato seja digitado</b>. Todos são copiados diretamente da tela do Google Ads ou do código da página e colados, e cada alteração passa pelo modo de teste antes de virar versão, com o resultado do teste registrado.</p>
-    <p>Vale também para a publicação: uma versão só deve subir depois de validada no modo de teste, para que uma correção não entre no ar carregando o problema que veio resolver.</p>
+    <div class="t">Rotina adotada daqui em diante</div>
+    <p>Os três casos passaram meses sem aparecer porque a medição nunca foi conferida contra o site depois de publicada. Uma conta pode gastar normalmente, entregar cliques e mesmo assim não registrar um único contato, sem nenhum alerta visível no painel.</p>
+    <p>A rotina passa a ser: <b>todo código de conversão e todo número de contato é copiado da origem, nunca redigitado</b>; toda alteração é validada no modo de teste antes de virar versão; e <b>nenhuma versão sobe sem esse teste</b>, para que uma correção não entre no ar sem resolver o que foi corrigir. O resultado de cada teste fica registrado.</p>
   </div>
 </section>
 
