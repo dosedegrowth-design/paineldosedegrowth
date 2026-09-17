@@ -226,7 +226,7 @@
 <!-- 02 MORUMBI -->
 <section>
   <div class="shead"><span class="snum">02</span><h2>Morumbi: R$ 500 recarregados no dia 15, zerados no dia 17</h2></div>
-  <p class="slead">O mês de Morumbi tem dois episódios de consumo acelerado, com causas diferentes. Um foi decisão de gestão e já está corrigido. O outro é técnico, continua ativo e é o que precisa de atenção, porque vai se repetir na próxima recarga se nada mudar.</p>
+  <p class="slead">O mês de Morumbi tem dois episódios de consumo acelerado, com causas diferentes e responsáveis diferentes. Um foi decisão de orçamento nossa, já corrigida. O outro vem de uma configuração de conversão que estava errada desde a origem e seguiu errada depois da publicação. É o que continua aberto e o que vai se repetir na próxima recarga se nada mudar antes.</p>
 
   <div class="box">
     <div class="t">Episódio 1 · Início do mês · decisão de gestão</div>
@@ -237,13 +237,13 @@
   <div class="box bad">
     <div class="t">Episódio 2 · Dias 15 a 17 · o que ainda está aberto</div>
     <p>No dia 15 de setembro a conta foi recarregada com <b>R$ 500,00</b>. Dois dias depois, no dia 17, o saldo é de <b>R$ 0,59</b> e as campanhas estão interrompidas. Praticamente meio mil reais consumidos em cerca de 48 horas, com <b>zero contato gerado</b>.</p>
-    <p>Aqui o orçamento já estava corrigido. O que consumiu a verba nesse ritmo foi outra coisa, e é técnica.</p>
+    <p>Aqui o orçamento já estava corrigido e as metas de conversão da campanha já estavam alinhadas do nosso lado. O que consumiu a verba nesse ritmo não foi verba nem configuração de campanha: <b>foi a ação de conversão, que estava desconfigurada na origem e continuou assim depois da publicação de 11 de setembro</b>.</p>
   </div>
 
   <div class="box bad">
     <div class="t">A cadeia do que causou o segundo episódio</div>
-    <p><b>1.</b> A ação de conversão de Morumbi foi criada em 28 de maio de 2026 com um caractere errado no código de identificação da tag. Um <code>l</code> minúsculo onde deveria haver um <code>I</code> maiúsculo, na sexta posição. Dois caracteres visualmente idênticos na maioria das fontes.</p>
-    <p><b>2.</b> Por causa disso, a tag nunca conseguiu se comunicar com a conta. O Google Ads registra literalmente: <i>"Conversion has never received data"</i>, ou seja, a ação nunca recebeu um único sinal desde a criação.</p>
+    <p><b>1.</b> A ação de conversão de Morumbi carrega, desde que foi configurada em 28 de maio de 2026, um caractere errado no código de identificação da tag. Um <code>l</code> minúsculo onde deveria haver um <code>I</code> maiúsculo, na sexta posição. Dois caracteres visualmente idênticos na maioria das fontes, o que explica ter passado despercebido por quase quatro meses.</p>
+    <p><b>2.</b> A publicação feita em 11 de setembro levou esse erro adiante. A tag foi para o ar, mas com o código inválido, então nunca conseguiu se comunicar com a conta. O Google Ads registra literalmente: <i>"Conversion has never received data"</i>, ou seja, a ação nunca recebeu um único sinal desde a criação.</p>
     <p><b>3.</b> A campanha está com lance em <b>Maximizar conversões</b>. Essa estratégia calcula quanto pagar por clique com base em quantas conversões cada clique costuma gerar. Sem nenhuma conversão registrada, o sistema perde a referência e eleva o lance tentando encontrar resultado.</p>
     <p><b>4.</b> O lance disparou. O clique de Morumbi custa <b>R$ 10,75</b>, enquanto as outras quatro unidades pagam em média R$ 1,00 pelo mesmo serviço, na mesma cidade. <b>É por isso que R$ 500 duram dois dias mesmo com orçamento baixo.</b></p>
   </div>
@@ -476,7 +476,8 @@
 
   <div class="box hot">
     <div class="t">Medida adotada para não repetir</div>
-    <p>O erro de Morumbi e o de Barueri têm a mesma natureza: um valor transcrito à mão em vez de copiado da origem. A partir de agora, <b>nenhum código de conversão ou número de contato é digitado</b>. Todos são copiados diretamente da tela do Google Ads ou do código da página e colados, e cada alteração passa pelo modo de teste antes de virar versão.</p>
+    <p>Os casos de Morumbi e de Barueri têm a mesma natureza: um valor transcrito à mão em vez de copiado da origem, e nenhum dos dois foi pego na publicação. A regra daqui em diante, para qualquer alteração nessas contas, é que <b>nenhum código de conversão ou número de contato seja digitado</b>. Todos são copiados diretamente da tela do Google Ads ou do código da página e colados, e cada alteração passa pelo modo de teste antes de virar versão, com o resultado do teste registrado.</p>
+    <p>Vale também para a publicação: uma versão só deve subir depois de validada no modo de teste, para que uma correção não entre no ar carregando o problema que veio resolver.</p>
   </div>
 </section>
 
@@ -513,9 +514,9 @@
   <div class="steps">
     <div class="step p1">
       <span class="n">01</span>
-      <h4>Publicar as três versões no Gerenciador de Tags</h4>
+      <h4>Publicar as três versões antes de colocar mais verba</h4>
       <div class="who"><span class="chip k-bad">Depende do cliente</span></div>
-      <p>Destrava a medição de Barueri, Morumbi e Osasco de uma vez, e é pré-requisito para tudo que vem depois. Sem isso, três unidades continuam investindo sem conseguir provar retorno.</p>
+      <p>Destrava a medição de Barueri, Morumbi e Osasco de uma vez, e é pré-requisito para tudo que vem depois. No caso de Morumbi é mais do que medição: enquanto a correção não subir, qualquer recarga corre o risco de se repetir o consumo dos R$ 500 em dois dias. <b>Publicar primeiro, recarregar depois.</b></p>
     </div>
     <div class="step p1">
       <span class="n">02</span>
