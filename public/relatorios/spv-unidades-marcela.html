@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>SPV Unidades — Relatório de Gestão</title>
+<meta name="description" content="Relatório de gestão Google Ads das cinco unidades Super Visão — investimento, entrega, medição de contatos e plano de ação." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0B0D0F; --surface:#14181B; --surface-2:#1C2226; --surface-3:#242B30;
+    --ink:#F2F0EC; --body:#A8B1B8; --faint:#6F7B83; --faint-2:#4E585F;
+    --line:#242B30; --line-2:#333D44;
+    --brand:#F15839; --brand-soft:rgba(241,88,57,.12); --brand-ink:#FF7A5E;
+    --ok:#4FB783; --ok-soft:rgba(79,183,131,.13);
+    --warn:#E0A33C; --warn-soft:rgba(224,163,60,.13);
+    --bad:#E25C4E; --bad-soft:rgba(226,92,78,.13);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--body);
+    font-family:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+    font-size:15px;line-height:1.62;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1000px;margin:0 auto;padding-inline:20px}
+  @media(min-width:900px){.wrap{padding-inline:36px}}
+  h1,h2,h3,h4{margin:0;color:var(--ink);text-wrap:balance}
+  p{margin:0}
+  b,strong{font-weight:600;color:var(--ink)}
+  a{color:var(--brand-ink)}
+  .mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+  code{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.86em;
+    background:var(--surface-2);padding:1px 6px;border-radius:3px;color:var(--ink);
+    overflow-wrap:anywhere}
+
+  /* header */
+  header{border-bottom:1px solid var(--line-2);padding-block:30px 26px;
+    background:linear-gradient(180deg,rgba(241,88,57,.07),transparent 70%)}
+  .brandbar{display:flex;align-items:center;gap:11px;margin-bottom:24px}
+  .brandbar svg{width:30px;height:30px;flex:none}
+  .brandbar .n{font-family:'Archivo',sans-serif;font-weight:700;font-size:14px;
+    letter-spacing:.02em;color:var(--ink);line-height:1.1}
+  .brandbar .n span{display:block;font-size:10.5px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--faint);font-weight:600;margin-top:2px}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.17em;
+    text-transform:uppercase;color:var(--brand-ink)}
+  h1{font-family:'Archivo',sans-serif;font-weight:800;letter-spacing:-.022em;
+    font-size:clamp(31px,6vw,50px);line-height:1.04;margin-top:10px}
+  .dek{margin-top:15px;max-width:62ch;font-size:16px}
+  .period{margin-top:18px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;
+    color:var(--faint);line-height:1.8}
+
+  /* tiles */
+  .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:28px}
+  @media(min-width:780px){.tiles{grid-template-columns:repeat(4,1fr)}}
+  .tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 17px}
+  .tile .l{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--faint)}
+  .tile .v{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(25px,3.4vw,33px);
+    color:var(--ink);line-height:1.05;margin-top:9px;font-variant-numeric:tabular-nums}
+  .tile .s{font-size:12.5px;color:var(--faint);margin-top:5px}
+  .tile.hot{border-color:rgba(241,88,57,.4);background:linear-gradient(180deg,var(--brand-soft),var(--surface))}
+  .tile.hot .v{color:var(--brand-ink)}
+
+  /* sections */
+  section{padding-block:44px 6px}
+  .shead{border-bottom:1px solid var(--line-2);padding-bottom:11px;
+    display:flex;align-items:baseline;gap:13px;flex-wrap:wrap}
+  .snum{font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.14em;
+    color:var(--brand-ink);white-space:nowrap}
+  .shead h2{font-family:'Archivo',sans-serif;font-weight:700;letter-spacing:-.015em;
+    font-size:clamp(22px,3.4vw,30px);line-height:1.12;flex:1;min-width:200px}
+  .slead{margin-top:14px;max-width:70ch;font-size:15.5px}
+
+  /* tables */
+  .tw{overflow-x:auto;margin-top:20px;border:1px solid var(--line);border-radius:12px;
+    background:var(--surface)}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+  thead th{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.11em;
+    text-transform:uppercase;color:var(--faint);text-align:left;font-weight:500;
+    padding:13px 14px;border-bottom:1px solid var(--line-2);white-space:nowrap}
+  thead th.n{text-align:right}
+  tbody td{font-size:13.5px;padding:12px 14px;border-bottom:1px solid var(--line);
+    color:var(--body);line-height:1.45}
+  tbody tr:last-child td{border-bottom:none}
+  td.n{text-align:right;font-family:'IBM Plex Mono',monospace}
+  td b{color:var(--ink)}
+  tr.tot td{border-top:1px solid var(--line-2);background:var(--surface-2);color:var(--ink);font-weight:600}
+  tr.flag td{background:rgba(226,92,78,.06)}
+
+  /* chips */
+  .chip{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;
+    letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:99px;
+    border:1px solid;white-space:nowrap}
+  .k-ok{color:var(--ok);border-color:rgba(79,183,131,.45);background:var(--ok-soft)}
+  .k-warn{color:var(--warn);border-color:rgba(224,163,60,.45);background:var(--warn-soft)}
+  .k-bad{color:var(--bad);border-color:rgba(226,92,78,.45);background:var(--bad-soft)}
+  .k-nu{color:var(--faint);border-color:var(--line-2);background:transparent}
+
+  /* callouts */
+  .box{margin-top:20px;border-radius:12px;padding:20px 22px;border:1px solid var(--line-2);
+    background:var(--surface)}
+  .box.hot{border-color:rgba(241,88,57,.42);background:linear-gradient(180deg,var(--brand-soft),var(--surface))}
+  .box.bad{border-color:rgba(226,92,78,.4);background:linear-gradient(180deg,rgba(226,92,78,.08),var(--surface))}
+  .box .t{font-family:'Archivo',sans-serif;font-weight:700;font-size:16.5px;color:var(--ink);
+    margin-bottom:8px;line-height:1.25}
+  .box p+p{margin-top:9px}
+  .box p{font-size:15px}
+
+  /* math */
+  .math{margin-top:20px;display:grid;gap:1px;background:var(--line-2);
+    border:1px solid var(--line-2);border-radius:12px;overflow:hidden}
+  .math .row{background:var(--surface);padding:14px 18px;display:flex;
+    justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+  .math .row .k{font-size:14px;color:var(--body);flex:1;min-width:190px}
+  .math .row .v{font-family:'Archivo',sans-serif;font-weight:700;font-size:19px;
+    color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .math .row.big{background:var(--surface-2)}
+  .math .row.big .v{color:var(--brand-ink);font-size:24px}
+
+  /* unit blocks */
+  .unit{margin-top:22px;border:1px solid var(--line);border-radius:14px;
+    background:var(--surface);overflow:hidden}
+  .unit>.hd{padding:18px 20px 16px;border-bottom:1px solid var(--line);
+    display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;
+    border-left:3px solid var(--line-2);margin-left:-1px}
+  .unit.ok>.hd{border-left-color:var(--ok)}
+  .unit.warn>.hd{border-left-color:var(--warn)}
+  .unit.bad>.hd{border-left-color:var(--bad)}
+  .unit .hd .nm{flex:1;min-width:210px}
+  .unit .hd h3{font-family:'Archivo',sans-serif;font-weight:700;font-size:21px;line-height:1.15}
+  .unit .hd .id{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--faint);margin-top:4px}
+  .unit .bd{padding:18px 20px 20px}
+  .kv{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  @media(min-width:640px){.kv{grid-template-columns:repeat(4,1fr)}}
+  .kv div{background:var(--surface-2);padding:11px 13px}
+  .kv .k{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--faint)}
+  .kv .v{font-family:'Archivo',sans-serif;font-weight:700;font-size:17px;color:var(--ink);
+    margin-top:4px;font-variant-numeric:tabular-nums}
+  .sub{margin-top:18px}
+  .sub h4{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--brand-ink);font-weight:500;margin-bottom:9px}
+  .sub p{font-size:14px}
+  .sub ul{margin:0;padding-left:19px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+  .sub li::marker{color:var(--faint-2)}
+  .rep{display:inline-flex;align-items:center;gap:8px;margin-top:16px;
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;text-decoration:none;
+    border:1px solid var(--line-2);border-radius:8px;padding:9px 14px;color:var(--brand-ink);
+    background:var(--surface-2)}
+  .rep:hover{border-color:var(--brand);background:var(--brand-soft)}
+  .act{margin-top:16px;border-left:2px solid var(--brand);padding:2px 0 2px 14px;font-size:14.5px}
+  .act b{color:var(--brand-ink)}
+
+  /* steps */
+  .steps{margin-top:20px;display:flex;flex-direction:column;gap:9px}
+  .step{display:grid;grid-template-columns:auto 1fr;gap:4px 15px;background:var(--surface);
+    border:1px solid var(--line);border-left:3px solid var(--line-2);border-radius:10px;
+    padding:15px 18px}
+  .step.p1{border-left-color:var(--bad)}
+  .step.p2{border-left-color:var(--warn)}
+  .step.p3{border-left-color:var(--ok)}
+  .step .n{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--faint);padding-top:2px}
+  .step h4{font-family:'IBM Plex Sans',sans-serif;font-weight:600;font-size:15.5px;
+    color:var(--ink);line-height:1.35}
+  .step .who{grid-column:2;margin-top:7px}
+  .step p{grid-column:2;margin-top:7px;font-size:14.5px}
+  @media(max-width:520px){
+    .step{grid-template-columns:1fr}
+    .step .n{padding-top:0;margin-bottom:2px}
+    .step h4,.step p,.step .who{grid-column:1}
+  }
+
+  footer{border-top:1px solid var(--line-2);margin-top:52px;padding-block:28px 46px}
+  footer .fb{display:flex;align-items:center;gap:11px;margin-bottom:14px}
+  footer .fb svg{width:26px;height:26px}
+  footer p{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--faint);line-height:1.9}
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header>
+  <div class="brandbar">
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dose de Growth">
+      <path d="M24 2L43.6 13V35L24 46L4.4 35V13L24 2Z" fill="#F15839"/>
+      <path d="M18 14L18 32L24 36L24 14L18 14Z" fill="white" fill-opacity="0.95"/>
+      <path d="M24 14L30 18L30 28L24 32L24 14Z" fill="#171717" fill-opacity="0.85"/>
+    </svg>
+    <div class="n">Dose de Growth<span>Gestão de tráfego</span></div>
+  </div>
+
+  <span class="eyebrow">Super Visão · 5 unidades · Google Ads</span>
+  <h1>Relatório de gestão<br />das unidades</h1>
+  <p class="dek">Investimento, entrega e medição de contatos das cinco unidades. Inclui o diagnóstico completo das conversões que não estavam sendo registradas e a explicação do gasto de Morumbi.</p>
+  <p class="period">
+    Últimos 14 dias: 03/09 a 16/09/2026 · Mês: 01/09 a 17/09/2026<br />
+    Conversões medidas a partir de 11/09/2026, data em que as tags foram publicadas<br />
+    Emitido em 17 de setembro de 2026
+  </p>
+
+  <div class="tiles">
+    <div class="tile"><div class="l">Investido no mês</div><div class="v">R$ 9.891</div><div class="s">as cinco unidades, 01 a 17/09</div></div>
+    <div class="tile"><div class="l">Cliques em 14 dias</div><div class="v">5.895</div><div class="s">126.156 impressões</div></div>
+    <div class="tile"><div class="l">Contatos desde 11/09</div><div class="v">38</div><div class="s">de duas unidades apenas</div></div>
+    <div class="tile hot"><div class="l">Saldo somado hoje</div><div class="v">R$ 1.927</div><div class="s">uma unidade já parada</div></div>
+  </div>
+</header>
+
+<!-- 01 PANORAMA -->
+<section>
+  <div class="shead"><span class="snum">01</span><h2>Panorama</h2></div>
+  <p class="slead">As cinco unidades gastaram R$ 9.891 no mês e registraram 38 contatos desde 11 de setembro. Só que esses 38 vieram de duas unidades. As outras três estavam com a medição quebrada, cada uma por um motivo técnico diferente. Todas as três já foram diagnosticadas e corrigidas, e as correções aguardam publicação.</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr>
+        <th>Unidade</th><th class="n">Saldo</th><th class="n">Gasto 14 dias</th><th class="n">Cliques</th>
+        <th class="n">Custo por clique</th><th class="n">Contatos</th><th>Medição</th>
+      </tr></thead>
+      <tbody>
+        <tr><td><b>Vila Leopoldina</b></td><td class="n">R$ 878,80</td><td class="n">R$ 791,93</td><td class="n">314</td><td class="n">R$ 2,52</td><td class="n"><b>25</b></td><td><span class="chip k-ok">Medindo</span></td></tr>
+        <tr><td><b>Butantã</b></td><td class="n">R$ 206,84</td><td class="n">R$ 1.769,90</td><td class="n">1.551</td><td class="n">R$ 1,14</td><td class="n"><b>13</b></td><td><span class="chip k-ok">Medindo</span></td></tr>
+        <tr><td><b>Barueri</b></td><td class="n">R$ 429,23</td><td class="n">R$ 1.558,57</td><td class="n">2.552</td><td class="n">R$ 0,61</td><td class="n">0</td><td><span class="chip k-warn">Corrigida</span></td></tr>
+        <tr><td><b>Osasco</b></td><td class="n">R$ 412,00</td><td class="n">R$ 1.573,66</td><td class="n">1.292</td><td class="n">R$ 1,22</td><td class="n">0</td><td><span class="chip k-warn">Corrigida</span></td></tr>
+        <tr class="flag"><td><b>Morumbi</b></td><td class="n">R$ 0,59</td><td class="n">R$ 1.999,55</td><td class="n">186</td><td class="n"><b>R$ 10,75</b></td><td class="n">0</td><td><span class="chip k-bad">Parada</span></td></tr>
+        <tr class="tot"><td>Total</td><td class="n">R$ 1.927,46</td><td class="n">R$ 7.693,61</td><td class="n">5.895</td><td class="n">R$ 1,30</td><td class="n">38</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box">
+    <div class="t">Sobre o ritmo de gasto</div>
+    <p>Os orçamentos diários somados das cinco unidades são <b>R$ 195 por dia</b>, enquanto a média gasta nas últimas duas semanas foi de <b>R$ 549 por dia</b>. A diferença vem do esforço de agosto, quando os orçamentos foram ampliados para atingir a meta por unidade, e depois reduzidos.</p>
+    <p>Nos orçamentos que estão configurados hoje, o mês fecharia em torno de <b>R$ 5.850 nas cinco</b>, uma média de R$ 1.170 por unidade. Isso fica alinhado com a meta de R$ 1.200 por unidade.</p>
+  </div>
+</section>
+
+<!-- 02 MORUMBI -->
+<section>
+  <div class="shead"><span class="snum">02</span><h2>Por que Morumbi gastou R$ 1.999 e trouxe 186 cliques</h2></div>
+  <p class="slead">É o ponto que mais pesa no mês e tem explicação técnica precisa, confirmada pelo próprio diagnóstico do Google dentro da conta.</p>
+
+  <div class="box bad">
+    <div class="t">A cadeia do problema</div>
+    <p><b>1.</b> A ação de conversão de Morumbi foi criada em 28 de maio de 2026 com um caractere errado no código de identificação da tag. Um <code>l</code> minúsculo onde deveria haver um <code>I</code> maiúsculo, na sexta posição. Dois caracteres visualmente idênticos na maioria das fontes.</p>
+    <p><b>2.</b> Por causa disso, a tag nunca conseguiu se comunicar com a conta. O Google Ads registra literalmente: <i>"Conversion has never received data"</i>, ou seja, a ação nunca recebeu um único sinal desde a criação.</p>
+    <p><b>3.</b> A campanha estava com lance em <b>Maximizar conversões</b>. Essa estratégia calcula quanto pagar por clique com base em quantas conversões cada clique costuma gerar. Sem nenhuma conversão registrada, o sistema perde a referência e passa a elevar o lance tentando encontrar resultado.</p>
+    <p><b>4.</b> O lance disparou. O clique de Morumbi passou a custar <b>R$ 10,75</b>, enquanto as outras quatro unidades pagam em média R$ 1,00 pelo mesmo serviço, na mesma cidade.</p>
+  </div>
+
+  <div class="math">
+    <div class="row"><span class="k">Participação de Morumbi no investimento das cinco</span><span class="v">26,0%</span></div>
+    <div class="row"><span class="k">Participação de Morumbi nos cliques das cinco</span><span class="v">3,2%</span></div>
+    <div class="row"><span class="k">Custo por clique de Morumbi</span><span class="v">R$ 10,75</span></div>
+    <div class="row"><span class="k">Custo por clique das outras quatro unidades</span><span class="v">R$ 1,00</span></div>
+    <div class="row"><span class="k">O que R$ 1.999,55 compraria no preço das outras</span><span class="v">≈ 2.000 cliques</span></div>
+    <div class="row"><span class="k">O que de fato comprou</span><span class="v">186 cliques</span></div>
+    <div class="row big"><span class="k">Diferença entre o pago e o preço justo de mercado</span><span class="v">≈ R$ 1.813</span></div>
+  </div>
+
+  <div class="box">
+    <div class="t">O que prova que o problema é a tag e não o site</div>
+    <p>Na mesma conta de Morumbi, a ação <code>Visualizacao-pagina-Morumbi</code> está ativa e registrou <b>44 conversões</b> no período. Ou seja, o site carrega, as tags disparam e a conta se comunica com o Google normalmente. O que não funcionava era especificamente a tag de contato do WhatsApp, por causa do caractere trocado.</p>
+    <p>A taxa de cliques de Morumbi também é a segunda mais alta da rede, 8,86%. O anúncio é relevante para quem busca. O problema nunca foi o anúncio, foi o preço que estava sendo pago por cada clique.</p>
+  </div>
+
+  <div class="box hot">
+    <div class="t">Regra para não repetir</div>
+    <p>Morumbi está hoje com R$ 0,59 e as campanhas interrompidas por falta de saldo. <b>A conta não deve ser recarregada antes da publicação da correção.</b> Enquanto a tag não voltar a enviar dados, o lance continua sem referência e o saldo é consumido no mesmo ritmo de R$ 143 por dia.</p>
+    <p>Com a correção publicada, o sinal volta e o lance tende a se normalizar sozinho em poucos dias, acompanhando o padrão das outras unidades.</p>
+  </div>
+</section>
+
+<!-- 03 UNIDADES -->
+<section>
+  <div class="shead"><span class="snum">03</span><h2>Unidade por unidade</h2></div>
+  <p class="slead">Cada bloco traz o quadro completo: investimento, entrega, campanhas ativas, situação da medição e o link do painel do Reportei daquela unidade.</p>
+
+  <!-- BUTANTA -->
+  <div class="unit ok">
+    <div class="hd">
+      <div class="nm"><h3>Butantã</h3><div class="id">788-031-3574 · GTM-T3JSV3XB</div></div>
+      <span class="chip k-ok">Medindo · referência da rede</span>
+    </div>
+    <div class="bd">
+      <div class="kv">
+        <div><div class="k">Saldo</div><div class="v">R$ 206,84</div></div>
+        <div><div class="k">Gasto 14 dias</div><div class="v">R$ 1.769,90</div></div>
+        <div><div class="k">Cliques</div><div class="v">1.551</div></div>
+        <div><div class="k">Contatos</div><div class="v">13</div></div>
+      </div>
+      <div class="sub">
+        <h4>Entrega</h4>
+        <p>41.446 impressões, taxa de cliques de 3,74% e custo por clique de R$ 1,14. Gasto do mês em R$ 2.395,51. Última recarga em 15/09, de R$ 500 via Pix manual.</p>
+      </div>
+      <div class="sub">
+        <h4>Campanhas</h4>
+        <ul>
+          <li>SPV Butante Pesquisa Leads Pmax — Performance Max, R$ 30/dia, qualificada, sem limitação de orçamento</li>
+          <li>SPV Butantã Pesquisa Principais Serviços — Pesquisa, R$ 16/dia, limitada por falta de palavras-chave relevantes</li>
+        </ul>
+      </div>
+      <div class="sub">
+        <h4>Medição</h4>
+        <p>Única unidade com a medição funcionando de ponta a ponta desde a publicação. A ação <code>Clique WhatsApp - Butantã</code> está ativa, com 13 contatos e último registro em 17/09. Serviu de referência para diagnosticar as outras quatro.</p>
+      </div>
+      <a class="rep" href="https://app.reportei.com/report/Mev68yphUGjvuQmhnL6E28NRe96Uyge1" target="_blank" rel="noopener">Abrir painel no Reportei →</a>
+      <p class="act"><b>Ação imediata:</b> recarregar. O saldo cobre cerca de 4 dias no orçamento atual, e é a unidade que mais converte da rede.</p>
+    </div>
+  </div>
+
+  <!-- LEOPOLDINA -->
+  <div class="unit ok">
+    <div class="hd">
+      <div class="nm"><h3>Vila Leopoldina</h3><div class="id">475-998-0447 · GTM-NR4K222M</div></div>
+      <span class="chip k-ok">Medindo</span>
+    </div>
+    <div class="bd">
+      <div class="kv">
+        <div><div class="k">Saldo</div><div class="v">R$ 878,80</div></div>
+        <div><div class="k">Gasto 14 dias</div><div class="v">R$ 791,93</div></div>
+        <div><div class="k">Cliques</div><div class="v">314</div></div>
+        <div><div class="k">Contatos</div><div class="v">25</div></div>
+      </div>
+      <div class="sub">
+        <h4>Entrega</h4>
+        <p>5.598 impressões, taxa de cliques de 5,61% e custo por clique de R$ 2,52. Gasto do mês em R$ 923,89, o menor da rede. Última recarga em 04/09, de R$ 1.500 via Pix manual. É a unidade com mais fôlego de saldo, cerca de 16 dias.</p>
+      </div>
+      <div class="sub">
+        <h4>Campanhas</h4>
+        <ul>
+          <li>SPV Leopoldina Principais serviços — Pesquisa, R$ 40/dia, qualificada, sem limitação</li>
+          <li>SPV Leopoldina PMax Principais Servicos — Performance Max, R$ 13/dia, limitada pelo orçamento</li>
+        </ul>
+      </div>
+      <div class="sub">
+        <h4>Medição</h4>
+        <p>São 25 contatos no período, mas vale entender a composição: 22 vieram da ação <code>Conversation started</code>, que é do próprio Google e registra a conversa iniciada direto pelo anúncio, 2 de chamadas de anúncios, e apenas 1 da nossa tag do site. A tag está tecnicamente correta e validada, com identificação conferida. O volume baixo dela se explica pelo número reduzido de cliques da unidade.</p>
+      </div>
+      <a class="rep" href="https://app.reportei.com/report/Mev68yphUGjvuQmhnL6E28NRe96Uyge1" target="_blank" rel="noopener">Abrir painel no Reportei →</a>
+      <p class="act"><b>Ação:</b> a Performance Max está limitada pelo orçamento. Há espaço para crescer sem aumentar o investimento total, remanejando verba dentro da própria unidade.</p>
+    </div>
+  </div>
+
+  <!-- BARUERI -->
+  <div class="unit warn">
+    <div class="hd">
+      <div class="nm"><h3>Barueri</h3><div class="id">488-303-4947 · GTM-P8X84PGW</div></div>
+      <span class="chip k-warn">Corrigida, aguarda publicação</span>
+    </div>
+    <div class="bd">
+      <div class="kv">
+        <div><div class="k">Saldo</div><div class="v">R$ 429,23</div></div>
+        <div><div class="k">Gasto 14 dias</div><div class="v">R$ 1.558,57</div></div>
+        <div><div class="k">Cliques</div><div class="v">2.552</div></div>
+        <div><div class="k">Contatos</div><div class="v">0</div></div>
+      </div>
+      <div class="sub">
+        <h4>Entrega</h4>
+        <p>É a unidade com maior volume da rede: 62.813 impressões e 2.552 cliques, ao menor custo por clique, R$ 0,61. Gasto do mês em R$ 2.410,64. Última recarga em 15/09, de R$ 500 via Pix manual.</p>
+      </div>
+      <div class="sub">
+        <h4>Campanhas</h4>
+        <ul>
+          <li>SPV Barueri Pesquisa Principais Serviços — Pesquisa, R$ 18/dia, com <b>64,07%</b> das impressões perdidas por orçamento</li>
+          <li>SPV Barueri Leads Pesquisa PMAX Principais Serviços — Performance Max, R$ 15/dia, com <b>77,87%</b> perdidas por orçamento</li>
+        </ul>
+        <p style="margin-top:9px">Barueri entrega barato e é fortemente limitada por verba. É a unidade com maior potencial de crescimento da rede assim que a medição estiver no ar e puder provar o retorno.</p>
+      </div>
+      <div class="sub">
+        <h4>Medição — causa encontrada</h4>
+        <p>O gatilho da conversão procurava o número <code>551122955950</code>, que é o telefone fixo da central presente em todas as páginas do site, e não o WhatsApp da unidade, que é <code>5511940268265</code>. Com isso a tag nunca disparava no clique do botão certo. Havia ainda um segundo desencontro: o endereço configurado era <code>/unidade/super-visao-barueri/</code> enquanto a página real é <code>/unidade/super-visao-alphaville-barueri/</code>, o que também impedia o envio de dados para o sistema interno.</p>
+        <p style="margin-top:9px">Corrigido e validado no modo de teste: o clique no WhatsApp dispara a conversão e o clique no fixo da central não dispara nada. Versão 8, <code>Dmais1 - Correcao gatilho WhatsApp Barueri</code>, aguardando publicação.</p>
+      </div>
+      <a class="rep" href="https://app.reportei.com/dashboard/J2EMMyu5ZIgCO6uhNWoeh9ReW42B1OkZ" target="_blank" rel="noopener">Abrir painel no Reportei →</a>
+      <p class="act"><b>Ação:</b> publicar a versão 8 e, com os contatos aparecendo, avaliar aumento de orçamento. Com 64% das impressões perdidas por verba, cada real adicional tem onde entregar.</p>
+    </div>
+  </div>
+
+  <!-- OSASCO -->
+  <div class="unit warn">
+    <div class="hd">
+      <div class="nm"><h3>Osasco Centro</h3><div class="id">159-174-7788 · GTM-MK9F2Z7N</div></div>
+      <span class="chip k-warn">Corrigida, aguarda publicação</span>
+    </div>
+    <div class="bd">
+      <div class="kv">
+        <div><div class="k">Saldo</div><div class="v">R$ 412,00</div></div>
+        <div><div class="k">Gasto 14 dias</div><div class="v">R$ 1.573,66</div></div>
+        <div><div class="k">Cliques</div><div class="v">1.292</div></div>
+        <div><div class="k">Contatos</div><div class="v">0</div></div>
+      </div>
+      <div class="sub">
+        <h4>Entrega</h4>
+        <p>14.199 impressões com a maior taxa de cliques da rede, 9,10%, e custo por clique de R$ 1,22. Gasto do mês em R$ 1.848,53. Última recarga em 15/09, de R$ 500 via Pix manual.</p>
+      </div>
+      <div class="sub">
+        <h4>Campanhas</h4>
+        <ul>
+          <li>SPV OSASCO Pesquisa Leads — Pesquisa, R$ 33/dia, limitada por falta de palavras-chave relevantes e também limitada pelo orçamento</li>
+        </ul>
+        <p style="margin-top:9px">É a única unidade sem Performance Max. Roda com uma campanha só.</p>
+      </div>
+      <div class="sub">
+        <h4>Medição — causa encontrada</h4>
+        <p>O container da unidade estava publicado <b>completamente vazio</b>: versão 2, de 06 de maio de 2026, sem nenhuma tag, gatilho ou variável. A medição nunca chegou a existir nesta unidade. No Google Ads havia ainda duas ações praticamente idênticas, <code>Contato</code> e <code>Contato (1)</code>, ambas sem tag associada e ambas marcadas como configuração incorreta.</p>
+        <p style="margin-top:9px">Foi montado do zero: variável de clique habilitada, gatilho criado no número correto da unidade (<code>5511948364138</code>), tag base da conta e tag de conversão. As ações duplicadas foram consolidadas, ficando uma principal e uma secundária, sem exclusão. Validado no modo de teste. Versão 3, <code>Dmais1 - Tracking WhatsApp Osasco</code>, aguardando publicação.</p>
+      </div>
+      <a class="rep" href="https://app.reportei.com/dashboard/DeehLkxCJhOc2OiIt4wFMe0AYkoFAX6p" target="_blank" rel="noopener">Abrir painel no Reportei →</a>
+      <p class="act"><b>Atenção administrativa:</b> a conta tem verificação do anunciante pendente com prazo até 07/10/2026. Sem a verificação, os anúncios podem ser pausados ou limitados. É a unidade com a melhor taxa de cliques da rede, então uma parada aqui custa caro.</p>
+    </div>
+  </div>
+
+  <!-- MORUMBI -->
+  <div class="unit bad">
+    <div class="hd">
+      <div class="nm"><h3>Morumbi</h3><div class="id">319-985-0748 · GTM-P9HLDQTF</div></div>
+      <span class="chip k-bad">Parada por saldo</span>
+    </div>
+    <div class="bd">
+      <div class="kv">
+        <div><div class="k">Saldo</div><div class="v">R$ 0,59</div></div>
+        <div><div class="k">Gasto 14 dias</div><div class="v">R$ 1.999,55</div></div>
+        <div><div class="k">Cliques</div><div class="v">186</div></div>
+        <div><div class="k">Contatos</div><div class="v">0</div></div>
+      </div>
+      <div class="sub">
+        <h4>Entrega</h4>
+        <p>2.100 impressões, taxa de cliques de 8,86%, a segunda melhor da rede, e custo por clique de R$ 10,75, quase onze vezes a média das outras. Gasto do mês em R$ 2.312,88. Última recarga em 15/09, de R$ 500 via Pix manual, consumida em poucos dias. As campanhas estão interrompidas por falta de fundos.</p>
+      </div>
+      <div class="sub">
+        <h4>Campanhas</h4>
+        <ul>
+          <li>SPV Morumbi Pesquisa Principais Serviços — Pesquisa, R$ 20/dia, limitada por falta de palavras-chave relevantes</li>
+          <li>SPV Morumbi Pesquisa leads Pmax 03-04-2026 — Performance Max, R$ 10/dia, sem entrega no período</li>
+          <li>Outras quatro campanhas pausadas</li>
+        </ul>
+      </div>
+      <div class="sub">
+        <h4>Medição — causa encontrada</h4>
+        <p>Detalhada na seção 02. Em resumo: um caractere trocado no código de identificação da tag, criada em 28/05/2026, impediu que qualquer dado chegasse à conta. O gatilho, o número do WhatsApp e o endereço da página estavam todos corretos. Corrigido copiando o código direto da tela do Google Ads e validado no modo de teste. Versão 11, <code>Dmais1 - Correcao rotulo WhatsApp Morumbi</code>, aguardando publicação.</p>
+      </div>
+      <a class="rep" href="https://app.reportei.com/dashboard/7hFFB7StaRAJ5ZJTJzm4PfRR54UTp9r1" target="_blank" rel="noopener">Abrir painel no Reportei →</a>
+      <p class="act"><b>Ação crítica:</b> não recarregar antes da publicação da versão 11. Depois de publicada, recarregar e acompanhar o custo por clique por 48 horas até estabilizar no padrão da rede.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 04 MEDICAO -->
+<section>
+  <div class="shead"><span class="snum">04</span><h2>O diagnóstico da medição</h2></div>
+  <p class="slead">As quatro unidades receberam a mesma publicação de tags no mesmo dia, 11 de setembro. Só uma passou a contar. A investigação comparou, elo por elo, o que o site tem contra o que cada gatilho esperava e contra o que cada conta do Google Ads esperava.</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr>
+        <th>Unidade</th><th>WhatsApp no site</th><th>Número no gatilho</th><th>Confere</th><th>Código da tag confere</th><th>Situação encontrada</th>
+      </tr></thead>
+      <tbody>
+        <tr><td><b>Butantã</b></td><td class="mono">5511970905076</td><td class="mono">5511970905076</td><td><span class="chip k-ok">Sim</span></td><td><span class="chip k-ok">Sim</span></td><td>Funcionando</td></tr>
+        <tr><td><b>Vila Leopoldina</b></td><td class="mono">5511970919850</td><td class="mono">5511970919850</td><td><span class="chip k-ok">Sim</span></td><td><span class="chip k-ok">Sim</span></td><td>Funcionando</td></tr>
+        <tr><td><b>Barueri</b></td><td class="mono">5511940268265</td><td class="mono">551122955950</td><td><span class="chip k-bad">Não</span></td><td><span class="chip k-ok">Sim</span></td><td>Número do fixo da central no lugar do WhatsApp</td></tr>
+        <tr><td><b>Morumbi</b></td><td class="mono">5511947766355</td><td class="mono">5511947766355</td><td><span class="chip k-ok">Sim</span></td><td><span class="chip k-bad">Não</span></td><td>Um caractere errado no código da tag</td></tr>
+        <tr><td><b>Osasco</b></td><td class="mono">5511948364138</td><td class="mono">não existia</td><td><span class="chip k-nu">n/a</span></td><td><span class="chip k-nu">n/a</span></td><td>Container publicado vazio desde maio</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box">
+    <div class="t">Achados estruturais do site</div>
+    <p><b>Todas as páginas de unidade carregam os 35 containers da rede inteira</b>, e não apenas o da própria unidade. Isso significa que nenhum gatilho está protegido por escopo de página. O que separa uma unidade da outra é o número de WhatsApp dentro da condição, que é único por unidade. Por isso um número errado na condição não gera medição de outra unidade, ele simplesmente não gera nada.</p>
+    <p>O botão de WhatsApp aparece <b>11 vezes por página</b> (flutuante, cabeçalho, cards e rodapé) e sempre no formato <code>api.whatsapp.com/send</code>, nunca <code>wa.me</code>. Qualquer configuração futura precisa considerar esse formato.</p>
+    <p>Existe ainda um segundo conjunto de quatro containers na conta, com nomes parecidos, <b>todos vazios e nenhum instalado no site</b>. Não interferem em nada, mas convém não confundir na hora de publicar.</p>
+  </div>
+
+  <div class="box hot">
+    <div class="t">Medida adotada para não repetir</div>
+    <p>O erro de Morumbi e o de Barueri têm a mesma natureza: um valor transcrito à mão em vez de copiado da origem. A partir de agora, <b>nenhum código de conversão ou número de contato é digitado</b>. Todos são copiados diretamente da tela do Google Ads ou do código da página e colados, e cada alteração passa pelo modo de teste antes de virar versão.</p>
+  </div>
+</section>
+
+<!-- 05 PENDENCIAS -->
+<section>
+  <div class="shead"><span class="snum">05</span><h2>O que depende de publicação</h2></div>
+  <p class="slead">As três correções estão criadas e testadas no Gerenciador de Tags, mas não publicadas. Nosso nível de acesso é de aprovação, não de publicação. A etapa final é do responsável pelo site.</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Unidade</th><th>Container</th><th>Versão a publicar</th><th>Teste</th><th>Situação</th></tr></thead>
+      <tbody>
+        <tr><td><b>Barueri</b></td><td class="mono">GTM-P8X84PGW</td><td>Versão 8 — Dmais1 - Correcao gatilho WhatsApp Barueri</td><td><span class="chip k-ok">Aprovado</span></td><td>Aguardando</td></tr>
+        <tr><td><b>Morumbi</b></td><td class="mono">GTM-P9HLDQTF</td><td>Versão 11 — Dmais1 - Correcao rotulo WhatsApp Morumbi</td><td><span class="chip k-ok">Aprovado</span></td><td>Aguardando</td></tr>
+        <tr><td><b>Osasco</b></td><td class="mono">GTM-MK9F2Z7N</td><td>Versão 3 — Dmais1 - Tracking WhatsApp Osasco</td><td><span class="chip k-ok">Aprovado</span></td><td>Aguardando</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box">
+    <div class="t">Alertas administrativos das contas</div>
+    <p><b>Osasco:</b> verificação do anunciante pendente, com prazo até 07/10/2026. Sem ela, os anúncios podem ser pausados ou limitados.</p>
+    <p><b>Barueri, Morumbi e Vila Leopoldina:</b> verificação de serviços financeiros pendente. A classificação não corresponde à atividade de vistoria veicular e vale contestar junto ao Google.</p>
+    <p><b>Saldo:</b> Butantã e Osasco com aviso de fundos acabando, Morumbi já interrompida. Nenhuma conta está suspensa e não há alerta de política em nenhuma das cinco.</p>
+    <p><b>Recarga automática:</b> desativada em todas. Todas as recargas são feitas por Pix manual, o que explica as paradas por saldo. Ativar a recarga automática eliminaria esse risco.</p>
+  </div>
+</section>
+
+<!-- 06 PROXIMOS -->
+<section>
+  <div class="shead"><span class="snum">06</span><h2>Próximas ações</h2></div>
+  <p class="slead">Em ordem de impacto sobre o resultado.</p>
+
+  <div class="steps">
+    <div class="step p1">
+      <span class="n">01</span>
+      <h4>Publicar as três versões no Gerenciador de Tags</h4>
+      <div class="who"><span class="chip k-bad">Depende do cliente</span></div>
+      <p>Destrava a medição de Barueri, Morumbi e Osasco de uma vez, e é pré-requisito para tudo que vem depois. Sem isso, três unidades continuam investindo sem conseguir provar retorno.</p>
+    </div>
+    <div class="step p1">
+      <span class="n">02</span>
+      <h4>Recarregar Butantã</h4>
+      <div class="who"><span class="chip k-bad">Depende do cliente</span></div>
+      <p>Restam cerca de 4 dias de saldo. É a unidade com a medição funcionando e 13 contatos no período. Uma parada aqui interrompe justamente o que está dando certo.</p>
+    </div>
+    <div class="step p2">
+      <span class="n">03</span>
+      <h4>Resolver a verificação do anunciante de Osasco</h4>
+      <div class="who"><span class="chip k-warn">Cliente e agência</span></div>
+      <p>Prazo até 07/10. É a unidade com a melhor taxa de cliques da rede, 9,10%.</p>
+    </div>
+    <div class="step p2">
+      <span class="n">04</span>
+      <h4>Recarregar Morumbi, só depois da publicação</h4>
+      <div class="who"><span class="chip k-warn">Cliente, na ordem certa</span></div>
+      <p>Com a tag corrigida no ar, o lance recupera a referência. Recarregar antes significa repetir o consumo de R$ 143 por dia sem retorno.</p>
+    </div>
+    <div class="step p3">
+      <span class="n">05</span>
+      <h4>Confirmar o registro das conversões em 48 horas</h4>
+      <div class="who"><span class="chip k-ok">Agência</span></div>
+      <p>Depois de publicado, verificamos conta a conta se as ações saíram de pendente e passaram a registrar contatos, e ajustamos o que ainda estiver fora do padrão.</p>
+    </div>
+    <div class="step p3">
+      <span class="n">06</span>
+      <h4>Revisar orçamento de Barueri</h4>
+      <div class="who"><span class="chip k-ok">Agência</span></div>
+      <p>Perde 64% das impressões por falta de verba, com o clique mais barato da rede a R$ 0,61. Com a medição no ar, dá para justificar o remanejamento com número na mão.</p>
+    </div>
+    <div class="step p3">
+      <span class="n">07</span>
+      <h4>Ativar recarga automática nas cinco contas</h4>
+      <div class="who"><span class="chip k-ok">Cliente</span></div>
+      <p>Elimina as paradas por saldo, que já custaram dias de veiculação em mais de uma unidade neste mês.</p>
+    </div>
+  </div>
+
+  <div class="box">
+    <div class="t">Registrado para acompanhamento</div>
+    <p>A unidade <b>Osasco Autonomistas</b> tem página própria no site e WhatsApp próprio, mas não possui conta de Google Ads no grupo. São cinco contas para seis unidades anunciáveis. O ponto já foi levantado com a operação.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="fb">
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dose de Growth">
+      <path d="M24 2L43.6 13V35L24 46L4.4 35V13L24 2Z" fill="#F15839"/>
+      <path d="M18 14L18 32L24 36L24 14L18 14Z" fill="white" fill-opacity="0.95"/>
+      <path d="M24 14L30 18L30 28L24 32L24 14Z" fill="#171717" fill-opacity="0.85"/>
+    </svg>
+    <div class="n" style="font-family:'Archivo',sans-serif;font-weight:700;font-size:13px;color:var(--ink)">Dose de Growth</div>
+  </div>
+  <p>
+    Relatório de gestão Google Ads · Super Visão · 5 unidades<br />
+    Dados apurados em 17 de setembro de 2026 · Períodos indicados no cabeçalho<br />
+    (11) 96072-5070 · lucas@dosedegrowth.com · www.dosedegrowth.com
+  </p>
+</footer>
+
+</div>
+</body>
+</html>
