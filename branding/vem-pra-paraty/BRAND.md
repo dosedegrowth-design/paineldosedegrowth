@@ -76,6 +76,18 @@ Campo Nome do perfil: `Vem pra Paraty | Passeio de Lancha` (busca do IG).
 👇 Reserve pelo WhatsApp
 ```
 
+## Google Meu Negócio (perfil da empresa)
+
+Categoria sugerida: "Serviço de passeios de barco" / "Agência de excursões". Descrição oficial (747/750 caracteres, sem links — o WhatsApp e o site vão nos campos próprios do perfil):
+
+```
+A Vem pra Paraty é uma empresa de turismo náutico com 24 anos de história — uma das primeiras lanchas a navegar a baía de Paraty, com mais de 5.000 passeios realizados. Realizamos passeios de lancha privativos por ilhas e praias que só se alcançam pelo mar, como Lagoa Azul, Praia da Lula, Praia Vermelha e Saco do Mamanguá.
+
+O roteiro é montado do seu jeito e no ritmo do grupo, com paradas para nadar e mergulhar em águas cristalinas. A estrutura inclui frota própria, marinheiros experientes, coletes, equipamentos e combustível — é só embarcar e aproveitar.
+
+Atendemos famílias, casais e grupos de até 12 pessoas, com saídas diárias do cais de Paraty e o clássico passeio do pôr do sol. Reserve pelo WhatsApp e viva o melhor dia da sua viagem.
+```
+
 ## Manual
 
 - PDF pro cliente: `manual/identidade-visual-vem-pra-paraty.pdf`
