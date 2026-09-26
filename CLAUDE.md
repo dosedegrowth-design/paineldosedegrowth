@@ -280,7 +280,7 @@ Gotchas:
 
 ## Simulador de benefício — `/simulador`
 
-Protótipo interno de LP mobile-first: simulação **fictícia** de aumento de benefício que termina no WhatsApp. 100% no navegador (sem backend, banco, API ou consulta a sistema nenhum — o CPF só é validado localmente e nunca sai da página). Marca fictícia "Revisa", sem identidade de governo. Detalhes em `docs/simulador/README.md`.
+Protótipo interno de LP mobile-first: simulação **fictícia** de aumento de benefício que termina no WhatsApp. 100% no navegador (sem backend, banco, API ou consulta a sistema nenhum — o CPF só é validado localmente e nunca sai da página). Marca própria "Revisa" com linguagem visual institucional (branco + verde/azul/amarelo, Public Sans, cabeçalho branco com menu, faixa tricolor, indicador de etapas), **sem** brasão, marca ou padrões do gov.br/INSS e com o descritor "plataforma independente" sempre visível. Detalhes e paleta em `docs/simulador/README.md`.
 
 | Recurso | Onde |
 |---|---|
@@ -291,7 +291,7 @@ Protótipo interno de LP mobile-first: simulação **fictícia** de aumento de b
 | Testes | `node --experimental-strip-types --test lib/simulador/simulador.test.ts` · UI: `BASE=http://localhost:3011/simulador node scripts/simulador-qa.cjs` |
 | Standalone (arquivo único, sem Next — link de teste fora do domínio DDG) | `standalone/simulador/index.html` (config no bloco `CONFIGURAÇÃO`; CSS espelha `app/simulador/simulador.css`) |
 
-Regras: o aviso "Resultado estimativo para fins de simulação…" fica sempre abaixo do valor; nunca afirmar consulta oficial; CPF não vai pra URL, storage ou mensagem; `/simulador` está em `publicPaths` do middleware; `BRAND.indexable=false` (noindex) enquanto for protótipo.
+Regras: o aviso "Resultado estimativo para fins de simulação…" fica sempre abaixo do valor; nunca afirmar ou insinuar vínculo com órgão público (cabeçalho, rodapé e seção Ajuda declaram que é plataforma independente); CPF não vai pra URL, storage ou mensagem; `/simulador` está em `publicPaths` do middleware; `BRAND.indexable=false` (noindex) enquanto for protótipo.
 
 ## Documentação relacionada
 

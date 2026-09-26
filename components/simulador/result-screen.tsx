@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  useEffect,
-  useId,
-  useRef,
-  useState,
-  type CSSProperties,
-  type MouseEvent,
-  type RefObject,
-} from "react";
+import { useEffect, useId, useRef, useState, type MouseEvent, type RefObject } from "react";
 import { COPY, ESTIMATE, WHATSAPP_MESSAGE, WHATSAPP_NUMBER } from "@/lib/simulador/config";
 import { formatBRL, formatBRLWhole, positionInRange } from "@/lib/simulador/estimate";
 import { firstName, titleCaseName } from "@/lib/simulador/name";
@@ -17,36 +9,13 @@ import { useReducedMotion } from "./use-reduced-motion";
 import { ScreenShell } from "./screen-shell";
 import type { Lead } from "./lead-form";
 import {
+  AlertIcon,
   CheckIcon,
   ChevronDownIcon,
-  InfoIcon,
   RefreshIcon,
   SpinnerIcon,
   WhatsappIcon,
 } from "./icons";
-
-const COUNT_UP_MS = 1000;
-const stagger = (i: number) => ({ "--i": i }) as CSSProperties;
-
-/** Conta de 0 até o valor (em reais inteiros). Desligado, mostra o valor direto. */
-function useCountUp(targetCents: number, enabled: boolean): number {
-  const [cents, setCents] = useState(0);
-  useEffect(() => {
-    if (!enabled) return;
-    let frame = 0;
-    const start = performance.now();
-    const targetReais = targetCents / 100;
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / COUNT_UP_MS);
-      const eased = 1 - Math.pow(1 - t, 3);
-      setCents(Math.round(targetReais * eased) * 100);
-      if (t < 1) frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [targetCents, enabled]);
-  return enabled ? cents : targetCents;
-}
 
 export function ResultScreen({
   lead,
@@ -64,7 +33,6 @@ export function ResultScreen({
   headingRef: RefObject<HTMLHeadingElement | null>;
 }) {
   const reduced = useReducedMotion();
-  const shownCents = useCountUp(estimateCents, !reduced);
   const valor = formatBRL(estimateCents);
   const position = positionInRange(estimateCents, ESTIMATE);
   const whatsappUrl = buildWhatsappUrl(WHATSAPP_NUMBER, WHATSAPP_MESSAGE, {
@@ -94,111 +62,113 @@ export function ResultScreen({
   const rangeMax = formatBRLWhole(ESTIMATE.maxBRL);
 
   return (
-    <ScreenShell
-      band={
-        <>
-          <p className="sim-eyebrow sim-eyebrow--done sim-stagger" style={stagger(0)}>
-            <CheckIcon size={14} strokeWidth={2.5} />
-            {COPY.result.eyebrow}
-          </p>
-          <h1 ref={headingRef} tabIndex={-1} className="sim-h1 sim-stagger" style={stagger(1)}>
-            {COPY.result.greeting.replace("{nome}", firstName(lead.nome))}
-          </h1>
-          <p className="sim-sub sim-stagger" style={stagger(2)}>
-            {COPY.result.lead}
-          </p>
-        </>
-      }
-    >
-      <section className="sim-card" aria-labelledby="sim-card-label">
-        <p id="sim-card-label" className="sim-card__label">
-          {COPY.result.cardLabel}
+    <ScreenShell>
+      <section className="sim-hero">
+        <p className="sim-status">
+          <CheckIcon size={16} strokeWidth={3} />
+          {COPY.result.eyebrow}
         </p>
-        <p className="sim-card__value" data-testid="estimate-value">
-          <span aria-hidden="true">{formatBRL(shownCents)}</span>
-          <span className="sim-sr">{valor}</span>
-        </p>
-        <div
-          className="sim-range"
-          role="img"
-          aria-label={`${COPY.result.rangeLabel}: de ${rangeMin} a ${rangeMax}`}
-        >
-          <p className="sim-range__title" aria-hidden="true">
-            {COPY.result.rangeLabel}
+        <h1 ref={headingRef} tabIndex={-1} className="sim-h1">
+          {COPY.result.greeting.replace("{nome}", firstName(lead.nome))}
+        </h1>
+        <p className="sim-lead">{COPY.result.lead}</p>
+      </section>
+
+      <section className="sim-panel" aria-labelledby="sim-result-title">
+        <div className="sim-panel__head">
+          <h2 id="sim-result-title" className="sim-panel__title">
+            {COPY.result.panelTitle}
+          </h2>
+        </div>
+        <div className="sim-panel__body">
+          <p className="sim-value__label">{COPY.result.cardLabel}</p>
+          <p className="sim-value" data-testid="estimate-value">
+            {valor}
           </p>
-          <div className="sim-range__bar">
-            <div className="sim-range__fill" style={{ width: `${position * 100}%` }} />
-            <span className="sim-range__dot" style={{ left: `${position * 100}%` }} />
+          <div
+            className="sim-range"
+            role="img"
+            aria-label={`${COPY.result.rangeLabel}: de ${rangeMin} a ${rangeMax}`}
+          >
+            <p className="sim-range__title" aria-hidden="true">
+              {COPY.result.rangeLabel}
+            </p>
+            <div className="sim-range__bar">
+              <div className="sim-range__fill" style={{ width: `${position * 100}%` }} />
+              <span className="sim-range__dot" style={{ left: `${position * 100}%` }} />
+            </div>
+            <div className="sim-range__labels" aria-hidden="true">
+              <span>{rangeMin}</span>
+              <span>{rangeMax}</span>
+            </div>
           </div>
-          <div className="sim-range__labels" aria-hidden="true">
-            <span>{rangeMin}</span>
-            <span>{rangeMax}</span>
+
+          <div className="sim-notice sim-notice--warn sim-disclaimer" role="note">
+            <AlertIcon size={20} />
+            <p className="sim-notice__title">{COPY.result.attention}</p>
+            <p className="sim-notice__body">{COPY.result.disclaimer}</p>
+          </div>
+
+          <div className="sim-actions">
+            <a
+              className="sim-btn sim-btn--primary sim-btn--xl sim-btn--whatsapp"
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={handleCta}
+              aria-disabled={redirecting || undefined}
+              data-testid="cta-whatsapp"
+            >
+              {redirecting ? <SpinnerIcon size={22} /> : <WhatsappIcon size={22} />}
+              <span className="sim-btn__stack">
+                <span>{redirecting ? COPY.result.ctaRedirecting : COPY.result.ctaPrimary}</span>
+                <small>{COPY.result.ctaPrimaryHint}</small>
+              </span>
+            </a>
+
+            <button
+              type="button"
+              className="sim-btn sim-btn--secondary"
+              aria-expanded={explainerOpen}
+              aria-controls={explainerId}
+              onClick={() => setExplainerOpen((open) => !open)}
+              data-testid="cta-explain"
+            >
+              <span>{COPY.result.ctaSecondary}</span>
+              <ChevronDownIcon size={18} className="sim-btn__chev" />
+            </button>
+
+            {explainerOpen ? (
+              <section
+                id={explainerId}
+                ref={explainerRef}
+                tabIndex={-1}
+                className="sim-explainer"
+                aria-labelledby={`${explainerId}-title`}
+              >
+                <h3 id={`${explainerId}-title`} className="sim-explainer__title">
+                  {COPY.result.explainer.title}
+                </h3>
+                <ul>
+                  {COPY.result.explainer.items.map((item) => (
+                    <li key={item}>
+                      <CheckIcon size={16} />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+
+            <div className="sim-restart">
+              <button type="button" className="sim-btn sim-btn--link" onClick={onRestart} data-testid="cta-restart">
+                <RefreshIcon size={18} />
+                <span>{COPY.result.restart}</span>
+              </button>
+            </div>
           </div>
         </div>
       </section>
-
-      <p className="sim-disclaimer">
-        <InfoIcon size={16} />
-        <span>{COPY.result.disclaimer}</span>
-      </p>
-
-      <div className="sim-actions">
-        <a
-          className="sim-btn sim-btn--primary sim-btn--xl sim-btn--whatsapp"
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={handleCta}
-          aria-disabled={redirecting || undefined}
-          data-testid="cta-whatsapp"
-        >
-          {redirecting ? <SpinnerIcon size={22} /> : <WhatsappIcon size={22} />}
-          <span className="sim-btn__stack">
-            <span>{redirecting ? COPY.result.ctaRedirecting : COPY.result.ctaPrimary}</span>
-            <small>{COPY.result.ctaPrimaryHint}</small>
-          </span>
-        </a>
-
-        <button
-          type="button"
-          className="sim-btn sim-btn--ghost"
-          aria-expanded={explainerOpen}
-          aria-controls={explainerId}
-          onClick={() => setExplainerOpen((open) => !open)}
-        >
-          <span>{COPY.result.ctaSecondary}</span>
-          <ChevronDownIcon size={18} className="sim-btn__chev" />
-        </button>
-
-        {explainerOpen ? (
-          <section
-            id={explainerId}
-            ref={explainerRef}
-            tabIndex={-1}
-            className="sim-explainer"
-            aria-labelledby={`${explainerId}-title`}
-          >
-            <h2 id={`${explainerId}-title`} className="sim-explainer__title">
-              {COPY.result.explainer.title}
-            </h2>
-            <ul>
-              {COPY.result.explainer.items.map((item) => (
-                <li key={item}>
-                  <CheckIcon size={16} />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-
-        <div className="sim-restart">
-          <button type="button" className="sim-btn sim-btn--text" onClick={onRestart}>
-            <RefreshIcon size={18} />
-            <span>{COPY.result.restart}</span>
-          </button>
-        </div>
-      </div>
     </ScreenShell>
   );
 }

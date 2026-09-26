@@ -10,9 +10,8 @@ import {
 import { COPY } from "@/lib/simulador/config";
 import { CPF_MASK_LENGTH, isValidCpf, nextCpfValue } from "@/lib/simulador/cpf";
 import { isValidFullName, normalizeName } from "@/lib/simulador/name";
-import { useReducedMotion } from "./use-reduced-motion";
 import { TextField } from "./text-field";
-import { ArrowRightIcon, ClockIcon, LockIcon, TagIcon } from "./icons";
+import { ArrowRightIcon, InfoIcon } from "./icons";
 
 export type Lead = { nome: string; cpf: string };
 
@@ -24,7 +23,6 @@ type Errors = Partial<Record<Field, string>>;
 type Flags = Record<Field, boolean>;
 
 const NONE: Flags = { nome: false, cpf: false };
-const TRUST_ICONS = [TagIcon, ClockIcon, LockIcon];
 
 function validate(values: Lead): Errors {
   const errors: Errors = {};
@@ -43,11 +41,9 @@ export function LeadForm({
   const [values, setValues] = useState<Lead>({ nome: "", cpf: "" });
   const [touched, setTouched] = useState<Flags>(NONE);
   const [submitted, setSubmitted] = useState(false);
-  const [shake, setShake] = useState<Flags>(NONE);
   const [liveMessage, setLiveMessage] = useState("");
   const nomeRef = useRef<HTMLInputElement>(null);
   const cpfRef = useRef<HTMLInputElement>(null);
-  const reduced = useReducedMotion();
 
   const errors = validate(values);
   const showError = (field: Field) =>
@@ -88,7 +84,6 @@ export function LeadForm({
       // limpa e reanuncia, mesmo que a mensagem seja igual à anterior
       setLiveMessage("");
       requestAnimationFrame(() => setLiveMessage(COPY.form.invalidSummary));
-      if (!reduced) setShake({ nome: Boolean(errs.nome), cpf: Boolean(errs.cpf) });
       (errs.nome ? nomeRef : cpfRef).current?.focus();
       return;
     }
@@ -97,21 +92,20 @@ export function LeadForm({
 
   return (
     <form className="sim-form" noValidate onSubmit={handleSubmit}>
-      <p className="sim-form__heading">{COPY.form.heading}</p>
+      <p className="sim-form__intro">{COPY.form.intro}</p>
 
       <TextField
         ref={nomeRef}
         id="sim-nome"
         name="nome"
         label={COPY.form.name.label}
+        hint={COPY.form.name.hint}
         placeholder={COPY.form.name.placeholder}
         value={values.nome}
         onChange={handleNome}
         onBlur={blur("nome")}
         error={showError("nome") ? errors.nome : null}
         valid={values.nome.length > 0 && isValid("nome")}
-        shake={shake.nome}
-        onShakeEnd={() => setShake((s) => ({ ...s, nome: false }))}
         type="text"
         autoComplete="name"
         autoCapitalize="words"
@@ -125,14 +119,13 @@ export function LeadForm({
         id="sim-cpf"
         name="cpf"
         label={COPY.form.cpf.label}
+        hint={COPY.form.cpf.hint}
         placeholder={COPY.form.cpf.placeholder}
         value={values.cpf}
         onChange={handleCpf}
         onBlur={blur("cpf")}
         error={showError("cpf") ? errors.cpf : null}
         valid={isValid("cpf")}
-        shake={shake.cpf}
-        onShakeEnd={() => setShake((s) => ({ ...s, cpf: false }))}
         type="text"
         inputMode="numeric"
         autoComplete="off"
@@ -147,18 +140,17 @@ export function LeadForm({
       <div className="sim-form__submit">
         <button type="submit" className="sim-btn sim-btn--primary sim-btn--xl">
           <span>{COPY.form.submit}</span>
-          <ArrowRightIcon size={20} className="sim-btn__arrow" />
+          <ArrowRightIcon size={20} />
         </button>
-        <ul className="sim-trust">
-          {COPY.form.trust.map((item, i) => {
-            const Icon = TRUST_ICONS[i] ?? LockIcon;
-            return (
-              <li key={item}>
-                <Icon size={15} />
-                {item}
-              </li>
-            );
-          })}
+      </div>
+
+      <div className="sim-notice sim-notice--info" role="note">
+        <InfoIcon size={20} />
+        <p className="sim-notice__title">{COPY.form.notice.title}</p>
+        <ul className="sim-notice__body">
+          {COPY.form.notice.items.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
         </ul>
       </div>
     </form>

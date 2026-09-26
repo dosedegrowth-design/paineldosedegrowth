@@ -1,11 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ESTIMATE } from "@/lib/simulador/config";
+import { COPY, ESTIMATE } from "@/lib/simulador/config";
 import { generateEstimateCents } from "@/lib/simulador/estimate";
 import { useReducedMotion } from "./use-reduced-motion";
 import { BrandHeader } from "./brand-header";
 import { SiteFooter } from "./site-footer";
+import { Stepper } from "./stepper";
+import { HowItWorks } from "./how-it-works";
+import { HelpSection } from "./help-section";
 import { LandingScreen } from "./landing-screen";
 import { ProcessingScreen } from "./processing-screen";
 import { ResultScreen } from "./result-screen";
@@ -30,10 +33,12 @@ export type AppState =
   | "redirecting"
   | "restart";
 
-/** Saída da tela atual antes de montar a próxima (ver `.sim-screen[data-leaving]`). */
-const EXIT_MS = 180;
+/** Saída da etapa atual antes de montar a próxima (ver `.sim-screen[data-leaving]`). */
+const EXIT_MS = 120;
 /** Tempo que o botão fica em "Abrindo WhatsApp..." depois do toque. */
 const REDIRECT_MS = 1600;
+
+const STEP_INDEX = { landing: 0, processing: 1, result: 2 } as const;
 
 export function SimuladorApp() {
   const reduced = useReducedMotion();
@@ -73,7 +78,7 @@ export function SimuladorApp() {
     []
   );
 
-  // Toda troca de tela: volta ao topo e leva o foco pro título — quem usa
+  // Toda troca de etapa: volta ao topo e leva o foco pro título — quem usa
   // teclado ou leitor de tela sabe onde está. Não no primeiro render.
   useEffect(() => {
     if (firstRender.current) {
@@ -115,28 +120,36 @@ export function SimuladorApp() {
 
   return (
     <div className="sim-app" data-state={state}>
+      <a className="sim-skip" href="#sim-conteudo">
+        {COPY.skipLink}
+      </a>
       <BrandHeader />
-      <main className="sim-main">
-        <div key={view.name} className="sim-screen" data-leaving={leaving || undefined}>
-          {view.name === "landing" ? (
-            <LandingScreen
-              onSubmit={handleSubmit}
-              onStatusChange={setFormStatus}
-              headingRef={headingRef}
-            />
-          ) : view.name === "processing" ? (
-            <ProcessingScreen onDone={handleDone} headingRef={headingRef} />
-          ) : (
-            <ResultScreen
-              lead={view.lead}
-              estimateCents={view.estimateCents}
-              redirecting={redirecting}
-              onRedirect={handleRedirect}
-              onRestart={handleRestart}
-              headingRef={headingRef}
-            />
-          )}
+      <main id="sim-conteudo" className="sim-main">
+        <div id="inicio" className="sim-container sim-service">
+          <Stepper current={STEP_INDEX[view.name]} />
+          <div key={view.name} className="sim-screen" data-leaving={leaving || undefined}>
+            {view.name === "landing" ? (
+              <LandingScreen
+                onSubmit={handleSubmit}
+                onStatusChange={setFormStatus}
+                headingRef={headingRef}
+              />
+            ) : view.name === "processing" ? (
+              <ProcessingScreen onDone={handleDone} headingRef={headingRef} />
+            ) : (
+              <ResultScreen
+                lead={view.lead}
+                estimateCents={view.estimateCents}
+                redirecting={redirecting}
+                onRedirect={handleRedirect}
+                onRestart={handleRestart}
+                headingRef={headingRef}
+              />
+            )}
+          </div>
         </div>
+        <HowItWorks />
+        <HelpSection />
       </main>
       <SiteFooter />
     </div>

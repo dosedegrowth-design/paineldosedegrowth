@@ -7,20 +7,34 @@
  *
  * A aplicação é 100% cliente: não há backend, banco, API nem consulta a
  * qualquer sistema. O resultado é uma estimativa fictícia de demonstração.
+ *
+ * Identidade: plataforma independente, com linguagem visual institucional
+ * (branco, verde, azul e amarelo). Não é, e não pode parecer ser, um órgão
+ * público — por isso o descritor do cabeçalho e as declarações do rodapé.
  */
 
-/* ---------- marca (fictícia, sem nenhuma identidade governamental) ---------- */
+/* ---------- marca (própria, sem vínculo com órgão público) ---------- */
 
 export const BRAND = {
   /** Nome exibido no cabeçalho, no rodapé e no título da aba. */
   name: "Revisa",
-  /** Descritor curto ao lado do nome. */
-  tagline: "Simulador de benefício",
-  /** Cor da barra do navegador no celular (mesma cor da faixa escura). */
-  themeColor: "#0e1a16",
+  /** Identificação ao lado do logo: deixa claro que é a própria plataforma. */
+  descriptor: "Plataforma independente de simulação de benefício",
+  /** Cor da barra do navegador no celular (cabeçalho branco). */
+  themeColor: "#ffffff",
   /** Protótipo interno: não indexar em buscadores. */
   indexable: false,
 } as const;
+
+/** Menu do cabeçalho: poucos itens, todos âncoras da própria página. */
+export const MENU = [
+  { label: "Início", href: "#inicio" },
+  { label: "Como funciona", href: "#como-funciona" },
+  { label: "Ajuda", href: "#ajuda" },
+] as const;
+
+/** Etapas do serviço, na ordem do fluxo (indicador de progresso). */
+export const STEPS = ["Identificação", "Análise", "Resultado"] as const;
 
 /* ---------- WhatsApp ---------- */
 
@@ -54,7 +68,7 @@ export const PROCESSING = {
   /** Pausa em 100% antes de mostrar o resultado (o "Finalizando" fica marcado). */
   settleMs: 450,
   title: "Analisando seus dados...",
-  hint: "Isso leva só alguns segundos.",
+  hint: "Aguarde. Isso leva só alguns segundos e acontece no seu aparelho.",
   /** Etapas mostradas progressivamente; `at` é a fração do progresso em que entram. */
   steps: [
     { label: "Validando informações...", at: 0 },
@@ -67,58 +81,87 @@ export const PROCESSING = {
 /* ---------- textos ---------- */
 
 export const COPY = {
+  skipLink: "Ir para o conteúdo",
   header: {
-    pill: "Simulação gratuita",
+    menu: "Menu",
+    closeMenu: "Fechar",
+    navLabel: "Navegação principal",
   },
   hero: {
-    eyebrow: "Simulador de benefício",
-    title: "Descubra quanto seu benefício pode aumentar",
-    subtitle: "Simulação gratuita. Leva menos de 1 minuto.",
+    eyebrow: "Serviço de simulação",
+    title: "Simulação de aumento de benefício",
+    subtitle: "Informe nome e CPF para gerar uma estimativa gratuita em menos de um minuto.",
   },
   form: {
-    heading: "Preencha para simular",
+    heading: "Dados para a simulação",
+    intro: "Preencha os dois campos e clique em Consultar agora.",
     name: {
       label: "Nome completo",
       placeholder: "Digite seu nome completo",
+      hint: "Como está no seu documento.",
       error: "Digite seu nome completo",
     },
     cpf: {
       label: "CPF",
       placeholder: "000.000.000-00",
+      hint: "Somente números. A verificação é feita no seu aparelho.",
       error: "Digite um CPF válido",
     },
     submit: "Consultar agora",
     /** Lido por leitores de tela quando o envio falha na validação. */
     invalidSummary: "Corrija os campos destacados para continuar.",
-    trust: ["Sem custo", "Leva 1 minuto", "Nada é salvo"],
+    notice: {
+      title: "Orientações",
+      items: [
+        "Esta simulação não consulta o INSS nem qualquer sistema público.",
+        "O resultado é uma estimativa ilustrativa, sem valor de concessão.",
+        "Seus dados ficam apenas no seu aparelho e não são enviados.",
+      ],
+    },
   },
   howItWorks: {
     title: "Como funciona",
+    intro: "Três passos, sem cadastro e sem custo.",
     steps: [
       {
         title: "Informe seus dados",
-        text: "Nome e CPF, só isso. Nada é enviado nem armazenado.",
+        text: "Nome completo e CPF, só isso. Nada é enviado nem armazenado.",
       },
       {
         title: "Simulação na hora",
-        text: "Em segundos você vê uma estimativa de aumento.",
+        text: "Em alguns segundos você recebe uma estimativa de aumento.",
       },
       {
-        title: "Continue pelo WhatsApp",
-        text: "Fale com a equipe e entenda os próximos passos.",
+        title: "Atendimento pelo WhatsApp",
+        text: "Se quiser continuar, a equipe explica os próximos passos.",
       },
     ],
+  },
+  help: {
+    title: "Ajuda e orientações",
+    items: [
+      "{marca} é uma plataforma independente. Não tem vínculo com o Governo Federal, o INSS ou qualquer órgão público.",
+      "A simulação não consulta sistemas externos: o valor é calculado no seu aparelho, dentro de uma faixa de referência.",
+      "O resultado é apenas uma estimativa ilustrativa. Não representa aprovação ou concessão de benefício.",
+      "Nenhum dado é enviado ou armazenado. Ao continuar pelo WhatsApp, só o seu nome e o valor da estimativa vão na mensagem.",
+    ],
+    contact: {
+      label: "Falar com a equipe pelo WhatsApp",
+      message: "Olá! Tenho uma dúvida sobre a simulação de benefício.",
+    },
   },
   result: {
     eyebrow: "Simulação concluída",
     greeting: "Olá, {nome}",
-    lead: "Aqui está o resultado da sua simulação.",
+    lead: "Veja abaixo o resultado da sua simulação.",
+    panelTitle: "Resultado da simulação",
     cardLabel: "Estimativa de aumento",
     rangeLabel: "Faixa da simulação",
+    attention: "Atenção",
     disclaimer:
       "Resultado estimativo para fins de simulação. Não representa aprovação ou concessão de benefício.",
     ctaPrimary: "Quero continuar",
-    ctaPrimaryHint: "Falar no WhatsApp",
+    ctaPrimaryHint: "Atendimento pelo WhatsApp",
     ctaRedirecting: "Abrindo WhatsApp...",
     ctaSecondary: "Entender como funciona",
     restart: "Fazer nova simulação",
@@ -132,15 +175,18 @@ export const COPY = {
     },
   },
   footer: {
-    line1: "{marca} é uma ferramenta de simulação para fins demonstrativos.",
-    line2: "Sem vínculo com órgãos públicos. Nenhum dado é enviado ou armazenado.",
+    statement:
+      "{marca} é uma plataforma independente de simulação. Não tem vínculo com o Governo Federal, o INSS ou qualquer órgão público.",
+    privacy: "Nenhum dado é enviado ou armazenado. O resultado é uma estimativa ilustrativa.",
+    navLabel: "Navegação do rodapé",
+    bar: "Ferramenta de simulação para fins demonstrativos.",
   },
 } as const;
 
 /* ---------- metadados da página ---------- */
 
 export const SEO = {
-  title: `${BRAND.name} — ${BRAND.tagline}`,
+  title: `${BRAND.name} — Simulação de benefício`,
   description:
-    "Simule em menos de 1 minuto uma estimativa de aumento do seu benefício. Gratuito, sem cadastro e sem armazenar dados.",
+    "Simule em menos de um minuto uma estimativa de aumento do seu benefício. Plataforma independente, gratuita, sem cadastro e sem armazenar dados.",
 } as const;

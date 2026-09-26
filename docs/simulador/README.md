@@ -7,10 +7,31 @@ navegador**: sem backend, banco, API, n8n ou qualquer consulta a sistema
 verificadores) e nunca sai da página — a mensagem do WhatsApp leva só nome e
 valor.
 
-Marca fictícia ("Revisa"), sem brasão, logotipo ou cores de governo. O
-resultado é sorteado dentro de uma faixa e vem sempre com o aviso:
-*"Resultado estimativo para fins de simulação. Não representa aprovação ou
-concessão de benefício."*
+Identidade própria ("Revisa", plataforma independente) com **linguagem visual
+institucional brasileira**: branco predominante, verde nas ações, azul na
+informação e navegação, amarelo só em atenção. Sem brasão, sem marca, fonte ou
+qualquer elemento do gov.br/INSS — e o cabeçalho e o rodapé dizem
+explicitamente que não há vínculo com órgão público. O resultado é sorteado
+dentro de uma faixa e vem sempre com o aviso: *"Resultado estimativo para
+fins de simulação. Não representa aprovação ou concessão de benefício."*
+
+## Linguagem visual
+
+| | |
+|---|---|
+| Base | Branco; seções informativas em cinza claro (`--sim-soft`) |
+| Verde `#1b7a3f` | Ações principais, barra lateral dos painéis, etapa atual, faixa |
+| Azul `#0f4c8f` | Informação (avisos "Orientações"), navegação, botões secundários, foco |
+| Amarelo `#f2c400` | Só na faixa tricolor do cabeçalho e no aviso "Atenção" do resultado |
+| Tipografia | Public Sans (variável, `@fontsource-variable/public-sans`); títulos 700, corpo 400 |
+| Componentes | Painel com borda 1px e cabeçalho com barra verde; campos de 52px com rótulo, dica e erro; botões sólidos (verde) e contornados (azul); avisos em grade ícone + título + texto; indicador de etapas; barra de progresso linear |
+| Movimento | Só um fade curto entre etapas e a barra de progresso; `prefers-reduced-motion` desliga tudo |
+
+Estrutura fixa em todas as etapas: cabeçalho (logo + "Plataforma independente
+de simulação de benefício" + menu Início / Como funciona / Ajuda) → faixa
+verde-amarelo-azul → indicador de etapas → área do serviço (formulário,
+análise ou resultado) → "Como funciona" (3 cards) → "Ajuda e orientações"
+(declarações + contato) → rodapé com as mesmas declarações.
 
 ## Fluxo e estados
 
@@ -40,7 +61,7 @@ Nenhuma etapa recarrega a página; cada troca tem transição própria
 | Lógica pura (testada) | `lib/simulador/cpf.ts` (máscara + validação), `name.ts`, `estimate.ts`, `whatsapp.ts` |
 | Rota, metadados, fontes, CSS | `app/simulador/{layout,page}.tsx`, `app/simulador/simulador.css` (classes `sim-*`) |
 | Máquina de estados + telas | `components/simulador/simulador-app.tsx` → `landing-screen`, `processing-screen`, `result-screen` |
-| Peças | `lead-form`, `text-field`, `progress-ring`, `brand-header`, `site-footer`, `how-it-works`, `screen-shell`, `icons` |
+| Peças | `brand-header` (menu + faixa), `stepper`, `lead-form`, `text-field`, `progress-bar`, `how-it-works`, `help-section`, `site-footer`, `screen-shell`, `icons` (inclui o emblema `BrandMark`) |
 | Ícones do site | `public/simulador/icon.svg`, `icon-32.png`, `apple-icon.png` |
 | Rota pública no middleware | `middleware.ts` (`publicPaths` → `/simulador`) |
 
@@ -48,7 +69,8 @@ Nenhuma etapa recarrega a página; cada troca tem transição própria
 
 Tudo que muda de cliente pra cliente está em `lib/simulador/config.ts`:
 
-- `BRAND.name` / `tagline` / `themeColor` / `indexable` (hoje `false`: protótipo com `noindex`)
+- `BRAND.name` / `descriptor` (identificação ao lado do logo — manter a ideia de "plataforma independente") / `themeColor` / `indexable` (hoje `false`: protótipo com `noindex`)
+- `MENU` (itens do cabeçalho e do rodapé, âncoras da própria página) e `STEPS` (rótulos do indicador de etapas)
 - `WHATSAPP_NUMBER` — só dígitos, DDI+DDD+número (`5511999999999`)
 - `WHATSAPP_MESSAGE` — placeholders `{nome}` e `{valor}`
 - `ESTIMATE.minBRL` / `maxBRL` — faixa do sorteio (hoje R$ 870 – R$ 1.400)
@@ -56,7 +78,9 @@ Tudo que muda de cliente pra cliente está em `lib/simulador/config.ts`:
 - `COPY.*` — todos os textos da interface
 
 Cores e tipografia: variáveis `--sim-*` no topo de `app/simulador/simulador.css`
-(Inter + Inter Tight, já instaladas via `@fontsource`).
+(Public Sans via `@fontsource-variable/public-sans`). Para trocar o emblema
+pelo logo do cliente: `BrandMark` em `components/simulador/icons.tsx` +
+`public/simulador/icon.svg` (e os PNGs) + `icons.brand` no standalone.
 
 ## Testes
 
@@ -71,7 +95,8 @@ BASE=http://localhost:3011/simulador node scripts/simulador-qa.cjs
 ```
 
 O QA de interface cobre: larguras 320/360/375/390/412/430/768/1280 sem
-overflow horizontal, CTA na dobra em telas baixas, envio vazio → erros nos
+overflow horizontal, formulário no primeiro quadro, menu do cabeçalho,
+indicador de etapas, envio vazio → erros nos
 campos (sem `alert()`), máscara e backspace do CPF, CPF inválido, estado
 `filled`, processamento com progresso e etapas, resultado dentro da faixa,
 URL do `wa.me` (nome formatado, valor, sem CPF, `noopener`), estado
@@ -85,8 +110,8 @@ desktop.
 puro, num arquivo só, sem Next e sem nada do painel. É o que se usa quando
 se quer um link de teste fora do domínio da DDG: serve em qualquer
 hospedagem estática, ou publicado como página na claude.ai (aí sem as
-tags `<html>/<head>/<body>`, que o host coloca). As fontes (Inter + Inter
-Tight) vêm do Google Fonts, com fallback de sistema.
+tags `<html>/<head>/<body>`, que o host coloca). A fonte (Public Sans) vem do
+Google Fonts, com fallback de sistema.
 
 - Configuração: bloco `CONFIGURAÇÃO` no topo do `<script>` (mesmos nomes de
   `lib/simulador/config.ts`).
@@ -102,7 +127,8 @@ Tight) vêm do Google Fonts, com fallback de sistema.
 - Nunca afirmar consulta oficial, aprovação ou concessão. O aviso fica logo
   abaixo do valor.
 - O CPF não vai pra URL do WhatsApp, pra storage nem pra lugar nenhum.
-- Nada de identidade visual de governo (brasão, verde-amarelo institucional,
-  "gov.br", "Meu INSS").
+- Nada que afirme ou insinue vínculo com órgão público: sem brasão, marca,
+  fonte ou padrões do gov.br/INSS; o descritor "plataforma independente" no
+  cabeçalho e as declarações do rodapé e da seção Ajuda ficam sempre visíveis.
 - Mobile primeiro: inputs com 17px (sem zoom no iOS), alvos ≥ 48px, sem
   overflow horizontal de 320 a 430px.

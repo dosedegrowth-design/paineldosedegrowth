@@ -1,5 +1,5 @@
 /**
- * Ícones inline (SVG) do simulador — sem biblioteca, sem requisição extra.
+ * Ícones inline (SVG) do simulador — simples, objetivos, sem biblioteca.
  * Traço 2px, pontas arredondadas, 24×24. Todos decorativos: `aria-hidden`.
  */
 import type { SVGProps } from "react";
@@ -46,9 +46,9 @@ export function ArrowRightIcon(props: IconProps) {
 export function AlertIcon(props: IconProps) {
   return (
     <Stroke {...props}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 8v5" />
-      <path d="M12 16.5h.01" />
+      <path d="M12 3.5l9.5 16.5h-19L12 3.5Z" />
+      <path d="M12 10v4.5" />
+      <path d="M12 17.5h.01" />
     </Stroke>
   );
 }
@@ -59,33 +59,6 @@ export function InfoIcon(props: IconProps) {
       <circle cx="12" cy="12" r="9" />
       <path d="M12 11v5" />
       <path d="M12 7.5h.01" />
-    </Stroke>
-  );
-}
-
-export function LockIcon(props: IconProps) {
-  return (
-    <Stroke {...props}>
-      <rect x="4.5" y="10.5" width="15" height="10" rx="2.5" />
-      <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" />
-    </Stroke>
-  );
-}
-
-export function ClockIcon(props: IconProps) {
-  return (
-    <Stroke {...props}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7.5V12l3 2" />
-    </Stroke>
-  );
-}
-
-export function TagIcon(props: IconProps) {
-  return (
-    <Stroke {...props}>
-      <path d="M20 13.5L13.5 20a1.5 1.5 0 0 1-2.1 0L4 12.6V4h8.6l7.4 7.4a1.5 1.5 0 0 1 0 2.1Z" />
-      <path d="M8.5 8.5h.01" />
     </Stroke>
   );
 }
@@ -107,6 +80,77 @@ export function ChevronDownIcon(props: IconProps) {
   );
 }
 
+export function MenuIcon(props: IconProps) {
+  return (
+    <Stroke {...props}>
+      <path d="M4 7h16" />
+      <path d="M4 12h16" />
+      <path d="M4 17h16" />
+    </Stroke>
+  );
+}
+
+export function CloseIcon(props: IconProps) {
+  return (
+    <Stroke {...props}>
+      <path d="M6 6l12 12" />
+      <path d="M18 6L6 18" />
+    </Stroke>
+  );
+}
+
+/** Formulário / ficha de dados. */
+export function FormIcon(props: IconProps) {
+  return (
+    <Stroke {...props}>
+      <rect x="4.5" y="3.5" width="15" height="17" rx="2" />
+      <path d="M8.5 8.5h7" />
+      <path d="M8.5 12h7" />
+      <path d="M8.5 15.5h4" />
+    </Stroke>
+  );
+}
+
+/** Documento de identificação. */
+export function IdIcon(props: IconProps) {
+  return (
+    <Stroke {...props}>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <circle cx="8.5" cy="11" r="2" />
+      <path d="M5.5 16c.6-1.5 1.7-2.2 3-2.2s2.4.7 3 2.2" />
+      <path d="M14 9.5h4" />
+      <path d="M14 13h4" />
+    </Stroke>
+  );
+}
+
+/** Cálculo / estimativa. */
+export function CalcIcon(props: IconProps) {
+  return (
+    <Stroke {...props}>
+      <rect x="5" y="3" width="14" height="18" rx="2" />
+      <path d="M8.5 7h7" />
+      <path d="M8.5 11.5h.01" />
+      <path d="M12 11.5h.01" />
+      <path d="M15.5 11.5h.01" />
+      <path d="M8.5 15h.01" />
+      <path d="M12 15h.01" />
+      <path d="M15.5 15v3" />
+    </Stroke>
+  );
+}
+
+/** Atendimento / conversa. */
+export function ChatIcon(props: IconProps) {
+  return (
+    <Stroke {...props}>
+      <path d="M4 5.5h16v10H9l-4 3.5v-3.5H4z" />
+      <path d="M8 9.5h8" />
+      <path d="M8 12.5h5" />
+    </Stroke>
+  );
+}
+
 /** Logo do WhatsApp (traçado oficial simplificado), preenchido com a cor do texto. */
 export function WhatsappIcon({ size = 22, ...rest }: IconProps) {
   return (
@@ -124,33 +168,26 @@ export function WhatsappIcon({ size = 22, ...rest }: IconProps) {
   );
 }
 
-/** Marca fictícia: quadrado arredondado com uma seta que sobe. */
-export function BrandMark({ size = 28, ...rest }: IconProps) {
+/**
+ * Emblema próprio da plataforma: quadrado branco com borda verde e três
+ * barras nas cores nacionais (verde, amarelo, azul). Sem brasão, sem
+ * qualquer elemento de identidade de órgão público.
+ */
+export function BrandMark({ size = 36, ...rest }: IconProps) {
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 28 28"
+      viewBox="0 0 36 36"
       fill="none"
       aria-hidden="true"
       focusable="false"
       {...rest}
     >
-      <rect width="28" height="28" rx="8" fill="var(--sim-primary)" />
-      <path
-        d="M7.5 18.5l5-5 3 3 5.5-6"
-        stroke="#fff"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M17 10.5h4v4"
-        stroke="#fff"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <rect x="1" y="1" width="34" height="34" rx="6" fill="#ffffff" stroke="#1b7a3f" strokeWidth="2" />
+      <rect x="9" y="10" width="18" height="4" rx="2" fill="#1b7a3f" />
+      <rect x="9" y="16" width="13" height="4" rx="2" fill="#e5b800" />
+      <rect x="9" y="22" width="9" height="4" rx="2" fill="#0f4c8f" />
     </svg>
   );
 }

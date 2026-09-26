@@ -4,25 +4,29 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- Simulador de benefício — versão standalone (arquivo único, sem Next e sem nada do painel).
-     Protótipo 100% no navegador, marca fictícia. Configuração no bloco CONFIGURAÇÃO do <script>. -->
+     Protótipo 100% no navegador; plataforma independente. Configuração no bloco CONFIGURAÇÃO do <script>. -->
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 <title>Simulador Revisa</title>
-<meta name="description" content="Simulação ilustrativa de aumento de benefício, 100% no navegador. Protótipo com marca fictícia; nada é consultado ou armazenado.">
+<meta name="description" content="Simulação ilustrativa de aumento de benefício, 100% no navegador. Plataforma independente com identidade própria; nada é consultado ou armazenado.">
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#0e1a16">
+<meta name="theme-color" content="#ffffff">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap">
 <style>
 /* Simulador de benefício — versão standalone (arquivo único).
    Espelha app/simulador/simulador.css do painel; se mudar lá, mude aqui.
    Protótipo 100% no navegador: sem backend, API, banco ou consulta a
-   sistema. Marca fictícia, sem identidade de governo. */
+   sistema. Plataforma independente, sem identidade de órgão público. */
 
 /* base: a página não tem Tailwind/preflight */
 html,
 body {
-  background: #0e1a16;
+  background: #ffffff;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -65,43 +69,42 @@ body {
   display: none !important;
 }
 
-@media (min-width: 720px) {
-  html,
-  body {
-    background: #e6ebe8;
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }
 
 .sim-scope {
-  --sim-band: #0e1a16;
-  --sim-band-glow: rgba(53, 214, 154, 0.16);
-  --sim-surface: #ffffff;
-  --sim-surface-2: #f3f6f4;
-  --sim-page: #e6ebe8;
-  --sim-ink: #0f1a17;
-  --sim-ink-2: #3d4a46;
-  --sim-muted: #5e6b67; /* 5,2:1 sobre branco */
-  --sim-line: rgba(15, 26, 23, 0.1);
-  --sim-line-2: rgba(15, 26, 23, 0.18);
-  --sim-primary: #0b7a55; /* 5,4:1 sobre branco */
-  --sim-primary-deep: #075c40;
-  --sim-primary-soft: #e3f3ec;
-  --sim-primary-ring: rgba(11, 122, 85, 0.22);
-  --sim-glow: #35d69a; /* acento sobre a faixa escura */
-  --sim-on-band: #ffffff;
-  --sim-on-band-2: rgba(255, 255, 255, 0.72);
-  --sim-on-band-3: rgba(255, 255, 255, 0.12);
-  --sim-error: #c0392b; /* 5,0:1 sobre branco */
-  --sim-radius: 16px;
-  --sim-radius-lg: 26px;
-  --sim-gutter: clamp(16px, 5vw, 24px);
-  --font-display: "Inter Tight", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --sim-white: #ffffff;
+  --sim-soft: #f3f5f7;
+  --sim-soft-2: #e7ebef;
+  --sim-ink: #1f2933; /* 14:1 sobre branco */
+  --sim-ink-2: #3e4c59;
+  --sim-muted: #5f6b76; /* 5,5:1 sobre branco */
+  --sim-line: #d9dee3;
+  --sim-line-strong: #7f8b96; /* borda de campo: 3,2:1 (não-texto) */
+  --sim-green: #1b7a3f; /* 5,3:1 sobre branco */
+  --sim-green-dark: #155f31;
+  --sim-green-soft: #e6f3ea;
+  --sim-blue: #0f4c8f; /* 8,6:1 sobre branco */
+  --sim-blue-dark: #0b3a6e;
+  --sim-blue-soft: #e8f0fa;
+  --sim-blue-line: #bcd0ea;
+  --sim-yellow: #f2c400;
+  --sim-yellow-soft: #fff6d5;
+  --sim-yellow-line: #ecd47a;
+  --sim-yellow-ink: #5b4600;
+  --sim-error: #b3261e; /* 6,1:1 sobre branco */
+  --sim-radius: 6px;
+  --sim-gutter: clamp(16px, 4vw, 24px);
+  --sim-font: "Public Sans Variable", "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 
-  font-family: var(--font-body);
+  font-family: var(--sim-font);
+  font-size: 16px;
+  line-height: 1.5;
   color: var(--sim-ink);
-  background: var(--sim-band);
+  background: var(--sim-white);
   min-height: 100vh;
   min-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
   overflow-x: clip;
@@ -111,13 +114,13 @@ body {
 }
 
 .sim-scope ::selection {
-  background: var(--sim-primary);
+  background: var(--sim-blue);
   color: #fff;
 }
 
 .sim-scope :focus-visible {
-  outline: 3px solid var(--sim-primary);
-  outline-offset: 3px;
+  outline: 3px solid var(--sim-blue);
+  outline-offset: 2px;
 }
 
 .sim-sr {
@@ -132,125 +135,315 @@ body {
   border: 0;
 }
 
+/* link de pulo pro conteúdo (aparece só ao receber foco pelo teclado) */
+.sim-skip {
+  position: absolute;
+  top: -100px;
+  left: 8px;
+  z-index: 50;
+  padding: 10px 14px;
+  border-radius: var(--sim-radius);
+  background: var(--sim-blue);
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.sim-skip:focus {
+  top: 8px;
+}
+
 /* ---------- casca ---------- */
 
 .sim-app {
-  position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   min-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
-  background: var(--sim-band);
+  background: var(--sim-white);
 }
 
 .sim-main {
   flex: 1;
-  display: flex;
-  flex-direction: column;
 }
 
-.sim-screen {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+.sim-container {
+  width: 100%;
+  max-width: 1040px;
+  margin-inline: auto;
+  padding-inline: var(--sim-gutter);
+}
+
+/* área do serviço (etapas + formulário/resultado): coluna de leitura */
+.sim-service {
+  max-width: 760px;
+  padding-bottom: 8px;
+  scroll-margin-top: 12px;
 }
 
 /* ---------- cabeçalho ---------- */
 
 .sim-header {
+  background: var(--sim-white);
+  border-bottom: 1px solid var(--sim-line);
+}
+
+.sim-header__row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 14px var(--sim-gutter) 8px;
-  color: var(--sim-on-band);
+  gap: 8px 16px;
+  min-height: 64px;
+  padding-block: 10px;
 }
 
 .sim-brand {
+  flex: 1 1 0;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.sim-brand svg {
+  flex: none;
+}
+
+.sim-brand__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   min-width: 0;
 }
 
 .sim-brand__name {
-  font: 700 17px/1 var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.1;
   letter-spacing: -0.01em;
+  color: var(--sim-green-dark);
 }
 
-.sim-brand__tag {
+.sim-brand__desc {
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--sim-muted);
+}
+
+.sim-menu-btn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--sim-line);
+  border-radius: var(--sim-radius);
+  background: var(--sim-white);
+  color: var(--sim-blue);
+  font: 600 14px/1 var(--sim-font);
+  cursor: pointer;
+}
+
+.sim-menu-btn:hover {
+  background: var(--sim-blue-soft);
+}
+
+.sim-nav {
   display: none;
-  padding-left: 10px;
-  border-left: 1px solid rgba(255, 255, 255, 0.18);
-  font: 500 12px/1 var(--font-body);
-  color: var(--sim-on-band-2);
-  white-space: nowrap;
+  flex-basis: 100%;
+  border-top: 1px solid var(--sim-line);
 }
 
-@media (min-width: 460px) {
-  .sim-brand__tag {
-    display: inline;
+.sim-nav[data-open] {
+  display: block;
+}
+
+.sim-nav ul {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 6px 0;
+  list-style: none;
+}
+
+.sim-nav a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 4px;
+  color: var(--sim-blue);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--sim-radius);
+}
+
+.sim-nav a:hover {
+  background: var(--sim-blue-soft);
+}
+
+@media (min-width: 768px) {
+  .sim-header__row {
+    flex-wrap: nowrap;
+  }
+
+  .sim-menu-btn {
+    display: none;
+  }
+
+  .sim-nav {
+    display: block;
+    flex-basis: auto;
+    border-top: 0;
+  }
+
+  .sim-nav ul {
+    flex-direction: row;
+    gap: 4px;
+    padding: 0;
+  }
+
+  .sim-nav a {
+    padding: 8px 14px;
   }
 }
 
-.sim-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 11px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: var(--sim-on-band-3);
-  color: var(--sim-on-band);
-  font: 600 12px/1 var(--font-body);
-  white-space: nowrap;
+/* faixa fina nas cores nacionais: discreta, só um traço */
+.sim-stripe {
+  display: flex;
+  height: 4px;
 }
 
-.sim-pill svg {
-  color: var(--sim-glow);
+.sim-stripe i {
+  flex: 1;
 }
 
-/* ---------- faixa escura ---------- */
+.sim-stripe i:nth-child(1) {
+  background: var(--sim-green);
+}
 
-.sim-band {
+.sim-stripe i:nth-child(2) {
+  background: var(--sim-yellow);
+}
+
+.sim-stripe i:nth-child(3) {
+  background: var(--sim-blue);
+}
+
+/* ---------- indicador de etapas ---------- */
+
+.sim-stepper {
+  display: flex;
+  margin: 0;
+  padding: 14px 0 2px;
+  list-style: none;
+}
+
+.sim-stepper li {
   position: relative;
-  padding: 16px var(--sim-gutter) 54px;
-  color: var(--sim-on-band);
-  background: radial-gradient(120% 90% at 100% -10%, var(--sim-band-glow), transparent 55%);
-}
-
-.sim-band--center {
-  text-align: center;
-}
-
-.sim-band--center .sim-band__in {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--sim-muted);
+  text-align: center;
+}
+
+.sim-stepper li::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  right: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--sim-line);
+}
+
+.sim-stepper li:first-child::before {
+  display: none;
+}
+
+.sim-stepper__num {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 2px solid var(--sim-line-strong);
+  border-radius: 50%;
+  background: var(--sim-white);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--sim-muted);
+}
+
+.sim-stepper li[data-state="current"] {
+  color: var(--sim-ink);
+}
+
+.sim-stepper li[data-state="current"] .sim-stepper__num {
+  border-color: var(--sim-green);
+  background: var(--sim-green);
+  color: #fff;
+}
+
+.sim-stepper li[data-state="done"] .sim-stepper__num {
+  border-color: var(--sim-green);
+  background: var(--sim-green-soft);
+  color: var(--sim-green-dark);
+}
+
+.sim-stepper li[data-state="done"]::before,
+.sim-stepper li[data-state="current"]::before {
+  background: var(--sim-green);
+}
+
+/* ---------- abertura de cada etapa ---------- */
+
+.sim-hero {
+  padding: 18px 0 14px;
 }
 
 .sim-eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin: 0 0 14px;
-  font: 600 12px/1 var(--font-body);
-  letter-spacing: 0.12em;
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--sim-glow);
+  color: var(--sim-blue);
 }
 
-.sim-eyebrow--done {
-  padding: 8px 12px 8px 10px;
-  border-radius: 999px;
-  background: rgba(53, 214, 154, 0.14);
+.sim-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  padding: 6px 12px;
+  border-radius: var(--sim-radius);
+  background: var(--sim-green-soft);
+  color: var(--sim-green-dark);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .sim-h1 {
   margin: 0;
-  max-width: 22ch;
-  font: 800 clamp(1.75rem, 6.2vw + 0.5rem, 2.25rem) / 1.08 var(--font-display);
-  letter-spacing: -0.025em;
+  font-size: clamp(1.6rem, 4.5vw + 0.6rem, 2.25rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
   text-wrap: balance;
 }
 
@@ -258,23 +451,49 @@ body {
   outline: none;
 }
 
-.sim-sub {
-  margin: 12px 0 0;
-  max-width: 34ch;
-  font: 400 1rem/1.5 var(--font-body);
-  color: var(--sim-on-band-2);
+.sim-lead {
+  margin: 10px 0 0;
+  max-width: 62ch;
+  font-size: 16.5px;
+  color: var(--sim-ink-2);
 }
 
-/* ---------- folha branca ---------- */
+/* ---------- painel (formulário, processamento, resultado) ---------- */
 
-.sim-sheet {
-  position: relative;
-  flex: 1;
-  margin-top: -28px;
-  padding: 28px var(--sim-gutter) 36px;
-  background: var(--sim-surface);
-  border-radius: var(--sim-radius-lg) var(--sim-radius-lg) 0 0;
-  box-shadow: 0 -10px 30px -12px rgba(0, 0, 0, 0.45);
+.sim-panel {
+  background: var(--sim-white);
+  border: 1px solid var(--sim-line);
+  border-radius: var(--sim-radius);
+}
+
+.sim-panel__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--sim-line);
+  border-left: 4px solid var(--sim-green);
+  border-radius: var(--sim-radius) var(--sim-radius) 0 0;
+}
+
+.sim-panel__icon {
+  flex: none;
+  color: var(--sim-green);
+}
+
+.sim-panel__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.sim-panel__title:focus {
+  outline: none;
+}
+
+.sim-panel__body {
+  padding: 20px 18px 22px;
 }
 
 /* ---------- formulário ---------- */
@@ -282,26 +501,30 @@ body {
 .sim-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
 }
 
-.sim-form__heading {
-  margin: 0 0 -4px;
-  font: 600 12.5px/1 var(--font-body);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+.sim-form__intro {
+  margin: 0;
+  font-size: 15px;
   color: var(--sim-muted);
 }
 
 .sim-field {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .sim-field__label {
-  font: 600 14px/1.2 var(--font-body);
-  color: var(--sim-ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.sim-field__hint {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--sim-muted);
 }
 
 .sim-field__control {
@@ -310,34 +533,32 @@ body {
 
 .sim-field__input {
   width: 100%;
-  height: 56px;
-  padding: 0 48px 0 16px;
-  border: 1.5px solid var(--sim-line-2);
+  height: 52px;
+  padding: 0 44px 0 14px;
+  border: 1px solid var(--sim-line-strong);
   border-radius: var(--sim-radius);
-  background: var(--sim-surface-2);
+  background: var(--sim-white);
   color: var(--sim-ink);
-  font: 500 17px/1 var(--font-body);
+  font: 400 17px/1 var(--sim-font);
   appearance: none;
   -webkit-appearance: none;
   outline: none;
   transition:
-    border-color 0.18s,
-    box-shadow 0.18s,
-    background-color 0.18s;
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 .sim-field__input::placeholder {
-  color: #8a9692;
+  color: #8a949e;
   opacity: 1;
 }
 
 .sim-field__input:focus {
-  border-color: var(--sim-primary);
-  background: #fff;
-  box-shadow: 0 0 0 4px var(--sim-primary-ring);
+  border-color: var(--sim-blue);
+  box-shadow: 0 0 0 2px var(--sim-blue);
 }
 
-/* no input, a borda + o anel de 4px já são o indicador de foco */
+/* no input, a borda + o anel de 2px já são o indicador de foco */
 .sim-field__input:focus-visible {
   outline: none;
 }
@@ -348,31 +569,30 @@ body {
 }
 
 .sim-field[data-valid] .sim-field__input {
-  border-color: var(--sim-primary);
+  border-color: var(--sim-green);
 }
 
 .sim-field[data-invalid] .sim-field__input {
   border-color: var(--sim-error);
-  background: #fff;
+  box-shadow: 0 0 0 1px var(--sim-error);
 }
 
 .sim-field[data-invalid] .sim-field__input:focus {
-  box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.18);
+  box-shadow: 0 0 0 2px var(--sim-error);
 }
 
 .sim-field__ok {
   position: absolute;
   top: 50%;
-  right: 14px;
+  right: 12px;
   translate: 0 -50%;
   display: grid;
   place-items: center;
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: var(--sim-primary-soft);
-  color: var(--sim-primary);
-  animation: sim-pop 0.28s var(--ease-out) both;
+  background: var(--sim-green-soft);
+  color: var(--sim-green-dark);
 }
 
 .sim-field__error {
@@ -380,22 +600,14 @@ body {
   align-items: flex-start;
   gap: 6px;
   margin: 0;
-  font: 500 13.5px/1.35 var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
   color: var(--sim-error);
-  animation: sim-fade-down 0.22s var(--ease-out) both;
 }
 
 .sim-field__error svg {
   flex: none;
-  margin-top: 1px;
-}
-
-.sim-field__control[data-shake] {
-  animation: sim-shake 0.36s var(--ease-out);
-}
-
-.sim-form__submit {
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 /* ---------- botões ---------- */
@@ -406,61 +618,45 @@ body {
   justify-content: center;
   gap: 10px;
   width: 100%;
-  min-height: 56px;
+  min-height: 52px;
   padding: 0 20px;
-  border: 1.5px solid transparent;
+  border: 2px solid transparent;
   border-radius: var(--sim-radius);
-  font: 700 16px/1.1 var(--font-display);
-  letter-spacing: 0.04em;
+  font: 700 16px/1.15 var(--sim-font);
+  letter-spacing: 0.02em;
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
   transition:
-    transform 0.12s var(--ease-out),
-    background-color 0.18s,
-    box-shadow 0.18s,
-    border-color 0.18s,
-    color 0.18s;
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s;
 }
 
 .sim-btn:active {
-  transform: translateY(1px) scale(0.985);
+  transform: translateY(1px);
 }
 
 .sim-btn--primary {
-  background: var(--sim-primary);
+  background: var(--sim-green);
+  border-color: var(--sim-green);
   color: #fff;
-  box-shadow:
-    0 14px 26px -12px rgba(11, 122, 85, 0.75),
-    inset 0 1px 0 rgba(255, 255, 255, 0.14);
 }
 
 .sim-btn--primary:hover {
-  background: var(--sim-primary-deep);
-}
-
-.sim-btn--primary:active {
-  box-shadow: 0 4px 12px -8px rgba(11, 122, 85, 0.6);
+  background: var(--sim-green-dark);
+  border-color: var(--sim-green-dark);
 }
 
 .sim-btn--xl {
-  min-height: 60px;
+  min-height: 56px;
   font-size: 17px;
 }
 
-.sim-btn__arrow {
-  transition: transform 0.18s var(--ease-out);
-}
-
-.sim-btn--primary:hover .sim-btn__arrow {
-  transform: translateX(3px);
-}
-
 .sim-btn--whatsapp {
-  min-height: 64px;
-  justify-content: center;
+  min-height: 60px;
   gap: 14px;
 }
 
@@ -468,284 +664,211 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 4px;
+  gap: 3px;
   text-align: left;
 }
 
 .sim-btn__stack small {
-  font: 500 12px/1 var(--font-body);
-  letter-spacing: 0.01em;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0;
   text-transform: none;
-  opacity: 0.82;
+  opacity: 0.92;
 }
 
-.sim-btn--ghost {
-  min-height: 52px;
-  background: transparent;
-  color: var(--sim-primary);
-  border-color: var(--sim-line-2);
-  font: 600 15.5px/1.1 var(--font-body);
+.sim-btn--secondary {
+  background: var(--sim-white);
+  border-color: var(--sim-blue);
+  color: var(--sim-blue);
+  font-weight: 600;
   letter-spacing: 0;
   text-transform: none;
 }
 
-.sim-btn--ghost:hover {
-  background: var(--sim-primary-soft);
-  border-color: var(--sim-primary);
+.sim-btn--secondary:hover {
+  background: var(--sim-blue-soft);
+}
+
+.sim-btn--auto {
+  width: auto;
+  min-height: 48px;
 }
 
 .sim-btn__chev {
-  transition: transform 0.2s var(--ease-out);
+  transition: transform 0.15s;
 }
 
 .sim-btn[aria-expanded="true"] .sim-btn__chev {
   transform: rotate(180deg);
 }
 
-.sim-btn--text {
-  min-height: 48px;
+.sim-btn--link {
+  width: auto;
+  min-height: 44px;
+  padding: 0 8px;
   background: transparent;
-  color: var(--sim-muted);
-  font-size: 13px;
-  letter-spacing: 0.08em;
+  color: var(--sim-blue);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
-.sim-btn--text:hover {
-  color: var(--sim-ink);
+.sim-btn--link:hover {
+  color: var(--sim-blue-dark);
 }
 
 .sim-btn[aria-disabled="true"] {
   pointer-events: none;
-  opacity: 0.85;
+  opacity: 0.75;
 }
 
 .sim-spin {
   animation: sim-spin 0.9s linear infinite;
 }
 
-/* ---------- garantias ---------- */
+/* ---------- avisos (informação em azul, atenção em amarelo) ---------- */
 
-.sim-trust {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px 16px;
-  margin: 14px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.sim-trust li {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font: 500 12.5px/1 var(--font-body);
-  color: var(--sim-muted);
-}
-
-.sim-trust svg {
-  color: var(--sim-primary);
-}
-
-/* ---------- como funciona ---------- */
-
-.sim-divider {
-  margin: 28px 0 24px;
-  border: 0;
-  border-top: 1px solid var(--sim-line);
-}
-
-.sim-how__title {
-  margin: 0 0 16px;
-  font: 700 19px/1.2 var(--font-display);
-  letter-spacing: -0.015em;
-}
-
-.sim-how__list {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.sim-how__list::before {
-  content: "";
-  position: absolute;
-  top: 30px;
-  bottom: 30px;
-  left: 14.5px;
-  width: 1px;
-  background: var(--sim-line);
-}
-
-.sim-how__item {
-  position: relative;
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-}
-
-.sim-how__num {
-  flex: none;
+.sim-notice {
   display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: var(--sim-primary-soft);
-  color: var(--sim-primary);
-  font: 700 13px/1 var(--font-display);
+  grid-template-columns: auto 1fr;
+  gap: 6px 12px;
+  align-items: start;
+  padding: 14px 16px;
+  border: 1px solid var(--sim-line);
+  border-radius: var(--sim-radius);
 }
 
-.sim-how__item-title {
-  margin: 5px 0 3px;
-  font: 600 15px/1.3 var(--font-body);
+.sim-notice svg {
+  grid-row: 1 / span 2;
+  margin-top: 1px;
 }
 
-.sim-how__item-text {
+.sim-notice__title {
   margin: 0;
-  font: 400 14px/1.45 var(--font-body);
-  color: var(--sim-muted);
+  font-size: 15px;
+  font-weight: 700;
 }
 
-/* ---------- rodapé ---------- */
-
-.sim-footer {
-  padding: 24px var(--sim-gutter) 28px;
-  color: var(--sim-on-band-2);
-  font: 400 12.5px/1.5 var(--font-body);
+.sim-notice__body {
+  grid-column: 2;
+  margin: 0;
+  font-size: 14.5px;
+  color: var(--sim-ink-2);
 }
 
-.sim-footer__brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
-  color: var(--sim-on-band);
-  font: 700 14px/1 var(--font-display);
+ul.sim-notice__body {
+  padding-left: 18px;
+  list-style: disc; /* o preflight do painel zera list-style */
 }
 
-.sim-footer p {
-  margin: 0 0 4px;
+ul.sim-notice__body li + li {
+  margin-top: 4px;
+}
+
+.sim-notice--info {
+  background: var(--sim-blue-soft);
+  border-color: var(--sim-blue-line);
+}
+
+.sim-notice--info svg {
+  color: var(--sim-blue);
+}
+
+.sim-notice--warn {
+  background: var(--sim-yellow-soft);
+  border-color: var(--sim-yellow-line);
+  border-left: 4px solid var(--sim-yellow);
+}
+
+.sim-notice--warn svg {
+  color: var(--sim-yellow-ink);
+}
+
+.sim-notice--warn .sim-notice__title {
+  color: var(--sim-yellow-ink);
 }
 
 /* ---------- processamento ---------- */
 
-.sim-ring {
-  position: relative;
-  display: grid;
-  place-items: center;
-  margin: 6px auto 22px;
-}
-
-.sim-ring__svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  transform: rotate(-90deg);
-}
-
-.sim-ring__track {
-  fill: none;
-  stroke: var(--sim-on-band-3);
-  stroke-width: 8;
-}
-
-.sim-ring__arc {
-  fill: none;
-  stroke: var(--sim-glow);
-  stroke-width: 8;
-  stroke-linecap: round;
-  filter: drop-shadow(0 0 6px rgba(53, 214, 154, 0.55));
-  transition: stroke-dashoffset 0.1s linear;
-}
-
-.sim-ring__orbit {
-  position: absolute;
-  inset: -9px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  border-top-color: rgba(53, 214, 154, 0.5);
-  animation: sim-spin 1.4s linear infinite;
-}
-
-.sim-ring__value {
-  position: relative;
-  display: inline-flex;
-  align-items: baseline;
-  gap: 2px;
-  font: 800 30px/1 var(--font-display);
-  letter-spacing: -0.03em;
-  font-variant-numeric: tabular-nums;
-}
-
-.sim-ring__value small {
-  font: 700 14px/1 var(--font-display);
-  opacity: 0.7;
-}
-
-.sim-processing__title {
-  margin: 0;
-  font: 700 clamp(1.25rem, 4.5vw + 0.25rem, 1.5rem) / 1.2 var(--font-display);
-  letter-spacing: -0.02em;
-}
-
-.sim-processing__title:focus {
-  outline: none;
-}
-
 .sim-processing__hint {
-  margin: 8px 0 0;
+  margin: 0 0 18px;
+  font-size: 15px;
+  color: var(--sim-muted);
+}
+
+.sim-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sim-progress__track {
+  height: 14px;
+  overflow: hidden;
+  border: 1px solid var(--sim-line);
+  border-radius: 7px;
+  background: var(--sim-soft-2);
+}
+
+.sim-progress__fill {
+  height: 100%;
+  border-radius: 7px;
+  background: var(--sim-green);
+  transition: width 0.1s linear;
+}
+
+.sim-progress__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
   font-size: 14px;
-  color: var(--sim-on-band-2);
+  color: var(--sim-ink-2);
+}
+
+.sim-progress__meta strong {
+  font-variant-numeric: tabular-nums;
+  color: var(--sim-ink);
 }
 
 .sim-steps {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
+  margin: 18px 0 0;
   padding: 0;
   list-style: none;
+  border-top: 1px solid var(--sim-line);
 }
 
 .sim-step {
   display: flex;
   align-items: center;
-  gap: 14px;
-  min-height: 54px;
-  padding: 6px 0;
+  gap: 12px;
+  min-height: 50px;
+  padding: 8px 0;
   border-bottom: 1px solid var(--sim-line);
+  font-size: 15.5px;
   color: var(--sim-muted);
-  font: 500 15px/1.3 var(--font-body);
   transition:
-    color 0.25s,
-    opacity 0.25s;
-}
-
-.sim-step:last-child {
-  border-bottom: 0;
+    color 0.2s,
+    opacity 0.2s;
 }
 
 .sim-step__icon {
   flex: none;
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
-  border: 1.5px solid var(--sim-line-2);
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--sim-line-strong);
   border-radius: 50%;
   color: #fff;
   transition:
-    background-color 0.25s,
-    border-color 0.25s;
+    background-color 0.2s,
+    border-color 0.2s;
 }
 
 .sim-step[data-state="pending"] {
-  opacity: 0.55;
+  opacity: 0.6;
 }
 
 .sim-step[data-state="active"] {
@@ -754,7 +877,7 @@ body {
 }
 
 .sim-step[data-state="active"] .sim-step__icon {
-  border-color: var(--sim-primary);
+  border-color: var(--sim-blue);
 }
 
 .sim-step[data-state="active"] .sim-step__icon::after {
@@ -762,8 +885,7 @@ body {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: var(--sim-primary);
-  animation: sim-pulse 1s ease-in-out infinite;
+  background: var(--sim-blue);
 }
 
 .sim-step[data-state="done"] {
@@ -771,122 +893,94 @@ body {
 }
 
 .sim-step[data-state="done"] .sim-step__icon {
-  background: var(--sim-primary);
-  border-color: var(--sim-primary);
-}
-
-.sim-step[data-state="done"] .sim-step__icon svg {
-  animation: sim-pop 0.25s var(--ease-out) both;
+  border-color: var(--sim-green);
+  background: var(--sim-green);
 }
 
 /* ---------- resultado ---------- */
 
-.sim-card {
-  position: relative;
-  padding: 22px 20px 20px;
-  border: 1px solid rgba(11, 122, 85, 0.22);
-  border-radius: 20px;
-  background: linear-gradient(160deg, #eaf7f0 0%, #ffffff 58%);
-  box-shadow: 0 18px 40px -24px rgba(15, 26, 23, 0.35);
-  animation: sim-card-in 0.5s var(--ease-out) both;
-}
-
-.sim-card__label {
-  margin: 0 0 12px;
-  font: 600 12px/1 var(--font-body);
-  letter-spacing: 0.12em;
+.sim-value__label {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--sim-primary);
+  color: var(--sim-green-dark);
 }
 
-.sim-card__value {
-  margin: 0 0 20px;
-  font: 800 clamp(2.4rem, 11vw, 3.1rem) / 1 var(--font-display);
-  letter-spacing: -0.035em;
+.sim-value {
+  margin: 0 0 18px;
+  font-size: clamp(2.2rem, 9vw, 3rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
-  color: var(--sim-ink);
 }
 
 .sim-range__title {
   margin: 0 0 8px;
-  font: 500 12px/1 var(--font-body);
+  font-size: 13px;
   color: var(--sim-muted);
 }
 
 .sim-range__bar {
   position: relative;
-  height: 8px;
-  border-radius: 999px;
-  background: var(--sim-primary-soft);
+  height: 10px;
+  border: 1px solid var(--sim-line);
+  border-radius: 5px;
+  background: var(--sim-soft-2);
 }
 
 .sim-range__fill {
   height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #6fd3ad, var(--sim-primary));
-  transform-origin: left;
-  animation: sim-fill 0.9s 0.25s var(--ease-out) both;
+  border-radius: 5px;
+  background: var(--sim-green);
 }
 
 .sim-range__dot {
   position: absolute;
   top: 50%;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   translate: -50% -50%;
-  border: 4px solid var(--sim-primary);
+  border: 3px solid var(--sim-green);
   border-radius: 50%;
   background: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
-  animation: sim-pop 0.3s 1.05s var(--ease-out) both;
 }
 
 .sim-range__labels {
   display: flex;
   justify-content: space-between;
-  margin-top: 10px;
-  font: 500 12px/1 var(--font-body);
+  margin-top: 8px;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
   color: var(--sim-muted);
 }
 
 .sim-disclaimer {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  margin: 14px 0 0;
-  padding: 12px 14px;
-  border-radius: 12px;
-  background: var(--sim-surface-2);
-  color: var(--sim-ink-2);
-  font: 400 13px/1.45 var(--font-body);
-}
-
-.sim-disclaimer svg {
-  flex: none;
-  margin-top: 1px;
-  color: var(--sim-muted);
+  margin-top: 20px;
 }
 
 .sim-actions {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: 22px;
-  animation: sim-fade-up 0.5s 0.35s var(--ease-out) both;
+  margin-top: 20px;
 }
 
 .sim-explainer {
-  padding: 16px 16px 6px;
-  border-radius: 14px;
-  background: var(--sim-surface-2);
+  padding: 16px 16px 8px;
+  border: 1px solid var(--sim-line);
+  border-left: 4px solid var(--sim-blue);
+  border-radius: var(--sim-radius);
+  background: var(--sim-soft);
   outline: none;
-  animation: sim-fade-down 0.25s var(--ease-out) both;
 }
 
 .sim-explainer__title {
   margin: 0 0 10px;
-  font: 700 15px/1.3 var(--font-display);
+  font-size: 15.5px;
+  font-weight: 700;
 }
 
 .sim-explainer ul {
@@ -898,46 +992,233 @@ body {
 .sim-explainer li {
   display: flex;
   gap: 10px;
-  margin-bottom: 10px;
-  font: 400 14px/1.45 var(--font-body);
+  margin-bottom: 8px;
+  font-size: 14.5px;
   color: var(--sim-ink-2);
 }
 
 .sim-explainer li svg {
   flex: none;
-  margin-top: 2px;
-  color: var(--sim-primary);
+  margin-top: 3px;
+  color: var(--sim-green);
 }
 
 .sim-restart {
-  margin-top: 6px;
-  padding-top: 12px;
-  border-top: 1px solid var(--sim-line);
+  padding-top: 4px;
+  text-align: center;
 }
 
-/* ---------- transições entre telas ---------- */
+/* ---------- seções informativas ---------- */
+
+.sim-section {
+  padding: 32px 0;
+}
+
+.sim-section--soft {
+  margin-top: 28px;
+  background: var(--sim-soft);
+  border-top: 1px solid var(--sim-line);
+  border-bottom: 1px solid var(--sim-line);
+}
+
+.sim-section__title {
+  margin: 0 0 6px;
+  padding-left: 14px;
+  border-left: 4px solid var(--sim-green);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.sim-section__intro {
+  margin: 0 0 18px;
+  color: var(--sim-muted);
+}
+
+.sim-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .sim-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.sim-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 16px;
+  border: 1px solid var(--sim-line);
+  border-radius: var(--sim-radius);
+  background: var(--sim-white);
+}
+
+.sim-card__icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--sim-radius);
+  background: var(--sim-blue-soft);
+  color: var(--sim-blue);
+}
+
+.sim-card__step {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sim-blue);
+}
+
+.sim-card__title {
+  margin: 0;
+  font-size: 16.5px;
+  font-weight: 700;
+}
+
+.sim-card__text {
+  margin: 0;
+  font-size: 15px;
+  color: var(--sim-ink-2);
+}
+
+.sim-help__list {
+  margin: 0;
+  padding-left: 20px;
+  list-style: disc;
+  max-width: 70ch;
+  color: var(--sim-ink-2);
+}
+
+.sim-help__list li + li {
+  margin-top: 8px;
+}
+
+.sim-help__contact {
+  margin: 18px 0 0;
+}
+
+/* ---------- rodapé ---------- */
+
+.sim-footer {
+  padding: 26px 0 30px;
+  border-top: 4px solid var(--sim-green);
+  background: var(--sim-soft);
+  font-size: 14px;
+  color: var(--sim-ink-2);
+}
+
+.sim-footer__grid {
+  display: grid;
+  gap: 18px;
+}
+
+@media (min-width: 768px) {
+  .sim-footer__grid {
+    grid-template-columns: 1fr auto;
+    gap: 32px;
+  }
+}
+
+.sim-footer__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--sim-ink);
+}
+
+.sim-footer p {
+  margin: 0 0 6px;
+  max-width: 70ch;
+}
+
+.sim-footer nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .sim-footer nav ul {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+.sim-footer nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--sim-blue);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.sim-footer__bar {
+  margin: 18px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--sim-line);
+  font-size: 13px;
+  color: var(--sim-muted);
+}
+
+/* ---------- telas baixas (ex.: 320×568): menos respiro no topo ---------- */
+
+@media (max-height: 600px) {
+  .sim-stepper {
+    padding-top: 8px;
+  }
+
+  .sim-hero {
+    padding: 8px 0;
+  }
+
+  .sim-lead {
+    font-size: 15px;
+  }
+
+  .sim-panel__head {
+    padding: 10px 14px;
+  }
+
+  .sim-panel__body {
+    padding: 16px 14px 18px;
+  }
+
+  .sim-form {
+    gap: 16px;
+  }
+}
+
+/* ---------- transições entre etapas (curtas, sem exagero) ---------- */
 
 .sim-anim {
-  animation: sim-enter 0.45s var(--ease-out) both;
-}
-
-.sim-anim--late {
-  animation-delay: 0.08s;
+  animation: sim-fade 0.22s ease-out both;
 }
 
 .sim-screen[data-leaving] .sim-anim {
-  animation: sim-exit 0.18s ease-in both;
+  animation: sim-fade-out 0.12s ease-in both;
 }
 
-.sim-stagger {
-  animation: sim-fade-up 0.5s var(--ease-out) both;
-  animation-delay: calc(var(--i, 0) * 70ms + 80ms);
-}
-
-@keyframes sim-enter {
+@keyframes sim-fade {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
@@ -945,155 +1226,15 @@ body {
   }
 }
 
-@keyframes sim-exit {
+@keyframes sim-fade-out {
   to {
     opacity: 0;
-    transform: translateY(-8px);
-  }
-}
-
-@keyframes sim-fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes sim-fade-down {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes sim-pop {
-  from {
-    opacity: 0;
-    transform: scale(0.6);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes sim-shake {
-  10%,
-  90% {
-    transform: translateX(-2px);
-  }
-  20%,
-  80% {
-    transform: translateX(3px);
-  }
-  30%,
-  50%,
-  70% {
-    transform: translateX(-4px);
-  }
-  40%,
-  60% {
-    transform: translateX(4px);
   }
 }
 
 @keyframes sim-spin {
   to {
     transform: rotate(360deg);
-  }
-}
-
-@keyframes sim-pulse {
-  0%,
-  100% {
-    transform: scale(0.8);
-    opacity: 0.7;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 1;
-  }
-}
-
-@keyframes sim-fill {
-  from {
-    transform: scaleX(0);
-  }
-}
-
-@keyframes sim-card-in {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-/* ---------- telas baixas (ex.: 320×568): o CTA precisa caber na dobra ---------- */
-
-@media (max-height: 640px) {
-  .sim-header {
-    padding-bottom: 2px;
-  }
-
-  .sim-band {
-    padding-top: 8px;
-    padding-bottom: 44px;
-  }
-
-  .sim-eyebrow {
-    margin-bottom: 10px;
-  }
-
-  .sim-sub {
-    margin-top: 8px;
-  }
-
-  .sim-sheet {
-    padding-top: 22px;
-  }
-
-  .sim-form {
-    gap: 14px;
-  }
-
-  .sim-form__heading {
-    margin-bottom: -6px;
-  }
-}
-
-/* ---------- desktop: a mesma experiência, centralizada ---------- */
-
-@media (min-width: 720px) {
-  .sim-scope {
-    padding: 40px 24px;
-    background: var(--sim-page);
-  }
-
-  .sim-app {
-    max-width: 480px;
-    min-height: 0;
-    margin: 0 auto;
-    border-radius: 28px;
-    overflow: hidden;
-    box-shadow:
-      0 40px 80px -40px rgba(15, 26, 23, 0.45),
-      0 0 0 1px rgba(15, 26, 23, 0.06);
-  }
-
-  .sim-header {
-    padding-top: 18px;
   }
 }
 
@@ -1107,7 +1248,6 @@ body {
     animation-delay: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
 }
 </style>
@@ -1115,8 +1255,15 @@ body {
 <body>
 <div class="sim-scope">
   <div class="sim-app" id="app" data-state="idle">
+    <a class="sim-skip" href="#sim-conteudo" id="skip"></a>
     <header class="sim-header" id="header"></header>
-    <main class="sim-main" id="main"><noscript><p style="padding:24px;color:#fff">Este simulador precisa de JavaScript ativado.</p></noscript></main>
+    <main id="sim-conteudo" class="sim-main">
+      <div id="inicio" class="sim-container sim-service">
+        <div id="stepper-host"></div>
+        <div id="screen-host"><noscript><p style="padding:24px 0">Este simulador precisa de JavaScript ativado.</p></noscript></div>
+      </div>
+      <div id="sections-host"></div>
+    </main>
     <footer class="sim-footer" id="footer"></footer>
   </div>
 </div>
@@ -1127,9 +1274,24 @@ body {
 
   /* =====================================================================
      CONFIGURAÇÃO — tudo que muda de cliente pra cliente fica aqui.
+     (mesmos nomes de lib/simulador/config.ts)
      ===================================================================== */
 
-  const BRAND = { name: "Revisa", tagline: "Simulador de benefício" };
+  const BRAND = {
+    name: "Revisa",
+    /** Identificação ao lado do logo: deixa claro que é a própria plataforma. */
+    descriptor: "Plataforma independente de simulação de benefício",
+  };
+
+  /** Menu do cabeçalho: poucos itens, todos âncoras da própria página. */
+  const MENU = [
+    { label: "Início", href: "#inicio" },
+    { label: "Como funciona", href: "#como-funciona" },
+    { label: "Ajuda", href: "#ajuda" },
+  ];
+
+  /** Etapas do serviço, na ordem do fluxo. */
+  const STEPS = ["Identificação", "Análise", "Resultado"];
 
   /** Só dígitos, formato internacional: DDI + DDD + número. */
   const WHATSAPP_NUMBER = "5511999999999";
@@ -1146,7 +1308,7 @@ body {
     durationMs: 4200,
     settleMs: 450,
     title: "Analisando seus dados...",
-    hint: "Isso leva só alguns segundos.",
+    hint: "Aguarde. Isso leva só alguns segundos e acontece no seu aparelho.",
     steps: [
       { label: "Validando informações...", at: 0 },
       { label: "Processando simulação...", at: 0.28 },
@@ -1156,37 +1318,59 @@ body {
   };
 
   const COPY = {
-    header: { pill: "Simulação gratuita" },
+    skipLink: "Ir para o conteúdo",
+    header: { menu: "Menu", closeMenu: "Fechar", navLabel: "Navegação principal" },
     hero: {
-      eyebrow: "Simulador de benefício",
-      title: "Descubra quanto seu benefício pode aumentar",
-      subtitle: "Simulação gratuita. Leva menos de 1 minuto.",
+      eyebrow: "Serviço de simulação",
+      title: "Simulação de aumento de benefício",
+      subtitle: "Informe seu nome e CPF para gerar uma estimativa. É gratuito, leva menos de um minuto e nenhum dado é armazenado.",
     },
     form: {
-      heading: "Preencha para simular",
-      name: { label: "Nome completo", placeholder: "Digite seu nome completo", error: "Digite seu nome completo" },
-      cpf: { label: "CPF", placeholder: "000.000.000-00", error: "Digite um CPF válido" },
+      heading: "Dados para a simulação",
+      intro: "Preencha os dois campos e clique em Consultar agora.",
+      name: { label: "Nome completo", placeholder: "Digite seu nome completo", hint: "Como está no seu documento.", error: "Digite seu nome completo" },
+      cpf: { label: "CPF", placeholder: "000.000.000-00", hint: "Somente números. A verificação é feita no seu aparelho.", error: "Digite um CPF válido" },
       submit: "Consultar agora",
       invalidSummary: "Corrija os campos destacados para continuar.",
-      trust: ["Sem custo", "Leva 1 minuto", "Nada é salvo"],
+      notice: {
+        title: "Orientações",
+        items: [
+          "Esta simulação não consulta o INSS nem qualquer sistema público.",
+          "O resultado é uma estimativa ilustrativa, sem valor de concessão.",
+          "Seus dados ficam apenas no seu aparelho e não são enviados.",
+        ],
+      },
     },
     howItWorks: {
       title: "Como funciona",
+      intro: "Três passos, sem cadastro e sem custo.",
       steps: [
-        { title: "Informe seus dados", text: "Nome e CPF, só isso. Nada é enviado nem armazenado." },
-        { title: "Simulação na hora", text: "Em segundos você vê uma estimativa de aumento." },
-        { title: "Continue pelo WhatsApp", text: "Fale com a equipe e entenda os próximos passos." },
+        { title: "Informe seus dados", text: "Nome completo e CPF, só isso. Nada é enviado nem armazenado." },
+        { title: "Simulação na hora", text: "Em alguns segundos você recebe uma estimativa de aumento." },
+        { title: "Atendimento pelo WhatsApp", text: "Se quiser continuar, a equipe explica os próximos passos." },
       ],
+    },
+    help: {
+      title: "Ajuda e orientações",
+      items: [
+        "{marca} é uma plataforma independente. Não tem vínculo com o Governo Federal, o INSS ou qualquer órgão público.",
+        "A simulação não consulta sistemas externos: o valor é calculado no seu aparelho, dentro de uma faixa de referência.",
+        "O resultado é apenas uma estimativa ilustrativa. Não representa aprovação ou concessão de benefício.",
+        "Nenhum dado é enviado ou armazenado. Ao continuar pelo WhatsApp, só o seu nome e o valor da estimativa vão na mensagem.",
+      ],
+      contact: { label: "Falar com a equipe pelo WhatsApp", message: "Olá! Tenho uma dúvida sobre a simulação de benefício." },
     },
     result: {
       eyebrow: "Simulação concluída",
       greeting: "Olá, {nome}",
-      lead: "Aqui está o resultado da sua simulação.",
+      lead: "Veja abaixo o resultado da sua simulação.",
+      panelTitle: "Resultado da simulação",
       cardLabel: "Estimativa de aumento",
       rangeLabel: "Faixa da simulação",
+      attention: "Atenção",
       disclaimer: "Resultado estimativo para fins de simulação. Não representa aprovação ou concessão de benefício.",
       ctaPrimary: "Quero continuar",
-      ctaPrimaryHint: "Falar no WhatsApp",
+      ctaPrimaryHint: "Atendimento pelo WhatsApp",
       ctaRedirecting: "Abrindo WhatsApp...",
       ctaSecondary: "Entender como funciona",
       restart: "Fazer nova simulação",
@@ -1200,13 +1384,15 @@ body {
       },
     },
     footer: {
-      line1: "{marca} é uma ferramenta de simulação para fins demonstrativos.",
-      line2: "Sem vínculo com órgãos públicos. Nenhum dado é enviado ou armazenado.",
+      statement: "{marca} é uma plataforma independente de simulação. Não tem vínculo com o Governo Federal, o INSS ou qualquer órgão público.",
+      privacy: "Nenhum dado é enviado ou armazenado. O resultado é uma estimativa ilustrativa.",
+      navLabel: "Navegação do rodapé",
+      bar: "Ferramenta de simulação para fins demonstrativos.",
     },
   };
 
   /** Tempos das transições (ms). */
-  const TIMING = { exitMs: 180, redirectMs: 1600, countUpMs: 1000 };
+  const TIMING = { exitMs: 120, redirectMs: 1600 };
 
   /* =====================================================================
      LÓGICA PURA (espelho de lib/simulador/*.ts)
@@ -1314,18 +1500,22 @@ body {
 
   const icons = {
     check: (size, cls, width) => stroke('<path d="M5 12.5l4.5 4.5L19 7.5"/>', size, cls, width),
-    arrow: (size, cls) => stroke('<path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>', size, cls),
-    alert: (size) => stroke('<circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.5h.01"/>', size),
+    arrow: (size) => stroke('<path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>', size),
+    alert: (size) => stroke('<path d="M12 3.5l9.5 16.5h-19L12 3.5Z"/><path d="M12 10v4.5"/><path d="M12 17.5h.01"/>', size),
     info: (size) => stroke('<circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.5h.01"/>', size),
-    lock: (size) => stroke('<rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/>', size),
-    clock: (size) => stroke('<circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/>', size),
-    tag: (size) => stroke('<path d="M20 13.5L13.5 20a1.5 1.5 0 0 1-2.1 0L4 12.6V4h8.6l7.4 7.4a1.5 1.5 0 0 1 0 2.1Z"/><path d="M8.5 8.5h.01"/>', size),
     refresh: (size) => stroke('<path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/>', size),
     chevron: (size, cls) => stroke('<path d="M6 9l6 6 6-6"/>', size, cls),
+    menu: (size) => stroke('<path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/>', size),
+    close: (size) => stroke('<path d="M6 6l12 12"/><path d="M18 6L6 18"/>', size),
+    form: (size, cls) => stroke('<rect x="4.5" y="3.5" width="15" height="17" rx="2"/><path d="M8.5 8.5h7"/><path d="M8.5 12h7"/><path d="M8.5 15.5h4"/>', size, cls),
+    id: (size) => stroke('<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="11" r="2"/><path d="M5.5 16c.6-1.5 1.7-2.2 3-2.2s2.4.7 3 2.2"/><path d="M14 9.5h4"/><path d="M14 13h4"/>', size),
+    calc: (size) => stroke('<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8.5 7h7"/><path d="M8.5 11.5h.01"/><path d="M12 11.5h.01"/><path d="M15.5 11.5h.01"/><path d="M8.5 15h.01"/><path d="M12 15h.01"/><path d="M15.5 15v3"/>', size),
+    chat: (size) => stroke('<path d="M4 5.5h16v10H9l-4 3.5v-3.5H4z"/><path d="M8 9.5h8"/><path d="M8 12.5h5"/>', size),
     whatsapp: (size) =>
       '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>',
+    /** Emblema próprio: quadrado branco com borda verde e três barras nas cores nacionais. */
     brand: (size) =>
-      '<svg width="' + size + '" height="' + size + '" viewBox="0 0 28 28" fill="none" aria-hidden="true" focusable="false"><rect width="28" height="28" rx="8" fill="#0b7a55"/><path d="M7.5 18.5l5-5 3 3 5.5-6M17 10.5h4v4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      '<svg width="' + size + '" height="' + size + '" viewBox="0 0 36 36" fill="none" aria-hidden="true" focusable="false"><rect x="1" y="1" width="34" height="34" rx="6" fill="#ffffff" stroke="#1b7a3f" stroke-width="2"/><rect x="9" y="10" width="18" height="4" rx="2" fill="#1b7a3f"/><rect x="9" y="16" width="13" height="4" rx="2" fill="#e5b800"/><rect x="9" y="22" width="9" height="4" rx="2" fill="#0f4c8f"/></svg>',
     spinner: (size) =>
       '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false" class="sim-spin"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity="0.25" stroke-width="2.5"/><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>',
   };
@@ -1337,7 +1527,8 @@ body {
      ===================================================================== */
 
   const app = $("#app");
-  const main = $("#main");
+  const host = $("#screen-host");
+  const STEP_INDEX = { landing: 0, processing: 1, result: 2 };
   let view = { name: "landing" };
   let restarting = false;
   let redirecting = false;
@@ -1368,20 +1559,21 @@ body {
 
   function render() {
     stopLoops();
-    main.innerHTML = "";
+    renderStepper(STEP_INDEX[view.name]);
+    host.innerHTML = "";
     const screen = document.createElement("div");
     screen.className = "sim-screen";
     if (view.name === "landing") {
       screen.innerHTML = landingHTML();
-      main.appendChild(screen);
+      host.appendChild(screen);
       wireLanding(screen);
     } else if (view.name === "processing") {
       screen.innerHTML = processingHTML();
-      main.appendChild(screen);
+      host.appendChild(screen);
       wireProcessing(screen);
     } else {
       screen.innerHTML = resultHTML(view);
-      main.appendChild(screen);
+      host.appendChild(screen);
       wireResult(screen, view);
     }
     setState();
@@ -1389,7 +1581,7 @@ body {
       firstRender = false;
       return;
     }
-    // troca de tela: topo + foco no título (teclado e leitores de tela)
+    // troca de etapa: topo + foco no título (teclado e leitores de tela)
     window.scrollTo({ top: 0, behavior: reduced() ? "auto" : "smooth" });
     const heading = $("[data-heading]", screen);
     if (heading) heading.focus({ preventScroll: true });
@@ -1406,56 +1598,103 @@ body {
       commit();
       return;
     }
-    const screen = $(".sim-screen", main);
+    const screen = $(".sim-screen", host);
     if (screen) screen.setAttribute("data-leaving", "");
     exitTimer = setTimeout(commit, TIMING.exitMs);
   }
 
-  /* ---------- casca ---------- */
+  /* ---------- casca: cabeçalho, etapas, seções, rodapé ---------- */
 
-  $("#header").innerHTML =
-    '<div class="sim-brand">' + icons.brand(28) + '<span class="sim-brand__name">' + esc(BRAND.name) + '</span><span class="sim-brand__tag">' + esc(BRAND.tagline) + "</span></div>" +
-    '<span class="sim-pill">' + icons.check(14) + esc(COPY.header.pill) + "</span>";
+  $("#skip").textContent = COPY.skipLink;
 
-  $("#footer").innerHTML =
-    '<div class="sim-footer__brand">' + icons.brand(20) + "<span>" + esc(BRAND.name) + "</span></div>" +
-    "<p>" + esc(COPY.footer.line1.replace("{marca}", BRAND.name)) + "</p><p>" + esc(COPY.footer.line2) + "</p>";
+  function renderHeader() {
+    const header = $("#header");
+    header.innerHTML =
+      '<div class="sim-container sim-header__row">' +
+      '<a class="sim-brand" href="#inicio">' + icons.brand(36) +
+      '<span class="sim-brand__text"><span class="sim-brand__name">' + esc(BRAND.name) + '</span><span class="sim-brand__desc">' + esc(BRAND.descriptor) + "</span></span></a>" +
+      '<button type="button" class="sim-menu-btn" aria-expanded="false" aria-controls="sim-menu">' + icons.menu(18) + "<span>" + esc(COPY.header.menu) + "</span></button>" +
+      '<nav id="sim-menu" class="sim-nav" aria-label="' + esc(COPY.header.navLabel) + '"><ul>' +
+      MENU.map((item) => '<li><a href="' + esc(item.href) + '">' + esc(item.label) + "</a></li>").join("") +
+      "</ul></nav></div>" +
+      '<div class="sim-stripe" aria-hidden="true"><i></i><i></i><i></i></div>';
+    const btn = $(".sim-menu-btn", header);
+    const nav = $("#sim-menu", header);
+    const setOpen = (open) => {
+      btn.setAttribute("aria-expanded", String(open));
+      btn.innerHTML = (open ? icons.close(18) : icons.menu(18)) + "<span>" + esc(open ? COPY.header.closeMenu : COPY.header.menu) + "</span>";
+      nav.toggleAttribute("data-open", open);
+    };
+    btn.addEventListener("click", () => setOpen(btn.getAttribute("aria-expanded") !== "true"));
+    header.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setOpen(false)));
+  }
 
-  /* ---------- landing ---------- */
+  function renderStepper(current) {
+    $("#stepper-host").innerHTML =
+      '<ol class="sim-stepper" aria-label="Etapa ' + (current + 1) + " de " + STEPS.length + '">' +
+      STEPS.map((label, i) => {
+        const state = i < current ? "done" : i === current ? "current" : "upcoming";
+        return '<li data-state="' + state + '"' + (state === "current" ? ' aria-current="step"' : "") + '><span class="sim-stepper__num" aria-hidden="true">' +
+          (state === "done" ? icons.check(14, "", 3) : i + 1) + '</span><span class="sim-stepper__label">' + esc(label) + "</span></li>";
+      }).join("") +
+      "</ol>";
+  }
+
+  function renderSections() {
+    const cardIcons = [icons.id, icons.calc, icons.chat];
+    const contactUrl = buildWhatsappUrl(WHATSAPP_NUMBER, COPY.help.contact.message, { nome: "", valor: "" });
+    $("#sections-host").innerHTML =
+      '<section id="como-funciona" class="sim-section sim-section--soft" aria-labelledby="sim-how-title"><div class="sim-container">' +
+      '<h2 id="sim-how-title" class="sim-section__title">' + esc(COPY.howItWorks.title) + "</h2>" +
+      '<p class="sim-section__intro">' + esc(COPY.howItWorks.intro) + "</p>" +
+      '<ol class="sim-cards">' +
+      COPY.howItWorks.steps.map((s, i) => '<li class="sim-card"><span class="sim-card__icon">' + (cardIcons[i] || icons.id)(22) + '</span><span class="sim-card__step">Passo ' + (i + 1) + '</span><h3 class="sim-card__title">' + esc(s.title) + '</h3><p class="sim-card__text">' + esc(s.text) + "</p></li>").join("") +
+      "</ol></div></section>" +
+      '<section id="ajuda" class="sim-section sim-help" aria-labelledby="sim-help-title"><div class="sim-container">' +
+      '<h2 id="sim-help-title" class="sim-section__title">' + esc(COPY.help.title) + "</h2>" +
+      '<ul class="sim-help__list">' + COPY.help.items.map((item) => "<li>" + esc(item.replace("{marca}", BRAND.name)) + "</li>").join("") + "</ul>" +
+      '<p class="sim-help__contact"><a class="sim-btn sim-btn--secondary sim-btn--auto" href="' + esc(contactUrl) + '" target="_blank" rel="noopener noreferrer">' + icons.whatsapp(20) + "<span>" + esc(COPY.help.contact.label) + "</span></a></p>" +
+      "</div></section>";
+  }
+
+  function renderFooter() {
+    $("#footer").innerHTML =
+      '<div class="sim-container"><div class="sim-footer__grid"><div>' +
+      '<div class="sim-footer__brand">' + icons.brand(28) + "<span>" + esc(BRAND.name) + "</span></div>" +
+      "<p>" + esc(COPY.footer.statement.replace("{marca}", BRAND.name)) + "</p><p>" + esc(COPY.footer.privacy) + "</p></div>" +
+      '<nav aria-label="' + esc(COPY.footer.navLabel) + '"><ul>' + MENU.map((item) => '<li><a href="' + esc(item.href) + '">' + esc(item.label) + "</a></li>").join("") + "</ul></nav></div>" +
+      '<p class="sim-footer__bar">' + esc(BRAND.name + " · " + BRAND.descriptor + " · " + COPY.footer.bar) + "</p></div>";
+  }
+
+  /* ---------- etapa 1: identificação ---------- */
 
   function fieldHTML(key, cfg, attrs) {
     return (
       '<div class="sim-field" data-field="' + key + '">' +
       '<label for="sim-' + key + '" class="sim-field__label">' + esc(cfg.label) + "</label>" +
-      '<div class="sim-field__control"><input id="sim-' + key + '" name="' + key + '" class="sim-field__input" type="text" placeholder="' + esc(cfg.placeholder) + '" ' + attrs + "></div>" +
+      '<p id="sim-' + key + '-dica" class="sim-field__hint">' + esc(cfg.hint) + "</p>" +
+      '<div class="sim-field__control"><input id="sim-' + key + '" name="' + key + '" class="sim-field__input" type="text" placeholder="' + esc(cfg.placeholder) + '" aria-describedby="sim-' + key + '-dica" ' + attrs + "></div>" +
       "</div>"
     );
   }
 
   function landingHTML() {
-    const trustIcons = [icons.tag, icons.clock, icons.lock];
     return (
-      '<div class="sim-band"><div class="sim-band__in sim-anim">' +
-      '<p class="sim-eyebrow sim-stagger" style="--i:0">' + esc(COPY.hero.eyebrow) + "</p>" +
-      '<h1 class="sim-h1 sim-stagger" style="--i:1" tabindex="-1" data-heading>' + esc(COPY.hero.title) + "</h1>" +
-      '<p class="sim-sub sim-stagger" style="--i:2">' + esc(COPY.hero.subtitle) + "</p>" +
-      "</div></div>" +
-      '<div class="sim-sheet"><div class="sim-sheet__in sim-anim sim-anim--late">' +
-      '<form class="sim-form" id="sim-form" novalidate>' +
-      '<p class="sim-form__heading">' + esc(COPY.form.heading) + "</p>" +
+      '<div class="sim-anim">' +
+      '<section class="sim-hero"><p class="sim-eyebrow">' + esc(COPY.hero.eyebrow) + "</p>" +
+      '<h1 class="sim-h1" tabindex="-1" data-heading>' + esc(COPY.hero.title) + "</h1>" +
+      '<p class="sim-lead">' + esc(COPY.hero.subtitle) + "</p></section>" +
+      '<section class="sim-panel" aria-labelledby="sim-form-title">' +
+      '<div class="sim-panel__head">' + icons.form(22, "sim-panel__icon") + '<h2 id="sim-form-title" class="sim-panel__title">' + esc(COPY.form.heading) + "</h2></div>" +
+      '<div class="sim-panel__body"><form class="sim-form" id="sim-form" novalidate>' +
+      '<p class="sim-form__intro">' + esc(COPY.form.intro) + "</p>" +
       fieldHTML("nome", COPY.form.name, 'autocomplete="name" autocapitalize="words" spellcheck="false" maxlength="80" enterkeyhint="next"') +
       fieldHTML("cpf", COPY.form.cpf, 'inputmode="numeric" autocomplete="off" maxlength="14" enterkeyhint="done"') +
       '<p class="sim-sr" aria-live="assertive" id="sim-live"></p>' +
-      '<div class="sim-form__submit">' +
-      '<button type="submit" class="sim-btn sim-btn--primary sim-btn--xl"><span>' + esc(COPY.form.submit) + "</span>" + icons.arrow(20, "sim-btn__arrow") + "</button>" +
-      '<ul class="sim-trust">' + COPY.form.trust.map((item, i) => "<li>" + (trustIcons[i] || icons.lock)(15) + esc(item) + "</li>").join("") + "</ul>" +
-      "</div></form>" +
-      '<hr class="sim-divider">' +
-      '<section class="sim-how" aria-labelledby="sim-how-title"><h2 id="sim-how-title" class="sim-how__title">' + esc(COPY.howItWorks.title) + "</h2>" +
-      '<ol class="sim-how__list">' +
-      COPY.howItWorks.steps.map((s, i) => '<li class="sim-how__item"><span class="sim-how__num" aria-hidden="true">' + (i + 1) + '</span><div><h3 class="sim-how__item-title">' + esc(s.title) + '</h3><p class="sim-how__item-text">' + esc(s.text) + "</p></div></li>").join("") +
-      "</ol></section>" +
-      "</div></div>"
+      '<div class="sim-form__submit"><button type="submit" class="sim-btn sim-btn--primary sim-btn--xl"><span>' + esc(COPY.form.submit) + "</span>" + icons.arrow(20) + "</button></div>" +
+      '<div class="sim-notice sim-notice--info" role="note">' + icons.info(20) + '<p class="sim-notice__title">' + esc(COPY.form.notice.title) + '</p><ul class="sim-notice__body">' +
+      COPY.form.notice.items.map((item) => "<li>" + esc(item) + "</li>").join("") + "</ul></div>" +
+      "</form></div></section></div>"
     );
   }
 
@@ -1486,13 +1725,13 @@ body {
         field.toggleAttribute("data-valid", valid);
         if (show) {
           input.setAttribute("aria-invalid", "true");
-          input.setAttribute("aria-describedby", "sim-" + key + "-erro");
+          input.setAttribute("aria-describedby", "sim-" + key + "-dica sim-" + key + "-erro");
         } else {
           input.removeAttribute("aria-invalid");
-          input.removeAttribute("aria-describedby");
+          input.setAttribute("aria-describedby", "sim-" + key + "-dica");
         }
         const ok = $(".sim-field__ok", control);
-        if (valid && !ok) control.insertAdjacentHTML("beforeend", '<span class="sim-field__ok">' + icons.check(16) + "</span>");
+        if (valid && !ok) control.insertAdjacentHTML("beforeend", '<span class="sim-field__ok">' + icons.check(15, "", 2.5) + "</span>");
         else if (!valid && ok) ok.remove();
         const err = $(".sim-field__error", field);
         if (show && !err) field.insertAdjacentHTML("beforeend", '<p id="sim-' + key + '-erro" class="sim-field__error">' + icons.alert(16) + "<span>" + esc(errors[key]) + "</span></p>");
@@ -1531,16 +1770,6 @@ body {
         requestAnimationFrame(() => {
           live.textContent = COPY.form.invalidSummary;
         });
-        if (!reduced()) {
-          for (const key of ["nome", "cpf"]) {
-            if (!errors[key]) continue;
-            const control = $('[data-field="' + key + '"] .sim-field__control', screen);
-            control.removeAttribute("data-shake");
-            void control.offsetWidth;
-            control.setAttribute("data-shake", "");
-            control.addEventListener("animationend", () => control.removeAttribute("data-shake"), { once: true });
-          }
-        }
         (errors.nome ? inputs.nome : inputs.cpf).focus();
         return;
       }
@@ -1549,27 +1778,21 @@ body {
     update();
   }
 
-  /* ---------- processamento ---------- */
-
-  const RING_C = 2 * Math.PI * 52;
+  /* ---------- etapa 2: análise ---------- */
 
   function processingHTML() {
     return (
-      '<div class="sim-band sim-band--center"><div class="sim-band__in sim-anim">' +
-      '<div class="sim-ring" role="progressbar" aria-label="' + esc(PROCESSING.title) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" style="width:132px;height:132px">' +
-      '<svg viewBox="0 0 120 120" class="sim-ring__svg" aria-hidden="true" focusable="false"><circle class="sim-ring__track" cx="60" cy="60" r="52"/><circle class="sim-ring__arc" cx="60" cy="60" r="52" stroke-dasharray="' + RING_C + '" stroke-dashoffset="' + RING_C + '"/></svg>' +
-      '<span class="sim-ring__orbit" aria-hidden="true"></span>' +
-      '<span class="sim-ring__value" aria-hidden="true"><span data-pct>0</span><small>%</small></span>' +
-      "</div>" +
-      '<h1 class="sim-processing__title" tabindex="-1" data-heading>' + esc(PROCESSING.title) + "</h1>" +
-      '<p class="sim-processing__hint">' + esc(PROCESSING.hint) + "</p>" +
-      "</div></div>" +
-      '<div class="sim-sheet"><div class="sim-sheet__in sim-anim sim-anim--late">' +
+      '<div class="sim-anim"><section class="sim-panel" aria-labelledby="sim-processing-title">' +
+      '<div class="sim-panel__head"><h1 id="sim-processing-title" class="sim-panel__title" tabindex="-1" data-heading>' + esc(PROCESSING.title) + "</h1></div>" +
+      '<div class="sim-panel__body"><p class="sim-processing__hint">' + esc(PROCESSING.hint) + "</p>" +
+      '<div class="sim-progress" role="progressbar" aria-label="' + esc(PROCESSING.title) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">' +
+      '<div class="sim-progress__track"><div class="sim-progress__fill" style="width:0%"></div></div>' +
+      '<div class="sim-progress__meta" aria-hidden="true"><strong data-pct>0%</strong><span data-status></span></div></div>' +
       '<ol class="sim-steps" aria-label="Etapas do processamento">' +
       PROCESSING.steps.map((s) => '<li class="sim-step" data-state="pending"><span class="sim-step__icon" aria-hidden="true"></span><span>' + esc(s.label) + "</span></li>").join("") +
       "</ol>" +
       '<p class="sim-sr" aria-live="polite" data-live></p>' +
-      "</div></div>"
+      "</div></section></div>"
     );
   }
 
@@ -1577,9 +1800,10 @@ body {
   const easeProgress = (t) => 0.5 * t + 0.5 * (1 - (1 - t) * (1 - t));
 
   function wireProcessing(screen) {
-    const arc = $(".sim-ring__arc", screen);
-    const ring = $(".sim-ring", screen);
+    const bar = $("[role=progressbar]", screen);
+    const fill = $(".sim-progress__fill", screen);
     const pct = $("[data-pct]", screen);
+    const status = $("[data-status]", screen);
     const live = $("[data-live]", screen);
     const steps = Array.from(screen.querySelectorAll(".sim-step"));
     const start = performance.now();
@@ -1588,17 +1812,17 @@ body {
     const tick = (now) => {
       const t = Math.min(1, (now - start) / PROCESSING.durationMs);
       const p = easeProgress(t);
-      arc.style.strokeDashoffset = String(RING_C * (1 - p));
       const percent = Math.round(p * 100);
-      pct.textContent = String(percent);
-      ring.setAttribute("aria-valuenow", String(percent));
+      fill.style.width = percent + "%";
+      pct.textContent = percent + "%";
+      bar.setAttribute("aria-valuenow", String(percent));
       let active = -1;
       steps.forEach((li, i) => {
         const next = PROCESSING.steps[i + 1] ? PROCESSING.steps[i + 1].at : 1;
         const state = p >= next ? "done" : p >= PROCESSING.steps[i].at ? "active" : "pending";
         if (li.dataset.state !== state) {
           li.dataset.state = state;
-          $(".sim-step__icon", li).innerHTML = state === "done" ? icons.check(15, "", 2.5) : "";
+          $(".sim-step__icon", li).innerHTML = state === "done" ? icons.check(14, "", 3) : "";
           if (state === "done") li.insertAdjacentHTML("beforeend", '<span class="sim-sr"> (concluído)</span>');
         }
         if (state === "active") active = i;
@@ -1606,7 +1830,9 @@ body {
       const current = active >= 0 ? active : steps.length - 1;
       if (current !== lastCurrent) {
         lastCurrent = current;
+        status.textContent = PROCESSING.steps[current].label;
         live.textContent = PROCESSING.steps[current].label;
+        bar.setAttribute("aria-valuetext", percent + "% — " + PROCESSING.steps[current].label);
       }
       if (t < 1) {
         rafId = requestAnimationFrame(tick);
@@ -1620,7 +1846,7 @@ body {
     rafId = requestAnimationFrame(tick);
   }
 
-  /* ---------- resultado ---------- */
+  /* ---------- etapa 3: resultado ---------- */
 
   function resultHTML(v) {
     const valor = formatBRL(v.estimateCents);
@@ -1628,48 +1854,32 @@ body {
     const url = buildWhatsappUrl(WHATSAPP_NUMBER, WHATSAPP_MESSAGE, { nome: titleCaseName(v.lead.nome), valor });
     const min = formatBRLWhole(ESTIMATE.minBRL);
     const max = formatBRLWhole(ESTIMATE.maxBRL);
-    const initial = reduced() ? valor : formatBRL(0);
     return (
-      '<div class="sim-band"><div class="sim-band__in sim-anim">' +
-      '<p class="sim-eyebrow sim-eyebrow--done sim-stagger" style="--i:0">' + icons.check(14, "", 2.5) + esc(COPY.result.eyebrow) + "</p>" +
-      '<h1 class="sim-h1 sim-stagger" style="--i:1" tabindex="-1" data-heading>' + esc(COPY.result.greeting.replace("{nome}", firstName(v.lead.nome))) + "</h1>" +
-      '<p class="sim-sub sim-stagger" style="--i:2">' + esc(COPY.result.lead) + "</p>" +
-      "</div></div>" +
-      '<div class="sim-sheet"><div class="sim-sheet__in sim-anim sim-anim--late">' +
-      '<section class="sim-card" aria-labelledby="sim-card-label">' +
-      '<p id="sim-card-label" class="sim-card__label">' + esc(COPY.result.cardLabel) + "</p>" +
-      '<p class="sim-card__value" data-testid="estimate-value"><span aria-hidden="true" data-countup>' + esc(initial) + '</span><span class="sim-sr">' + esc(valor) + "</span></p>" +
+      '<div class="sim-anim">' +
+      '<section class="sim-hero"><p class="sim-status">' + icons.check(16, "", 3) + esc(COPY.result.eyebrow) + "</p>" +
+      '<h1 class="sim-h1" tabindex="-1" data-heading>' + esc(COPY.result.greeting.replace("{nome}", firstName(v.lead.nome))) + "</h1>" +
+      '<p class="sim-lead">' + esc(COPY.result.lead) + "</p></section>" +
+      '<section class="sim-panel" aria-labelledby="sim-result-title">' +
+      '<div class="sim-panel__head"><h2 id="sim-result-title" class="sim-panel__title">' + esc(COPY.result.panelTitle) + "</h2></div>" +
+      '<div class="sim-panel__body">' +
+      '<p class="sim-value__label">' + esc(COPY.result.cardLabel) + "</p>" +
+      '<p class="sim-value" data-testid="estimate-value">' + esc(valor) + "</p>" +
       '<div class="sim-range" role="img" aria-label="' + esc(COPY.result.rangeLabel + ": de " + min + " a " + max) + '">' +
       '<p class="sim-range__title" aria-hidden="true">' + esc(COPY.result.rangeLabel) + "</p>" +
       '<div class="sim-range__bar"><div class="sim-range__fill" style="width:' + pos + '%"></div><span class="sim-range__dot" style="left:' + pos + '%"></span></div>' +
-      '<div class="sim-range__labels" aria-hidden="true"><span>' + esc(min) + "</span><span>" + esc(max) + "</span></div>" +
-      "</div></section>" +
-      '<p class="sim-disclaimer">' + icons.info(16) + "<span>" + esc(COPY.result.disclaimer) + "</span></p>" +
+      '<div class="sim-range__labels" aria-hidden="true"><span>' + esc(min) + "</span><span>" + esc(max) + "</span></div></div>" +
+      '<div class="sim-notice sim-notice--warn sim-disclaimer" role="note">' + icons.alert(20) + '<p class="sim-notice__title">' + esc(COPY.result.attention) + '</p><p class="sim-notice__body">' + esc(COPY.result.disclaimer) + "</p></div>" +
       '<div class="sim-actions">' +
       '<a class="sim-btn sim-btn--primary sim-btn--xl sim-btn--whatsapp" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer" data-testid="cta-whatsapp" data-cta>' +
       icons.whatsapp(22) +
       '<span class="sim-btn__stack"><span data-cta-label>' + esc(COPY.result.ctaPrimary) + "</span><small>" + esc(COPY.result.ctaPrimaryHint) + "</small></span></a>" +
-      '<button type="button" class="sim-btn sim-btn--ghost" aria-expanded="false" aria-controls="sim-explainer" data-explain><span>' + esc(COPY.result.ctaSecondary) + "</span>" + icons.chevron(18, "sim-btn__chev") + "</button>" +
-      '<div class="sim-restart"><button type="button" class="sim-btn sim-btn--text" data-restart>' + icons.refresh(18) + "<span>" + esc(COPY.result.restart) + "</span></button></div>" +
-      "</div></div></div>"
+      '<button type="button" class="sim-btn sim-btn--secondary" aria-expanded="false" aria-controls="sim-explainer" data-testid="cta-explain" data-explain><span>' + esc(COPY.result.ctaSecondary) + "</span>" + icons.chevron(18, "sim-btn__chev") + "</button>" +
+      '<div class="sim-restart"><button type="button" class="sim-btn sim-btn--link" data-testid="cta-restart" data-restart>' + icons.refresh(18) + "<span>" + esc(COPY.result.restart) + "</span></button></div>" +
+      "</div></div></section></div>"
     );
   }
 
-  function wireResult(screen, v) {
-    // contador (sem movimento reduzido, o valor já veio pronto no HTML)
-    const counter = $("[data-countup]", screen);
-    if (!reduced()) {
-      const start = performance.now();
-      const targetReais = v.estimateCents / 100;
-      const tick = (now) => {
-        const t = Math.min(1, (now - start) / TIMING.countUpMs);
-        const eased = 1 - Math.pow(1 - t, 3);
-        counter.textContent = formatBRL(Math.round(targetReais * eased) * 100);
-        if (t < 1) rafId = requestAnimationFrame(tick);
-      };
-      rafId = requestAnimationFrame(tick);
-    }
-
+  function wireResult(screen) {
     // CTA: link normal do WhatsApp + estado "abrindo" por alguns segundos
     const cta = $("[data-cta]", screen);
     cta.addEventListener("click", (e) => {
@@ -1706,7 +1916,7 @@ body {
       explain.insertAdjacentHTML(
         "afterend",
         '<section id="sim-explainer" class="sim-explainer" tabindex="-1" aria-labelledby="sim-explainer-title">' +
-          '<h2 id="sim-explainer-title" class="sim-explainer__title">' + esc(COPY.result.explainer.title) + "</h2><ul>" +
+          '<h3 id="sim-explainer-title" class="sim-explainer__title">' + esc(COPY.result.explainer.title) + "</h3><ul>" +
           COPY.result.explainer.items.map((item) => "<li>" + icons.check(16) + "<span>" + esc(item) + "</span></li>").join("") +
           "</ul></section>"
       );
@@ -1725,6 +1935,9 @@ body {
     });
   }
 
+  renderHeader();
+  renderSections();
+  renderFooter();
   render();
 })();
 </script>

@@ -7,28 +7,28 @@ type TextFieldProps = InputHTMLAttributes<HTMLInputElement> & {
   id: string;
   ref?: Ref<HTMLInputElement>;
   label: string;
+  /** Orientação curta abaixo do rótulo. */
+  hint?: string;
   /** Mensagem de erro; quando presente o campo entra no estado inválido. */
   error?: string | null;
-  /** Mostra o check verde quando o valor já é válido. */
+  /** Mostra a confirmação verde quando o valor já é válido. */
   valid?: boolean;
-  /** Dispara a animação de "tremida" (só quando um envio falha). */
-  shake?: boolean;
-  onShakeEnd?: () => void;
 };
 
 export function TextField({
   id,
   ref,
   label,
+  hint,
   error,
   valid,
-  shake,
-  onShakeEnd,
   className,
   ...input
 }: TextFieldProps) {
+  const hintId = `${id}-dica`;
   const errorId = `${id}-erro`;
   const invalid = Boolean(error);
+  const describedBy = [hint ? hintId : null, invalid ? errorId : null].filter(Boolean).join(" ") || undefined;
   return (
     <div
       className={`sim-field${className ? ` ${className}` : ""}`}
@@ -38,22 +38,23 @@ export function TextField({
       <label htmlFor={id} className="sim-field__label">
         {label}
       </label>
-      <div
-        className="sim-field__control"
-        data-shake={shake || undefined}
-        onAnimationEnd={onShakeEnd}
-      >
+      {hint ? (
+        <p id={hintId} className="sim-field__hint">
+          {hint}
+        </p>
+      ) : null}
+      <div className="sim-field__control">
         <input
           ref={ref}
           id={id}
           className="sim-field__input"
           aria-invalid={invalid || undefined}
-          aria-describedby={invalid ? errorId : undefined}
+          aria-describedby={describedBy}
           {...input}
         />
         {valid && !invalid ? (
           <span className="sim-field__ok">
-            <CheckIcon size={16} />
+            <CheckIcon size={15} strokeWidth={2.5} />
           </span>
         ) : null}
       </div>

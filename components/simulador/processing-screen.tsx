@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { PROCESSING } from "@/lib/simulador/config";
 import { ScreenShell } from "./screen-shell";
-import { ProgressRing } from "./progress-ring";
+import { ProgressBar } from "./progress-bar";
 import { CheckIcon } from "./icons";
 
 /** Começa rápido e desacelera de leve no fim — como um carregamento de verdade. */
@@ -55,32 +55,32 @@ export function ProcessingScreen({
   const current = steps.find((s) => s.state === "active") ?? steps[steps.length - 1];
 
   return (
-    <ScreenShell
-      bandClassName="sim-band--center"
-      band={
-        <>
-          <ProgressRing value={progress} label={PROCESSING.title} />
-          <h1 ref={headingRef} tabIndex={-1} className="sim-processing__title">
+    <ScreenShell>
+      <section className="sim-panel" aria-labelledby="sim-processing-title">
+        <div className="sim-panel__head">
+          <h1 id="sim-processing-title" ref={headingRef} tabIndex={-1} className="sim-panel__title">
             {PROCESSING.title}
           </h1>
+        </div>
+        <div className="sim-panel__body">
           <p className="sim-processing__hint">{PROCESSING.hint}</p>
-        </>
-      }
-    >
-      <ol className="sim-steps" aria-label="Etapas do processamento">
-        {steps.map((step) => (
-          <li key={step.label} className="sim-step" data-state={step.state}>
-            <span className="sim-step__icon" aria-hidden="true">
-              {step.state === "done" ? <CheckIcon size={15} strokeWidth={2.5} /> : null}
-            </span>
-            <span>{step.label}</span>
-            {step.state === "done" ? <span className="sim-sr"> (concluído)</span> : null}
-          </li>
-        ))}
-      </ol>
-      <p className="sim-sr" aria-live="polite">
-        {current.label}
-      </p>
+          <ProgressBar value={progress} label={PROCESSING.title} status={current.label} />
+          <ol className="sim-steps" aria-label="Etapas do processamento">
+            {steps.map((step) => (
+              <li key={step.label} className="sim-step" data-state={step.state}>
+                <span className="sim-step__icon" aria-hidden="true">
+                  {step.state === "done" ? <CheckIcon size={14} strokeWidth={3} /> : null}
+                </span>
+                <span>{step.label}</span>
+                {step.state === "done" ? <span className="sim-sr"> (concluído)</span> : null}
+              </li>
+            ))}
+          </ol>
+          <p className="sim-sr" aria-live="polite">
+            {current.label}
+          </p>
+        </div>
+      </section>
     </ScreenShell>
   );
 }

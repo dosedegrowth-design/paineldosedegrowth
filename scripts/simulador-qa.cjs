@@ -82,7 +82,10 @@ async function state(page) {
     await page.goto(BASE, { waitUntil: "networkidle" });
     await sleep(900);
     const btn = await page.locator("button[type=submit]").boundingBox();
-    check(`CTA acima da dobra @${w}x${h}`, btn && btn.y + btn.height <= h, `bottom=${btn ? Math.round(btn.y + btn.height) : "?"}/${h}`);
+    const field = await page.locator("#sim-nome").boundingBox();
+    // portal institucional: cabeçalho, etapas e orientações vêm antes do
+    // formulário; o que precisa estar no primeiro quadro é o início dele
+    check(`formulário começa no primeiro quadro @${w}x${h}`, field && field.y + field.height <= h, `campo=${field ? Math.round(field.y + field.height) : "?"} cta=${btn ? Math.round(btn.y) : "?"}/${h}`);
     await page.screenshot({ path: `${OUT}/fold-${w}x${h}.png` });
     await ctx.close();
   }
@@ -99,6 +102,18 @@ async function state(page) {
   await sleep(900);
 
   check("estado inicial = idle", (await state(page)) === "idle", await state(page));
+  check("link de pulo pro conteúdo", (await page.locator("a.sim-skip").count()) === 1);
+  check("etapas: 1ª etapa atual", (await page.getAttribute(".sim-stepper li:first-child", "data-state")) === "current");
+  // menu do cabeçalho (celular): botão abre e fecha a lista
+  const menuBtn = page.locator(".sim-menu-btn");
+  await menuBtn.click();
+  check("menu abre (aria-expanded)", (await menuBtn.getAttribute("aria-expanded")) === "true" && (await page.locator("#sim-menu").isVisible()));
+  await page.click("#sim-menu a[href='#como-funciona']");
+  await sleep(500);
+  check("menu fecha ao escolher item", (await menuBtn.getAttribute("aria-expanded")) === "false");
+  check("âncora rola até a seção", (await page.evaluate(() => window.scrollY)) > 100);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await sleep(300);
   const a11y = await page.evaluate(() => {
     const inputs = [...document.querySelectorAll("input")];
     const labeled = inputs.every((i) => document.querySelector(`label[for="${i.id}"]`));
@@ -153,6 +168,7 @@ async function state(page) {
   await page.keyboard.press("Enter");
   await page.waitForFunction(() => document.querySelector(".sim-app")?.dataset.state === "processing", null, { timeout: 3000 });
   check("estado = processing", true);
+  check("etapas: 2ª etapa atual", (await page.getAttribute(".sim-stepper li:nth-child(2)", "data-state")) === "current");
   await sleep(1300);
   await page.screenshot({ path: `${OUT}/flow-3-processando-a.png`, fullPage: true });
   const p1 = await page.getAttribute("[role=progressbar]", "aria-valuenow");
@@ -171,11 +187,10 @@ async function state(page) {
   await sleep(1600);
   check("um h1 na tela de resultado", (await page.locator("h1").count()) === 1);
   check("saudação com o primeiro nome", (await page.locator("h1").innerText()).includes("Maria"), await page.locator("h1").innerText());
-  const valueText = await page.locator("[data-testid=estimate-value] .sim-sr").innerText();
+  const valueText = (await page.locator("[data-testid=estimate-value]").innerText()).trim();
   const reais = Number(valueText.replace(/[^\d,]/g, "").replace(",", "."));
   check("valor dentro da faixa 870–1400", reais >= 870 && reais <= 1400, valueText);
-  const shown = await page.locator("[data-testid=estimate-value] span[aria-hidden]").innerText();
-  check("contador terminou no valor final", shown.replace(/ /g, " ") === valueText.replace(/ /g, " "), `${shown} vs ${valueText}`);
+  check("etapas: 3ª etapa atual", (await page.getAttribute(".sim-stepper li:nth-child(3)", "data-state")) === "current");
   check("aviso de simulação visível", await page.locator(".sim-disclaimer").isVisible());
   check("foco foi pro título", (await page.evaluate(() => document.activeElement?.tagName)) === "H1");
   check("página no topo", (await page.evaluate(() => window.scrollY)) < 2);
@@ -201,14 +216,14 @@ async function state(page) {
   check("volta pro estado result", (await state(page)) === "result", await state(page));
 
   // secundário
-  await page.click("button[aria-expanded]");
+  await page.click("[data-testid=cta-explain]");
   await sleep(400);
-  check("explicação abre (aria-expanded)", (await page.getAttribute("button[aria-expanded]", "aria-expanded")) === "true");
+  check("explicação abre (aria-expanded)", (await page.getAttribute("[data-testid=cta-explain]", "aria-expanded")) === "true");
   check("explicação visível", await page.locator(".sim-explainer").isVisible());
   await page.screenshot({ path: `${OUT}/flow-6-explicacao.png`, fullPage: true });
 
   // 11/12. voltar + nova simulação
-  await page.click("button.sim-btn--text");
+  await page.click("[data-testid=cta-restart]");
   await sleep(60);
   const transient = await state(page);
   await page.waitForFunction(() => document.querySelector(".sim-app")?.dataset.state === "idle", null, { timeout: 3000 });
@@ -219,9 +234,8 @@ async function state(page) {
   check("reinício: sem erros exibidos", (await page.locator(".sim-field__error").count()) === 0);
   check("reinício: no topo", (await page.evaluate(() => window.scrollY)) < 2);
 
-  // teclado: ordem de foco
-  await page.evaluate(() => document.activeElement && document.activeElement.blur());
-  await page.keyboard.press("Tab");
+  // teclado: ordem de foco a partir do primeiro campo
+  await page.focus("#sim-nome");
   const f1 = await page.evaluate(() => document.activeElement?.id);
   await page.keyboard.press("Tab");
   const f2 = await page.evaluate(() => document.activeElement?.id);
@@ -241,9 +255,8 @@ async function state(page) {
   await rpage.click("button[type=submit]");
   await rpage.waitForFunction(() => document.querySelector(".sim-app")?.dataset.state === "result", null, { timeout: 9000 });
   await sleep(100);
-  const rShown = await rpage.locator("[data-testid=estimate-value] span[aria-hidden]").innerText();
-  const rFinal = await rpage.locator("[data-testid=estimate-value] .sim-sr").innerText();
-  check("reduced-motion: valor final sem contador", rShown === rFinal, `${rShown} vs ${rFinal}`);
+  const rValue = (await rpage.locator("[data-testid=estimate-value]").innerText()).trim();
+  check("reduced-motion: resultado exibido", /R\$/.test(rValue), rValue);
   check("reduced-motion: saudação", (await rpage.locator("h1").innerText()).includes("João"));
   await rpage.screenshot({ path: `${OUT}/reduced-resultado.png`, fullPage: true });
   await rctx.close();
@@ -253,8 +266,9 @@ async function state(page) {
   const dpage = await dctx.newPage();
   await dpage.goto(BASE, { waitUntil: "networkidle" });
   await sleep(700);
-  const box = await dpage.locator(".sim-app").boundingBox();
-  check("desktop: coluna ≤ 480px centralizada", box && box.width <= 480 && Math.abs(box.x + box.width / 2 - 640) < 2, box ? `w=${box.width} x=${box.x}` : "?");
+  const box = await dpage.locator(".sim-service").boundingBox();
+  check("desktop: coluna de leitura ≤ 800px centralizada", box && box.width <= 800 && Math.abs(box.x + box.width / 2 - 640) < 2, box ? `w=${box.width} x=${box.x}` : "?");
+  check("desktop: menu visível sem botão", (await dpage.locator("#sim-menu").isVisible()) && !(await dpage.locator(".sim-menu-btn").isVisible()));
   await dpage.fill("#sim-nome", "Ana Clara Souza");
   await dpage.fill("#sim-cpf", "52998224725");
   await dpage.click("button[type=submit]");

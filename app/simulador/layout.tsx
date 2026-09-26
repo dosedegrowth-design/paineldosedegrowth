@@ -1,15 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource/inter/400.css";
-import "@fontsource/inter/500.css";
-import "@fontsource/inter/600.css";
-import "@fontsource/inter-tight/700.css";
-import "@fontsource/inter-tight/800.css";
+import "@fontsource-variable/public-sans";
 import "./simulador.css";
 import { BRAND, SEO } from "@/lib/simulador/config";
 
 /**
  * Simulador de benefício — protótipo interno, 100% no navegador.
- * Marca fictícia (lib/simulador/config.ts); nada de identidade de governo.
+ * Plataforma independente com linguagem visual institucional; a identidade
+ * é própria (lib/simulador/config.ts) e não representa órgão público.
  */
 export const metadata: Metadata = {
   title: { absolute: SEO.title },
