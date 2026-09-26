@@ -1027,16 +1027,10 @@ ul.sim-notice__body li + li {
   color: var(--sim-ink-2);
 }
 
-.sim-help__list {
+.sim-help__text {
   margin: 0;
-  padding-left: 20px;
-  list-style: disc;
-  max-width: 70ch;
+  max-width: 62ch;
   color: var(--sim-ink-2);
-}
-
-.sim-help__list li + li {
-  margin-top: 8px;
 }
 
 .sim-help__contact {

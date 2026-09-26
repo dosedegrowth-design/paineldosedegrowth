@@ -11,7 +11,7 @@ import { COPY } from "@/lib/simulador/config";
 import { CPF_MASK_LENGTH, isValidCpf, nextCpfValue } from "@/lib/simulador/cpf";
 import { isValidFullName, normalizeName } from "@/lib/simulador/name";
 import { TextField } from "./text-field";
-import { ArrowRightIcon, InfoIcon } from "./icons";
+import { ArrowRightIcon } from "./icons";
 
 export type Lead = { nome: string; cpf: string };
 
@@ -142,16 +142,6 @@ export function LeadForm({
           <span>{COPY.form.submit}</span>
           <ArrowRightIcon size={20} />
         </button>
-      </div>
-
-      <div className="sim-notice sim-notice--info" role="note">
-        <InfoIcon size={20} />
-        <p className="sim-notice__title">{COPY.form.notice.title}</p>
-        <ul className="sim-notice__body">
-          {COPY.form.notice.items.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
       </div>
     </form>
   );

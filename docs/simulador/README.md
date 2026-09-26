@@ -30,8 +30,13 @@ fins de simulação. Não representa aprovação ou concessão de benefício."*
 Estrutura fixa em todas as etapas: cabeçalho (logo + "Plataforma independente
 de simulação de benefício" + menu Início / Como funciona / Ajuda) → faixa
 verde-amarelo-azul → indicador de etapas → área do serviço (formulário,
-análise ou resultado) → "Como funciona" (3 cards) → "Ajuda e orientações"
-(declarações + contato) → rodapé com as mesmas declarações.
+análise ou resultado) → "Como funciona" (3 cards) → "Ajuda" (contato pelo
+WhatsApp) → rodapé com a identificação de plataforma independente.
+
+A pedido do cliente, o quadro "Orientações" e as frases sobre não consultar
+sistemas, não enviar dados e valor ilustrativo **foram removidos** de todos
+os lugares. O que fica, e não sai: o aviso abaixo do valor e a identificação
+"plataforma independente, sem vínculo com órgão público" (cabeçalho e rodapé).
 
 ## Fluxo e estados
 
@@ -129,6 +134,6 @@ Google Fonts, com fallback de sistema.
 - O CPF não vai pra URL do WhatsApp, pra storage nem pra lugar nenhum.
 - Nada que afirme ou insinue vínculo com órgão público: sem brasão, marca,
   fonte ou padrões do gov.br/INSS; o descritor "plataforma independente" no
-  cabeçalho e as declarações do rodapé e da seção Ajuda ficam sempre visíveis.
+  cabeçalho e a linha do rodapé ficam sempre visíveis.
 - Mobile primeiro: inputs com 17px (sem zoom no iOS), alvos ≥ 48px, sem
   overflow horizontal de 320 a 430px.

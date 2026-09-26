@@ -68,7 +68,7 @@ export const PROCESSING = {
   /** Pausa em 100% antes de mostrar o resultado (o "Finalizando" fica marcado). */
   settleMs: 450,
   title: "Analisando seus dados...",
-  hint: "Aguarde. Isso leva só alguns segundos e acontece no seu aparelho.",
+  hint: "Aguarde. Isso leva só alguns segundos.",
   /** Etapas mostradas progressivamente; `at` é a fração do progresso em que entram. */
   steps: [
     { label: "Validando informações...", at: 0 },
@@ -104,20 +104,12 @@ export const COPY = {
     cpf: {
       label: "CPF",
       placeholder: "000.000.000-00",
-      hint: "Somente números. A verificação é feita no seu aparelho.",
+      hint: "Somente números.",
       error: "Digite um CPF válido",
     },
     submit: "Consultar agora",
     /** Lido por leitores de tela quando o envio falha na validação. */
     invalidSummary: "Corrija os campos destacados para continuar.",
-    notice: {
-      title: "Orientações",
-      items: [
-        "Esta simulação não consulta o INSS nem qualquer sistema público.",
-        "O resultado é uma estimativa ilustrativa, sem valor de concessão.",
-        "Seus dados ficam apenas no seu aparelho e não são enviados.",
-      ],
-    },
   },
   howItWorks: {
     title: "Como funciona",
@@ -125,7 +117,7 @@ export const COPY = {
     steps: [
       {
         title: "Informe seus dados",
-        text: "Nome completo e CPF, só isso. Nada é enviado nem armazenado.",
+        text: "Nome completo e CPF, só isso.",
       },
       {
         title: "Simulação na hora",
@@ -138,13 +130,8 @@ export const COPY = {
     ],
   },
   help: {
-    title: "Ajuda e orientações",
-    items: [
-      "{marca} é uma plataforma independente. Não tem vínculo com o Governo Federal, o INSS ou qualquer órgão público.",
-      "A simulação não consulta sistemas externos: o valor é calculado no seu aparelho, dentro de uma faixa de referência.",
-      "O resultado é apenas uma estimativa ilustrativa. Não representa aprovação ou concessão de benefício.",
-      "Nenhum dado é enviado ou armazenado. Ao continuar pelo WhatsApp, só o seu nome e o valor da estimativa vão na mensagem.",
-    ],
+    title: "Ajuda",
+    text: "Ficou com dúvida sobre a simulação ou sobre os próximos passos? A equipe responde pelo WhatsApp.",
     contact: {
       label: "Falar com a equipe pelo WhatsApp",
       message: "Olá! Tenho uma dúvida sobre a simulação de benefício.",
@@ -168,18 +155,17 @@ export const COPY = {
     explainer: {
       title: "Como funciona a análise",
       items: [
-        "A simulação usa uma faixa de referência para gerar uma estimativa ilustrativa, calculada aqui no seu aparelho.",
-        "A análise de verdade é feita pela equipe, com você, pelo WhatsApp.",
-        "Nenhum dado é consultado em sistemas externos, enviado a órgãos públicos ou armazenado nesta página.",
+        "A simulação apresenta uma estimativa inicial de aumento.",
+        "A análise completa é feita pela equipe, com você, pelo WhatsApp, a partir dos seus documentos.",
+        "O valor final depende dessa análise.",
       ],
     },
   },
   footer: {
+    /** Identificação obrigatória: plataforma própria, sem vínculo com órgão público. */
     statement:
-      "{marca} é uma plataforma independente de simulação. Não tem vínculo com o Governo Federal, o INSS ou qualquer órgão público.",
-    privacy: "Nenhum dado é enviado ou armazenado. O resultado é uma estimativa ilustrativa.",
+      "{marca} é uma plataforma independente de simulação de benefício, sem vínculo com o Governo Federal, o INSS ou qualquer órgão público.",
     navLabel: "Navegação do rodapé",
-    bar: "Ferramenta de simulação para fins demonstrativos.",
   },
 } as const;
 

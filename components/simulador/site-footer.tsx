@@ -12,7 +12,6 @@ export function SiteFooter() {
               <span>{BRAND.name}</span>
             </div>
             <p>{COPY.footer.statement.replace("{marca}", BRAND.name)}</p>
-            <p>{COPY.footer.privacy}</p>
           </div>
           <nav aria-label={COPY.footer.navLabel}>
             <ul>
@@ -25,7 +24,7 @@ export function SiteFooter() {
           </nav>
         </div>
         <p className="sim-footer__bar">
-          {BRAND.name} · {BRAND.descriptor} · {COPY.footer.bar}
+          {BRAND.name} · {BRAND.descriptor}
         </p>
       </div>
     </footer>
