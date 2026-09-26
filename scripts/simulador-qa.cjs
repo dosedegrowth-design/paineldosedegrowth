@@ -199,7 +199,7 @@ async function state(page) {
   // 9/10. CTA + URL do WhatsApp
   const href = await page.getAttribute("[data-testid=cta-whatsapp]", "href");
   const text = decodeURIComponent((href || "").split("text=")[1] || "");
-  check("URL wa.me com o número", (href || "").startsWith("https://wa.me/5511999999999?text="), href);
+  check("URL wa.me com o número", (href || "").startsWith("https://wa.me/5516982525280?text="), href);
   check("mensagem com nome formatado", text.includes("Maria da Silva"), text);
   check("mensagem com o valor", text.replace(/ /g, " ").includes(valueText.replace(/ /g, " ")));
   check("CPF não vai na URL", !/529|982|247/.test(href || ""));

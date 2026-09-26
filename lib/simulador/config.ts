@@ -42,7 +42,7 @@ export const STEPS = ["Identificação", "Análise", "Resultado"] as const;
  * Número que recebe a conversa, só dígitos, no formato internacional:
  * DDI + DDD + número (ex.: 55 11 99999-9999 → "5511999999999").
  */
-export const WHATSAPP_NUMBER = "5511999999999";
+export const WHATSAPP_NUMBER = "5516982525280";
 
 /**
  * Mensagem que já chega preenchida no WhatsApp.

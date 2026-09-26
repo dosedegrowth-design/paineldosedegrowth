@@ -71,7 +71,7 @@ Tudo que muda de cliente pra cliente está em `lib/simulador/config.ts`:
 
 - `BRAND.name` / `descriptor` (identificação ao lado do logo — manter a ideia de "plataforma independente") / `themeColor` / `indexable` (hoje `false`: protótipo com `noindex`)
 - `MENU` (itens do cabeçalho e do rodapé, âncoras da própria página) e `STEPS` (rótulos do indicador de etapas)
-- `WHATSAPP_NUMBER` — só dígitos, DDI+DDD+número (`5511999999999`)
+- `WHATSAPP_NUMBER` — só dígitos, DDI+DDD+número (hoje `5516982525280`, o 16 98252-5280)
 - `WHATSAPP_MESSAGE` — placeholders `{nome}` e `{valor}`
 - `ESTIMATE.minBRL` / `maxBRL` — faixa do sorteio (hoje R$ 870 – R$ 1.400)
 - `PROCESSING.durationMs` / `settleMs` / `steps` — tempo e etapas da tela de análise
