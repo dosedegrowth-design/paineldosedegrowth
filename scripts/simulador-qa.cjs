@@ -202,7 +202,8 @@ async function state(page) {
   check("URL wa.me com o número", (href || "").startsWith("https://wa.me/5516982525280?text="), href);
   check("mensagem com nome formatado", text.includes("Maria da Silva"), text);
   check("mensagem com o valor", text.replace(/ /g, " ").includes(valueText.replace(/ /g, " ")));
-  check("CPF não vai na URL", !/529|982|247/.test(href || ""));
+  const decodedHref = decodeURIComponent(href || "");
+  check("CPF não vai na URL", !decodedHref.includes("52998224725") && !decodedHref.includes("529.982.247-25"));
   check("abre em nova aba com noopener", (await page.getAttribute("[data-testid=cta-whatsapp]", "target")) === "_blank" && /noopener/.test(await page.getAttribute("[data-testid=cta-whatsapp]", "rel")));
   const popupPromise = ctx.waitForEvent("page", { timeout: 4000 }).catch(() => null);
   await page.click("[data-testid=cta-whatsapp]");
