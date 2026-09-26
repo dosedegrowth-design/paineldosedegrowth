@@ -278,6 +278,20 @@ Gotchas:
 - `tayssa-lash/` é espelho mecânico: rode `node scratchpad/sync-standalone.mjs`-equivalente (copiar `app/components/lib/public/docs/tayssa` + migrations `*vip*`, trocar `@/lib/tayssa/`→`@/lib/`, `@/components/tayssa/`→`@/components/`, `"/tayssa/`→`"/`) — nunca edite o espelho à mão.
 - ⚠️ Nessa mesma checagem, `trafego_ddg` **não está** na lista de schemas expostos (`pgrst.db_schemas`) — as queries `.schema("trafego_ddg")` do painel retornam PGRST106 na REST. Não foi alterado por estar fora do escopo do Tayssa.
 
+## Simulador de benefício — `/simulador`
+
+Protótipo interno de LP mobile-first: simulação **fictícia** de aumento de benefício que termina no WhatsApp. 100% no navegador (sem backend, banco, API ou consulta a sistema nenhum — o CPF só é validado localmente e nunca sai da página). Marca fictícia "Revisa", sem identidade de governo. Detalhes em `docs/simulador/README.md`.
+
+| Recurso | Onde |
+|---|---|
+| Configuração (marca, `WHATSAPP_NUMBER`, mensagem, faixa R$ 870–1.400, duração do processamento, textos) | `lib/simulador/config.ts` — **só aqui** |
+| Lógica pura | `lib/simulador/{cpf,name,estimate,whatsapp}.ts` |
+| Rota + CSS (classes `sim-*`) | `app/simulador/*` |
+| Estados (`data-state` em `.sim-app`: idle → filled → error → processing → result → redirecting → restart) | `components/simulador/simulador-app.tsx` |
+| Testes | `node --experimental-strip-types --test lib/simulador/simulador.test.ts` · UI: `BASE=http://localhost:3011/simulador node scripts/simulador-qa.cjs` |
+
+Regras: o aviso "Resultado estimativo para fins de simulação…" fica sempre abaixo do valor; nunca afirmar consulta oficial; CPF não vai pra URL, storage ou mensagem; `/simulador` está em `publicPaths` do middleware; `BRAND.indexable=false` (noindex) enquanto for protótipo.
+
 ## Documentação relacionada
 
 - `AGENTS.md` — regra crítica sobre Next.js 16 (não confiar em training data)

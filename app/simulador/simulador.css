@@ -1,0 +1,1053 @@
+/* Simulador de benefício — mobile first (320 → 430 px é o alvo; o desktop
+   só centraliza a mesma experiência). Marca fictícia, sem estética de
+   governo: faixa verde-noite em cima, folha branca embaixo, um acento só.
+   Fontes: Inter Tight (títulos, valores, botões) + Inter (corpo). */
+
+.sim-scope {
+  --sim-band: #0e1a16;
+  --sim-band-glow: rgba(53, 214, 154, 0.16);
+  --sim-surface: #ffffff;
+  --sim-surface-2: #f3f6f4;
+  --sim-page: #e6ebe8;
+  --sim-ink: #0f1a17;
+  --sim-ink-2: #3d4a46;
+  --sim-muted: #5e6b67; /* 5,2:1 sobre branco */
+  --sim-line: rgba(15, 26, 23, 0.1);
+  --sim-line-2: rgba(15, 26, 23, 0.18);
+  --sim-primary: #0b7a55; /* 5,4:1 sobre branco */
+  --sim-primary-deep: #075c40;
+  --sim-primary-soft: #e3f3ec;
+  --sim-primary-ring: rgba(11, 122, 85, 0.22);
+  --sim-glow: #35d69a; /* acento sobre a faixa escura */
+  --sim-on-band: #ffffff;
+  --sim-on-band-2: rgba(255, 255, 255, 0.72);
+  --sim-on-band-3: rgba(255, 255, 255, 0.12);
+  --sim-error: #c0392b; /* 5,0:1 sobre branco */
+  --sim-radius: 16px;
+  --sim-radius-lg: 26px;
+  --sim-gutter: clamp(16px, 5vw, 24px);
+  --font-display: "Inter Tight", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  font-family: var(--font-body);
+  color: var(--sim-ink);
+  background: var(--sim-band);
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  color-scheme: light;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* O "elástico" do scroll no celular mostra o fundo do documento: escuro
+   como a faixa (em cima) e o rodapé (embaixo). No desktop, o fundo da página. */
+html:has(.sim-scope) {
+  background: #0e1a16;
+}
+
+.sim-scope ::selection {
+  background: var(--sim-primary);
+  color: #fff;
+}
+
+.sim-scope :focus-visible {
+  outline: 3px solid var(--sim-primary);
+  outline-offset: 3px;
+}
+
+.sim-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- casca ---------- */
+
+.sim-app {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--sim-band);
+}
+
+.sim-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.sim-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- cabeçalho ---------- */
+
+.sim-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: calc(14px + env(safe-area-inset-top)) var(--sim-gutter) 8px;
+  color: var(--sim-on-band);
+}
+
+.sim-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.sim-brand__name {
+  font: 700 17px/1 var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+.sim-brand__tag {
+  display: none;
+  padding-left: 10px;
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
+  font: 500 12px/1 var(--font-body);
+  color: var(--sim-on-band-2);
+  white-space: nowrap;
+}
+
+@media (min-width: 460px) {
+  .sim-brand__tag {
+    display: inline;
+  }
+}
+
+.sim-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--sim-on-band-3);
+  color: var(--sim-on-band);
+  font: 600 12px/1 var(--font-body);
+  white-space: nowrap;
+}
+
+.sim-pill svg {
+  color: var(--sim-glow);
+}
+
+/* ---------- faixa escura ---------- */
+
+.sim-band {
+  position: relative;
+  padding: 16px var(--sim-gutter) 54px;
+  color: var(--sim-on-band);
+  background: radial-gradient(120% 90% at 100% -10%, var(--sim-band-glow), transparent 55%);
+}
+
+.sim-band--center {
+  text-align: center;
+}
+
+.sim-band--center .sim-band__in {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sim-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  font: 600 12px/1 var(--font-body);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sim-glow);
+}
+
+.sim-eyebrow--done {
+  padding: 8px 12px 8px 10px;
+  border-radius: 999px;
+  background: rgba(53, 214, 154, 0.14);
+}
+
+.sim-h1 {
+  margin: 0;
+  max-width: 22ch;
+  font: 800 clamp(1.75rem, 6.2vw + 0.5rem, 2.25rem) / 1.08 var(--font-display);
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.sim-h1:focus {
+  outline: none;
+}
+
+.sim-sub {
+  margin: 12px 0 0;
+  max-width: 34ch;
+  font: 400 1rem/1.5 var(--font-body);
+  color: var(--sim-on-band-2);
+}
+
+/* ---------- folha branca ---------- */
+
+.sim-sheet {
+  position: relative;
+  flex: 1;
+  margin-top: -28px;
+  padding: 28px var(--sim-gutter) 36px;
+  background: var(--sim-surface);
+  border-radius: var(--sim-radius-lg) var(--sim-radius-lg) 0 0;
+  box-shadow: 0 -10px 30px -12px rgba(0, 0, 0, 0.45);
+}
+
+/* ---------- formulário ---------- */
+
+.sim-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sim-form__heading {
+  margin: 0 0 -4px;
+  font: 600 12.5px/1 var(--font-body);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sim-muted);
+}
+
+.sim-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sim-field__label {
+  font: 600 14px/1.2 var(--font-body);
+  color: var(--sim-ink);
+}
+
+.sim-field__control {
+  position: relative;
+}
+
+.sim-field__input {
+  width: 100%;
+  height: 56px;
+  padding: 0 48px 0 16px;
+  border: 1.5px solid var(--sim-line-2);
+  border-radius: var(--sim-radius);
+  background: var(--sim-surface-2);
+  color: var(--sim-ink);
+  font: 500 17px/1 var(--font-body);
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  transition:
+    border-color 0.18s,
+    box-shadow 0.18s,
+    background-color 0.18s;
+}
+
+.sim-field__input::placeholder {
+  color: #8a9692;
+  opacity: 1;
+}
+
+.sim-field__input:focus {
+  border-color: var(--sim-primary);
+  background: #fff;
+  box-shadow: 0 0 0 4px var(--sim-primary-ring);
+}
+
+/* no input, a borda + o anel de 4px já são o indicador de foco */
+.sim-field__input:focus-visible {
+  outline: none;
+}
+
+.sim-field__input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #fff inset;
+  -webkit-text-fill-color: var(--sim-ink);
+}
+
+.sim-field[data-valid] .sim-field__input {
+  border-color: var(--sim-primary);
+}
+
+.sim-field[data-invalid] .sim-field__input {
+  border-color: var(--sim-error);
+  background: #fff;
+}
+
+.sim-field[data-invalid] .sim-field__input:focus {
+  box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.18);
+}
+
+.sim-field__ok {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  translate: 0 -50%;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--sim-primary-soft);
+  color: var(--sim-primary);
+  animation: sim-pop 0.28s var(--ease-out) both;
+}
+
+.sim-field__error {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  font: 500 13.5px/1.35 var(--font-body);
+  color: var(--sim-error);
+  animation: sim-fade-down 0.22s var(--ease-out) both;
+}
+
+.sim-field__error svg {
+  flex: none;
+  margin-top: 1px;
+}
+
+.sim-field__control[data-shake] {
+  animation: sim-shake 0.36s var(--ease-out);
+}
+
+.sim-form__submit {
+  margin-top: 4px;
+}
+
+/* ---------- botões ---------- */
+
+.sim-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 56px;
+  padding: 0 20px;
+  border: 1.5px solid transparent;
+  border-radius: var(--sim-radius);
+  font: 700 16px/1.1 var(--font-display);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition:
+    transform 0.12s var(--ease-out),
+    background-color 0.18s,
+    box-shadow 0.18s,
+    border-color 0.18s,
+    color 0.18s;
+}
+
+.sim-btn:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+.sim-btn--primary {
+  background: var(--sim-primary);
+  color: #fff;
+  box-shadow:
+    0 14px 26px -12px rgba(11, 122, 85, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.sim-btn--primary:hover {
+  background: var(--sim-primary-deep);
+}
+
+.sim-btn--primary:active {
+  box-shadow: 0 4px 12px -8px rgba(11, 122, 85, 0.6);
+}
+
+.sim-btn--xl {
+  min-height: 60px;
+  font-size: 17px;
+}
+
+.sim-btn__arrow {
+  transition: transform 0.18s var(--ease-out);
+}
+
+.sim-btn--primary:hover .sim-btn__arrow {
+  transform: translateX(3px);
+}
+
+.sim-btn--whatsapp {
+  min-height: 64px;
+  justify-content: center;
+  gap: 14px;
+}
+
+.sim-btn__stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: left;
+}
+
+.sim-btn__stack small {
+  font: 500 12px/1 var(--font-body);
+  letter-spacing: 0.01em;
+  text-transform: none;
+  opacity: 0.82;
+}
+
+.sim-btn--ghost {
+  min-height: 52px;
+  background: transparent;
+  color: var(--sim-primary);
+  border-color: var(--sim-line-2);
+  font: 600 15.5px/1.1 var(--font-body);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.sim-btn--ghost:hover {
+  background: var(--sim-primary-soft);
+  border-color: var(--sim-primary);
+}
+
+.sim-btn__chev {
+  transition: transform 0.2s var(--ease-out);
+}
+
+.sim-btn[aria-expanded="true"] .sim-btn__chev {
+  transform: rotate(180deg);
+}
+
+.sim-btn--text {
+  min-height: 48px;
+  background: transparent;
+  color: var(--sim-muted);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+}
+
+.sim-btn--text:hover {
+  color: var(--sim-ink);
+}
+
+.sim-btn[aria-disabled="true"] {
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.sim-spin {
+  animation: sim-spin 0.9s linear infinite;
+}
+
+/* ---------- garantias ---------- */
+
+.sim-trust {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 16px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sim-trust li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 500 12.5px/1 var(--font-body);
+  color: var(--sim-muted);
+}
+
+.sim-trust svg {
+  color: var(--sim-primary);
+}
+
+/* ---------- como funciona ---------- */
+
+.sim-divider {
+  margin: 28px 0 24px;
+  border: 0;
+  border-top: 1px solid var(--sim-line);
+}
+
+.sim-how__title {
+  margin: 0 0 16px;
+  font: 700 19px/1.2 var(--font-display);
+  letter-spacing: -0.015em;
+}
+
+.sim-how__list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sim-how__list::before {
+  content: "";
+  position: absolute;
+  top: 30px;
+  bottom: 30px;
+  left: 14.5px;
+  width: 1px;
+  background: var(--sim-line);
+}
+
+.sim-how__item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.sim-how__num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--sim-primary-soft);
+  color: var(--sim-primary);
+  font: 700 13px/1 var(--font-display);
+}
+
+.sim-how__item-title {
+  margin: 5px 0 3px;
+  font: 600 15px/1.3 var(--font-body);
+}
+
+.sim-how__item-text {
+  margin: 0;
+  font: 400 14px/1.45 var(--font-body);
+  color: var(--sim-muted);
+}
+
+/* ---------- rodapé ---------- */
+
+.sim-footer {
+  padding: 24px var(--sim-gutter) calc(28px + env(safe-area-inset-bottom));
+  color: var(--sim-on-band-2);
+  font: 400 12.5px/1.5 var(--font-body);
+}
+
+.sim-footer__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: var(--sim-on-band);
+  font: 700 14px/1 var(--font-display);
+}
+
+.sim-footer p {
+  margin: 0 0 4px;
+}
+
+/* ---------- processamento ---------- */
+
+.sim-ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin: 6px auto 22px;
+}
+
+.sim-ring__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.sim-ring__track {
+  fill: none;
+  stroke: var(--sim-on-band-3);
+  stroke-width: 8;
+}
+
+.sim-ring__arc {
+  fill: none;
+  stroke: var(--sim-glow);
+  stroke-width: 8;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 6px rgba(53, 214, 154, 0.55));
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+.sim-ring__orbit {
+  position: absolute;
+  inset: -9px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: rgba(53, 214, 154, 0.5);
+  animation: sim-spin 1.4s linear infinite;
+}
+
+.sim-ring__value {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  font: 800 30px/1 var(--font-display);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-ring__value small {
+  font: 700 14px/1 var(--font-display);
+  opacity: 0.7;
+}
+
+.sim-processing__title {
+  margin: 0;
+  font: 700 clamp(1.25rem, 4.5vw + 0.25rem, 1.5rem) / 1.2 var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.sim-processing__title:focus {
+  outline: none;
+}
+
+.sim-processing__hint {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: var(--sim-on-band-2);
+}
+
+.sim-steps {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sim-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 54px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--sim-line);
+  color: var(--sim-muted);
+  font: 500 15px/1.3 var(--font-body);
+  transition:
+    color 0.25s,
+    opacity 0.25s;
+}
+
+.sim-step:last-child {
+  border-bottom: 0;
+}
+
+.sim-step__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1.5px solid var(--sim-line-2);
+  border-radius: 50%;
+  color: #fff;
+  transition:
+    background-color 0.25s,
+    border-color 0.25s;
+}
+
+.sim-step[data-state="pending"] {
+  opacity: 0.55;
+}
+
+.sim-step[data-state="active"] {
+  color: var(--sim-ink);
+  font-weight: 600;
+}
+
+.sim-step[data-state="active"] .sim-step__icon {
+  border-color: var(--sim-primary);
+}
+
+.sim-step[data-state="active"] .sim-step__icon::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--sim-primary);
+  animation: sim-pulse 1s ease-in-out infinite;
+}
+
+.sim-step[data-state="done"] {
+  color: var(--sim-ink-2);
+}
+
+.sim-step[data-state="done"] .sim-step__icon {
+  background: var(--sim-primary);
+  border-color: var(--sim-primary);
+}
+
+.sim-step[data-state="done"] .sim-step__icon svg {
+  animation: sim-pop 0.25s var(--ease-out) both;
+}
+
+/* ---------- resultado ---------- */
+
+.sim-card {
+  position: relative;
+  padding: 22px 20px 20px;
+  border: 1px solid rgba(11, 122, 85, 0.22);
+  border-radius: 20px;
+  background: linear-gradient(160deg, #eaf7f0 0%, #ffffff 58%);
+  box-shadow: 0 18px 40px -24px rgba(15, 26, 23, 0.35);
+  animation: sim-card-in 0.5s var(--ease-out) both;
+}
+
+.sim-card__label {
+  margin: 0 0 12px;
+  font: 600 12px/1 var(--font-body);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sim-primary);
+}
+
+.sim-card__value {
+  margin: 0 0 20px;
+  font: 800 clamp(2.4rem, 11vw, 3.1rem) / 1 var(--font-display);
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+  color: var(--sim-ink);
+}
+
+.sim-range__title {
+  margin: 0 0 8px;
+  font: 500 12px/1 var(--font-body);
+  color: var(--sim-muted);
+}
+
+.sim-range__bar {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--sim-primary-soft);
+}
+
+.sim-range__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #6fd3ad, var(--sim-primary));
+  transform-origin: left;
+  animation: sim-fill 0.9s 0.25s var(--ease-out) both;
+}
+
+.sim-range__dot {
+  position: absolute;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  translate: -50% -50%;
+  border: 4px solid var(--sim-primary);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  animation: sim-pop 0.3s 1.05s var(--ease-out) both;
+}
+
+.sim-range__labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font: 500 12px/1 var(--font-body);
+  font-variant-numeric: tabular-nums;
+  color: var(--sim-muted);
+}
+
+.sim-disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--sim-surface-2);
+  color: var(--sim-ink-2);
+  font: 400 13px/1.45 var(--font-body);
+}
+
+.sim-disclaimer svg {
+  flex: none;
+  margin-top: 1px;
+  color: var(--sim-muted);
+}
+
+.sim-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 22px;
+  animation: sim-fade-up 0.5s 0.35s var(--ease-out) both;
+}
+
+.sim-explainer {
+  padding: 16px 16px 6px;
+  border-radius: 14px;
+  background: var(--sim-surface-2);
+  outline: none;
+  animation: sim-fade-down 0.25s var(--ease-out) both;
+}
+
+.sim-explainer__title {
+  margin: 0 0 10px;
+  font: 700 15px/1.3 var(--font-display);
+}
+
+.sim-explainer ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sim-explainer li {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  font: 400 14px/1.45 var(--font-body);
+  color: var(--sim-ink-2);
+}
+
+.sim-explainer li svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--sim-primary);
+}
+
+.sim-restart {
+  margin-top: 6px;
+  padding-top: 12px;
+  border-top: 1px solid var(--sim-line);
+}
+
+/* ---------- transições entre telas ---------- */
+
+.sim-anim {
+  animation: sim-enter 0.45s var(--ease-out) both;
+}
+
+.sim-anim--late {
+  animation-delay: 0.08s;
+}
+
+.sim-screen[data-leaving] .sim-anim {
+  animation: sim-exit 0.18s ease-in both;
+}
+
+.sim-stagger {
+  animation: sim-fade-up 0.5s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 70ms + 80ms);
+}
+
+@keyframes sim-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sim-exit {
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes sim-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sim-fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sim-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes sim-shake {
+  10%,
+  90% {
+    transform: translateX(-2px);
+  }
+  20%,
+  80% {
+    transform: translateX(3px);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translateX(-4px);
+  }
+  40%,
+  60% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes sim-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sim-pulse {
+  0%,
+  100% {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes sim-fill {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes sim-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- telas baixas (ex.: 320×568): o CTA precisa caber na dobra ---------- */
+
+@media (max-height: 640px) {
+  .sim-header {
+    padding-bottom: 2px;
+  }
+
+  .sim-band {
+    padding-top: 8px;
+    padding-bottom: 44px;
+  }
+
+  .sim-eyebrow {
+    margin-bottom: 10px;
+  }
+
+  .sim-sub {
+    margin-top: 8px;
+  }
+
+  .sim-sheet {
+    padding-top: 22px;
+  }
+
+  .sim-form {
+    gap: 14px;
+  }
+
+  .sim-form__heading {
+    margin-bottom: -6px;
+  }
+}
+
+/* ---------- desktop: a mesma experiência, centralizada ---------- */
+
+@media (min-width: 720px) {
+  html:has(.sim-scope) {
+    background: #e6ebe8;
+  }
+
+  .sim-scope {
+    padding: 40px 24px;
+    background: var(--sim-page);
+  }
+
+  .sim-app {
+    max-width: 480px;
+    min-height: 0;
+    margin: 0 auto;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow:
+      0 40px 80px -40px rgba(15, 26, 23, 0.45),
+      0 0 0 1px rgba(15, 26, 23, 0.06);
+  }
+
+  .sim-header {
+    padding-top: 18px;
+  }
+}
+
+/* ---------- movimento reduzido ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .sim-scope *,
+  .sim-scope *::before,
+  .sim-scope *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

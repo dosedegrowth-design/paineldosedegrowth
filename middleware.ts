@@ -109,6 +109,8 @@ export async function middleware(request: NextRequest) {
     "/carol",
     // Página avulsa "cadê o link" (zoeira, sem destino)
     "/cade",
+    // Simulador de benefício (protótipo 100% no navegador, marca fictícia)
+    "/simulador",
     // Webhook receiver
     "/api/webhooks",
     // OAuth callback

@@ -43,3 +43,6 @@ next-env.d.ts
 # Python cache (skills scripts)
 __pycache__/
 .claude/settings.local.json
+
+# capturas do QA de interface (scripts/simulador-qa.cjs)
+/.qa
