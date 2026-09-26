@@ -1,0 +1,1732 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Simulador de benefício — versão standalone (arquivo único, sem Next e sem nada do painel).
+     Protótipo 100% no navegador, marca fictícia. Configuração no bloco CONFIGURAÇÃO do <script>. -->
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>Simulador Revisa</title>
+<meta name="description" content="Simulação ilustrativa de aumento de benefício, 100% no navegador. Protótipo com marca fictícia; nada é consultado ou armazenado.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0e1a16">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@700;800&display=swap">
+<style>
+/* Simulador de benefício — versão standalone (arquivo único).
+   Espelha app/simulador/simulador.css do painel; se mudar lá, mude aqui.
+   Protótipo 100% no navegador: sem backend, API, banco ou consulta a
+   sistema. Marca fictícia, sem identidade de governo. */
+
+/* base: a página não tem Tailwind/preflight */
+html,
+body {
+  background: #0e1a16;
+}
+
+body {
+  margin: 0;
+}
+
+.sim-scope,
+.sim-scope *,
+.sim-scope *::before,
+.sim-scope *::after {
+  box-sizing: border-box;
+}
+
+.sim-scope :where(h1, h2, h3, p, ul, ol, hr) {
+  margin: 0;
+  padding: 0;
+}
+
+.sim-scope :where(button, input) {
+  font: inherit;
+  color: inherit;
+  margin: 0;
+}
+
+.sim-scope :where(button) {
+  border: 0;
+  background: none;
+  padding: 0;
+}
+
+.sim-scope :where(a) {
+  color: inherit;
+}
+
+.sim-scope svg {
+  display: block;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (min-width: 720px) {
+  html,
+  body {
+    background: #e6ebe8;
+  }
+}
+
+.sim-scope {
+  --sim-band: #0e1a16;
+  --sim-band-glow: rgba(53, 214, 154, 0.16);
+  --sim-surface: #ffffff;
+  --sim-surface-2: #f3f6f4;
+  --sim-page: #e6ebe8;
+  --sim-ink: #0f1a17;
+  --sim-ink-2: #3d4a46;
+  --sim-muted: #5e6b67; /* 5,2:1 sobre branco */
+  --sim-line: rgba(15, 26, 23, 0.1);
+  --sim-line-2: rgba(15, 26, 23, 0.18);
+  --sim-primary: #0b7a55; /* 5,4:1 sobre branco */
+  --sim-primary-deep: #075c40;
+  --sim-primary-soft: #e3f3ec;
+  --sim-primary-ring: rgba(11, 122, 85, 0.22);
+  --sim-glow: #35d69a; /* acento sobre a faixa escura */
+  --sim-on-band: #ffffff;
+  --sim-on-band-2: rgba(255, 255, 255, 0.72);
+  --sim-on-band-3: rgba(255, 255, 255, 0.12);
+  --sim-error: #c0392b; /* 5,0:1 sobre branco */
+  --sim-radius: 16px;
+  --sim-radius-lg: 26px;
+  --sim-gutter: clamp(16px, 5vw, 24px);
+  --font-display: "Inter Tight", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  font-family: var(--font-body);
+  color: var(--sim-ink);
+  background: var(--sim-band);
+  min-height: 100vh;
+  min-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  color-scheme: light;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sim-scope ::selection {
+  background: var(--sim-primary);
+  color: #fff;
+}
+
+.sim-scope :focus-visible {
+  outline: 3px solid var(--sim-primary);
+  outline-offset: 3px;
+}
+
+.sim-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- casca ---------- */
+
+.sim-app {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  background: var(--sim-band);
+}
+
+.sim-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.sim-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- cabeçalho ---------- */
+
+.sim-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px var(--sim-gutter) 8px;
+  color: var(--sim-on-band);
+}
+
+.sim-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.sim-brand__name {
+  font: 700 17px/1 var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+.sim-brand__tag {
+  display: none;
+  padding-left: 10px;
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
+  font: 500 12px/1 var(--font-body);
+  color: var(--sim-on-band-2);
+  white-space: nowrap;
+}
+
+@media (min-width: 460px) {
+  .sim-brand__tag {
+    display: inline;
+  }
+}
+
+.sim-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--sim-on-band-3);
+  color: var(--sim-on-band);
+  font: 600 12px/1 var(--font-body);
+  white-space: nowrap;
+}
+
+.sim-pill svg {
+  color: var(--sim-glow);
+}
+
+/* ---------- faixa escura ---------- */
+
+.sim-band {
+  position: relative;
+  padding: 16px var(--sim-gutter) 54px;
+  color: var(--sim-on-band);
+  background: radial-gradient(120% 90% at 100% -10%, var(--sim-band-glow), transparent 55%);
+}
+
+.sim-band--center {
+  text-align: center;
+}
+
+.sim-band--center .sim-band__in {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sim-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  font: 600 12px/1 var(--font-body);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sim-glow);
+}
+
+.sim-eyebrow--done {
+  padding: 8px 12px 8px 10px;
+  border-radius: 999px;
+  background: rgba(53, 214, 154, 0.14);
+}
+
+.sim-h1 {
+  margin: 0;
+  max-width: 22ch;
+  font: 800 clamp(1.75rem, 6.2vw + 0.5rem, 2.25rem) / 1.08 var(--font-display);
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.sim-h1:focus {
+  outline: none;
+}
+
+.sim-sub {
+  margin: 12px 0 0;
+  max-width: 34ch;
+  font: 400 1rem/1.5 var(--font-body);
+  color: var(--sim-on-band-2);
+}
+
+/* ---------- folha branca ---------- */
+
+.sim-sheet {
+  position: relative;
+  flex: 1;
+  margin-top: -28px;
+  padding: 28px var(--sim-gutter) 36px;
+  background: var(--sim-surface);
+  border-radius: var(--sim-radius-lg) var(--sim-radius-lg) 0 0;
+  box-shadow: 0 -10px 30px -12px rgba(0, 0, 0, 0.45);
+}
+
+/* ---------- formulário ---------- */
+
+.sim-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sim-form__heading {
+  margin: 0 0 -4px;
+  font: 600 12.5px/1 var(--font-body);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sim-muted);
+}
+
+.sim-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sim-field__label {
+  font: 600 14px/1.2 var(--font-body);
+  color: var(--sim-ink);
+}
+
+.sim-field__control {
+  position: relative;
+}
+
+.sim-field__input {
+  width: 100%;
+  height: 56px;
+  padding: 0 48px 0 16px;
+  border: 1.5px solid var(--sim-line-2);
+  border-radius: var(--sim-radius);
+  background: var(--sim-surface-2);
+  color: var(--sim-ink);
+  font: 500 17px/1 var(--font-body);
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  transition:
+    border-color 0.18s,
+    box-shadow 0.18s,
+    background-color 0.18s;
+}
+
+.sim-field__input::placeholder {
+  color: #8a9692;
+  opacity: 1;
+}
+
+.sim-field__input:focus {
+  border-color: var(--sim-primary);
+  background: #fff;
+  box-shadow: 0 0 0 4px var(--sim-primary-ring);
+}
+
+/* no input, a borda + o anel de 4px já são o indicador de foco */
+.sim-field__input:focus-visible {
+  outline: none;
+}
+
+.sim-field__input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #fff inset;
+  -webkit-text-fill-color: var(--sim-ink);
+}
+
+.sim-field[data-valid] .sim-field__input {
+  border-color: var(--sim-primary);
+}
+
+.sim-field[data-invalid] .sim-field__input {
+  border-color: var(--sim-error);
+  background: #fff;
+}
+
+.sim-field[data-invalid] .sim-field__input:focus {
+  box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.18);
+}
+
+.sim-field__ok {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  translate: 0 -50%;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--sim-primary-soft);
+  color: var(--sim-primary);
+  animation: sim-pop 0.28s var(--ease-out) both;
+}
+
+.sim-field__error {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  font: 500 13.5px/1.35 var(--font-body);
+  color: var(--sim-error);
+  animation: sim-fade-down 0.22s var(--ease-out) both;
+}
+
+.sim-field__error svg {
+  flex: none;
+  margin-top: 1px;
+}
+
+.sim-field__control[data-shake] {
+  animation: sim-shake 0.36s var(--ease-out);
+}
+
+.sim-form__submit {
+  margin-top: 4px;
+}
+
+/* ---------- botões ---------- */
+
+.sim-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 56px;
+  padding: 0 20px;
+  border: 1.5px solid transparent;
+  border-radius: var(--sim-radius);
+  font: 700 16px/1.1 var(--font-display);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition:
+    transform 0.12s var(--ease-out),
+    background-color 0.18s,
+    box-shadow 0.18s,
+    border-color 0.18s,
+    color 0.18s;
+}
+
+.sim-btn:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+.sim-btn--primary {
+  background: var(--sim-primary);
+  color: #fff;
+  box-shadow:
+    0 14px 26px -12px rgba(11, 122, 85, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.sim-btn--primary:hover {
+  background: var(--sim-primary-deep);
+}
+
+.sim-btn--primary:active {
+  box-shadow: 0 4px 12px -8px rgba(11, 122, 85, 0.6);
+}
+
+.sim-btn--xl {
+  min-height: 60px;
+  font-size: 17px;
+}
+
+.sim-btn__arrow {
+  transition: transform 0.18s var(--ease-out);
+}
+
+.sim-btn--primary:hover .sim-btn__arrow {
+  transform: translateX(3px);
+}
+
+.sim-btn--whatsapp {
+  min-height: 64px;
+  justify-content: center;
+  gap: 14px;
+}
+
+.sim-btn__stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: left;
+}
+
+.sim-btn__stack small {
+  font: 500 12px/1 var(--font-body);
+  letter-spacing: 0.01em;
+  text-transform: none;
+  opacity: 0.82;
+}
+
+.sim-btn--ghost {
+  min-height: 52px;
+  background: transparent;
+  color: var(--sim-primary);
+  border-color: var(--sim-line-2);
+  font: 600 15.5px/1.1 var(--font-body);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.sim-btn--ghost:hover {
+  background: var(--sim-primary-soft);
+  border-color: var(--sim-primary);
+}
+
+.sim-btn__chev {
+  transition: transform 0.2s var(--ease-out);
+}
+
+.sim-btn[aria-expanded="true"] .sim-btn__chev {
+  transform: rotate(180deg);
+}
+
+.sim-btn--text {
+  min-height: 48px;
+  background: transparent;
+  color: var(--sim-muted);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+}
+
+.sim-btn--text:hover {
+  color: var(--sim-ink);
+}
+
+.sim-btn[aria-disabled="true"] {
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.sim-spin {
+  animation: sim-spin 0.9s linear infinite;
+}
+
+/* ---------- garantias ---------- */
+
+.sim-trust {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 16px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sim-trust li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 500 12.5px/1 var(--font-body);
+  color: var(--sim-muted);
+}
+
+.sim-trust svg {
+  color: var(--sim-primary);
+}
+
+/* ---------- como funciona ---------- */
+
+.sim-divider {
+  margin: 28px 0 24px;
+  border: 0;
+  border-top: 1px solid var(--sim-line);
+}
+
+.sim-how__title {
+  margin: 0 0 16px;
+  font: 700 19px/1.2 var(--font-display);
+  letter-spacing: -0.015em;
+}
+
+.sim-how__list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sim-how__list::before {
+  content: "";
+  position: absolute;
+  top: 30px;
+  bottom: 30px;
+  left: 14.5px;
+  width: 1px;
+  background: var(--sim-line);
+}
+
+.sim-how__item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.sim-how__num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--sim-primary-soft);
+  color: var(--sim-primary);
+  font: 700 13px/1 var(--font-display);
+}
+
+.sim-how__item-title {
+  margin: 5px 0 3px;
+  font: 600 15px/1.3 var(--font-body);
+}
+
+.sim-how__item-text {
+  margin: 0;
+  font: 400 14px/1.45 var(--font-body);
+  color: var(--sim-muted);
+}
+
+/* ---------- rodapé ---------- */
+
+.sim-footer {
+  padding: 24px var(--sim-gutter) 28px;
+  color: var(--sim-on-band-2);
+  font: 400 12.5px/1.5 var(--font-body);
+}
+
+.sim-footer__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: var(--sim-on-band);
+  font: 700 14px/1 var(--font-display);
+}
+
+.sim-footer p {
+  margin: 0 0 4px;
+}
+
+/* ---------- processamento ---------- */
+
+.sim-ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin: 6px auto 22px;
+}
+
+.sim-ring__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.sim-ring__track {
+  fill: none;
+  stroke: var(--sim-on-band-3);
+  stroke-width: 8;
+}
+
+.sim-ring__arc {
+  fill: none;
+  stroke: var(--sim-glow);
+  stroke-width: 8;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 6px rgba(53, 214, 154, 0.55));
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+.sim-ring__orbit {
+  position: absolute;
+  inset: -9px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: rgba(53, 214, 154, 0.5);
+  animation: sim-spin 1.4s linear infinite;
+}
+
+.sim-ring__value {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  font: 800 30px/1 var(--font-display);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-ring__value small {
+  font: 700 14px/1 var(--font-display);
+  opacity: 0.7;
+}
+
+.sim-processing__title {
+  margin: 0;
+  font: 700 clamp(1.25rem, 4.5vw + 0.25rem, 1.5rem) / 1.2 var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.sim-processing__title:focus {
+  outline: none;
+}
+
+.sim-processing__hint {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: var(--sim-on-band-2);
+}
+
+.sim-steps {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sim-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 54px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--sim-line);
+  color: var(--sim-muted);
+  font: 500 15px/1.3 var(--font-body);
+  transition:
+    color 0.25s,
+    opacity 0.25s;
+}
+
+.sim-step:last-child {
+  border-bottom: 0;
+}
+
+.sim-step__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1.5px solid var(--sim-line-2);
+  border-radius: 50%;
+  color: #fff;
+  transition:
+    background-color 0.25s,
+    border-color 0.25s;
+}
+
+.sim-step[data-state="pending"] {
+  opacity: 0.55;
+}
+
+.sim-step[data-state="active"] {
+  color: var(--sim-ink);
+  font-weight: 600;
+}
+
+.sim-step[data-state="active"] .sim-step__icon {
+  border-color: var(--sim-primary);
+}
+
+.sim-step[data-state="active"] .sim-step__icon::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--sim-primary);
+  animation: sim-pulse 1s ease-in-out infinite;
+}
+
+.sim-step[data-state="done"] {
+  color: var(--sim-ink-2);
+}
+
+.sim-step[data-state="done"] .sim-step__icon {
+  background: var(--sim-primary);
+  border-color: var(--sim-primary);
+}
+
+.sim-step[data-state="done"] .sim-step__icon svg {
+  animation: sim-pop 0.25s var(--ease-out) both;
+}
+
+/* ---------- resultado ---------- */
+
+.sim-card {
+  position: relative;
+  padding: 22px 20px 20px;
+  border: 1px solid rgba(11, 122, 85, 0.22);
+  border-radius: 20px;
+  background: linear-gradient(160deg, #eaf7f0 0%, #ffffff 58%);
+  box-shadow: 0 18px 40px -24px rgba(15, 26, 23, 0.35);
+  animation: sim-card-in 0.5s var(--ease-out) both;
+}
+
+.sim-card__label {
+  margin: 0 0 12px;
+  font: 600 12px/1 var(--font-body);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sim-primary);
+}
+
+.sim-card__value {
+  margin: 0 0 20px;
+  font: 800 clamp(2.4rem, 11vw, 3.1rem) / 1 var(--font-display);
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+  color: var(--sim-ink);
+}
+
+.sim-range__title {
+  margin: 0 0 8px;
+  font: 500 12px/1 var(--font-body);
+  color: var(--sim-muted);
+}
+
+.sim-range__bar {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--sim-primary-soft);
+}
+
+.sim-range__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #6fd3ad, var(--sim-primary));
+  transform-origin: left;
+  animation: sim-fill 0.9s 0.25s var(--ease-out) both;
+}
+
+.sim-range__dot {
+  position: absolute;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  translate: -50% -50%;
+  border: 4px solid var(--sim-primary);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  animation: sim-pop 0.3s 1.05s var(--ease-out) both;
+}
+
+.sim-range__labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font: 500 12px/1 var(--font-body);
+  font-variant-numeric: tabular-nums;
+  color: var(--sim-muted);
+}
+
+.sim-disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--sim-surface-2);
+  color: var(--sim-ink-2);
+  font: 400 13px/1.45 var(--font-body);
+}
+
+.sim-disclaimer svg {
+  flex: none;
+  margin-top: 1px;
+  color: var(--sim-muted);
+}
+
+.sim-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 22px;
+  animation: sim-fade-up 0.5s 0.35s var(--ease-out) both;
+}
+
+.sim-explainer {
+  padding: 16px 16px 6px;
+  border-radius: 14px;
+  background: var(--sim-surface-2);
+  outline: none;
+  animation: sim-fade-down 0.25s var(--ease-out) both;
+}
+
+.sim-explainer__title {
+  margin: 0 0 10px;
+  font: 700 15px/1.3 var(--font-display);
+}
+
+.sim-explainer ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sim-explainer li {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  font: 400 14px/1.45 var(--font-body);
+  color: var(--sim-ink-2);
+}
+
+.sim-explainer li svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--sim-primary);
+}
+
+.sim-restart {
+  margin-top: 6px;
+  padding-top: 12px;
+  border-top: 1px solid var(--sim-line);
+}
+
+/* ---------- transições entre telas ---------- */
+
+.sim-anim {
+  animation: sim-enter 0.45s var(--ease-out) both;
+}
+
+.sim-anim--late {
+  animation-delay: 0.08s;
+}
+
+.sim-screen[data-leaving] .sim-anim {
+  animation: sim-exit 0.18s ease-in both;
+}
+
+.sim-stagger {
+  animation: sim-fade-up 0.5s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 70ms + 80ms);
+}
+
+@keyframes sim-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sim-exit {
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes sim-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sim-fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sim-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes sim-shake {
+  10%,
+  90% {
+    transform: translateX(-2px);
+  }
+  20%,
+  80% {
+    transform: translateX(3px);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translateX(-4px);
+  }
+  40%,
+  60% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes sim-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sim-pulse {
+  0%,
+  100% {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes sim-fill {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes sim-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- telas baixas (ex.: 320×568): o CTA precisa caber na dobra ---------- */
+
+@media (max-height: 640px) {
+  .sim-header {
+    padding-bottom: 2px;
+  }
+
+  .sim-band {
+    padding-top: 8px;
+    padding-bottom: 44px;
+  }
+
+  .sim-eyebrow {
+    margin-bottom: 10px;
+  }
+
+  .sim-sub {
+    margin-top: 8px;
+  }
+
+  .sim-sheet {
+    padding-top: 22px;
+  }
+
+  .sim-form {
+    gap: 14px;
+  }
+
+  .sim-form__heading {
+    margin-bottom: -6px;
+  }
+}
+
+/* ---------- desktop: a mesma experiência, centralizada ---------- */
+
+@media (min-width: 720px) {
+  .sim-scope {
+    padding: 40px 24px;
+    background: var(--sim-page);
+  }
+
+  .sim-app {
+    max-width: 480px;
+    min-height: 0;
+    margin: 0 auto;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow:
+      0 40px 80px -40px rgba(15, 26, 23, 0.45),
+      0 0 0 1px rgba(15, 26, 23, 0.06);
+  }
+
+  .sim-header {
+    padding-top: 18px;
+  }
+}
+
+/* ---------- movimento reduzido ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .sim-scope *,
+  .sim-scope *::before,
+  .sim-scope *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+</style>
+</head>
+<body>
+<div class="sim-scope">
+  <div class="sim-app" id="app" data-state="idle">
+    <header class="sim-header" id="header"></header>
+    <main class="sim-main" id="main"><noscript><p style="padding:24px;color:#fff">Este simulador precisa de JavaScript ativado.</p></noscript></main>
+    <footer class="sim-footer" id="footer"></footer>
+  </div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  /* =====================================================================
+     CONFIGURAÇÃO — tudo que muda de cliente pra cliente fica aqui.
+     ===================================================================== */
+
+  const BRAND = { name: "Revisa", tagline: "Simulador de benefício" };
+
+  /** Só dígitos, formato internacional: DDI + DDD + número. */
+  const WHATSAPP_NUMBER = "5511999999999";
+
+  /** Placeholders: {nome} e {valor}. O CPF nunca entra na mensagem. */
+  const WHATSAPP_MESSAGE =
+    "Olá! Fiz uma simulação e gostaria de saber mais sobre a análise. Meu nome é {nome} e a estimativa foi de {valor}.";
+
+  /** Faixa (em reais, inteiros) de onde sai o valor sorteado. */
+  const ESTIMATE = { minBRL: 870, maxBRL: 1400 };
+
+  /** Tela de "analisando": duração total, pausa em 100% e etapas. */
+  const PROCESSING = {
+    durationMs: 4200,
+    settleMs: 450,
+    title: "Analisando seus dados...",
+    hint: "Isso leva só alguns segundos.",
+    steps: [
+      { label: "Validando informações...", at: 0 },
+      { label: "Processando simulação...", at: 0.28 },
+      { label: "Calculando estimativa...", at: 0.56 },
+      { label: "Finalizando...", at: 0.84 },
+    ],
+  };
+
+  const COPY = {
+    header: { pill: "Simulação gratuita" },
+    hero: {
+      eyebrow: "Simulador de benefício",
+      title: "Descubra quanto seu benefício pode aumentar",
+      subtitle: "Simulação gratuita. Leva menos de 1 minuto.",
+    },
+    form: {
+      heading: "Preencha para simular",
+      name: { label: "Nome completo", placeholder: "Digite seu nome completo", error: "Digite seu nome completo" },
+      cpf: { label: "CPF", placeholder: "000.000.000-00", error: "Digite um CPF válido" },
+      submit: "Consultar agora",
+      invalidSummary: "Corrija os campos destacados para continuar.",
+      trust: ["Sem custo", "Leva 1 minuto", "Nada é salvo"],
+    },
+    howItWorks: {
+      title: "Como funciona",
+      steps: [
+        { title: "Informe seus dados", text: "Nome e CPF, só isso. Nada é enviado nem armazenado." },
+        { title: "Simulação na hora", text: "Em segundos você vê uma estimativa de aumento." },
+        { title: "Continue pelo WhatsApp", text: "Fale com a equipe e entenda os próximos passos." },
+      ],
+    },
+    result: {
+      eyebrow: "Simulação concluída",
+      greeting: "Olá, {nome}",
+      lead: "Aqui está o resultado da sua simulação.",
+      cardLabel: "Estimativa de aumento",
+      rangeLabel: "Faixa da simulação",
+      disclaimer: "Resultado estimativo para fins de simulação. Não representa aprovação ou concessão de benefício.",
+      ctaPrimary: "Quero continuar",
+      ctaPrimaryHint: "Falar no WhatsApp",
+      ctaRedirecting: "Abrindo WhatsApp...",
+      ctaSecondary: "Entender como funciona",
+      restart: "Fazer nova simulação",
+      explainer: {
+        title: "Como funciona a análise",
+        items: [
+          "A simulação usa uma faixa de referência para gerar uma estimativa ilustrativa, calculada aqui no seu aparelho.",
+          "A análise de verdade é feita pela equipe, com você, pelo WhatsApp.",
+          "Nenhum dado é consultado em sistemas externos, enviado a órgãos públicos ou armazenado nesta página.",
+        ],
+      },
+    },
+    footer: {
+      line1: "{marca} é uma ferramenta de simulação para fins demonstrativos.",
+      line2: "Sem vínculo com órgãos públicos. Nenhum dado é enviado ou armazenado.",
+    },
+  };
+
+  /** Tempos das transições (ms). */
+  const TIMING = { exitMs: 180, redirectMs: 1600, countUpMs: 1000 };
+
+  /* =====================================================================
+     LÓGICA PURA (espelho de lib/simulador/*.ts)
+     ===================================================================== */
+
+  const onlyDigits = (value) => value.replace(/\D/g, "");
+
+  function maskCpf(value) {
+    const d = onlyDigits(value).slice(0, 11);
+    let out = d.slice(0, 3);
+    if (d.length > 3) out += "." + d.slice(3, 6);
+    if (d.length > 6) out += "." + d.slice(6, 9);
+    if (d.length > 9) out += "-" + d.slice(9, 11);
+    return out;
+  }
+
+  /** Backspace em cima do "." ou do "-" também apaga o dígito anterior. */
+  function nextCpfValue(previousMasked, rawInput, inputType) {
+    let digits = onlyDigits(rawInput);
+    if (inputType === "deleteContentBackward" && digits === onlyDigits(previousMasked) && digits.length > 0) {
+      digits = digits.slice(0, -1);
+    }
+    return maskCpf(digits);
+  }
+
+  function checkDigit(digits, length) {
+    let sum = 0;
+    for (let i = 0; i < length; i++) sum += Number(digits[i]) * (length + 1 - i);
+    const rest = (sum * 10) % 11;
+    return rest === 10 ? 0 : rest;
+  }
+
+  function isValidCpf(value) {
+    const d = onlyDigits(value);
+    if (d.length !== 11) return false;
+    if (/^(\d)\1{10}$/.test(d)) return false;
+    return checkDigit(d, 9) === Number(d[9]) && checkDigit(d, 10) === Number(d[10]);
+  }
+
+  const normalizeName = (value) => value.replace(/\s+/g, " ").trim();
+  const WORD = "[\\p{L}][\\p{L}'’.\\-]*";
+  const FULL_NAME = new RegExp("^" + WORD + "(?: " + WORD + ")+$", "u");
+
+  function isValidFullName(value) {
+    const n = normalizeName(value);
+    if (n.length < 5 || n.length > 80) return false;
+    return FULL_NAME.test(n);
+  }
+
+  const PARTICLES = new Set(["da", "das", "de", "do", "dos", "e", "di", "du", "del", "van", "von"]);
+
+  function titleCaseName(value) {
+    return normalizeName(value)
+      .split(" ")
+      .map((word, i) => {
+        const lower = word.toLocaleLowerCase("pt-BR");
+        if (i > 0 && PARTICLES.has(lower)) return lower;
+        return lower
+          .split("-")
+          .map((part) => part.charAt(0).toLocaleUpperCase("pt-BR") + part.slice(1))
+          .join("-");
+      })
+      .join(" ");
+  }
+
+  const firstName = (value) => titleCaseName(value).split(" ")[0] || "";
+
+  function randomIntInclusive(min, max) {
+    const lo = Math.ceil(Math.min(min, max));
+    const hi = Math.floor(Math.max(min, max));
+    return lo + Math.floor(Math.random() * (hi - lo + 1));
+  }
+
+  const generateEstimateCents = () => randomIntInclusive(ESTIMATE.minBRL, ESTIMATE.maxBRL) * 100;
+
+  const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const brlWhole = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const formatBRL = (cents) => brl.format(Math.round(cents) / 100);
+  const formatBRLWhole = (reais) => brlWhole.format(reais);
+
+  function positionInRange(cents) {
+    const min = ESTIMATE.minBRL * 100;
+    const max = ESTIMATE.maxBRL * 100;
+    if (max <= min) return 1;
+    return Math.min(1, Math.max(0, (cents - min) / (max - min)));
+  }
+
+  function buildWhatsappUrl(number, template, vars) {
+    const text = template.replace(/\{(nome|valor)\}/g, (_, key) => vars[key]);
+    return "https://wa.me/" + onlyDigits(number) + "?text=" + encodeURIComponent(text);
+  }
+
+  /* =====================================================================
+     UTILITÁRIOS DE DOM E ÍCONES
+     ===================================================================== */
+
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const reduced = () => motionQuery.matches;
+
+  const stroke = (paths, size = 20, cls = "", width = 2) =>
+    '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + width +
+    '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"' + (cls ? ' class="' + cls + '"' : "") + ">" + paths + "</svg>";
+
+  const icons = {
+    check: (size, cls, width) => stroke('<path d="M5 12.5l4.5 4.5L19 7.5"/>', size, cls, width),
+    arrow: (size, cls) => stroke('<path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>', size, cls),
+    alert: (size) => stroke('<circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.5h.01"/>', size),
+    info: (size) => stroke('<circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.5h.01"/>', size),
+    lock: (size) => stroke('<rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/>', size),
+    clock: (size) => stroke('<circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/>', size),
+    tag: (size) => stroke('<path d="M20 13.5L13.5 20a1.5 1.5 0 0 1-2.1 0L4 12.6V4h8.6l7.4 7.4a1.5 1.5 0 0 1 0 2.1Z"/><path d="M8.5 8.5h.01"/>', size),
+    refresh: (size) => stroke('<path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/>', size),
+    chevron: (size, cls) => stroke('<path d="M6 9l6 6 6-6"/>', size, cls),
+    whatsapp: (size) =>
+      '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>',
+    brand: (size) =>
+      '<svg width="' + size + '" height="' + size + '" viewBox="0 0 28 28" fill="none" aria-hidden="true" focusable="false"><rect width="28" height="28" rx="8" fill="#0b7a55"/><path d="M7.5 18.5l5-5 3 3 5.5-6M17 10.5h4v4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    spinner: (size) =>
+      '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false" class="sim-spin"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity="0.25" stroke-width="2.5"/><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>',
+  };
+
+  /* =====================================================================
+     MÁQUINA DE ESTADOS
+     Estados em data-state (.sim-app): idle · filled · error · processing ·
+     result · redirecting · restart
+     ===================================================================== */
+
+  const app = $("#app");
+  const main = $("#main");
+  let view = { name: "landing" };
+  let restarting = false;
+  let redirecting = false;
+  let formStatus = "idle";
+  let exitTimer = 0;
+  let redirectTimer = 0;
+  let settleTimer = 0;
+  let rafId = 0;
+  let firstRender = true;
+
+  function setState() {
+    app.dataset.state = restarting
+      ? "restart"
+      : view.name === "landing"
+        ? formStatus
+        : view.name === "processing"
+          ? "processing"
+          : redirecting
+            ? "redirecting"
+            : "result";
+  }
+
+  function stopLoops() {
+    cancelAnimationFrame(rafId);
+    rafId = 0;
+    clearTimeout(settleTimer);
+  }
+
+  function render() {
+    stopLoops();
+    main.innerHTML = "";
+    const screen = document.createElement("div");
+    screen.className = "sim-screen";
+    if (view.name === "landing") {
+      screen.innerHTML = landingHTML();
+      main.appendChild(screen);
+      wireLanding(screen);
+    } else if (view.name === "processing") {
+      screen.innerHTML = processingHTML();
+      main.appendChild(screen);
+      wireProcessing(screen);
+    } else {
+      screen.innerHTML = resultHTML(view);
+      main.appendChild(screen);
+      wireResult(screen, view);
+    }
+    setState();
+    if (firstRender) {
+      firstRender = false;
+      return;
+    }
+    // troca de tela: topo + foco no título (teclado e leitores de tela)
+    window.scrollTo({ top: 0, behavior: reduced() ? "auto" : "smooth" });
+    const heading = $("[data-heading]", screen);
+    if (heading) heading.focus({ preventScroll: true });
+  }
+
+  function go(next) {
+    clearTimeout(exitTimer);
+    const commit = () => {
+      view = next;
+      restarting = false;
+      render();
+    };
+    if (reduced()) {
+      commit();
+      return;
+    }
+    const screen = $(".sim-screen", main);
+    if (screen) screen.setAttribute("data-leaving", "");
+    exitTimer = setTimeout(commit, TIMING.exitMs);
+  }
+
+  /* ---------- casca ---------- */
+
+  $("#header").innerHTML =
+    '<div class="sim-brand">' + icons.brand(28) + '<span class="sim-brand__name">' + esc(BRAND.name) + '</span><span class="sim-brand__tag">' + esc(BRAND.tagline) + "</span></div>" +
+    '<span class="sim-pill">' + icons.check(14) + esc(COPY.header.pill) + "</span>";
+
+  $("#footer").innerHTML =
+    '<div class="sim-footer__brand">' + icons.brand(20) + "<span>" + esc(BRAND.name) + "</span></div>" +
+    "<p>" + esc(COPY.footer.line1.replace("{marca}", BRAND.name)) + "</p><p>" + esc(COPY.footer.line2) + "</p>";
+
+  /* ---------- landing ---------- */
+
+  function fieldHTML(key, cfg, attrs) {
+    return (
+      '<div class="sim-field" data-field="' + key + '">' +
+      '<label for="sim-' + key + '" class="sim-field__label">' + esc(cfg.label) + "</label>" +
+      '<div class="sim-field__control"><input id="sim-' + key + '" name="' + key + '" class="sim-field__input" type="text" placeholder="' + esc(cfg.placeholder) + '" ' + attrs + "></div>" +
+      "</div>"
+    );
+  }
+
+  function landingHTML() {
+    const trustIcons = [icons.tag, icons.clock, icons.lock];
+    return (
+      '<div class="sim-band"><div class="sim-band__in sim-anim">' +
+      '<p class="sim-eyebrow sim-stagger" style="--i:0">' + esc(COPY.hero.eyebrow) + "</p>" +
+      '<h1 class="sim-h1 sim-stagger" style="--i:1" tabindex="-1" data-heading>' + esc(COPY.hero.title) + "</h1>" +
+      '<p class="sim-sub sim-stagger" style="--i:2">' + esc(COPY.hero.subtitle) + "</p>" +
+      "</div></div>" +
+      '<div class="sim-sheet"><div class="sim-sheet__in sim-anim sim-anim--late">' +
+      '<form class="sim-form" id="sim-form" novalidate>' +
+      '<p class="sim-form__heading">' + esc(COPY.form.heading) + "</p>" +
+      fieldHTML("nome", COPY.form.name, 'autocomplete="name" autocapitalize="words" spellcheck="false" maxlength="80" enterkeyhint="next"') +
+      fieldHTML("cpf", COPY.form.cpf, 'inputmode="numeric" autocomplete="off" maxlength="14" enterkeyhint="done"') +
+      '<p class="sim-sr" aria-live="assertive" id="sim-live"></p>' +
+      '<div class="sim-form__submit">' +
+      '<button type="submit" class="sim-btn sim-btn--primary sim-btn--xl"><span>' + esc(COPY.form.submit) + "</span>" + icons.arrow(20, "sim-btn__arrow") + "</button>" +
+      '<ul class="sim-trust">' + COPY.form.trust.map((item, i) => "<li>" + (trustIcons[i] || icons.lock)(15) + esc(item) + "</li>").join("") + "</ul>" +
+      "</div></form>" +
+      '<hr class="sim-divider">' +
+      '<section class="sim-how" aria-labelledby="sim-how-title"><h2 id="sim-how-title" class="sim-how__title">' + esc(COPY.howItWorks.title) + "</h2>" +
+      '<ol class="sim-how__list">' +
+      COPY.howItWorks.steps.map((s, i) => '<li class="sim-how__item"><span class="sim-how__num" aria-hidden="true">' + (i + 1) + '</span><div><h3 class="sim-how__item-title">' + esc(s.title) + '</h3><p class="sim-how__item-text">' + esc(s.text) + "</p></div></li>").join("") +
+      "</ol></section>" +
+      "</div></div>"
+    );
+  }
+
+  function wireLanding(screen) {
+    const form = $("#sim-form", screen);
+    const live = $("#sim-live", screen);
+    const inputs = { nome: $("#sim-nome", screen), cpf: $("#sim-cpf", screen) };
+    const values = { nome: "", cpf: "" };
+    const touched = { nome: false, cpf: false };
+    let submitted = false;
+
+    const errorsOf = () => ({
+      nome: isValidFullName(values.nome) ? "" : COPY.form.name.error,
+      cpf: isValidCpf(values.cpf) ? "" : COPY.form.cpf.error,
+    });
+
+    function update() {
+      const errors = errorsOf();
+      let anyError = false;
+      for (const key of ["nome", "cpf"]) {
+        const field = $('[data-field="' + key + '"]', screen);
+        const control = $(".sim-field__control", field);
+        const input = inputs[key];
+        const show = (touched[key] || submitted) && Boolean(errors[key]);
+        const valid = !errors[key] && !show;
+        anyError = anyError || show;
+        field.toggleAttribute("data-invalid", show);
+        field.toggleAttribute("data-valid", valid);
+        if (show) {
+          input.setAttribute("aria-invalid", "true");
+          input.setAttribute("aria-describedby", "sim-" + key + "-erro");
+        } else {
+          input.removeAttribute("aria-invalid");
+          input.removeAttribute("aria-describedby");
+        }
+        const ok = $(".sim-field__ok", control);
+        if (valid && !ok) control.insertAdjacentHTML("beforeend", '<span class="sim-field__ok">' + icons.check(16) + "</span>");
+        else if (!valid && ok) ok.remove();
+        const err = $(".sim-field__error", field);
+        if (show && !err) field.insertAdjacentHTML("beforeend", '<p id="sim-' + key + '-erro" class="sim-field__error">' + icons.alert(16) + "<span>" + esc(errors[key]) + "</span></p>");
+        else if (!show && err) err.remove();
+      }
+      formStatus = anyError ? "error" : !errors.nome && !errors.cpf ? "filled" : "idle";
+      setState();
+    }
+
+    inputs.nome.addEventListener("input", () => {
+      values.nome = inputs.nome.value;
+      update();
+    });
+    inputs.cpf.addEventListener("input", (e) => {
+      const next = nextCpfValue(values.cpf, inputs.cpf.value, e.inputType);
+      values.cpf = next;
+      if (inputs.cpf.value !== next) inputs.cpf.value = next;
+      update();
+    });
+    for (const key of ["nome", "cpf"]) {
+      inputs[key].addEventListener("blur", () => {
+        if (touched[key]) return;
+        touched[key] = true;
+        update();
+      });
+    }
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      submitted = true;
+      const errors = errorsOf();
+      if (errors.nome || errors.cpf) {
+        touched.nome = touched.cpf = true;
+        update();
+        // limpa e reanuncia, mesmo que a mensagem seja igual à anterior
+        live.textContent = "";
+        requestAnimationFrame(() => {
+          live.textContent = COPY.form.invalidSummary;
+        });
+        if (!reduced()) {
+          for (const key of ["nome", "cpf"]) {
+            if (!errors[key]) continue;
+            const control = $('[data-field="' + key + '"] .sim-field__control', screen);
+            control.removeAttribute("data-shake");
+            void control.offsetWidth;
+            control.setAttribute("data-shake", "");
+            control.addEventListener("animationend", () => control.removeAttribute("data-shake"), { once: true });
+          }
+        }
+        (errors.nome ? inputs.nome : inputs.cpf).focus();
+        return;
+      }
+      go({ name: "processing", lead: { nome: normalizeName(values.nome), cpf: values.cpf } });
+    });
+    update();
+  }
+
+  /* ---------- processamento ---------- */
+
+  const RING_C = 2 * Math.PI * 52;
+
+  function processingHTML() {
+    return (
+      '<div class="sim-band sim-band--center"><div class="sim-band__in sim-anim">' +
+      '<div class="sim-ring" role="progressbar" aria-label="' + esc(PROCESSING.title) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" style="width:132px;height:132px">' +
+      '<svg viewBox="0 0 120 120" class="sim-ring__svg" aria-hidden="true" focusable="false"><circle class="sim-ring__track" cx="60" cy="60" r="52"/><circle class="sim-ring__arc" cx="60" cy="60" r="52" stroke-dasharray="' + RING_C + '" stroke-dashoffset="' + RING_C + '"/></svg>' +
+      '<span class="sim-ring__orbit" aria-hidden="true"></span>' +
+      '<span class="sim-ring__value" aria-hidden="true"><span data-pct>0</span><small>%</small></span>' +
+      "</div>" +
+      '<h1 class="sim-processing__title" tabindex="-1" data-heading>' + esc(PROCESSING.title) + "</h1>" +
+      '<p class="sim-processing__hint">' + esc(PROCESSING.hint) + "</p>" +
+      "</div></div>" +
+      '<div class="sim-sheet"><div class="sim-sheet__in sim-anim sim-anim--late">' +
+      '<ol class="sim-steps" aria-label="Etapas do processamento">' +
+      PROCESSING.steps.map((s) => '<li class="sim-step" data-state="pending"><span class="sim-step__icon" aria-hidden="true"></span><span>' + esc(s.label) + "</span></li>").join("") +
+      "</ol>" +
+      '<p class="sim-sr" aria-live="polite" data-live></p>' +
+      "</div></div>"
+    );
+  }
+
+  /** Começa rápido e desacelera de leve no fim, como um carregamento de verdade. */
+  const easeProgress = (t) => 0.5 * t + 0.5 * (1 - (1 - t) * (1 - t));
+
+  function wireProcessing(screen) {
+    const arc = $(".sim-ring__arc", screen);
+    const ring = $(".sim-ring", screen);
+    const pct = $("[data-pct]", screen);
+    const live = $("[data-live]", screen);
+    const steps = Array.from(screen.querySelectorAll(".sim-step"));
+    const start = performance.now();
+    let lastCurrent = -1;
+
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / PROCESSING.durationMs);
+      const p = easeProgress(t);
+      arc.style.strokeDashoffset = String(RING_C * (1 - p));
+      const percent = Math.round(p * 100);
+      pct.textContent = String(percent);
+      ring.setAttribute("aria-valuenow", String(percent));
+      let active = -1;
+      steps.forEach((li, i) => {
+        const next = PROCESSING.steps[i + 1] ? PROCESSING.steps[i + 1].at : 1;
+        const state = p >= next ? "done" : p >= PROCESSING.steps[i].at ? "active" : "pending";
+        if (li.dataset.state !== state) {
+          li.dataset.state = state;
+          $(".sim-step__icon", li).innerHTML = state === "done" ? icons.check(15, "", 2.5) : "";
+          if (state === "done") li.insertAdjacentHTML("beforeend", '<span class="sim-sr"> (concluído)</span>');
+        }
+        if (state === "active") active = i;
+      });
+      const current = active >= 0 ? active : steps.length - 1;
+      if (current !== lastCurrent) {
+        lastCurrent = current;
+        live.textContent = PROCESSING.steps[current].label;
+      }
+      if (t < 1) {
+        rafId = requestAnimationFrame(tick);
+      } else {
+        settleTimer = setTimeout(() => {
+          if (view.name !== "processing") return;
+          go({ name: "result", lead: view.lead, estimateCents: generateEstimateCents() });
+        }, PROCESSING.settleMs);
+      }
+    };
+    rafId = requestAnimationFrame(tick);
+  }
+
+  /* ---------- resultado ---------- */
+
+  function resultHTML(v) {
+    const valor = formatBRL(v.estimateCents);
+    const pos = positionInRange(v.estimateCents) * 100;
+    const url = buildWhatsappUrl(WHATSAPP_NUMBER, WHATSAPP_MESSAGE, { nome: titleCaseName(v.lead.nome), valor });
+    const min = formatBRLWhole(ESTIMATE.minBRL);
+    const max = formatBRLWhole(ESTIMATE.maxBRL);
+    const initial = reduced() ? valor : formatBRL(0);
+    return (
+      '<div class="sim-band"><div class="sim-band__in sim-anim">' +
+      '<p class="sim-eyebrow sim-eyebrow--done sim-stagger" style="--i:0">' + icons.check(14, "", 2.5) + esc(COPY.result.eyebrow) + "</p>" +
+      '<h1 class="sim-h1 sim-stagger" style="--i:1" tabindex="-1" data-heading>' + esc(COPY.result.greeting.replace("{nome}", firstName(v.lead.nome))) + "</h1>" +
+      '<p class="sim-sub sim-stagger" style="--i:2">' + esc(COPY.result.lead) + "</p>" +
+      "</div></div>" +
+      '<div class="sim-sheet"><div class="sim-sheet__in sim-anim sim-anim--late">' +
+      '<section class="sim-card" aria-labelledby="sim-card-label">' +
+      '<p id="sim-card-label" class="sim-card__label">' + esc(COPY.result.cardLabel) + "</p>" +
+      '<p class="sim-card__value" data-testid="estimate-value"><span aria-hidden="true" data-countup>' + esc(initial) + '</span><span class="sim-sr">' + esc(valor) + "</span></p>" +
+      '<div class="sim-range" role="img" aria-label="' + esc(COPY.result.rangeLabel + ": de " + min + " a " + max) + '">' +
+      '<p class="sim-range__title" aria-hidden="true">' + esc(COPY.result.rangeLabel) + "</p>" +
+      '<div class="sim-range__bar"><div class="sim-range__fill" style="width:' + pos + '%"></div><span class="sim-range__dot" style="left:' + pos + '%"></span></div>' +
+      '<div class="sim-range__labels" aria-hidden="true"><span>' + esc(min) + "</span><span>" + esc(max) + "</span></div>" +
+      "</div></section>" +
+      '<p class="sim-disclaimer">' + icons.info(16) + "<span>" + esc(COPY.result.disclaimer) + "</span></p>" +
+      '<div class="sim-actions">' +
+      '<a class="sim-btn sim-btn--primary sim-btn--xl sim-btn--whatsapp" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer" data-testid="cta-whatsapp" data-cta>' +
+      icons.whatsapp(22) +
+      '<span class="sim-btn__stack"><span data-cta-label>' + esc(COPY.result.ctaPrimary) + "</span><small>" + esc(COPY.result.ctaPrimaryHint) + "</small></span></a>" +
+      '<button type="button" class="sim-btn sim-btn--ghost" aria-expanded="false" aria-controls="sim-explainer" data-explain><span>' + esc(COPY.result.ctaSecondary) + "</span>" + icons.chevron(18, "sim-btn__chev") + "</button>" +
+      '<div class="sim-restart"><button type="button" class="sim-btn sim-btn--text" data-restart>' + icons.refresh(18) + "<span>" + esc(COPY.result.restart) + "</span></button></div>" +
+      "</div></div></div>"
+    );
+  }
+
+  function wireResult(screen, v) {
+    // contador (sem movimento reduzido, o valor já veio pronto no HTML)
+    const counter = $("[data-countup]", screen);
+    if (!reduced()) {
+      const start = performance.now();
+      const targetReais = v.estimateCents / 100;
+      const tick = (now) => {
+        const t = Math.min(1, (now - start) / TIMING.countUpMs);
+        const eased = 1 - Math.pow(1 - t, 3);
+        counter.textContent = formatBRL(Math.round(targetReais * eased) * 100);
+        if (t < 1) rafId = requestAnimationFrame(tick);
+      };
+      rafId = requestAnimationFrame(tick);
+    }
+
+    // CTA: link normal do WhatsApp + estado "abrindo" por alguns segundos
+    const cta = $("[data-cta]", screen);
+    cta.addEventListener("click", (e) => {
+      if (redirecting) {
+        e.preventDefault();
+        return;
+      }
+      redirecting = true;
+      setState();
+      cta.setAttribute("aria-disabled", "true");
+      $("svg", cta).outerHTML = icons.spinner(22);
+      $("[data-cta-label]", cta).textContent = COPY.result.ctaRedirecting;
+      clearTimeout(redirectTimer);
+      redirectTimer = setTimeout(() => {
+        redirecting = false;
+        setState();
+        if (!cta.isConnected) return;
+        cta.removeAttribute("aria-disabled");
+        $("svg", cta).outerHTML = icons.whatsapp(22);
+        $("[data-cta-label]", cta).textContent = COPY.result.ctaPrimary;
+      }, TIMING.redirectMs);
+    });
+
+    // "Entender como funciona": painel expansível logo abaixo do botão
+    const explain = $("[data-explain]", screen);
+    explain.addEventListener("click", () => {
+      const open = explain.getAttribute("aria-expanded") === "true";
+      explain.setAttribute("aria-expanded", String(!open));
+      const existing = $("#sim-explainer", screen);
+      if (open) {
+        if (existing) existing.remove();
+        return;
+      }
+      explain.insertAdjacentHTML(
+        "afterend",
+        '<section id="sim-explainer" class="sim-explainer" tabindex="-1" aria-labelledby="sim-explainer-title">' +
+          '<h2 id="sim-explainer-title" class="sim-explainer__title">' + esc(COPY.result.explainer.title) + "</h2><ul>" +
+          COPY.result.explainer.items.map((item) => "<li>" + icons.check(16) + "<span>" + esc(item) + "</span></li>").join("") +
+          "</ul></section>"
+      );
+      const panel = $("#sim-explainer", screen);
+      panel.focus({ preventScroll: true });
+      panel.scrollIntoView({ block: "nearest", behavior: reduced() ? "auto" : "smooth" });
+    });
+
+    // nova simulação
+    $("[data-restart]", screen).addEventListener("click", () => {
+      restarting = true;
+      redirecting = false;
+      clearTimeout(redirectTimer);
+      setState();
+      go({ name: "landing" });
+    });
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>

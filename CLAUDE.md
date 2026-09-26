@@ -289,6 +289,7 @@ Protótipo interno de LP mobile-first: simulação **fictícia** de aumento de b
 | Rota + CSS (classes `sim-*`) | `app/simulador/*` |
 | Estados (`data-state` em `.sim-app`: idle → filled → error → processing → result → redirecting → restart) | `components/simulador/simulador-app.tsx` |
 | Testes | `node --experimental-strip-types --test lib/simulador/simulador.test.ts` · UI: `BASE=http://localhost:3011/simulador node scripts/simulador-qa.cjs` |
+| Standalone (arquivo único, sem Next — link de teste fora do domínio DDG) | `standalone/simulador/index.html` (config no bloco `CONFIGURAÇÃO`; CSS espelha `app/simulador/simulador.css`) |
 
 Regras: o aviso "Resultado estimativo para fins de simulação…" fica sempre abaixo do valor; nunca afirmar consulta oficial; CPF não vai pra URL, storage ou mensagem; `/simulador` está em `publicPaths` do middleware; `BRAND.indexable=false` (noindex) enquanto for protótipo.
 

@@ -79,6 +79,24 @@ URL do `wa.me` (nome formatado, valor, sem CPF, `noopener`), estado
 ordem de tabulação, `prefers-reduced-motion` e a coluna centralizada no
 desktop.
 
+## Versão standalone (arquivo único)
+
+`standalone/simulador/index.html` é a mesma experiência em HTML + CSS + JS
+puro, num arquivo só, sem Next e sem nada do painel. É o que se usa quando
+se quer um link de teste fora do domínio da DDG: serve em qualquer
+hospedagem estática, ou publicado como página na claude.ai (aí sem as
+tags `<html>/<head>/<body>`, que o host coloca). As fontes (Inter + Inter
+Tight) vêm do Google Fonts, com fallback de sistema.
+
+- Configuração: bloco `CONFIGURAÇÃO` no topo do `<script>` (mesmos nomes de
+  `lib/simulador/config.ts`).
+- CSS: espelho de `app/simulador/simulador.css` mais um reset mínimo. Ao
+  mudar um, mude o outro.
+- Ids, classes e `data-state` são idênticos aos da rota, então o mesmo QA
+  roda nele: sirva a pasta (`python3 -m http.server 8090 --directory
+  standalone/simulador`) e rode `BASE=http://localhost:8090/ node
+  scripts/simulador-qa.cjs`.
+
 ## Regras que não podem quebrar
 
 - Nunca afirmar consulta oficial, aprovação ou concessão. O aviso fica logo
