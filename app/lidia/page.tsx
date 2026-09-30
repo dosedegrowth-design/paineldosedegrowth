@@ -68,7 +68,7 @@ export default function LidiaPage() {
     <main className="ld-main">
       <header className="ld-hero">
         <p className="ld-kicker">Dose de Growth · Estratégia de conteúdo</p>
-        <h1>Lidia Guimarães</h1>
+        <h1>Lidia Magalhães</h1>
         <p className="ld-sub">
           Corretora de imóveis. O plano para transformar atenção em conversa no WhatsApp:
           o que já temos no ar, o que falta e o que vamos produzir.

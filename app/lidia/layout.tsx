@@ -2,9 +2,9 @@ import type { Metadata, Viewport } from "next";
 import "./lidia.css";
 
 export const metadata: Metadata = {
-  title: "Lidia Guimarães — Funil de conteúdo | Dose de Growth",
+  title: "Lidia Magalhães — Funil de conteúdo | Dose de Growth",
   description:
-    "Estratégia de conteúdo e anúncios para levar compradores e vendedores de imóveis até o WhatsApp da Lidia Guimarães.",
+    "Estratégia de conteúdo e anúncios para levar compradores e vendedores de imóveis até o WhatsApp da Lidia Magalhães.",
   robots: { index: false, follow: false },
 };
 
