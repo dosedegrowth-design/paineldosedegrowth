@@ -1,85 +1,205 @@
+type Criativo = {
+  img: string;
+  nome: string;
+  link?: string;
+  etapas: ("topo" | "meio" | "fundo")[];
+};
+
+const CRIATIVOS: Criativo[] = [
+  {
+    img: "/lidia/01-clube-pinheiros.webp",
+    nome: "Casa próxima ao Clube Pinheiros",
+    link: "https://www.instagram.com/reel/DdsxmH-x9Iq/",
+    etapas: ["topo", "meio", "fundo"],
+  },
+  {
+    img: "/lidia/02-sala-jantar.webp",
+    nome: "Apartamento — sala de jantar",
+    link: "https://www.instagram.com/reel/Dc2EupOCRta/",
+    etapas: ["topo", "meio", "fundo"],
+  },
+  {
+    img: "/lidia/03-varanda-vista.webp",
+    nome: "Varanda com vista para a cidade",
+    link: "https://www.instagram.com/reel/DcC3enAO7D4/",
+    etapas: ["topo", "meio", "fundo"],
+  },
+  {
+    img: "/lidia/04-cozinha.webp",
+    nome: "Cozinha gourmet com varanda",
+    link: "https://www.instagram.com/reel/DarpClju6Eo/",
+    etapas: ["topo", "meio", "fundo"],
+  },
+  {
+    img: "/lidia/05-entrevista.webp",
+    nome: "Entrevista — início da carreira",
+    link: "https://www.instagram.com/reel/DZv82ppgPlF/",
+    etapas: ["topo", "meio", "fundo"],
+  },
+  {
+    img: "/lidia/06-sala-vazia.webp",
+    nome: "Apartamento vazio — planta livre",
+    link: "https://www.instagram.com/reel/DY12tjZgJ4r/",
+    etapas: ["topo", "meio", "fundo"],
+  },
+  {
+    img: "/lidia/07-tijolinho.webp",
+    nome: "Living com parede de tijolinho",
+    link: "https://www.instagram.com/reel/DYSwZiXgHAi/",
+    etapas: ["topo", "meio", "fundo"],
+  },
+  {
+    img: "/lidia/08-janela-parque.webp",
+    nome: "Vista para o parque",
+    link: "https://www.instagram.com/reel/DX7XLQcAB3T/",
+    etapas: ["topo", "meio", "fundo"],
+  },
+  {
+    img: "/lidia/09-carrossel-esquema.webp",
+    nome: "Carrossel — living amplo (fotos profissionais)",
+    link: "https://www.instagram.com/p/DdItqGqDgLb/",
+    etapas: ["meio", "fundo"],
+  },
+  {
+    img: "/lidia/10-carrossel-sala-branca.webp",
+    nome: "Carrossel — sala clara com poltronas",
+    link: "https://www.instagram.com/p/Dch098rjs3m/",
+    etapas: ["meio", "fundo"],
+  },
+  {
+    img: "/lidia/11-carrossel-hall.webp",
+    nome: "Carrossel — hall de entrada do prédio",
+    link: "https://www.instagram.com/p/DcKcMlUEYPS/",
+    etapas: ["meio", "fundo"],
+  },
+];
+
 type Etapa = {
-  id: string;
+  id: "topo" | "meio" | "fundo";
+  n: string;
   tag: string;
   titulo: string;
+  frase: string;
+  publico: string;
   objetivo: string;
-  conteudos: string[];
-  cta: string;
-  pasta: string;
+  botao: string;
+  verba: string;
   medir: string;
 };
 
 const ETAPAS: Etapa[] = [
   {
     id: "topo",
-    tag: "Topo de funil",
-    titulo: "Atrair e ser descoberta",
-    objetivo:
-      "Chegar em quem ainda não conhece a Lidia: gente que sonha em comprar, vender ou investir em imóvel, mas não está decidida.",
-    conteudos: [
-      "Vídeos curtos de bastidor, tour por imóveis e dicas rápidas do mercado",
-      "Conteúdo que gera curiosidade e salvamentos (\"o que ninguém conta sobre comprar imóvel\")",
-      "Alcance amplo em Reels e Stories, público frio segmentado por região",
-    ],
-    cta: "Seguir o perfil e assistir ao próximo vídeo",
-    pasta: "topo",
-    medir: "Alcance, visualizações de 3s e 50%, novos seguidores",
+    n: "01",
+    tag: "Topo",
+    titulo: "Descoberta",
+    frase:
+      "Os vídeos rodam para gente que ainda não conhece você. É aqui que a pessoa vê o imóvel pela primeira vez e para o dedo.",
+    publico: "Público frio — bairros e faixa de renda definidos abaixo.",
+    objetivo: "Reconhecimento / visualizações de vídeo",
+    botao: "Sem botão. O trabalho do topo é só fazer assistir.",
+    verba: "R$ 250/mês",
+    medir: "Alcance, custo por mil pessoas, quem assistiu 50% ou mais",
   },
   {
     id: "meio",
-    tag: "Meio de funil",
-    titulo: "Gerar confiança e autoridade",
-    objetivo:
-      "Mostrar que a Lidia entende do assunto. Quem já conhece passa a confiar e a enxergar nela a corretora certa.",
-    conteudos: [
-      "Explicações de processo: financiamento, documentação, avaliação do imóvel",
-      "Casos reais e depoimentos de clientes atendidos",
-      "Comparativos de bairros e análises de oportunidade",
-    ],
-    cta: "Chamar no WhatsApp para tirar uma dúvida",
-    pasta: "meio",
-    medir: "Engajamento, compartilhamentos, cliques no perfil e no link",
+    n: "02",
+    tag: "Meio",
+    titulo: "Perfil e autoridade",
+    frase:
+      "Quem assistiu no topo vê o mesmo conteúdo de novo, agora com o objetivo de trazer essa pessoa para dentro do seu Instagram — para ela conhecer você, ver os outros imóveis e passar a seguir.",
+    publico:
+      "Quem assistiu 50% ou mais de qualquer vídeo do topo nos últimos 30 dias.",
+    objetivo: "Tráfego / visitas ao perfil — crescimento do @",
+    botao: "Leva direto para o perfil no Instagram",
+    verba: "R$ 200/mês",
+    medir: "Visitas ao perfil, seguidores novos, custo por visita",
   },
   {
     id: "fundo",
-    tag: "Fundo de funil",
-    titulo: "Converter em conversa no WhatsApp",
-    objetivo:
-      "Levar quem está pronto para agir direto ao WhatsApp da Lidia, onde o atendimento e a negociação acontecem.",
-    conteudos: [
-      "Anúncios de imóvel específico com botão \"Enviar mensagem\" (click-to-WhatsApp)",
-      "Ofertas e oportunidades com urgência real (condição, unidade, prazo)",
-      "Remarketing para quem assistiu vídeos e visitou o perfil",
-    ],
-    cta: "Falar agora com a Lidia no WhatsApp",
-    pasta: "fundo",
+    n: "03",
+    tag: "Fundo",
+    titulo: "Conversa no WhatsApp",
+    frase:
+      "O MESMO vídeo que a pessoa já viu duas vezes volta uma terceira — agora com o botão de WhatsApp. Ela já conhece o imóvel, já conhece você. Aqui ela só clica e fala.",
+    publico:
+      "Quem assistiu aos vídeos + quem visitou o perfil + quem interagiu com o Instagram nos últimos 30 dias.",
+    objetivo: "Mensagens (click-to-WhatsApp)",
+    botao: "Enviar mensagem → abre a conversa no seu WhatsApp",
+    verba: "R$ 250/mês",
     medir: "Conversas iniciadas, custo por conversa, visitas agendadas",
   },
 ];
 
-const PRIORIDADES = [
-  "Mais conteúdo de fundo: anúncios click-to-WhatsApp de imóveis específicos, que trazem a conversa direto.",
-  "Mais conteúdo de meio: provas e explicações que tiram a dúvida de quem já acompanha a Lidia.",
-  "Topo constante, mas enxuto: o suficiente para alimentar o funil com gente nova.",
-];
+const ETIQUETA: Record<string, string> = {
+  topo: "Topo",
+  meio: "Meio",
+  fundo: "Fundo",
+};
 
 export default function LidiaPage() {
   return (
     <main className="ld-main">
       <header className="ld-hero">
-        <p className="ld-kicker">Dose de Growth · Estratégia de conteúdo</p>
+        <p className="ld-kicker">Dose de Growth · Plano de campanha</p>
         <h1>Lidia Magalhães</h1>
         <p className="ld-sub">
-          Corretora de imóveis. O plano para transformar atenção em conversa no WhatsApp:
-          o que já temos no ar, o que falta e o que vamos produzir.
+          Como vamos usar os vídeos que você já tem para crescer o perfil no
+          Instagram e trazer quem se interessou de verdade para uma conversa no
+          seu WhatsApp.
         </p>
       </header>
+
+      <section className="ld-facts" aria-label="Resumo da campanha">
+        <div>
+          <span>Verba</span>
+          <strong>R$ 700/mês</strong>
+        </div>
+        <div>
+          <span>Início</span>
+          <strong>Quinta, 1º/out</strong>
+        </div>
+        <div>
+          <span>Praça</span>
+          <strong>São Paulo capital</strong>
+        </div>
+        <div>
+          <span>Idade</span>
+          <strong>35+</strong>
+        </div>
+      </section>
+
+      <section className="ld-card ld-ideia">
+        <p className="ld-tag">A ideia central</p>
+        <h2>O mesmo vídeo, três vezes — com um pedido diferente a cada vez</h2>
+        <p>
+          A maioria das corretoras posta o vídeo uma vez e torce. A gente vai
+          fazer diferente: o vídeo que funcionar no topo <strong>persegue</strong>{" "}
+          quem assistiu.
+        </p>
+        <p>
+          Exemplo real: a pessoa vê o vídeo da cozinha, gosta do móvel, assiste
+          até o fim. Isso é um sinal. Ela entra numa lista. Dias depois, o mesmo
+          vídeo aparece de novo para ela, agora levando ao seu perfil. Depois
+          aparece uma terceira vez, com o botão de WhatsApp. Quando ela clica, já
+          não é um estranho falando com você — é alguém que viu aquele imóvel
+          três vezes e decidiu.
+        </p>
+        <p className="ld-nota">
+          Por isso quase todos os criativos aparecem nas três etapas. Não é
+          repetição por falta de material: é a mesma peça trabalhando em
+          temperaturas diferentes.
+        </p>
+      </section>
 
       <section className="ld-funil" aria-label="Visão geral do funil">
         {ETAPAS.map((e, i) => (
           <a key={e.id} href={`#${e.id}`} className={`ld-step ld-step-${i + 1}`}>
-            <span>{e.tag}</span>
+            <span>
+              {e.n} · {e.tag}
+            </span>
             <strong>{e.titulo}</strong>
+            <em>{e.verba}</em>
           </a>
         ))}
         <div className="ld-goal">WhatsApp da Lidia</div>
@@ -87,46 +207,146 @@ export default function LidiaPage() {
 
       {ETAPAS.map((e) => (
         <section key={e.id} id={e.id} className="ld-card">
-          <p className="ld-tag">{e.tag}</p>
+          <p className="ld-tag">
+            {e.n} · {e.tag} de funil
+          </p>
           <h2>{e.titulo}</h2>
-          <p className="ld-obj">{e.objetivo}</p>
+          <p className="ld-obj">{e.frase}</p>
 
-          <h3>O que entra aqui</h3>
-          <ul>
-            {e.conteudos.map((c) => (
-              <li key={c}>{c}</li>
+          <dl className="ld-def">
+            <div>
+              <dt>Quem vê</dt>
+              <dd>{e.publico}</dd>
+            </div>
+            <div>
+              <dt>Objetivo no Meta</dt>
+              <dd>{e.objetivo}</dd>
+            </div>
+            <div>
+              <dt>Botão do anúncio</dt>
+              <dd>{e.botao}</dd>
+            </div>
+            <div>
+              <dt>Verba</dt>
+              <dd>{e.verba}</dd>
+            </div>
+            <div>
+              <dt>Como medimos</dt>
+              <dd>{e.medir}</dd>
+            </div>
+          </dl>
+
+          <h3>Criativos que entram nesta etapa</h3>
+          <div className="ld-media">
+            {CRIATIVOS.filter((c) => c.etapas.includes(e.id)).map((c) => (
+              <figure key={c.img}>
+                <img src={c.img} alt={c.nome} loading="lazy" />
+                <figcaption>
+                  {c.link ? (
+                    <a href={c.link} target="_blank" rel="noreferrer">
+                      {c.nome}
+                    </a>
+                  ) : (
+                    c.nome
+                  )}
+                </figcaption>
+              </figure>
             ))}
-          </ul>
-
-          <div className="ld-row">
-            <div>
-              <h3>Chamada para ação</h3>
-              <p>{e.cta}</p>
-            </div>
-            <div>
-              <h3>Como medimos</h3>
-              <p>{e.medir}</p>
-            </div>
-          </div>
-
-          <h3>Criativos no ar</h3>
-          <div className="ld-media" data-pasta={e.pasta}>
-            <p>Prints e vídeos desta etapa entram aqui.</p>
           </div>
         </section>
       ))}
 
+      <section className="ld-card">
+        <p className="ld-tag">Público</p>
+        <h2>Para quem os anúncios vão aparecer</h2>
+        <dl className="ld-def">
+          <div>
+            <dt>Região</dt>
+            <dd>
+              Jardins, Higienópolis, Campo Belo, Itaim, Vila Nova Conceição,
+              Pinheiros, Perdizes e o entorno — os bairros de alto padrão de São
+              Paulo.
+            </dd>
+          </div>
+          <div>
+            <dt>Idade</dt>
+            <dd>35 anos ou mais</dd>
+          </div>
+          <div>
+            <dt>Perfil</dt>
+            <dd>
+              Faixa de renda mais alta da cidade. Gente que compra, vende ou
+              investe em imóvel de padrão — não quem procura aluguel barato.
+            </dd>
+          </div>
+          <div>
+            <dt>No meio e no fundo</dt>
+            <dd>
+              O público deixa de ser por bairro e passa a ser por
+              comportamento: só quem já assistiu, já visitou o perfil ou já
+              interagiu.
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section className="ld-card ld-acervo">
+        <p className="ld-tag">Acervo</p>
+        <h2>Os 11 criativos que já temos no ar</h2>
+        <div className="ld-grid">
+          {CRIATIVOS.map((c) => (
+            <figure key={c.img}>
+              <img src={c.img} alt={c.nome} loading="lazy" />
+              <figcaption>
+                {c.link ? (
+                  <a href={c.link} target="_blank" rel="noreferrer">
+                    {c.nome}
+                  </a>
+                ) : (
+                  c.nome
+                )}
+                <span className="ld-pills">
+                  {c.etapas.map((et) => (
+                    <i key={et} className={`ld-pill ld-pill-${et}`}>
+                      {ETIQUETA[et]}
+                    </i>
+                  ))}
+                </span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
       <section className="ld-card ld-next">
         <p className="ld-tag">Próximos passos</p>
-        <h2>O que vamos produzir mais</h2>
+        <h2>O que precisamos produzir</h2>
         <ol>
-          {PRIORIDADES.map((p) => (
-            <li key={p}>{p}</li>
-          ))}
+          <li>
+            <strong>Mais vídeos com você aparecendo.</strong> O da entrevista é o
+            único em que a pessoa vê seu rosto e ouve sua voz. É o que mais
+            constrói confiança — e hoje temos um só.
+          </li>
+          <li>
+            <strong>Vídeos de imóvel específico com preço e bairro.</strong> Para
+            o fundo funcionar melhor, o anúncio precisa falar de um imóvel
+            concreto, não de um tour genérico.
+          </li>
+          <li>
+            <strong>Conteúdo de processo.</strong> Financiamento, documentação,
+            avaliação. É o que faz a pessoa te seguir e te achar a corretora
+            certa, mesmo antes de estar pronta para comprar.
+          </li>
+          <li>
+            <strong>Depoimento de cliente.</strong> Um vídeo curto de quem já
+            comprou ou vendeu com você vale mais que qualquer anúncio nosso.
+          </li>
         </ol>
         <p className="ld-ask">
-          Lidia, o que você acha? Se algum ponto não combina com o seu jeito de atender ou
-          com os imóveis que você quer vender, é só avisar que a gente ajusta.
+          Lidia, dá uma olhada e me fala o que faz sentido. Se algum bairro
+          estiver de fora, se tiver um imóvel que você quer priorizar, ou se algo
+          aqui não combina com o seu jeito de trabalhar — a gente ajusta antes de
+          subir.
         </p>
       </section>
 
