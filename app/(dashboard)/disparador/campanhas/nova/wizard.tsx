@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, ArrowLeft, ArrowRight, Upload, Check, Plus, Search, Calendar, ClipboardPaste, AlertTriangle } from "lucide-react";
 import { parseTemplateShape, type TemplateComponentLike } from "@/lib/whatsapp/template-shape";
+import { fetchJson } from "@/lib/fetch-json";
 
 interface Conta {
   id: string;
@@ -325,7 +326,7 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
       if (contatos.length === 0) throw new Error("Nenhum contato com telefone valido");
 
       // Sobe upload primeiro
-      const upRes = await fetch("/api/dispatcher/upload", {
+      const upData = await fetchJson<{ upload?: { id?: string } }>("/api/dispatcher/upload", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -335,11 +336,9 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
           column_mapping: { telefone: phoneColumn, ...varMap },
         }),
       });
-      const upData = await upRes.json();
-      if (!upRes.ok) throw new Error(upData.error);
 
       // Cria campanha
-      const campRes = await fetch("/api/dispatcher/campanhas", {
+      const campData = await fetchJson<{ campanha: { id: string } }>("/api/dispatcher/campanhas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -352,8 +351,6 @@ export function NovaCampanhaWizard({ contas }: { contas: Conta[] }) {
           scheduled_at: scheduledAt ? new Date(scheduledAt).toISOString() : null,
         }),
       });
-      const campData = await campRes.json();
-      if (!campRes.ok) throw new Error(campData.error);
 
       if (scheduledAt) {
         toast.success(`Campanha "${campanhaNome}" agendada para ${new Date(scheduledAt).toLocaleString("pt-BR")}.`);
