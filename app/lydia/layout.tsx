@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import "./lidia.css";
+import "./lydia.css";
 
 export const metadata: Metadata = {
-  title: "Lidia Magalhães — Funil de conteúdo | Dose de Growth",
+  title: "Lydia Magalhães — Funil de conteúdo | Dose de Growth",
   description:
-    "Estratégia de conteúdo e anúncios para levar compradores e vendedores de imóveis até o WhatsApp da Lidia Magalhães.",
+    "Estratégia de conteúdo e anúncios para levar compradores e vendedores de imóveis até o WhatsApp da Lydia Magalhães.",
   robots: { index: false, follow: false },
 };
 
@@ -14,6 +14,6 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function LidiaLayout({ children }: { children: React.ReactNode }) {
+export default function LydiaLayout({ children }: { children: React.ReactNode }) {
   return <div className="ld-root">{children}</div>;
 }
