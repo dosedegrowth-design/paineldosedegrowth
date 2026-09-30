@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Plus, Trash2, Image as ImageIcon, Video, FileText, Type, Upload, Check } from "lucide-react";
-import { fetchJson, LIMITE_BODY_VERCEL_BYTES, mensagemDeUploadGrande } from "@/lib/fetch-json";
+import { fetchJson } from "@/lib/fetch-json";
+import { createClient as createSupabaseClient } from "@/lib/supabase/client";
 
 interface Props {
   contas: { id: string; display_name: string; phone_number_display: string | null }[];
@@ -79,22 +80,43 @@ export function NovoTemplateForm({ contas, initialContaId, returnTo }: Props) {
       toast.error(`Arquivo muito grande. Máx ${Math.round(max / 1024 / 1024)}MB.`);
       return;
     }
-    // O arquivo passa pela função da Vercel, que corta antes do limite da Meta.
-    if (file.size > LIMITE_BODY_VERCEL_BYTES) {
-      toast.error(mensagemDeUploadGrande());
-      return;
-    }
-
     setUploadingMedia(true);
     try {
       const previewUrl = URL.createObjectURL(file);
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("conta_id", form.conta_id);
 
+      // 1. Pede uma URL assinada (só JSON trafega pela função da Vercel).
+      const { path, token } = await fetchJson<{ path: string; token: string }>(
+        "/api/dispatcher/templates/upload-url",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            conta_id: form.conta_id,
+            filename: file.name,
+            content_type: file.type,
+          }),
+        },
+      );
+
+      // 2. Manda os bytes direto pro Storage, sem passar pela Vercel.
+      const { error: storageErr } = await createSupabaseClient()
+        .storage.from("disparador-media")
+        .uploadToSignedUrl(path, token, file, { contentType: file.type });
+      if (storageErr) throw new Error(`Falha enviando pro Storage: ${storageErr.message}`);
+
+      // 3. Servidor busca do Storage e registra na Meta.
       const data = await fetchJson<{ handle?: string; public_url?: string }>(
         "/api/dispatcher/templates/upload-media",
-        { method: "POST", body: fd },
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            conta_id: form.conta_id,
+            storage_path: path,
+            filename: file.name,
+            content_type: file.type,
+          }),
+        },
       );
       if (!data.handle) throw new Error("Falha no upload");
 
@@ -333,10 +355,9 @@ export function NovoTemplateForm({ contas, initialContaId, returnTo }: Props) {
                   </label>
                 )}
                 <p className="text-[10px] text-muted-foreground">
-                  {form.header_format === "IMAGE" && "JPG ou PNG, máx 4,5MB."}
-                  {form.header_format === "VIDEO" && "MP4 ou 3GPP, máx 4,5MB."}
-                  {form.header_format === "DOCUMENT" && "PDF, máx 4,5MB."}
-                  {" Teto do upload pelo painel (limite da Vercel), abaixo do que a Meta aceita."}
+                  {form.header_format === "IMAGE" && "JPG ou PNG, máx 5MB."}
+                  {form.header_format === "VIDEO" && "MP4 ou 3GPP, máx 16MB."}
+                  {form.header_format === "DOCUMENT" && "PDF, máx 100MB."}
                   {" "}Arquivo vai ser enviado pra Meta como exemplo.
                 </p>
               </>

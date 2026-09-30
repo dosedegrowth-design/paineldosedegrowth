@@ -6,15 +6,11 @@
  * escondendo o motivo real da falha.
  */
 
-/** Corpo máximo de uma requisição que passa por Serverless Function na Vercel. */
-export const LIMITE_BODY_VERCEL_BYTES = 4.5 * 1024 * 1024;
-
-export function mensagemDeUploadGrande(): string {
-  return "Arquivo grande demais pro upload pelo painel: a Vercel corta requisições acima de 4,5MB. Comprima o arquivo ou suba direto pelo Storage.";
-}
-
 function mensagemDeFalha(status: number, corpo: string): string {
-  if (status === 413) return mensagemDeUploadGrande();
+  // A Vercel corta o corpo da requisição em 4,5MB antes de chegar no handler.
+  if (status === 413) {
+    return "Requisição grande demais: a Vercel corta acima de 4,5MB. Arquivo grande precisa ir direto pro Storage; lista grande precisa ser enviada em lotes.";
+  }
   if (status === 408 || status === 504) {
     return "O servidor demorou demais pra responder. Tente de novo.";
   }

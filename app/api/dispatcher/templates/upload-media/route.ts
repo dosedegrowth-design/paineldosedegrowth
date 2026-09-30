@@ -4,26 +4,46 @@ import { createClient as createSbClient } from "@supabase/supabase-js";
 /**
  * POST /api/dispatcher/templates/upload-media
  *
- * Upload de midia pra templates Meta WhatsApp (header IMAGE/VIDEO/DOCUMENT).
+ * Registra na Meta uma midia que JA esta no bucket `disparador-media`.
  *
- * Faz DUAS coisas:
- *  1. Resumable Upload API Meta -> retorna `handle` pra criar template
- *  2. Upload Supabase Storage (bucket disparador-media) -> retorna `public_url` pra disparar
+ * O arquivo nao passa por aqui: o browser sobe direto pro Storage com a URL
+ * assinada por /api/dispatcher/templates/upload-url, porque a Vercel corta
+ * requisicoes acima de 4,5MB na borda. Esta rota recebe so o path em JSON,
+ * baixa os bytes do Storage (trafego de saida, sem limite) e faz o Resumable
+ * Upload pra Meta.
  *
- * Returns: { handle: string, public_url: string }
+ * Body:    { conta_id, storage_path, filename, content_type }
+ * Returns: { handle: string, public_url: string, filename: string }
  */
 
 const API_VERSION = process.env.META_API_VERSION ?? "v25.0";
+const BUCKET = "disparador-media";
 
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  const formData = await req.formData();
-  const file = formData.get("file") as File | null;
-  const contaId = formData.get("conta_id") as string | null;
+  let body: {
+    conta_id?: string;
+    storage_path?: string;
+    filename?: string;
+    content_type?: string;
+  };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "body invalido" }, { status: 400 });
+  }
 
-  if (!file || !contaId) {
-    return NextResponse.json({ error: "file e conta_id obrigatorios" }, { status: 400 });
+  const contaId = body.conta_id;
+  const storagePath = body.storage_path;
+  const filename = body.filename ?? storagePath?.split("/").pop() ?? "arquivo";
+
+  if (!contaId || !storagePath) {
+    return NextResponse.json({ error: "conta_id e storage_path obrigatorios" }, { status: 400 });
+  }
+  // O path é gerado pela rota que assina o upload e começa sempre pela conta.
+  if (!storagePath.startsWith(`${contaId}/`)) {
+    return NextResponse.json({ error: "storage_path nao pertence a conta" }, { status: 403 });
   }
 
   const supabase = createSbClient(
@@ -55,17 +75,27 @@ export async function POST(req: Request) {
   if (!tokenResp) return NextResponse.json({ error: "token vazio" }, { status: 500 });
   const token = tokenResp as unknown as string;
 
-  // Pega buffer uma vez (precisamos pra Meta + pra Supabase)
-  const buf = await file.arrayBuffer();
-  const fileLength = file.size;
-  const fileType = file.type;
+  // Baixa do Storage: o arquivo ja esta la, subido direto pelo browser.
+  const { data: blob, error: downloadErr } = await supabase.storage
+    .from(BUCKET)
+    .download(storagePath);
+  if (downloadErr || !blob) {
+    return NextResponse.json(
+      { error: `Arquivo nao encontrado no Storage: ${downloadErr?.message ?? storagePath}` },
+      { status: 404 },
+    );
+  }
+
+  const buf = await blob.arrayBuffer();
+  const fileLength = buf.byteLength;
+  const fileType = body.content_type || blob.type || "application/octet-stream";
 
   // ─── META: Resumable Upload ───────────────────────────────
   // STEP 1: Cria upload session
   const sessionUrl = new URL(`https://graph.facebook.com/${API_VERSION}/${businessObj.meta_app_id}/uploads`);
   sessionUrl.searchParams.set("file_length", fileLength.toString());
   sessionUrl.searchParams.set("file_type", fileType);
-  sessionUrl.searchParams.set("file_name", file.name);
+  sessionUrl.searchParams.set("file_name", filename);
   sessionUrl.searchParams.set("access_token", token);
 
   const sessionRes = await fetch(sessionUrl.toString(), { method: "POST" });
@@ -96,31 +126,13 @@ export async function POST(req: Request) {
   }
   const handle = uploadJson.h as string;
 
-  // ─── SUPABASE STORAGE: Upload pra ter URL publica ─────────
-  const ext = file.name.split(".").pop()?.toLowerCase() ?? "bin";
-  const storagePath = `${contaId}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
-
-  const { error: uploadStorageErr } = await supabase.storage
-    .from("disparador-media")
-    .upload(storagePath, buf, {
-      contentType: fileType,
-      upsert: false,
-    });
-  if (uploadStorageErr) {
-    return NextResponse.json(
-      { error: `Falha upload Storage: ${uploadStorageErr.message}`, handle },
-      { status: 502 },
-    );
-  }
-
-  const { data: publicData } = supabase.storage
-    .from("disparador-media")
-    .getPublicUrl(storagePath);
-  const publicUrl = publicData.publicUrl;
+  // ─── SUPABASE STORAGE: so a URL publica ───────────────────
+  // O arquivo ja foi subido direto pelo browser; nao ha nada pra gravar aqui.
+  const { data: publicData } = supabase.storage.from(BUCKET).getPublicUrl(storagePath);
 
   return NextResponse.json({
     handle,
-    public_url: publicUrl,
-    filename: file.name,
+    public_url: publicData.publicUrl,
+    filename,
   });
 }
