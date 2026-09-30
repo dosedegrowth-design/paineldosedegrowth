@@ -56,13 +56,6 @@ const FLUXO = [
   { t: "WhatsApp", d: "a conversa com você, onde vira agendamento" },
 ];
 
-const PASSOS = [
-  { t: "Responder rápido", d: "Quem recebe resposta em poucos minutos agenda muito mais do que quem espera horas. As mensagens chegam no (11) 91352-8080." },
-  { t: "Nos contar o que virou agendamento", d: "Uma vez por semana, quantas conversas chegaram e quantas viraram avaliação. É o que separa curioso de paciente e mostra onde investir mais." },
-  { t: "Acesso ao Perfil da Empresa no Google", d: "Com o perfil da clínica vinculado, o endereço e as avaliações passam a aparecer junto dos anúncios e no Google Maps." },
-  { t: "Convênio ou particular", d: "Confirmar se atende algum convênio. Se for só particular, filtramos quem busca por plano de saúde e a verba vai só para quem pode agendar." },
-];
-
 export default function DrSamuelPage() {
   return (
     <main>
@@ -278,26 +271,6 @@ export default function DrSamuelPage() {
       {/* Próximos passos */}
       <section className="ds-sec">
         <div className="ds-wrap">
-          <p className="ds-kicker">A partir de agora</p>
-          <h2>
-            O anúncio traz a conversa.
-            <br />
-            <span className="ds-gold">O atendimento fecha o paciente.</span>
-          </h2>
-          <p className="ds-sub">
-            A parte da mídia está pronta. Para o resultado aparecer por completo, quatro pontos do seu lado fazem toda a
-            diferença.
-          </p>
-          <div className="ds-passos">
-            {PASSOS.map((p, i) => (
-              <div className="ds-passo" key={p.t}>
-                <div className="n ds-num ds-gold">0{i + 1}</div>
-                <h3>{p.t}</h3>
-                <p>{p.d}</p>
-              </div>
-            ))}
-          </div>
-
           <div className="ds-destaque">
             <p>Resumo: R$ 2.000 por mês, 6 frentes no ar a partir de 01/10, todas levando ao seu WhatsApp e ao seu Instagram, com cada conversa medida desde a origem.</p>
             <p>Qualquer dúvida sobre a estrutura, é só chamar. Seguimos acompanhando de perto a partir de amanhã.</p>
