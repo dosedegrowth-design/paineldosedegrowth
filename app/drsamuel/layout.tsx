@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Dr. Samuel Chagas · Estrutura de anúncios",
     description: DESCRICAO,
-    images: [{ url: "https://paineltrafego.dosedegrowth.com.br/drsamuel/capa.jpg", width: 1400, height: 788 }],
+    images: [{ url: "https://painel.dosedegrowth.com/drsamuel/capa.jpg", width: 1400, height: 788 }],
     locale: "pt_BR",
     type: "website",
   },
