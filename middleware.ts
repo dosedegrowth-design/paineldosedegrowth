@@ -110,6 +110,8 @@ export async function middleware(request: NextRequest) {
     // Funil de conteúdo da Lydia Magalhães (corretora) — página pública pra compartilhar
     "/lidia",
     "/lydia",
+    // Estrutura de anúncios do Dr. Samuel Chagas (quiropraxia) — página pública pra compartilhar
+    "/drsamuel",
     // Página avulsa "cadê o link" (zoeira, sem destino)
     "/cade",
     // Webhook receiver
