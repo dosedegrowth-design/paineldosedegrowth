@@ -107,6 +107,8 @@ export async function middleware(request: NextRequest) {
     "/tayssa",
     // LP pública da Carolina Kühn (portfólio UGC)
     "/carol",
+    // Funil de conteúdo da Lidia Guimarães (corretora) — página pública pra compartilhar
+    "/lidia",
     // Página avulsa "cadê o link" (zoeira, sem destino)
     "/cade",
     // Webhook receiver
