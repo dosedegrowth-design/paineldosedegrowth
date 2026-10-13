@@ -94,15 +94,14 @@ Nenhuma peça ficou com still de catálogo. Os 26 anúncios sobem com a peça ve
 
 ## Hospedagem das imagens novas — bloqueio aberto
 
-As 9 imagens novas (as 8 geradas no KIE + a foto do Kimono) **ainda não estão nos criativos do Meta**. Dois motivos:
+O Meta só aceita imagem por **URL pública** (o modo `LOCAL_FILE` depende de app interativo, que não existe nesta sessão). O Lucas autorizou usar a **biblioteca de arquivos da loja da Marina** como destino — é onde já moram as imagens dos criativos.
 
-1. Criativo no Meta é imutável. Trocar a imagem = criar criativo novo + trocar o criativo do anúncio. São 9 pares de operações.
-2. `ads_creative_upload_media` só aceita **URL pública** (o modo `LOCAL_FILE` depende de app interativo, que não existe nesta sessão). As 9 imagens estão só no scratchpad.
+Caminho que funciona, via Admin GraphQL:
+1. `stagedUploadsCreate` com `httpMethod: "PUT"` e `resource: "FILE"` (com `PUT` o upload é um `curl -X PUT --upload-file` na URL assinada, sem os ~8 parâmetros de formulário que o modo `POST` exige — bem mais simples).
+2. `fileCreate` com `originalSource` = o `resourceUrl` de cada staged target, `contentType: IMAGE`, mais `alt` e `filename`.
+3. `files(query: "filename:ADS_*")` até `fileStatus: READY` para colher a `image.url` pública.
 
-Precisa de um destino público antes. Duas opções, decisão do Lucas:
-
-- **Biblioteca de arquivos da loja da Marina** (`fileCreate` no Admin GraphQL). É onde já moram as 26 imagens atuais dos criativos — consistente. Mas escreve na loja da cliente.
-- **Supabase Storage do projeto DDG** (`hkjukobqpjezhpxzplpj`), bucket público. Infra da DDG, não toca na loja da cliente. Precisa da service role key, que não está nas envs desta sessão.
+Gotchas: o Shopify **acrescenta um sufixo UUID** ao nome do arquivo (o `filename` pedido não é respeitado ao pé da letra), então use a URL que volta, e ache cada peça pelo campo `alt`. O CDN também **recomprime o JPEG** (~40% menos peso, dimensões preservadas). As 22 imagens subiram com o prefixo `ADS_` — nenhum produto, preço, estoque, coleção ou tema foi tocado.
 
 ## Análise de outubro — o que o dado diz (13/out)
 
@@ -175,7 +174,7 @@ Reenquadramento sem cortar: `scratchpad/reformat.py`. A foto inteira é encaixad
 
 Vai como string JSON em `degrees_of_freedom_spec`, e não pode ser combinado com `advantage_plus_creative`.
 
-**Criativo é imutável.** Trocar a imagem de um anúncio = criar criativo novo + apontar o anúncio para ele. `ads_creative_delete` ainda não está liberado nesta conta, então criativo velho fica na biblioteca (sem anúncio, não entrega nem gasta). Sobrou lá um `ZZ TESTE automacoes desligadas v3 (apagar)`, id `1583073472934692`, dos testes — pode apagar no Gerenciador.
+**Criativo é imutável, e o anúncio NÃO pode ser reapontado.** Testado: `ads_update_entity` no nível `ad` recusa tanto `creative` quanto `creative_id` — *"Ad creatives are immutable and cannot be edited in place"* e *"Unsupported field(s) for entity_type=ad: creative_id"*. Ou seja, trocar a imagem de um anúncio existente **não existe** na API. O único caminho é criar criativo novo **e anúncio novo** (`ads_create_ad`) no mesmo conjunto, e aposentar o antigo. Como os 26 anúncios de outubro nasceram pausados e nunca entregaram, substituí-los não perde histórico nenhum. `ads_creative_delete` ainda não está liberado nesta conta, então criativo velho fica na biblioteca (sem anúncio, não entrega nem gasta). Sobrou lá um `ZZ TESTE automacoes desligadas v3 (apagar)`, id `1583073472934692`, dos testes — pode apagar no Gerenciador.
 
 
 ## Regra de imagem gerada
