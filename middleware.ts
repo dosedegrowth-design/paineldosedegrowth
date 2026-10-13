@@ -112,6 +112,8 @@ export async function middleware(request: NextRequest) {
     "/lydia",
     // Estrutura de anúncios do Dr. Samuel Chagas (quiropraxia) — página pública pra compartilhar
     "/drsamuel",
+    // Estrutura de anúncios da Marina Saleme — página pública pra mostrar pra cliente
+    "/marina",
     // Página avulsa "cadê o link" (zoeira, sem destino)
     "/cade",
     // Webhook receiver
