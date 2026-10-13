@@ -53,7 +53,7 @@ Instagram · feminino · 40 a 65 anos · Brasil.
 | 03 | Calça Sevilha Vermelha | pronta |
 | 04 | Calça Sevilha Azul | pronta · pedido da Marina |
 | 05 | Caftan Sevilha Vermelho | pronta |
-| 06 | Kimono Bali Sevilha | **TRAVADA** — as 5 fotos do Lucas são locais; precisam ir para a biblioteca da loja |
+| 06 | Kimono Bali Sevilha | pronta — foto real do Lucas, modelo no fundo azul (frontal, kimono aberto) |
 | 07 | Camisa Ana Sevilha | **refeita** — foto 16840 da modelo bege, estampa Sevilha aplicada |
 | 08 | Camisa T Sevilha | pronta |
 | 09 | Macacão Sevilha Azul | pronta · vendeu em outubro |
@@ -90,7 +90,19 @@ Instagram · feminino · 40 a 65 anos · Brasil.
 | 25 | Sacolão Stripes Azul | pronta |
 | 26 | CONJUNTO · Saia Degrau + Sacolão | pedido do Lucas |
 
-As travadas **sobem mesmo assim, pausadas**, com a imagem disponível. Trocar depois.
+Nenhuma peça ficou com still de catálogo. Os 26 anúncios sobem com a peça vestida.
+
+## Hospedagem das imagens novas — bloqueio aberto
+
+As 9 imagens novas (as 8 geradas no KIE + a foto do Kimono) **ainda não estão nos criativos do Meta**. Dois motivos:
+
+1. Criativo no Meta é imutável. Trocar a imagem = criar criativo novo + trocar o criativo do anúncio. São 9 pares de operações.
+2. `ads_creative_upload_media` só aceita **URL pública** (o modo `LOCAL_FILE` depende de app interativo, que não existe nesta sessão). As 9 imagens estão só no scratchpad.
+
+Precisa de um destino público antes. Duas opções, decisão do Lucas:
+
+- **Biblioteca de arquivos da loja da Marina** (`fileCreate` no Admin GraphQL). É onde já moram as 26 imagens atuais dos criativos — consistente. Mas escreve na loja da cliente.
+- **Supabase Storage do projeto DDG** (`hkjukobqpjezhpxzplpj`), bucket público. Infra da DDG, não toca na loja da cliente. Precisa da service role key, que não está nas envs desta sessão.
 
 ## Regra de imagem gerada
 
