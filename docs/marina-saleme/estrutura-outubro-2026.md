@@ -1,0 +1,134 @@
+# Marina Saleme — Estrutura de anúncios · Outubro 2026
+
+> Handoff para execução no Meta Ads. Alinhado com a cliente e aprovado pelo Lucas em 13/10/2026.
+> Esta estrutura **ainda não foi publicada**: o conector Meta Ads não estava autenticado na sessão
+> em que ela foi montada. A sessão que pegar este arquivo deve criar tudo **PAUSADO** e avisar
+> antes de ligar qualquer coisa.
+
+## Regras que não podem ser quebradas
+
+- **Criar tudo pausado.** Nada entra no ar sem o Lucas conferir. Já houve um incidente de campanha
+  ativada sem autorização; não repetir.
+- `client_conversation_id` obrigatório em toda chamada da API Meta Ads: `Pd7kQ2mX9vB4nR8sT1wZ`
+- Conta: a mesma já usada para Marina Saleme. Página/IG: perfil da Marina Saleme Estamparia.
+- Estoque: **a palavra do Lucas vale mais que a contagem da Shopify** ("as vezes é so estoque
+  desatualizado"). Não barrar peça por causa do número da loja.
+
+## Orçamento
+
+| Campanha | Verba/dia | Observação |
+|---|---|---|
+| Vendas | R$ 225 | **CBO no nível da campanha** |
+| Tráfego | R$ 26 | igual ao mês anterior |
+| Alcance | R$ 7 | igual ao mês anterior |
+| **Total** | **R$ 258** | ≈ R$ 7.998/mês |
+
+CBO e não verba por conjunto: são 26 anúncios para R$ 225/dia — dividido por igual daria
+R$ 8,65 por anúncio, que não gera aprendizado. Em CBO o Meta concentra sozinho.
+
+### Como criar CBO pela API (workaround conhecido)
+
+1. Criar a campanha **sem** orçamento
+2. Criar os conjuntos com `daily_budget` (ABO)
+3. `ads_update_entity` na campanha setando o `daily_budget`
+
+Edição de orçamento força `status_forced_to_paused: true` — o que aqui é o comportamento desejado.
+
+## Público
+
+Instagram · feminino · 40 a 65 anos · Brasil.
+`targeting_automation.advantage_audience: 0` para travar idade e gênero.
+
+> A API não expõe busca de interesses. Segmentação por interesse, se for usada, entra na mão no
+> Gerenciador.
+
+## Os 4 conjuntos · 26 anúncios
+
+### Conjunto 01 · Sevilha — 10 anúncios
+
+| # | Peça | Status da imagem |
+|---|---|---|
+| 01 | Chemise Sevilha Vermelho | pronta |
+| 02 | Chemise Sevilha Azul | pronta |
+| 03 | Calça Sevilha Vermelha | pronta |
+| 04 | Calça Sevilha Azul | pronta · pedido da Marina |
+| 05 | Caftan Sevilha Vermelho | pronta |
+| 06 | Kimono Bali Sevilha | foto nova enviada pelo Lucas (editorial azul) |
+| 07 | Camisa Ana Sevilha | pronta |
+| 08 | Camisa T Sevilha | pronta |
+| 09 | Macacão Sevilha Azul | pronta · vendeu em outubro |
+| 10 | Lenço Sevilha Rosa | **TRAVADA** — só still; edição pendente |
+
+### Conjunto 02 · Ipanema — 5 peças + 2 conjuntos
+
+| # | Peça | Status da imagem |
+|---|---|---|
+| 11 | Camisa T Ipanema Marrom | pronta |
+| 12 | Camisa Ana Ipanema Marrom | pronta |
+| 13 | Camisa Ana Ipanema Amarelo | pronta |
+| 14 | Saia Degrau Ipanema Marrom | **TRAVADA** — nenhuma foto com modelo existe |
+| 15 | Saia Degrau Ipanema Amarelo | pronta · vendeu em outubro |
+| 16 | CONJUNTO · Saia Degrau Marrom + Camisa T ou Ana Marrom | foto de look |
+| 17 | CONJUNTO · Saia Degrau Amarelo + Camisa Ana Amarelo | foto de look |
+
+### Conjunto 03 · Leque — 3 anúncios
+
+| # | Peça | Status da imagem |
+|---|---|---|
+| 18 | Vestido Princesa Leque Berinjela | pronta · **legenda tem que dizer que é algodão** |
+| 19 | Vestido Clarice Leque Cinza | **TRAVADA** — só existem fotos da modelo Lara, que a cliente pediu para tirar |
+| 20 | Camisa Lenço Leque Verde | pronta |
+
+### Conjunto 04 · Sacolões — 5 peças + 1 conjunto
+
+| # | Peça | Status da imagem |
+|---|---|---|
+| 21 | Sacolão Rei Rainha Vermelho | foto de uso |
+| 22 | Sacolão Rei Rainha Mostarda | **TRAVADA** — só still |
+| 23 | Sacolão Stripes Verde | pronta |
+| 24 | Sacolão Stripes Vermelho | pronta |
+| 25 | Sacolão Stripes Azul | pronta |
+| 26 | CONJUNTO · Saia Degrau + Sacolão | pedido do Lucas |
+
+As 4 travadas **sobem mesmo assim, pausadas**, com a imagem disponível. Trocar depois.
+
+## Fora de outubro
+
+| Peça | Motivo |
+|---|---|
+| Calça Leque Verde | acabou (confirmado pelo Lucas) — era a nº1 de setembro, R$ 5.040 |
+| Camisa Jota Leque Mostarda | acabou · 0 em estoque, rascunho |
+| Saia Envelope Sevilha Azul | não tem |
+| Saia Envelope Sevilha Vermelho | não tem |
+| Lenço Sevilha Azul | substituído pelo rosa |
+
+## Contexto que motivou esta estrutura
+
+- **Nenhuma das 5 campeãs de setembro repetiu em outubro.** A nº1 (Calça Leque Verde, R$ 5.040)
+  esgotou. Perseguir o criativo vencedor falha por construção: o estoque por peça é de 1 a 11
+  unidades, então quando o vencedor aparece no relatório já não há o que vender.
+- **Outubro (1 a 13): 19 peças, 19 pedidos, uma unidade cada, zero repetição.** R$ 23.537.
+- 84% do tráfego da loja vem do Instagram (3.469 de 4.117 sessões).
+- **Eleição:** de 05 a 09/10, nos cinco dias seguintes ao primeiro turno, a loja recebeu 1.415
+  visitas (movimento normal) e vendeu **zero**. O tráfego não caiu — a decisão de compra parou.
+  Segundo turno em 25/10.
+
+### Recomendação de calendário
+
+Não estrear os criativos novos entre **24 e 28/10**. Segurar a estreia para **29/10** e deixar no ar
+apenas o que já estava rodando. Decisão final é do Lucas.
+
+## Pendências
+
+- [ ] Publicar a estrutura no Meta (pausada) — bloqueado só pelo conector
+- [ ] Legendas das 26 peças — processo anterior parou em 9 de 27, refazer
+- [ ] Lenço Sevilha Rosa: recolorir a foto real do lenço azul para o rosa real via API do kie.ai
+      (`POST https://api.kie.ai/api/v1/jobs/createTask`, modelo `google/nano-banana-edit`).
+      Chave do Lucas — pedir a ele, não está versionada.
+      Referências públicas:
+      - modelo com o lenço azul: `https://cdn.shopify.com/s/files/1/0272/7929/4543/files/em_baixa2510_Marina_Saleme_Alto_Verao26647.jpg`
+      - still do lenço rosa: `https://cdn.shopify.com/s/files/1/0272/7929/4543/files/MARINA-SALEME_006_3_e644b2bf-4201-4554-9af0-4de4de97775f.png`
+      Regra: trocar **apenas** a base turquesa pelo rosa. Palmeiras douradas, panteras pretas,
+      barrado vermelho e moldura geométrica têm que sair idênticos. Se a estampa distorcer,
+      descartar — anúncio não pode mostrar produto que não existe.
+- [ ] Saia Degrau Ipanema Marrom, Sacolão Rei Rainha Mostarda, Vestido Clarice: sem foto utilizável
