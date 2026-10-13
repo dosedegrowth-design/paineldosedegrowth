@@ -53,11 +53,11 @@ Instagram · feminino · 40 a 65 anos · Brasil.
 | 03 | Calça Sevilha Vermelha | pronta |
 | 04 | Calça Sevilha Azul | pronta · pedido da Marina |
 | 05 | Caftan Sevilha Vermelho | pronta |
-| 06 | Kimono Bali Sevilha | foto nova enviada pelo Lucas (editorial azul) |
-| 07 | Camisa Ana Sevilha | pronta |
+| 06 | Kimono Bali Sevilha | **TRAVADA** — as 5 fotos do Lucas são locais; precisam ir para a biblioteca da loja |
+| 07 | Camisa Ana Sevilha | **refeita** — foto 16840 da modelo bege, estampa Sevilha aplicada |
 | 08 | Camisa T Sevilha | pronta |
 | 09 | Macacão Sevilha Azul | pronta · vendeu em outubro |
-| 10 | Lenço Sevilha Rosa | **TRAVADA** — só still; edição pendente |
+| 10 | Lenço Sevilha Rosa | pronta — lenço azul recolorido para o rosa real |
 
 ### Conjunto 02 · Ipanema — 5 peças + 2 conjuntos
 
@@ -65,8 +65,8 @@ Instagram · feminino · 40 a 65 anos · Brasil.
 |---|---|---|
 | 11 | Camisa T Ipanema Marrom | pronta |
 | 12 | Camisa Ana Ipanema Marrom | pronta |
-| 13 | Camisa Ana Ipanema Amarelo | pronta |
-| 14 | Saia Degrau Ipanema Marrom | **TRAVADA** — nenhuma foto com modelo existe |
+| 13 | Camisa Ana Ipanema Amarelo | **refeita** — foto 16837 da modelo bege, estampa Ipanema amarela aplicada |
+| 14 | Saia Degrau Ipanema Marrom | pronta — saia trocada sobre foto real, 3 poses |
 | 15 | Saia Degrau Ipanema Amarelo | pronta · vendeu em outubro |
 | 16 | CONJUNTO · Saia Degrau Marrom + Camisa T ou Ana Marrom | foto de look |
 | 17 | CONJUNTO · Saia Degrau Amarelo + Camisa Ana Amarelo | foto de look |
@@ -84,13 +84,34 @@ Instagram · feminino · 40 a 65 anos · Brasil.
 | # | Peça | Status da imagem |
 |---|---|---|
 | 21 | Sacolão Rei Rainha Vermelho | foto de uso |
-| 22 | Sacolão Rei Rainha Mostarda | **TRAVADA** — só still |
+| 22 | Sacolão Rei Rainha Mostarda | pronta — cenário de pátio aplicado |
 | 23 | Sacolão Stripes Verde | pronta |
 | 24 | Sacolão Stripes Vermelho | pronta |
 | 25 | Sacolão Stripes Azul | pronta |
 | 26 | CONJUNTO · Saia Degrau + Sacolão | pedido do Lucas |
 
-As 4 travadas **sobem mesmo assim, pausadas**, com a imagem disponível. Trocar depois.
+As travadas **sobem mesmo assim, pausadas**, com a imagem disponível. Trocar depois.
+
+## Regra de imagem gerada
+
+O Lucas fechou a regra em 13/out: **quando a imagem for gerada, usar só uma modelo** — a do fundo bege, a mesma do anúncio 08 Camisa T Sevilha.
+
+Método: nunca criar a pessoa do zero. Partir sempre de uma **foto real dela** e trocar só o que a peça exige (estampa, cor, peça de roupa, fundo). Rosto, cabelo, pose, mãos, luz, grão e enquadramento ficam da foto original.
+
+Fotos reais dela já localizadas na biblioteca da loja (ensaio `2509_Marina_Saleme*`, fundo bege, calça branca):
+
+| Arquivo | Enquadramento | Uso |
+|---|---|---|
+| `2509_Marina_Saleme16902.jpg` | busto, mão na testa, olhos fechados | anúncio 08 |
+| `2509_Marina_Saleme16873.jpg` | busto, três-quartos, olhando para a câmera | anúncio 11 (foto real, sem edição) |
+| `2509_Marina_Saleme16840_1.jpg` | meio corpo, mãos na cintura, de frente | anúncio 07 |
+| `2509_Marina_Saleme16837.jpg` | corpo inteiro, de pé, descalça | anúncio 13 |
+
+Sobraram sem uso ainda: `16728`, `16732`, `16752` (jaqueta jeans, mesmo fundo) — servem se precisar de mais uma pose dela.
+
+Ferramenta: KIE (`google/nano-banana-edit`), que devolve 864×1184 sempre; depois Lanczos 2× + unsharp para 1728×2368. O `nano-banana-2-1` em 4K redesenha a estampa — não usar. O `recraft/crisp-upscale` transforma a foto em vetor — não usar. O `topaz/image-upscale` está retornando erro interno.
+
+Na estampa, o que mais erra é a **escala do rapport**. Dizer no prompt quantas faixas aparecem na frente da peça e qual o tamanho de cada losango, e conferir contra a foto do produto antes de aceitar.
 
 ## Fora de outubro
 
