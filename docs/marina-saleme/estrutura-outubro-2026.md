@@ -104,6 +104,42 @@ Precisa de um destino público antes. Duas opções, decisão do Lucas:
 - **Biblioteca de arquivos da loja da Marina** (`fileCreate` no Admin GraphQL). É onde já moram as 26 imagens atuais dos criativos — consistente. Mas escreve na loja da cliente.
 - **Supabase Storage do projeto DDG** (`hkjukobqpjezhpxzplpj`), bucket público. Infra da DDG, não toca na loja da cliente. Precisa da service role key, que não está nas envs desta sessão.
 
+## Achados técnicos da conta 782476046702053 (13/out)
+
+Testado na própria conta, não é suposição.
+
+**A identidade do Instagram NÃO é bloqueio.** `ads_get_ig_accounts` devolve `[]`, mas isso é falta da permissão `instagram_basic` no app para LISTAR as contas — não ausência de identidade. Os 26 criativos novos já têm `effective_instagram_media_id` preenchido, igual aos criativos da campanha antiga que estão no ar com 29 mil impressões. O Meta usa a Página como identidade no Instagram automaticamente. Passar `instagram_user_id` explícito falha: o id `602357466550214` que aparece no público "Compradoras Marina" é de shopping do Instagram, não de IG Business Account, e é rejeitado.
+
+**Customização por posicionamento está bloqueada nesta conta.** `placement_customizations` (e `multi_media`) retornam: *"Placement Asset Customization is not enabled for this ad account in Ads MCP yet. This capability is controlled by the Ads MCP rollout and cannot be enabled in Ads Manager."* Ou seja, não dá para mandar uma imagem para o Feed e outra para o Reels pela API. É uma imagem por anúncio. Se quiser imagem separada por posicionamento, tem que ser na mão no Gerenciador.
+
+**Proporção da imagem.** O Instagram Feed aceita de 1.91:1 até 4:5 (0,80). Imagem mais alta que isso é recortada. Auditoria dos 26 criativos: **16 estão abaixo de 0,79** e seriam cortados — inclusive as 8 novas geradas no KIE, que saem em 0,73. Como só cabe uma imagem por anúncio, o formato certo é **4:5 exato (1440x1800)**, que passa inteiro no Feed e no Reels aparece inteiro com preenchimento.
+
+Reenquadramento sem cortar: `scratchpad/reformat.py`. A foto inteira é encaixada no quadro e as faixas que sobram são preenchidas esticando a coluna de borda da própria foto com blur leve. Em fundo de estúdio liso (bege, azul, preto) a emenda é invisível.
+
+**Como desligar as automações do Advantage+ creative.** `standard_enhancements` foi descontinuado e é rejeitado; `music` não existe como feature. O spec abaixo foi aceito pela API nesta conta:
+
+```json
+{"creative_features_spec":{
+  "image_touchups":{"enroll_status":"OPT_OUT"},
+  "text_optimizations":{"enroll_status":"OPT_OUT"},
+  "image_brightness_and_contrast":{"enroll_status":"OPT_OUT"},
+  "enhance_cta":{"enroll_status":"OPT_OUT"},
+  "image_templates":{"enroll_status":"OPT_OUT"},
+  "image_animation":{"enroll_status":"OPT_OUT"},
+  "adapt_to_placement":{"enroll_status":"OPT_OUT"},
+  "media_type_automation":{"enroll_status":"OPT_OUT"},
+  "video_auto_crop":{"enroll_status":"OPT_OUT"},
+  "profile_card":{"enroll_status":"OPT_OUT"},
+  "add_text_overlay":{"enroll_status":"OPT_OUT"}}}
+```
+
+`adapt_to_placement` é o que impede o recorte por posicionamento. `image_animation` e `media_type_automation` são os que transformam a foto em vídeo — é de onde vem a música automática no Reels; desligados os dois, não há música.
+
+Vai como string JSON em `degrees_of_freedom_spec`, e não pode ser combinado com `advantage_plus_creative`.
+
+**Criativo é imutável.** Trocar a imagem de um anúncio = criar criativo novo + apontar o anúncio para ele. `ads_creative_delete` ainda não está liberado nesta conta, então criativo velho fica na biblioteca (sem anúncio, não entrega nem gasta). Sobrou lá um `ZZ TESTE automacoes desligadas v3 (apagar)`, id `1583073472934692`, dos testes — pode apagar no Gerenciador.
+
+
 ## Regra de imagem gerada
 
 O Lucas fechou a regra em 13/out: **quando a imagem for gerada, usar só uma modelo** — a do fundo bege, a mesma do anúncio 08 Camisa T Sevilha.
