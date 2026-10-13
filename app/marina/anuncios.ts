@@ -138,7 +138,7 @@ export const ANUNCIOS: Anuncio[] = [
     conjunto: "Ipanema",
     legenda:
       "A saia degrau é tipo envelope, com transpasse e o detalhe de duas alturas. Se adapta a qualquer tipo de corpo. Fica ótima com a Camisa T ou a Camisa Ana na mesma estampa.",
-    img: `${CDN}/ADS_14_Saia_Degrau_Ipanema_Marrom_FEED_4x5_4c2a672a-3ee0-4e46-8a23-3e7c48624595.jpg`,
+    img: `${CDN}/ADS_14c_Saia_Degrau_Ipanema_Marrom.jpg`,
     produto: "saia-degrau-ipanema-marrom",
   },
   {
@@ -219,7 +219,7 @@ export const ANUNCIOS: Anuncio[] = [
     conjunto: "Sacolões",
     legenda:
       "Bolsa de lona 100% algodão com alças de couro, forrada e com bolso interno. Fundo estruturado e botões que regulam a largura. Listras em verde, para a praia e para a cidade.",
-    img: `${CDN}/ADS_23_Sacolao_Stripes_Verde_FEED_4x5_6bd0ddf1-e066-4d71-86d1-cac1386ac24f.jpg`,
+    img: `${CDN}/ADS_23b_Sacolao_Stripes_Verde.jpg`,
     produto: "sacolao-stripes-verde",
   },
   {
@@ -228,7 +228,7 @@ export const ANUNCIOS: Anuncio[] = [
     conjunto: "Sacolões",
     legenda:
       "Bolsa de lona 100% algodão com alças de couro, forrada e com bolso interno. Fundo estruturado e botões que regulam a largura. Listras em vermelho.",
-    img: `${CDN}/ADS_24_Sacolao_Stripes_Vermelho_FEED_4x5_d3136c89-84f6-41d8-a86e-78bcc729c352.jpg`,
+    img: `${CDN}/ADS_24b_Sacolao_Stripes_Vermelho.jpg`,
     produto: "sacolao-stripes-vermelho",
   },
   {
@@ -237,7 +237,7 @@ export const ANUNCIOS: Anuncio[] = [
     conjunto: "Sacolões",
     legenda:
       "Bolsa de lona 100% algodão com alças de couro, forrada e com bolso interno. Fundo estruturado e botões que regulam a largura. Listras em azul.",
-    img: `${CDN}/ADS_25_Sacolao_Stripes_Azul_FEED_4x5_1ba81a5e-ce31-413c-994c-def5409652f7.jpg`,
+    img: `${CDN}/ADS_25b_Sacolao_Stripes_Azul.jpg`,
     produto: "sacolao-stripes-azul",
   },
   {
@@ -246,7 +246,7 @@ export const ANUNCIOS: Anuncio[] = [
     conjunto: "Sacolões",
     legenda:
       "A saia degrau estampada com o sacolão de lona e alças de couro. Um look de dia inteiro, da rua ao fim de semana. Cada peça tem a sua própria página. Carrossel de dois cards.",
-    img: `${CDN}/ADS_14_Saia_Degrau_Ipanema_Marrom_FEED_4x5_4c2a672a-3ee0-4e46-8a23-3e7c48624595.jpg`,
+    img: `${CDN}/ADS_14c_Saia_Degrau_Ipanema_Marrom.jpg`,
     produto: "sacolao-rei-rainha",
   },
 ];
