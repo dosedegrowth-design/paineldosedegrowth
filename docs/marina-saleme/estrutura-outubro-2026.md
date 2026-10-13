@@ -104,6 +104,44 @@ Precisa de um destino público antes. Duas opções, decisão do Lucas:
 - **Biblioteca de arquivos da loja da Marina** (`fileCreate` no Admin GraphQL). É onde já moram as 26 imagens atuais dos criativos — consistente. Mas escreve na loja da cliente.
 - **Supabase Storage do projeto DDG** (`hkjukobqpjezhpxzplpj`), bucket público. Infra da DDG, não toca na loja da cliente. Precisa da service role key, que não está nas envs desta sessão.
 
+## Análise de outubro — o que o dado diz (13/out)
+
+Levantamento em 5 frentes (Meta 30 dias, setembro vs outubro, públicos, Shopify, formato) mais uma passada crítica. Só o que ficou de pé depois da verificação.
+
+### Dois alarmes que NÃO procedem
+
+**"A faixa 40-65 corta o 65+."** Não corta. Li o targeting do conjunto que vendeu em setembro (`120249487980150535`, R$39.262, ROAS 4,46) e ele tem exatamente o mesmo `age_min: 40, age_max: 65` dos 4 conjuntos novos — e foi desse conjunto que saíram as 11 compras atribuídas à faixa "65+" no breakdown. No Meta, 65 é o teto da API e significa "65 ou mais". Não há nada a corrigir.
+
+**"Os 4 públicos estão vazios e a campanha não vai entregar."** O `approximate_count` deles volta 20/20, é verdade. Mas o conjunto que vendeu R$39.262 em setembro usa **exatamente esses mesmos 4 públicos**. O desempenho real ganha do contador: eles entregam. O número 20/20 é artefato, não diagnóstico.
+
+Os 4 conjuntos novos replicam fielmente o targeting do conjunto que vendeu. Está conforme o pedido.
+
+### O que procede e vale decisão
+
+| Achado | Número | Consequência |
+|---|---|---|
+| ROAS do Meta inflado | pixel disparou 15 eventos Purchase em 01–13/out contra 8 pedidos reais no Shopify (~1,9x). O Meta atribui R$21.747 de 01–13/out, e a loja inteira faturou R$23.722 no período (91,7%) | **A métrica de decisão tem que ser pedido do Shopify, não ROAS do Meta** |
+| A estrutura anuncia o que não vendeu | só 26,3% da receita de outubro (R$6.180 de R$23.537) saiu de peças que os 26 anúncios cobrem | as 3 validadas são os anúncios 19, 09 e 15/17 |
+| Ipanema: cor errada | vendeu **Verde** (R$3.840 — Calça + Camisa Lenço). Os anúncios são Marrom e Amarelo | trocar a cor ou aceitar que é teste |
+| Camisa T é o modelo herói | R$5.092 em outubro (21,6%) nas estampas Tijolo, Cassino, Ondas, Atenas — nenhuma no plano. Em setembro, R$4.455 | dois meses seguidos acima de R$4.400 sem anúncio |
+| Sacolões não vendeu | R$0 em 01–13/out nos 5 SKUs. Carrega 6 dos 26 anúncios (23%) | candidato a sair ou entrar com teto |
+| Sevilha já foi testada | R$375,93 no Meta em 30 dias, **zero compra**. Carrega 10 dos 26 anúncios (38%) | maior bloco de verba na coleção que não converteu |
+| Receita concentrada | 63,5% de outubro (R$15.075) veio de **uma** cliente, em 2 pedidos. Sem ela o ticket cai 4,8% abaixo de setembro | não dimensionar meta em cima do ticket de R$2.942 |
+| Frequência saturando | conjunto vencedor em 2,96 e campanha em 3,04, com 19,9 mil de alcance. As 8 compras reais vieram com frequência mediana ~1,5 | público pequeno, 4 conjuntos disputando o mesmo leilão |
+| Estoque crítico | Caftan Sevilha (05) 2 unidades; Saia Degrau Amarelo (15), Vestido Princesa (18) e Clarice (19) com 1 cada | 4 anúncios apontando para peça quase esgotada |
+| Janela morta | zero pedido em 05–09/out (1º turno). 2º turno é 25/10 | provável repetição em 24–27/10 |
+
+### Canal e posicionamento
+
+100% das vendas de setembro vieram do Instagram, divididas entre Feed e Reels: Feed R$4.151 com 13 compras (ROAS 5,69, CPA R$319), Reels R$620 com 5 compras (ROAS 8,51, CPA R$124). Nenhuma linha de Facebook, Audience Network, Stories ou Explore. Cortar o Facebook não custa venda nenhuma — mas o certo é dizer que **o que vendeu foi 100% Instagram**, não que "Facebook não vende": ele nunca foi comprado nesse conjunto.
+
+O Reels teve CTR melhor nos dois meses (9,90% e 9,64% contra 7,22% e 6,18%) e CPA menor no acumulado (R$258 contra R$404), mas fez **zero compra em outubro** com R$670 gastos. É direcional, não conclusivo — manter Feed e Reels juntos e deixar o CBO decidir.
+
+### Públicos
+
+Inventário real da conta: de ~176 públicos, 15 têm tamanho de entrega e 14 são engajamento de perfil. Os dois confirmadamente da Marina e com volume são `120219888489150535` (Instagram 365 dias, 85–100 mil, conta IG 602357466550214) e `120211613906190535` (lista `neutro.xlsx`, 14–16 mil pessoas reais, sem atualização desde ago/2024). O maior da conta (`120242670781220535`, 187–220 mil) vem de uma conta de Instagram não identificada — não usar.
+
+
 ## Achados técnicos da conta 782476046702053 (13/out)
 
 Testado na própria conta, não é suposição.
