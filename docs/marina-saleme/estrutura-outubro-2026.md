@@ -238,3 +238,71 @@ apenas o que já estava rodando. Decisão final é do Lucas.
       barrado vermelho e moldura geométrica têm que sair idênticos. Se a estampa distorcer,
       descartar — anúncio não pode mostrar produto que não existe.
 - [ ] Saia Degrau Ipanema Marrom, Sacolão Rei Rainha Mostarda, Vestido Clarice: sem foto utilizável
+
+## Revisao da cliente — 14/out/2026
+
+A Marina leu os 26 anuncios na pagina `painel.dosedegrowth.com/marina` e devolveu os ajustes
+abaixo. **Resultado: 22 anuncios.** Tudo aplicado nos dois lugares (pagina + Meta) em 14/out.
+
+### Legendas — o texto e dela, nao reescrever
+
+| # | O que ela pediu |
+|---|---|
+| 01, 02 | Trocar "chemise em linho leve e arejado" por **"Chemise 100% linho"** |
+| 03 | "compoe com a chemise e com a **blusa Diva**" |
+| 06 | "Kimono Sevilha, **100% seda**" + **"com fechamento opcional sem transpasse"**. Ela escreveu antes "aberto ou semi aberto", depois voltou atras: *"Calma: vou pensar. Nao gostei do aberto ou semi aberto."* — o 06 ainda pode mudar |
+| 10 | "super versatil, pode ser usado como **top**, na cintura, no pescoco" |
+| 11 | "A estampa Ipanema Marrom e **atemporal**, e compoe com a Saia Degrau Ipanema Marrom" |
+| 15 | "Na Estampa Ipanema Amarelo compoe muito bem com a Camisa Ana Ipanema Amarelo. Ultima" |
+
+### Fotos trocadas
+
+- **05 Caftan** — *"a Lara e influencer, nao modelo"*. Saiu `IMG-1027.jpg`, entrou
+  `embaixa2510MarinaSalemeAltoVerao25238.jpg` (a modelo do ensaio, corpo inteiro, fundo azul).
+  Hospedada como `ADS_05b_Caftan_Sevilha_Vermelho.jpg`.
+- **12 Camisa Ana Ipanema Marrom** — *"A Foto esta errada! A camisa da foto e a camisa Lenco, e a
+  foto esta feia"*. Ela tem razao: a foto vinha de `2509_Marina_Saleme17746.jpg`, onde a modelo
+  usa a Camisa Lenco (modelagem larga, mangas amplas), nao a Ana (colarinho e punho).
+  Entrou **`CAMISA_ANA_IPANEMA_MARROM_1.jpg`** — foto real da peca certa, na rua em Copacabana,
+  que ja estava na propria pagina do produto e ninguem tinha achado. Hospedada como
+  `ADS_12b_Camisa_Ana_Ipanema_Marrom.jpg`. **Nao e imagem gerada.**
+
+### Peca errada no texto
+
+- **13** era "Camisa Ana Ipanema Amarelo", mas a foto mostra **gola careca** = Camisa T.
+  Ela ofereceu *"Trocar a foto ou a descricao"* — trocamos a descricao, porque a foto esta certa
+  e o produto **CAMISA T IPANEMA AMARELO** existe (`camisa-t-ipanema-amarelo`, 9 em estoque).
+  O anuncio agora aponta para la.
+- **16 e 17** — *"so acertar a camisa"*. Conferido no decote: no 16 a peca e a **Camisa Lenco**
+  (larga, mangas amplas); no 17 e a **Camisa T** (gola banda). As legendas nomeiam a peca certa.
+
+### Fora da estrutura
+
+- **18, 19, 20** — o conjunto **Leque inteiro** saiu. O ad set `120250690303110535` foi arquivado.
+- **26** (carrossel saia + sacolao) — *"A saia Degrau ja foi mencionada, no anuncio 16"*.
+
+### Como ficou
+
+| Conjunto | Anuncios |
+|---|---|
+| 01 Sevilha | 10 (01 a 10) |
+| 02 Ipanema | 7 (11 a 17) |
+| 03 Leque | **arquivado** |
+| 04 Sacoloes | 5 (21 a 25) |
+| **Total** | **22**, todos PAUSADOS |
+
+16 criativos e 16 anuncios novos (sufixo `v3`), porque criativo e imutavel e anuncio nao pode ser
+reapontado. Os substituidos, os excluidos e os 26 `ZZ SUBSTITUIDO` foram **arquivados** — a
+campanha mostra so os 22.
+
+### Pendente com a cliente
+
+- **Videos das bolsas** — ela perguntou *"Vamos enviar videos das bolsas tambem ok?"*. Sim: o Meta
+  aceita video no Feed e no Reels. A loja nao tem video de bolsa (os unicos videos no acervo sao
+  de 2020/2023 e nao sao das bolsas). Quando ela mandar: mp4, 4:5 ou 9:16, ate 60s. Vira anuncio
+  novo (`ads_create_creative` com `video_id` + thumbnail).
+- **06 Kimono** — ela disse que ia pensar. Esta no ar com "fechamento opcional sem transpasse".
+- **Divulgacao de IA**: 10, 13 e 16 usam imagem editada por IA sobre foto real. O campo
+  `self_ai_disclosure` do criativo **nao foi preenchido** — a declaracao e do anunciante, nao
+  nossa, e so vale na Europa, India, Taiwan, California e Nova York. A campanha e so Brasil.
+  Se o Lucas quiser declarar, tem que ser na criacao do criativo (nao da para editar depois).
