@@ -114,6 +114,8 @@ export async function middleware(request: NextRequest) {
     "/drsamuel",
     // Estrutura de anúncios da Marina Saleme — página pública pra mostrar pra cliente
     "/marina",
+    // Guia do site novo da Palavra com Alma (Tray) — página pública pra mostrar pra cliente
+    "/palavracomalma",
     // Página avulsa "cadê o link" (zoeira, sem destino)
     "/cade",
     // Webhook receiver
