@@ -1,9 +1,13 @@
 # Marina Saleme — Estrutura de anúncios · Outubro 2026
 
 > Handoff para execução no Meta Ads. Alinhado com a cliente e aprovado pelo Lucas em 13/10/2026.
-> Esta estrutura **ainda não foi publicada**: o conector Meta Ads não estava autenticado na sessão
-> em que ela foi montada. A sessão que pegar este arquivo deve criar tudo **PAUSADO** e avisar
-> antes de ligar qualquer coisa.
+> **ATIVADA em 14/10/2026**, com o OK do Lucas ("a campanha de conversão tem que parar e ativar uma
+> nova com os anúncios que alinhamos"). A campanha `DD Conversao Vendas Lookalike 2.0 - 04/08/2026`
+> (`120249487968470535`) foi **pausada** no mesmo momento. As campanhas de Tráfego e de Alcance
+> continuam ativas, intocadas.
+>
+> No ar: campanha `120250690296280535`, R$ 225/dia em CBO, 3 conjuntos, **22 anúncios ACTIVE**.
+> A verba de conversão subiu de R$ 150/dia (a antiga) para R$ 225/dia.
 
 ## Regras que não podem ser quebradas
 
