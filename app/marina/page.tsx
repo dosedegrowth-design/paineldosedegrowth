@@ -3,7 +3,7 @@ import { ANUNCIOS, CONJUNTOS } from "./anuncios";
 
 export const metadata: Metadata = {
   title: "Marina Saleme · Anúncios de Outubro",
-  description: "Os 26 anúncios da estrutura de outubro de 2026.",
+  description: "Os 22 anúncios da estrutura de outubro de 2026.",
   robots: { index: false, follow: false },
 };
 
@@ -20,7 +20,7 @@ export default function MarinaPage() {
           Os anúncios desta rodada
         </h1>
         <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-neutral-600">
-          26 anúncios, um para cada peça, divididos em quatro conjuntos. Só no
+          22 anúncios, um para cada peça, divididos em três conjuntos. Só no
           Instagram, no Feed e no Reels. Cada anúncio leva direto para a página
           da peça na loja.
         </p>
