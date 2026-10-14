@@ -216,3 +216,65 @@ export const ANUNCIOS: Anuncio[] = [
     produto: "sacolao-stripes-azul",
   },
 ];
+
+// Revisao da cliente em 14/10/2026 — o que mudou em cada anuncio.
+// A chave e o numero do anuncio; quem nao esta aqui ficou igual.
+export type Ajuste = { tag: string; detalhe: string };
+
+export const AJUSTES: Record<string, Ajuste> = {
+  "01": { tag: "Legenda nova", detalhe: "Chemise 100% linho." },
+  "02": { tag: "Legenda nova", detalhe: "Chemise 100% linho." },
+  "03": {
+    tag: "Legenda nova",
+    detalhe: "Compõe com a Chemise Sevilha e com a Blusa Diva.",
+  },
+  "05": {
+    tag: "Foto nova",
+    detalhe: "Saiu a foto da Lara, entrou a modelo do ensaio de corpo inteiro.",
+  },
+  "06": {
+    tag: "Legenda nova",
+    detalhe: "100% seda, com fechamento opcional sem transpasse.",
+  },
+  "10": {
+    tag: "Legenda nova",
+    detalhe: "Super versátil: pode ser usado como top, na cintura, no pescoço.",
+  },
+  "11": {
+    tag: "Legenda nova",
+    detalhe: "A estampa Ipanema Marrom é atemporal.",
+  },
+  "12": {
+    tag: "Foto nova",
+    detalhe:
+      "A foto anterior mostrava a Camisa Lenço. Entrou a foto real da Camisa Ana, com colarinho e punho.",
+  },
+  "13": {
+    tag: "Peça corrigida",
+    detalhe:
+      "Era Camisa Ana, mas a peça da foto tem gola careca. Virou Camisa T Ipanema Amarelo e leva para a página certa.",
+  },
+  "14": { tag: "Foto atualizada", detalhe: "A saia aparece inteira." },
+  "15": {
+    tag: "Legenda nova",
+    detalhe: "Compõe muito bem com a Camisa Ana Ipanema Amarelo.",
+  },
+  "16": {
+    tag: "Camisa corrigida",
+    detalhe: "A peça de cima é a Camisa Lenço, não a Camisa Ana.",
+  },
+  "17": {
+    tag: "Camisa corrigida",
+    detalhe: "A peça de cima é a Camisa T, de gola careca.",
+  },
+  "23": { tag: "Foto atualizada", detalhe: "A bolsa aparece de frente, inteira." },
+  "24": { tag: "Foto atualizada", detalhe: "A bolsa aparece de frente, inteira." },
+  "25": { tag: "Foto atualizada", detalhe: "A bolsa aparece de frente, inteira." },
+};
+
+export const SAIRAM = [
+  { n: "18", nome: "Vestido Princesa Leque Berinjela" },
+  { n: "19", nome: "Vestido Clarice Leque Cinza" },
+  { n: "20", nome: "Camisa Lenço Leque Verde" },
+  { n: "26", nome: "CONJUNTO Saia Degrau + Sacolão" },
+];
