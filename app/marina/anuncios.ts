@@ -194,7 +194,7 @@ export const ANUNCIOS: Anuncio[] = [
     conjunto: "Sacolões",
     legenda:
       "Bolsa de lona 100% algodão com alças de couro, forrada e com bolso interno. Fundo estruturado e botões que regulam a largura. Listras em verde, para a praia e para a cidade.",
-    img: `${CDN}/ADS_23b_Sacolao_Stripes_Verde.jpg`,
+    img: `${CDN}/ADS_23_Sacolao_Stripes_Verde_FEED_4x5_6bd0ddf1-e066-4d71-86d1-cac1386ac24f.jpg`,
     produto: "sacolao-stripes-verde",
   },
   {
@@ -203,7 +203,7 @@ export const ANUNCIOS: Anuncio[] = [
     conjunto: "Sacolões",
     legenda:
       "Bolsa de lona 100% algodão com alças de couro, forrada e com bolso interno. Fundo estruturado e botões que regulam a largura. Listras em vermelho.",
-    img: `${CDN}/ADS_24b_Sacolao_Stripes_Vermelho.jpg`,
+    img: `${CDN}/ADS_24_Sacolao_Stripes_Vermelho_FEED_4x5_d3136c89-84f6-41d8-a86e-78bcc729c352.jpg`,
     produto: "sacolao-stripes-vermelho",
   },
   {
@@ -212,7 +212,7 @@ export const ANUNCIOS: Anuncio[] = [
     conjunto: "Sacolões",
     legenda:
       "Bolsa de lona 100% algodão com alças de couro, forrada e com bolso interno. Fundo estruturado e botões que regulam a largura. Listras em azul.",
-    img: `${CDN}/ADS_25b_Sacolao_Stripes_Azul.jpg`,
+    img: `${CDN}/ADS_25_Sacolao_Stripes_Azul_FEED_4x5_1ba81a5e-ce31-413c-994c-def5409652f7.jpg`,
     produto: "sacolao-stripes-azul",
   },
 ];
@@ -267,9 +267,18 @@ export const AJUSTES: Record<string, Ajuste> = {
     tag: "Camisa corrigida",
     detalhe: "A peça de cima é a Camisa T, de gola careca.",
   },
-  "23": { tag: "Foto atualizada", detalhe: "A bolsa aparece de frente, inteira." },
-  "24": { tag: "Foto atualizada", detalhe: "A bolsa aparece de frente, inteira." },
-  "25": { tag: "Foto atualizada", detalhe: "A bolsa aparece de frente, inteira." },
+  "23": {
+    tag: "Foto da modelo",
+    detalhe: "Voltou a foto da modelo com as bolsas, do ensaio da Marina.",
+  },
+  "24": {
+    tag: "Foto da modelo",
+    detalhe: "Voltou a foto da modelo com as bolsas, do ensaio da Marina.",
+  },
+  "25": {
+    tag: "Foto da modelo",
+    detalhe: "Voltou a foto da modelo com as bolsas, do ensaio da Marina.",
+  },
 };
 
 export const SAIRAM = [
