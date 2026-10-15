@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
-import type { ComponentProps, ReactNode } from "react";
+import type { ComponentProps, FormEvent, ReactNode } from "react";
 // (useState/useTransition usados no AccessLinkPanel)
 import {
   adminCreateClientAction,
@@ -16,6 +16,9 @@ import { PASSWORD_TOKEN_DAYS, ROUTES } from "@/lib/tayssa/config";
 import type { ActionResult, BenefitRow, ClientProfileRow, ServiceRow, UserRow } from "@/lib/tayssa/types";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { CopyField } from "@/components/tayssa/admin/controls";
+import { useFormPreservado } from "@/components/tayssa/ui/form-preservado";
+
+export { useFormPreservado };
 
 /* ------------------------------------------------------------------
    Peças de formulário no vocabulário do painel (.tya-*). De propósito
@@ -140,13 +143,6 @@ export function Marcar({
   );
 }
 
-function useResetOnSuccess(ok: boolean | undefined) {
-  const ref = useRef<HTMLFormElement>(null);
-  useEffect(() => {
-    if (ok) ref.current?.reset();
-  }, [ok]);
-  return ref;
-}
 
 /** Mensagem pronta para enviar o link de acesso pelo WhatsApp. */
 function inviteMessage(name: string, url: string) {
@@ -161,6 +157,7 @@ export function ClientCreateForm() {
     null
   );
   const err = state && !state.ok ? state : null;
+  const { onReset } = useFormPreservado();
 
   if (state?.ok) {
     return (
@@ -195,7 +192,7 @@ export function ClientCreateForm() {
   }
 
   return (
-    <form action={action} noValidate style={{ display: "grid", gap: 16 }}>
+    <form action={action} noValidate onReset={onReset} style={{ display: "grid", gap: 16 }}>
       <div className="tya-grid">
         <Campo label="Nome completo" name="name" required error={err?.field === "name" ? err.error : undefined} />
         <Campo label="Apelido" name="nickname" maxLength={60} hint="Como ela gosta de ser chamada." />
@@ -222,8 +219,9 @@ export function ClientCreateForm() {
 export function ClientEditForm({ user, profile }: { user: UserRow; profile: ClientProfileRow | null }) {
   const [state, action, pending] = useActionState<ActionResult | null, FormData>(adminUpdateClientAction, null);
   const err = state && !state.ok ? state : null;
+  const { onReset } = useFormPreservado();
   return (
-    <form action={action} noValidate style={{ display: "grid", gap: 16 }}>
+    <form action={action} noValidate onReset={onReset} style={{ display: "grid", gap: 16 }}>
       <input type="hidden" name="id" value={user.id} />
       <div className="tya-grid">
         <Campo label="Nome completo" name="name" defaultValue={user.name} required error={err?.field === "name" ? err.error : undefined} />
@@ -298,9 +296,9 @@ export function AccessLinkPanel({ userId, name, phone, hasPassword }: { userId: 
 export function AdminServiceEntryForm({ clientId, services, todayISO }: { clientId: string; services: ServiceRow[]; todayISO: string }) {
   const [state, action, pending] = useActionState<ActionResult<{ id: string }> | null, FormData>(adminAddServiceAction, null);
   const err = state && !state.ok ? state : null;
-  const ref = useResetOnSuccess(state?.ok);
+  const { ref, onReset } = useFormPreservado(state);
   return (
-    <form ref={ref} action={action} noValidate style={{ display: "grid", gap: 14 }}>
+    <form ref={ref} action={action} noValidate onReset={onReset} style={{ display: "grid", gap: 14 }}>
       <input type="hidden" name="client_id" value={clientId} />
       <div className="tya-grid">
         <Escolha label="Serviço" name="service_id" required defaultValue="" error={err?.field === "service_id" ? err.error : undefined}>
@@ -336,9 +334,10 @@ export function AdminServiceEntryForm({ clientId, services, todayISO }: { client
 export function ReleaseBirthdayForm({ clientId, defaultDays }: { clientId: string; defaultDays: number }) {
   const [state, action, pending] = useActionState<ActionResult | null, FormData>(adminReleaseBirthdayAction, null);
   const err = state && !state.ok ? state : null;
+  const { onReset } = useFormPreservado();
   if (state?.ok) return <p className="tya-ok">Benefício de aniversário liberado. Ela já vê no espaço dela.</p>;
   return (
-    <form action={action} noValidate style={{ display: "grid", gap: 14, maxWidth: 560 }}>
+    <form action={action} noValidate onReset={onReset} style={{ display: "grid", gap: 14, maxWidth: 560 }}>
       <input type="hidden" name="client_id" value={clientId} />
       <Campo label="O presente (ela vê este título)" name="title" required placeholder="Ex.: Lip spa de aniversário" error={err?.field === "title" ? err.error : undefined} />
       <Area label="Descrição (opcional)" name="description" rows={2} maxLength={500} />
@@ -360,12 +359,18 @@ export function ReleaseBirthdayForm({ clientId, defaultDays }: { clientId: strin
 export function GrantCustomBenefitForm({ clientId, benefits, defaultDays }: { clientId: string; benefits: BenefitRow[]; defaultDays: number }) {
   const [state, action, pending] = useActionState<ActionResult | null, FormData>(adminGrantCustomBenefitAction, null);
   const err = state && !state.ok ? state : null;
-  const ref = useResetOnSuccess(state?.ok);
+  const { ref, onReset } = useFormPreservado(state);
   const options = benefits.filter((b) => b.active && b.type !== "birthday");
   return (
-    <form ref={ref} action={action} noValidate style={{ display: "grid", gap: 14, maxWidth: 560 }}>
+    <form ref={ref} action={action} noValidate onReset={onReset} style={{ display: "grid", gap: 14, maxWidth: 560 }}>
       <input type="hidden" name="client_id" value={clientId} />
-      <Escolha label="Tipo" name="benefit_id" required defaultValue="">
+      <Escolha
+        label="Tipo"
+        name="benefit_id"
+        required
+        defaultValue=""
+        error={err?.field === "benefit_id" ? err.error : undefined}
+      >
         <option value="" disabled>
           Escolha
         </option>
@@ -377,7 +382,13 @@ export function GrantCustomBenefitForm({ clientId, benefits, defaultDays }: { cl
       </Escolha>
       <Campo label="Título (ela vê)" name="title" required error={err?.field === "title" ? err.error : undefined} />
       <Area label="Descrição (opcional)" name="description" rows={2} maxLength={500} />
-      <Campo label="Validade (dias)" name="validity_days" inputMode="numeric" defaultValue={String(defaultDays)} />
+      <Campo
+        label="Validade (dias)"
+        name="validity_days"
+        inputMode="numeric"
+        defaultValue={String(defaultDays)}
+        error={err?.field === "validity_days" ? err.error : undefined}
+      />
       {err && !err.field ? (
         <p className="tya-err" role="alert">
           {err.error}

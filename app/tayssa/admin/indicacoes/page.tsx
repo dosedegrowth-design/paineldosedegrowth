@@ -25,7 +25,7 @@ const TOM: Record<ReferralStatus, "warn" | "brand" | "gold" | "ok" | "quiet"> = 
   pending: "warn",
   contacted: "quiet",
   scheduled: "brand",
-  completed: "gold",
+  completed: "warn",
   approved: "ok",
   rejected: "quiet",
 };
@@ -120,6 +120,9 @@ function Linha({ r, espera }: { r: ReferralWithClient; espera?: boolean }) {
   );
 }
 
+/** Quanto da tabela de encerradas cabe na tela de uma vez. */
+const ENCERRADAS_NA_TELA = 60;
+
 /** Primeiro o que já foi atendido (espera a palavra dela), depois o resto do caminho. */
 const ORDEM: ReferralStatus[] = ["completed", "scheduled", "contacted", "pending", "approved", "rejected"];
 
@@ -130,7 +133,7 @@ export default async function ReferralsAdminPage() {
     .filter((r) => !["approved", "rejected"].includes(r.status))
     .sort((a, b) => ORDEM.indexOf(a.status) - ORDEM.indexOf(b.status));
   const closedAll = all.filter((r) => ["approved", "rejected"].includes(r.status));
-  const closed = closedAll.slice(0, 60);
+  const closed = closedAll.slice(0, ENCERRADAS_NA_TELA);
   const esperando = open.filter((r) => r.status === "completed").length;
   const confirmadas = closedAll.filter((r) => r.status === "approved").length;
 
@@ -168,7 +171,7 @@ export default async function ReferralsAdminPage() {
         title="Em andamento"
         aside={
           esperando ? (
-            <span className="tya-pill tya-pill--gold">{esperando} esperando você</span>
+            <span className="tya-pill tya-pill--warn">{esperando} esperando você</span>
           ) : open.length ? (
             <span className="tya-pill tya-pill--quiet">{open.length} em caminho</span>
           ) : (
@@ -202,39 +205,46 @@ export default async function ReferralsAdminPage() {
         }
       >
         {closed.length ? (
-          <div className="tya-tablewrap tya-tablewrap--bare">
-            <table className="tya-table">
-              <thead>
-                <tr>
-                  <th>Data</th>
-                  <th>Indicada</th>
-                  <th>Por</th>
-                  <th>Estado</th>
-                  <th>Mudar</th>
-                </tr>
-              </thead>
-              <tbody>
-                {closed.map((r) => (
-                  <tr key={r.id}>
-                    <td className="tya-num" style={{ whiteSpace: "nowrap" }}>
-                      {dateShort(r.approved_at ?? r.updated_at)}
-                    </td>
-                    <td>{r.referred_name}</td>
-                    <td>
-                      <QuemIndicou r={r} />
-                    </td>
-                    <td>
-                      <Selo status={r.status} />
-                      {r.status_note ? <p className="tya-small">{r.status_note}</p> : null}
-                    </td>
-                    <td>
-                      <ReferralStatusControl id={r.id} current={r.status} action={adminSetReferralStatusAction} />
-                    </td>
+          <>
+            <div className="tya-tablewrap tya-tablewrap--bare">
+              <table className="tya-table">
+                <thead>
+                  <tr>
+                    <th>Data</th>
+                    <th>Indicada</th>
+                    <th>Por</th>
+                    <th>Estado</th>
+                    <th>Mudar</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {closed.map((r) => (
+                    <tr key={r.id}>
+                      <td data-rotulo="Data" className="tya-num" style={{ whiteSpace: "nowrap" }}>
+                        {dateShort(r.approved_at ?? r.updated_at)}
+                      </td>
+                      <td data-rotulo="Indicada">{r.referred_name}</td>
+                      <td data-rotulo="Por">
+                        <QuemIndicou r={r} />
+                      </td>
+                      <td data-rotulo="Estado">
+                        <Selo status={r.status} />
+                        {r.status_note ? <p className="tya-small">{r.status_note}</p> : null}
+                      </td>
+                      <td data-rotulo="Mudar">
+                        <ReferralStatusControl id={r.id} current={r.status} action={adminSetReferralStatusAction} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {closedAll.length > closed.length ? (
+              <p className="tya-small" style={{ marginTop: 14 }}>
+                Na tela, {closed.length} de {closedAll.length} encerradas.
+              </p>
+            ) : null}
+          </>
         ) : (
           <Vazio icone="indicacoes" titulo="Nenhuma indicação encerrada">
             As confirmadas e as não confirmadas ficam guardadas aqui.

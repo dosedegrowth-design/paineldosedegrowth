@@ -4,7 +4,7 @@ import { getClientDetail } from "@/lib/tayssa/queries/admin";
 import { getActiveServices, getPublicBenefits } from "@/lib/tayssa/queries/catalog";
 import { getSettings } from "@/lib/tayssa/settings";
 import { toISODate } from "@/lib/tayssa/rules";
-import { currency, dateLong, dateShort, dateTime, isWithinHours } from "@/lib/tayssa/format";
+import { cicloLegivel, currency, dateLong, dateShort, dateTime, isWithinHours } from "@/lib/tayssa/format";
 import { formatBrPhone } from "@/lib/tayssa/phone";
 import { renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { ROUTES, publicUrl } from "@/lib/tayssa/config";
@@ -71,6 +71,7 @@ const Selo = ({ tom, children }: { tom: string; children: React.ReactNode }) => 
   <span className={`tya-pill ${tom}`}>{children}</span>
 );
 
+
 export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   await requireAdminPage();
   const { id } = await params;
@@ -85,7 +86,11 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
   const first = user.nickname ?? user.name.split(" ")[0];
   const vip = profile?.vip_status ?? "none";
   const canReleaseBirthday = vip === "active" && profile?.birthday && !d.thisYearBirthday;
-  const esperando = d.summary.pendingServices + d.summary.benefitsPendingValidation;
+  // a faixa só vale se contar tudo o que espera decisão sua nesta ficha
+  const pedidoDeAcesso = user.status === "pending" ? 1 : 0;
+  const beneficiosPedidos = d.benefits.filter((b) => b.status === "requested").length;
+  const esperando =
+    pedidoDeAcesso + d.summary.pendingServices + d.summary.benefitsPendingValidation + beneficiosPedidos;
   const revisadoAgora = user.signup_source === "self" && user.status !== "pending" && isWithinHours(user.reviewed_at, 48);
 
   return (
@@ -123,7 +128,11 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
         <Stat n={d.summary.points} label="Pontos" />
         <Stat n={d.summary.approvedCount} label="Atendimentos" />
         <Stat n={d.summary.approvedReferrals} label="Indicações confirmadas" />
-        <Stat n={d.summary.benefitsAvailable} label="Benefícios liberados" />
+        {/* `benefitsAvailable` soma available + requested + approved; o
+            "requested" ainda espera decisão dela e já é contado em
+            Pendências. Sem tirar daqui, a mesma faixa dizia que o benefício
+            estava liberado E esperando. */}
+        <Stat n={Math.max(0, d.summary.benefitsAvailable - beneficiosPedidos)} label="Benefícios liberados" />
         <Stat n={profile?.birthday ? dateShort(profile.birthday).slice(0, 5) : "—"} label="Aniversário" />
         <Stat n={esperando} label="Pendências" alert={esperando > 0} />
       </div>
@@ -437,7 +446,16 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                       <Selo tom={BENEFICIO_TOM[b.status]}>{BENEFIT_STATUS_LABEL[b.status]}</Selo>
                     </div>
                     <span className="tya-small" style={{ display: "block", marginTop: 4 }}>
-                      {b.benefit?.name ?? "—"} · {b.cycle_key} · criado {dateShort(b.created_at)}
+                      {/* o motor grava title = benefit.name, então nas linhas
+                          dele os dois são a mesma string: repetir só enche a
+                          linha. Mesmo critério da tela de Benefícios. */}
+                      {[
+                        b.benefit?.name && b.benefit.name !== b.title ? b.benefit.name : null,
+                        cicloLegivel(b.cycle_key),
+                        `criado ${dateShort(b.created_at)}`,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
                       {b.expires_at ? ` · válido até ${dateShort(b.expires_at)}` : ""}
                     </span>
                     {b.client_note ? <p className="tya-quote">Ela: “{b.client_note}”</p> : null}

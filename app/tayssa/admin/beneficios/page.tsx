@@ -3,7 +3,7 @@ import { requireAdminPage } from "@/lib/tayssa/auth/guards";
 import { listClientBenefits, type ClientBenefitWithClient } from "@/lib/tayssa/queries/admin";
 import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES } from "@/lib/tayssa/config";
-import { dateShort } from "@/lib/tayssa/format";
+import { cicloLegivel, dateShort } from "@/lib/tayssa/format";
 import { BENEFIT_STATUS_LABEL, type ClientBenefitStatus } from "@/lib/tayssa/types";
 import {
   adminApproveBenefitRequestAction,
@@ -29,6 +29,9 @@ const TOM: Record<ClientBenefitStatus, "warn" | "gold" | "brand" | "ok" | "quiet
   expired: "quiet",
   rejected: "bad",
 };
+
+/** Quanto do histórico cabe na tela de uma vez. A contagem nunca sai daqui. */
+const HISTORICO_NA_TELA = 60;
 
 function Selo({ status }: { status: ClientBenefitStatus }) {
   return <span className={`tya-pill tya-pill--${TOM[status]}`}>{BENEFIT_STATUS_LABEL[status]}</span>;
@@ -63,7 +66,8 @@ export default async function BenefitsAdminPage() {
   const toValidate = all.filter((b) => b.status === "pending_validation");
   const requested = all.filter((b) => b.status === "requested");
   const live = all.filter((b) => ["available", "approved"].includes(b.status));
-  const history = all.filter((b) => ["redeemed", "expired", "rejected"].includes(b.status)).slice(0, 60);
+  const historyAll = all.filter((b) => ["redeemed", "expired", "rejected"].includes(b.status));
+  const history = historyAll.slice(0, HISTORICO_NA_TELA);
   const days = settings.rules.benefit_validity_days;
   const espera = toValidate.length + requested.length;
 
@@ -87,13 +91,15 @@ export default async function BenefitsAdminPage() {
         </div>
         <p className="tya-slot__meta">
           {b.title}
-          {b.benefit?.name ? ` · ${b.benefit.name}` : ""} · {dateShort(b.created_at)}
+          {b.benefit?.name && b.benefit.name !== b.title ? ` · ${b.benefit.name}` : ""} · {dateShort(b.created_at)}
           {b.expires_at ? ` · válido até ${dateShort(b.expires_at)}` : ""}
         </p>
-        <p className="tya-slot__mine">
-          <span className="tya-slot__tag">ciclo</span>
-          {b.cycle_key}
-        </p>
+        {cicloLegivel(b.cycle_key) ? (
+          <p className="tya-slot__mine">
+            <span className="tya-slot__tag">ciclo</span>
+            {cicloLegivel(b.cycle_key)}
+          </p>
+        ) : null}
         {b.client_note ? <p className="tya-quote">Ela: “{b.client_note}”</p> : null}
       </div>
       {actions ? <div className="tya-item__acts">{actions}</div> : null}
@@ -122,7 +128,7 @@ export default async function BenefitsAdminPage() {
         <Atalho n={toValidate.length} label="A validar" href="#validar" alerta={toValidate.length > 0} />
         <Atalho n={requested.length} label="Solicitados" href="#solicitados" alerta={requested.length > 0} />
         <Atalho n={live.length} label="Liberados" href="#liberados" />
-        <Atalho n={history.length} label="No histórico" href="#historico" />
+        <Atalho n={historyAll.length} label="No histórico" href="#historico" />
       </div>
 
       <AdminBlock
@@ -267,14 +273,25 @@ export default async function BenefitsAdminPage() {
       <AdminBlock
         id="historico"
         title="Histórico"
-        aside={history.length ? <span className="tya-pill tya-pill--quiet">{history.length} registros</span> : null}
+        aside={
+          historyAll.length ? (
+            <span className="tya-pill tya-pill--quiet">{historyAll.length} registros</span>
+          ) : null
+        }
       >
         {history.length ? (
-          <ul className="tya-list">
-            {history.map((b) => (
-              <Linha key={b.id} b={b} />
-            ))}
-          </ul>
+          <>
+            <ul className="tya-list">
+              {history.map((b) => (
+                <Linha key={b.id} b={b} />
+              ))}
+            </ul>
+            {historyAll.length > history.length ? (
+              <p className="tya-small" style={{ marginTop: 14 }}>
+                Na tela, {history.length} de {historyAll.length} registros.
+              </p>
+            ) : null}
+          </>
         ) : (
           <Vazio icone="beneficios" titulo="Nada no histórico ainda">
             Utilizados, expirados e não liberados ficam guardados aqui.

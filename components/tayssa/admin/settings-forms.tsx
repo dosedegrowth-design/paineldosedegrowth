@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import type { ReactNode } from "react";
 import {
   addBlackoutAction,
   toggleBlackoutAction,
@@ -15,287 +16,690 @@ import {
   upsertCatalogServiceAction,
 } from "@/lib/tayssa/actions/settings";
 import type { Settings } from "@/lib/tayssa/config";
-import type { ActionResult, BenefitRow, BlackoutRow, ServiceRow } from "@/lib/tayssa/types";
+import type { ActionResult, BenefitRow, BenefitType, BlackoutRow, ServiceRow } from "@/lib/tayssa/types";
 import { BENEFIT_TYPE_LABEL } from "@/lib/tayssa/types";
 import { formatBrPhone } from "@/lib/tayssa/phone";
-import { dateShort } from "@/lib/tayssa/format";
-import { TyCheckbox, TyInput, TyTextarea } from "@/components/tayssa/ui/field";
-import { TyButton } from "@/components/tayssa/ui/button";
+import { dateShort, hhmm } from "@/lib/tayssa/format";
+import { Area, Campo, Marcar, useFormPreservado } from "@/components/tayssa/admin/forms";
 import { ActionButton } from "@/components/tayssa/admin/controls";
+import { Icone } from "@/components/tayssa/admin/icons";
 
-function Feedback({ state }: { state: ActionResult | null }) {
-  if (!state) return null;
-  if (state.ok) return <div className="ty-form-ok">Salvo.</div>;
-  return <div className="ty-form-error" role="alert">{state.error}</div>;
+/* ------------------------------------------------------------------
+   Os formulários das Configurações, no vocabulário do painel (.tya-*).
+
+   Cada bloco é um formulário com a sua própria server action: salva
+   sozinho, responde no lugar. O que o servidor recusa por campo volta
+   no campo (a regra do {url} na mensagem de boas-vindas, o limite do
+   benefício, o percentual, a data de fim e o que fica restrito no
+   período de restrição). O que ela digitou fica na tela: o reset
+   automático do <form action> é barrado em useFormPreservado.
+   ------------------------------------------------------------------ */
+
+/** O erro que o servidor devolveu para este campo — ou nada. */
+function erroDe(state: ActionResult | null, campo: string): string | undefined {
+  return state && !state.ok && state.field === campo ? state.error : undefined;
 }
+
+/** Botão de salvar com a resposta ao lado: salvando, salvo, ou o que falhou. */
+function Salvar({
+  state,
+  pending,
+  children = "Salvar",
+  feito = "Salvo",
+  tom = "primary",
+  antes,
+}: {
+  state: ActionResult | null;
+  pending: boolean;
+  children?: ReactNode;
+  feito?: string;
+  tom?: "primary" | "ghost" | "dark";
+  /** o que vem antes do botão na mesma linha (ex.: a marca "Ativo") */
+  antes?: ReactNode;
+}) {
+  const falhou = state && !state.ok ? state : null;
+  return (
+    <div className="tya-salvar">
+      {antes}
+      <button
+        type="submit"
+        className={`tya-btn tya-btn--sm tya-btn--${tom}`}
+        disabled={pending}
+        aria-busy={pending || undefined}
+      >
+        {pending ? "Salvando…" : children}
+      </button>
+      {state?.ok && !pending ? <span className="tya-pill tya-pill--ok">{feito}</span> : null}
+      {falhou && !falhou.field ? (
+        <span className="tya-err" role="alert">
+          {falhou.error}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
+/** Vazio desenhado, igual ao resto do painel. */
+function Vazio({ titulo, children }: { titulo: string; children?: ReactNode }) {
+  return (
+    <p className="tya-empty">
+      <span className="tya-nada">
+        <Icone nome="config" />
+        <b>{titulo}</b>
+        {children ? <span>{children}</span> : null}
+      </span>
+    </p>
+  );
+}
+
+/* ------------------------------------------------------------------
+   Negócio
+   ------------------------------------------------------------------ */
 
 export function BusinessForm({ value }: { value: Settings["business"] }) {
   const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateBusinessSettingsAction, null);
+  const { onReset } = useFormPreservado();
   return (
-    <form action={action} noValidate style={{ display: "grid", gap: 18, maxWidth: 640 }}>
-      <div style={{ display: "grid", gap: 18, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
-        <TyInput label="Nome" name="name" defaultValue={value.name} required />
-        <TyInput label="Assinatura" name="tagline" defaultValue={value.tagline} />
-        <TyInput label="Especialidade" name="specialty" defaultValue={value.specialty} />
-        <TyInput label="WhatsApp" name="whatsapp" defaultValue={formatBrPhone(value.whatsapp)} required />
-        <TyInput label="Instagram (URL)" name="instagram_url" defaultValue={value.instagram_url} />
-        <TyInput label="Instagram (@)" name="instagram_handle" defaultValue={value.instagram_handle} />
+    <form action={action} noValidate onReset={onReset} className="tya-stack">
+      <div className="tya-grid">
+        <Campo label="Nome" name="name" defaultValue={value.name} required error={erroDe(state, "name")} />
+        <Campo label="Assinatura" name="tagline" defaultValue={value.tagline} error={erroDe(state, "tagline")} />
+        <Campo
+          label="Especialidade"
+          name="specialty"
+          defaultValue={value.specialty}
+          error={erroDe(state, "specialty")}
+        />
+        <Campo
+          label="WhatsApp"
+          name="whatsapp"
+          inputMode="tel"
+          defaultValue={formatBrPhone(value.whatsapp)}
+          required
+          error={erroDe(state, "whatsapp")}
+          hint="É para onde vão todos os botões de conversa."
+        />
+        <Campo
+          label="Instagram (URL)"
+          name="instagram_url"
+          defaultValue={value.instagram_url}
+          error={erroDe(state, "instagram_url")}
+        />
+        <Campo
+          label="Instagram (@)"
+          name="instagram_handle"
+          defaultValue={value.instagram_handle}
+          error={erroDe(state, "instagram_handle")}
+        />
       </div>
-      <Feedback state={state} />
-      <div>
-        <TyButton type="submit" size="sm" variant="solid" disabled={pending}>
-          {pending ? "Salvando…" : "Salvar"}
-        </TyButton>
-      </div>
+      <Salvar state={state} pending={pending} />
     </form>
   );
 }
+
+/* ------------------------------------------------------------------
+   Regras gerais
+   ------------------------------------------------------------------ */
 
 export function RulesForm({ value }: { value: Settings["rules"] }) {
   const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateRulesSettingsAction, null);
+  const { onReset } = useFormPreservado();
   return (
-    <form action={action} noValidate style={{ display: "grid", gap: 18, maxWidth: 640 }}>
-      <div style={{ display: "grid", gap: 18, gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
-        <TyInput label="Atendimentos sugeridos p/ VIP" name="vip_min_services" inputMode="numeric" defaultValue={String(value.vip_min_services)} hint="Só referência: você decide quem entra." />
-        <TyInput label="Dias sem atendimento = inativa" name="inactivity_days" inputMode="numeric" defaultValue={String(value.inactivity_days)} />
-        <TyInput label="Validade padrão de benefício (dias)" name="benefit_validity_days" inputMode="numeric" defaultValue={String(value.benefit_validity_days)} />
+    <form action={action} noValidate onReset={onReset} className="tya-stack">
+      <div className="tya-grid">
+        <Campo
+          label="Atendimentos sugeridos p/ VIP"
+          name="vip_min_services"
+          inputMode="numeric"
+          defaultValue={String(value.vip_min_services)}
+          error={erroDe(state, "vip_min_services")}
+          hint="Só referência: você decide quem entra."
+        />
+        <Campo
+          label="Dias sem atendimento = inativa"
+          name="inactivity_days"
+          inputMode="numeric"
+          defaultValue={String(value.inactivity_days)}
+          error={erroDe(state, "inactivity_days")}
+          hint="Alimenta a lista de clientes para chamar, na visão geral."
+        />
+        <Campo
+          label="Validade padrão de benefício (dias)"
+          name="benefit_validity_days"
+          inputMode="numeric"
+          defaultValue={String(value.benefit_validity_days)}
+          error={erroDe(state, "benefit_validity_days")}
+          hint="Usada quando o benefício não tem validade própria."
+        />
       </div>
-      <Feedback state={state} />
-      <div>
-        <TyButton type="submit" size="sm" variant="solid" disabled={pending}>
-          {pending ? "Salvando…" : "Salvar"}
-        </TyButton>
-      </div>
+      <Salvar state={state} pending={pending} />
     </form>
   );
 }
+
+/* ------------------------------------------------------------------
+   Aniversário
+   ------------------------------------------------------------------ */
 
 export function BirthdayForm({ value }: { value: Settings["birthday"] }) {
   const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateBirthdaySettingsAction, null);
+  const { onReset } = useFormPreservado();
   return (
-    <form action={action} noValidate style={{ display: "grid", gap: 18, maxWidth: 640 }}>
-      <div style={{ display: "grid", gap: 18, gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
-        <TyInput label="Dias antes" name="window_days_before" inputMode="numeric" defaultValue={String(value.window_days_before)} />
-        <TyInput label="Dias depois" name="window_days_after" inputMode="numeric" defaultValue={String(value.window_days_after)} />
+    <form action={action} noValidate onReset={onReset} className="tya-stack">
+      <div className="tya-grid tya-grid--num">
+        <Campo
+          label="Dias antes"
+          name="window_days_before"
+          inputMode="numeric"
+          defaultValue={String(value.window_days_before)}
+          error={erroDe(state, "window_days_before")}
+        />
+        <Campo
+          label="Dias depois"
+          name="window_days_after"
+          inputMode="numeric"
+          defaultValue={String(value.window_days_after)}
+          error={erroDe(state, "window_days_after")}
+        />
       </div>
-      <TyCheckbox name="once_per_year" label="Uma vez por ano" defaultChecked={value.once_per_year} />
-      <TyTextarea label="Regras (uma por linha — a cliente vê)" name="rules" rows={8} defaultValue={value.rules.join("\n")} />
-      <Feedback state={state} />
-      <div>
-        <TyButton type="submit" size="sm" variant="solid" disabled={pending}>
-          {pending ? "Salvando…" : "Salvar"}
-        </TyButton>
-      </div>
+      <Marcar name="once_per_year" label="Uma vez por ano" defaultChecked={value.once_per_year} />
+      <Area
+        label="Regras (uma por linha — a cliente vê)"
+        name="rules"
+        rows={8}
+        defaultValue={value.rules.join("\n")}
+        error={erroDe(state, "rules")}
+        hint="Aparecem na tela de benefícios dela, exatamente nesta ordem."
+      />
+      <Salvar state={state} pending={pending} />
     </form>
   );
 }
 
-const WA_FIELDS: { key: keyof Settings["whatsapp"]; label: string }[] = [
-  { key: "public_schedule", label: "Site · Agendar" },
-  { key: "public_vip_info", label: "Site · Quero saber do VIP" },
-  { key: "public_refer", label: "Site · Indicar" },
-  { key: "vip_support", label: "VIP · Falar com Tayssa ({name})" },
-  { key: "vip_refer", label: "VIP · Indicar" },
-  { key: "benefit_request", label: "VIP · Agendar benefício ({name}, {benefit})" },
-  { key: "birthday_request", label: "VIP · Aniversário ({name})" },
-  { key: "inactive_outreach", label: "Admin · Cliente inativa ({name})" },
+/* ------------------------------------------------------------------
+   Mensagens de WhatsApp
+   ------------------------------------------------------------------ */
+
+type WaCampo = { key: keyof Settings["whatsapp"]; label: string; marcas?: string };
+
+const WA_GRUPOS: { titulo: string; campos: WaCampo[] }[] = [
+  {
+    titulo: "Pelo site",
+    campos: [
+      { key: "public_schedule", label: "Agendar" },
+      { key: "public_vip_info", label: "Quero saber do VIP" },
+      { key: "public_refer", label: "Indicar" },
+    ],
+  },
+  {
+    titulo: "Pelo espaço da cliente",
+    campos: [
+      { key: "vip_support", label: "Falar com você", marcas: "{name}" },
+      { key: "vip_refer", label: "Indicar" },
+      { key: "benefit_request", label: "Agendar benefício", marcas: "{name}, {benefit}" },
+      { key: "birthday_request", label: "Aniversário", marcas: "{name}" },
+    ],
+  },
+  {
+    titulo: "Daqui do painel",
+    campos: [{ key: "inactive_outreach", label: "Chamar cliente inativa", marcas: "{name}" }],
+  },
 ];
 
 export function WhatsappForm({ value }: { value: Settings["whatsapp"] }) {
   const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateWhatsappTemplatesAction, null);
+  const { onReset } = useFormPreservado();
   return (
-    <form action={action} noValidate style={{ display: "grid", gap: 18, maxWidth: 720 }}>
-      {WA_FIELDS.map((f) => (
-        <TyTextarea key={f.key} label={f.label} name={f.key} rows={2} defaultValue={value[f.key]} maxLength={300} />
+    <form action={action} noValidate onReset={onReset} className="tya-stack" style={{ gap: 22 }}>
+      {WA_GRUPOS.map((g) => (
+        <div key={g.titulo} className="tya-set">
+          <span className="tya-set__t">
+            <span className="tya-eyebrow">{g.titulo}</span>
+          </span>
+          {g.campos.map((f) => (
+            <Area
+              key={f.key}
+              label={f.label}
+              name={f.key}
+              rows={2}
+              defaultValue={value[f.key]}
+              maxLength={300}
+              error={erroDe(state, f.key)}
+              hint={f.marcas ? `Troca sozinho: ${f.marcas}` : undefined}
+            />
+          ))}
+        </div>
       ))}
-      <Feedback state={state} />
-      <div>
-        <TyButton type="submit" size="sm" variant="solid" disabled={pending}>
-          {pending ? "Salvando…" : "Salvar mensagens"}
-        </TyButton>
-      </div>
+      <Salvar state={state} pending={pending}>
+        Salvar mensagens
+      </Salvar>
     </form>
   );
 }
+
+/* ------------------------------------------------------------------
+   Catálogo de serviços
+   ------------------------------------------------------------------ */
 
 export function CatalogServiceForm({ service }: { service?: ServiceRow }) {
   const [state, action, pending] = useActionState<ActionResult | null, FormData>(upsertCatalogServiceAction, null);
+  const novo = !service;
+  // só o formulário do "novo serviço" se esvazia; o de um serviço existente
+  // continua mostrando o que foi salvo
+  const { ref, onReset } = useFormPreservado(novo ? state : null);
   return (
-    <form action={action} noValidate style={{ display: "grid", gap: 14, padding: "16px 0", borderTop: "1px solid var(--t-line)" }}>
+    <form
+      ref={ref}
+      action={action}
+      noValidate
+      onReset={onReset}
+      className={`tya-sub${novo ? " tya-sub--novo" : ""}`}
+    >
       {service ? <input type="hidden" name="id" value={service.id} /> : null}
-      <div style={{ display: "grid", gap: 14, gridTemplateColumns: "minmax(160px, 2fr) minmax(160px, 3fr) 90px 70px auto", alignItems: "end" }}>
-        <TyInput label="Serviço" name="name" defaultValue={service?.name ?? ""} required />
-        <TyInput label="Descrição" name="description" defaultValue={service?.description ?? ""} />
-        <TyInput label="Pontos" name="point_value" inputMode="numeric" defaultValue={String(service?.point_value ?? 10)} />
-        <TyInput label="Ordem" name="sort_order" inputMode="numeric" defaultValue={String(service?.sort_order ?? 50)} />
-        <div style={{ display: "grid", gap: 8 }}>
-          <TyCheckbox name="active" label="Ativo" defaultChecked={service ? service.active : true} />
-          <TyButton type="submit" size="xs" variant={service ? "line" : "solid"} disabled={pending}>
-            {pending ? "…" : service ? "Salvar" : "Adicionar"}
-          </TyButton>
-        </div>
+      <div className="tya-sub__top">
+        <span className="tya-eyebrow">{novo ? "Novo serviço" : service.name}</span>
+        {service ? (
+          <span className="tya-pills">
+            <span className="tya-pill tya-pill--quiet tya-num">{service.point_value} pts</span>
+            <span className={`tya-pill ${service.active ? "tya-pill--ok" : "tya-pill--quiet"}`}>
+              {service.active ? "no site" : "fora do site"}
+            </span>
+          </span>
+        ) : null}
       </div>
-      <Feedback state={state} />
+      <div className="tya-grid tya-grid--serv">
+        <Campo
+          label="Serviço"
+          name="name"
+          defaultValue={service?.name ?? ""}
+          required
+          error={erroDe(state, "name")}
+        />
+        <Campo
+          label="Descrição"
+          name="description"
+          defaultValue={service?.description ?? ""}
+          error={erroDe(state, "description")}
+        />
+        <Campo
+          label="Pontos"
+          name="point_value"
+          inputMode="numeric"
+          defaultValue={String(service?.point_value ?? 10)}
+          error={erroDe(state, "point_value")}
+        />
+        <Campo
+          label="Ordem"
+          name="sort_order"
+          inputMode="numeric"
+          defaultValue={String(service?.sort_order ?? 50)}
+          error={erroDe(state, "sort_order")}
+        />
+      </div>
+      <Salvar
+        state={state}
+        pending={pending}
+        tom={novo ? "primary" : "ghost"}
+        feito={novo ? "Adicionado" : "Salvo"}
+        antes={<Marcar name="active" label="Ativo" defaultChecked={service ? service.active : true} />}
+      >
+        {novo ? "Adicionar serviço" : "Salvar"}
+      </Salvar>
     </form>
   );
 }
+
+/* ------------------------------------------------------------------
+   Benefícios (regras)
+   ------------------------------------------------------------------ */
+
+/** Dourado é o VIP; a marca é a indicação; o aniversário é o que espera data. */
+const TOM_TIPO: Record<BenefitType, "gold" | "brand" | "warn" | "quiet"> = {
+  loyalty: "gold",
+  referral: "brand",
+  birthday: "warn",
+  custom: "quiet",
+};
 
 export function BenefitConfigForm({ benefit }: { benefit: BenefitRow }) {
   const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateBenefitConfigAction, null);
-  const unit = benefit.threshold_unit === "referrals" ? "indicações" : benefit.threshold_unit === "services" ? "atendimentos" : "pontos";
+  const unit =
+    benefit.threshold_unit === "referrals"
+      ? "indicações"
+      : benefit.threshold_unit === "services"
+        ? "atendimentos"
+        : "pontos";
   const percent = typeof benefit.config?.percent === "number" ? String(benefit.config.percent) : "";
+  const { onReset } = useFormPreservado();
   return (
-    <form action={action} noValidate style={{ display: "grid", gap: 14, padding: "18px 0", borderTop: "1px solid var(--t-line)" }}>
+    <form action={action} noValidate onReset={onReset} className="tya-sub">
       <input type="hidden" name="id" value={benefit.id} />
-      <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-        <span className="ty-eyebrow">{BENEFIT_TYPE_LABEL[benefit.type]} · {benefit.key}</span>
-        <TyCheckbox name="active" label="Ativo" defaultChecked={benefit.active} />
+      <div className="tya-sub__top">
+        <span className="tya-eyebrow">{benefit.name}</span>
+        <span className="tya-pills">
+          <span className={`tya-pill tya-pill--${TOM_TIPO[benefit.type]}`}>{BENEFIT_TYPE_LABEL[benefit.type]}</span>
+          <span className={`tya-pill ${benefit.active ? "tya-pill--ok" : "tya-pill--quiet"}`}>
+            {benefit.active ? "no ar" : "desligado"}
+          </span>
+        </span>
       </div>
-      <div style={{ display: "grid", gap: 14, gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))" }}>
-        <TyInput label="Nome (a cliente vê)" name="name" defaultValue={benefit.name} required />
+      <div className="tya-grid">
+        <Campo
+          label="Nome (a cliente vê)"
+          name="name"
+          defaultValue={benefit.name}
+          required
+          error={erroDe(state, "name")}
+        />
         {benefit.type !== "birthday" ? (
-          <TyInput label={`Limite (${unit})`} name="threshold" inputMode="numeric" defaultValue={benefit.threshold != null ? String(benefit.threshold) : ""} />
+          <Campo
+            label={`Limite (${unit})`}
+            name="threshold"
+            inputMode="numeric"
+            defaultValue={benefit.threshold != null ? String(benefit.threshold) : ""}
+            error={erroDe(state, "threshold")}
+          />
         ) : null}
-        {benefit.type === "referral" ? <TyInput label="Percentual (%)" name="percent" inputMode="numeric" defaultValue={percent} /> : null}
-        <TyInput label="Validade (dias)" name="validity_days" inputMode="numeric" defaultValue={benefit.validity_days != null ? String(benefit.validity_days) : ""} hint="Vazio = padrão das regras" />
+        {benefit.type === "referral" ? (
+          <Campo
+            label="Percentual (%)"
+            name="percent"
+            inputMode="numeric"
+            defaultValue={percent}
+            error={erroDe(state, "percent")}
+          />
+        ) : null}
+        <Campo
+          label="Validade (dias)"
+          name="validity_days"
+          inputMode="numeric"
+          defaultValue={benefit.validity_days != null ? String(benefit.validity_days) : ""}
+          error={erroDe(state, "validity_days")}
+          hint="Vazio = padrão das regras"
+        />
       </div>
-      <TyInput label="Descrição (a cliente vê)" name="description" defaultValue={benefit.description ?? ""} />
-      <Feedback state={state} />
-      <div>
-        <TyButton type="submit" size="xs" disabled={pending}>
-          {pending ? "…" : "Salvar"}
-        </TyButton>
-      </div>
+      <Campo
+        label="Descrição (a cliente vê)"
+        name="description"
+        defaultValue={benefit.description ?? ""}
+        error={erroDe(state, "description")}
+      />
+      <Salvar
+        state={state}
+        pending={pending}
+        tom="ghost"
+        antes={<Marcar name="active" label="Ativo" defaultChecked={benefit.active} />}
+      />
+      <p className="tya-small" style={{ fontSize: 11 }}>
+        Mesmo ativo, nenhum benefício é concedido sozinho: o sistema propõe e você libera.
+      </p>
     </form>
   );
 }
 
+/* ------------------------------------------------------------------
+   Períodos de restrição (blackout)
+   ------------------------------------------------------------------ */
+
+const TIPOS_BLACKOUT: { value: string; label: string }[] = [
+  { value: "birthday", label: "Aniversário" },
+  { value: "loyalty", label: "Fidelidade" },
+  { value: "referral", label: "Indicação" },
+  { value: "custom", label: "Especiais" },
+];
+
 export function BlackoutForm() {
   const [state, action, pending] = useActionState<ActionResult | null, FormData>(addBlackoutAction, null);
+  const { ref, onReset } = useFormPreservado(state);
   return (
-    <form action={action} noValidate style={{ display: "grid", gap: 14, maxWidth: 640 }}>
-      <div style={{ display: "grid", gap: 14, gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))" }}>
-        <TyInput label="Nome" name="name" placeholder="Ex.: Dezembro" required />
-        <TyInput label="Início" name="starts_on" type="date" required />
-        <TyInput label="Fim" name="ends_on" type="date" required />
+    <form ref={ref} action={action} noValidate onReset={onReset} className="tya-sub tya-sub--novo">
+      <div className="tya-sub__top">
+        <span className="tya-eyebrow">Novo período</span>
       </div>
-      <div style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
-        <TyCheckbox name="benefit_types" value="birthday" label="Aniversário" defaultChecked />
-        <TyCheckbox name="benefit_types" value="loyalty" label="Fidelidade" />
-        <TyCheckbox name="benefit_types" value="referral" label="Indicação" />
-        <TyCheckbox name="benefit_types" value="custom" label="Especiais" />
+      <div className="tya-grid">
+        <Campo label="Nome" name="name" placeholder="Ex.: Dezembro" required error={erroDe(state, "name")} />
+        <Campo label="Início" name="starts_on" type="date" required error={erroDe(state, "starts_on")} />
+        <Campo label="Fim" name="ends_on" type="date" required error={erroDe(state, "ends_on")} />
       </div>
-      <Feedback state={state} />
       <div>
-        <TyButton type="submit" size="xs" variant="solid" disabled={pending}>
-          {pending ? "…" : "Adicionar período"}
-        </TyButton>
+        <span className="tya-label">O que fica restrito</span>
+        <div className="tya-marcas">
+          {TIPOS_BLACKOUT.map((t) => (
+            <label key={t.value} className="tya-marca">
+              <input type="checkbox" name="benefit_types" value={t.value} defaultChecked={t.value === "birthday"} />
+              <span>{t.label}</span>
+            </label>
+          ))}
+        </div>
+        {erroDe(state, "benefit_types") ? (
+          <p className="tya-err" role="alert">
+            {erroDe(state, "benefit_types")}
+          </p>
+        ) : null}
       </div>
+      <Salvar state={state} pending={pending} feito="Adicionado">
+        Adicionar período
+      </Salvar>
     </form>
   );
 }
 
 export function BlackoutList({ items }: { items: BlackoutRow[] }) {
-  if (!items.length) return <p className="ty-small">Nenhum período de restrição cadastrado.</p>;
+  if (!items.length) {
+    return (
+      <Vazio titulo="Nenhum período de restrição">
+        Enquanto não houver período aqui, os benefícios valem o ano inteiro. Dezembro costuma ser o primeiro a entrar.
+      </Vazio>
+    );
+  }
   return (
-    <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+    <ul className="tya-list">
       {items.map((b) => (
-        <li key={b.id} style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", padding: "12px 0", borderTop: "1px solid var(--t-line)", alignItems: "center", opacity: b.active ? 1 : 0.55 }}>
+        <li key={b.id} className="tya-item">
           <div>
-            <strong style={{ fontWeight: 500 }}>{b.name}</strong>
-            <span className="ty-small" style={{ display: "block" }}>
-              {dateShort(b.starts_on)} a {dateShort(b.ends_on)} · {b.benefit_types.join(", ")}
-            </span>
+            <div className="tya-pills" style={{ alignItems: "center" }}>
+              <strong style={{ fontWeight: 600, fontSize: 14 }}>{b.name}</strong>
+              <span className={`tya-pill ${b.active ? "tya-pill--bad" : "tya-pill--quiet"}`}>
+                {b.active ? "restringindo" : "desligado"}
+              </span>
+            </div>
+            <p className="tya-small" style={{ marginTop: 4 }}>
+              {dateShort(b.starts_on)} a {dateShort(b.ends_on)}
+            </p>
+            <p className="tya-pills" style={{ marginTop: 8 }}>
+              {b.benefit_types.map((t) => (
+                <span key={t} className="tya-pill tya-pill--quiet">
+                  {TIPOS_BLACKOUT.find((x) => x.value === t)?.label ?? t}
+                </span>
+              ))}
+            </p>
           </div>
-          <ActionButton action={toggleBlackoutAction} args={{ id: b.id, active: !b.active }}>
-            {b.active ? "Desativar" : "Ativar"}
-          </ActionButton>
+          <div className="tya-item__acts">
+            <ActionButton action={toggleBlackoutAction} args={{ id: b.id, active: !b.active }}>
+              {b.active ? "Desativar" : "Ativar"}
+            </ActionButton>
+          </div>
         </li>
       ))}
     </ul>
   );
 }
 
+/* ------------------------------------------------------------------
+   Agenda
+   ------------------------------------------------------------------ */
+
 const WEEKDAY_LABELS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
 /** Disponibilidade: o que a cliente enxerga ao marcar. Muda na hora. */
 export function BookingForm({ value }: { value: Settings["booking"] }) {
   const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateBookingSettingsAction, null);
+  const { onReset } = useFormPreservado();
   return (
-    <form action={action} noValidate style={{ display: "grid", gap: 18, maxWidth: 640 }}>
-      <div>
-        <span className="ty-field__label" style={{ display: "block", marginBottom: 10 }}>
-          Dias abertos
+    <form action={action} noValidate onReset={onReset} className="tya-stack" style={{ gap: 22 }}>
+      <div className="tya-set">
+        <span className="tya-set__t">
+          <span className="tya-eyebrow">Dias abertos</span>
         </span>
-        <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+        <div className="tya-marcas">
           {WEEKDAY_LABELS.map((label, d) => (
-            <TyCheckbox key={d} name="weekdays" value={String(d)} label={label} defaultChecked={value.weekdays.includes(d)} />
+            <label key={d} className="tya-marca">
+              <input type="checkbox" name="weekdays" value={String(d)} defaultChecked={value.weekdays.includes(d)} />
+              <span>{label}</span>
+            </label>
           ))}
         </div>
+        {erroDe(state, "weekdays") ? (
+          <p className="tya-err" role="alert">
+            {erroDe(state, "weekdays")}
+          </p>
+        ) : null}
       </div>
-      <TyTextarea
-        label="Horários oferecidos (um por linha, HH:MM)"
-        name="slots"
-        rows={7}
-        defaultValue={value.slots.join("\n")}
-        hint="Cada horário vale para todos os dias abertos. Horário já ocupado some sozinho para as clientes."
-      />
-      <div style={{ display: "grid", gap: 18, gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}>
-        <TyInput label="Antecedência mínima (horas)" name="lead_hours" inputMode="numeric" defaultValue={String(value.lead_hours)} />
-        <TyInput label="Dias à frente" name="horizon_days" inputMode="numeric" defaultValue={String(value.horizon_days)} />
-        <TyInput label="Duração padrão (min)" name="default_duration_min" inputMode="numeric" defaultValue={String(value.default_duration_min)} />
-        <TyInput label="Horários em aberto por cliente" name="max_open_per_client" inputMode="numeric" defaultValue={String(value.max_open_per_client)} />
+
+      <div className="tya-set">
+        <span className="tya-set__t">
+          <span className="tya-eyebrow">Horários</span>
+        </span>
+        {value.slots.length ? (
+          <p className="tya-pills">
+            {value.slots.map((s) => (
+              <span key={s} className="tya-pill tya-pill--quiet tya-num">
+                {hhmm(s)}
+              </span>
+            ))}
+          </p>
+        ) : (
+          <p className="tya-small">Sem horário nenhum, a cliente não consegue pedir data.</p>
+        )}
+        <Area
+          label="Horários oferecidos (um por linha, HH:MM)"
+          name="slots"
+          rows={7}
+          defaultValue={value.slots.join("\n")}
+          error={erroDe(state, "slots")}
+          hint="Cada horário vale para todos os dias abertos. Horário já ocupado some sozinho para as clientes."
+        />
       </div>
-      <Feedback state={state} />
-      <div>
-        <TyButton type="submit" size="sm" variant="solid" disabled={pending}>
-          {pending ? "Salvando…" : "Salvar disponibilidade"}
-        </TyButton>
+
+      <div className="tya-set">
+        <span className="tya-set__t">
+          <span className="tya-eyebrow">Limites do pedido</span>
+        </span>
+        <div className="tya-grid">
+          <Campo
+            label="Antecedência mínima (horas)"
+            name="lead_hours"
+            inputMode="numeric"
+            defaultValue={String(value.lead_hours)}
+            error={erroDe(state, "lead_hours")}
+            hint="Abaixo disso o horário não aparece para ela."
+          />
+          <Campo
+            label="Dias à frente"
+            name="horizon_days"
+            inputMode="numeric"
+            defaultValue={String(value.horizon_days)}
+            error={erroDe(state, "horizon_days")}
+            hint="Até onde a agenda dela enxerga."
+          />
+          <Campo
+            label="Duração padrão (min)"
+            name="default_duration_min"
+            inputMode="numeric"
+            defaultValue={String(value.default_duration_min)}
+            error={erroDe(state, "default_duration_min")}
+          />
+          <Campo
+            label="Horários em aberto por cliente"
+            name="max_open_per_client"
+            inputMode="numeric"
+            defaultValue={String(value.max_open_per_client)}
+            error={erroDe(state, "max_open_per_client")}
+            hint="Quantos pedidos futuros ela pode ter ao mesmo tempo."
+          />
+        </div>
       </div>
+
+      <Salvar state={state} pending={pending}>
+        Salvar disponibilidade
+      </Salvar>
     </form>
   );
 }
+
+/* ------------------------------------------------------------------
+   Cartão de fidelidade
+   ------------------------------------------------------------------ */
 
 /** O cartão: quantas visitas e qual o presente ao fechar. */
 export function LoyaltyForm({ value }: { value: Settings["loyalty"] }) {
   const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateLoyaltySettingsAction, null);
+  const { onReset } = useFormPreservado();
   return (
-    <form action={action} noValidate style={{ display: "grid", gap: 18, maxWidth: 640 }}>
-      <div style={{ display: "grid", gap: 18, gridTemplateColumns: "minmax(120px, 1fr) minmax(200px, 2fr)" }}>
-        <TyInput label="Visitas por cartão" name="card_size" inputMode="numeric" defaultValue={String(value.card_size)} hint="Vale para cartões novos; o cartão aberto de cada cliente mantém o tamanho com que nasceu." />
-        <TyInput label="Nome do presente (a cliente vê)" name="card_reward_title" defaultValue={value.card_reward_title} required />
+    <form action={action} noValidate onReset={onReset} className="tya-stack">
+      <div className="tya-grid">
+        <Campo
+          label="Visitas por cartão"
+          name="card_size"
+          inputMode="numeric"
+          defaultValue={String(value.card_size)}
+          error={erroDe(state, "card_size")}
+          hint="Vale para cartões novos; o cartão aberto de cada cliente mantém o tamanho com que nasceu."
+        />
+        <Campo
+          label="Nome do presente (a cliente vê)"
+          name="card_reward_title"
+          defaultValue={value.card_reward_title}
+          required
+          error={erroDe(state, "card_reward_title")}
+        />
       </div>
-      <TyTextarea label="Descrição do presente" name="card_reward_description" rows={2} defaultValue={value.card_reward_description} maxLength={300} />
-      <Feedback state={state} />
-      <div>
-        <TyButton type="submit" size="sm" variant="solid" disabled={pending}>
-          {pending ? "Salvando…" : "Salvar cartão"}
-        </TyButton>
-      </div>
+      <Area
+        label="Descrição do presente"
+        name="card_reward_description"
+        rows={2}
+        defaultValue={value.card_reward_description}
+        maxLength={300}
+        error={erroDe(state, "card_reward_description")}
+      />
+      <Salvar state={state} pending={pending}>
+        Salvar cartão
+      </Salvar>
     </form>
   );
 }
 
+/* ------------------------------------------------------------------
+   Cadastro pelo site
+   ------------------------------------------------------------------ */
+
 /** Cadastro pelo site: aberto/fechado e a mensagem de boas-vindas ao aprovar. */
 export function SignupForm({ value }: { value: Settings["signup"] }) {
   const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateSignupSettingsAction, null);
+  const { onReset } = useFormPreservado();
   return (
-    <form action={action} noValidate style={{ display: "grid", gap: 18, maxWidth: 640 }}>
-      <TyCheckbox name="open" label="Aceitar pedidos de acesso pelo site (cada pedido continua passando por você)" defaultChecked={value.open} />
-      <TyTextarea
-        label="Mensagem de boas-vindas ao aprovar ({name} e {url})"
+    <form action={action} noValidate onReset={onReset} className="tya-stack">
+      <div className="tya-marcas">
+        <label className="tya-marca">
+          <input type="checkbox" name="open" defaultChecked={value.open} />
+          <span>Aceitar pedidos de acesso pelo site</span>
+        </label>
+      </div>
+      <p className="tya-small" style={{ marginTop: -4 }}>
+        Cada pedido continua passando por você: ninguém entra sozinha.
+      </p>
+      <Area
+        label="Mensagem de boas-vindas ao aprovar"
         name="welcome_template"
         rows={3}
         defaultValue={value.welcome_template}
         maxLength={400}
-        hint="Abre no WhatsApp com o nome dela e o link de entrada já preenchidos."
+        error={erroDe(state, "welcome_template")}
+        hint="Abre no WhatsApp com o nome dela e o link de entrada já preenchidos. Troca sozinho: {name}, {url} — e o {url} é obrigatório."
       />
-      <Feedback state={state} />
-      <div>
-        <TyButton type="submit" size="sm" variant="solid" disabled={pending}>
-          {pending ? "Salvando…" : "Salvar cadastro"}
-        </TyButton>
-      </div>
+      <Salvar state={state} pending={pending}>
+        Salvar cadastro
+      </Salvar>
     </form>
   );
 }

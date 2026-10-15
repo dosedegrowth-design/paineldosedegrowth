@@ -20,6 +20,12 @@ import { TransitionLink } from "@/components/tayssa/ui/transition";
 
 const WEEKDAYS = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
 
+/** "seg, ter e qua" — lista em português, sem vírgula antes do "e". */
+function lista(dias: string[]): string {
+  if (dias.length < 2) return dias.join("");
+  return `${dias.slice(0, -1).join(", ")} e ${dias[dias.length - 1]}`;
+}
+
 /** Cada estado tem uma cor só dele — para ler no relance, sem reler o texto. */
 const TOM: Record<AppointmentStatus, "warn" | "brand" | "ok" | "quiet" | "bad"> = {
   requested: "warn",
@@ -50,13 +56,25 @@ function Vazio({ icone, titulo, children }: { icone: IconeNome; titulo: string; 
   );
 }
 
-/** Atalho do topo: número que vem do banco e desce para a seção. */
-function Atalho({ n, label, href, alerta }: { n: number; label: string; href: string; alerta?: boolean }) {
-  return (
-    <a href={href} className={`tya-card tya-kpi tya-card--hover${alerta ? " tya-kpi--alert" : ""}`}>
+/**
+ * Atalho do topo: número que vem do banco e desce para a seção. Sem `href`
+ * — quando a seção não está na tela — fica cartão, não link: clicar num
+ * link para uma âncora que não existe não faz nada.
+ */
+function Atalho({ n, label, href, alerta }: { n: number; label: string; href?: string; alerta?: boolean }) {
+  const classe = `tya-card tya-kpi${href ? " tya-card--hover" : ""}${alerta ? " tya-kpi--alert" : ""}`;
+  const corpo = (
+    <>
       <span className="tya-eyebrow">{label}</span>
       <p className="tya-kpi__n">{n}</p>
+    </>
+  );
+  return href ? (
+    <a href={href} className={classe}>
+      {corpo}
     </a>
+  ) : (
+    <div className={classe}>{corpo}</div>
   );
 }
 
@@ -168,6 +186,8 @@ export default async function AgendaAdminPage() {
     return now.getHours() > h || (now.getHours() === h && now.getMinutes() >= m);
   };
   const attention = agenda.requested.length + agenda.toClose.length;
+  const diasAbertos = WEEKDAYS.filter((_, i) => b.weekdays.includes(i));
+  const diasFolga = WEEKDAYS.filter((_, i) => !b.weekdays.includes(i));
 
   return (
     <>
@@ -196,7 +216,12 @@ export default async function AgendaAdminPage() {
       <div className="tya-kpis tya-kpis--2sm tya-stagger">
         <Atalho n={agenda.requested.length} label="Pedidos" href="#pedidos" alerta={agenda.requested.length > 0} />
         <Atalho n={agenda.todayList.length} label="Hoje" href="#hoje" />
-        <Atalho n={agenda.toClose.length} label="Para fechar" href="#fechar" alerta={agenda.toClose.length > 0} />
+        <Atalho
+          n={agenda.toClose.length}
+          label="Para fechar"
+          href={agenda.toClose.length ? "#fechar" : undefined}
+          alerta={agenda.toClose.length > 0}
+        />
         <Atalho n={agenda.upcoming.length} label="Próximos" href="#proximos" />
       </div>
 
@@ -317,13 +342,22 @@ export default async function AgendaAdminPage() {
         <dl className="tya-defs">
           <dt>Dias</dt>
           <dd>
+            {/* a folga vai escrita na pastilha, e a regra inteira vem abaixo em
+                texto: quem atende e quem folga não pode depender da cor. */}
             <div className="tya-pills">
               {WEEKDAYS.map((d, i) => (
                 <span key={d} className={`tya-pill tya-pill--${b.weekdays.includes(i) ? "brand" : "quiet"}`}>
-                  {d}
+                  {b.weekdays.includes(i) ? d : `${d} · folga`}
                 </span>
               ))}
             </div>
+            <p className="tya-small" style={{ marginTop: 8 }}>
+              {diasAbertos.length === 0
+                ? "Nenhum dia aberto para agendamento."
+                : diasFolga.length === 0
+                  ? "Atende todos os dias da semana."
+                  : `Atende ${lista(diasAbertos)}. Folga ${lista(diasFolga)}.`}
+            </p>
           </dd>
           <dt>Horários</dt>
           <dd>
@@ -359,10 +393,10 @@ export default async function AgendaAdminPage() {
               <tbody>
                 {agenda.past.map((a) => (
                   <tr key={a.id}>
-                    <td className="tya-num" style={{ whiteSpace: "nowrap" }}>
+                    <td data-rotulo="Quando" className="tya-num" style={{ whiteSpace: "nowrap" }}>
                       {dateShort(a.scheduled_date)} · {hhmm(a.scheduled_time)}
                     </td>
-                    <td>
+                    <td data-rotulo="Cliente">
                       {a.client ? (
                         <TransitionLink href={ROUTES.adminClient(a.client.id)} className="tya-link">
                           {a.client.name}
@@ -371,8 +405,8 @@ export default async function AgendaAdminPage() {
                         "Cliente"
                       )}
                     </td>
-                    <td>{a.service_name}</td>
-                    <td>
+                    <td data-rotulo="Serviço">{a.service_name}</td>
+                    <td data-rotulo="Estado">
                       <Selo status={a.status} />
                       {a.admin_note ? <span className="tya-small"> · {a.admin_note}</span> : null}
                     </td>

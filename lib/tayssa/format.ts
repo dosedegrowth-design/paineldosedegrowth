@@ -134,3 +134,21 @@ export function isWithinHours(iso: string | null | undefined, hours: number): bo
   if (!iso) return false;
   return Date.now() - new Date(iso).getTime() < hours * 3600 * 1000;
 }
+
+/**
+ * `cycle_key` é chave interna (`loyalty:loyalty_100`, `birthday:2026`).
+ * Na tela vira o ciclo que a Tayssa reconhece — ou nada, quando a chave
+ * não acrescenta à linha. Nunca o texto de máquina.
+ */
+export function cicloLegivel(cycleKey: string): string | null {
+  const corte = cycleKey.indexOf(":");
+  const tipo = corte < 0 ? cycleKey : cycleKey.slice(0, corte);
+  const resto = corte < 0 ? "" : cycleKey.slice(corte + 1);
+  const n = Number(resto);
+  if (tipo === "birthday" && /^\d{4}$/.test(resto)) return `aniversário de ${resto}`;
+  if (tipo === "referral" && Number.isInteger(n) && n > 0) return `${n}ª rodada de indicações`;
+  if (tipo === "card" && Number.isInteger(n) && n > 0) return `${n}º cartão`;
+  if (tipo === "manual") return "concedido por você";
+  // loyalty: a chave deriva do benefício, e o nome dele já distingue a linha
+  return null;
+}

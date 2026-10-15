@@ -203,7 +203,7 @@ export const releaseBirthdaySchema = z.object({
 
 export const customBenefitSchema = z.object({
   client_id: z.string().uuid(),
-  benefit_id: z.string().uuid(),
+  benefit_id: z.string().uuid("Escolha um benefício"),
   title: trimmed(120),
   description: z.string().trim().max(500).optional().transform((v) => v || null),
   validity_days: benefitDecisionSchema.shape.validity_days,
@@ -231,7 +231,9 @@ export const blackoutSchema = z.object({
   name: trimmed(80),
   starts_on: isoDateField,
   ends_on: isoDateField,
-  benefit_types: z.array(z.enum(["birthday", "loyalty", "referral", "custom", "all"])).min(1),
+  benefit_types: z
+    .array(z.enum(["birthday", "loyalty", "referral", "custom", "all"]))
+    .min(1, "Escolha pelo menos um tipo"),
 });
 
 export const businessSettingsSchema = z.object({
@@ -253,7 +255,9 @@ export const birthdaySettingsSchema = z.object({
   window_days_before: z.coerce.number().int().min(0).max(30),
   window_days_after: z.coerce.number().int().min(0).max(30),
   once_per_year: z.boolean(),
-  rules: z.array(z.string().trim().min(1).max(200)).max(20),
+  rules: z
+    .array(z.string().trim().min(1, "Escreva a regra").max(200, "Use no máximo 200 caracteres"))
+    .max(20, "No máximo 20 regras"),
 });
 
 export const whatsappTemplatesSchema = z.object({
@@ -278,7 +282,7 @@ const hhmmField = z.string().trim().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Horário
 
 export const bookingSettingsSchema = z.object({
   weekdays: z.array(z.coerce.number().int().min(0).max(6)).min(1, "Escolha pelo menos um dia").transform((v) => [...new Set(v)].sort()),
-  slots: z.array(hhmmField).min(1, "Informe pelo menos um horário").max(24).transform((v) => [...new Set(v)].sort()),
+  slots: z.array(hhmmField).min(1, "Informe pelo menos um horário").max(24, "No máximo 24 horários").transform((v) => [...new Set(v)].sort()),
   lead_hours: z.coerce.number().int().min(0).max(168),
   horizon_days: z.coerce.number().int().min(1).max(120),
   default_duration_min: z.coerce.number().int().min(15).max(480),

@@ -57,7 +57,12 @@ function Registro({ s, children }: { s: ServiceWithClient; children?: ReactNode 
             {s.client?.name ?? "Cliente"}
           </TransitionLink>
           <Selo status={s.status} />
-          <span className="tya-pill tya-pill--gold tya-num">{s.points} pts</span>
+          {/* dourado diz "já está nas mãos dela": ponto de atendimento não
+              confirmado ainda não entrou, e ficava dourado dentro do bloco
+              "Aguardando você", ao lado de um selo de espera. */}
+          <span className={`tya-pill tya-num ${s.status === "approved" ? "tya-pill--gold" : "tya-pill--quiet"}`}>
+            {s.points} pts
+          </span>
         </div>
         <p className="tya-slot__meta">
           {s.service_name} · {dateShort(s.service_date)}
@@ -162,17 +167,17 @@ export default async function ServicesAdminPage() {
               <tbody>
                 {recent.map((s) => (
                   <tr key={s.id}>
-                    <td className="tya-num" style={{ whiteSpace: "nowrap" }}>
+                    <td data-rotulo="Data" className="tya-num" style={{ whiteSpace: "nowrap" }}>
                       {dateShort(s.service_date)}
                     </td>
-                    <td>
+                    <td data-rotulo="Cliente">
                       <TransitionLink href={ROUTES.adminClient(s.client_id)} className="tya-link">
                         {s.client?.name ?? "—"}
                       </TransitionLink>
                     </td>
-                    <td>{s.service_name}</td>
-                    <td className="tya-num">{s.points}</td>
-                    <td>
+                    <td data-rotulo="Serviço">{s.service_name}</td>
+                    <td data-rotulo="Pontos" className="tya-num">{s.points}</td>
+                    <td data-rotulo="Estado">
                       <Selo status={s.status} />
                     </td>
                   </tr>

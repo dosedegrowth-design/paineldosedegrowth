@@ -579,6 +579,16 @@
   font-size: 12px;
   line-height: 1.45;
   color: var(--tya-muted);
+  /* nome de arquivo escolhido mora aqui: sem espaço e com 40+ caracteres
+     ele passava da caixa e o .tya-main clipava sem aviso. */
+  overflow-wrap: anywhere;
+}
+/* campo que o servidor recusou: a mensagem sozinha não diz QUAL campo é,
+   e numa tela de várias alturas ela fica fora do campo de visão. */
+.tya-field__input[aria-invalid="true"],
+.tya-field[aria-invalid="true"] {
+  border-color: var(--tya-brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tya-brand) 12%, transparent);
 }
 .tya-pagehead {
   display: flex;
@@ -771,6 +781,14 @@
   font-size: 11.5px;
   font-weight: 600;
   white-space: nowrap;
+  /* teto de largura: nenhum selo-botão passa da caixa onde mora. Sem isto
+     um nome de volume comprido (o banco aceita 80 caracteres) empurra a
+     linha para fora da tela — e o .tya-main clipa, sem rolagem.
+     O teto sozinho não basta: com `nowrap` e sem corte, o texto passa a
+     pintar FORA da borda e do fundo do chip. Os três andam juntos. */
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -797,17 +815,34 @@
   background: var(--tya-brand-soft);
   color: var(--tya-brand-ink);
 }
+/* dourado = VIP e benefício liberado: chapado, com anel dourado. É o que
+   já está nas mãos dela, e nenhum outro estado usa dourado. */
 .tya-pill--gold {
   background: var(--tya-gold-bg);
   color: #6d5316;
+  box-shadow: inset 0 0 0 1px rgba(172, 128, 46, 0.5);
 }
 .tya-pill--ok {
   background: #e7f0e9;
   color: #33604a;
 }
+/* espera por você = cassis vazado, com ponto cheio na frente. Era um bege a
+   um canal de distância do dourado: na ficha da cliente "Desbloqueado" e
+   "Solicitado" caíam um sob o outro na mesma cor, e essa é a distinção que
+   manda no produto — já liberado para ela x esperando você. Forma
+   diferente, não só tom: vazado com ponto, contra chapado com anel. */
 .tya-pill--warn {
-  background: #f6eedd;
-  color: #7d6127;
+  background: #fff;
+  color: var(--tya-brand);
+  box-shadow: inset 0 0 0 1px rgba(110, 47, 69, 0.4);
+}
+.tya-pill--warn::before {
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
 }
 .tya-pill--bad {
   background: #f8e9e8;
@@ -1044,6 +1079,11 @@ textarea.tya-field {
 }
 .tya-stack {
   display: grid;
+  /* `auto` na coluna implícita deixa a trilha crescer até o max-content do
+     filho — e um chip `nowrap` de 316px arrastava o cartão inteiro para
+     fora da tela. Com minmax(0, …) a trilha para na caixa e quem encolhe é
+     o conteúdo. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 14px;
 }
 .tya-row {
@@ -1433,12 +1473,15 @@ a.tya-kpi {
   font-variant-numeric: tabular-nums;
   color: var(--tya-muted);
 }
+/* espera é cassis, nunca dourado: o dourado diz "já está nas mãos dela".
+   Ficou de fora do endurecimento do selo e mantinha a colisão viva em
+   /admin/atendimentos, /admin/agenda e /admin/aniversarios. */
 .tya-slot[data-tom="warn"] .tya-slot__when {
-  border-color: var(--tya-gold-soft);
-  background: var(--tya-gold-bg);
+  border-color: #e4c9d2;
+  background: var(--tya-brand-soft);
 }
 .tya-slot[data-tom="warn"] .tya-slot__dow {
-  color: #7d6127;
+  color: var(--tya-brand);
 }
 .tya-slot[data-tom="brand"] .tya-slot__when {
   border-color: #ebd2da;
@@ -1623,10 +1666,47 @@ a.tya-kpi {
     margin-top: 6px;
     font-size: 24px;
   }
-  /* tabela estreita rola inteira em vez de quebrar cada célula */
-  .tya-tablewrap--bare .tya-table th,
-  .tya-tablewrap--bare .tya-table td {
-    white-space: nowrap;
+  /* a célula volta a quebrar linha. Com nowrap, a tabela de 657-863px
+     ficava num tubo de 240px úteis: o nome cortava no meio da palavra e
+     Serviço, Pontos e Estado ficavam 100% fora da tela. Quebrando nos
+     espaços ela encolhe para perto de 400px — o cabeçalho segue inteiro
+     (nowrap na regra base) e a data também (nowrap no próprio td). */
+  .tya-table {
+    font-size: 12.5px;
+  }
+  .tya-table th,
+  .tya-table td {
+    padding: 10px 9px;
+  }
+  /* o que ainda sobra para o lado precisa se anunciar. Véu nas pontas: as
+     duas últimas camadas são a sombra, presa à moldura (`scroll`); as duas
+     primeiras são uma tampa branca presa ao conteúdo (`local`) — branco
+     sobre o branco do card, invisível, que esconde a sombra enquanto a
+     ponta da tabela está à vista. Então sobra sombra só do lado em que
+     ainda há tabela escondida, e ela cresce conforme você arrasta. Mais a
+     barra de rolagem desenhada, não só no gesto. */
+  .tya-tablewrap {
+    background-image:
+      linear-gradient(#fff, #fff),
+      linear-gradient(#fff, #fff),
+      linear-gradient(to right, rgba(26, 21, 18, 0.17), rgba(26, 21, 18, 0)),
+      linear-gradient(to left, rgba(26, 21, 18, 0.17), rgba(26, 21, 18, 0));
+    background-position: 0 0, 100% 0, 0 0, 100% 0;
+    background-repeat: no-repeat;
+    background-size: 22px 100%, 22px 100%, 16px 100%, 16px 100%;
+    background-attachment: local, local, scroll, scroll;
+    scrollbar-width: thin;
+    scrollbar-color: #c9bbab transparent;
+  }
+  .tya-tablewrap::-webkit-scrollbar {
+    height: 7px;
+  }
+  .tya-tablewrap::-webkit-scrollbar-track {
+    border-radius: 4px;
+    background: var(--tya-line-soft);
+  }
+  .tya-tablewrap::-webkit-scrollbar-thumb {
+    background: #c9bbab;
   }
 }
 
@@ -1749,5 +1829,607 @@ a.tya-kpi {
 @media (max-width: 860px) {
   .tya-cols {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ============================================================
+   PEÇAS DA TELA DE FOTOS
+   A biblioteca alimenta o site e a frente do cartão. Aqui o
+   trabalho é um só: escolher o arquivo, dizer o volume, ver onde
+   a foto caiu.
+   ============================================================ */
+
+/* o formulário de um lado, a biblioteca ao lado — e no estreito, um sob o outro */
+.tya-fotos {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+  align-items: start;
+}
+/* a trilha é o teto. Sem isto o item de grade cresce até o min-content do
+   que está dentro (um nome de volume comprido, que não quebra) e o
+   formulário de 485px passa por baixo do card da Biblioteca. */
+.tya-fotos > * {
+  min-width: 0;
+}
+/* no estreito a coluna da esquerda se dissolve (display:contents) e a ordem
+   vira a do trabalho: subir a foto, ver a biblioteca, ler a legenda */
+@media (max-width: 1080px) {
+  .tya-fotos {
+    display: flex;
+    flex-direction: column;
+    /* em coluna o eixo cruzado é o horizontal: sem redefinir aqui, o
+       `align-items: start` da regra base faz cada card assumir a largura de
+       max-content. Era isso que punha a borda do "Adicionar foto" em x=450
+       num aparelho de 390px — e o .tya-main clipa o excedente, então o
+       corte não tinha nem rolagem para alcançar. Esticando, os dois cards
+       empilhados também fecham a borda direita no mesmo lugar. */
+    align-items: stretch;
+  }
+  .tya-fotos__col {
+    display: contents;
+  }
+  .tya-fotos__sobe { order: 1; }
+  .tya-fotos__lista { order: 2; }
+  .tya-fotos__onde { order: 3; }
+}
+
+/* escolher o arquivo: a prévia é o próprio campo */
+.tya-drop {
+  position: relative;
+  display: grid;
+  place-items: center;
+  /* vazio é só um convite: não ocupa a tela. Com a prévia, vira retrato. */
+  min-height: 164px;
+  overflow: hidden;
+  border: 1px dashed var(--tya-line);
+  border-radius: var(--tya-radius-sm);
+  background: var(--tya-surface-2);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.tya-drop:hover {
+  border-color: var(--tya-brand-2);
+  background: var(--tya-brand-soft);
+}
+.tya-drop:focus-within {
+  border-color: var(--tya-brand-2);
+  box-shadow: 0 0 0 4px rgba(110, 47, 69, 0.12);
+}
+.tya-drop[data-cheio="true"] {
+  aspect-ratio: 4 / 5;
+  border-style: solid;
+  border-color: var(--tya-line);
+  background: #ece3d8;
+}
+.tya-drop img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.tya-drop input {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  opacity: 0;
+  cursor: pointer;
+}
+.tya-drop__hint {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  padding: 18px;
+  text-align: center;
+}
+.tya-drop__hint svg {
+  width: 24px;
+  height: 24px;
+  stroke: var(--tya-muted-2);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tya-drop__hint b {
+  font-size: 13px;
+  font-weight: 600;
+}
+.tya-drop__hint span {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--tya-muted);
+}
+/* sobre a prévia, o convite para trocar */
+.tya-drop__troca {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* a fila de atalhos dos volumes já usados */
+.tya-sugs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+/* o nome do volume vem do banco e pode ter 80 caracteres; no celular cabem
+   ~34. Aqui o atalho tem teto e termina em reticências em vez de furar a
+   tela. A caixa continua a de 28px, mas a altura sai do padding: texto só
+   reticencia dentro de um bloco — num flex ele vira item anônimo e o
+   text-overflow não pega. `flex: none` guarda o atalho curto inteiro: só
+   quem passa da linha é cortado. */
+.tya-sugs .tya-chip {
+  display: inline-block;
+  /* `inline-block` num <button> herda o text-align: center do navegador:
+     com a linha maior que a caixa, o corte sai pelos DOIS lados e o começo
+     do nome some sem reticência. O começo é o que distingue um nome do
+     outro. */
+  text-align: left;
+  flex: none;
+  max-width: 100%;
+  height: auto;
+  padding: 5px 12px;
+  line-height: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* a barra que mostra que o arquivo está subindo */
+.tya-skel--bar {
+  height: 6px;
+  border-radius: 999px;
+}
+
+/* ---------- a biblioteca ---------- */
+.tya-galeria {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+}
+@media (max-width: 560px) {
+  .tya-galeria {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+.tya-foto {
+  display: grid;
+  align-content: start;
+  gap: 9px;
+  padding: 10px;
+  border: 1px solid var(--tya-line);
+  border-radius: var(--tya-radius-sm);
+  background: var(--tya-surface-2);
+}
+.tya-foto[data-ocupado="true"] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.tya-foto__img {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #ece3d8;
+}
+.tya-foto__img img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* arquivada continua visível, mas apagada: ela não está no ar */
+.tya-foto--off .tya-foto__img img {
+  filter: grayscale(1);
+  opacity: 0.5;
+}
+/* sem arquivo no Storage não entra imagem inventada: fica o campo tonal */
+.tya-foto__tonal {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 10px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tya-muted-2);
+  background: linear-gradient(160deg, #ece3d8 0%, #e3d8ca 100%);
+}
+.tya-foto__selo {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+}
+/* a posição na fila: é ela que decide onde a foto cai */
+.tya-foto__n {
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: #f4efe8;
+  background: rgba(26, 21, 18, 0.72);
+}
+.tya-foto__t {
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.tya-foto__onde,
+.tya-foto__acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tya-foto .tya-btn--sm {
+  height: 30px;
+  padding: 0 10px;
+  font-size: 11.5px;
+}
+
+/* o que acontece quando ela subir a primeira foto */
+.tya-passos {
+  counter-reset: passo;
+  display: grid;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding: 0;
+  max-width: 48ch;
+  list-style: none;
+  text-align: left;
+}
+.tya-passos li {
+  position: relative;
+  padding-left: 25px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--tya-muted);
+}
+.tya-passos li::before {
+  counter-increment: passo;
+  content: counter(passo);
+  position: absolute;
+  left: 0;
+  top: 1px;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--tya-brand-soft);
+  color: var(--tya-brand-ink);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* ============================================================
+   PEÇAS DA TELA DE CONFIGURAÇÕES
+   É a tela mais densa do painel: dez formulários numa página só.
+   O que organiza não é enfeite, é hierarquia — índice no topo,
+   grupos com rótulo, e cada bloco dizendo em uma frase o que muda
+   lá fora quando ela salva.
+   ============================================================ */
+
+/* o índice: salta para o bloco. No estreito vira trilho que rola
+   sozinho — nunca empurra a página para o lado. */
+.tya-indice {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 12px;
+  border: 1px solid var(--tya-line);
+  border-radius: var(--tya-radius);
+  background: var(--tya-surface);
+  box-shadow: var(--tya-shadow);
+}
+@media (max-width: 860px) {
+  .tya-indice {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tya-indice::-webkit-scrollbar {
+    display: none;
+  }
+  .tya-indice .tya-chip {
+    flex: none;
+  }
+}
+
+/* rótulo de grupo: separa as famílias de ajuste, com régua até a margem */
+.tya-grupo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 34px 0 -6px;
+}
+.tya-grupo::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--tya-line);
+}
+
+/* a frase que diz o efeito do bloco, entre o título e o formulário */
+.tya-explica {
+  margin: -4px 0 18px;
+  max-width: 70ch;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--tya-muted);
+}
+
+/* dois blocos lado a lado quando há largura; no estreito, um sob o outro.
+   Trilha mínima zero de propósito: `minmax(380px, …)` estourava a borda. */
+.tya-dupla {
+  display: grid;
+  gap: 0 22px;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+}
+@media (min-width: 1100px) {
+  .tya-dupla {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+/* o botão de salvar e a resposta dele na mesma linha: salvando, salvo, falhou */
+.tya-salvar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 2px;
+}
+.tya-salvar .tya-err,
+.tya-salvar .tya-ok {
+  margin-top: 0;
+}
+
+/* um registro editável dentro do bloco (um serviço, um benefício):
+   carta menor, sem sombra — a sombra é do bloco que a contém */
+.tya-subs {
+  display: grid;
+  gap: 12px;
+}
+.tya-sub {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--tya-line-soft);
+  border-radius: var(--tya-radius-sm);
+  background: var(--tya-surface-2);
+}
+/* o que ainda não existe aparece em linha tracejada */
+.tya-sub--novo {
+  border-style: dashed;
+  border-color: var(--tya-line);
+  background: transparent;
+}
+.tya-sub__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* conjunto de campos com rótulo próprio dentro de um bloco */
+.tya-set {
+  display: grid;
+  gap: 12px;
+}
+.tya-set__t {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tya-set__t::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--tya-line-soft);
+}
+
+/* catálogo de serviços: nome, descrição e dois números miúdos */
+.tya-grid--serv {
+  grid-template-columns: minmax(150px, 2fr) minmax(170px, 3fr) minmax(0, 0.8fr) minmax(0, 0.7fr);
+}
+/* no estreito, nome e descrição ocupam a linha inteira e os dois números
+   ficam lado a lado — a ficha do serviço não vira uma coluna sem fim */
+@media (max-width: 1000px) {
+  .tya-grid--serv {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .tya-grid--serv > :nth-child(1),
+  .tya-grid--serv > :nth-child(2) {
+    grid-column: 1 / -1;
+  }
+}
+
+/* grade de números curtos: não estica um campo de 2 dígitos */
+.tya-grid--num {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 0.4fr));
+}
+@media (max-width: 520px) {
+  .tya-grid--num {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* marcar vira selo que acende: dias abertos, tipos de benefício */
+.tya-marcas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tya-marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  /* altura mínima, não fixa: um rótulo comprido quebra a linha em vez de
+     furar a borda do card (o .tya-main esconde o estouro, e o corte seria
+     silencioso) */
+  min-height: 32px;
+  max-width: 100%;
+  padding: 5px 13px;
+  border: 1px solid var(--tya-line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+.tya-marca input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--tya-brand);
+}
+.tya-marca:hover {
+  border-color: #d5c8ba;
+}
+.tya-marca:has(input:checked) {
+  border-color: var(--tya-brand);
+  background: var(--tya-brand-soft);
+  color: var(--tya-brand-ink);
+}
+
+/* nos números das Configurações o rótulo reserva duas linhas: assim os
+   números ficam na mesma altura mesmo quando um rótulo quebra */
+.tya-kpis--cfg .tya-eyebrow {
+  display: block;
+  min-height: 2.3em;
+}
+
+/* ============================================================
+   ALVOS DE TOQUE NO CELULAR
+   Decisão dela — confirmar, validar, suspender, apagar — não pode
+   depender de mira: confirmar vira ponto e carimbo, desbloquear é
+   definitivo. No estreito o controle cresce até o dedo e encosta na
+   altura dos campos (42px) do mesmo card. No desktop fica como está.
+   Vem no fim do arquivo de propósito: precisa vencer, por ordem,
+   a altura de 30px de `.tya-foto .tya-btn--sm`.
+   ============================================================ */
+@media (max-width: 860px) {
+  /* o normal sobe junto: senão o "pequeno" fica MAIOR que ele, e os dois
+     convivem no mesmo cartão (signup-review, photo-upload, ficha). */
+  .tya-btn {
+    height: 44px;
+  }
+  .tya-btn--sm,
+  .tya-foto .tya-btn--sm {
+    height: 42px;
+    padding: 0 14px;
+    font-size: 12.5px;
+  }
+  .tya-btn--sm.tya-btn--icon {
+    width: 42px;
+    padding: 0;
+  }
+  /* na biblioteca, "Apagar" ficava encostado em "Arquivar" */
+  .tya-foto__acts {
+    gap: 10px;
+  }
+  .tya-chip {
+    height: 42px;
+    padding: 0 15px;
+    font-size: 12.5px;
+  }
+  .tya-sugs .tya-chip {
+    padding: 12px 15px;
+  }
+  .tya-chips,
+  .tya-sugs {
+    gap: 10px;
+  }
+  /* a caixa e o rótulo são um alvo só: o alvo é a linha inteira */
+  .tya-check {
+    min-height: 44px;
+    gap: 11px;
+  }
+  .tya-check input {
+    width: 22px;
+    height: 22px;
+  }
+  /* a irmã dela, no mesmo formulário de Configurações */
+  .tya-marca {
+    min-height: 44px;
+  }
+  .tya-marca input {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* ============================================================
+   TABELA DE HISTÓRICO NO CELULAR
+   A rolagem lateral não resolvia: a coluna Estado — justamente o que ela
+   precisa ver — começava depois da borda direita nas três telas
+   (/indicacoes "Encerradas", /agenda "Encerrados recentes",
+   /atendimentos "Recentes"), e ninguém descobre que um bloco rola.
+   Medido a 390px: 453px de tabela em 240px visíveis.
+   Aqui a tabela vira cartão, como o resto do painel já faz abaixo de
+   860px. O rótulo de cada campo vem do `data-rotulo` da célula, porque o
+   cabeçalho some. Vem no fim do arquivo para vencer, por ordem, o
+   `white-space: nowrap` que garante a largura no modo tabela.
+   ============================================================ */
+@media (max-width: 860px) {
+  .tya-tablewrap--bare {
+    overflow: visible;
+    background-image: none;
+  }
+  .tya-tablewrap--bare .tya-table,
+  .tya-tablewrap--bare .tya-table tbody,
+  .tya-tablewrap--bare .tya-table tr,
+  .tya-tablewrap--bare .tya-table td {
+    display: block;
+    width: auto;
+    min-width: 0;
+  }
+  .tya-tablewrap--bare .tya-table thead {
+    display: none;
+  }
+  .tya-tablewrap--bare .tya-table tr {
+    border: 1px solid var(--tya-line);
+    border-radius: var(--tya-radius-sm);
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .tya-tablewrap--bare .tya-table td {
+    border: 0;
+    padding: 5px 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .tya-tablewrap--bare .tya-table td:empty {
+    display: none;
+  }
+  .tya-tablewrap--bare .tya-table td[data-rotulo]::before {
+    content: attr(data-rotulo);
+    display: block;
+    margin-bottom: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--tya-muted-2);
   }
 }
