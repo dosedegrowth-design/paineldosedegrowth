@@ -207,6 +207,15 @@ export const ANUNCIOS: Anuncio[] = [
     produto: "sacolao-stripes-vermelho",
   },
   {
+    n: "25b",
+    nome: "Sacolão Stripes Azul · look completo",
+    conjunto: "Sacolões",
+    legenda:
+      "Bolsa de lona 100% algodão com alças de couro, forrada e com bolso interno. Fundo estruturado e botões que regulam a largura. Listras em azul.",
+    img: `${CDN}/ADS_25c_Sacolao_Stripes_Azul_Modelo_Vestida.jpg`,
+    produto: "sacolao-stripes-azul",
+  },
+  {
     n: "25",
     nome: "Sacolão Stripes Azul",
     conjunto: "Sacolões",
@@ -278,6 +287,11 @@ export const AJUSTES: Record<string, Ajuste> = {
   "25": {
     tag: "Foto da modelo",
     detalhe: "Voltou a foto da modelo com as bolsas, do ensaio da Marina.",
+  },
+  "25b": {
+    tag: "Criativo novo",
+    detalhe:
+      "A modelo vestida, com as três cores na mesma foto. Entrou junto com as outras, no mesmo público.",
   },
 };
 
