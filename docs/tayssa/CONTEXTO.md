@@ -7,6 +7,15 @@
 >
 > Tudo aqui é **estado**, não plano. O que é opinião ou pendência está
 > marcado como tal.
+>
+> **Confiança:** depois de escrito, o documento passou por 7 conferidores
+> em paralelo — um por bloco de seções — cada um checando afirmação por
+> afirmação contra o código, o banco e o `git log`, e cada achado passou
+> por um verificador adversarial instruído a refutá-lo. **17 erros meus
+> foram encontrados e corrigidos**, incluindo dois que invertiam o
+> diagnóstico de um incidente. Onde uma versão anterior deste arquivo
+> dizia outra coisa, a correção está marcada no próprio lugar com
+> "⚠️ Correção a uma versão anterior deste documento".
 
 ---
 
@@ -71,8 +80,10 @@ Existem **exatamente duas** contas:
 | `79529e4d-e690-4729-b3cc-78b758278f37` | `client` | `demo@tayssa.vip` | Cliente Demonstração (apelido "Demo") | active | **NÃO** |
 
 > ⚠️ **Nenhuma das duas tem senha definida** (`password_hash` é null).
-> **Login por e-mail + senha não funciona para ninguém hoje.** A única
-> porta de entrada é link de acesso (§3.3).
+> **Para estas duas contas, login por e-mail + senha não funciona** — a
+> porta é link de acesso (§3.3). Isso é um fato sobre *estas* contas, não
+> sobre o produto: cliente que se cadastrar por `/cadastro` escolhe a
+> senha no próprio cadastro e entra normalmente (§12).
 >
 > ⚠️ O `CLAUDE.md` do repositório diz que a cliente demo é
 > `cliente01@demo.tayssa` — **está errado**, o banco diz `demo@tayssa.vip`.
@@ -99,10 +110,17 @@ Rota: `app/tayssa/entrar/link/route.ts` → `GET /tayssa/entrar/link?t=<token>`
 
 Dois tipos, na coluna `purpose`:
 
-- **`magic`** — convite de uso único. É queimado (`used_at`) *antes* de
-  abrir a sessão. É o que a Tayssa manda para uma cliente nova.
+- **`magic`** — convite de uso único, queimado (`used_at`) *antes* de abrir
+  a sessão. Existe na rota e no CHECK da tabela, mas **nenhuma tela gera
+  `magic` hoje**: o único `insert` em `password_tokens` no repositório é
+  `issueAccessLink()` (`lib/tayssa/actions/clients.ts:21`), que só grava
+  `setup` ou `reset`. Os 3 `magic` do banco são do seed de 16/set/2026,
+  todos queimados e vencidos em 23/set. Para emitir um hoje, só na mão
+  (§3.4, trocando `'demo'` por `'magic'`).
 - **`demo`** — link de teste. Abre quantas vezes quiser, em quantos
   aparelhos quiser, até vencer. Cada aparelho ganha a própria sessão.
+  **É a única entrada sem senha que funciona hoje** — e os `demo` válidos
+  foram inseridos à mão (nenhum tem `created_by`).
 
 Link inválido/vencido/queimado → redireciona para `/tayssa/entrar?link=expirado`
 sem contar história. Admin cai em `/tayssa/admin`, cliente em `/tayssa/vip`.
@@ -126,10 +144,14 @@ from vip.users where email = 'admin@tayssa.vip';
 mudar. Revogar = apagar a linha (sessões já abertas continuam; para cortar
 essas, apague de `vip.sessions`).
 
-Alternativa pela interface: `/tayssa/admin/clientes/novo` cria cliente e
-gera link único de 7 dias; na ficha de uma cliente existente há
-"gerar link de acesso" (`adminIssueAccessLinkAction`). Nenhuma senha
-aparece em tela em nenhum fluxo.
+⚠️ **O que a interface gera NÃO é link de entrada direta.**
+`/tayssa/admin/clientes/novo` e o botão "Gerar link de acesso" na ficha
+(`adminIssueAccessLinkAction`) emitem `setup` — ou `reset`, se a conta já
+tem senha — válidos 7 dias (`PASSWORD_TOKEN_DAYS`), apontando para
+`/tayssa/entrar/definir-senha?token=…`. **Essa tela pede a senha**; a
+sessão só abre depois que a senha é gravada. E `/tayssa/entrar/link`
+recusa `setup`/`reset` (filtra só `magic`/`demo`). Nenhuma senha aparece
+em tela em nenhum fluxo.
 
 ### 3.5 Segredos de infraestrutura
 
@@ -396,14 +418,21 @@ busca de página e ação, ⌘K) · `icons.tsx` · `clients-table.tsx` ·
 | `auth/password.ts` | scrypt |
 | `auth/guards.ts` | `assertClient()`, `assertAdmin()` |
 | `queries/` | `admin.ts` · `catalog.ts` · `client.ts` · `photos.ts` · `vip.ts` |
-| `actions/` | 13 arquivos de Server Actions — tabela abaixo |
+| `actions/` | 13 arquivos: 12 de Server Actions + `_helpers.ts` (apoio) — tabela abaixo |
 | `rules.test.ts` · `timeline.test.ts` | testes puros |
 
-### Server Actions (todas com `"use server"`, Zod, auditoria)
+### Server Actions — 12 arquivos com `"use server"` e auditoria via `logAudit()`; Zod em quase todas
+
+> `_helpers.ts` **não é Server Action.** Usa `import "server-only"`, não
+> `"use server"`, e exporta `runAction` (try/catch → `ActionResult`), a
+> classe `BusinessError` e os leitores de FormData `str`/`bool`/`list`.
+> Esses exports são síncronos ou classe — ilegais num arquivo
+> `"use server"`, onde todo export tem de ser função async. **Não cole
+> `"use server"` nele: quebra o build.** Ele só *captura* `ZodError` e
+> converte em `{ ok: false, error }`; não aplica schema nenhum.
 
 | Arquivo | Ações |
 |---|---|
-| `_helpers.ts` | `runAction` |
 | `auth.ts` | `loginAction` `logoutAction` `setPasswordAction` `changePasswordAction` |
 | `signup.ts` | `signupAction` |
 | `clients.ts` | `adminCreateClientAction` `adminUpdateClientAction` `adminSetVipAction` `adminSetClientStatusAction` `adminReviewSignupAction` `adminIssueAccessLinkAction` `adminRevokeSessionsAction` |
@@ -412,12 +441,16 @@ busca de página e ação, ⌘K) · `icons.tsx` · `clients-table.tsx` ·
 | `referrals.ts` | `submitPublicReferralAction` `submitVipReferralAction` `adminSetReferralStatusAction` |
 | `booking.ts` | `createAppointmentAction` `cancelAppointmentAction` |
 | `appointments.ts` | `adminConfirmAppointmentAction` `adminCancelAppointmentAction` `adminCompleteAppointmentAction` `adminNoShowAppointmentAction` |
-| `card.ts` | `revealStampAction` |
+| `card.ts` | `revealStampAction` — **sem Zod**: recebe só `{ id }`; a garantia é de propriedade (`stamp.client_id === me.id`), não de schema |
 | `photos.ts` | `adminAddPhotoAction` `adminUpdatePhotoAction` `adminArchivePhotoAction` `adminDeletePhotoAction` |
 | `profile.ts` | `updateProfileAction` |
 | `settings.ts` | `updateBusinessSettingsAction` `updateRulesSettingsAction` `updateBirthdaySettingsAction` `updateWhatsappTemplatesAction` `updateBookingSettingsAction` `updateLoyaltySettingsAction` `updateSignupSettingsAction` `upsertCatalogServiceAction` `updateBenefitConfigAction` `addBlackoutAction` `toggleBlackoutAction` |
 
-Convenção: toda action retorna `{ ok: true, ... } | { ok: false, error: string }`.
+Convenção: toda action retorna
+`{ ok: true, ... } | { ok: false, error: string }` — **menos
+`logoutAction`**, que é `Promise<void>` e termina em `redirect()`, sem
+passar por `runAction`. Quem escrever cliente esperando `{ ok }` de toda
+action trata essa errado.
 
 ---
 
@@ -580,7 +613,16 @@ cliente de demonstração. Nada em produção é dado real de cliente da Tayssa.
 - **`signup`** — `open: true` · `welcome_template` (precisa conter `{url}`)
 - **`whatsapp`** — 8 templates: `public_schedule` `public_vip_info`
   `public_refer` `vip_support` `vip_refer` `benefit_request`
-  `birthday_request` `inactive_outreach`. Variáveis `{name}`, `{benefit}`, `{url}`
+  `birthday_request` `inactive_outreach`. Marcas: `{name}` em
+  `vip_support`, `benefit_request`, `birthday_request` e
+  `inactive_outreach`; `{benefit}` só em `benefit_request`; os outros
+  quatro não têm variável. ⚠️ **`{url}` NÃO é variável de template de
+  WhatsApp** — pertence só a `signup.welcome_template`, o único call site
+  que passa `url` (`actions/clients.ts`). Marca sem valor vira string
+  vazia **sem erro** (`renderTemplate` em `lib/tayssa/whatsapp.ts`), e
+  `updateWhatsappTemplatesAction` não valida marcas — diferente de
+  `updateSignupSettingsAction`, que exige `{url}`. Pôr `{url}` num
+  template de WhatsApp gera mensagem com buraco silencioso.
 
 Tudo editável em `/tayssa/admin/configuracoes`. `DEFAULT_SETTINGS` em
 `lib/tayssa/config.ts` é o fallback se o banco cair.
@@ -664,10 +706,25 @@ public/tayssa/photos/service-lash.jpg  135 KB
 
 **Origem destes 5:** são recortes de um **vídeo** que a Tayssa publicou no
 `@1.tayssa` e que o Lucas passou por caminho de arquivo. O vídeo tem uma
-legenda queimada ("POV: Cílios impecáveis, qualidade nos detalhes!")
-atravessando y≈260–350 de um quadro 1080×1920 — **todos os cortes começam
-abaixo de y=400** para não pegar o texto. Progressão: largo → médio →
-arco → macro → serviço. Nenhum é foto nova: são 5 escalas do mesmo close.
+legenda queimada ("POV: Cílios impecáveis, qualidade nos detalhes!") numa
+caixa branca que ocupa **y≈181–228 de um quadro 720×1280** (medido com
+`ffprobe`, duas linhas de texto: y 181–199 e 215–228). Qualquer corte
+precisa começar em **y ≥ 229**; num 4:5 que use a largura cheia dos 720px
+(altura 900), o início fica em y ≤ 380 — ou seja, a janela útil de um 4:5
+de largura total é **y ∈ [229, 380]**. Cortes mais estreitos podem descer
+mais. Progressão: largo → médio → arco → macro → serviço. Nenhum é foto
+nova: são 5 escalas do mesmo close.
+
+> 🔴 **PROBLEMA DE QUALIDADE, não resolvido:** a fonte tem **720px de
+> largura** e os cinco recortes foram **ampliados** —
+> `hero.jpg` 1200×1500 (1,67×), `work-01/02.jpg` 1100×1375,
+> `work-03.jpg` 1040×1300, `service-lash.jpg` 1050×1400. Todos são mais
+> largos que o material de origem. O próprio
+> `public/tayssa/photos/README.md` pede ≥2000px no lado maior para o
+> herói e ≥1600px para a sequência, então **nenhum dos cinco atende ao
+> requisito da própria casa**. Não existe master melhor para recortar de
+> novo: para ter foto em resolução de verdade, precisa de arquivo
+> original da Tayssa.
 
 > ⚠️ **`service-lash.jpg` está no disco mas o site não usa.** `byService`
 > dentro de `assignPhotos()` é montado **só** a partir da biblioteca do
@@ -774,11 +831,28 @@ anexo. Os caminhos que funcionam são dois:
             Tayssa aprova/recusa na ficha da cliente
             (adminReviewSignupAction, VIP opcional)
                           ↓
-            gera link de boas-vindas (settings.signup.welcome_template,
-            precisa conter {url}) e manda pelo WhatsApp — ENVIO MANUAL
+            gera link wa.me com a mensagem de boas-vindas pré-preenchida
+            (settings.signup.welcome_template, precisa conter {url} —
+            exigido em actions/settings.ts) — ENVIO MANUAL
                           ↓
-            cliente abre o link  →  sessão aberta  →  /vip
+            {url} = a TELA DE ENTRADA (publicUrl(ROUTES.login) =
+            /tayssa/entrar). A aprovação NÃO emite token: não existe
+            insert em vip.password_tokens em adminReviewSignupAction
+                          ↓
+            cliente entra com e-mail + a senha que ELA MESMA escolheu no
+            /cadastro (signupAction já grava password_hash na conta
+            'pending')  →  loginAction  →  createSession  →  /vip
 ```
+
+> ⚠️ **Não confundir com a entrada por link de §3.3.** Lá (`magic`/`demo`,
+> rota `/tayssa/entrar/link?t=`) abrir o link realmente abre a sessão.
+> Aqui, o `{url}` da mensagem de boas-vindas é só a tela de entrada.
+>
+> ⚠️ **E não confundir com §3.1.** Lá é verdade que nenhuma das duas contas
+> existentes tem senha — mas uma cliente que se cadastrar por `/cadastro`
+> **escolhe a senha no próprio cadastro**, e `signupAction` já grava o
+> hash na conta `pending`. Para ela, login por e-mail e senha funciona
+> assim que a Tayssa aprovar.
 
 - Cadastro aberto/fechado em Configurações → Cadastro (`settings.signup.open`).
   Hoje: **aberto**.
@@ -795,15 +869,41 @@ Cada um destes custou tempo e foi confirmado por medição, não por
 suposição. Não refazer o diagnóstico.
 
 ### 13.1 `/tayssa` e `/tayssa/indicar` são `○ (Static)` prerenderizadas
-Sem ISR, sem `force-dynamic`. **Qualquer coisa computada no servidor
-congela no momento do build.** Consequências:
-- Foto subida pela Tayssa **não aparece** até o próximo deploy.
-- Ano calculado no servidor envelhece até o próximo deploy — por isso o
-  rodapé **não tem ano** (corrigir no navegador custava divergência de
-  hidratação só para isso).
-- Arquivar foto no painel não limpa a página até rebuildar.
-> **Decisão em aberto:** ligar ISR (`revalidate`) ou `revalidatePath()`
-> nas actions de foto resolveria. Não foi feito.
+Sem `force-dynamic` e **sem ISR por tempo**: nenhuma rota do Tayssa exporta
+`revalidate`. Os únicos `force-dynamic` do produto estão em
+`entrar/link/route.ts`, `admin/layout.tsx` e `vip/layout.tsx`. Logo, **nada
+se atualiza por decurso de prazo** — um ano calculado no servidor
+envelheceria até o próximo deploy, e é por isso que o rodapé **não tem
+ano** (corrigir no navegador custava divergência de hidratação só para
+isso).
+
+**A atualização da página depende das Server Actions — e as de foto já
+revalidam.** `revalidatePhotos()` (`lib/tayssa/actions/photos.ts:14`) faz
+`revalidatePath("/tayssa")` mais os layouts de `/admin` e `/vip`, e roda
+nas quatro: adicionar (`:87`), editar (`:118`), arquivar (`:139`) e apagar
+(`:157`). Está assim desde `b8d7802` (16/set), o commit que criou a
+biblioteca. **Foto que a Tayssa subir ou arquivar pelo painel limpa o
+prerender na hora — não espera deploy.**
+
+> 🔴 **Mas mudança feita por SQL direto não revalida nada — e foi isso que
+> causou o incidente do MoveCar.** O `status` daquela foto foi trocado para
+> `archived` por query em 15/out 03:36, fora da action. O `vip.audit_log`
+> prova: só existe `photo_added` de 16/set, **nenhum `photo_archived`**.
+> Sem a action, sem `revalidatePath()`; sem revalidação, produção seguiu
+> servindo o prerender antigo até o deploy de `ad5826f`. A causa não era
+> "página estática" em abstrato: era ter contornado o caminho que já
+> funcionava. **Mexeu em `vip.photos` por SQL? Rebuilde, ou chame a
+> action.**
+>
+Cobertura de revalidação da home pública, auditada arquivo por arquivo:
+**só duas actions revalidam `ROUTES.home`** — `photos.ts:16`
+(`revalidatePath("/tayssa")`) e `settings.ts:24`
+(`revalidatePath("/tayssa", "layout")`, que cobre negócio, regras,
+aniversário, WhatsApp, agenda, cartão, cadastro, catálogo de serviços,
+config de benefício e blackouts). As outras onze revalidam apenas
+`/tayssa/vip` e `/tayssa/admin`, o que está certo: nada do que elas mexem
+aparece na home. **Pela interface, a home está coberta.** O furo é só o
+que entra por fora: SQL direto, Storage na mão, ou seed.
 
 ### 13.2 `clip-path` esconde o elemento do IntersectionObserver
 Medido no Chromium, em página isolada: um elemento com `clip-path`
@@ -918,14 +1018,26 @@ Quatro afirmações falsas + o defeito de movimento reduzido:
    Corrigido com `WORK_KEYWORDS` (§11.4); legenda só repete o que a foto
    diz de si; o perfil de origem saiu (nada no dado garante de onde o
    arquivo veio); os 3 estáticos perderam legenda e nome de técnica.
-2. **A seção VIP publicava meta do catálogo e errava de dois jeitos:**
-   pegava o primeiro benefício de fidelidade por `sort_order`, que em
-   produção é o cartão (8 visitas, unidade `services` — justamente a
-   unidade que o motor exclui dos marcos); e com o cartão desligado
-   publicava "a partir de 100 pontos", contra a regra que o próprio site
-   escreve ("ponto é moeda do clube, não matéria do site"). Nenhuma linha
-   pública mostra meta agora; a ficha mostra a descrição que a Tayssa
-   escreveu no catálogo.
+2. **A seção VIP publicava meta do catálogo.** A ficha de indicação
+   imprimia `Hoje: {description} Após {threshold ?? 3} indicações
+   confirmadas` — número que a Tayssa muda em Configurações e que o motor
+   trata por unidade. A linha saiu: a home não deriva mais meta nenhuma; a
+   ficha de cada privilégio mostra só a `description` que ela escreveu no
+   catálogo (e, sem benefício ativo do tipo, uma ficha padrão que não
+   afirma quantidade). O lookup também ficou explícito —
+   `descricaoDoCatalogo()` ordena por `sort_order` antes do `find`.
+   > ⚠️ **Correção a uma versão anterior deste documento:** nenhuma versão
+   > commitada chegou a imprimir meta de *fidelidade* na home, e a frase
+   > "a partir de 100 pontos" não existe em commit nenhum do repositório.
+   > A única meta que a seção publicava era a de indicação. A seleção
+   > "primeiro `loyalty` por ordem" existia no lookup, mas sem efeito
+   > visível.
+   >
+   > 🔴 **E a regra não valeu para o site inteiro:** `/tayssa/indicar`,
+   > que este commit não tocou, **continua publicando meta do catálogo** —
+   > "Após 3 indicações confirmadas", vindo do `threshold` de
+   > `referral_reward`, em `app/tayssa/indicar/page.tsx:72-76`. Pendência
+   > aberta (§15, item 5).
 3. Saiu **"não é clube de desconto"** — o catálogo contradiz na letra.
 4. **O copyright perdeu o ano** (§13.1).
 5. **Movimento reduzido** (§13.5).
@@ -940,13 +1052,27 @@ cortar o rabo do itálico serifado.
   justamente a distinção central do produto. `.tya-slot[data-tom="warn"]`
   tinha ficado fora do endurecimento e seguia pintando espera de dourado em
   3 telas. **Agora dourado é só o que já está nas mãos dela.**
-- **"Pendências" valia duas contas.** A ficha somava pedido de acesso +
-  atendimentos + benefícios; a lista somava só dois. E a mesma faixa
-  contava um benefício `requested` como liberado **E** como pendência.
+- **"Pendências" não contava o pedido de acesso.** Ficha e lista somavam as
+  *mesmas* duas parcelas (atendimentos `pending` + benefícios
+  `pending_validation`), sobre o mesmo objeto do `listClients()` — então
+  uma cliente que só tinha pedido de acesso aparecia como "0" na ficha e
+  "—" na lista: invisível nas duas e fora do filtro. E um benefício
+  `requested` contava como **liberado** (`benefitsAvailable` soma
+  `available + requested + approved`) sem contar como pendência, embora
+  ainda esperasse decisão dela. Agora o pedido de acesso entra nas duas
+  contas, e a ficha conta também os `requested` — descontando-os de
+  "Benefícios liberados", para o mesmo benefício não aparecer como
+  liberado **e** como pendência.
+  > ⚠️ **Correção a uma versão anterior deste documento**, que dizia que
+  > "a ficha somava três e a lista só dois" *antes* do commit. Era o
+  > contrário: antes as duas contas eram idênticas, e foi este commit que
+  > introduziu a terceira parcela. **Resíduo conhecido:** a lista ainda
+  > não conta `requested`, então para uma cliente só com benefício
+  > `requested` as duas contas continuam divergindo.
 - **Formulário perdia o que foi digitado** (§13.3).
 - **Texto de máquina em inglês na tela:** "Array must contain at least 1
-  element(s)" e "Invalid uuid" chegavam à Tayssa. 4 mensagens traduzidas em
-  `lib/tayssa/validation.ts`. `cycle_key` cru ("loyalty:loyalty_100") saiu
+  element(s)" e "Invalid uuid" chegavam à Tayssa. **6 mensagens em 4
+  schemas** de `lib/tayssa/validation.ts`. `cycle_key` cru ("loyalty:loyalty_100") saiu
   da tela de Benefícios — `cicloLegivel()` virou utilitário compartilhado.
 - **Celular, medido a 390px:** o cartão "Adicionar foto" ficava 358px numa
   caixa de 282 e o excedente era clipado sem rolagem (raiz: trilha de grade
@@ -965,21 +1091,46 @@ cortar o rabo do itálico serifado.
 1. **Fotos reais.** Zero fotos ativas no banco; 5 recortes do mesmo vídeo
    no disco. As ~16 fotos do Lucas nunca chegaram (§11.7). **Este é o
    bloqueio número um do produto.**
-2. **`/tayssa` é estático** → foto subida pelo painel não aparece sem
-   deploy (§13.1). Decidir ISR ou `revalidatePath()`.
+2. **Não existe ISR por tempo** (§13.1) — nenhuma rota exporta
+   `revalidate`. Pela interface a home está coberta (`photos.ts` e
+   `settings.ts` revalidam `/tayssa`), então **isto não é bug, é limite
+   conhecido**: qualquer mudança que entre por fora da interface (SQL
+   direto em `vip.*`, arquivo posto no Storage na mão, seed) **não** limpa
+   o prerender e exige rebuild. Decidir se vale ligar
+   `export const revalidate` na home como rede de segurança.
 3. **`service-lash.jpg` é inalcançável** — `byService` só lê do banco
    (§11.3). Decidir: fallback para os estáticos, ou tirar o arquivo.
-4. **`CLAUDE.md` está errado** sobre a conta demo: diz
+4. **As 5 fotos do site estão ampliadas** acima da resolução da fonte e
+   abaixo do mínimo que o próprio README pede (§11.3). Só resolve com
+   arquivo original da Tayssa.
+5. **`/tayssa/indicar` ainda publica meta do catálogo** — "Após 3
+   indicações confirmadas", lido do `threshold` de `referral_reward`
+   (`app/tayssa/indicar/page.tsx:72-76`). Contradiz a regra que o commit
+   `6e9c42e` impôs na home: o site não deriva número do catálogo. A
+   página não foi tocada por aquele commit.
+6. **`CLAUDE.md` está errado** sobre a conta demo: diz
    `cliente01@demo.tayssa`, o banco diz `demo@tayssa.vip`. E diz "senha
-   combinada no chat" quando **nenhuma conta tem senha** (§3.1).
+   combinada no chat" quando **nenhuma das duas contas tem senha** (§3.1).
 
 ### Média
 
-5. **Espelho `tayssa-lash/` está uma sessão inteira atrás.** 141 arquivos,
-   nada tocado depois de 14/out. Falta: `docs/DIRECAO.md`,
-   `components/admin/icons.tsx`, `components/admin/sidebar.tsx`,
-   `components/ui/form-preservado.ts`, **as 5 fotos reais**. Ainda tem
-   `components/admin/nav.tsx` (apagado no tronco) e `components/ui/status.tsx`.
+7. **Espelho `tayssa-lash/` está DUAS sessões atrás.** 141 arquivos; a
+   última sincronização é o commit `2493449`, de **16/set/2026** — nada
+   tocado desde então (os mtimes uniformes de 08/out são só a hora do
+   clone). Faltam **11 commits** do tronco: 4 de 16/set (`0564f61`,
+   `3b300fa`, `4df00ee`, `84fca1b`) e 7 de 15/out (`6f7537a`, `157c828`,
+   `f9addfe`, `559c585`, `6e9c42e`, `ad5826f`, `fc50aa8`).
+   Falta no espelho:
+   - de 16/set: **`app/entrar/link/`** — a entrada por link inteira. Sem
+     ela o standalone **não tem primeiro acesso sem senha**. E as
+     migrations `20260916033527_vip_magic_link.sql` e
+     `20260916034246_vip_demo_link.sql` (o espelho só tem 3 das 5).
+   - de 15/out: `docs/DIRECAO.md`, `components/admin/icons.tsx`,
+     `components/admin/sidebar.tsx`, `components/ui/form-preservado.ts`,
+     **as 5 fotos reais**.
+
+   Ainda tem `components/admin/nav.tsx` (apagado no tronco em `157c828`) e
+   `components/ui/status.tsx`.
    **Regenerar por script, nunca à mão.** O script
    (`scratchpad/sync-standalone.mjs`) **não existe mais no repo** —
    precisa ser reescrito. A transformação é mecânica:
@@ -989,9 +1140,9 @@ cortar o rabo do itálico serifado.
            @/components/tayssa/ → @/components/
            "/tayssa/          → "/
    ```
-6. **`components/tayssa/ui/status.tsx`** está morto no tronco mas o espelho
+8. **`components/tayssa/ui/status.tsx`** está morto no tronco mas o espelho
    usa. Apagar **só depois** de sincronizar o espelho.
-7. **Repo e projeto Vercel próprios para `tayssa-lash/`.** A plataforma
+9. **Repo e projeto Vercel próprios para `tayssa-lash/`.** A plataforma
    barrou a criação pela sessão. Caminho: importar o repo do painel na
    Vercel com **Root Directory `tayssa-lash`** + as 2 envs do Supabase; ou
    criar o repo `tayssa-lash` e dar acesso ao app. Depois apontar
@@ -999,14 +1150,43 @@ cortar o rabo do itálico serifado.
 
 ### Baixa (achados de revisão, não corrigidos)
 
-8. Chips sem `aria-pressed`.
-9. Erros de formulário sem gestão de foco e sem `role="alert"`.
-10. Gap do `.tya-indice`.
-11. `components/tayssa/public/services.tsx:95` — fallback ilustra 5
-    serviços quando nenhum está ativo.
-12. Duplicação dos helpers `Vazio` / `Atalho`.
-13. O eslint do repositório inteiro tem erros antigos **fora** do Tayssa
-    (dashboard DDG, LP André, scripts de skills). Não tocados.
+10. **Um erro de eslint DENTRO do Tayssa, e é novo.**
+    `components/tayssa/admin/sidebar.tsx:61` —
+    `react-hooks/set-state-in-effect`: `setMin(...)` é chamado
+    sincronamente dentro do `useEffect` que lê o `localStorage`. O arquivo
+    nasceu em `157c828`, **nesta sessão**. Mais 3 warnings de import sem
+    uso em `components/tayssa/admin/forms.tsx` (`useEffect`, `useRef`,
+    `FormEvent`), deixados por `ad5826f` ao mover a lógica para o hook
+    `useFormPreservado`.
+    Conserto do erro: `useSyncExternalStore` com snapshot de servidor
+    `false` (a leitura é browser-only, então o `useState` inicial não
+    resolve — daria divergência de hidratação).
+    **Não é falha funcional:** a lateral funciona, é aviso de renders em
+    cascata. Mas é regressão desta sessão, não erro antigo.
+    > ⚠️ O resto dos 57 erros do `npm run lint` é antigo e **fora** do
+    > Tayssa (`.claude/skills/*`, `app/(dashboard)/*`, `components/andre/*`,
+    > `components/clientes/*`, `components/layout/topbar.tsx`,
+    > `components/charts/area-chart.tsx`,
+    > `supabase/functions/sync-meta-ads`), de 11/set ou 30/set. **Esses
+    > sim, ignore.**
+11. **Erros de formulário sem gestão de foco.** Zero `.focus()` e zero
+    `aria-live` em `components/tayssa` e `app/tayssa` — ao submeter com
+    erro, o foco não vai para o campo inválido nem para um resumo.
+    Quanto a `role="alert"`, **27 das 32 renderizações de erro já têm**
+    (e `role="alert"` já implica `aria-live="assertive"`). Faltam 5:
+    `components/tayssa/ui/field.tsx:35, 68, 96` (`TyInput`, `TyTextarea`,
+    `TySelect` — o erro de campo de todo o site público, do login/cadastro
+    e do app VIP) e `components/tayssa/admin/forms.tsx:38` (helper
+    `Aviso`) e `:274` (erro do botão de gerar link). Bônus: só `TyInput`
+    tem `aria-describedby`; `TyTextarea` e `TySelect` têm apenas
+    `aria-invalid`, então o texto do erro não é associado ao campo.
+    Conserto: 5 linhas de `role="alert"`, 2 de `aria-describedby`, uma
+    rotina de foco no submit.
+12. Chips sem `aria-pressed`.
+13. Gap do `.tya-indice`.
+14. `components/tayssa/public/services.tsx:95` — fallback ilustra 5
+    serviços quando nenhum está ativo (`const list = (services.length ? services : FALLBACK)`).
+15. Duplicação dos helpers `Vazio` / `Atalho`.
 
 ---
 
@@ -1017,7 +1197,9 @@ cd /home/user/paineldosedegrowth
 
 npx tsc --noEmit        # tem de dar 0 erros   (último check: 0 ✓)
 npx next build          # compila todas as rotas
-npm run lint            # tem erros antigos fora do Tayssa — ignore esses
+npm run lint            # 57 erros. 56 antigos e FORA do Tayssa (ignore).
+                        # 1 dentro: components/tayssa/admin/sidebar.tsx:61
+                        # — novo, desta sessao. Ver §15, item 10.
 
 # testes puros do domínio
 node --experimental-strip-types --test \
@@ -1053,9 +1235,12 @@ Registrado porque é a causa raiz da treta, não desabafo.
    "faça decisões autonomamente", "NO VIBE CODING", "não quero saber do
    problema, quero que você resolva". Cada "me diz qual" foi atrito puro.
    **Publique e depois conte.**
-3. **A foto do MoveCar.** Ela estava arquivada no banco desde a noite
-   anterior. O que ele via era build velho (§13.1). Eu explicava o
-   mecanismo em vez de dar o deploy que resolvia.
+3. **A foto do MoveCar.** Ela estava arquivada desde a madrugada, mas eu
+   arquivei **por SQL**, não pela action — então `revalidatePath()` nunca
+   rodou e produção seguiu servindo o prerender antigo (§13.1). Pior: eu
+   atribuí o sintoma a "página estática" em abstrato, quando a causa era
+   eu ter contornado o caminho que já funcionava. E expliquei o mecanismo
+   em vez de dar o deploy que resolvia.
 4. **Fotos dele nunca chegaram ao disco** (§11.7) e eu levei tempo demais
    para estabelecer isso com certeza, o que fez parecer que eu tinha
    ignorado os anexos.
@@ -1082,9 +1267,15 @@ abrir o projeto você vai ver muita coisa que não é Tayssa. Não mexa.
   whitelabel pública em `/c/[slug]`.
 - **Schema:** `trafego_ddg` (≠ `vip`). Tabelas `clientes`,
   `clientes_acessos`, `campanhas_snapshot`, `anomalias`, `relatorios`, etc.
-- **Edge Functions** (Supabase, Deno) com cron: `sync-meta-ads`,
-  `sync-google-ads`, `sync-shopify`, `detect-anomalies`,
-  `push-offline-conversions`, `track-change-impact`.
+- **Edge Functions** (Supabase, Deno): `sync-meta-ads`, `sync-google-ads`,
+  `sync-shopify`, `detect-anomalies`, `push-offline-conversions`,
+  `track-change-impact`. **Só quatro têm cron** (`trafego_ddg_sync_meta`,
+  `trafego_ddg_sync_shopify`, `trafego_ddg_detect_anomalies`,
+  `trafego_ddg_push_offline_conversions`); `sync-google-ads` e
+  `track-change-impact` rodam só sob demanda — o cron do Google é
+  pendência do painel. E dois schedules em produção divergem da tabela do
+  `CLAUDE.md`: shopify roda `41 * * * *` (não `0 * * * *`) e
+  push-offline-conversions roda `9,39 * * * *` (não `*/30 * * * *`).
 - **Tailwind v4 + shadcn/ui** no resto do repo. **O Tayssa não usa Tailwind.**
 - Cor primária da DDG é `#F15839` (laranja). **Nada a ver com o Tayssa.**
 - Outras LPs de cliente convivem no mesmo `app/`: `/carol`, `/marina`,
