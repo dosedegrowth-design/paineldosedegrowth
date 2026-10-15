@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "framer-motion";
-import type { CSSProperties, ReactNode } from "react";
+import { motion, useInView, useReducedMotion, type Variants } from "framer-motion";
+import { useRef, type CSSProperties, type ReactNode } from "react";
 
 const EASE_OUT: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -106,7 +106,17 @@ export function MaskedLines({
   );
 }
 
-/** Foto entra por máscara (inset) com leve zoom de 1.08 -> 1. */
+/**
+ * Foto entra por máscara (inset) com leve zoom de 1.08 -> 1.
+ *
+ * Quem decide a hora é o invólucro, não o elemento recortado: no Chromium
+ * um elemento com `clip-path` não é reportado pelo IntersectionObserver
+ * quando o threshold é maior que zero — medido, `inset(100%)` e
+ * `inset(50% 50% 50% 50%)` nunca disparam a 0.2 e sempre disparam a 0.
+ * Pendurar o `whileInView` na própria máscara deixava a foto escondida
+ * para sempre. Então o invólucro (sem recorte) observa, e a máscara anda
+ * por `animate`.
+ */
 export function MaskedPhoto({
   children,
   className,
@@ -115,6 +125,7 @@ export function MaskedPhoto({
   from = "bottom",
   once = true,
   inView = true,
+  amount = 0.2,
 }: {
   children: ReactNode;
   className?: string;
@@ -123,8 +134,11 @@ export function MaskedPhoto({
   from?: "bottom" | "top" | "left" | "right" | "center";
   once?: boolean;
   inView?: boolean;
+  amount?: number;
 }) {
   const reduced = useReducedMotion();
+  const alvo = useRef<HTMLDivElement>(null);
+  const apareceu = useInView(alvo, { once, amount });
   const insets: Record<typeof from, string> = {
     bottom: "inset(100% 0 0 0)",
     top: "inset(0 0 100% 0)",
@@ -132,26 +146,25 @@ export function MaskedPhoto({
     right: "inset(0 0 0 100%)",
     center: "inset(50% 50% 50% 50%)",
   };
+  // sem recorte: ou já é hora (fora do modo inView), ou o invólucro avisou
+  const abrir = reduced || !inView || apareceu;
   return (
-    <motion.div
-      className={className}
-      style={{ ...style, willChange: "clip-path" }}
-      initial={reduced ? false : { clipPath: insets[from] }}
-      {...(inView
-        ? { whileInView: { clipPath: "inset(0 0 0 0)" }, viewport: { once, amount: 0.2 } }
-        : { animate: { clipPath: "inset(0 0 0 0)" } })}
-      transition={{ duration: 1.25, ease: EASE_OUT, delay }}
-    >
+    <div ref={alvo} className={className} style={style}>
       <motion.div
-        style={{ height: "100%", willChange: "transform" }}
-        initial={reduced ? false : { scale: 1.08 }}
-        {...(inView
-          ? { whileInView: { scale: 1 }, viewport: { once, amount: 0.2 } }
-          : { animate: { scale: 1 } })}
-        transition={{ duration: 1.6, ease: EASE_OUT, delay }}
+        style={{ height: "100%", willChange: "clip-path" }}
+        initial={reduced ? false : { clipPath: insets[from] }}
+        animate={{ clipPath: abrir ? "inset(0 0 0 0)" : insets[from] }}
+        transition={{ duration: 1.25, ease: EASE_OUT, delay }}
       >
-        {children}
+        <motion.div
+          style={{ height: "100%", willChange: "transform" }}
+          initial={reduced ? false : { scale: 1.08 }}
+          animate={{ scale: abrir ? 1 : 1.08 }}
+          transition={{ duration: 1.6, ease: EASE_OUT, delay }}
+        >
+          {children}
+        </motion.div>
       </motion.div>
-    </motion.div>
+    </div>
   );
 }
