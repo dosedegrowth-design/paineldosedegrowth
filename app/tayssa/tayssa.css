@@ -853,6 +853,15 @@ select.ty-field__input {
 .ty-mask {
   overflow: hidden;
 }
+/* Títulos mascarados com <em> serifado cujo corpo é definido por <style>
+   local da página (`.ty-setpw-title` & cia., sem bloco próprio aqui): a
+   máscara cortava o rabo do itálico. Mesmo remédio das declarações. */
+.ty-mask:has(> .ty-ref-done),
+.ty-mask:has(> .ty-setpw-title),
+.ty-mask:has(> .ty-restricted-title),
+.ty-mask:has(> .ty-refpage-title) {
+  padding-bottom: 0.07em;
+}
 /* só escondem; nunca redefinem o display do elemento */
 @media (max-width: 767px) {
   .ty-hide-mobile {
@@ -878,6 +887,21 @@ select.ty-field__input {
   }
   .ty-grain {
     display: none;
+  }
+
+  /* O estado escondido das revelações nasce no servidor, onde
+     `useReducedMotion()` ainda é null — então o HTML sai com
+     `opacity:0` mesmo para quem pediu menos movimento. O React de
+     produção não corrige atributo divergente na hidratação e o
+     framer-motion não limpa no mount, então o inline ficava para
+     sempre: com o scroll restaurado abaixo do elemento, ele nunca
+     intersecta, `whileInView` nunca dispara e o conteúdo some.
+     Aqui o CSS resolve sem depender de JS nenhum — por isso o
+     `!important`, que é o único jeito de vencer o estilo inline. */
+  .ty-scope [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
   }
 }
 
@@ -1232,6 +1256,10 @@ select.ty-field__input {
   line-height: 1.1;
   letter-spacing: -0.035em;
 }
+/* a máscara da linha corta o rabo do "f" de "perfil": este ar devolve */
+.ty-ig__chamada .ty-mask {
+  padding-bottom: 0.07em;
+}
 /* o @ é a assinatura da casa na rede: mono grande, como ela escreve */
 .ty-ig__arroba {
   display: block;
@@ -1565,10 +1593,8 @@ select.ty-field__input {
   margin: clamp(22px, 2.6vw, 36px) 0 0;
 }
 .tyw__legenda {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
+  /* um só texto: o que a própria foto declara. Nada de layout que
+     dependa de haver dois filhos. */
   margin-top: 10px;
   font-family: var(--t-font-mono);
   font-size: 10.5px;
@@ -1663,8 +1689,9 @@ select.ty-field__input {
 
 /* ---------- a lista ---------- */
 .tysv__lista {
+  /* a régua da primeira linha já é o fio sob o cabeçalho: não há hr aqui */
+  margin: clamp(34px, 4.4vw, 64px) 0 0;
   list-style: none;
-  margin: 0;
   padding: 0;
 }
 .tysv__linha {
@@ -1756,6 +1783,15 @@ select.ty-field__input {
 .tysv__dizer {
   margin: 0;
 }
+/* casca que só existe para segurar a coluna vazia do desktop */
+.tysv__vazio {
+  display: none;
+}
+@media (min-width: 900px) {
+  .tysv__vazio {
+    display: block;
+  }
+}
 @media (min-width: 900px) {
   .tysv__dizer {
     margin-top: 0.4em;
@@ -1784,7 +1820,7 @@ select.ty-field__input {
 /* foto dentro da linha: só no toque, e só quando existe foto */
 .tysv__figura {
   margin: clamp(14px, 1.8vw, 22px) 0 2px;
-  max-width: min(86%, 320px);
+  max-width: min(80%, 300px);
 }
 @media (hover: hover) and (pointer: fine) {
   .tysv__figura {
@@ -1880,7 +1916,7 @@ select.ty-field__input {
   top: 0;
   left: 0;
   z-index: 40;
-  width: 300px;
+  width: 260px;
   pointer-events: none;
 }
 
@@ -1949,6 +1985,11 @@ select.ty-field__input {
   font-size: clamp(38px, 5.5vw, 80px);
   line-height: 1.03;
   letter-spacing: -0.042em;
+}
+/* linha mascarada com <em> serifado: o mesmo ar que as outras declarações
+   pedem, para a máscara não cortar o rabo do itálico (nem o "p" da sans) */
+.tyvi__declaracao .ty-mask {
+  padding-bottom: 0.07em;
 }
 .tyvi__declaracao em {
   color: var(--t-accent);
@@ -2063,8 +2104,10 @@ select.ty-field__input {
 }
 
 /* ---------- o caminho de entrada ---------- */
+/* o trilho fecha o índice: perto o bastante para a régua de baixo e a
+   do trilho lerem como um par, não como duas sobras */
 .tyvi__trilho {
-  margin-top: clamp(50px, 6.5vw, 98px);
+  margin-top: clamp(38px, 4.6vw, 70px);
 }
 /* no celular a ficha quebra em linhas: corre da esquerda em vez de
    jogar os sinais para as pontas */
@@ -2089,6 +2132,8 @@ select.ty-field__input {
 }
 /* a entrada de quem já é de casa: discreta, do tamanho de uma ficha */
 .tyvi__entrar {
+  position: relative;
+  display: inline-block;
   font-family: var(--t-font-mono);
   font-size: 11px;
   letter-spacing: 0.16em;
@@ -2100,6 +2145,17 @@ select.ty-field__input {
     color var(--t-micro) var(--t-ease-micro),
     border-color var(--t-micro) var(--t-ease-micro);
 }
+/* é a única porta de quem já é VIP, ao lado de um botão de 54px: a ficha
+   fica do tamanho que está (11px é padrão da casa) e o alvo cresce 12px
+   para cima e para baixo — ~21px viram ~45px, acima dos 44px de dedo.
+   Área, não desenho: a sublinha não sai do lugar. Só o eixo vertical
+   cresce, e os 12px cabem no respiro de 16px do `.tyvi__acoes`, então o
+   alvo não encosta no botão nem na nota. */
+.tyvi__entrar::before {
+  content: "";
+  position: absolute;
+  inset: -12px 0;
+}
 @media (hover: hover) {
   .tyvi__entrar:hover {
     color: var(--t-accent);
@@ -2108,4 +2164,464 @@ select.ty-field__input {
 }
 .tyvi__nota {
   margin-top: clamp(18px, 2vw, 26px);
+}
+
+/* ============================================================
+   INDICAÇÃO (.tyr) — indicar é um gesto de confiança.
+   Declaração grande com a coluna de voz descendo ao lado, os três
+   tempos do gesto em tríptico (cada coluna com a sua régua) e a regra
+   da casa dita sem rodeio: a indicação só conta depois que a Tayssa
+   confirma o primeiro atendimento de quem foi indicada.
+   Nenhuma foto participa — a matéria é tipografia, régua e ar.
+   ============================================================ */
+.tyr__topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+/* no celular o rótulo da direita é comprido: empilha em vez de
+   espremer as duas pontas na mesma linha */
+@media (max-width: 767px) {
+  .tyr__topo {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+.tyr__cabeca {
+  margin-top: clamp(8px, 1.6vw, 26px);
+}
+.tyr__declaracao {
+  font-weight: 300;
+  font-size: clamp(34px, 4.7vw, 66px);
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+}
+/* a máscara da linha corta o rabo do "ç" e do "y": este ar devolve */
+.tyr__declaracao .ty-mask {
+  padding-bottom: 0.07em;
+}
+.tyr__declaracao em {
+  color: var(--t-accent);
+}
+.tyr__lado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(18px, 2.2vw, 28px);
+}
+
+/* ---------- os três tempos, em tríptico ---------- */
+.tyr__chapeu {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: clamp(52px, 7vw, 104px);
+  padding-bottom: 14px;
+}
+.tyr__tempos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+/* cada tempo carrega a própria régua: no celular vira lista,
+   no desktop viram três colunas capeadas */
+.tyr__tempo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  height: 100%;
+  padding: clamp(16px, 1.8vw, 22px) 0 clamp(24px, 2.8vw, 34px);
+  border-top: 1px solid var(--t-line-strong);
+}
+@media (min-width: 900px) {
+  .tyr__tempos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(28px, 4vw, 76px);
+  }
+}
+.tyr__n {
+  color: var(--t-accent);
+}
+.tyr__nome {
+  font-family: var(--t-font-display);
+  font-weight: 300;
+  font-size: clamp(25px, 2.5vw, 35px);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+}
+.tyr__texto {
+  max-width: 34ch;
+  font-size: 15.5px;
+  line-height: 1.62;
+  color: var(--t-fg-2);
+}
+/* a ficha é o pé da coluna: alinhada embaixo nas três */
+.tyr__ficha {
+  margin-top: auto;
+  padding-top: clamp(14px, 1.6vw, 20px);
+  font-family: var(--t-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--t-fg-2);
+}
+
+/* ---------- a regra da casa ---------- */
+.tyr__regra {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(14px, 2vw, 22px);
+  margin-top: clamp(44px, 6vw, 92px);
+  padding-top: clamp(18px, 2vw, 26px);
+  border-top: 1px solid var(--t-line-strong);
+}
+@media (min-width: 900px) {
+  .tyr__regra {
+    grid-template-columns: minmax(0, 0.36fr) minmax(0, 1fr);
+    gap: clamp(24px, 4vw, 80px);
+  }
+}
+.tyr__selo {
+  color: var(--t-accent);
+}
+.tyr__regra-linha {
+  max-width: 46ch;
+  font-family: var(--t-font-display);
+  font-weight: 300;
+  font-size: clamp(19px, 1.7vw, 27px);
+  line-height: 1.34;
+  letter-spacing: -0.022em;
+}
+.tyr__regra-linha em {
+  font-family: var(--t-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.06em;
+  color: var(--t-accent);
+}
+.tyr__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px clamp(18px, 2.4vw, 30px);
+  margin-top: clamp(26px, 3.2vw, 40px);
+}
+
+/* ============================================================
+   FECHAMENTO (.tycl) — o convite final, em três caminhos reais.
+   A declaração é o maior corpo da página depois da marca; embaixo,
+   os caminhos como índice: agendar no WhatsApp, pedir acesso ao
+   clube e indicar alguém. A linha inteira é o link e reage sozinha
+   (régua de cassis, nome que desliza, seta) — nada de botão que não
+   leva a lugar nenhum. Sem foto, e sem precisar de nenhuma.
+   ============================================================ */
+.tycl__topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+@media (max-width: 767px) {
+  .tycl__topo {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+.tycl__declaracao {
+  font-weight: 300;
+  font-size: clamp(40px, 6.1vw, 92px);
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+}
+.tycl__declaracao .ty-mask {
+  padding-bottom: 0.06em;
+}
+.tycl__declaracao em {
+  color: var(--t-accent);
+}
+.tycl__chapeu {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: clamp(50px, 6.6vw, 104px);
+  padding-bottom: 14px;
+}
+.tycl__lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.tycl__linha {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(9px, 1.3vw, 15px);
+  padding: clamp(24px, 2.8vw, 40px) 0;
+  border-top: 1px solid var(--t-line);
+  color: inherit;
+}
+.tycl__item:first-child .tycl__linha {
+  border-top-color: var(--t-line-strong);
+}
+.tycl__item:last-child .tycl__linha {
+  border-bottom: 1px solid var(--t-line);
+}
+@media (min-width: 900px) {
+  .tycl__linha {
+    grid-template-columns: auto minmax(0, 1.25fr) minmax(0, 1fr) auto;
+    gap: clamp(24px, 3.4vw, 64px);
+    align-items: start;
+  }
+}
+/* a régua de cassis corre por cima da linha da tabela */
+.tycl__fio {
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--t-accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--t-section) var(--t-ease-out);
+}
+.tycl__n {
+  font-family: var(--t-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--t-fg-2);
+}
+@media (min-width: 900px) {
+  .tycl__n {
+    margin-top: 0.55em;
+  }
+}
+.tycl__nome {
+  font-family: var(--t-font-display);
+  font-weight: 300;
+  font-size: clamp(27px, 2.9vw, 44px);
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+  transition:
+    transform var(--t-ui) var(--t-ease-out),
+    color var(--t-ui) var(--t-ease-out);
+}
+.tycl__dizer {
+  margin: 0;
+  max-width: 38ch;
+  font-size: 15.5px;
+  line-height: 1.62;
+  color: var(--t-fg-2);
+}
+@media (min-width: 900px) {
+  .tycl__dizer {
+    margin-top: 0.45em;
+  }
+}
+.tycl__acao {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--t-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--t-fg-2);
+  white-space: nowrap;
+  transition: color var(--t-ui) var(--t-ease-out);
+}
+@media (min-width: 900px) {
+  .tycl__acao {
+    justify-self: end;
+    justify-content: flex-end;
+    /* a largura da ficha é a mesma nas três linhas: sem isso cada linha
+       é uma grade própria e as colunas do meio desalinhavam */
+    min-width: 15em;
+    margin-top: 0.7em;
+  }
+}
+/* a linha reage sozinha — vale igual no teclado */
+@media (hover: hover) {
+  .tycl__linha:hover .tycl__fio {
+    transform: scaleX(1);
+  }
+  .tycl__linha:hover .tycl__nome {
+    transform: translateX(clamp(6px, 0.9vw, 16px));
+    color: var(--t-accent);
+  }
+  .tycl__linha:hover .tycl__acao {
+    color: var(--t-accent);
+  }
+  .tycl__linha:hover .ty-btn__arrow {
+    transform: translateX(6px);
+  }
+}
+.tycl__linha:focus-visible .tycl__fio {
+  transform: scaleX(1);
+}
+.tycl__linha:focus-visible .tycl__nome {
+  color: var(--t-accent);
+}
+.tycl__linha:focus-visible .tycl__acao {
+  color: var(--t-accent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .tycl__fio,
+  .tycl__nome,
+  .tycl__acao {
+    transition-duration: 1ms;
+  }
+  .tycl__linha:hover .tycl__nome {
+    transform: none;
+  }
+}
+
+/* ============================================================
+   RODAPÉ (.typ) — o colofão da casa.
+   Marca e voz à esquerda, três colunas de caminho real (navegar,
+   contato que sai das settings, clube) e a assinatura: a marca
+   gigante outra vez, fechando o que o herói abriu. Embaixo, a ficha
+   em mono. Serve nos dois temas — o rodapé também mora na página
+   clara de /indicar.
+   ============================================================ */
+.typ {
+  padding-bottom: clamp(26px, 3vw, 40px);
+}
+.typ__grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(34px, 4vw, 56px);
+}
+@media (min-width: 560px) {
+  .typ__grade {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(28px, 4vw, 44px);
+  }
+  .typ__marca {
+    grid-column: 1 / -1;
+  }
+}
+@media (min-width: 760px) {
+  .typ__grade {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  /* a marca ocupa a faixa inteira acima das colunas */
+  .typ__marca {
+    grid-column: 1 / -1;
+  }
+}
+@media (min-width: 1000px) {
+  .typ__grade {
+    grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr));
+    gap: clamp(28px, 4vw, 72px);
+  }
+  .typ__marca {
+    grid-column: auto;
+  }
+}
+.typ__marca {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(16px, 2vw, 22px);
+}
+.typ__dizer {
+  max-width: 30ch;
+}
+.typ__coluna {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 13px;
+}
+.typ__titulo {
+  color: var(--t-fg);
+  margin-bottom: 2px;
+}
+.typ__link {
+  font-size: 14.5px;
+  font-weight: 400;
+  letter-spacing: -0.012em;
+}
+/* Seis links de texto em coluna, cada um com 22px de altura: pequeno
+   demais para o dedo. O alvo cresce 6px para cima e para baixo (22px →
+   34px) dentro dos 13px de respiro da coluna, então sobra 1px entre
+   vizinhos e nada se move na tela. Só os links de verdade: o
+   `.typ__link` dos cartões de contato é um <span> dentro do <a>, e
+   aquele cartão já tem 42px. */
+a.typ__link::before {
+  content: "";
+  position: absolute;
+  inset: -6px 0;
+}
+/* contato: o nome da rede em cima, o endereço real em mono embaixo */
+.typ__contato {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+.typ__num {
+  font-variant-numeric: tabular-nums;
+  text-transform: none;
+  letter-spacing: 0.1em;
+}
+@media (hover: hover) {
+  .typ__contato:hover .typ__link::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+/* ---------- a assinatura: a marca outra vez, na medida do rodapé ---------- */
+/* Ela mora fora do `.ty-container` e o corpo saía de 100vw, então acima de
+   --t-max a palavra avançava ~175px à esquerda e ~100px à direita das
+   réguas e ainda parava a 130px da borda: não lia como sangria nem como
+   assinatura alinhada. O herói pode ser full-bleed porque é full-bleed
+   inteiro — ficha, corpo e marca na mesma prumada da tela. Aqui o resto
+   do colofão (régua de cima, as quatro colunas, régua e ficha de baixo)
+   para em --t-max, e a palavra fecha essa composição: então ela assume a
+   mesma medida. A palavra continua sendo a imagem, só que medida pelo
+   grid. Em --t-max e abaixo nada muda: o min() escolhe a tela. */
+.typ__assinatura {
+  width: 100%;
+  max-width: var(--t-max);
+  margin: clamp(44px, 6vw, 88px) auto 0;
+  padding-inline: var(--t-gutter);
+  overflow: hidden;
+}
+.typ__assinatura .ty-wordmark {
+  overflow: hidden;
+  padding-bottom: 0.06em;
+  margin-left: -0.045em;
+  /* o corpo sai da largura do grid, não da tela */
+  font-size: min(
+    calc((min(100vw, var(--t-max)) - var(--t-gutter) * 2) / (var(--ty-letras, 11) * 0.585)),
+    calc(min(100vw, var(--t-max)) / 4.6)
+  );
+}
+
+/* ---------- a ficha ---------- */
+.typ__ficha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 22px;
+  margin-top: clamp(16px, 2vw, 24px);
+  padding-top: 16px;
+  border-top: 1px solid var(--t-line);
+}
+.typ__ficha span {
+  font-family: var(--t-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--t-fg-2);
 }

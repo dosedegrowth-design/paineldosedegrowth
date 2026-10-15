@@ -29,6 +29,7 @@ export function Reveal({
   const Tag = motion[as];
   return (
     <Tag
+      data-reveal=""
       className={className}
       style={style}
       initial={reduced ? false : { opacity: 0, y }}
@@ -84,6 +85,7 @@ export function MaskedLines({
   };
   return (
     <Tag
+      data-reveal=""
       className={className}
       variants={container}
       initial={reduced ? "show" : "hidden"}
@@ -94,6 +96,7 @@ export function MaskedLines({
       {lines.map((l, i) => (
         <span key={i} className="ty-mask" style={{ display: "block" }}>
           <motion.span
+            data-reveal=""
             variants={line}
             className={lineClassName}
             style={{ display: "block", willChange: "transform" }}
@@ -151,12 +154,14 @@ export function MaskedPhoto({
   return (
     <div ref={alvo} className={className} style={style}>
       <motion.div
+        data-reveal=""
         style={{ height: "100%", willChange: "clip-path" }}
         initial={reduced ? false : { clipPath: insets[from] }}
         animate={{ clipPath: abrir ? "inset(0 0 0 0)" : insets[from] }}
         transition={{ duration: 1.25, ease: EASE_OUT, delay }}
       >
         <motion.div
+          data-reveal=""
           style={{ height: "100%", willChange: "transform" }}
           initial={reduced ? false : { scale: 1.08 }}
           animate={{ scale: abrir ? 1 : 1.08 }}

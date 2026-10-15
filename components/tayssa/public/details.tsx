@@ -72,7 +72,7 @@ export function Details({
               </p>
             </Reveal>
             <Reveal delay={0.16}>
-              <span className="ty-oval">dá uma olhada</span>
+              <span className="ty-oval">o trabalho vive lá</span>
             </Reveal>
           </div>
 
@@ -104,7 +104,7 @@ export function Details({
                   target="_blank"
                   rel="noopener noreferrer"
                   className="ty-ig__cta"
-                  aria-label={`Abrir ${handle} no Instagram`}
+                  aria-label={`Abrir o perfil ${handle} no Instagram`}
                 >
                   Abrir o perfil
                   <span className="ty-ig__seta" aria-hidden />

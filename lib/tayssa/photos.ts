@@ -26,23 +26,23 @@ export const PHOTOS = {
     ratio: 4 / 5,
     caption: "Olhar · aplicação",
   },
+  // sem legenda e sem nome de técnica: estes três são recortes do mesmo
+  // close que a Tayssa publicou, e nada no arquivo diz qual técnica está
+  // ali. Afirmar "fio a fio" aqui seria inventar o trabalho dela.
   work01: {
     src: `${base}/work-01.jpg`,
-    alt: "Resultado de aplicação de cílios fio a fio",
+    alt: "Cílios aplicados pela Tayssa, close do olhar",
     ratio: 4 / 5,
-    caption: "Fio a fio",
   },
   work02: {
     src: `${base}/work-02.jpg`,
-    alt: "Resultado de aplicação de cílios volume",
+    alt: "Cílios aplicados pela Tayssa, desenho da curvatura",
     ratio: 4 / 5,
-    caption: "Volume",
   },
   work03: {
     src: `${base}/work-03.jpg`,
-    alt: "Manutenção de cílios, detalhe",
+    alt: "Cílios aplicados pela Tayssa, detalhe das pontas",
     ratio: 4 / 5,
-    caption: "Manutenção",
   },
   serviceLash: {
     src: `${base}/service-lash.jpg`,
@@ -127,6 +127,17 @@ export type PhotoAssignment = {
   card: PhotoSlot[];
 };
 
+/**
+ * As três técnicas da sequência de trabalho, na ordem em que o site as
+ * mostra, com as palavras que identificam cada uma no nome que a Tayssa
+ * dá à foto (`lash_style`).
+ */
+const WORK_KEYWORDS: string[][] = [
+  ["fio a fio", "fio-a-fio", "fio", "clássico", "classico"],
+  ["volume", "russo", "brasileiro", "egípcio", "egipcio"],
+  ["manuten"],
+];
+
 const SERVICE_KEYWORDS: Record<string, string[]> = {
   "manutencao-cilios": ["manuten"],
   "design-sobrancelhas": ["sobrancelh", "brow"],
@@ -146,7 +157,23 @@ export function assignPhotos(library: LibraryPhoto[]): PhotoAssignment {
   const slots = ordered.map((p) => slotFromPhoto(p));
   const take = (n: number, from: number) => slots.slice(from, from + n);
   const hero = slots[0] ?? PHOTOS.hero;
-  const work = [0, 1, 2].map((i) => take(1, 1 + i)[0] ?? [PHOTOS.work01, PHOTOS.work02, PHOTOS.work03][i]);
+  // A sequência de trabalho é por TÉCNICA, não por ordem de destaque.
+  // Pegar a 2ª, 3ª e 4ª foto da fila fazia o site pôr uma foto de
+  // sobrancelha debaixo do título "Fio a fio". Então cada técnica recebe a
+  // primeira foto cujo nome a declara; quem não tiver foto declarada fica
+  // com o estático, que não afirma técnica nenhuma.
+  const estaticos = [PHOTOS.work01, PHOTOS.work02, PHOTOS.work03];
+  const usadas = new Set<string>();
+  const work = WORK_KEYWORDS.map((palavras, i) => {
+    const achou = ordered.find(
+      (p) => !usadas.has(p.id) && palavras.some((w) => p.lash_style.toLowerCase().includes(w))
+    );
+    if (achou) {
+      usadas.add(achou.id);
+      return slotFromPhoto(achou);
+    }
+    return estaticos[i];
+  });
   const detailStatics = [PHOTOS.detail01, PHOTOS.detail02, PHOTOS.detail03, PHOTOS.detail04, PHOTOS.detail05, PHOTOS.detail06];
   const details = detailStatics.map((st, i) => take(1, 4 + i)[0] ?? st);
   const byService: Record<string, PhotoSlot> = {};

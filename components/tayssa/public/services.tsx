@@ -45,17 +45,23 @@ function nomeComEnfase(nome: string): ReactNode {
  * O link de agendar de cada linha. A mensagem que a Tayssa escreveu nas
  * configurações continua intacta: só acrescenta no fim o serviço que a
  * cliente abriu, para a conversa já começar no assunto certo.
+ *
+ * O complemento é concatenado, nunca reserializado. `URLSearchParams`
+ * regravaria a query inteira em form-urlencoded e os espaços virariam
+ * `+` — e o wa.me não traduz `+` de volta para espaço: a mensagem
+ * chegaria com sinal de mais entre todas as palavras. Aqui o complemento
+ * vai codificado com `encodeURIComponent`, o mesmo encoding que
+ * `whatsappUrl()` (`lib/tayssa/whatsapp.ts`) usou para montar `base`,
+ * então o link inteiro sai com `%20`, igual ao CTA do pé da seção.
  */
 function linkDoServico(base: string, nome: string): string {
-  try {
-    const url = new URL(base);
-    const texto = url.searchParams.get("text");
-    if (!texto) return base;
-    url.searchParams.set("text", `${texto.trim()} Quero saber sobre: ${nome}.`);
-    return url.toString();
-  } catch {
-    return base;
-  }
+  // só é seguro concatenar se `text` for o último parâmetro e tiver
+  // valor — é assim que whatsappUrl() monta o link. Qualquer outro
+  // formato fica exatamente como chegou.
+  if (!/[?&]text=[^&#]+$/.test(base)) return base;
+  // espaço no fim da mensagem salva sai antes (o `.trim()` de sempre, já codificado)
+  const inicio = base.replace(/(?:%20)+$/, "");
+  return inicio + encodeURIComponent(` Quero saber sobre: ${nome}.`);
 }
 
 /**
@@ -132,8 +138,6 @@ export function Services({
           </Reveal>
         </div>
 
-        <hr className="ty-rule" />
-
         <ul className="tysv__lista">
           {list.map((s, i) => {
             const foto = photoBySlug?.[s.slug];
@@ -160,18 +164,25 @@ export function Services({
                   {s.description ? (
                     <p className="ty-body ty-measure--tight tysv__dizer">{s.description}</p>
                   ) : (
-                    // mantém a prumada das colunas quando o serviço não tem texto
-                    <span aria-hidden />
+                    // mantém a prumada das colunas quando o serviço não tem
+                    // texto (no celular não há coluna: a casca some)
+                    <span className="tysv__vazio" aria-hidden />
                   )}
                   {/* foto é bônus: no toque ela mora dentro da linha; no mouse,
                       o CSS esconde esta e a foto passa a seguir o cursor */}
                   {foto ? (
                     <figure className="tysv__figura">
                       <div className="ty-figure">
-                        <RealPhoto photo={foto} ratio={3 / 4} sizes="(max-width: 899px) 86vw, 320px" />
+                        <RealPhoto photo={foto} ratio={3 / 4} sizes="(max-width: 899px) 80vw, 300px" />
                       </div>
                       <figcaption className="tysv__legenda">
-                        <span>{s.name}</span>
+                        {/* a legenda da biblioteca só entra quando diz algo
+                            além do nome que já está logo acima */}
+                        <span>
+                          {foto.caption && foto.caption.trim().toLowerCase() !== s.name.toLowerCase()
+                            ? foto.caption
+                            : s.name}
+                        </span>
                         <span>@1.tayssa</span>
                       </figcaption>
                     </figure>
@@ -217,7 +228,7 @@ export function Services({
                 exit={{ opacity: 0, transition: tempo(0.24) }}
                 transition={tempo(0.55)}
               >
-                <RealPhoto photo={fotoAtiva} ratio={3 / 4} sizes="300px" />
+                <RealPhoto photo={fotoAtiva} ratio={3 / 4} sizes="260px" />
               </motion.div>
             ) : null}
           </AnimatePresence>

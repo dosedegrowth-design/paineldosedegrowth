@@ -27,6 +27,16 @@ const COVER_MS = 560;
 const REVEAL_MS = 720;
 const SAFETY_MS = 7000;
 
+/**
+ * O caminho de um href, sem query nem hash. É com isto que `usePathname()`
+ * se compara: ele devolve só o caminho. Sem descontar o hash, um link de
+ * seção (`/tayssa#vip`) nunca casava com a rota que chegava e a cortina
+ * só saía no estouro de SAFETY_MS.
+ */
+function caminhoDe(href: string): string {
+  return href.split("#")[0].split("?")[0];
+}
+
 export function TransitionProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -36,7 +46,7 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
 
   const navigate = useCallback(
     (href: string) => {
-      const path = href.split("?")[0];
+      const path = caminhoDe(href);
       if (reduced || path === pathname) {
         router.push(href);
         return;
@@ -62,9 +72,11 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
   // rota trocou -> revela
   useEffect(() => {
     if (phase !== "cover") return;
-    const wanted = target.current?.split("?")[0];
-    if (wanted && pathname === wanted) {
-      window.scrollTo(0, 0);
+    const href = target.current;
+    if (href && pathname === caminhoDe(href)) {
+      // sem hash, a página nova começa do topo; com hash, quem posiciona é
+      // o SmoothScroll — ele espera a seção existir antes de saltar
+      if (!href.includes("#")) window.scrollTo(0, 0);
       setPhase("reveal");
     }
   }, [pathname, phase]);

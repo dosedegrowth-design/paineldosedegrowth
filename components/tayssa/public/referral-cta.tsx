@@ -2,78 +2,124 @@
 
 import { ROUTES } from "@/lib/tayssa/config";
 import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
-import { TyLinkButton } from "@/components/tayssa/ui/button";
 import { Magnetic } from "@/components/tayssa/ui/magnetic";
-import { useIsMobile } from "@/components/tayssa/ui/use-media";
+import { TransitionLink } from "@/components/tayssa/ui/transition";
 
-const STEPS = [
-  { n: "01", t: "Você indica", d: "Nome e telefone de quem ainda não conhece a Tayssa." },
-  { n: "02", t: "Ela confirma", d: "A pessoa faz o primeiro atendimento e a Tayssa valida." },
-  { n: "03", t: "O benefício é seu", d: "Liberado depois da confirmação. Nunca automático." },
+/** A declaração, quebrada como o olho lê: três tempos, o último em itálico. */
+const DECLARACAO = ["Indicar alguém", "é emprestar", <em key="confianca">a sua confiança.</em>];
+
+/**
+ * Os três tempos do gesto. Cada texto diz, por si, quem confirma: a
+ * indicação não vale na promessa, vale na confirmação dela.
+ */
+const TEMPOS = [
+  {
+    n: "01",
+    nome: "Você passa o nome",
+    texto: "Nome e WhatsApp de quem ainda não conhece o trabalho da Tayssa. Nada além disso.",
+    ficha: "nome e whatsapp",
+  },
+  {
+    n: "02",
+    nome: "Ela atende",
+    texto: "A Tayssa combina o horário com essa pessoa e faz o primeiro atendimento dela.",
+    ficha: "primeiro atendimento",
+  },
+  {
+    n: "03",
+    nome: "Ela confirma",
+    texto:
+      "Com o atendimento feito, a Tayssa confirma — e é aí que a indicação passa a contar como sua.",
+    ficha: "aí a indicação é sua",
+  },
 ];
 
-/** Transição 7 — indicação pública. Qualquer pessoa pode indicar. */
+/**
+ * Transição 7 — a indicação, que qualquer pessoa pode fazer.
+ *
+ * Não é um CTA: é um gesto. A declaração grande abre a seção com a
+ * coluna de voz descendo em diagonal ao lado; embaixo, os três tempos
+ * em tríptico, cada coluna capeada pela sua régua e com a ficha alinhada
+ * no pé. Fecha com a regra da casa dita sem rodeio — a indicação só
+ * conta depois que a Tayssa confirma o primeiro atendimento de quem foi
+ * indicada — e o caminho real: o formulário de indicar.
+ *
+ * Nenhuma foto participa, e nenhuma faria falta: aqui a matéria é
+ * tipografia, régua e ar.
+ */
 export function ReferralCta() {
-  const isMobile = useIsMobile();
   return (
-    <section id="indicar" className="ty-section" aria-label="Indicação">
+    <section id="indicar" className="ty-section tyr" aria-label="Indicação">
       <div className="ty-container">
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "minmax(0, 6fr) minmax(0, 6fr)",
-            gap: isMobile ? 36 : "clamp(40px, 6vw, 120px)",
-            alignItems: "start",
-          }}
-        >
-          <div>
-            <Reveal>
-              <span className="ty-eyebrow" style={{ display: "block", marginBottom: 22 }}>
-                Indicação
-              </span>
+        {/* ficha de topo: o assunto de um lado, quem pode indicar do outro */}
+        <Reveal className="tyr__topo" y={14}>
+          <span className="ty-mono ty-mono--ink">Indicação</span>
+          <span className="ty-mono">não precisa ser VIP para indicar</span>
+        </Reveal>
+        <div className="ty-rule" />
+
+        {/* a declaração, com a voz da casa descendo ao lado */}
+        <div className="ty-split ty-split--wide-left ty-split--offset tyr__cabeca">
+          <MaskedLines as="h2" className="ty-display tyr__declaracao" lines={DECLARACAO} />
+          <div className="tyr__lado">
+            <Reveal delay={0.12}>
+              <p className="ty-lead ty-measure">
+                Quando você passa um nome pra Tayssa, não é um contato que muda de mão: é alguém
+                de quem você gosta cruzando a porta do estúdio pela primeira vez. É o elogio mais
+                honesto que o trabalho dela pode receber.
+              </p>
             </Reveal>
-            <MaskedLines
-              as="h2"
-              className="ty-display"
-              lineClassName="ty-ref-title"
-              lines={["Conhece alguém", "que precisa", <em key="e">conhecer a Tayssa?</em>]}
-            />
             <Reveal delay={0.2}>
-              <div style={{ marginTop: 32 }}>
-                <Magnetic>
-                  <TyLinkButton href={ROUTES.refer} variant="solid" arrow>
-                    Indicar alguém
-                  </TyLinkButton>
-                </Magnetic>
-              </div>
+              <span className="ty-oval">um nome de cada vez</span>
             </Reveal>
           </div>
-          <ol style={{ listStyle: "none", margin: 0, padding: 0 }}>
-            {STEPS.map((s, i) => (
-              <Reveal key={s.n} as="li" delay={0.1 + i * 0.08}>
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "56px 1fr",
-                    gap: 16,
-                    padding: "22px 0",
-                    borderTop: "1px solid var(--t-line)",
-                  }}
-                >
-                  <span className="ty-num ty-muted" style={{ fontSize: 11, letterSpacing: "0.2em", paddingTop: 6 }}>
-                    {s.n}
-                  </span>
-                  <div>
-                    <h3 className="ty-h-sm" style={{ fontSize: 24 }}>{s.t}</h3>
-                    <p className="ty-body" style={{ marginTop: 6 }}>{s.d}</p>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </ol>
+        </div>
+
+        {/* os três tempos do gesto */}
+        <Reveal className="tyr__chapeu" y={14}>
+          <span className="ty-mono ty-mono--ink">Como funciona</span>
+          <span className="ty-index">
+            <b>03</b> tempos
+          </span>
+        </Reveal>
+        <ol className="tyr__tempos">
+          {TEMPOS.map((t, i) => (
+            <Reveal key={t.n} as="li" delay={i * 0.08} amount={0.25}>
+              <div className="tyr__tempo">
+                <span className="ty-mono ty-num tyr__n">{t.n}</span>
+                <h3 className="tyr__nome">{t.nome}</h3>
+                <p className="tyr__texto">{t.texto}</p>
+                <span className="tyr__ficha">{t.ficha}</span>
+              </div>
+            </Reveal>
+          ))}
+        </ol>
+
+        {/* a regra da casa, sem rodeio — e o caminho de indicar */}
+        <div className="tyr__regra">
+          <Reveal>
+            <span className="ty-mono tyr__selo">a regra da casa</span>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <p className="tyr__regra-linha">
+              A indicação conta <em>depois</em> que a Tayssa confirma o primeiro atendimento de
+              quem você indicou — nunca na promessa. É ela quem confere cada atendimento e quem
+              libera cada benefício: automático, aqui, não existe.
+            </p>
+            <div className="tyr__acoes">
+              <Magnetic>
+                <TransitionLink href={ROUTES.refer} className="ty-btn ty-btn--solid">
+                  <span>Indicar alguém</span>
+                  <span className="ty-btn__arrow" aria-hidden />
+                </TransitionLink>
+              </Magnetic>
+              <span className="ty-mono">
+                o formulário pede o seu nome, o nome dela e os dois WhatsApp
+              </span>
+            </div>
+          </Reveal>
         </div>
       </div>
-      <style>{`.ty-ref-title { font-size: clamp(31px, 3.65vw, 50px); }`}</style>
     </section>
   );
 }

@@ -103,8 +103,10 @@ export function WorkSequence({ photos }: { photos?: PhotoSlot[] }) {
 
   const atual = TECNICAS[ativo] ?? TECNICAS[0];
   const fotos = photos ?? [];
-  // quem não quer movimento recebe o mesmo desenho, sem tempo de animação:
-  // o alvo é sempre o estado visível, então nada fica preso no caminho
+  // quem não quer movimento recebe o mesmo desenho, sem tempo de animação.
+  // Duração zero não basta: o `initial` de cada bloco também tem de sair
+  // (`initial={reduced ? false : ...}`), senão o estado escondido é o que
+  // vale enquanto o bloco não entra em vista.
   const tempo = (s: number) => ({ duration: reduced ? 0 : s, ease: EASE });
 
   return (
@@ -174,12 +176,14 @@ export function WorkSequence({ photos }: { photos?: PhotoSlot[] }) {
             <ol className="tyw__corrida" ref={corridaRef}>
               {TECNICAS.map((t, i) => {
                 const foto = fotos[i];
+                const legenda = foto?.caption?.trim();
                 return (
                   <motion.li
                     key={t.n}
                     data-tecnica={i}
+                    data-reveal=""
                     className="tyw__item"
-                    initial={{ opacity: 0, y: 24 }}
+                    initial={reduced ? false : { opacity: 0, y: 24 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-8% 0px -8% 0px" }}
                     transition={tempo(0.85)}
@@ -190,11 +194,21 @@ export function WorkSequence({ photos }: { photos?: PhotoSlot[] }) {
                     </div>
 
                     {/* no celular o nome grande mora aqui; no desktop ele
-                        vive na coluna grudada e este bloco sai do fluxo */}
+                        vive na coluna grudada e este bloco sai do fluxo.
+                        Nas duas larguras é desenho: o nome é eco do h3 e a
+                        frase tem a cópia abaixo, que é a que vai ser lida. */}
                     <div className="tyw__item-nome" aria-hidden>
                       <span className="tyw__nome">{t.nome}</span>
                       <p className="tyw__dizer">{t.dizer}</p>
                     </div>
+
+                    {/* a frase da técnica como conteúdo de verdade: as duas
+                        cópias visíveis (coluna grudada no desktop, bloco
+                        acima no celular) saem do leitor de tela, e uma dessas
+                        duas está sempre em `display: none` — esta aqui é a
+                        única que entra na árvore de acessibilidade, em
+                        qualquer largura, e sem leitura dobrada */}
+                    <p className="sr-only">{t.dizer}</p>
 
                     <p className="ty-body ty-measure tyw__texto">{t.texto}</p>
 
@@ -204,16 +218,14 @@ export function WorkSequence({ photos }: { photos?: PhotoSlot[] }) {
                         <div className="ty-figure">
                           <RealPhoto photo={foto} ratio={4 / 5} sizes="(max-width: 899px) 100vw, 42vw" />
                         </div>
-                        <figcaption className="tyw__legenda">
-                          <span>{t.nome}</span>
-                          {/* a legenda da biblioteca só entra quando diz algo
-                              além do nome que já está do lado */}
-                          <span>
-                            {foto.caption && foto.caption.trim().toLowerCase() !== t.nome.toLowerCase()
-                              ? foto.caption
-                              : "@1.tayssa"}
-                          </span>
-                        </figcaption>
+                        {/* a legenda só pode afirmar o que a própria foto
+                            declara — nada além disso. O nome da técnica não
+                            entra aqui: o perfil de onde a foto veio também
+                            não, porque a biblioteca é alimentada por upload
+                            em /tayssa/admin/fotos e nenhum dado diz que o
+                            arquivo saiu do Instagram. Sem legenda própria,
+                            não há legenda. */}
+                        {legenda ? <figcaption className="tyw__legenda">{legenda}</figcaption> : null}
                       </figure>
                     ) : null}
                   </motion.li>
@@ -223,8 +235,9 @@ export function WorkSequence({ photos }: { photos?: PhotoSlot[] }) {
 
             {/* fecho em bloco chapado: a cor da casa entra como peça, não como enfeite */}
             <motion.div
+              data-reveal=""
               className="tyw__fecho ty-block"
-              initial={{ opacity: 0, clipPath: "inset(0% 0% 100% 0%)" }}
+              initial={reduced ? false : { opacity: 0, clipPath: "inset(0% 0% 100% 0%)" }}
               whileInView={{ opacity: 1, clipPath: "inset(0% 0% 0% 0%)" }}
               viewport={{ once: true, margin: "-8% 0px -8% 0px" }}
               transition={tempo(1)}
