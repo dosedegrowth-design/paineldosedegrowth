@@ -1,4 +1,10 @@
 import type { ReactNode } from "react";
+import { TransitionLink } from "@/components/tayssa/ui/transition";
+
+/**
+ * Peças do painel. Mesmo vocabulário do `admin.css`: cabeçalho de
+ * página, bloco com título, número em destaque e vazio desenhado.
+ */
 
 export function AdminHeader({
   eyebrow,
@@ -12,61 +18,79 @@ export function AdminHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div style={{ paddingBlock: "clamp(28px, 4vw, 56px) clamp(22px, 3vw, 40px)", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-end", gap: 20 }}>
+    <div className="tya-pagehead tya-up">
       <div>
-        <span className="ty-eyebrow" style={{ display: "block", marginBottom: 12 }}>
-          {eyebrow}
-        </span>
-        <h1 className="ty-display" style={{ fontSize: "clamp(26px, 3.34vw, 40px)" }}>
+        <span className="tya-eyebrow">{eyebrow}</span>
+        <h1 className="tya-h1" style={{ marginTop: 10 }}>
           {title}
         </h1>
-        {lead ? (
-          <p className="ty-body" style={{ marginTop: 12, maxWidth: 560 }}>
-            {lead}
-          </p>
-        ) : null}
+        {lead ? <p className="tya-lead">{lead}</p> : null}
       </div>
-      {actions ? <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>{actions}</div> : null}
+      {actions ? <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>{actions}</div> : null}
     </div>
   );
 }
 
-export function AdminBlock({ title, aside, children, id }: { title: ReactNode; aside?: ReactNode; children: ReactNode; id?: string }) {
+export function AdminBlock({
+  title,
+  aside,
+  children,
+  id,
+}: {
+  title: ReactNode;
+  aside?: ReactNode;
+  children: ReactNode;
+  id?: string;
+}) {
   return (
-    <section id={id} style={{ paddingBlock: "clamp(22px, 3vw, 40px)", borderTop: "1px solid var(--t-line)" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 16, flexWrap: "wrap", marginBottom: 18 }}>
-        <h2 className="ty-h-sm" style={{ fontSize: 24 }}>
-          {title}
-        </h2>
-        {aside ? <div className="ty-small">{aside}</div> : null}
+    <section id={id} className="tya-sec tya-up">
+      <div className="tya-card">
+        <div className="tya-head">
+          <h2>{title}</h2>
+          {aside ? <div className="tya-small">{aside}</div> : null}
+        </div>
+        {children}
       </div>
-      {children}
     </section>
   );
 }
 
-export function Stat({ n, label, href, alert }: { n: number | string; label: string; href?: string; alert?: boolean }) {
-  const body = (
-    <div className="ty-stat">
-      <span className={`ty-stat__n ${alert ? "ty-stat__n--alert" : ""}`}>{n}</span>
-      <span className="ty-eyebrow" style={{ fontSize: 10 }}>
-        {label}
-      </span>
+/** Número que importa. `alert` acende quando há gente esperando. */
+export function Stat({
+  n,
+  label,
+  href,
+  alert,
+  sub,
+  tom,
+}: {
+  n: number | string;
+  label: string;
+  href?: string;
+  alert?: boolean;
+  sub?: string;
+  tom?: "brand" | "dark" | "gold";
+}) {
+  const corpo = (
+    <div className={`tya-card tya-kpi ${tom ? `tya-card--${tom}` : ""} ${href ? "tya-card--hover" : ""}`}>
+      <div className="tya-kpi__top">
+        <span className="tya-eyebrow">{label}</span>
+      </div>
+      <p className="tya-kpi__n" style={alert && !tom ? { color: "var(--tya-brand)" } : undefined}>
+        {n}
+      </p>
+      {sub ? <p className="tya-kpi__sub">{sub}</p> : null}
     </div>
   );
   return href ? (
-    <a href={href} style={{ display: "block" }}>
-      {body}
-    </a>
+    <TransitionLink href={href} style={{ display: "block" }}>
+      {corpo}
+    </TransitionLink>
   ) : (
-    body
+    corpo
   );
 }
 
 export function Empty({ children }: { children: ReactNode }) {
-  return (
-    <p className="ty-body" style={{ fontFamily: "var(--t-font-display)", fontWeight: 300, fontSize: 17 }}>
-      {children}
-    </p>
-  );
+  return <p className="tya-empty">{children}</p>;
 }

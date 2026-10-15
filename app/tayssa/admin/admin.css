@@ -1126,3 +1126,628 @@ textarea.tya-field {
     transition: none !important;
   }
 }
+
+/* utilitário de visibilidade */
+.tya-hide-sm {
+  display: inline;
+}
+@media (max-width: 720px) {
+  .tya-hide-sm {
+    display: none;
+  }
+}
+
+/* ============================================================
+   PEÇAS DAS TELAS DE CLIENTES (lista, ficha, nova)
+   ============================================================ */
+
+/* barra de trabalho: busca + filtros */
+.tya-toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.tya-find {
+  position: relative;
+  flex: 1 1 240px;
+  max-width: 360px;
+}
+.tya-find svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 15px;
+  height: 15px;
+  flex: none;
+  stroke: var(--tya-muted-2);
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.tya-find .tya-field {
+  padding-left: 34px;
+}
+.tya-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+/* selo com número dentro do filtro: quem está esperando aparece */
+.tya-chip__n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 5px;
+  margin-left: 2px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  background: var(--tya-gold-bg);
+  color: #6d5316;
+}
+.tya-chip[data-on="true"] .tya-chip__n {
+  background: var(--tya-gold-soft);
+  color: #4a3612;
+}
+
+/* o que espera decisão ganha um fio da marca na borda */
+.tya-card--wait {
+  border-left: 3px solid var(--tya-brand);
+}
+
+/* ficha técnica: rótulo e valor */
+.tya-defs {
+  display: grid;
+  grid-template-columns: minmax(84px, auto) minmax(0, 1fr);
+  gap: 10px 20px;
+  margin: 0;
+  font-size: 13.5px;
+}
+.tya-defs dt {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tya-muted-2);
+  padding-top: 2px;
+}
+.tya-defs dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* números miúdos (cartão de cliente no celular) */
+.tya-mini {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+  gap: 12px 14px;
+}
+.tya-mini b {
+  display: block;
+  font-family: var(--t-font-display);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.tya-mini span {
+  display: block;
+  margin-top: 3px;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--tya-muted-2);
+}
+
+/* fala de alguém (recado da cliente, nota sua) */
+.tya-quote {
+  margin-top: 6px;
+  padding-left: 11px;
+  border-left: 2px solid var(--tya-line);
+  font-size: 12.5px;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--tya-muted);
+}
+
+/* barra de progresso — só com número que veio do banco */
+.tya-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: #efe7dc;
+  overflow: hidden;
+}
+.tya-bar > i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--tya-brand-2), var(--tya-brand));
+}
+
+/* tabela no desktop, cartões no celular */
+.tya-only-lg {
+  display: block;
+}
+.tya-only-sm {
+  display: none;
+}
+@media (max-width: 860px) {
+  .tya-only-lg {
+    display: none;
+  }
+  .tya-only-sm {
+    display: grid;
+    gap: 12px;
+  }
+  .tya-defs {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px 0;
+  }
+  .tya-defs dd {
+    margin-bottom: 10px;
+  }
+  .tya-find {
+    max-width: none;
+  }
+}
+
+/* ponte: peças compartilhadas (components/tayssa/ui/*, admin/controls.tsx)
+   falam o vocabulário do site público. Dentro do painel elas vestem o
+   uniforme da casa — sem tocar nos arquivos compartilhados. */
+.tya .ty-btn {
+  height: 32px;
+  gap: 8px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--tya-line);
+  background: #fff;
+  color: var(--tya-ink);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.tya .ty-btn::before {
+  display: none;
+}
+.tya .ty-btn:hover {
+  color: var(--tya-ink);
+  background: var(--tya-surface-2);
+  border-color: #d5c8ba;
+}
+.tya .ty-btn--solid,
+.tya .ty-btn--solid:hover {
+  background: linear-gradient(180deg, #2a2320 0%, #1a1512 100%);
+  border-color: #1a1512;
+  color: #fff;
+}
+.tya .ty-btn--accent,
+.tya .ty-btn--accent:hover {
+  background: linear-gradient(180deg, var(--tya-brand-2) 0%, var(--tya-brand) 60%, #5e2739 100%);
+  border-color: var(--tya-brand);
+  color: #fff;
+}
+.tya .ty-btn--sm {
+  height: 36px;
+  padding: 0 14px;
+  font-size: 12.5px;
+}
+.tya .ty-btn--xs {
+  height: 30px;
+  padding: 0 10px;
+  font-size: 11.5px;
+}
+.tya .ty-btn__arrow {
+  width: 14px;
+}
+.tya .ty-field {
+  gap: 6px;
+}
+.tya .ty-field__label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--tya-muted);
+}
+.tya .ty-field__input {
+  border: 1px solid var(--tya-line);
+  border-radius: var(--tya-radius-sm);
+  background: #fff;
+  padding: 10px 12px;
+  font-size: 13.5px;
+}
+.tya .ty-field__input:focus {
+  border-color: var(--tya-brand-2);
+  box-shadow: 0 0 0 4px rgba(110, 47, 69, 0.12);
+}
+.tya .ty-field__error {
+  font-size: 12px;
+  color: var(--tya-bad);
+}
+
+/* ============================================================
+   PEÇAS DAS TELAS DE AGENDA E ATENDIMENTOS
+   ============================================================ */
+
+/* o número do topo leva para a seção, e a seção não some sob o topo de vidro */
+.tya-sec {
+  scroll-margin-top: calc(var(--tya-top) + 18px);
+}
+a.tya-kpi {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+.tya-kpi--alert .tya-kpi__n {
+  color: var(--tya-brand);
+}
+
+/* ---------- a linha de trabalho: horário / registro ---------- */
+.tya-slot {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 16px;
+  padding: 16px 0;
+  border-top: 1px solid var(--tya-line-soft);
+}
+.tya-slot:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+/* o bloco da hora: dia da semana, hora grande, data */
+.tya-slot__when {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 8px 6px 7px;
+  border-radius: 12px;
+  border: 1px solid var(--tya-line);
+  background: var(--tya-surface-2);
+}
+.tya-slot__dow {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tya-muted-2);
+}
+.tya-slot__h {
+  font-size: 20px;
+  line-height: 1.1;
+}
+.tya-slot__d {
+  font-size: 10.5px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--tya-muted);
+}
+.tya-slot[data-tom="warn"] .tya-slot__when {
+  border-color: var(--tya-gold-soft);
+  background: var(--tya-gold-bg);
+}
+.tya-slot[data-tom="warn"] .tya-slot__dow {
+  color: #7d6127;
+}
+.tya-slot[data-tom="brand"] .tya-slot__when {
+  border-color: #ebd2da;
+  background: var(--tya-brand-soft);
+}
+.tya-slot[data-tom="brand"] .tya-slot__dow {
+  color: var(--tya-brand-ink);
+}
+.tya-slot[data-tom="ok"] .tya-slot__when {
+  border-color: #cfe0d4;
+  background: #e7f0e9;
+}
+.tya-slot[data-tom="ok"] .tya-slot__dow {
+  color: #33604a;
+}
+.tya-slot[data-tom="bad"] .tya-slot__when {
+  border-color: #eccac7;
+  background: #f8e9e8;
+}
+.tya-slot[data-tom="bad"] .tya-slot__dow {
+  color: #8f322d;
+}
+.tya-slot__body {
+  min-width: 0;
+}
+.tya-slot__top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+}
+.tya-slot__name {
+  font-size: 15px;
+  font-weight: 600;
+}
+.tya-slot__meta {
+  margin-top: 5px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--tya-muted);
+}
+.tya-slot__mine {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--tya-muted);
+}
+.tya-slot__tag {
+  margin-right: 6px;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tya-muted-2);
+}
+.tya-slot__wa {
+  display: inline-block;
+  margin-top: 9px;
+}
+.tya-slot__acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* no celular cada horário vira um cartão legível, nunca tabela espremida */
+@media (max-width: 860px) {
+  .tya-slot {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+    padding: 14px;
+    border-top: 0;
+    border: 1px solid var(--tya-line);
+    border-radius: var(--tya-radius-sm);
+    background: var(--tya-surface-2);
+  }
+  .tya-slot:first-child {
+    margin-top: 0;
+    padding-top: 14px;
+  }
+  .tya-slot__when {
+    grid-auto-flow: column;
+    justify-items: start;
+    align-items: baseline;
+    gap: 9px;
+    width: max-content;
+    padding: 5px 11px;
+    background: #fff;
+  }
+  .tya-slot__h {
+    font-size: 17px;
+  }
+  .tya-slot__acts {
+    justify-content: flex-start;
+  }
+}
+
+/* fila de selos (dias e horários da disponibilidade) */
+.tya-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* tabela dentro de um card: o card já tem a borda, aqui só o rolar */
+.tya-tablewrap--bare {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* vazio desenhado: ícone, uma frase e o porquê */
+.tya-nada {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  padding: 28px 18px;
+  text-align: center;
+  border: 1px dashed var(--tya-line);
+  border-radius: var(--tya-radius-sm);
+  background: var(--tya-surface-2);
+}
+.tya-nada svg {
+  width: 22px;
+  height: 22px;
+  stroke: var(--tya-muted-2);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tya-nada b {
+  font-family: var(--t-font-display);
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--tya-ink-2);
+}
+.tya-nada > span {
+  max-width: 46ch;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--tya-muted);
+}
+
+/* o reset do site público (`.ty-scope a:not(.ty-btn){color:inherit}`) vence
+   `.tya-link` por especificidade e apagava a cor dos links do painel.
+   Aqui eles recuperam a tinta da casa. */
+.tya.ty-scope a.tya-link {
+  color: var(--tya-brand);
+}
+.tya.ty-scope a.tya-link--quiet {
+  color: var(--tya-muted);
+}
+.tya.ty-scope a.tya-btn {
+  color: var(--tya-ink);
+}
+.tya.ty-scope a.tya-btn--primary,
+.tya.ty-scope a.tya-btn--dark {
+  color: #fff;
+}
+.tya.ty-scope a.tya-btn--soft {
+  color: var(--tya-brand-ink);
+}
+.tya.ty-scope a.tya-btn--gold {
+  color: #2b2008;
+}
+
+/* no celular os atalhos ficam dois a dois: o trabalho do dia não pode
+   nascer abaixo da dobra */
+@media (max-width: 860px) {
+  .tya-kpis--2sm {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .tya-kpis--2sm .tya-kpi {
+    padding: 14px;
+  }
+  .tya-kpis--2sm .tya-kpi__n {
+    margin-top: 6px;
+    font-size: 24px;
+  }
+  /* tabela estreita rola inteira em vez de quebrar cada célula */
+  .tya-tablewrap--bare .tya-table th,
+  .tya-tablewrap--bare .tya-table td {
+    white-space: nowrap;
+  }
+}
+
+/* fileira de números da ficha: 6 no desktop, 3 no meio, 2 no celular */
+.tya-kpis--tight {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+@media (max-width: 1180px) {
+  .tya-kpis--tight {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .tya-kpis--tight {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* no estreito o selo do bloco desce para a própria linha */
+@media (max-width: 560px) {
+  .tya-head {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .tya-mini {
+    grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+  }
+}
+
+/* ============================================================
+   PEÇAS DOS CONTROLES (admin/controls.tsx) E DAS TELAS DE
+   INDICAÇÕES, BENEFÍCIOS E ANIVERSÁRIOS
+   ============================================================ */
+
+/* botão de decisão e o erro dele, um sob o outro */
+.tya-act {
+  display: inline-grid;
+  gap: 6px;
+  justify-items: start;
+}
+.tya-act .tya-err {
+  margin-top: 0;
+}
+
+/* o quadro que abre para escrever o recado antes de decidir */
+.tya-note {
+  display: grid;
+  gap: 10px;
+  min-width: 240px;
+  max-width: 320px;
+  padding: 12px;
+  border: 1px solid var(--tya-line);
+  border-radius: var(--tya-radius-sm);
+  background: var(--tya-surface-2);
+  text-align: left;
+}
+.tya-note__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* escolher o estado da indicação e aplicar */
+.tya-pick {
+  display: grid;
+  gap: 8px;
+  min-width: 210px;
+  max-width: 280px;
+  text-align: left;
+}
+
+/* campo só de leitura com o botão de copiar ao lado */
+.tya-copy {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tya-copy .tya-field {
+  min-width: 0;
+}
+.tya-copy .tya-btn {
+  flex: none;
+}
+
+/* a linha que espera decisão dela ganha o fio da marca */
+.tya-item--wait {
+  padding-left: 14px;
+  border-left: 3px solid var(--tya-brand);
+}
+
+/* o presente de aniversário: o formulário mora na coluna da direita */
+.tya-give {
+  width: min(320px, 100%);
+  text-align: left;
+}
+
+/* os meses são links, e o reset do site público apagaria a cor deles */
+.tya.ty-scope a.tya-chip {
+  color: var(--tya-ink);
+}
+.tya.ty-scope a.tya-chip[data-on="true"] {
+  color: #fff;
+}
+
+/* no celular nenhum controle pode empurrar a página para o lado */
+@media (max-width: 560px) {
+  .tya-note,
+  .tya-pick {
+    min-width: 0;
+    max-width: none;
+  }
+  .tya-copy {
+    flex-wrap: wrap;
+  }
+}
+
+/* No celular a coluna útil dentro de um card tem ~240px: a trilha mínima de
+   320px de .tya-cols estourava a borda e cortava texto (o .tya-main esconde
+   o estouro, então o corte era silencioso). Abaixo de 860px, uma coluna. */
+@media (max-width: 860px) {
+  .tya-cols {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

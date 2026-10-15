@@ -6,8 +6,7 @@ import { adminReviewSignupAction } from "@/lib/tayssa/actions/clients";
 import { dateTime } from "@/lib/tayssa/format";
 import { formatBrPhone } from "@/lib/tayssa/phone";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
-import { TyButton } from "@/components/tayssa/ui/button";
-import { TyTextarea } from "@/components/tayssa/ui/field";
+import { Area } from "@/components/tayssa/admin/forms";
 
 /**
  * A Tayssa decide quem entra. Aprovar abre a conta na hora (a senha a
@@ -54,27 +53,26 @@ export function SignupReviewPanel({
   if (decided) {
     return (
       <div style={{ display: "grid", gap: 12, maxWidth: 560 }}>
-        <p className="ty-lead" style={{ fontSize: 18 }}>
-          {decided === "approve" ? `${name.split(" ")[0]} já pode entrar.` : "Pedido recusado."}
+        <div>
+          <span className={`tya-pill ${decided === "approve" ? "tya-pill--ok" : "tya-pill--bad"}`}>
+            {decided === "approve" ? "Acesso aprovado" : "Pedido recusado"}
+          </span>
+        </div>
+        <p className="tya-lead" style={{ marginTop: 0 }}>
+          {decided === "approve"
+            ? `${name.split(" ")[0]} já pode entrar. A conta está ativa${vip ? " e já como VIP" : ""} — ela entra com o e-mail e a senha que escolheu no cadastro. Avisa ela:`
+            : "A conta fica marcada como recusada; se mudar de ideia, dá para reativar em “Conta”."}
         </p>
-        {decided === "approve" ? (
-          <p className="ty-body">
-            A conta está ativa{vip ? " e já como VIP" : ""}. Ela entra com o e-mail e a senha que escolheu no cadastro — avisa ela:
-          </p>
-        ) : (
-          <p className="ty-body">A conta fica marcada como recusada; se mudar de ideia, dá para reativar em “Conta”.</p>
-        )}
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           {decided === "approve" && welcome ? (
-            <a href={welcome} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--sm ty-btn--solid">
-              <span>Mandar boas-vindas no WhatsApp</span>
-              <span className="ty-btn__arrow" aria-hidden />
+            <a href={welcome} target="_blank" rel="noopener noreferrer" className="tya-btn tya-btn--sm tya-btn--primary">
+              Mandar boas-vindas no WhatsApp
             </a>
           ) : null}
           {decided === "approve" ? (
-            <TyButton size="sm" onClick={() => router.refresh()}>
+            <button type="button" className="tya-btn tya-btn--sm tya-btn--ghost" onClick={() => router.refresh()}>
               Atualizar ficha
-            </TyButton>
+            </button>
           ) : null}
         </div>
       </div>
@@ -82,16 +80,16 @@ export function SignupReviewPanel({
   }
 
   return (
-    <div style={{ display: "grid", gap: 18, maxWidth: 640 }}>
-      <dl style={{ margin: 0, display: "grid", gridTemplateColumns: "auto 1fr", gap: "8px 18px", fontSize: 14.5 }}>
-        <dt className="ty-eyebrow" style={{ fontSize: 10 }}>Pedido</dt>
-        <dd style={{ margin: 0 }}>{requestedAt ? dateTime(requestedAt) : "—"}</dd>
-        <dt className="ty-eyebrow" style={{ fontSize: 10 }}>E-mail</dt>
-        <dd style={{ margin: 0 }}>{email}</dd>
-        <dt className="ty-eyebrow" style={{ fontSize: 10 }}>WhatsApp</dt>
-        <dd style={{ margin: 0 }}>
+    <div style={{ display: "grid", gap: 18 }}>
+      <dl className="tya-defs">
+        <dt>Pedido</dt>
+        <dd>{requestedAt ? dateTime(requestedAt) : "—"}</dd>
+        <dt>E-mail</dt>
+        <dd>{email}</dd>
+        <dt>WhatsApp</dt>
+        <dd>
           {phone ? (
-            <a href={whatsappUrl(phone, `Oi, ${name.split(" ")[0]}! Aqui é a Tayssa.`)} target="_blank" rel="noopener noreferrer" className="ty-link">
+            <a href={whatsappUrl(phone, `Oi, ${name.split(" ")[0]}! Aqui é a Tayssa.`)} target="_blank" rel="noopener noreferrer" className="tya-link">
               {formatBrPhone(phone)}
             </a>
           ) : (
@@ -100,30 +98,32 @@ export function SignupReviewPanel({
         </dd>
         {message ? (
           <>
-            <dt className="ty-eyebrow" style={{ fontSize: 10 }}>Recado</dt>
-            <dd style={{ margin: 0, fontWeight: 300 }}>“{message}”</dd>
+            <dt>Recado</dt>
+            <dd>
+              <span className="tya-quote" style={{ display: "block", marginTop: 0 }}>“{message}”</span>
+            </dd>
           </>
         ) : null}
       </dl>
 
       {!rejecting ? (
         <>
-          <label className="ty-check">
+          <label className="tya-check">
             <input type="checkbox" checked={vip} onChange={(e) => setVip(e.target.checked)} />
             <span>Já entra como VIP (aniversário e benefícios exclusivos liberados)</span>
           </label>
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <TyButton size="sm" variant="solid" arrow onClick={() => run("approve")} disabled={pending}>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <button type="button" className="tya-btn tya-btn--primary" onClick={() => run("approve")} disabled={pending}>
               {pending ? "Aprovando…" : "Aprovar acesso"}
-            </TyButton>
-            <TyButton size="sm" onClick={() => setRejecting(true)} disabled={pending}>
+            </button>
+            <button type="button" className="tya-btn tya-btn--ghost" onClick={() => setRejecting(true)} disabled={pending}>
               Recusar
-            </TyButton>
+            </button>
           </div>
         </>
       ) : (
-        <div style={{ display: "grid", gap: 14 }}>
-          <TyTextarea
+        <div style={{ display: "grid", gap: 12, maxWidth: 480 }}>
+          <Area
             label="Motivo (só você vê)"
             name="note"
             rows={2}
@@ -131,20 +131,20 @@ export function SignupReviewPanel({
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <TyButton size="sm" variant="accent" onClick={() => run("reject")} disabled={pending}>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <button type="button" className="tya-btn tya-btn--sm tya-btn--danger" onClick={() => run("reject")} disabled={pending}>
               {pending ? "Recusando…" : "Confirmar recusa"}
-            </TyButton>
-            <TyButton size="sm" onClick={() => setRejecting(false)} disabled={pending}>
+            </button>
+            <button type="button" className="tya-btn tya-btn--sm tya-btn--ghost" onClick={() => setRejecting(false)} disabled={pending}>
               Voltar
-            </TyButton>
+            </button>
           </div>
         </div>
       )}
       {error ? (
-        <div className="ty-form-error" role="alert">
+        <p className="tya-err" role="alert">
           {error}
-        </div>
+        </p>
       ) : null}
     </div>
   );

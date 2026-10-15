@@ -1,37 +1,54 @@
 import type { Metadata } from "next";
+import "./admin.css";
 import { requireAdminPage } from "@/lib/tayssa/auth/guards";
 import { vipDb } from "@/lib/tayssa/db";
-import { AdminNav } from "@/components/tayssa/admin/nav";
+import { AdminSidebar, type Atencao } from "@/components/tayssa/admin/sidebar";
+import { AdminTopbar } from "@/components/tayssa/admin/topbar";
 
 export const metadata: Metadata = {
-  title: "Admin",
+  title: "Painel",
   robots: { index: false, follow: false },
 };
 
 /** Painel operacional: sempre por requisição, nunca cacheado. */
 export const dynamic = "force-dynamic";
 
-async function attentionCounts() {
+/** O que espera por ela — é isso que acende o número na lateral. */
+async function contarAtencao(): Promise<Atencao> {
   const db = vipDb();
-  const [a, s, r, b] = await Promise.all([
+  const [cadastros, horarios, atendimentos, indicacoes, beneficios] = await Promise.all([
+    db.from("users").select("id", { count: "exact", head: true }).eq("status", "pending"),
     db.from("appointments").select("id", { count: "exact", head: true }).eq("status", "requested"),
     db.from("client_services").select("id", { count: "exact", head: true }).eq("status", "pending"),
-    db.from("referrals").select("id", { count: "exact", head: true }).in("status", ["pending", "contacted", "scheduled", "completed"]),
-    db.from("client_benefits").select("id", { count: "exact", head: true }).in("status", ["pending_validation", "requested"]),
+    db
+      .from("referrals")
+      .select("id", { count: "exact", head: true })
+      .in("status", ["pending", "contacted", "scheduled", "completed"]),
+    db
+      .from("client_benefits")
+      .select("id", { count: "exact", head: true })
+      .in("status", ["pending_validation", "requested"]),
   ]);
-  return { appointments: a.count ?? 0, services: s.count ?? 0, referrals: r.count ?? 0, benefits: b.count ?? 0, birthdays: 0 };
+  return {
+    signups: cadastros.count ?? 0,
+    appointments: horarios.count ?? 0,
+    services: atendimentos.count ?? 0,
+    referrals: indicacoes.count ?? 0,
+    benefits: beneficios.count ?? 0,
+  };
 }
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const user = await requireAdminPage();
-  const attention = await attentionCounts();
+  const [user, atencao] = await Promise.all([requireAdminPage(), contarAtencao()]);
   return (
-    <div className="ty-scope" data-theme="night">
-      <div className="ty-grain" aria-hidden />
-      <AdminNav name={user.displayName} attention={attention} />
-      <main className="ty-container" style={{ paddingBottom: "clamp(64px, 8vw, 120px)" }}>
-        {children}
-      </main>
+    <div className="ty-scope tya">
+      <AdminSidebar atencao={atencao} />
+      <div className="tya-body">
+        <AdminTopbar nome={user.displayName} />
+        <main className="tya-main">
+          <div className="tya-wrap">{children}</div>
+        </main>
+      </div>
     </div>
   );
 }

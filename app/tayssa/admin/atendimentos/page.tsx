@@ -1,12 +1,79 @@
+import type { ReactNode } from "react";
 import { requireAdminPage } from "@/lib/tayssa/auth/guards";
 import { listServices } from "@/lib/tayssa/queries/admin";
+import type { ServiceWithClient } from "@/lib/tayssa/queries/admin";
 import { ROUTES } from "@/lib/tayssa/config";
-import { currency, dateShort, dateTime } from "@/lib/tayssa/format";
+import { currency, dateShort, dateTime, monthName, weekdayShort } from "@/lib/tayssa/format";
 import { adminReviewServiceAction } from "@/lib/tayssa/actions/services";
+import { SERVICE_STATUS_LABEL, type ServiceStatus } from "@/lib/tayssa/types";
 import { AdminBlock, AdminHeader, Empty } from "@/components/tayssa/admin/shell";
 import { ActionButton, NoteAction } from "@/components/tayssa/admin/controls";
-import { ServiceStatusText } from "@/components/tayssa/ui/status";
+import { Icone, type IconeNome } from "@/components/tayssa/admin/icons";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
+
+/** Cada estado tem uma cor só dele — para ler no relance. */
+const TOM: Record<ServiceStatus, "warn" | "ok" | "quiet"> = {
+  pending: "warn",
+  approved: "ok",
+  rejected: "quiet",
+};
+
+function Selo({ status }: { status: ServiceStatus }) {
+  return <span className={`tya-pill tya-pill--${TOM[status]}`}>{SERVICE_STATUS_LABEL[status]}</span>;
+}
+
+/** Vazio desenhado: ícone, uma frase curta e o porquê. */
+function Vazio({ icone, titulo, children }: { icone: IconeNome; titulo: string; children?: ReactNode }) {
+  return (
+    <Empty>
+      <span className="tya-nada">
+        <Icone nome={icone} />
+        <b>{titulo}</b>
+        {children ? <span>{children}</span> : null}
+      </span>
+    </Empty>
+  );
+}
+
+/** "12 / out" a partir de "2026-10-12", sem passar por fuso. */
+function diaMes(iso: string): { dia: string; mes: string } {
+  return { dia: iso.slice(8, 10), mes: monthName(Number(iso.slice(5, 7)) - 1).slice(0, 3) };
+}
+
+/** Registro aguardando: data à esquerda, quem e o quê no meio, ação à direita. */
+function Registro({ s, children }: { s: ServiceWithClient; children?: ReactNode }) {
+  const { dia, mes } = diaMes(s.service_date);
+  return (
+    <li className="tya-slot" data-tom={TOM[s.status]}>
+      <div className="tya-slot__when">
+        <span className="tya-slot__dow">{weekdayShort(s.service_date)}</span>
+        <span className="tya-num tya-slot__h">{dia}</span>
+        <span className="tya-slot__d">{mes}</span>
+      </div>
+
+      <div className="tya-slot__body">
+        <div className="tya-slot__top">
+          <TransitionLink href={ROUTES.adminClient(s.client_id)} className="tya-link tya-slot__name">
+            {s.client?.name ?? "Cliente"}
+          </TransitionLink>
+          <Selo status={s.status} />
+          <span className="tya-pill tya-pill--gold tya-num">{s.points} pts</span>
+        </div>
+        <p className="tya-slot__meta">
+          {s.service_name} · {dateShort(s.service_date)}
+          {s.amount != null ? ` · ${currency(s.amount)}` : ""}
+        </p>
+        {s.notes ? <p className="tya-quote">“{s.notes}”</p> : null}
+        <p className="tya-slot__mine">
+          <span className="tya-slot__tag">enviado</span>
+          {dateTime(s.submitted_at)}
+        </p>
+      </div>
+
+      {children ? <div className="tya-slot__acts">{children}</div> : null}
+    </li>
+  );
+}
 
 export default async function ServicesAdminPage() {
   await requireAdminPage();
@@ -17,72 +84,106 @@ export default async function ServicesAdminPage() {
     <>
       <AdminHeader
         eyebrow="Atendimentos"
-        title={pending.length ? <>{pending.length} a <em>confirmar</em></> : <>Nada a <em>confirmar</em></>}
+        title={
+          pending.length ? (
+            <>
+              {pending.length} a <em>confirmar</em>
+            </>
+          ) : (
+            <>
+              Nada a <em>confirmar</em>
+            </>
+          )
+        }
         lead="Registros enviados pelas clientes. Só depois da sua confirmação os pontos entram na jornada."
+        actions={
+          <TransitionLink href={ROUTES.adminAgenda} className="tya-btn tya-btn--ghost">
+            <Icone nome="agenda" />
+            Ver a agenda
+          </TransitionLink>
+        }
       />
 
-      <AdminBlock title="Aguardando você">
+      <AdminBlock
+        title="Aguardando você"
+        aside={
+          pending.length ? (
+            <span className="tya-pill tya-pill--warn">{pending.length} aguardando</span>
+          ) : (
+            <span className="tya-pill tya-pill--ok">fila vazia</span>
+          )
+        }
+      >
         {pending.length ? (
-          <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+          <ul className="tya-list">
             {pending.map((s) => (
-              <li key={s.id} style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 18, padding: "16px 0", borderTop: "1px solid var(--t-line)", alignItems: "start" }}>
-                <div>
-                  <TransitionLink href={ROUTES.adminClient(s.client_id)} className="ty-link" style={{ fontSize: 16 }}>
-                    {s.client?.name ?? "Cliente"}
-                  </TransitionLink>
-                  <span style={{ display: "block", marginTop: 4 }}>
-                    {s.service_name} · {dateShort(s.service_date)}
-                    {s.amount != null ? ` · ${currency(s.amount)}` : ""} · {s.points} pts
-                  </span>
-                  {s.notes ? <span className="ty-small" style={{ display: "block", fontWeight: 300 }}>“{s.notes}”</span> : null}
-                  <span className="ty-small" style={{ display: "block" }}>enviado {dateTime(s.submitted_at)}</span>
-                </div>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-                  <ActionButton action={adminReviewServiceAction} args={{ id: s.id, decision: "approve" as const }} variant="accent">
-                    Confirmar
-                  </ActionButton>
-                  <NoteAction action={adminReviewServiceAction} args={{ id: s.id, decision: "reject" as const }} label="Motivo (ela vê)">
-                    Não confirmar
-                  </NoteAction>
-                </div>
-              </li>
+              <Registro key={s.id} s={s}>
+                <ActionButton
+                  action={adminReviewServiceAction}
+                  args={{ id: s.id, decision: "approve" as const }}
+                  variant="accent"
+                >
+                  Confirmar
+                </ActionButton>
+                <NoteAction
+                  action={adminReviewServiceAction}
+                  args={{ id: s.id, decision: "reject" as const }}
+                  label="Motivo (ela vê)"
+                >
+                  Não confirmar
+                </NoteAction>
+              </Registro>
             ))}
           </ul>
         ) : (
-          <Empty>Nenhum registro aguardando confirmação.</Empty>
+          <Vazio icone="atendimentos" titulo="Nenhum registro aguardando confirmação">
+            Quando uma cliente registrar um atendimento pelo app, ele espera aqui — os pontos só entram depois do seu
+            sim.
+          </Vazio>
         )}
       </AdminBlock>
 
-      <AdminBlock title="Recentes">
+      <AdminBlock
+        title="Recentes"
+        aside={recent.length ? <span className="tya-pill tya-pill--quiet">{recent.length} registros</span> : null}
+      >
         {recent.length ? (
-          <div className="ty-table-wrap">
-            <table className="ty-table">
+          <div className="tya-tablewrap tya-tablewrap--bare">
+            <table className="tya-table">
               <thead>
                 <tr>
                   <th>Data</th>
                   <th>Cliente</th>
                   <th>Serviço</th>
                   <th>Pontos</th>
-                  <th>Status</th>
+                  <th>Estado</th>
                 </tr>
               </thead>
               <tbody>
                 {recent.map((s) => (
                   <tr key={s.id}>
-                    <td className="ty-num">{dateShort(s.service_date)}</td>
+                    <td className="tya-num" style={{ whiteSpace: "nowrap" }}>
+                      {dateShort(s.service_date)}
+                    </td>
                     <td>
-                      <TransitionLink href={ROUTES.adminClient(s.client_id)} className="ty-link">{s.client?.name ?? "—"}</TransitionLink>
+                      <TransitionLink href={ROUTES.adminClient(s.client_id)} className="tya-link">
+                        {s.client?.name ?? "—"}
+                      </TransitionLink>
                     </td>
                     <td>{s.service_name}</td>
-                    <td className="ty-num">{s.points}</td>
-                    <td><ServiceStatusText status={s.status} /></td>
+                    <td className="tya-num">{s.points}</td>
+                    <td>
+                      <Selo status={s.status} />
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         ) : (
-          <Empty>Ainda não há atendimentos.</Empty>
+          <Vazio icone="atendimentos" titulo="Ainda não há atendimentos">
+            Os registros confirmados e não confirmados ficam guardados aqui.
+          </Vazio>
         )}
       </AdminBlock>
     </>

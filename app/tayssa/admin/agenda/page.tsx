@@ -1,10 +1,11 @@
+import type { ReactNode } from "react";
 import { requireAdminPage } from "@/lib/tayssa/auth/guards";
 import { getAgenda } from "@/lib/tayssa/queries/admin";
 import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES } from "@/lib/tayssa/config";
-import { dateShort, dayLabel, hhmm, nowInBusinessTz, weekdayShort } from "@/lib/tayssa/format";
+import { dateShort, dayLabel, dayMonth, hhmm, nowInBusinessTz, weekdayShort } from "@/lib/tayssa/format";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
-import { APPOINTMENT_STATUS_LABEL } from "@/lib/tayssa/types";
+import { APPOINTMENT_STATUS_LABEL, type AppointmentStatus } from "@/lib/tayssa/types";
 import type { AppointmentWithClient } from "@/lib/tayssa/queries/admin";
 import {
   adminCancelAppointmentAction,
@@ -14,65 +15,107 @@ import {
 } from "@/lib/tayssa/actions/appointments";
 import { AdminBlock, AdminHeader, Empty } from "@/components/tayssa/admin/shell";
 import { ActionButton, NoteAction } from "@/components/tayssa/admin/controls";
+import { Icone, type IconeNome } from "@/components/tayssa/admin/icons";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
-import { TyInput } from "@/components/tayssa/ui/field";
 
 const WEEKDAYS = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
+
+/** Cada estado tem uma cor só dele — para ler no relance, sem reler o texto. */
+const TOM: Record<AppointmentStatus, "warn" | "brand" | "ok" | "quiet" | "bad"> = {
+  requested: "warn",
+  confirmed: "brand",
+  done: "ok",
+  cancelled: "quiet",
+  no_show: "bad",
+};
 
 function clientName(a: AppointmentWithClient): string {
   return a.client?.nickname?.trim() || a.client?.name || "Cliente";
 }
 
-function Who({ a }: { a: AppointmentWithClient }) {
-  const first = clientName(a).split(/\s+/)[0];
+function Selo({ status }: { status: AppointmentStatus }) {
+  return <span className={`tya-pill tya-pill--${TOM[status]}`}>{APPOINTMENT_STATUS_LABEL[status]}</span>;
+}
+
+/** Vazio desenhado: ícone, uma frase curta e o porquê. */
+function Vazio({ icone, titulo, children }: { icone: IconeNome; titulo: string; children?: ReactNode }) {
   return (
-    <div style={{ minWidth: 0 }}>
-      <span style={{ display: "flex", gap: 12, alignItems: "baseline", flexWrap: "wrap" }}>
-        <span className="ty-num" style={{ fontSize: 18, fontWeight: 600, letterSpacing: "-0.02em" }}>
-          {hhmm(a.scheduled_time)}
-        </span>
-        {a.client ? (
-          <TransitionLink href={ROUTES.adminClient(a.client.id)} className="ty-link" style={{ fontSize: 16 }}>
-            {a.client.name}
-          </TransitionLink>
-        ) : (
-          <span style={{ fontSize: 16 }}>Cliente</span>
-        )}
+    <Empty>
+      <span className="tya-nada">
+        <Icone nome={icone} />
+        <b>{titulo}</b>
+        {children ? <span>{children}</span> : null}
       </span>
-      <span style={{ display: "block", marginTop: 4 }}>
-        {a.service_name} · {weekdayShort(a.scheduled_date)}, {dateShort(a.scheduled_date)} · {a.duration_min} min
-        <span className="ty-small"> · {APPOINTMENT_STATUS_LABEL[a.status].toLowerCase()}</span>
-      </span>
-      {a.client_note ? (
-        <span className="ty-small" style={{ display: "block", fontWeight: 300 }}>
-          “{a.client_note}”
-        </span>
-      ) : null}
-      {a.admin_note ? (
-        <span className="ty-small" style={{ display: "block" }}>
-          sua observação: {a.admin_note}
-        </span>
-      ) : null}
-      {a.client?.phone ? (
-        <a
-          href={whatsappUrl(a.client.phone, `Oi, ${first}! Sobre seu horário de ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}: `)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="ty-link ty-link--caps"
-          style={{ display: "inline-block", marginTop: 6 }}
-        >
-          WhatsApp
-        </a>
-      ) : null}
-    </div>
+    </Empty>
   );
 }
 
-function Row({ a, children }: { a: AppointmentWithClient; children?: React.ReactNode }) {
+/** Atalho do topo: número que vem do banco e desce para a seção. */
+function Atalho({ n, label, href, alerta }: { n: number; label: string; href: string; alerta?: boolean }) {
   return (
-    <li style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 18, padding: "16px 0", borderTop: "1px solid var(--t-line)", alignItems: "start" }}>
-      <Who a={a} />
-      {children ? <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>{children}</div> : null}
+    <a href={href} className={`tya-card tya-kpi tya-card--hover${alerta ? " tya-kpi--alert" : ""}`}>
+      <span className="tya-eyebrow">{label}</span>
+      <p className="tya-kpi__n">{n}</p>
+    </a>
+  );
+}
+
+/** A linha de trabalho: hora grande à esquerda, quem e o quê no meio, ação à direita. */
+function Slot({
+  a,
+  tom,
+  children,
+}: {
+  a: AppointmentWithClient;
+  tom?: "warn" | "brand" | "ok" | "quiet" | "bad";
+  children?: ReactNode;
+}) {
+  const first = clientName(a).split(/\s+/)[0];
+  return (
+    <li className="tya-slot" data-tom={tom ?? TOM[a.status]}>
+      <div className="tya-slot__when">
+        <span className="tya-slot__dow">{weekdayShort(a.scheduled_date)}</span>
+        <span className="tya-num tya-slot__h">{hhmm(a.scheduled_time)}</span>
+        <span className="tya-slot__d">{dayMonth(a.scheduled_date)}</span>
+      </div>
+
+      <div className="tya-slot__body">
+        <div className="tya-slot__top">
+          {a.client ? (
+            <TransitionLink href={ROUTES.adminClient(a.client.id)} className="tya-link tya-slot__name">
+              {a.client.name}
+            </TransitionLink>
+          ) : (
+            <span className="tya-slot__name">Cliente</span>
+          )}
+          <Selo status={a.status} />
+        </div>
+        <p className="tya-slot__meta">
+          {a.service_name} · {a.duration_min} min · {weekdayShort(a.scheduled_date)}, {dateShort(a.scheduled_date)}
+        </p>
+        {a.client_note ? <p className="tya-quote">“{a.client_note}”</p> : null}
+        {a.admin_note ? (
+          <p className="tya-slot__mine">
+            <span className="tya-slot__tag">sua observação</span>
+            {a.admin_note}
+          </p>
+        ) : null}
+        {a.client?.phone ? (
+          <a
+            href={whatsappUrl(
+              a.client.phone,
+              `Oi, ${first}! Sobre seu horário de ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}: `
+            )}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="tya-link tya-link--quiet tya-slot__wa"
+          >
+            WhatsApp
+          </a>
+        ) : null}
+      </div>
+
+      {children ? <div className="tya-slot__acts">{children}</div> : null}
     </li>
   );
 }
@@ -86,11 +129,28 @@ function CloseActions({ a }: { a: AppointmentWithClient }) {
         args={{ id: a.id }}
         label="Observação (opcional)"
         variant="accent"
-        extra={<TyInput label="Pontos desta visita (vazio = do catálogo)" name="points" inputMode="numeric" placeholder="ex.: 40" />}
+        extra={
+          <div>
+            <label className="tya-label" htmlFor={`pontos-${a.id}`}>
+              Pontos desta visita (vazio = do catálogo)
+            </label>
+            <input
+              id={`pontos-${a.id}`}
+              className="tya-field"
+              name="points"
+              inputMode="numeric"
+              placeholder="ex.: 40"
+            />
+          </div>
+        }
       >
         Realizado
       </NoteAction>
-      <ActionButton action={adminNoShowAppointmentAction} args={{ id: a.id }} confirm="Marcar como não compareceu? Nada soma para a cliente.">
+      <ActionButton
+        action={adminNoShowAppointmentAction}
+        args={{ id: a.id }}
+        confirm="Marcar como não compareceu? Nada soma para a cliente."
+      >
         Não compareceu
       </ActionButton>
     </>
@@ -126,38 +186,70 @@ export default async function AgendaAdminPage() {
         }
         lead="A cliente pede o horário pelo app; ele só vale depois que você confirma. Ao marcar como realizado, a visita entra confirmada, com pontos e carimbo."
         actions={
-          <TransitionLink href={`${ROUTES.adminSettings}#agenda`} className="ty-link ty-link--caps">
+          <TransitionLink href={`${ROUTES.adminSettings}#agenda`} className="tya-btn tya-btn--ghost">
+            <Icone nome="config" />
             Editar disponibilidade
           </TransitionLink>
         }
       />
 
-      <AdminBlock title="Pedidos de horário" aside={agenda.requested.length ? `${agenda.requested.length} aguardando` : undefined}>
+      <div className="tya-kpis tya-kpis--2sm tya-stagger">
+        <Atalho n={agenda.requested.length} label="Pedidos" href="#pedidos" alerta={agenda.requested.length > 0} />
+        <Atalho n={agenda.todayList.length} label="Hoje" href="#hoje" />
+        <Atalho n={agenda.toClose.length} label="Para fechar" href="#fechar" alerta={agenda.toClose.length > 0} />
+        <Atalho n={agenda.upcoming.length} label="Próximos" href="#proximos" />
+      </div>
+
+      <AdminBlock
+        id="pedidos"
+        title="Pedidos de horário"
+        aside={agenda.requested.length ? <span className="tya-pill tya-pill--warn">{agenda.requested.length} aguardando</span> : null}
+      >
         {agenda.requested.length ? (
-          <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+          <ul className="tya-list">
             {agenda.requested.map((a) => (
-              <Row key={a.id} a={a}>
-                <NoteAction action={adminConfirmAppointmentAction} args={{ id: a.id }} label="Recado para a cliente (opcional)" variant="accent">
+              <Slot key={a.id} a={a}>
+                <NoteAction
+                  action={adminConfirmAppointmentAction}
+                  args={{ id: a.id }}
+                  label="Recado para a cliente (opcional)"
+                  variant="accent"
+                >
                   Confirmar
                 </NoteAction>
                 <NoteAction action={adminCancelAppointmentAction} args={{ id: a.id }} label="Motivo (ela vê)">
                   Recusar
                 </NoteAction>
-              </Row>
+              </Slot>
             ))}
           </ul>
         ) : (
-          <Empty>Nenhum pedido de horário aguardando.</Empty>
+          <Vazio icone="agenda" titulo="Nenhum pedido aguardando">
+            Quando uma cliente pedir um horário pelo app, ele aparece aqui para você confirmar ou recusar.
+          </Vazio>
         )}
       </AdminBlock>
 
-      <AdminBlock title="Hoje" aside={`${weekdayShort(todayISO)}, ${dateShort(todayISO)}`}>
+      <AdminBlock
+        id="hoje"
+        title="Hoje"
+        aside={
+          <span className="tya-pill tya-pill--quiet">
+            {weekdayShort(todayISO)}, {dateShort(todayISO)}
+          </span>
+        }
+      >
         {agenda.todayList.length ? (
-          <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+          <ul className="tya-list">
             {agenda.todayList.map((a) => (
-              <Row key={a.id} a={a}>
+              <Slot key={a.id} a={a}>
                 {a.status === "requested" ? (
-                  <NoteAction action={adminConfirmAppointmentAction} args={{ id: a.id }} label="Recado para a cliente (opcional)" variant="accent">
+                  <NoteAction
+                    action={adminConfirmAppointmentAction}
+                    args={{ id: a.id }}
+                    label="Recado para a cliente (opcional)"
+                    variant="accent"
+                  >
                     Confirmar
                   </NoteAction>
                 ) : null}
@@ -165,90 +257,114 @@ export default async function AgendaAdminPage() {
                 <NoteAction action={adminCancelAppointmentAction} args={{ id: a.id }} label="Motivo (ela vê)">
                   Cancelar
                 </NoteAction>
-              </Row>
+              </Slot>
             ))}
           </ul>
         ) : (
-          <Empty>Nenhum horário hoje.</Empty>
+          <Vazio icone="agenda" titulo="Nenhum horário hoje">
+            {agenda.toClose.length
+              ? `Mas ${agenda.toClose.length} ${agenda.toClose.length === 1 ? "horário passado espera" : "horários passados esperam"} fechamento logo abaixo.`
+              : "O dia está livre na agenda."}
+          </Vazio>
         )}
       </AdminBlock>
 
       {agenda.toClose.length ? (
-        <AdminBlock title="Para fechar" aside="já passaram — realizado ou não compareceu?">
-          <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+        <AdminBlock
+          id="fechar"
+          title="Para fechar"
+          aside={<span className="tya-pill tya-pill--bad">já passaram</span>}
+        >
+          <ul className="tya-list">
             {agenda.toClose.map((a) => (
-              <Row key={a.id} a={a}>
+              <Slot key={a.id} a={a} tom="bad">
                 <CloseActions a={a} />
                 <NoteAction action={adminCancelAppointmentAction} args={{ id: a.id }} label="Motivo (ela vê)">
                   Cancelar
                 </NoteAction>
-              </Row>
+              </Slot>
             ))}
           </ul>
         </AdminBlock>
       ) : null}
 
-      <AdminBlock title="Próximos confirmados">
+      <AdminBlock id="proximos" title="Próximos confirmados">
         {agenda.upcoming.length ? (
-          <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+          <ul className="tya-list">
             {agenda.upcoming.map((a) => (
-              <Row key={a.id} a={a}>
+              <Slot key={a.id} a={a}>
                 <NoteAction action={adminCancelAppointmentAction} args={{ id: a.id }} label="Motivo (ela vê)">
                   Cancelar
                 </NoteAction>
-              </Row>
+              </Slot>
             ))}
           </ul>
         ) : (
-          <Empty>Nenhum horário confirmado à frente.</Empty>
+          <Vazio icone="agenda" titulo="Nenhum horário confirmado à frente">
+            Os horários que você confirmar aparecem aqui, do mais próximo ao mais distante.
+          </Vazio>
         )}
       </AdminBlock>
 
       <AdminBlock
         title="Disponibilidade"
         aside={
-          <TransitionLink href={`${ROUTES.adminSettings}#agenda`} className="ty-link ty-link--caps">
+          <TransitionLink href={`${ROUTES.adminSettings}#agenda`} className="tya-link tya-link--quiet">
             Editar
           </TransitionLink>
         }
       >
-        <div style={{ display: "grid", gap: 8, maxWidth: 640 }}>
-          <span>
-            <span className="ty-small">Dias · </span>
-            {b.weekdays.map((d) => WEEKDAYS[d]).join(", ")}
-          </span>
-          <span>
-            <span className="ty-small">Horários · </span>
-            {b.slots.join(" · ")}
-          </span>
-          <span className="ty-small">
-            antecedência mínima {b.lead_hours}h · até {b.horizon_days} dias à frente · {b.default_duration_min} min por atendimento · até{" "}
-            {b.max_open_per_client} {b.max_open_per_client === 1 ? "horário em aberto" : "horários em aberto"} por cliente
-          </span>
-        </div>
+        <dl className="tya-defs">
+          <dt>Dias</dt>
+          <dd>
+            <div className="tya-pills">
+              {WEEKDAYS.map((d, i) => (
+                <span key={d} className={`tya-pill tya-pill--${b.weekdays.includes(i) ? "brand" : "quiet"}`}>
+                  {d}
+                </span>
+              ))}
+            </div>
+          </dd>
+          <dt>Horários</dt>
+          <dd>
+            <div className="tya-pills">
+              {b.slots.map((s) => (
+                <span key={s} className="tya-pill tya-pill--quiet tya-num">
+                  {s}
+                </span>
+              ))}
+            </div>
+          </dd>
+          <dt>Regras</dt>
+          <dd className="tya-small">
+            antecedência mínima {b.lead_hours}h · até {b.horizon_days} dias à frente · {b.default_duration_min} min por
+            atendimento · até {b.max_open_per_client}{" "}
+            {b.max_open_per_client === 1 ? "horário em aberto" : "horários em aberto"} por cliente
+          </dd>
+        </dl>
       </AdminBlock>
 
       <AdminBlock title="Encerrados recentes">
         {agenda.past.length ? (
-          <div className="ty-table-wrap">
-            <table className="ty-table">
+          <div className="tya-tablewrap tya-tablewrap--bare">
+            <table className="tya-table">
               <thead>
                 <tr>
                   <th>Quando</th>
                   <th>Cliente</th>
                   <th>Serviço</th>
-                  <th>Status</th>
+                  <th>Estado</th>
                 </tr>
               </thead>
               <tbody>
                 {agenda.past.map((a) => (
                   <tr key={a.id}>
-                    <td className="ty-num">
-                      {dateShort(a.scheduled_date)} {hhmm(a.scheduled_time)}
+                    <td className="tya-num" style={{ whiteSpace: "nowrap" }}>
+                      {dateShort(a.scheduled_date)} · {hhmm(a.scheduled_time)}
                     </td>
                     <td>
                       {a.client ? (
-                        <TransitionLink href={ROUTES.adminClient(a.client.id)} className="ty-link">
+                        <TransitionLink href={ROUTES.adminClient(a.client.id)} className="tya-link">
                           {a.client.name}
                         </TransitionLink>
                       ) : (
@@ -257,8 +373,8 @@ export default async function AgendaAdminPage() {
                     </td>
                     <td>{a.service_name}</td>
                     <td>
-                      {APPOINTMENT_STATUS_LABEL[a.status]}
-                      {a.admin_note ? <span className="ty-small"> · {a.admin_note}</span> : null}
+                      <Selo status={a.status} />
+                      {a.admin_note ? <span className="tya-small"> · {a.admin_note}</span> : null}
                     </td>
                   </tr>
                 ))}
@@ -266,7 +382,9 @@ export default async function AgendaAdminPage() {
             </table>
           </div>
         ) : (
-          <Empty>Nada encerrado nos últimos 45 dias.</Empty>
+          <Vazio icone="agenda" titulo="Nada encerrado nos últimos 45 dias">
+            Realizados, cancelados e faltas aparecem aqui depois que você fecha o horário.
+          </Vazio>
         )}
       </AdminBlock>
     </>

@@ -1,11 +1,30 @@
 "use client";
 
-import { useState, useTransition, type ReactNode } from "react";
+import { useId, useState, useTransition, type ReactNode } from "react";
 import type { ActionResult, ReferralStatus } from "@/lib/tayssa/types";
 import { REFERRAL_STATUS_LABEL, REFERRAL_STATUS_ORDER } from "@/lib/tayssa/types";
-import { TyButton } from "@/components/tayssa/ui/button";
+
+/* ------------------------------------------------------------------
+   Controles do painel: cada um chama uma server action e mostra o erro
+   no lugar, sem tirar a Tayssa da tela.
+
+   Vocabulário do painel (.tya-*). As assinaturas são as de sempre —
+   agenda, atendimentos, benefícios, indicações, aniversários, a ficha
+   da cliente e as configurações dependem destas quatro peças.
+   ------------------------------------------------------------------ */
 
 type Variant = "line" | "solid" | "accent";
+
+/** `line` é o botão neutro; `solid` é a tinta escura; `accent` é a decisão da casa. */
+const BOTAO: Record<Variant, string> = {
+  line: "tya-btn--ghost",
+  solid: "tya-btn--dark",
+  accent: "tya-btn--primary",
+};
+
+function botao(variant: Variant): string {
+  return `tya-btn tya-btn--sm ${BOTAO[variant]}`;
+}
 
 /** Botão que executa uma server action com argumentos fixos. */
 export function ActionButton<T>({
@@ -35,11 +54,15 @@ export function ActionButton<T>({
     });
   };
   return (
-    <span style={{ display: "inline-grid", gap: 6 }}>
-      <TyButton size="xs" variant={variant} onClick={run} disabled={pending}>
+    <span className="tya-act">
+      <button type="button" className={botao(variant)} onClick={run} disabled={pending} aria-busy={pending || undefined}>
         {pending ? "…" : children}
-      </TyButton>
-      {err ? <span className="ty-field__error">{err}</span> : null}
+      </button>
+      {err ? (
+        <span className="tya-err" role="alert">
+          {err}
+        </span>
+      ) : null}
     </span>
   );
 }
@@ -61,6 +84,7 @@ export function NoteAction<T extends object>({
   /** campos extras (name/value) renderizados junto */
   extra?: ReactNode;
 }) {
+  const fid = useId();
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState("");
   const [pending, start] = useTransition();
@@ -83,32 +107,50 @@ export function NoteAction<T extends object>({
   };
   if (!open) {
     return (
-      <TyButton size="xs" variant={variant} onClick={() => setOpen(true)}>
+      <button type="button" className={botao(variant)} onClick={() => setOpen(true)}>
         {children}
-      </TyButton>
+      </button>
     );
   }
   return (
     <form
+      className="tya-note"
       onSubmit={(e) => {
         e.preventDefault();
         run(e.currentTarget);
       }}
-      style={{ display: "grid", gap: 10, minWidth: 260, padding: 14, border: "1px solid var(--t-line-strong)", borderRadius: 2 }}
     >
       {extra}
-      <label className="ty-field" style={{ gap: 6 }}>
-        <span className="ty-field__label">{label}</span>
-        <textarea className="ty-field__input" rows={2} value={note} onChange={(e) => setNote(e.target.value)} maxLength={500} style={{ fontSize: 14 }} />
-      </label>
-      {err ? <span className="ty-field__error">{err}</span> : null}
-      <div style={{ display: "flex", gap: 8 }}>
-        <TyButton size="xs" variant={variant === "line" ? "solid" : variant} type="submit" disabled={pending}>
+      <div>
+        <label className="tya-label" htmlFor={`${fid}-note`}>
+          {label}
+        </label>
+        <textarea
+          id={`${fid}-note`}
+          className="tya-field"
+          rows={2}
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          maxLength={500}
+        />
+      </div>
+      {err ? (
+        <p className="tya-err" role="alert">
+          {err}
+        </p>
+      ) : null}
+      <div className="tya-note__row">
+        <button
+          type="submit"
+          className={botao(variant === "line" ? "solid" : variant)}
+          disabled={pending}
+          aria-busy={pending || undefined}
+        >
           {pending ? "…" : "Confirmar"}
-        </TyButton>
-        <TyButton size="xs" type="button" onClick={() => setOpen(false)}>
+        </button>
+        <button type="button" className="tya-btn tya-btn--sm tya-btn--ghost" onClick={() => setOpen(false)}>
           Cancelar
-        </TyButton>
+        </button>
       </div>
     </form>
   );
@@ -124,6 +166,7 @@ export function ReferralStatusControl({
   current: ReferralStatus;
   action: (input: { id: string; status: ReferralStatus; note?: string }) => Promise<ActionResult>;
 }) {
+  const fid = useId();
   const [status, setStatus] = useState<ReferralStatus>(current);
   const [note, setNote] = useState("");
   const [pending, start] = useTransition();
@@ -131,15 +174,15 @@ export function ReferralStatusControl({
   const [ok, setOk] = useState(false);
   const changed = status !== current;
   return (
-    <div style={{ display: "grid", gap: 8, minWidth: 220 }}>
+    <div className="tya-pick">
       <select
-        className="ty-field__input"
+        id={`${fid}-status`}
+        className="tya-field"
         value={status}
         onChange={(e) => {
           setStatus(e.target.value as ReferralStatus);
           setOk(false);
         }}
-        style={{ fontSize: 13.5, padding: "8px 0" }}
         aria-label="Status da indicação"
       >
         {REFERRAL_STATUS_ORDER.map((s) => (
@@ -152,19 +195,20 @@ export function ReferralStatusControl({
         <>
           {status === "rejected" || status === "approved" ? (
             <input
-              className="ty-field__input"
+              className="tya-field"
               placeholder={status === "rejected" ? "Motivo (a cliente vê)" : "Observação (opcional)"}
+              aria-label={status === "rejected" ? "Motivo da recusa" : "Observação da confirmação"}
               value={note}
               onChange={(e) => setNote(e.target.value)}
               maxLength={500}
-              style={{ fontSize: 13.5, padding: "8px 0" }}
             />
           ) : null}
-          <div style={{ display: "flex", gap: 8 }}>
-            <TyButton
-              size="xs"
-              variant={status === "approved" ? "accent" : "solid"}
+          <div className="tya-note__row">
+            <button
+              type="button"
+              className={botao(status === "approved" ? "accent" : "solid")}
               disabled={pending}
+              aria-busy={pending || undefined}
               onClick={() =>
                 start(async () => {
                   setErr(null);
@@ -178,34 +222,44 @@ export function ReferralStatusControl({
               }
             >
               {pending ? "…" : status === "approved" ? "Confirmar indicação" : "Aplicar"}
-            </TyButton>
-            <TyButton size="xs" onClick={() => setStatus(current)}>
+            </button>
+            <button type="button" className="tya-btn tya-btn--sm tya-btn--ghost" onClick={() => setStatus(current)}>
               Cancelar
-            </TyButton>
+            </button>
           </div>
         </>
       ) : ok ? (
-        <span className="ty-small" style={{ color: "var(--t-ok)" }}>
-          Atualizado.
-        </span>
+        <p className="tya-ok">Atualizado.</p>
       ) : null}
-      {err ? <span className="ty-field__error">{err}</span> : null}
+      {err ? (
+        <p className="tya-err" role="alert">
+          {err}
+        </p>
+      ) : null}
     </div>
   );
 }
 
 /** Campo somente leitura com botão copiar (link de acesso). */
 export function CopyField({ value, label = "Link" }: { value: string; label?: string }) {
+  const fid = useId();
   const [copied, setCopied] = useState(false);
   return (
-    <div className="ty-field">
-      <span className="ty-field__label">{label}</span>
-      <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-        <input className="ty-field__input" readOnly value={value} style={{ fontSize: 13 }} onFocus={(e) => e.currentTarget.select()} />
-        <TyButton
-          size="xs"
-          variant="solid"
+    <div>
+      <label className="tya-label" htmlFor={`${fid}-copy`}>
+        {label}
+      </label>
+      <div className="tya-copy">
+        <input
+          id={`${fid}-copy`}
+          className="tya-field"
+          readOnly
+          value={value}
+          onFocus={(e) => e.currentTarget.select()}
+        />
+        <button
           type="button"
+          className="tya-btn tya-btn--sm tya-btn--dark"
           onClick={async () => {
             try {
               await navigator.clipboard.writeText(value);
@@ -215,7 +269,7 @@ export function CopyField({ value, label = "Link" }: { value: string; label?: st
           }}
         >
           {copied ? "Copiado" : "Copiar"}
-        </TyButton>
+        </button>
       </div>
     </div>
   );
