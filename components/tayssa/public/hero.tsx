@@ -1,33 +1,30 @@
 "use client";
 
 import { useRef } from "react";
-import {
-  motion,
-  useMotionTemplate,
-  useMotionValue,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
-} from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import type { BusinessSettings } from "@/lib/tayssa/config";
 import { ROUTES } from "@/lib/tayssa/config";
-import { PHOTOS, type PhotoSlot } from "@/lib/tayssa/photos";
+import type { PhotoSlot } from "@/lib/tayssa/photos";
 import { RealPhoto } from "@/components/tayssa/ui/real-photo";
-import { MaskedLines } from "@/components/tayssa/ui/reveal";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
-import { Magnetic } from "@/components/tayssa/ui/magnetic";
 import { useIsMobile } from "@/components/tayssa/ui/use-media";
 import { useIntroReady } from "@/components/tayssa/public/experience";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
+/** A frase de abertura, quebrada como o olho lê: três tempos. */
+const LINHAS = [
+  { texto: "Cílios que combinam", em: false },
+  { texto: "com o seu rosto —", em: false },
+  { texto: "não com a moda.", em: true },
+];
+
 /**
- * Transição 1 e 2.
- * Entrada: a foto abre a partir de uma faixa vertical estreita; "TAYSSA"
- * sobe por linhas. Scroll: a foto encolhe até virar um cartão (portrait à
- * direita no desktop, topo no mobile) e a declaração editorial aparece.
- * Tudo em clip-path/transform/opacity, ligado ao scroll.
+ * Abertura. A marca ocupa a largura inteira e sai pelas bordas: a
+ * palavra é a imagem. Ao lado, a declaração em três tempos, com a
+ * última linha em itálico serifado. Embaixo, a ficha técnica do que a
+ * casa faz. Foto entra como peça chapada — e só quando existe de
+ * verdade; sem ela, a composição se sustenta na tipografia.
  */
 export function Hero({
   business,
@@ -36,206 +33,129 @@ export function Hero({
 }: {
   business: BusinessSettings;
   scheduleUrl: string;
-  /** foto de destaque da biblioteca; sem ela, o slot estático */
+  /** foto de destaque da biblioteca; sem ela, o herói é tipográfico */
   photo?: PhotoSlot;
 }) {
   const ready = useIntroReady();
   const reduced = useReducedMotion();
   const isMobile = useIsMobile();
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
 
-  // foto: de tela cheia a cartão
-  const t = useTransform(scrollYProgress, [0.12, 0.72], [0, 1]);
-  const insetTop = useTransform(t, [0, 1], isMobile ? [0, 9] : [0, 12]);
-  const insetRight = useTransform(t, [0, 1], isMobile ? [0, 6] : [0, 6]);
-  const insetBottom = useTransform(t, [0, 1], isMobile ? [0, 46] : [0, 12]);
-  const insetLeft = useTransform(t, [0, 1], isMobile ? [0, 6] : [0, 56]);
-  const clipPath = useMotionTemplate`inset(${insetTop}% ${insetRight}% ${insetBottom}% ${insetLeft}%)`;
-  const photoScale = useTransform(scrollYProgress, [0, 1], [1, 1.12]);
+  // a marca desliza de leve enquanto a página sobe — só isso
+  const marcaX = useTransform(scrollYProgress, [0, 1], [0, reduced ? 0 : -60]);
+  const marcaO = useTransform(scrollYProgress, [0, 0.85], [1, 0.08]);
 
-  // texto do hero sai; declaração entra
-  const titleOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
-  const titleY = useTransform(scrollYProgress, [0, 0.3], [0, -70]);
-  const stmtOpacity = useTransform(scrollYProgress, [0.5, 0.82], [0, 1]);
-  const stmtY = useTransform(scrollYProgress, [0.5, 0.82], [48, 0]);
-  const stmtPointer = useTransform(scrollYProgress, (v) => (v > 0.6 ? "auto" : "none"));
-
-  // foto reage ao cursor (1.5%)
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
-  const sx = useSpring(mx, { stiffness: 60, damping: 20 });
-  const sy = useSpring(my, { stiffness: 60, damping: 20 });
-  const onMove = (e: React.PointerEvent) => {
-    if (e.pointerType !== "mouse" || reduced) return;
-    const r = e.currentTarget.getBoundingClientRect();
-    mx.set(((e.clientX - r.left) / r.width - 0.5) * -14);
-    my.set(((e.clientY - r.top) / r.height - 0.5) * -14);
-  };
+  const [primeira = "Tayssa", segunda = "Lash"] = business.name.trim().split(/\s+/);
+  // a palavra ocupa a largura da tela: o corpo sai do número de letras
+  const letras = `${primeira} ${segunda}`.length;
+  const entra = ready && !reduced;
 
   return (
-    <div ref={ref} style={{ height: isMobile ? "200vh" : "230vh", position: "relative" }}>
-      <section className="ty-pin" aria-label="Apresentação" onPointerMove={onMove}>
-        {/* foto */}
-        <motion.div
-          style={{ position: "absolute", inset: 0, clipPath, willChange: "clip-path" }}
-          initial={reduced ? false : { clipPath: "inset(0% 44% 0% 44%)" }}
-          animate={ready ? { clipPath: "inset(0% 0% 0% 0%)" } : undefined}
-          transition={{ duration: 1.6, ease: EASE, delay: 0.15 }}
+    <section ref={ref} className="ty-hero" aria-label="Abertura">
+      <div className="ty-hero__top">
+        <motion.p
+          className="ty-mono"
+          initial={reduced ? false : { opacity: 0 }}
+          animate={{ opacity: ready ? 1 : 0 }}
+          transition={{ duration: 0.8, delay: 0.1, ease: EASE }}
         >
-          <motion.div style={{ position: "absolute", inset: "-4%", scale: photoScale, x: sx, y: sy }}>
-            <RealPhoto photo={photo ?? PHOTOS.hero} ratio="fill" priority sizes="100vw" style={{ height: "100%" }} />
-            <div
-              aria-hidden
-              style={{
-                position: "absolute",
-                inset: 0,
-                background:
-                  "linear-gradient(180deg, rgba(16,13,11,0.18) 0%, rgba(16,13,11,0) 35%, rgba(16,13,11,0) 60%, rgba(16,13,11,0.55) 100%)",
-              }}
-            />
-          </motion.div>
-        </motion.div>
+          {business.specialty}
+        </motion.p>
+        <motion.p
+          className="ty-mono"
+          initial={reduced ? false : { opacity: 0 }}
+          animate={{ opacity: ready ? 1 : 0 }}
+          transition={{ duration: 0.8, delay: 0.18, ease: EASE }}
+        >
+          {business.instagram_handle}
+        </motion.p>
+      </div>
 
-        {/* texto do hero */}
-        <motion.div
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "flex-end",
-            padding: "0 var(--t-gutter) clamp(36px, 6vh, 72px)",
-            color: "#f1eae1",
-            opacity: titleOpacity,
-            y: titleY,
-            pointerEvents: "none",
-          }}
-        >
+      {/* a marca é a imagem */}
+      <motion.h1 className="ty-hero__marca" style={{ x: marcaX, opacity: marcaO }} aria-label={business.name}>
+        <span className="ty-wordmark" style={{ "--ty-letras": letras } as React.CSSProperties} aria-hidden>
           <motion.span
-            className="ty-eyebrow"
-            style={{ color: "rgba(241,234,225,0.7)", marginBottom: 22 }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: ready ? 1 : 0 }}
-            transition={{ duration: 0.8, delay: 0.9 }}
+            style={{ display: "inline-block" }}
+            initial={reduced ? false : { y: "16%", opacity: 0 }}
+            animate={entra ? { y: "0%", opacity: 1 } : reduced ? {} : { y: "16%", opacity: 0 }}
+            transition={{ duration: 1.1, ease: EASE }}
           >
-            {business.specialty}
-          </motion.span>
-          <MaskedLines
-            as="h1"
-            inView={false}
-            play={ready}
-            lines={[
-              <>
-                Tayssa <em>Lash</em>
-              </>,
-            ]}
-            className="ty-display"
-            lineClassName="ty-hero-title"
-            delay={0.45}
-            duration={1.2}
-          />
-          <MaskedLines
-            as="p"
-            inView={false}
-            play={ready}
-            lines={[<span key="s" className="ty-i">{business.tagline}</span>]}
-            className="ty-display"
-            delay={0.7}
-            lineClassName="ty-hero-sub"
-          />
-          <motion.div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              alignItems: "center",
-              gap: 24,
-              marginTop: 34,
-              pointerEvents: "auto",
-            }}
-            initial={{ opacity: 0, y: 12 }}
-            animate={ready ? { opacity: 1, y: 0 } : undefined}
-            transition={{ duration: 0.8, ease: EASE, delay: 1.1 }}
+            {primeira}
+          </motion.span>{" "}
+          <motion.em
+            style={{ display: "inline-block" }}
+            initial={reduced ? false : { y: "16%", opacity: 0 }}
+            animate={entra ? { y: "0%", opacity: 1 } : reduced ? {} : { y: "16%", opacity: 0 }}
+            transition={{ duration: 1.1, delay: 0.09, ease: EASE }}
           >
-            <Magnetic>
-              <a
-                href={scheduleUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="ty-btn ty-btn--sm"
-                style={{ color: "#f1eae1", borderColor: "rgba(241,234,225,0.5)" }}
+            {segunda}
+          </motion.em>
+        </span>
+      </motion.h1>
+
+      <div className="ty-hero__corpo">
+        <div className="ty-hero__dizer">
+          {LINHAS.map((l, i) => (
+            <span key={l.texto} className="ty-hero__linha">
+              <motion.span
+                initial={reduced ? false : { y: "110%" }}
+                animate={entra ? { y: "0%" } : reduced ? {} : { y: "110%" }}
+                transition={{ duration: 0.95, delay: 0.3 + i * 0.1, ease: EASE }}
               >
-                <span>Agendar</span>
-                <span className="ty-btn__arrow" aria-hidden />
-              </a>
-            </Magnetic>
-            <TransitionLink href={ROUTES.login} className="ty-link ty-link--caps" style={{ color: "#f1eae1" }}>
-              Entrar no VIP
+                {l.em ? <em>{l.texto}</em> : l.texto}
+              </motion.span>
+            </span>
+          ))}
+
+          <motion.div
+            className="ty-hero__acoes"
+            initial={reduced ? false : { opacity: 0, y: 16 }}
+            animate={entra ? { opacity: 1, y: 0 } : reduced ? {} : { opacity: 0, y: 16 }}
+            transition={{ duration: 0.8, delay: 0.72, ease: EASE }}
+          >
+            <a href={scheduleUrl} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--solid">
+              Agendar no WhatsApp
+            </a>
+            <TransitionLink href={ROUTES.signup} className="ty-hero__secundario">
+              Pedir acesso ao clube
             </TransitionLink>
           </motion.div>
-        </motion.div>
+        </div>
 
-        {/* declaração (aparece quando a foto vira cartão) */}
-        <motion.div
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: isMobile ? "flex-end" : "center",
-            padding: isMobile
-              ? "0 var(--t-gutter) clamp(28px, 6vh, 56px)"
-              : "0 var(--t-gutter)",
-            opacity: stmtOpacity,
-            y: stmtY,
-            pointerEvents: stmtPointer,
-          }}
-        >
-          <div style={{ maxWidth: isMobile ? "100%" : "44%" }}>
-            <span className="ty-eyebrow" style={{ display: "block", marginBottom: 22 }}>
-              Sobre
-            </span>
-            <h2 className="ty-display" style={{ fontSize: "clamp(28px, 3.95vw, 52px)" }}>
-              Cílios feitos
-              <br />
-              com calma,
-              <br />
-              técnica e <em>cuidado.</em>
-            </h2>
-            <p className="ty-body" style={{ marginTop: 26, maxWidth: 440, fontSize: 16 }}>
-              {business.name} trabalha com o olhar: aplicação, manutenção e os
-              detalhes que só se percebem de perto. Quem volta ganha mais do que
-              um horário. Ganha um lugar.
-            </p>
-          </div>
-        </motion.div>
+        {/* a foto é opcional: entra chapada, sem moldura, quando existe */}
+        {photo ? (
+          <motion.figure
+            className="ty-hero__figura ty-figure"
+            initial={reduced ? false : { opacity: 0, clipPath: "inset(0 0 100% 0)" }}
+            animate={
+              entra
+                ? { opacity: 1, clipPath: "inset(0 0 0% 0)" }
+                : reduced
+                  ? {}
+                  : { opacity: 0, clipPath: "inset(0 0 100% 0)" }
+            }
+            transition={{ duration: 1.3, delay: 0.42, ease: EASE }}
+          >
+            <RealPhoto photo={photo} ratio={isMobile ? 4 / 5 : 3 / 4} sizes="(max-width: 899px) 100vw, 38vw" priority />
+          </motion.figure>
+        ) : null}
+      </div>
 
-        {/* indicador de scroll */}
-        <motion.div
-          aria-hidden
-          style={{
-            position: "absolute",
-            right: "var(--t-gutter)",
-            bottom: 28,
-            width: 1,
-            height: 56,
-            background: "rgba(241,234,225,0.35)",
-            overflow: "hidden",
-            opacity: titleOpacity,
-          }}
-        >
-          <motion.div
-            style={{ position: "absolute", inset: 0, background: "#f1eae1" }}
-            animate={reduced ? undefined : { y: ["-100%", "100%"] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </motion.div>
-      </section>
-
-      <style>{`
-        .ty-hero-title { font-size: clamp(52px, 10.5vw, 132px); letter-spacing: -0.02em; text-transform: uppercase; line-height: 0.94; }
-        .ty-hero-title em { letter-spacing: 0.01em; }
-        .ty-hero-sub { font-size: clamp(18px, 1.98vw, 25px); margin-top: 10px; }
-      `}</style>
-    </div>
+      <motion.div
+        className="ty-hero__ficha ty-rail"
+        initial={reduced ? false : { opacity: 0 }}
+        animate={{ opacity: ready ? 1 : 0 }}
+        transition={{ duration: 0.9, delay: 0.85, ease: EASE }}
+      >
+        <span>Fio a fio</span>
+        <i aria-hidden>+</i>
+        <span>Volume</span>
+        <i aria-hidden>+</i>
+        <span>Manutenção</span>
+        <i aria-hidden>=</i>
+        <span className="ty-mono--accent">o seu olhar</span>
+      </motion.div>
+    </section>
   );
 }

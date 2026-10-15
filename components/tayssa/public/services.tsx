@@ -1,22 +1,17 @@
 "use client";
 
-import { useState } from "react";
-import { AnimatePresence, motion, useMotionValue, useSpring } from "framer-motion";
+import { useState, type ReactNode } from "react";
+import { AnimatePresence, motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
 import type { ServiceRow } from "@/lib/tayssa/types";
-import { PHOTOS, type PhotoSlot } from "@/lib/tayssa/photos";
+import type { PhotoSlot } from "@/lib/tayssa/photos";
 import { RealPhoto } from "@/components/tayssa/ui/real-photo";
-import { Reveal, MaskedLines } from "@/components/tayssa/ui/reveal";
-import { useFinePointer, useIsMobile } from "@/components/tayssa/ui/use-media";
+import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
+import { useFinePointer } from "@/components/tayssa/ui/use-media";
 import { Magnetic } from "@/components/tayssa/ui/magnetic";
 
-const PHOTO_BY_SLUG: Record<string, PhotoSlot> = {
-  "aplicacao-cilios": PHOTOS.serviceLash,
-  "manutencao-cilios": PHOTOS.serviceMaintenance,
-  "design-sobrancelhas": PHOTOS.serviceBrow,
-  "lip-spa": PHOTOS.serviceLip,
-  "limpeza-de-pele": PHOTOS.serviceFacial,
-};
+const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
+/** Mesmos nomes do banco: a lista só existe para a página nunca abrir vazia. */
 const FALLBACK: ServiceRow[] = [
   { id: "1", slug: "aplicacao-cilios", name: "Aplicação de cílios", description: "Aplicação completa, fio a fio ou volume.", point_value: 0, active: true, sort_order: 1 },
   { id: "2", slug: "manutencao-cilios", name: "Manutenção de cílios", description: "Manutenção periódica da aplicação.", point_value: 0, active: true, sort_order: 2 },
@@ -25,11 +20,61 @@ const FALLBACK: ServiceRow[] = [
   { id: "5", slug: "limpeza-de-pele", name: "Limpeza de pele", description: "Facial e limpeza profunda.", point_value: 0, active: true, sort_order: 5 },
 ];
 
+/** Palavras que só ligam: nunca são elas que carregam a emoção do nome. */
+const LIGACAO = new Set(["de", "do", "da", "dos", "das", "e", "com", "no", "na", "em", "a", "o", "para"]);
+
 /**
- * Transição 4 — serviços como tipografia.
- * Lista em Bodoni, uma linha por serviço. No desktop, a foto do serviço
- * segue o cursor enquanto a linha está sob o mouse; no mobile, o toque
- * abre a foto dentro da linha.
+ * Destaca no nome a palavra que nomeia o cuidado — "Aplicação de
+ * **cílios**" — e deixa o resto em sans. O `<em>` vira itálico serifado
+ * pelo CSS da seção. Nome de uma palavra fica como está: destacar o
+ * todo não é destaque, é enfeite.
+ */
+function nomeComEnfase(nome: string): ReactNode {
+  const partes = nome.trim().split(/\s+/);
+  if (partes.length < 2) return nome;
+  const ligacao = partes.findIndex((p) => LIGACAO.has(p.toLowerCase()));
+  const corte = ligacao >= 0 && ligacao + 1 < partes.length ? ligacao + 1 : partes.length - 1;
+  return (
+    <>
+      {partes.slice(0, corte).join(" ")} <em>{partes.slice(corte).join(" ")}</em>
+    </>
+  );
+}
+
+/**
+ * O link de agendar de cada linha. A mensagem que a Tayssa escreveu nas
+ * configurações continua intacta: só acrescenta no fim o serviço que a
+ * cliente abriu, para a conversa já começar no assunto certo.
+ */
+function linkDoServico(base: string, nome: string): string {
+  try {
+    const url = new URL(base);
+    const texto = url.searchParams.get("text");
+    if (!texto) return base;
+    url.searchParams.set("text", `${texto.trim()} Quero saber sobre: ${nome}.`);
+    return url.toString();
+  } catch {
+    return base;
+  }
+}
+
+/**
+ * Serviços — o que a casa faz, como índice editorial.
+ *
+ * Cada serviço é uma linha: índice em mono, nome em corpo grande com a
+ * palavra do cuidado em itálico serifado, a explicação numa coluna
+ * estreita e o caminho de ação (agendar no WhatsApp) na ponta. A linha
+ * inteira é o link — no mouse, no toque e no teclado.
+ *
+ * A reação de hover vive no CSS (cor, deslocamento, régua de cassis que
+ * corre, o índice em mono que troca de lugar), então ela não depende de
+ * foto nem de estado em JS: funciona no `:focus-visible` igual. Quando a
+ * biblioteca tiver foto, ela entra chapada — seguindo o cursor no
+ * desktop, dentro da linha no toque. Sem foto, nada de caixote: a
+ * composição já está completa em tipografia, régua e ar.
+ *
+ * Pontos (`point_value`) não aparecem: aquilo é moeda do clube VIP, não
+ * matéria do site.
  */
 export function Services({
   services,
@@ -38,14 +83,15 @@ export function Services({
 }: {
   services: ServiceRow[];
   scheduleUrl: string;
+  /** só chega aqui foto que existe de verdade (a página filtra antes) */
   photoBySlug?: Record<string, PhotoSlot>;
 }) {
   const list = (services.length ? services : FALLBACK).filter((s) => s.slug !== "outro");
   const fine = useFinePointer();
-  const isMobile = useIsMobile();
-  const [active, setActive] = useState<number | null>(null);
-  const [openMobile, setOpenMobile] = useState<number | null>(null);
+  const reduced = useReducedMotion();
+  const [ativo, setAtivo] = useState<number | null>(null);
 
+  // a foto que segue o cursor: só existe se a linha ativa tiver foto
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
   const sx = useSpring(mx, { stiffness: 120, damping: 22, mass: 0.5 });
@@ -54,163 +100,129 @@ export function Services({
     mx.set(e.clientX);
     my.set(e.clientY);
   };
+  const fotoAtiva = ativo === null ? undefined : photoBySlug?.[list[ativo]?.slug ?? ""];
+  // quem pediu menos movimento recebe o mesmo desenho, sem tempo de animação
+  const tempo = (s: number) => ({ duration: reduced ? 0 : s, ease: EASE });
 
   return (
-    <section id="servicos" className="ty-section" aria-label="Serviços" onPointerMove={fine ? onMove : undefined}>
+    <section
+      id="servicos"
+      className="ty-section tysv"
+      aria-label="Serviços"
+      onPointerMove={fine ? onMove : undefined}
+    >
       <div className="ty-container">
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "minmax(0, 4fr) minmax(0, 8fr)",
-            gap: isMobile ? 34 : "clamp(32px, 5vw, 96px)",
-            alignItems: "start",
-          }}
-        >
-          <div style={{ position: isMobile ? "static" : "sticky", top: "calc(var(--t-nav-h) + 24px)" }}>
-            <Reveal>
-              <span className="ty-eyebrow" style={{ display: "block", marginBottom: 20 }}>
-                Serviços
-              </span>
-            </Reveal>
-            <MaskedLines
-              as="h2"
-              className="ty-display"
-              lineClassName="ty-services-title"
-              lines={["O que a", <em key="e">Tayssa</em>, "faz."]}
-            />
-            <Reveal delay={0.2}>
-              <p className="ty-body" style={{ marginTop: 24, maxWidth: 360 }}>
-                Valores e disponibilidade direto com ela, no WhatsApp. Sem tabela
-                genérica: cada olhar pede uma conversa.
-              </p>
-              <div style={{ marginTop: 28 }}>
-                <Magnetic>
-                  <a href={scheduleUrl} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--sm">
-                    <span>Agendar atendimento</span>
-                    <span className="ty-btn__arrow" aria-hidden />
-                  </a>
-                </Magnetic>
-              </div>
-            </Reveal>
-          </div>
-
-          <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-            {list.map((s, i) => {
-              const photo = photoBySlug?.[s.slug] ?? PHOTO_BY_SLUG[s.slug] ?? PHOTOS.work01;
-              const isOpen = openMobile === i;
-              return (
-                <Reveal key={s.id} as="li" delay={i * 0.05} amount={0.3}>
-                  <div
-                    role={isMobile ? "button" : undefined}
-                    tabIndex={isMobile ? 0 : undefined}
-                    aria-expanded={isMobile ? isOpen : undefined}
-                    onPointerEnter={() => fine && setActive(i)}
-                    onPointerLeave={() => fine && setActive(null)}
-                    onClick={() => isMobile && setOpenMobile(isOpen ? null : i)}
-                    onKeyDown={(e) => {
-                      if (isMobile && (e.key === "Enter" || e.key === " ")) {
-                        e.preventDefault();
-                        setOpenMobile(isOpen ? null : i);
-                      }
-                    }}
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "auto 1fr auto",
-                      alignItems: "baseline",
-                      gap: "clamp(14px, 2vw, 32px)",
-                      padding: "clamp(22px, 2.6vw, 36px) 0",
-                      borderTop: "1px solid var(--t-line-strong)",
-                      borderBottom: i === list.length - 1 ? "1px solid var(--t-line-strong)" : undefined,
-                      cursor: isMobile ? "pointer" : undefined,
-                    }}
-                  >
-                    <span className="ty-num ty-muted" style={{ fontSize: 11, letterSpacing: "0.2em" }}>
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <div>
-                      <motion.h3
-                        className="ty-display"
-                        style={{ fontSize: "clamp(23px, 2.74vw, 37px)", display: "inline-block" }}
-                        animate={{ x: active === i ? 10 : 0 }}
-                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                      >
-                        {s.name}
-                      </motion.h3>
-                      {s.description ? (
-                        <p className="ty-body" style={{ marginTop: 8, maxWidth: 480 }}>
-                          {s.description}
-                        </p>
-                      ) : null}
-                      <AnimatePresence initial={false}>
-                        {isMobile && isOpen ? (
-                          <motion.div
-                            key="ph"
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-                            style={{ overflow: "hidden" }}
-                          >
-                            <div style={{ paddingTop: 18, maxWidth: 300 }}>
-                              <RealPhoto photo={photo} sizes="80vw" />
-                            </div>
-                          </motion.div>
-                        ) : null}
-                      </AnimatePresence>
-                    </div>
-                    <span
-                      className="ty-btn__arrow"
-                      aria-hidden
-                      style={{
-                        alignSelf: "center",
-                        transform: isMobile && isOpen ? "rotate(90deg)" : undefined,
-                        transition: "transform var(--t-ui) var(--t-ease-out)",
-                      }}
-                    />
-                  </div>
-                </Reveal>
-              );
-            })}
-          </ul>
+        {/* ficha da seção */}
+        <div className="tysv__topo">
+          <span className="ty-mono ty-mono--ink">Serviços</span>
+          <span className="ty-mono ty-num">01 — {String(list.length).padStart(2, "0")}</span>
         </div>
+
+        <div className="tysv__cabeca">
+          <MaskedLines
+            as="h2"
+            className="tysv__titulo"
+            lines={["O que a", <em key="marca">Tayssa</em>, "faz."]}
+          />
+          <Reveal delay={0.14}>
+            <p className="ty-body ty-measure--tight tysv__lead">
+              Valores e disponibilidade direto com ela, no WhatsApp. Sem tabela
+              genérica: cada olhar pede uma <em>conversa</em>.
+            </p>
+          </Reveal>
+        </div>
+
+        <hr className="ty-rule" />
+
+        <ul className="tysv__lista">
+          {list.map((s, i) => {
+            const foto = photoBySlug?.[s.slug];
+            const n = String(i + 1).padStart(2, "0");
+            return (
+              <Reveal key={s.id} as="li" className="tysv__item" delay={Math.min(i, 4) * 0.05} amount={0.25}>
+                <a
+                  className="tysv__linha"
+                  href={linkDoServico(scheduleUrl, s.name)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Agendar ${s.name} no WhatsApp`}
+                  onPointerEnter={fine ? () => setAtivo(i) : undefined}
+                  onPointerLeave={fine ? () => setAtivo(null) : undefined}
+                >
+                  {/* a régua da linha acende em cassis quando ela é a escolhida */}
+                  <span className="tysv__fio" aria-hidden />
+                  {/* o índice troca de lugar: o número sai por cima e volta em cassis */}
+                  <span className="tysv__num" aria-hidden>
+                    <i>{n}</i>
+                    <i>{n}</i>
+                  </span>
+                  <h3 className="tysv__nome">{nomeComEnfase(s.name)}</h3>
+                  {s.description ? (
+                    <p className="ty-body ty-measure--tight tysv__dizer">{s.description}</p>
+                  ) : (
+                    // mantém a prumada das colunas quando o serviço não tem texto
+                    <span aria-hidden />
+                  )}
+                  {/* foto é bônus: no toque ela mora dentro da linha; no mouse,
+                      o CSS esconde esta e a foto passa a seguir o cursor */}
+                  {foto ? (
+                    <figure className="tysv__figura">
+                      <div className="ty-figure">
+                        <RealPhoto photo={foto} ratio={3 / 4} sizes="(max-width: 899px) 86vw, 320px" />
+                      </div>
+                      <figcaption className="tysv__legenda">
+                        <span>{s.name}</span>
+                        <span>@1.tayssa</span>
+                      </figcaption>
+                    </figure>
+                  ) : null}
+                  <span className="tysv__acao">
+                    <span>Agendar</span>
+                    <span className="ty-btn__arrow" aria-hidden />
+                  </span>
+                </a>
+              </Reveal>
+            );
+          })}
+        </ul>
+
+        <Reveal className="tysv__pe" delay={0.08}>
+          <p className="tysv__pe-linha">
+            Me conta o que você tem hoje e o que quer ver no espelho — o desenho
+            a gente escolhe <em>junto</em>.
+          </p>
+          <Magnetic>
+            <a href={scheduleUrl} target="_blank" rel="noopener noreferrer" className="ty-btn">
+              <span>Agendar atendimento</span>
+              <span className="ty-btn__arrow" aria-hidden />
+            </a>
+          </Magnetic>
+        </Reveal>
       </div>
 
-      {/* foto que segue o cursor (desktop) */}
+      {/* foto chapada que segue o cursor (só mouse, só quando existe foto) */}
       {fine ? (
         <motion.div
+          className="tysv__segue"
           aria-hidden
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            x: sx,
-            y: sy,
-            width: 260,
-            zIndex: 40,
-            pointerEvents: "none",
-            translateX: "-50%",
-            translateY: "-58%",
-            rotate: -3,
-          }}
+          style={{ x: reduced ? mx : sx, y: reduced ? my : sy, translateX: "-50%", translateY: "-58%", rotate: -3 }}
         >
           <AnimatePresence>
-            {active !== null ? (
+            {fotoAtiva ? (
               <motion.div
-                key={active}
-                initial={{ opacity: 0, scale: 0.86, clipPath: "inset(20% 0 20% 0)" }}
-                animate={{ opacity: 1, scale: 1, clipPath: "inset(0% 0 0% 0)" }}
-                exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.25 } }}
-                transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-                style={{ boxShadow: "0 30px 60px -30px rgba(26,21,18,0.55)" }}
+                key={fotoAtiva.src}
+                className="ty-figure"
+                initial={{ opacity: 0, clipPath: "inset(18% 0 18% 0)" }}
+                animate={{ opacity: 1, clipPath: "inset(0% 0 0% 0)" }}
+                exit={{ opacity: 0, transition: tempo(0.24) }}
+                transition={tempo(0.55)}
               >
-                <RealPhoto photo={photoBySlug?.[list[active]?.slug] ?? PHOTO_BY_SLUG[list[active]?.slug] ?? PHOTOS.work01} sizes="260px" />
+                <RealPhoto photo={fotoAtiva} ratio={3 / 4} sizes="300px" />
               </motion.div>
             ) : null}
           </AnimatePresence>
         </motion.div>
       ) : null}
-
-      <style>{`.ty-services-title { font-size: clamp(36px, 4.26vw, 57px); }`}</style>
     </section>
   );
 }

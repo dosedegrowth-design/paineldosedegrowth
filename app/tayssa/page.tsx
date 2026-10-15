@@ -24,8 +24,20 @@ export default async function TayssaHome() {
     getPhotoAvailability(),
     getPhotoLibrary(),
   ]);
-  // uma biblioteca, todos os lugares: o herói, a sequência, o trilho, os serviços
+  // uma biblioteca, todos os lugares: o herói, a sequência, o trilho, os serviços.
+  // Só entra foto que existe de verdade — da biblioteca, ou arquivo estático
+  // presente. Sem isso o site exibiria caixotes vazios no lugar do trabalho.
   const assigned = assignPhotos(library);
+  const existe = (p?: { src: string }) => Boolean(p && (p.src.startsWith("http") || photos[p.src]));
+  const reais = {
+    ...assigned,
+    hero: existe(assigned.hero) ? assigned.hero : undefined,
+    entrance: existe(assigned.entrance) ? assigned.entrance : undefined,
+    work: assigned.work.filter(existe),
+    details: assigned.details.filter(existe),
+    byService: Object.fromEntries(Object.entries(assigned.byService).filter(([, v]) => existe(v))),
+    card: assigned.card.filter(existe),
+  };
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -41,7 +53,7 @@ export default async function TayssaHome() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <PhotoAvailabilityProvider value={photos}>
-        <PublicExperience settings={settings} services={services} benefits={benefits} photos={assigned} />
+        <PublicExperience settings={settings} services={services} benefits={benefits} photos={reais} />
       </PhotoAvailabilityProvider>
     </>
   );

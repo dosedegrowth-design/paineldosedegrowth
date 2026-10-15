@@ -117,8 +117,9 @@ export function slotFromPhoto(p: LibraryPhoto, ratio?: number): PhotoSlot {
 }
 
 export type PhotoAssignment = {
-  hero: PhotoSlot;
-  entrance: PhotoSlot;
+  /** undefined quando não existe foto real — a composição se vira sem ela */
+  hero?: PhotoSlot;
+  entrance?: PhotoSlot;
   work: PhotoSlot[];
   details: PhotoSlot[];
   byService: Record<string, PhotoSlot>;

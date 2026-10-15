@@ -1,170 +1,243 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useMotionTemplate, useScroll, useTransform, type MotionValue } from "framer-motion";
-import { PHOTOS, type PhotoSlot } from "@/lib/tayssa/photos";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { AnimatePresence, motion, useReducedMotion, useScroll } from "framer-motion";
+import type { PhotoSlot } from "@/lib/tayssa/photos";
 import { RealPhoto } from "@/components/tayssa/ui/real-photo";
-import { useIsMobile } from "@/components/tayssa/ui/use-media";
 
-const FRAMES: { n: string; title: string; text: string; photo: PhotoSlot }[] = [
-  { n: "01", title: "Fio a fio", text: "Natural, leve, um a um.", photo: PHOTOS.work01 },
-  { n: "02", title: "Volume", text: "Presença, sem exagero.", photo: PHOTOS.work02 },
-  { n: "03", title: "Manutenção", text: "O cuidado que mantém o resultado.", photo: PHOTOS.work03 },
+const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
+/**
+ * As três técnicas da casa. `dizer` é a frase curta que vai no corpo
+ * grande — a palavra em <em> é a que carrega a emoção e vira itálico
+ * serifado. `texto` é a explicação, na coluna que corre.
+ */
+const TECNICAS: { n: string; nome: string; dizer: ReactNode; texto: string }[] = [
+  {
+    n: "01",
+    nome: "Fio a fio",
+    dizer: (
+      <>
+        Natural e leve, aplicado um a <em>um</em>.
+      </>
+    ),
+    texto:
+      "Uma extensão para cada cílio seu, na curvatura e no tamanho que o seu olho pede. Fecha a linha, define o contorno e continua parecendo seu: ninguém vê o fio, vê o olho.",
+  },
+  {
+    n: "02",
+    nome: "Volume",
+    dizer: (
+      <>
+        <em>Presença</em>, sem exagero.
+      </>
+    ),
+    texto:
+      "Leques leves, abertos fio por fio na hora da aplicação. Preenchem a falha e marcam a raiz sem pesar na pálpebra — o olhar fica mais cheio, nunca mais pesado.",
+  },
+  {
+    n: "03",
+    nome: "Manutenção",
+    dizer: (
+      <>
+        O cuidado que <em>mantém</em> o resultado.
+      </>
+    ),
+    texto:
+      "Retoque no ritmo do seu ciclo: sai o que cresceu, entra o que caiu, o desenho volta ao lugar. É a parte que faz o resultado durar.",
+  },
 ];
 
 /**
- * Transição 3 — storytelling em pin.
- * A seção prende por 3 telas. Cada foto entra por máscara de baixo pra
- * cima e assume o quadro; a legenda troca em sincronia. Ao final, solta.
+ * Trabalho — as três técnicas como peça editorial.
+ *
+ * No desktop a coluna da esquerda fica grudada: nome da técnica em corpo
+ * grande, a frase com a palavra em itálico serifado, o contador e o
+ * índice em mono que acende na técnica ativa. A coluna da direita corre
+ * com a explicação de cada uma; quem cruza o meio da tela vira a ativa.
+ * No celular a mesma matéria vira pilha, cada técnica com o seu nome
+ * grande — sem coluna grudada, que no toque só atrapalha.
+ *
+ * A seção se sustenta em tipografia, régua e bloco chapado: sem foto ela
+ * está completa. Quando a biblioteca tiver foto, ela entra chapada na
+ * coluna que corre e melhora a composição — nunca é requisito.
  */
 export function WorkSequence({ photos }: { photos?: PhotoSlot[] }) {
-  // biblioteca primeiro; onde faltar, o slot estático de cada quadro
-  const frames = FRAMES.map((f, i) => ({ ...f, photo: photos?.[i] ?? f.photo }));
-  const ref = useRef<HTMLDivElement>(null);
-  const isMobile = useIsMobile();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+  const reduced = useReducedMotion();
+  const corridaRef = useRef<HTMLOListElement>(null);
+  const [ativo, setAtivo] = useState(0);
+  // progresso da coluna que corre: alimenta a barrinha do contador
+  const { scrollYProgress } = useScroll({
+    target: corridaRef,
+    offset: ["start center", "end center"],
+  });
+
+  // ativa = a última técnica cujo topo já cruzou a linha do meio da tela.
+  // Medir posição (em vez de observar entrada) mantém a coluna grudada
+  // certa mesmo num salto de âncora, e independe da altura do item.
+  useEffect(() => {
+    const itens = Array.from(corridaRef.current?.querySelectorAll<HTMLElement>("[data-tecnica]") ?? []);
+    if (!itens.length) return;
+    let quadro = 0;
+    const medir = () => {
+      quadro = 0;
+      const linha = window.innerHeight * 0.52;
+      let i = 0;
+      itens.forEach((el, k) => {
+        if (el.getBoundingClientRect().top <= linha) i = k;
+      });
+      setAtivo(i);
+    };
+    const aoRolar = () => {
+      if (!quadro) quadro = requestAnimationFrame(medir);
+    };
+    medir();
+    window.addEventListener("scroll", aoRolar, { passive: true });
+    window.addEventListener("resize", aoRolar);
+    return () => {
+      window.removeEventListener("scroll", aoRolar);
+      window.removeEventListener("resize", aoRolar);
+      if (quadro) cancelAnimationFrame(quadro);
+    };
+  }, []);
+
+  const atual = TECNICAS[ativo] ?? TECNICAS[0];
+  const fotos = photos ?? [];
+  // quem não quer movimento recebe o mesmo desenho, sem tempo de animação:
+  // o alvo é sempre o estado visível, então nada fica preso no caminho
+  const tempo = (s: number) => ({ duration: reduced ? 0 : s, ease: EASE });
 
   return (
-    <div id="trabalho" ref={ref} style={{ height: `${frames.length * 100 + 60}vh`, position: "relative" }}>
-      <section className="ty-pin" aria-label="Trabalho">
-        <div
-          className="ty-container"
-          style={{
-            height: "100%",
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "minmax(0, 5fr) minmax(0, 7fr)",
-            alignItems: "center",
-            gap: isMobile ? 18 : "clamp(32px, 5vw, 96px)",
-            paddingTop: isMobile ? "calc(var(--t-nav-h) + 8px)" : 0,
-            paddingBottom: isMobile ? 24 : 0,
-          }}
-        >
-          {/* legendas */}
-          <div style={{ position: "relative", minHeight: isMobile ? 184 : 260, order: isMobile ? 2 : 1 }}>
-            <span className="ty-eyebrow" style={{ display: "block", marginBottom: isMobile ? 12 : 26 }}>
-              Trabalho
-            </span>
-            {frames.map((f, i) => (
-              <Caption key={f.n} frame={f} index={i} progress={scrollYProgress} total={frames.length} />
-            ))}
-            <Counter progress={scrollYProgress} total={frames.length} />
+    <section id="trabalho" className="ty-section tyw" aria-labelledby="tyw-titulo">
+      <div className="ty-container">
+        {/* ficha da seção */}
+        <div className="tyw__topo">
+          <span className="ty-mono ty-mono--ink">Trabalho</span>
+          <span className="ty-mono">01 — 03</span>
+        </div>
+
+        <div className="tyw__cabeca">
+          <h2 id="tyw-titulo" className="tyw__titulo">
+            Três técnicas, um <em>olhar</em>.
+          </h2>
+          <p className="ty-body ty-measure--tight">
+            Não é sobre colocar cílio: é sobre devolver ao olho o desenho que ele já tem.
+          </p>
+        </div>
+
+        <hr className="ty-rule" />
+
+        <div className="tyw__grade">
+          {/* coluna grudada: quem fala alto no desktop. Espelho do que já
+              está escrito na coluna que corre, então sai do leitor de tela. */}
+          <div className="tyw__fixa" aria-hidden>
+            <div className="tyw__conta">
+              <span className="ty-index">
+                <b>{atual.n}</b> / 03
+              </span>
+              <span className="tyw__barra">
+                <motion.i style={{ scaleX: reduced ? (ativo + 1) / TECNICAS.length : scrollYProgress }} />
+              </span>
+            </div>
+
+            <div className="tyw__palco">
+              <AnimatePresence initial={false}>
+                <motion.div
+                  key={atual.n}
+                  className="tyw__tecnica"
+                  initial={{ clipPath: "inset(0% 0% 100% 0%)", y: "12%" }}
+                  animate={{ clipPath: "inset(0% 0% 0% 0%)", y: "0%" }}
+                  exit={{ opacity: 0, y: "-7%", transition: tempo(0.34) }}
+                  transition={tempo(0.72)}
+                >
+                  <span className="tyw__nome">{atual.nome}</span>
+                  <p className="tyw__dizer">{atual.dizer}</p>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            <ul className="tyw__indice">
+              {TECNICAS.map((t, i) => (
+                <li key={t.n} className="tyw__indice-item" data-ativo={i === ativo}>
+                  <span>{t.n}</span>
+                  <span className="tyw__fio">
+                    <i />
+                  </span>
+                  <span>{t.nome}</span>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {/* pilha de fotos */}
-          <div
-            style={{
-              position: "relative",
-              order: isMobile ? 1 : 2,
-              aspectRatio: "4 / 5",
-              width: isMobile ? "min(100%, calc(52svh * 0.8))" : "min(100%, calc(80vh * 0.8))",
-              margin: isMobile ? "0 auto" : "0 0 0 auto",
-              justifySelf: isMobile ? "center" : "end",
-            }}
-          >
-            {frames.map((f, i) => (
-              <Frame key={f.n} frame={f} index={i} progress={scrollYProgress} total={frames.length} />
-            ))}
+          {/* coluna que corre */}
+          <div className="tyw__corre">
+            <ol className="tyw__corrida" ref={corridaRef}>
+              {TECNICAS.map((t, i) => {
+                const foto = fotos[i];
+                return (
+                  <motion.li
+                    key={t.n}
+                    data-tecnica={i}
+                    className="tyw__item"
+                    initial={{ opacity: 0, y: 24 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-8% 0px -8% 0px" }}
+                    transition={tempo(0.85)}
+                  >
+                    <div className="tyw__marca">
+                      <span className="ty-mono">{t.n}</span>
+                      <h3 className="tyw__marca-nome">{t.nome}</h3>
+                    </div>
+
+                    {/* no celular o nome grande mora aqui; no desktop ele
+                        vive na coluna grudada e este bloco sai do fluxo */}
+                    <div className="tyw__item-nome" aria-hidden>
+                      <span className="tyw__nome">{t.nome}</span>
+                      <p className="tyw__dizer">{t.dizer}</p>
+                    </div>
+
+                    <p className="ty-body ty-measure tyw__texto">{t.texto}</p>
+
+                    {/* foto é bônus: entra chapada, sem moldura, só se existir */}
+                    {foto ? (
+                      <figure className="tyw__figura">
+                        <div className="ty-figure">
+                          <RealPhoto photo={foto} ratio={4 / 5} sizes="(max-width: 899px) 100vw, 42vw" />
+                        </div>
+                        <figcaption className="tyw__legenda">
+                          <span>{t.nome}</span>
+                          {/* a legenda da biblioteca só entra quando diz algo
+                              além do nome que já está do lado */}
+                          <span>
+                            {foto.caption && foto.caption.trim().toLowerCase() !== t.nome.toLowerCase()
+                              ? foto.caption
+                              : "@1.tayssa"}
+                          </span>
+                        </figcaption>
+                      </figure>
+                    ) : null}
+                  </motion.li>
+                );
+              })}
+            </ol>
+
+            {/* fecho em bloco chapado: a cor da casa entra como peça, não como enfeite */}
+            <motion.div
+              className="tyw__fecho ty-block"
+              initial={{ opacity: 0, clipPath: "inset(0% 0% 100% 0%)" }}
+              whileInView={{ opacity: 1, clipPath: "inset(0% 0% 0% 0%)" }}
+              viewport={{ once: true, margin: "-8% 0px -8% 0px" }}
+              transition={tempo(1)}
+            >
+              <span className="ty-mono">Como escolher</span>
+              <p className="tyw__fecho-linha">
+                Na prática, a técnica se escolhe <em>sozinha</em>: no seu cílio natural, no seu rosto, na sua
+                rotina.
+              </p>
+            </motion.div>
           </div>
         </div>
-      </section>
-    </div>
-  );
-}
-
-function bounds(index: number, total: number) {
-  // cada quadro ocupa uma fatia igual do progresso
-  const size = 1 / total;
-  return { start: index * size, end: (index + 1) * size, size };
-}
-
-function Frame({
-  frame,
-  index,
-  progress,
-  total,
-}: {
-  frame: (typeof FRAMES)[number];
-  index: number;
-  progress: MotionValue<number>;
-  total: number;
-}) {
-  const { start, size } = bounds(index, total);
-  // entra por máscara (de baixo) na primeira metade da fatia; o primeiro já começa visível
-  const reveal = useTransform(
-    progress,
-    index === 0 ? [0, 0.0001] : [start - size * 0.35, start + size * 0.25],
-    index === 0 ? [0, 0] : [100, 0]
-  );
-  const clipPath = useMotionTemplate`inset(${reveal}% 0% 0% 0%)`;
-  const scale = useTransform(
-    progress,
-    [start - size * 0.35, start + size * 0.25, start + size],
-    [1.12, 1, 1.04]
-  );
-  const y = useTransform(progress, [start, start + size], [0, -18]);
-  return (
-    <motion.div
-      style={{
-        position: "absolute",
-        inset: 0,
-        clipPath,
-        zIndex: index,
-        willChange: "clip-path",
-      }}
-    >
-      <motion.div style={{ position: "absolute", inset: 0, scale, y }}>
-        <RealPhoto photo={frame.photo} ratio="fill" sizes="(max-width: 767px) 100vw, 55vw" style={{ height: "100%" }} />
-      </motion.div>
-    </motion.div>
-  );
-}
-
-function Caption({
-  frame,
-  index,
-  progress,
-  total,
-}: {
-  frame: (typeof FRAMES)[number];
-  index: number;
-  progress: MotionValue<number>;
-  total: number;
-}) {
-  const { start, end, size } = bounds(index, total);
-  const isLast = index === total - 1;
-  const inKeys = index === 0 ? [0, 0.0001] : [start - size * 0.1, start + size * 0.15];
-  const outKeys = isLast ? [end + 1, end + 2] : [end - size * 0.15, end + size * 0.05];
-  const opacity = useTransform(progress, [...inKeys, ...outKeys], [index === 0 ? 1 : 0, 1, 1, 0]);
-  const y = useTransform(progress, [...inKeys, ...outKeys], [index === 0 ? 0 : 26, 0, 0, -20]);
-  return (
-    <motion.div
-      style={{ position: "absolute", top: 40, left: 0, right: 0, opacity, y, pointerEvents: "none" }}
-      aria-hidden={index !== 0}
-    >
-      <h3 className="ty-display" style={{ fontSize: "clamp(36px, 4.56vw, 64px)" }}>
-        {frame.title}
-      </h3>
-      <p className="ty-body" style={{ marginTop: 14, fontSize: 16 }}>
-        {frame.text}
-      </p>
-    </motion.div>
-  );
-}
-
-function Counter({ progress, total }: { progress: MotionValue<number>; total: number }) {
-  const current = useTransform(progress, (v) =>
-    String(Math.min(total, Math.max(1, Math.floor(v * total) + 1))).padStart(2, "0")
-  );
-  const width = useTransform(progress, [0, 1], ["0%", "100%"]);
-  return (
-    <div style={{ position: "absolute", bottom: 0, left: 0, display: "flex", alignItems: "center", gap: 16 }}>
-      <span className="ty-num" style={{ fontSize: 12, letterSpacing: "0.2em" }}>
-        <motion.span>{current}</motion.span>
-        <span className="ty-muted"> / {String(total).padStart(2, "0")}</span>
-      </span>
-      <span style={{ position: "relative", width: 96, height: 1, background: "var(--t-line)" }}>
-        <motion.span style={{ position: "absolute", left: 0, top: 0, bottom: 0, background: "var(--t-fg)", width }} />
-      </span>
-    </div>
+      </div>
+    </section>
   );
 }

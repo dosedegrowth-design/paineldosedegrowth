@@ -1,167 +1,171 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { PHOTOS, type PhotoSlot } from "@/lib/tayssa/photos";
+import { useRef } from "react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
+import type { PhotoSlot } from "@/lib/tayssa/photos";
 import { RealPhoto } from "@/components/tayssa/ui/real-photo";
-import { useIsMobile } from "@/components/tayssa/ui/use-media";
 import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
 
-const ITEMS: { photo: PhotoSlot; w: number; offset: number; kind: "foto" | "publicação" }[] = [
-  { photo: PHOTOS.detail01, w: 30, offset: 0, kind: "foto" },
-  { photo: PHOTOS.detail02, w: 22, offset: 14, kind: "publicação" },
-  { photo: PHOTOS.detail03, w: 34, offset: -6, kind: "foto" },
-  { photo: PHOTOS.detail04, w: 22, offset: 18, kind: "publicação" },
-  { photo: PHOTOS.detail05, w: 28, offset: 2, kind: "foto" },
-  { photo: PHOTOS.detail06, w: 22, offset: 12, kind: "publicação" },
-];
+const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
+/** A chamada, quebrada como o olho lê: três tempos, o último em itálico. */
+const CHAMADA = ["O trabalho sai", "do estúdio e vai", <em key="perfil">direto pro perfil.</em>];
 
 /**
- * Transição 5 — vertical vira horizontal.
- * A seção prende e um trilho de fotos e prints reais do Instagram corre
- * na horizontal enquanto a página desce. A tipografia fica ancorada.
- * No mobile o trilho é um scroll horizontal nativo (gesto deliberado).
+ * O convite ao Instagram — hoje é lá que o trabalho dela vive.
+ *
+ * A seção é um bloco chapado de cassis: a chamada em corpo grande, o @ em
+ * mono grande e o link para o perfil. Ao redor, régua fina, ficha em mono
+ * e uma coluna curta de texto. Sem nenhuma foto a composição já está
+ * completa — nada de caixote vazio. Quando a biblioteca tiver foto, um
+ * trilho de figuras chapadas entra embaixo, com legenda em mono.
+ *
+ * Movimento: a massa de cor sobe por máscara e o conteúdo entra atrás
+ * dela. O gatilho fica no invólucro, nunca no elemento recortado — um
+ * elemento com `clip-path: inset(100%)` não é visto pelo observador e
+ * ficaria preso fechado para sempre.
  */
-export function Details({ instagramUrl, handle, photos }: { instagramUrl: string; handle: string; photos?: PhotoSlot[] }) {
-  const items = ITEMS.map((it, i) => ({ ...it, photo: photos?.[i] ?? it.photo }));
-  const isMobile = useIsMobile();
+export function Details({
+  instagramUrl,
+  handle,
+  photos,
+}: {
+  instagramUrl: string;
+  handle: string;
+  /** já filtradas na página: lista vazia ou undefined = não existe foto */
+  photos?: PhotoSlot[];
+}) {
   const reduced = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
-  const railRef = useRef<HTMLDivElement>(null);
-  const [distance, setDistance] = useState(0);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
-  const x = useTransform(scrollYProgress, [0.08, 0.95], [0, -distance]);
+  const caixa = useRef<HTMLDivElement>(null);
+  const naTela = useInView(caixa, { once: true, amount: 0.25 });
+  const abre = naTela || Boolean(reduced);
+  const fotos = photos ?? [];
 
-  useEffect(() => {
-    const measure = () => {
-      const rail = railRef.current;
-      if (!rail) return;
-      setDistance(Math.max(0, rail.scrollWidth - window.innerWidth + 24));
-    };
-    measure();
-    const ro = new ResizeObserver(measure);
-    if (railRef.current) ro.observe(railRef.current);
-    window.addEventListener("resize", measure);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, [isMobile]);
-
-  const head = (
-    <div style={{ flex: "none", width: isMobile ? "78vw" : "min(34vw, 520px)", paddingRight: isMobile ? 0 : 24 }}>
-      <Reveal>
-        <span className="ty-eyebrow" style={{ display: "block", marginBottom: 20 }}>
-          Real
-        </span>
-      </Reveal>
-      <MaskedLines
-        as="h2"
-        className="ty-display"
-        lineClassName="ty-details-title"
-        lines={["Trabalho real.", <em key="c">Clientes reais.</em>]}
-      />
-      <Reveal delay={0.15}>
-        <p className="ty-body" style={{ marginTop: 22, maxWidth: 380 }}>
-          Sem banco de imagens. O que está aqui saiu do estúdio e do {handle}.
-          Publicações aparecem como são: prints, com a textura de quem posta o próprio trabalho.
-        </p>
-        <a
-          href={instagramUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="ty-link ty-link--caps"
-          style={{ marginTop: 24, display: "inline-block" }}
-        >
-          Ver mais no Instagram
-        </a>
-      </Reveal>
-    </div>
-  );
-
-  if (isMobile || reduced) {
-    return (
-      <section className="ty-section" aria-label="Trabalho real" style={{ paddingBottom: 0 }}>
-        <div className="ty-container">{head}</div>
-        <div
-          style={{
-            display: "flex",
-            gap: 14,
-            overflowX: "auto",
-            padding: "32px var(--t-gutter) 64px",
-            scrollSnapType: "x proximity",
-            WebkitOverflowScrolling: "touch",
-          }}
-        >
-          {items.map((it, i) => (
-            <div key={i} style={{ flex: "none", width: `${Math.max(56, it.w * 2.2)}vw`, scrollSnapAlign: "start" }}>
-              <RealPhoto photo={it.photo} sizes="70vw" showCaption />
-              <span className="ty-small" style={{ display: "block", marginTop: 8, letterSpacing: "0.18em", textTransform: "uppercase", fontSize: 10 }}>
-                {it.kind} · {String(i + 1).padStart(2, "0")}
-              </span>
-            </div>
-          ))}
-        </div>
-      </section>
-    );
-  }
+  /** entra junto com o bloco, em cascata curta */
+  const sobe = (delay: number) => ({
+    initial: reduced ? false : { opacity: 0, y: 16 },
+    animate: abre ? { opacity: 1, y: 0 } : reduced ? {} : { opacity: 0, y: 16 },
+    transition: { duration: 0.75, delay, ease: EASE },
+  });
 
   return (
-    <div ref={ref} style={{ height: "300vh", position: "relative" }}>
-      <section className="ty-pin" aria-label="Trabalho real" style={{ display: "flex", alignItems: "center" }}>
-        <motion.div
-          ref={railRef}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "clamp(24px, 3vw, 56px)",
-            paddingLeft: "var(--t-gutter)",
-            paddingRight: "var(--t-gutter)",
-            x,
-            willChange: "transform",
-          }}
-        >
-          {head}
-          {items.map((it, i) => (
-            <RailItem key={i} item={it} index={i} progress={scrollYProgress} />
-          ))}
-          <div style={{ flex: "none", width: "12vw" }} />
-        </motion.div>
-      </section>
-      <style>{`.ty-details-title { font-size: clamp(33px, 3.5vw, 47px); }`}</style>
-    </div>
+    <section className="ty-section" id="instagram" aria-label="Instagram">
+      <div className="ty-container">
+        {/* ficha de cabeça: a rede de um lado, o perfil do outro */}
+        <Reveal className="ty-ig__topo" y={14}>
+          <span className="ty-mono ty-mono--ink">Instagram</span>
+          <span className="ty-mono">{handle}</span>
+        </Reveal>
+        <div className="ty-rule" />
+
+        <div className="ty-split ty-split--wide-right ty-split--offset ty-ig__grade">
+          {/* coluna curta: por que ir até lá */}
+          <div className="ty-ig__lado">
+            <Reveal>
+              <span className="ty-eyebrow">Antes de agendar</span>
+            </Reveal>
+            <Reveal delay={0.08}>
+              <p className="ty-lead ty-measure--tight">
+                Aqui o site conta o essencial: o que a casa faz e como funciona o clube. O
+                trabalho recente fica no Instagram — é lá que o olhar aparece de perto, um por
+                um.
+              </p>
+            </Reveal>
+            <Reveal delay={0.16}>
+              <span className="ty-oval">dá uma olhada</span>
+            </Reveal>
+          </div>
+
+          {/* o invólucro é quem o observador enxerga; o bloco é o recortado */}
+          <div ref={caixa}>
+            <motion.div
+              className="ty-block ty-ig__bloco"
+              initial={reduced ? false : { clipPath: "inset(100% 0 0 0)" }}
+              animate={abre ? { clipPath: "inset(0% 0 0 0)" } : reduced ? {} : { clipPath: "inset(100% 0 0 0)" }}
+              transition={{ duration: 1.05, ease: EASE }}
+            >
+              <motion.span className="ty-mono" {...sobe(0.18)}>
+                o perfil
+              </motion.span>
+              <MaskedLines
+                as="h2"
+                className="ty-display ty-ig__chamada"
+                lines={CHAMADA}
+                inView={false}
+                play={abre}
+                delay={0.26}
+              />
+              <motion.span className="ty-ig__arroba" {...sobe(0.5)}>
+                {handle}
+              </motion.span>
+              <motion.div className="ty-ig__acao" {...sobe(0.6)}>
+                <a
+                  href={instagramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ty-ig__cta"
+                  aria-label={`Abrir ${handle} no Instagram`}
+                >
+                  Abrir o perfil
+                  <span className="ty-ig__seta" aria-hidden />
+                </a>
+                <span className="ty-mono">abre em nova aba</span>
+              </motion.div>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* a ficha fecha a composição: A + B + C = o perfil */}
+        <Reveal className="ty-ig__ficha ty-rail" y={14}>
+          <span>Trabalho recente</span>
+          <i aria-hidden>+</i>
+          <span>Foto do estúdio</span>
+          <i aria-hidden>+</i>
+          <span>Sem banco de imagens</span>
+          <i aria-hidden>=</i>
+          <span className="ty-mono--accent">{handle}</span>
+        </Reveal>
+      </div>
+
+      {/* foto é bônus, nunca requisito: o trilho só existe se houver foto */}
+      {fotos.length > 0 ? (
+        <div className="ty-ig__fotos">
+          <div className="ty-container ty-ig__topo">
+            <span className="ty-mono ty-mono--ink">Do perfil</span>
+            <span className="ty-mono ty-num">
+              {String(fotos.length).padStart(2, "0")} {fotos.length === 1 ? "foto" : "fotos"}
+            </span>
+          </div>
+          <div className="ty-ig__rolo">
+            {fotos.map((foto, i) => (
+              <Peca key={`${foto.src}-${i}`} foto={foto} indice={i} handle={handle} />
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </section>
   );
 }
 
-function RailItem({
-  item,
-  index,
-  progress,
-}: {
-  item: (typeof ITEMS)[number];
-  index: number;
-  progress: ReturnType<typeof useScroll>["scrollYProgress"];
-}) {
-  // cada foto tem uma leve deriva vertical própria — profundidade sem exagero
-  const y = useTransform(progress, [0, 1], [item.offset * 2, -item.offset * 2]);
+/** Peça do trilho: figura chapada, legenda em mono, entrada por máscara. */
+function Peca({ foto, indice, handle }: { foto: PhotoSlot; indice: number; handle: string }) {
+  const reduced = useReducedMotion();
+  const alvo = useRef<HTMLElement>(null);
+  const naTela = useInView(alvo, { once: true, amount: 0.2 });
+  const abre = naTela || Boolean(reduced);
   return (
-    <motion.figure
-      style={{
-        flex: "none",
-        width: `${item.w}vw`,
-        maxWidth: 520,
-        margin: 0,
-        y,
-        marginTop: `${item.offset}vh`,
-      }}
-    >
-      <RealPhoto photo={item.photo} sizes="34vw" hover showCaption />
-      <figcaption
-        className="ty-small"
-        style={{ marginTop: 10, letterSpacing: "0.18em", textTransform: "uppercase", fontSize: 10 }}
+    <figure ref={alvo} className="ty-figure ty-ig__peca">
+      <motion.div
+        initial={reduced ? false : { clipPath: "inset(100% 0 0 0)" }}
+        animate={abre ? { clipPath: "inset(0% 0 0 0)" } : reduced ? {} : { clipPath: "inset(100% 0 0 0)" }}
+        transition={{ duration: 1.05, delay: Math.min(indice, 4) * 0.06, ease: EASE }}
       >
-        {item.kind} · {String(index + 1).padStart(2, "0")}
+        <RealPhoto photo={foto} hover sizes="(max-width: 899px) 62vw, 26vw" />
+      </motion.div>
+      <figcaption>
+        <span>{foto.caption ?? handle}</span>
+        <span className="ty-num">{String(indice + 1).padStart(2, "0")}</span>
       </figcaption>
-    </motion.figure>
+    </figure>
   );
 }

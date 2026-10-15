@@ -4,6 +4,10 @@ import "@fontsource/montserrat/300.css";
 import "@fontsource/montserrat/400.css";
 import "@fontsource/montserrat/500.css";
 import "@fontsource/montserrat/600.css";
+// itálico serifado: o acento editorial dentro da frase (nunca o corpo)
+import "@fontsource-variable/bodoni-moda/wght-italic.css";
+// mono: os micro-rótulos, contadores e marcações de ficha
+import "@fontsource/jetbrains-mono/400.css";
 import "lenis/dist/lenis.css";
 import "./tayssa.css";
 import { PUBLIC_ORIGIN } from "@/lib/tayssa/config";

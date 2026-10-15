@@ -33,6 +33,10 @@
   /* tipografia */
   --t-font-display: "Montserrat", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   --t-font-body: "Montserrat", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  /* o acento: itálico serifado de alto contraste, só em palavra marcada */
+  --t-font-serif: "Bodoni Moda Variable", "Bodoni Moda", Didot, "Times New Roman", serif;
+  /* a ficha: mono para rótulo, contador, hora, estado */
+  --t-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* motion — uma física só */
   --t-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -150,10 +154,12 @@ body:has(.ty-scope[data-theme="night"]) {
 }
 .ty-display em,
 .ty-i {
-  font-family: var(--t-font-display);
-  font-style: normal;
-  font-weight: 200;
-  letter-spacing: -0.02em;
+  font-family: var(--t-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  /* a serifa tem olho menor que a Montserrat: compensa para a linha não quebrar */
+  font-size: 1.06em;
 }
 .ty-h {
   font-family: var(--t-font-display);
@@ -162,8 +168,11 @@ body:has(.ty-scope[data-theme="night"]) {
   line-height: 1.08;
 }
 .ty-h em {
-  font-style: normal;
-  font-weight: 200;
+  font-family: var(--t-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  font-size: 1.06em;
 }
 .ty-h-sm {
   font-family: var(--t-font-display);
@@ -172,14 +181,17 @@ body:has(.ty-scope[data-theme="night"]) {
   line-height: 1.2;
 }
 .ty-h-sm em {
-  font-style: normal;
-  font-weight: 300;
+  font-family: var(--t-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.05em;
 }
 .ty-eyebrow {
+  font-family: var(--t-font-mono);
   font-size: 10.5px;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--t-fg-2);
 }
 .ty-lead {
@@ -717,13 +729,40 @@ select.ty-field__input {
 }
 .ty-nav__links a,
 .ty-nav__links button {
+  font-family: var(--t-font-mono);
   font-size: 10.5px;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 400;
+  color: var(--t-fg-2);
+  transition: color var(--t-micro) var(--t-ease-micro);
 }
+.ty-nav__links a:hover,
+.ty-nav__links button:hover {
+  color: var(--t-accent);
+}
+/* a abertura é clara: o topo é tinta sobre marfim, não o contrário */
 .ty-nav--over {
-  color: #f1eae1;
+  color: var(--t-fg);
+}
+.ty-nav .ty-brand__name {
+  font-size: 12.5px;
+  letter-spacing: 0.26em;
+  font-weight: 500;
+}
+.ty-nav .ty-brand__name em {
+  font-family: var(--t-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  font-size: 1.1em;
+  text-transform: none;
+}
+.ty-nav .ty-brand__mark {
+  width: 28px;
+  height: 28px;
+  font-size: 12px;
+  color: var(--t-accent);
 }
 
 /* ---------- loader / cortina ---------- */
@@ -863,4 +902,1210 @@ select.ty-field__input {
   .ty-skel {
     animation: none;
   }
+}
+
+/* ============================================================
+   CAMADA EDITORIAL — a voz da casa em peças reutilizáveis.
+   Duas cores em bloco chapado, tipo grande cortado pela borda,
+   itálico serifado dentro da frase, mono como ficha técnica.
+   Nada de sombra, gradiente de enfeite ou canto arredondado.
+   ============================================================ */
+
+/* ---------- ficha técnica (mono) ---------- */
+.ty-mono {
+  font-family: var(--t-font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--t-fg-2);
+}
+.ty-mono--ink {
+  color: var(--t-fg);
+}
+.ty-mono--accent {
+  color: var(--t-accent);
+}
+
+/* trilho: PALAVRA + PALAVRA = CONCLUSÃO, espaçado pela largura toda */
+.ty-rail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(12px, 3vw, 48px);
+  flex-wrap: wrap;
+  padding: 22px 0;
+  border-top: 1px solid var(--t-line);
+  border-bottom: 1px solid var(--t-line);
+}
+.ty-rail span {
+  font-family: var(--t-font-mono);
+  font-size: clamp(10px, 1vw, 12px);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.ty-rail i {
+  font-style: normal;
+  color: var(--t-accent);
+  opacity: 0.7;
+}
+
+/* ---------- marca gigante, cortada pela borda ---------- */
+.ty-wordmark {
+  display: block;
+  font-family: var(--t-font-display);
+  font-weight: 500;
+  letter-spacing: -0.055em;
+  line-height: 0.82;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--t-accent);
+  /* a palavra ocupa a largura da tela: corpo derivado do número de letras,
+     com a métrica da Montserrat caixa-alta (~0.60em por letra) */
+  font-size: min(
+    calc((100vw - var(--t-gutter) * 2) / (var(--ty-letras, 11) * 0.585)),
+    calc(100vw / 4.6)
+  );
+  margin-left: -0.045em;
+}
+.ty-wordmark em {
+  font-family: var(--t-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  font-size: 0.98em;
+}
+
+/* ---------- bloco chapado ---------- */
+.ty-block {
+  background: var(--t-accent);
+  color: #f6ece2;
+  padding: clamp(22px, 2.6vw, 36px);
+}
+.ty-block .ty-eyebrow,
+.ty-block .ty-mono {
+  color: rgba(246, 236, 226, 0.66);
+}
+.ty-block--ink {
+  background: var(--t-ink);
+  color: #f1eae1;
+}
+.ty-block--bone {
+  background: var(--t-bone);
+  color: var(--t-ink);
+}
+
+/* ---------- rótulo em elipse desenhada ---------- */
+.ty-oval {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 22px 11px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-family: var(--t-font-serif);
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--t-accent);
+  white-space: nowrap;
+}
+
+/* ---------- figura chapada ---------- */
+.ty-figure {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: var(--t-photo);
+}
+.ty-figure figcaption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  font-family: var(--t-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--t-fg-2);
+}
+
+/* ---------- grade editorial ---------- */
+.ty-split {
+  display: grid;
+  gap: clamp(28px, 5vw, 80px);
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .ty-split {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .ty-split--wide-left {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  }
+  .ty-split--wide-right {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+  }
+  .ty-split--offset > :last-child {
+    margin-top: clamp(40px, 9vw, 140px);
+  }
+}
+.ty-measure {
+  max-width: 46ch;
+}
+.ty-measure--tight {
+  max-width: 34ch;
+}
+
+/* número de seção, grande e discreto */
+.ty-index {
+  font-family: var(--t-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--t-fg-2);
+}
+.ty-index b {
+  font-weight: 400;
+  color: var(--t-accent);
+}
+
+/* regra fina que respira com a seção */
+.ty-rule {
+  height: 1px;
+  background: var(--t-line);
+  border: 0;
+  margin: clamp(28px, 4vw, 56px) 0;
+}
+
+/* ---------- abertura ---------- */
+.ty-hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: calc(var(--t-nav-h) + 8px) var(--t-gutter) clamp(20px, 3vw, 34px);
+  overflow: hidden;
+}
+.ty-hero__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+}
+.ty-hero__marca {
+  margin: clamp(18px, 3vw, 40px) 0 clamp(20px, 3vw, 36px);
+  /* a palavra sai pelas bordas de propósito */
+  margin-inline: calc(var(--t-gutter) * -1);
+  padding-inline: calc(var(--t-gutter) - 0.04em);
+}
+.ty-hero__marca .ty-wordmark {
+  overflow: hidden;
+  padding-bottom: 0.06em;
+}
+.ty-hero__corpo {
+  display: grid;
+  gap: clamp(26px, 4vw, 56px);
+  align-items: end;
+  grid-template-columns: minmax(0, 1fr);
+}
+.ty-hero__dizer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.ty-hero__linha {
+  display: block;
+  overflow: hidden;
+  font-family: var(--t-font-display);
+  font-size: clamp(27px, 4.1vw, 56px);
+  font-weight: 300;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+}
+.ty-hero__linha > span {
+  display: block;
+}
+.ty-hero__linha em {
+  font-family: var(--t-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.06em;
+  color: var(--t-accent);
+}
+.ty-hero__acoes {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 2vw, 26px);
+  flex-wrap: wrap;
+  margin-top: clamp(22px, 3vw, 34px);
+}
+.ty-hero__secundario {
+  font-family: var(--t-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--t-fg-2);
+  border-bottom: 1px solid var(--t-line-strong);
+  padding-bottom: 3px;
+  transition: color var(--t-micro) var(--t-ease-micro), border-color var(--t-micro);
+}
+.ty-hero__secundario:hover {
+  color: var(--t-accent);
+  border-color: var(--t-accent);
+}
+.ty-hero__figura {
+  width: 100%;
+}
+.ty-hero__ficha {
+  margin-top: clamp(24px, 3vw, 40px);
+}
+
+@media (min-width: 900px) {
+  .ty-hero__corpo {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: clamp(40px, 6vw, 110px);
+  }
+  .ty-hero__figura {
+    max-width: 380px;
+    justify-self: end;
+  }
+}
+
+/* ---------- convite ao Instagram (.ty-ig) ---------- */
+/* O trabalho dela vive no perfil: a seção é um bloco chapado de cassis
+   com a chamada, o @ em mono grande e o link. Régua fina e ficha em mono
+   ao redor. Sem foto a composição está completa; quando houver foto, um
+   trilho de figuras chapadas entra embaixo. */
+
+.ty-ig__topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+.ty-ig__grade {
+  margin-top: clamp(30px, 4vw, 58px);
+}
+/* o bloco desce em relação ao texto e o rótulo cai para o pé da coluna:
+   a diagonal fecha a composição (assimetria com ar) */
+@media (min-width: 900px) {
+  .ty-ig__grade {
+    align-items: stretch;
+  }
+  .ty-ig__grade.ty-split--offset > :last-child {
+    margin-top: clamp(20px, 3.4vw, 64px);
+  }
+  .ty-ig__lado > :last-child {
+    margin-top: auto;
+  }
+}
+.ty-ig__lado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(16px, 2vw, 24px);
+}
+.ty-ig__bloco {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(18px, 2.2vw, 28px);
+  /* o texto do bloco entra na mesma prumada do resto da página */
+  padding: clamp(30px, 3.4vw, 54px) var(--t-gutter);
+  /* a massa de cor encosta na borda: no celular dos dois lados,
+     no desktop só na direita */
+  margin-inline: calc(var(--t-gutter) * -1);
+}
+@media (min-width: 900px) {
+  .ty-ig__bloco {
+    margin-left: 0;
+  }
+}
+.ty-ig__chamada {
+  font-size: clamp(26px, 3.4vw, 50px);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+}
+/* o @ é a assinatura da casa na rede: mono grande, como ela escreve */
+.ty-ig__arroba {
+  display: block;
+  font-family: var(--t-font-mono);
+  font-size: clamp(21px, 2.4vw, 36px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: inherit;
+}
+.ty-ig__acao {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-top: clamp(2px, 1vw, 10px);
+}
+.ty-ig__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 22px 14px;
+  border: 1px solid rgba(246, 236, 226, 0.45);
+  font-family: var(--t-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #f6ece2;
+  transition:
+    color var(--t-ui) var(--t-ease-out),
+    background-color var(--t-ui) var(--t-ease-out),
+    border-color var(--t-ui) var(--t-ease-out);
+}
+.ty-ig__seta {
+  position: relative;
+  display: inline-block;
+  width: 18px;
+  height: 1px;
+  background: currentColor;
+  transition: transform var(--t-ui) var(--t-ease-out);
+}
+.ty-ig__seta::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: -3px;
+  width: 6px;
+  height: 6px;
+  border-top: 1px solid currentColor;
+  border-right: 1px solid currentColor;
+  transform: rotate(45deg);
+}
+@media (hover: hover) {
+  .ty-ig__cta:hover {
+    background: #f6ece2;
+    border-color: #f6ece2;
+    color: var(--t-cassis);
+  }
+  .ty-ig__cta:hover .ty-ig__seta {
+    transform: translateX(6px);
+  }
+}
+.ty-ig__ficha {
+  margin-top: clamp(34px, 4.6vw, 70px);
+}
+/* no celular a ficha quebra em duas linhas: corre da esquerda,
+   em vez de jogar os sinais para as pontas */
+@media (max-width: 767px) {
+  .ty-ig__ficha {
+    justify-content: flex-start;
+    gap: 10px 14px;
+  }
+}
+
+/* trilho de fotos — só existe quando existe foto */
+.ty-ig__fotos {
+  margin-top: clamp(38px, 5vw, 76px);
+}
+.ty-ig__rolo {
+  display: flex;
+  gap: clamp(12px, 1.6vw, 24px);
+  margin-top: 16px;
+  padding: 0 var(--t-gutter) 6px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  /* sem isto o encaixe come a margem lateral da primeira peça */
+  scroll-padding-left: var(--t-gutter);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.ty-ig__rolo::-webkit-scrollbar {
+  display: none;
+}
+.ty-ig__peca {
+  flex: none;
+  width: min(62vw, 300px);
+  margin: 0;
+  scroll-snap-align: start;
+  /* o chão tonal do primitivo vale para a imagem, não para a legenda */
+  background: transparent;
+  overflow: visible;
+}
+@media (min-width: 900px) {
+  .ty-ig__peca {
+    width: min(26vw, 340px);
+  }
+}
+
+/* ============================================================
+   TRABALHO (.tyw) — as três técnicas como peça editorial.
+   Desktop: nome grudado à esquerda em corpo grande, explicação
+   correndo à direita, índice em mono que acende na ativa.
+   Celular: a mesma matéria em pilha, cada técnica com o seu nome.
+   Sem foto a seção está completa; com foto, a figura chapada entra
+   na coluna que corre.
+   ============================================================ */
+.tyw__topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+.tyw__cabeca {
+  display: grid;
+  gap: clamp(16px, 2.4vw, 26px);
+  margin-top: clamp(18px, 2.4vw, 32px);
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 900px) {
+  .tyw__cabeca {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: clamp(40px, 6vw, 110px);
+    align-items: end;
+  }
+}
+.tyw__titulo {
+  font-family: var(--t-font-display);
+  font-weight: 300;
+  font-size: clamp(32px, 5.1vw, 72px);
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+  max-width: 20ch;
+}
+.tyw__titulo em {
+  font-family: var(--t-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.06em;
+  letter-spacing: -0.01em;
+  color: var(--t-accent);
+}
+
+.tyw__grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(10px, 2vw, 24px);
+}
+@media (min-width: 900px) {
+  .tyw__grade {
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+    gap: clamp(40px, 6vw, 120px);
+  }
+}
+
+/* ---------- coluna grudada (desktop) ---------- */
+.tyw__fixa {
+  display: none;
+}
+@media (min-width: 900px) {
+  .tyw__fixa {
+    display: block;
+    position: sticky;
+    align-self: start;
+    top: calc(var(--t-nav-h) + clamp(28px, 7vh, 84px));
+  }
+}
+.tyw__conta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.tyw__conta .ty-index {
+  font-variant-numeric: tabular-nums;
+}
+.tyw__barra {
+  position: relative;
+  display: block;
+  width: clamp(56px, 7vw, 104px);
+  height: 1px;
+  background: var(--t-line);
+}
+.tyw__barra i {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: var(--t-accent);
+  transform-origin: left center;
+}
+.tyw__palco {
+  position: relative;
+  margin-top: clamp(18px, 2.2vw, 28px);
+  /* cabe o nome mais alto com a frase em duas linhas */
+  min-height: clamp(152px, 12.4vw, 184px);
+}
+.tyw__tecnica {
+  position: absolute;
+  inset: 0;
+  will-change: clip-path, transform;
+}
+.tyw__nome {
+  display: block;
+  font-family: var(--t-font-display);
+  font-weight: 300;
+  font-size: clamp(44px, 5.6vw, 92px);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  color: var(--t-fg);
+}
+.tyw__dizer {
+  margin-top: clamp(13px, 1.5vw, 20px);
+  max-width: 24ch;
+  font-family: var(--t-font-display);
+  font-weight: 300;
+  font-size: clamp(18px, 1.5vw, 24px);
+  line-height: 1.36;
+  letter-spacing: -0.02em;
+  color: var(--t-fg-2);
+}
+.tyw__dizer em {
+  font-family: var(--t-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.08em;
+  color: var(--t-accent);
+}
+
+/* índice em mono: acende na técnica ativa */
+.tyw__indice {
+  margin-top: clamp(26px, 3.2vw, 44px);
+  list-style: none;
+  margin-bottom: 0;
+  padding: 0;
+  border-top: 1px solid var(--t-line);
+}
+.tyw__indice-item {
+  display: grid;
+  grid-template-columns: auto minmax(24px, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--t-line);
+  font-family: var(--t-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--t-fg-2);
+  transition: color var(--t-ui) var(--t-ease-out);
+}
+.tyw__indice-item[data-ativo="true"] {
+  color: var(--t-accent);
+}
+.tyw__fio {
+  position: relative;
+  display: block;
+  height: 1px;
+  background: var(--t-line);
+}
+.tyw__fio i {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: var(--t-accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--t-section) var(--t-ease-out);
+}
+.tyw__indice-item[data-ativo="true"] .tyw__fio i {
+  transform: scaleX(1);
+}
+
+/* ---------- coluna que corre ---------- */
+.tyw__corrida {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: clamp(48px, 9vw, 92px);
+}
+@media (min-width: 900px) {
+  .tyw__corrida {
+    gap: clamp(120px, 22vh, 240px);
+    padding-block: clamp(18px, 5vh, 56px) clamp(64px, 16vh, 170px);
+  }
+}
+.tyw__marca {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--t-line);
+}
+.tyw__marca-nome {
+  font-family: var(--t-font-mono);
+  font-size: 10.5px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--t-fg);
+}
+/* no celular o nome grande mora dentro do item; no desktop, na coluna grudada */
+.tyw__item-nome {
+  margin-top: clamp(16px, 4vw, 26px);
+}
+.tyw__item-nome .tyw__nome {
+  font-size: clamp(38px, 11vw, 62px);
+}
+.tyw__item-nome .tyw__dizer {
+  max-width: 28ch;
+}
+@media (min-width: 900px) {
+  .tyw__item-nome {
+    display: none;
+  }
+}
+.tyw__texto {
+  margin-top: clamp(16px, 2vw, 24px);
+}
+.tyw__figura {
+  margin: clamp(22px, 2.6vw, 36px) 0 0;
+}
+.tyw__legenda {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  font-family: var(--t-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--t-fg-2);
+}
+
+/* ---------- fecho chapado ---------- */
+.tyw__fecho {
+  margin-top: clamp(44px, 7vw, 80px);
+  max-width: 54ch;
+}
+@media (min-width: 900px) {
+  .tyw__fecho {
+    margin-top: 0;
+    /* alinhado à régua da coluna que corre, sem sobra */
+    max-width: none;
+  }
+}
+.tyw__fecho-linha {
+  margin-top: 14px;
+  font-family: var(--t-font-display);
+  font-weight: 300;
+  font-size: clamp(19px, 1.65vw, 26px);
+  line-height: 1.34;
+  letter-spacing: -0.022em;
+}
+.tyw__fecho-linha em {
+  font-family: var(--t-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.06em;
+}
+
+/* ============================================================
+   SERVIÇOS (.tysv) — o cardápio como índice editorial.
+   Cada serviço é uma linha: índice em mono, nome em corpo grande
+   com a palavra do cuidado em itálico serifado, a explicação numa
+   coluna estreita e o caminho de agendar na ponta. A linha inteira
+   é o link.
+   A reação de hover mora aqui, não em JS: cor, deslocamento, régua
+   de cassis que corre e o índice que troca de lugar. Vale igual no
+   :focus-visible — e não depende de foto nenhuma. Com foto, ela
+   entra chapada; sem foto, a composição já está completa.
+   ============================================================ */
+.tysv__topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.tysv__cabeca {
+  display: grid;
+  gap: clamp(18px, 2.4vw, 28px);
+  margin-top: clamp(18px, 2.4vw, 32px);
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 900px) {
+  .tysv__cabeca {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: clamp(40px, 6vw, 110px);
+    align-items: end;
+  }
+}
+.tysv__titulo {
+  font-family: var(--t-font-display);
+  font-weight: 300;
+  font-size: clamp(38px, 5.1vw, 72px);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+/* a máscara da linha corta o rabo do "y" e do "q": este ar devolve */
+.tysv__titulo .ty-mask {
+  padding-bottom: 0.07em;
+}
+.tysv__titulo em {
+  font-family: var(--t-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.06em;
+  letter-spacing: -0.01em;
+  color: var(--t-accent);
+}
+.tysv__lead em {
+  font-family: var(--t-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.08em;
+}
+
+/* ---------- a lista ---------- */
+.tysv__lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.tysv__linha {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(9px, 1.3vw, 15px);
+  padding: clamp(24px, 2.8vw, 40px) 0;
+  border-top: 1px solid var(--t-line);
+  color: inherit;
+}
+.tysv__item:last-child .tysv__linha {
+  border-bottom: 1px solid var(--t-line);
+}
+@media (min-width: 900px) {
+  .tysv__linha {
+    grid-template-columns: auto minmax(0, 1.3fr) minmax(0, 1fr) auto;
+    gap: clamp(24px, 3.4vw, 64px);
+    align-items: start;
+  }
+}
+
+/* régua: o fio de cassis corre por cima da linha da tabela */
+.tysv__fio {
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--t-accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--t-section) var(--t-ease-out);
+}
+
+/* índice em mono: dois números empilhados dentro de uma máscara —
+   o de cima sai, o de baixo entra em cassis */
+.tysv__num {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  width: 3ch;
+  height: 1.4em;
+  font-family: var(--t-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  font-variant-numeric: tabular-nums;
+}
+@media (min-width: 900px) {
+  .tysv__num {
+    margin-top: 0.5em;
+  }
+}
+.tysv__num i {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  font-style: normal;
+  line-height: 1.4em;
+  transition: transform var(--t-ui) var(--t-ease-out);
+}
+.tysv__num i:first-child {
+  color: var(--t-fg-2);
+}
+.tysv__num i:last-child {
+  color: var(--t-accent);
+  transform: translateY(100%);
+}
+
+.tysv__nome {
+  font-family: var(--t-font-display);
+  font-weight: 300;
+  font-size: clamp(28px, 2.9vw, 44px);
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+  color: var(--t-fg);
+  transition:
+    transform var(--t-ui) var(--t-ease-out),
+    color var(--t-ui) var(--t-ease-out);
+}
+.tysv__nome em {
+  font-family: var(--t-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.06em;
+  letter-spacing: -0.01em;
+}
+.tysv__dizer {
+  margin: 0;
+}
+@media (min-width: 900px) {
+  .tysv__dizer {
+    margin-top: 0.4em;
+  }
+}
+
+.tysv__acao {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--t-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--t-fg-2);
+  white-space: nowrap;
+  transition: color var(--t-ui) var(--t-ease-out);
+}
+@media (min-width: 900px) {
+  .tysv__acao {
+    justify-self: end;
+    margin-top: 0.6em;
+  }
+}
+
+/* foto dentro da linha: só no toque, e só quando existe foto */
+.tysv__figura {
+  margin: clamp(14px, 1.8vw, 22px) 0 2px;
+  max-width: min(86%, 320px);
+}
+@media (hover: hover) and (pointer: fine) {
+  .tysv__figura {
+    display: none;
+  }
+}
+.tysv__legenda {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  font-family: var(--t-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--t-fg-2);
+}
+
+/* ---------- a linha reage sozinha ---------- */
+@media (hover: hover) {
+  .tysv__linha:hover .tysv__fio {
+    transform: scaleX(1);
+  }
+  .tysv__linha:hover .tysv__nome {
+    transform: translateX(clamp(6px, 0.9vw, 16px));
+    color: var(--t-accent);
+  }
+  .tysv__linha:hover .tysv__num i:first-child {
+    transform: translateY(-110%);
+  }
+  .tysv__linha:hover .tysv__num i:last-child {
+    transform: translateY(0);
+  }
+  .tysv__linha:hover .tysv__acao {
+    color: var(--t-accent);
+  }
+  .tysv__linha:hover .ty-btn__arrow {
+    transform: translateX(6px);
+  }
+}
+/* teclado: mesma reação, sem mouse */
+.tysv__linha:focus-visible .tysv__fio {
+  transform: scaleX(1);
+}
+.tysv__linha:focus-visible .tysv__nome {
+  color: var(--t-accent);
+}
+.tysv__linha:focus-visible .tysv__num i:first-child {
+  transform: translateY(-110%);
+}
+.tysv__linha:focus-visible .tysv__num i:last-child {
+  transform: translateY(0);
+}
+.tysv__linha:focus-visible .tysv__acao {
+  color: var(--t-accent);
+}
+
+/* ---------- pé da seção ---------- */
+.tysv__pe {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(22px, 2.6vw, 34px);
+  margin-top: clamp(40px, 5vw, 76px);
+}
+@media (min-width: 900px) {
+  .tysv__pe {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: clamp(32px, 5vw, 80px);
+  }
+}
+.tysv__pe-linha {
+  max-width: 36ch;
+  font-family: var(--t-font-display);
+  font-weight: 300;
+  font-size: clamp(19px, 1.65vw, 26px);
+  line-height: 1.34;
+  letter-spacing: -0.022em;
+}
+.tysv__pe-linha em {
+  font-family: var(--t-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.06em;
+}
+
+/* foto que segue o cursor: peça chapada, sem moldura e sem sombra */
+.tysv__segue {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 40;
+  width: 300px;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tysv__fio,
+  .tysv__nome,
+  .tysv__num i,
+  .tysv__acao,
+  .tysv__linha .ty-btn__arrow {
+    transition-duration: 1ms;
+  }
+  .tysv__linha:hover .tysv__nome {
+    transform: none;
+  }
+}
+
+/* ============================================================
+   CONVITE AO CLUBE (.tyvi) — o degrau entre o site e o privado.
+   Quando esta seção chega, os tokens da página inteira já estão
+   caminhando de marfim a noir (a interpolação vive no componente):
+   não é um bloco escuro, é a página escurecendo.
+   É o único lugar do site público onde o dourado aparece — um fio
+   e um rótulo, mais nada. O resto é tipografia, régua e ar.
+   ============================================================ */
+
+/* o dourado do convite. Fica na folha com o valor de dia; enquanto a
+   página escurece o componente sobrescreve inline (inline vence), e ao
+   desmontar a remoção devolve este valor. */
+.ty-scope {
+  --tyvi-gold: #8a6334;
+}
+.ty-scope[data-theme="night"] {
+  --tyvi-gold: #c9a36c;
+}
+
+.tyvi {
+  /* o degrau pede silêncio antes: entra com mais ar que as outras */
+  padding-top: clamp(126px, 17vw, 250px);
+}
+
+/* ---------- ficha de topo: o rótulo e o fio ---------- */
+.tyvi__topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+/* o rótulo: a única palavra dourada do site público */
+.tyvi__selo {
+  color: var(--tyvi-gold);
+}
+/* o fio: risca-se da esquerda, como a linha que se cruza para entrar */
+.tyvi__fio {
+  height: 1px;
+  margin-top: 14px;
+  background: color-mix(in srgb, var(--tyvi-gold) 72%, transparent);
+  transform-origin: left center;
+}
+
+/* ---------- a declaração ---------- */
+.tyvi__cabeca {
+  margin-top: clamp(38px, 5.4vw, 86px);
+}
+.tyvi__declaracao {
+  font-weight: 300;
+  font-size: clamp(38px, 5.5vw, 80px);
+  line-height: 1.03;
+  letter-spacing: -0.042em;
+}
+.tyvi__declaracao em {
+  color: var(--t-accent);
+}
+.tyvi__lado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(18px, 2.2vw, 28px);
+}
+
+/* ---------- os três privilégios: índice numerado em mono ---------- */
+.tyvi__chapeu {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: clamp(54px, 7.5vw, 112px);
+  padding-bottom: 14px;
+}
+.tyvi__lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--t-line-strong);
+}
+.tyvi__linha {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 11px;
+  padding: clamp(24px, 3vw, 42px) 0;
+  border-bottom: 1px solid var(--t-line);
+}
+.tyvi__lista > li:last-child .tyvi__linha {
+  border-bottom-color: var(--t-line-strong);
+}
+/* a régua da linha acende de leve ao passar o mouse — nada além disso */
+@media (hover: hover) {
+  .tyvi__linha::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: var(--t-accent);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--t-section) var(--t-ease-out);
+  }
+  .tyvi__linha:hover::after {
+    transform: scaleX(1);
+  }
+}
+.tyvi__n {
+  font-family: var(--t-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--t-fg-2);
+}
+.tyvi__nome {
+  font-family: var(--t-font-display);
+  font-weight: 300;
+  font-size: clamp(31px, 3.3vw, 46px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.tyvi__texto {
+  max-width: 44ch;
+  font-size: 15.5px;
+  line-height: 1.62;
+  color: var(--t-fg-2);
+}
+.tyvi__ficha {
+  font-family: var(--t-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--t-fg-2);
+}
+@media (min-width: 900px) {
+  .tyvi__linha {
+    grid-template-columns: 56px minmax(0, 4fr) minmax(0, 6fr);
+    gap: 0 clamp(22px, 3vw, 56px);
+    align-items: start;
+  }
+  .tyvi__n {
+    padding-top: 9px;
+  }
+  /* texto e ficha moram na mesma coluna: a ficha é o pé da explicação */
+  .tyvi__texto,
+  .tyvi__ficha {
+    grid-column: 3;
+  }
+  .tyvi__ficha {
+    margin-top: 14px;
+  }
+}
+/* com largura de sobra a ficha vira coluna própria, rente à margem:
+   o índice ganha cara de livro-caixa da casa */
+@media (min-width: 1200px) {
+  .tyvi__linha {
+    grid-template-columns: 56px minmax(0, 3.6fr) minmax(0, 5.4fr) minmax(0, 2.2fr);
+  }
+  .tyvi__ficha {
+    grid-column: 4;
+    margin-top: 0;
+    padding-top: 10px;
+    text-align: right;
+  }
+}
+
+/* ---------- o caminho de entrada ---------- */
+.tyvi__trilho {
+  margin-top: clamp(50px, 6.5vw, 98px);
+}
+/* no celular a ficha quebra em linhas: corre da esquerda em vez de
+   jogar os sinais para as pontas */
+@media (max-width: 767px) {
+  .tyvi__trilho {
+    justify-content: flex-start;
+    gap: 10px 14px;
+  }
+}
+.tyvi__porta {
+  margin-top: clamp(38px, 5vw, 78px);
+}
+.tyvi__porta-h {
+  font-size: clamp(21px, 2vw, 27px);
+}
+.tyvi__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px clamp(18px, 2.4vw, 30px);
+  margin-top: clamp(26px, 3.2vw, 40px);
+}
+/* a entrada de quem já é de casa: discreta, do tamanho de uma ficha */
+.tyvi__entrar {
+  font-family: var(--t-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--t-fg-2);
+  border-bottom: 1px solid var(--t-line-strong);
+  padding-bottom: 3px;
+  transition:
+    color var(--t-micro) var(--t-ease-micro),
+    border-color var(--t-micro) var(--t-ease-micro);
+}
+@media (hover: hover) {
+  .tyvi__entrar:hover {
+    color: var(--t-accent);
+    border-color: var(--t-accent);
+  }
+}
+.tyvi__nota {
+  margin-top: clamp(18px, 2vw, 26px);
 }
