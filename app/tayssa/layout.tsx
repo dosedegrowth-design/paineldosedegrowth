@@ -10,9 +10,12 @@ import "@fontsource-variable/bodoni-moda/wght-italic.css";
 import "@fontsource/jetbrains-mono/400.css";
 import "lenis/dist/lenis.css";
 import "./tayssa.css";
+import "./flora.css";
+import "./casa.css";
 import { PUBLIC_ORIGIN } from "@/lib/tayssa/config";
 import { SmoothScroll } from "@/components/tayssa/ui/smooth-scroll";
 import { TransitionProvider } from "@/components/tayssa/ui/transition";
+import { EstruturaProvider } from "@/components/tayssa/ui/estrutura";
 
 const TITLE = "Tayssa Lash — Private Beauty Experience";
 const DESCRIPTION =
@@ -35,7 +38,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f4efe8",
+  themeColor: "#fbf7f6",
   width: "device-width",
   initialScale: 1,
 };
@@ -45,7 +48,9 @@ export default function TayssaLayout({ children }: { children: React.ReactNode }
     <div className="ty-scope" data-theme="day">
       <div className="ty-grain" aria-hidden />
       <SmoothScroll />
-      <TransitionProvider>{children}</TransitionProvider>
+      <TransitionProvider>
+        <EstruturaProvider>{children}</EstruturaProvider>
+      </TransitionProvider>
     </div>
   );
 }

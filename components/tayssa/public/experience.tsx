@@ -15,25 +15,42 @@ import { VipIntro } from "@/components/tayssa/public/vip-intro";
 import { ReferralCta } from "@/components/tayssa/public/referral-cta";
 import { Closing } from "@/components/tayssa/public/closing";
 import { PublicFooter } from "@/components/tayssa/public/footer";
+import { Film } from "@/components/tayssa/public/film";
+import { About } from "@/components/tayssa/public/about";
+import { Studio } from "@/components/tayssa/public/studio";
+import { Testimonials } from "@/components/tayssa/public/testimonials";
+import { VisitInfo } from "@/components/tayssa/public/visit-info";
+import { CONTEUDO, temAtendimento, temSobre } from "@/lib/tayssa/content";
+import { temVideo } from "@/lib/tayssa/media";
+import type { VideoAvailability } from "@/lib/tayssa/media-server";
+import { useEstrutura } from "@/components/tayssa/ui/estrutura";
 
 const IntroCtx = createContext(false);
 export const useIntroReady = () => useContext(IntroCtx);
 
 /**
  * A experiência pública inteira. Uma só narrativa em scroll:
- * entrada → hero vira cartão → trabalho (pin) → serviços → detalhes
- * (trilho horizontal) → a luz abaixa → VIP → indicação → fechamento.
+ * abertura (marca + flores + janela) → trabalho (pin) → o filme (a
+ * janela abre até a tela cheia) → serviços → a profissional → o estúdio
+ * → Instagram → depoimentos → a luz abaixa → VIP → indicação →
+ * atendimento → fechamento.
+ *
+ * As seções que dependem de conteúdo que só a Tayssa pode dar (filme,
+ * biografia, estúdio, depoimentos, horários) só entram quando ele
+ * existe; com `?estrutura=1` aparecem com o espaço reservado marcado.
  */
 export function PublicExperience({
   settings,
   services,
   benefits,
   photos,
+  videos,
 }: {
   settings: Settings;
   services: ServiceRow[];
   benefits: BenefitRow[];
   photos?: PhotoAssignment;
+  videos?: VideoAvailability;
 }) {
   const [ready, setReady] = useState(false);
   const wa = settings.whatsapp;
@@ -46,17 +63,37 @@ export function PublicExperience({
     handle: settings.business.instagram_handle,
   };
 
+  const estrutura = useEstrutura();
+  // o menu só aponta para seção que está na página
+  const secoes = [
+    { id: "trabalho", label: "Trabalho" },
+    { id: "servicos", label: "Serviços" },
+    ...(temSobre(CONTEUDO) || estrutura ? [{ id: "sobre", label: "A Tayssa" }] : []),
+    { id: "vip", label: "VIP" },
+    ...(temAtendimento(CONTEUDO) || estrutura ? [{ id: "atendimento", label: "Atendimento" }] : []),
+  ];
+
   return (
     <IntroCtx.Provider value={ready}>
       <IntroLoader onDone={() => setReady(true)} />
-      <PublicNav scheduleUrl={links.schedule} />
+      <PublicNav scheduleUrl={links.schedule} sections={secoes} />
       <main>
-        <Hero business={settings.business} scheduleUrl={links.schedule} photo={photos?.hero} />
+        <Hero business={settings.business} scheduleUrl={links.schedule} photo={photos?.hero} video={videos?.hero} />
         <WorkSequence photos={photos?.work} />
-        <Services services={services} scheduleUrl={links.schedule} photoBySlug={photos?.byService} />
+        <Film video={videos?.processo} photo={temVideo(videos?.processo) ? undefined : photos?.work[0]} />
+        <Services
+          services={services}
+          scheduleUrl={links.schedule}
+          photoBySlug={photos?.byService}
+          detalhes={CONTEUDO.servicos}
+        />
+        <About business={settings.business} conteudo={CONTEUDO} portrait={photos?.portrait} instagramUrl={links.instagram} />
+        <Studio conteudo={CONTEUDO} video={videos?.espaco} photo={photos?.studio} />
         <Details instagramUrl={links.instagram} handle={links.handle} photos={photos?.details} />
+        <Testimonials conteudo={CONTEUDO} />
         <VipIntro benefits={benefits} />
         <ReferralCta />
+        <VisitInfo business={settings.business} conteudo={CONTEUDO} />
         <Closing scheduleUrl={links.schedule} />
       </main>
       <PublicFooter business={settings.business} />

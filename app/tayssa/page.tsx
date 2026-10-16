@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getSettings } from "@/lib/tayssa/settings";
 import { getActiveServices, getPublicBenefits } from "@/lib/tayssa/queries/catalog";
 import { getPhotoAvailability } from "@/lib/tayssa/photos-server";
+import { getVideoAvailability } from "@/lib/tayssa/media-server";
 import { getPhotoLibrary } from "@/lib/tayssa/queries/photos";
 import { assignPhotos } from "@/lib/tayssa/photos";
 import { PublicExperience } from "@/components/tayssa/public/experience";
@@ -17,12 +18,13 @@ export const metadata: Metadata = {
  * a página nunca quebra por causa do Supabase.
  */
 export default async function TayssaHome() {
-  const [settings, services, benefits, photos, library] = await Promise.all([
+  const [settings, services, benefits, photos, library, videos] = await Promise.all([
     getSettings(),
     getActiveServices(),
     getPublicBenefits(),
     getPhotoAvailability(),
     getPhotoLibrary(),
+    getVideoAvailability(),
   ]);
   // uma biblioteca, todos os lugares: o herói, a sequência, o trilho, os serviços.
   // Só entra foto que existe de verdade — da biblioteca, ou arquivo estático
@@ -37,6 +39,8 @@ export default async function TayssaHome() {
     details: assigned.details.filter(existe),
     byService: Object.fromEntries(Object.entries(assigned.byService).filter(([, v]) => existe(v))),
     card: assigned.card.filter(existe),
+    portrait: existe(assigned.portrait) ? assigned.portrait : undefined,
+    studio: existe(assigned.studio) ? assigned.studio : undefined,
   };
 
   const jsonLd = {
@@ -53,7 +57,7 @@ export default async function TayssaHome() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <PhotoAvailabilityProvider value={photos}>
-        <PublicExperience settings={settings} services={services} benefits={benefits} photos={reais} />
+        <PublicExperience settings={settings} services={services} benefits={benefits} photos={reais} videos={videos} />
       </PhotoAvailabilityProvider>
     </>
   );

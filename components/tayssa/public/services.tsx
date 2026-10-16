@@ -8,6 +8,8 @@ import { RealPhoto } from "@/components/tayssa/ui/real-photo";
 import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
 import { useFinePointer } from "@/components/tayssa/ui/use-media";
 import { Magnetic } from "@/components/tayssa/ui/magnetic";
+import type { ServicoDetalhe } from "@/lib/tayssa/content";
+import { Pendente } from "@/components/tayssa/ui/estrutura";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -86,11 +88,14 @@ export function Services({
   services,
   scheduleUrl,
   photoBySlug,
+  detalhes = {},
 }: {
   services: ServiceRow[];
   scheduleUrl: string;
   /** só chega aqui foto que existe de verdade (a página filtra antes) */
   photoBySlug?: Record<string, PhotoSlot>;
+  /** duração, valor e diferencial que a Tayssa informou (lib/tayssa/content.ts) */
+  detalhes?: Record<string, ServicoDetalhe>;
 }) {
   const list = (services.length ? services : FALLBACK).filter((s) => s.slug !== "outro");
   const fine = useFinePointer();
@@ -161,8 +166,11 @@ export function Services({
                     <i>{n}</i>
                   </span>
                   <h3 className="tysv__nome">{nomeComEnfase(s.name)}</h3>
-                  {s.description ? (
-                    <p className="ty-body ty-measure--tight tysv__dizer">{s.description}</p>
+                  {s.description || detalhes[s.slug] ? (
+                    <div className="tysv__dizer">
+                      {s.description ? <p className="ty-body ty-measure--tight">{s.description}</p> : null}
+                      <Ficha d={detalhes[s.slug]} />
+                    </div>
                   ) : (
                     // mantém a prumada das colunas quando o serviço não tem
                     // texto (no celular não há coluna: a casca some)
@@ -196,6 +204,15 @@ export function Services({
             );
           })}
         </ul>
+
+        {Object.keys(detalhes).length === 0 ? (
+          <div className="tysv__pendente">
+            <Pendente
+              titulo="Detalhes de cada serviço"
+              detalhe="Confirmar a lista real de serviços e, para cada um: descrição curta, diferencial, duração e preço (só se ela quiser divulgar — senão fica 'valor no WhatsApp'). Fotos ou vídeo por serviço."
+            />
+          </div>
+        ) : null}
 
         <Reveal className="tysv__pe" delay={0.08}>
           <p className="tysv__pe-linha">
@@ -235,5 +252,17 @@ export function Services({
         </motion.div>
       ) : null}
     </section>
+  );
+}
+
+/** Ficha do serviço em mono: só o que a Tayssa informou. */
+function Ficha({ d }: { d?: ServicoDetalhe }) {
+  if (!d) return null;
+  const itens = [d.duracao, d.preco].filter(Boolean) as string[];
+  return (
+    <>
+      {d.diferencial ? <p className="ty-body ty-measure--tight tysv__dif">{d.diferencial}</p> : null}
+      {itens.length ? <p className="ty-mono tysv__ficha">{itens.join(" · ")}</p> : null}
+    </>
   );
 }

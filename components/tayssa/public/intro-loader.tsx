@@ -81,13 +81,13 @@ export function IntroLoader({ onDone }: { onDone: () => void }) {
               style={{
                 width: 160,
                 height: 1,
-                background: "rgba(241,234,225,0.22)",
+                background: "rgba(248,236,239,0.22)",
                 position: "relative",
                 overflow: "hidden",
               }}
             >
               <motion.div
-                style={{ position: "absolute", inset: 0, background: "#f1eae1", transformOrigin: "left" }}
+                style={{ position: "absolute", inset: 0, background: "#f8ecef", transformOrigin: "left" }}
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: phase === "boot" ? 0 : 1 }}
                 transition={{ duration: 1.15, ease: EASE, delay: 0.2 }}
@@ -95,7 +95,7 @@ export function IntroLoader({ onDone }: { onDone: () => void }) {
             </motion.div>
             <motion.span
               className="ty-eyebrow"
-              style={{ color: "rgba(241,234,225,0.55)" }}
+              style={{ color: "rgba(248,236,239,0.55)" }}
               initial={{ opacity: 0 }}
               animate={{ opacity: phase === "boot" ? 0 : 1 }}
               transition={{ duration: 0.6, delay: 0.5 }}

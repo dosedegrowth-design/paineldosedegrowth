@@ -1,0 +1,352 @@
+/* ============================================================
+   TAYSSA — seções institucionais: filme, a profissional, o estúdio,
+   depoimentos e atendimento. Mesmo vocabulário do resto da casa:
+   ficha em mono no topo, régua fina, título com itálico serifado.
+   ============================================================ */
+
+/* ficha de topo comum às seções novas */
+.tyab__topo,
+.tyst__topo,
+.tydp__topo,
+.tyat__topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* ---------- o filme ---------- */
+.tyfm {
+  position: relative;
+  height: 230vh;
+  height: 230svh;
+}
+.tyfm__palco {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+.tyfm__titulo {
+  position: absolute;
+  top: calc(var(--t-nav-h) + 2vh);
+  left: 0;
+  right: 0;
+  z-index: 1;
+  text-align: center;
+  font-family: var(--t-font-display);
+  font-weight: 300;
+  font-size: clamp(30px, 4.6vw, 72px);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--t-fg);
+}
+.tyfm__titulo em {
+  font-family: var(--t-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--t-accent);
+}
+.tyfm__janela {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  will-change: clip-path;
+}
+.tyfm__escala {
+  position: absolute;
+  inset: 0;
+}
+.tyfm__midia {
+  position: absolute;
+  inset: 0;
+}
+.tyfm__legenda {
+  position: absolute;
+  left: var(--t-gutter);
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  z-index: 3;
+  color: #fbf1f3;
+  text-shadow: 0 1px 14px rgba(26, 8, 16, 0.5);
+}
+.tyfm__flor {
+  position: absolute;
+  z-index: 3;
+  width: clamp(130px, 19vw, 300px);
+  pointer-events: none;
+}
+.tyfm__flor--e {
+  left: calc(33% - clamp(70px, 8vw, 140px));
+  bottom: 9%;
+}
+.tyfm__flor--d {
+  right: calc(33% - clamp(50px, 6vw, 110px));
+  top: 18%;
+  width: clamp(90px, 12vw, 190px);
+}
+@media (max-width: 767px) {
+  .tyfm {
+    height: 190svh;
+  }
+  .tyfm__flor--e {
+    left: 2%;
+    bottom: 12%;
+    width: 120px;
+  }
+  .tyfm__flor--d {
+    right: 2%;
+    top: 14%;
+    width: 84px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tyfm {
+    height: auto;
+  }
+  .tyfm__palco {
+    position: relative;
+    height: 80svh;
+  }
+}
+
+/* ---------- a profissional ---------- */
+.tyab__grade {
+  display: grid;
+  gap: clamp(36px, 6vw, 110px);
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .tyab__grade {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+}
+.tyab__retrato {
+  position: relative;
+  max-width: 520px;
+  width: 100%;
+}
+.tyab__quadro {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  border-radius: 999px 999px 0 0;
+  overflow: hidden;
+  background: var(--t-photo);
+}
+.tyab__quadro--vazio {
+  background: radial-gradient(120% 90% at 30% 20%, var(--t-photo) 0%, var(--t-photo-2) 100%);
+}
+.tyab__flores {
+  z-index: 2;
+}
+.tyab__texto {
+  display: grid;
+  gap: clamp(20px, 2.4vw, 32px);
+  align-content: start;
+}
+@media (min-width: 900px) {
+  .tyab__texto {
+    padding-top: clamp(20px, 6vw, 100px);
+  }
+}
+.tyab__titulo {
+  font-size: clamp(44px, 6.4vw, 104px);
+  font-weight: 300;
+  color: var(--t-fg);
+}
+.tyab__titulo em {
+  color: var(--t-accent);
+}
+.tyab__bio {
+  display: grid;
+  gap: 16px;
+  max-width: 52ch;
+}
+.tyab__formacao ul {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.tyab__formacao li {
+  padding: 10px 0;
+  border-top: 1px solid var(--t-line);
+  font-size: 15px;
+}
+.tyab__assinatura {
+  font-family: var(--t-font-serif);
+  font-size: clamp(22px, 2.2vw, 32px);
+  color: var(--t-accent);
+}
+.tyab__ig {
+  justify-self: start;
+}
+
+/* ---------- o estúdio ---------- */
+.tyst__grade {
+  display: grid;
+  gap: clamp(32px, 5vw, 90px);
+  grid-template-columns: minmax(0, 1fr);
+  align-items: end;
+}
+@media (min-width: 900px) {
+  .tyst__grade {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  }
+}
+.tyst__midia-wrap {
+  position: relative;
+}
+.tyst__midia {
+  aspect-ratio: 16 / 10;
+}
+@media (max-width: 767px) and (orientation: portrait) {
+  .tyst__midia {
+    aspect-ratio: 4 / 5;
+  }
+}
+.tyst__flores {
+  z-index: 2;
+}
+.tyst__texto {
+  display: grid;
+  gap: clamp(18px, 2.2vw, 30px);
+}
+.tyst__titulo {
+  font-size: clamp(40px, 5vw, 84px);
+  font-weight: 300;
+}
+.tyst__titulo em {
+  color: var(--t-accent);
+}
+.tyst__onde {
+  display: grid;
+  gap: 8px;
+}
+.tyst__onde p {
+  font-size: 17px;
+}
+.tyst__onde .ty-link {
+  justify-self: start;
+}
+
+/* ---------- depoimentos ---------- */
+.tydp__lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: clamp(36px, 5vw, 72px);
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 900px) {
+  .tydp__lista {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .tydp__item:nth-child(even) {
+    margin-top: clamp(40px, 7vw, 120px);
+  }
+}
+.tydp__item {
+  position: relative;
+  padding-left: clamp(46px, 5vw, 72px);
+}
+.tydp__flor {
+  position: absolute;
+  left: 0;
+  top: -6px;
+  width: clamp(34px, 3.6vw, 52px);
+}
+.tydp__texto {
+  margin: 0;
+  font-family: var(--t-font-display);
+  font-weight: 300;
+  font-size: clamp(21px, 2vw, 30px);
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+.tydp__texto em {
+  font-family: var(--t-font-serif);
+  color: var(--t-accent);
+}
+.tydp__quem {
+  margin-top: 14px;
+}
+
+/* ---------- atendimento ---------- */
+.tyat__grade {
+  display: grid;
+  gap: clamp(28px, 3.6vw, 56px) clamp(24px, 4vw, 64px);
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 640px) {
+  .tyat__grade {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1100px) {
+  .tyat__grade {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.tyat__bloco {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  padding-top: 18px;
+  border-top: 1px solid var(--t-line-strong);
+}
+.tyat__h {
+  font-family: var(--t-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 400;
+  color: var(--t-accent);
+}
+.tyat__horas {
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+.tyat__horas div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 16px;
+}
+.tyat__horas dd {
+  margin: 0;
+}
+.tyat__lista {
+  margin: 0;
+  padding: 0 0 0 1.1em;
+  display: grid;
+  gap: 6px;
+  font-size: 15.5px;
+  line-height: 1.5;
+}
+.tyat__contato {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--t-line);
+}
+
+/* ---------- serviços: ficha de duração/valor ---------- */
+.tysv__ficha {
+  margin-top: 10px;
+  color: var(--t-accent);
+}
+.tysv__dif {
+  margin-top: 8px;
+}
+.tysv__pendente {
+  margin-top: clamp(24px, 3vw, 40px);
+}

@@ -6,29 +6,37 @@
    ============================================================ */
 
 .ty-scope {
-  /* paleta */
-  --t-ivory: #f4efe8;
-  --t-bone: #e8e0d5;
-  --t-sand: #cdbfb0;
-  --t-umber: #6b5a4e;
-  --t-ink: #1a1512;
-  --t-noir: #100d0b;
-  --t-cassis: #6e2f45;
-  --t-cassis-soft: #a5647a;
+  /* paleta — branco e vinho protagonistas; ameixa e rosa fechado dão
+     profundidade; verde só em folha; dourado fica no VIP, e pouco. */
+  --t-white: #ffffff;
+  --t-paper: #fbf7f6;
+  --t-blush: #f4e8ea;
+  --t-petal: #e7d2d8;
+  --t-mauve: #7a5260;
+  --t-ink: #2a0d18;
+  --t-noir: #1a0810;
+  --t-vinho: #6d1530;
+  --t-bordo: #4b0c20;
+  --t-ameixa: #5b2346;
+  --t-rosa: #b2566f;
+  --t-rosa-soft: #d797a8;
+  --t-folha: #55704f;
+  --t-folha-luz: #8aa07f;
 
   /* semânticos — dia */
-  --t-bg: var(--t-ivory);
-  --t-bg-2: var(--t-bone);
+  --t-bg: var(--t-paper);
+  --t-bg-2: var(--t-blush);
   --t-fg: var(--t-ink);
-  --t-fg-2: var(--t-umber);
-  --t-line: rgba(26, 21, 18, 0.14);
-  --t-line-strong: rgba(26, 21, 18, 0.32);
-  --t-accent: var(--t-cassis);
+  --t-fg-2: var(--t-mauve);
+  --t-line: rgba(42, 13, 24, 0.13);
+  --t-line-strong: rgba(42, 13, 24, 0.3);
+  --t-accent: var(--t-vinho);
   --t-accent-fg: #ffffff;
-  --t-photo: #d9cfc3;
-  --t-photo-2: #c4b6a7;
-  --t-ok: #4f7a5f;
-  --t-wait: #9a7b3f;
+  --t-on-accent: #fbf1f3;
+  --t-photo: #f0e1e5;
+  --t-photo-2: #e3c9d1;
+  --t-ok: #4f6b4a;
+  --t-wait: #8a5a2e;
 
   /* tipografia */
   --t-font-display: "Montserrat", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
@@ -67,27 +75,29 @@
 
 .ty-scope[data-theme="night"],
 .ty-night {
+  /* a noite da casa é vinho, não café */
   --t-bg: var(--t-noir);
-  --t-bg-2: #1a1512;
-  --t-fg: #f1eae1;
-  --t-fg-2: rgba(241, 234, 225, 0.62);
-  --t-line: rgba(241, 234, 225, 0.14);
-  --t-line-strong: rgba(241, 234, 225, 0.34);
-  --t-accent: var(--t-cassis-soft);
-  --t-accent-fg: #100d0b;
-  --t-photo: #2a2320;
-  --t-photo-2: #382f2a;
-  --t-ok: #86b396;
-  --t-wait: #d0b06a;
+  --t-bg-2: #2a0e1b;
+  --t-fg: #f8ecef;
+  --t-fg-2: rgba(248, 236, 239, 0.64);
+  --t-line: rgba(248, 236, 239, 0.14);
+  --t-line-strong: rgba(248, 236, 239, 0.34);
+  --t-accent: var(--t-rosa-soft);
+  --t-accent-fg: #1a0810;
+  --t-on-accent: #1a0810;
+  --t-photo: #2d1019;
+  --t-photo-2: #3c1725;
+  --t-ok: #9cbb92;
+  --t-wait: #e0b48a;
   color-scheme: dark;
 }
 
 /* o body do app é escuro; aqui o chão acompanha o tema da experiência */
 body:has(.ty-scope) {
-  background: #f4efe8;
+  background: #fbf7f6;
 }
 body:has(.ty-scope[data-theme="night"]) {
-  background: #100d0b;
+  background: #1a0810;
 }
 
 @layer base {
@@ -433,16 +443,16 @@ textarea.ty-field__input {
 }
 select.ty-field__input {
   padding-right: 28px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%236b5a4e' stroke-width='1.2'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%237a5260' stroke-width='1.2'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 2px center;
 }
 .ty-scope[data-theme="night"] select.ty-field__input {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%23f1eae1' stroke-width='1.2'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%23f8ecef' stroke-width='1.2'/%3E%3C/svg%3E");
 }
 .ty-scope[data-theme="night"] select.ty-field__input option {
-  background: #1a1512;
-  color: #f1eae1;
+  background: #2a0e1b;
+  color: #f8ecef;
 }
 .ty-field--error .ty-field__input {
   border-bottom-color: var(--t-accent);
@@ -524,7 +534,7 @@ select.ty-field__input {
   font-size: 10.5px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: #f1eae1;
+  color: #f8ecef;
   opacity: 0;
   transform: translateY(6px);
   transition: opacity var(--t-ui) var(--t-ease-out), transform var(--t-ui) var(--t-ease-out);
@@ -591,7 +601,7 @@ select.ty-field__input {
 
 .ty-scope {
   cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Cpath d='M4.2 2 L4.2 17.2 L8.2 13.6 L10.4 18.8 L12.9 17.7 L10.7 12.7 L15.9 12.4 Z' fill='%231a1512' stroke='%23f4efe8' stroke-width='1.3' stroke-linejoin='round'/%3E%3C/svg%3E")
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Cpath d='M4.2 2 L4.2 17.2 L8.2 13.6 L10.4 18.8 L12.9 17.7 L10.7 12.7 L15.9 12.4 Z' fill='%232a0d18' stroke='%23fbf7f6' stroke-width='1.3' stroke-linejoin='round'/%3E%3C/svg%3E")
       4 2,
     auto;
 }
@@ -599,7 +609,7 @@ select.ty-field__input {
 .ty-scope[data-theme="night"],
 .ty-night {
   cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Cpath d='M4.2 2 L4.2 17.2 L8.2 13.6 L10.4 18.8 L12.9 17.7 L10.7 12.7 L15.9 12.4 Z' fill='%23f1eae1' stroke='%23100d0b' stroke-width='1.3' stroke-linejoin='round'/%3E%3C/svg%3E")
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Cpath d='M4.2 2 L4.2 17.2 L8.2 13.6 L10.4 18.8 L12.9 17.7 L10.7 12.7 L15.9 12.4 Z' fill='%23f8ecef' stroke='%231a0810' stroke-width='1.3' stroke-linejoin='round'/%3E%3C/svg%3E")
       4 2,
     auto;
 }
@@ -611,7 +621,7 @@ select.ty-field__input {
 .ty-scope label,
 .ty-scope summary {
   cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='26' viewBox='0 0 30 26'%3E%3Cpath d='M4.2 2 L4.2 17.2 L8.2 13.6 L10.4 18.8 L12.9 17.7 L10.7 12.7 L15.9 12.4 Z' fill='%236e2f45' stroke='%23f4efe8' stroke-width='1.3' stroke-linejoin='round'/%3E%3Cg fill='none' stroke='%236e2f45' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M17.6 6.2 q4.2 0.2 6.4 3'/%3E%3Cpath d='M18.4 3.6 q2.6 0 4.2 1.3'/%3E%3Cpath d='M17.9 9.2 q3.4 1 5 3.1'/%3E%3C/g%3E%3C/svg%3E")
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='26' viewBox='0 0 30 26'%3E%3Cpath d='M4.2 2 L4.2 17.2 L8.2 13.6 L10.4 18.8 L12.9 17.7 L10.7 12.7 L15.9 12.4 Z' fill='%236d1530' stroke='%23fbf7f6' stroke-width='1.3' stroke-linejoin='round'/%3E%3Cg fill='none' stroke='%236d1530' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M17.6 6.2 q4.2 0.2 6.4 3'/%3E%3Cpath d='M18.4 3.6 q2.6 0 4.2 1.3'/%3E%3Cpath d='M17.9 9.2 q3.4 1 5 3.1'/%3E%3C/g%3E%3C/svg%3E")
       4 2,
     pointer;
 }
@@ -623,7 +633,7 @@ select.ty-field__input {
 .ty-night a,
 .ty-night button {
   cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='26' viewBox='0 0 30 26'%3E%3Cpath d='M4.2 2 L4.2 17.2 L8.2 13.6 L10.4 18.8 L12.9 17.7 L10.7 12.7 L15.9 12.4 Z' fill='%23a5647a' stroke='%23100d0b' stroke-width='1.3' stroke-linejoin='round'/%3E%3Cg fill='none' stroke='%23a5647a' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M17.6 6.2 q4.2 0.2 6.4 3'/%3E%3Cpath d='M18.4 3.6 q2.6 0 4.2 1.3'/%3E%3Cpath d='M17.9 9.2 q3.4 1 5 3.1'/%3E%3C/g%3E%3C/svg%3E")
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='26' viewBox='0 0 30 26'%3E%3Cpath d='M4.2 2 L4.2 17.2 L8.2 13.6 L10.4 18.8 L12.9 17.7 L10.7 12.7 L15.9 12.4 Z' fill='%23d797a8' stroke='%231a0810' stroke-width='1.3' stroke-linejoin='round'/%3E%3Cg fill='none' stroke='%23d797a8' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M17.6 6.2 q4.2 0.2 6.4 3'/%3E%3Cpath d='M18.4 3.6 q2.6 0 4.2 1.3'/%3E%3Cpath d='M17.9 9.2 q3.4 1 5 3.1'/%3E%3C/g%3E%3C/svg%3E")
       4 2,
     pointer;
 }
@@ -772,7 +782,7 @@ select.ty-field__input {
   inset: 0;
   z-index: 200;
   background: var(--t-ink);
-  color: #f1eae1;
+  color: #f8ecef;
   display: grid;
   place-items: center;
 }
@@ -1004,19 +1014,19 @@ select.ty-field__input {
 /* ---------- bloco chapado ---------- */
 .ty-block {
   background: var(--t-accent);
-  color: #f6ece2;
+  color: #fbf1f3;
   padding: clamp(22px, 2.6vw, 36px);
 }
 .ty-block .ty-eyebrow,
 .ty-block .ty-mono {
-  color: rgba(246, 236, 226, 0.66);
+  color: rgba(251, 241, 243, 0.66);
 }
 .ty-block--ink {
   background: var(--t-ink);
-  color: #f1eae1;
+  color: #f8ecef;
 }
-.ty-block--bone {
-  background: var(--t-bone);
+.ty-block--blush {
+  background: var(--t-blush);
   color: var(--t-ink);
 }
 
@@ -1181,9 +1191,6 @@ select.ty-field__input {
   color: var(--t-accent);
   border-color: var(--t-accent);
 }
-.ty-hero__figura {
-  width: 100%;
-}
 .ty-hero__ficha {
   margin-top: clamp(24px, 3vw, 40px);
 }
@@ -1193,14 +1200,10 @@ select.ty-field__input {
     grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
     gap: clamp(40px, 6vw, 110px);
   }
-  .ty-hero__figura {
-    max-width: 380px;
-    justify-self: end;
-  }
 }
 
 /* ---------- convite ao Instagram (.ty-ig) ---------- */
-/* O trabalho dela vive no perfil: a seção é um bloco chapado de cassis
+/* O trabalho dela vive no perfil: a seção é um bloco chapado de vinho
    com a chamada, o @ em mono grande e o link. Régua fina e ficha em mono
    ao redor. Sem foto a composição está completa; quando houver foto, um
    trilho de figuras chapadas entra embaixo. */
@@ -1283,12 +1286,12 @@ select.ty-field__input {
   align-items: center;
   gap: 14px;
   padding: 15px 22px 14px;
-  border: 1px solid rgba(246, 236, 226, 0.45);
+  border: 1px solid rgba(251, 241, 243, 0.45);
   font-family: var(--t-font-mono);
   font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #f6ece2;
+  color: #fbf1f3;
   transition:
     color var(--t-ui) var(--t-ease-out),
     background-color var(--t-ui) var(--t-ease-out),
@@ -1315,9 +1318,9 @@ select.ty-field__input {
 }
 @media (hover: hover) {
   .ty-ig__cta:hover {
-    background: #f6ece2;
-    border-color: #f6ece2;
-    color: var(--t-cassis);
+    background: #fbf1f3;
+    border-color: #fbf1f3;
+    color: var(--t-vinho);
   }
   .ty-ig__cta:hover .ty-ig__seta {
     transform: translateX(6px);

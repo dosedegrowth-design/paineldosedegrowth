@@ -75,6 +75,11 @@ export const PHOTOS = {
   detail04: { src: `${base}/detail-04.jpg`, alt: "Publicação do Instagram @1.tayssa", ratio: 4 / 5 },
   detail05: { src: `${base}/detail-05.jpg`, alt: "Resultado de cliente", ratio: 4 / 5 },
   detail06: { src: `${base}/detail-06.jpg`, alt: "Publicação do Instagram @1.tayssa", ratio: 4 / 5 },
+  portrait: {
+    src: `${base}/portrait.jpg`,
+    alt: "Retrato da Tayssa",
+    ratio: 4 / 5,
+  },
   studio: {
     src: `${base}/studio.jpg`,
     alt: "Ambiente do estúdio da Tayssa",
@@ -125,6 +130,10 @@ export type PhotoAssignment = {
   byService: Record<string, PhotoSlot>;
   /** sequência para a frente do cartão (destaques primeiro) */
   card: PhotoSlot[];
+  /** retrato dela (seção "A Tayssa") */
+  portrait?: PhotoSlot;
+  /** o ambiente do estúdio (seção "O estúdio") */
+  studio?: PhotoSlot;
 };
 
 /**
@@ -144,6 +153,19 @@ const SERVICE_KEYWORDS: Record<string, string[]> = {
   "lip-spa": ["lip", "lábio", "labio"],
   "limpeza-de-pele": ["limpeza", "pele", "skin"],
   "aplicacao-cilios": ["volume", "fio", "cílio", "cilio", "lash"],
+};
+
+/** Fotos que não são de trabalho: só entram no lugar delas, por nome. */
+const PORTRAIT_KEYWORDS = ["retrato", "tayssa", "profissional"];
+const STUDIO_KEYWORDS = ["estúdio", "estudio", "espaço", "espaco", "ambiente"];
+
+/** Estático de cada serviço — usado quando a biblioteca não tem foto declarada. */
+const SERVICE_STATICS: Record<string, PhotoSlot> = {
+  "aplicacao-cilios": PHOTOS.serviceLash,
+  "manutencao-cilios": PHOTOS.serviceMaintenance,
+  "design-sobrancelhas": PHOTOS.serviceBrow,
+  "lip-spa": PHOTOS.serviceLip,
+  "limpeza-de-pele": PHOTOS.serviceFacial,
 };
 
 /**
@@ -176,11 +198,18 @@ export function assignPhotos(library: LibraryPhoto[]): PhotoAssignment {
   });
   const detailStatics = [PHOTOS.detail01, PHOTOS.detail02, PHOTOS.detail03, PHOTOS.detail04, PHOTOS.detail05, PHOTOS.detail06];
   const details = detailStatics.map((st, i) => take(1, 4 + i)[0] ?? st);
+  // por serviço: a foto declarada na biblioteca; sem ela, o estático do
+  // serviço (que a página descarta se o arquivo não existir)
   const byService: Record<string, PhotoSlot> = {};
   for (const [slug, words] of Object.entries(SERVICE_KEYWORDS)) {
     const hit = ordered.find((p) => words.some((w) => p.lash_style.toLowerCase().includes(w)));
     if (hit) byService[slug] = slotFromPhoto(hit, 3 / 4);
+    else if (SERVICE_STATICS[slug]) byService[slug] = SERVICE_STATICS[slug];
   }
+  const porNome = (palavras: string[]) =>
+    ordered.find((p) => palavras.some((w) => p.lash_style.toLowerCase().includes(w)));
+  const retrato = porNome(PORTRAIT_KEYWORDS);
+  const estudio = porNome(STUDIO_KEYWORDS);
   return {
     hero,
     entrance: slots[1] ?? slots[0] ?? PHOTOS.entrance,
@@ -188,5 +217,7 @@ export function assignPhotos(library: LibraryPhoto[]): PhotoAssignment {
     details,
     byService,
     card: slots.length ? slots.slice(0, 6) : [PHOTOS.hero, PHOTOS.work01, PHOTOS.work02, PHOTOS.work03],
+    portrait: retrato ? slotFromPhoto(retrato, 4 / 5) : PHOTOS.portrait,
+    studio: estudio ? slotFromPhoto(estudio, 16 / 10) : PHOTOS.studio,
   };
 }

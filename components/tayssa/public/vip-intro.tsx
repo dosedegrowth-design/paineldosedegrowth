@@ -10,25 +10,25 @@ import { Magnetic } from "@/components/tayssa/ui/magnetic";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
-/* Tokens dia -> noite, interpolados pelo scroll. O dourado entra na mesma
-   conta: no claro ele é um ocre fechado (para ler sobre marfim), no escuro
-   abre em dourado. É a única cor nova do site público. */
+/* Tokens dia -> noite, interpolados pelo scroll: o off-white da casa
+   escurece até a noite vinho. O dourado entra na mesma conta — no claro é
+   um ocre fechado, no escuro abre em dourado — e só pinta o selo e o fio. */
 const DAY = {
-  bg: [244, 239, 232],
-  fg: [26, 21, 18],
-  fg2: [107, 90, 78],
-  line: [26, 21, 18],
-  accent: [110, 47, 69],
-  photo: [217, 207, 195],
+  bg: [251, 247, 246],
+  fg: [42, 13, 24],
+  fg2: [122, 82, 96],
+  line: [42, 13, 24],
+  accent: [109, 21, 48],
+  photo: [240, 225, 229],
   gold: [138, 99, 52],
 };
 const NIGHT = {
-  bg: [16, 13, 11],
-  fg: [241, 234, 225],
-  fg2: [241, 234, 225],
-  line: [241, 234, 225],
-  accent: [165, 100, 122],
-  photo: [42, 35, 32],
+  bg: [26, 8, 16],
+  fg: [248, 236, 239],
+  fg2: [248, 236, 239],
+  line: [248, 236, 239],
+  accent: [215, 151, 168],
+  photo: [45, 16, 25],
   gold: [201, 163, 108],
 };
 
@@ -141,7 +141,7 @@ export function VipIntro({ benefits }: { benefits: BenefitRow[] }) {
     scope.style.setProperty("--t-line-strong", `rgba(${mix(DAY.line, NIGHT.line, k)},0.33)`);
     scope.style.setProperty("--t-accent", `rgb(${mix(DAY.accent, NIGHT.accent, k)})`);
     scope.style.setProperty("--t-photo", `rgb(${mix(DAY.photo, NIGHT.photo, k)})`);
-    scope.style.setProperty("--t-accent-fg", k > 0.5 ? "#100d0b" : "#ffffff");
+    scope.style.setProperty("--t-accent-fg", k > 0.5 ? "#1a0810" : "#ffffff");
     scope.style.setProperty("--tyvi-gold", `rgb(${mix(DAY.gold, NIGHT.gold, k)})`);
     document.body.style.background = `rgb(${mix(DAY.bg, NIGHT.bg, k)})`;
   });

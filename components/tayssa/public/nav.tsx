@@ -7,7 +7,9 @@ import { TyBrand } from "@/components/tayssa/ui/brand";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { scrollToTarget } from "@/components/tayssa/ui/smooth-scroll";
 
-const SECTIONS = [
+type Secao = { id: string; label: string };
+
+const SECTIONS: Secao[] = [
   { id: "trabalho", label: "Trabalho" },
   { id: "servicos", label: "Serviços" },
   { id: "vip", label: "VIP" },
@@ -17,7 +19,7 @@ const SECTIONS = [
  * Nav que some ao descer e volta compacta ao subir. Transparente sobre o
  * hero, translúcida depois. No mobile vira um menu de tela cheia.
  */
-export function PublicNav({ scheduleUrl }: { scheduleUrl: string }) {
+export function PublicNav({ scheduleUrl, sections = SECTIONS }: { scheduleUrl: string; sections?: Secao[] }) {
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
   const [solid, setSolid] = useState(false);
@@ -56,7 +58,7 @@ export function PublicNav({ scheduleUrl }: { scheduleUrl: string }) {
         </TransitionLink>
 
         <nav className="ty-nav__links ty-hide-mobile" aria-label="Seções">
-          {SECTIONS.map((s) => (
+          {sections.map((s) => (
             <button key={s.id} className="ty-link" onClick={() => go(s.id)}>
               {s.label}
             </button>
@@ -116,7 +118,7 @@ export function PublicNav({ scheduleUrl }: { scheduleUrl: string }) {
           >
             <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 6 }}>
               {[
-                ...SECTIONS.map((s) => ({ label: s.label, onClick: () => go(s.id) })),
+                ...sections.map((s) => ({ label: s.label, onClick: () => go(s.id) })),
                 { label: "Indicar", href: ROUTES.refer },
                 { label: "Pedir acesso", href: ROUTES.signup },
                 { label: "Entrar no VIP", href: ROUTES.login },
