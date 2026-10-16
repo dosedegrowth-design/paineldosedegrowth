@@ -31,8 +31,8 @@ export function ProgressRing({
       <svg viewBox={`0 0 ${size} ${size}`} className="tyv-ring__svg" aria-hidden>
         <defs>
           <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#e8cfa0" />
-            <stop offset="1" stopColor="#a5647a" />
+            <stop offset="0" stopColor="#f1c4d2" />
+            <stop offset="1" stopColor="#b8578a" />
           </linearGradient>
         </defs>
         <circle className="tyv-ring__track" cx={c} cy={c} r={r} strokeWidth={stroke} />

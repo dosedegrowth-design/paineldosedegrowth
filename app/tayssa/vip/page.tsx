@@ -15,6 +15,7 @@ import { toCardStamps } from "@/lib/tayssa/queries/vip";
 import { getPhotoLibrary } from "@/lib/tayssa/queries/photos";
 import { getPhotoAvailability } from "@/lib/tayssa/photos-server";
 import { assignPhotos } from "@/lib/tayssa/photos";
+import { Bloom } from "@/components/tayssa/flora/bloom";
 
 /**
  * A casa da cliente. Uma tela, de cima para baixo, na ordem do que ela
@@ -61,10 +62,16 @@ export default async function VipHome() {
 
   return (
     <>
-      <h1 className="tyv-hello">
-        Olá, <em>{user.displayName}</em>.
-      </h1>
-      <p className="tyv-sub">{status}</p>
+      <div className="tyv-hello-wrap">
+        {/* a flor da parede do estúdio, abrindo no canto: o app é da mesma casa do site */}
+        <span className="tyv-flor" aria-hidden>
+          <Bloom kind="flor" seed={5} tom="magenta" />
+        </span>
+        <h1 className="tyv-hello">
+          Olá, <em>{user.displayName}</em>.
+        </h1>
+        <p className="tyv-sub">{status}</p>
+      </div>
 
       {moment ? <MilestoneMoment moment={moment} /> : null}
 

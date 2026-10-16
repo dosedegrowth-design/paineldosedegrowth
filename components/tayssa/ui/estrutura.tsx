@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 
 const KEY = "ty_estrutura";
 const Ctx = createContext(false);
@@ -17,6 +18,9 @@ const Ctx = createContext(false);
  */
 export function EstruturaProvider({ children }: { children: ReactNode }) {
   const [on, setOn] = useState(false);
+  const pathname = usePathname() ?? "";
+  // o aviso só faz sentido onde há conteúdo pendente: a home do site
+  const naHome = /^\/(tayssa)?\/?$/.test(pathname);
   useEffect(() => {
     let ligado = process.env.NODE_ENV !== "production" || process.env.NEXT_PUBLIC_TAYSSA_ESTRUTURA === "1";
     try {
@@ -33,7 +37,7 @@ export function EstruturaProvider({ children }: { children: ReactNode }) {
   return (
     <Ctx.Provider value={on}>
       {children}
-      {on ? (
+      {on && naHome ? (
         <p className="ty-estrutura-aviso" role="note">
           Modo estrutura · os blocos tracejados são conteúdo pendente ·{" "}
           <a href="?estrutura=0">sair</a>

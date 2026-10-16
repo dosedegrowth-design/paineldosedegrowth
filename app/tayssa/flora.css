@@ -297,3 +297,10 @@
   width: clamp(150px, 22vw, 260px);
   margin-bottom: -8px;
 }
+
+/* o app e o painel cobrem a tela inteira: em página curta, o chão claro
+   do escopo público não pode aparecer embaixo da noite */
+.ty-scope[data-theme="night"] {
+  min-height: 100vh;
+  min-height: 100dvh;
+}

@@ -11,6 +11,7 @@ import { TyBrand } from "@/components/tayssa/ui/brand";
 import { usePhotoAvailable } from "@/components/tayssa/ui/photo-availability";
 import { TyInput } from "@/components/tayssa/ui/field";
 import { TransitionLink, useTransitionNav } from "@/components/tayssa/ui/transition";
+import { EntryFlowers } from "@/components/tayssa/auth/entry-flowers";
 
 type LoginResult = ActionResult<{ redirectTo: string; name: string }>;
 
@@ -62,6 +63,7 @@ export function LoginExperience({ vipInfoUrl, next }: { vipInfoUrl: string; next
         ) : null}
       </div>
 
+      <EntryFlowers />
       <div className="tyl__top">
         <TransitionLink href={ROUTES.home} className="tyl__brand">
           <TyBrand />

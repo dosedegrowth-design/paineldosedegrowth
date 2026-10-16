@@ -12,13 +12,14 @@
   --tyv-radius-sm: 12px;
   --tyv-surface: color-mix(in srgb, var(--t-fg) 6%, transparent);
   --tyv-surface-2: color-mix(in srgb, var(--t-fg) 10%, transparent);
-  --tyv-cream: #f1e6d6;
-  --tyv-cream-2: #e6d7c2;
-  --tyv-cream-ink: #3b2c24;
-  --tyv-cream-muted: rgba(59, 44, 36, 0.62);
-  --tyv-cream-line: rgba(59, 44, 36, 0.16);
-  --tyv-plum: #6e2f45;
-  --tyv-gold: #b58a5c;
+  /* o verso do cartão é papel rosado, não creme; o dourado fica no detalhe */
+  --tyv-cream: #f8ecf0;
+  --tyv-cream-2: #edd6de;
+  --tyv-cream-ink: #3a0f20;
+  --tyv-cream-muted: rgba(58, 15, 32, 0.62);
+  --tyv-cream-line: rgba(58, 15, 32, 0.16);
+  --tyv-plum: #6d1530;
+  --tyv-gold: #c79a6c;
   min-height: 100svh;
   padding-bottom: calc(var(--tyv-nav-h) + env(safe-area-inset-bottom, 0px) + 24px);
   -webkit-tap-highlight-color: transparent;
@@ -197,7 +198,7 @@
   top: 0;
   bottom: 0;
   width: 3px;
-  background: linear-gradient(180deg, #e8cfa0, #a5647a);
+  background: linear-gradient(180deg, #d797a8, #933b6c);
 }
 .tyv-moment::after {
   content: "";
@@ -544,10 +545,12 @@
   opacity: 0.35;
 }
 .tyv-choice__t {
+  display: block;
   font-size: 16px;
   font-weight: 500;
 }
 .tyv-choice__s {
+  display: block;
   font-size: 12.5px;
   color: var(--t-fg-2);
   margin-top: 2px;
@@ -765,7 +768,7 @@
   position: fixed;
   inset: 0;
   z-index: 90;
-  background: rgba(16, 13, 11, 0.7);
+  background: rgba(26, 8, 16, 0.7);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
 }
@@ -887,7 +890,7 @@
 .tyc3__face--front {
   transform: translateZ(1px);
   color: var(--tyc3-ivory);
-  background: radial-gradient(120% 90% at 20% 0%, #4a2233 0%, #1c1114 55%, #100d0b 100%);
+  background: radial-gradient(120% 90% at 20% 0%, #5a1d36 0%, #240b16 55%, #1a0810 100%);
 }
 .tyc3__face--back {
   transform: rotateY(180deg) translateZ(1px);
@@ -907,7 +910,7 @@
   inset: 0;
   z-index: -1;
   opacity: 0.5;
-  background-image: radial-gradient(rgba(59, 44, 36, 0.16) 0.5px, transparent 0.6px);
+  background-image: radial-gradient(rgba(58, 15, 32, 0.16) 0.5px, transparent 0.6px);
   background-size: 4px 4px;
 }
 .tyc3__shade {
@@ -915,7 +918,7 @@
   inset: 0;
   z-index: 9;
   pointer-events: none;
-  background: #100d0b;
+  background: #1a0810;
   opacity: 0;
 }
 
@@ -977,7 +980,7 @@
   background:
     radial-gradient(70% 60% at 30% 20%, rgba(165, 100, 122, 0.35), transparent 60%),
     radial-gradient(60% 50% at 80% 90%, rgba(201, 163, 108, 0.18), transparent 60%),
-    linear-gradient(160deg, #2a171f 0%, #100d0b 100%);
+    linear-gradient(160deg, #36101f 0%, #1a0810 100%);
 }
 .tyc3__tonal svg {
   width: 38%;
@@ -994,10 +997,10 @@
   z-index: 1;
   background: linear-gradient(
     180deg,
-    rgba(16, 13, 11, 0.58) 0%,
-    rgba(16, 13, 11, 0.08) 36%,
-    rgba(16, 13, 11, 0.1) 56%,
-    rgba(16, 13, 11, 0.8) 100%
+    rgba(26, 8, 16, 0.58) 0%,
+    rgba(26, 8, 16, 0.08) 36%,
+    rgba(26, 8, 16, 0.1) 56%,
+    rgba(26, 8, 16, 0.8) 100%
   );
 }
 .tyc3__grain {
@@ -1171,7 +1174,7 @@
   gap: 6px;
   border-radius: 999px;
   border: 1px solid rgba(241, 234, 225, 0.35);
-  background: rgba(16, 13, 11, 0.28);
+  background: rgba(26, 8, 16, 0.28);
   color: inherit;
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
@@ -1437,4 +1440,28 @@
 .tyv .ty-form-error,
 .tyv .ty-form-ok {
   font-size: 13.5px;
+}
+
+/* ---------- a flor da casa no topo do início ---------- */
+.tyv-hello-wrap {
+  position: relative;
+}
+.tyv-hello-wrap > :not(.tyv-flor) {
+  position: relative;
+  z-index: 1;
+}
+.tyv-flor {
+  position: absolute;
+  right: -38px;
+  top: -30px;
+  width: 168px;
+  z-index: 0;
+  opacity: 0.92;
+  pointer-events: none;
+}
+@media (min-width: 640px) {
+  .tyv-flor {
+    right: -10px;
+    width: 200px;
+  }
 }

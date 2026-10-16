@@ -278,3 +278,8 @@
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+
+/* flores atrás do formulário — nunca por cima dos campos */
+.tyl__flores {
+  z-index: 0;
+}

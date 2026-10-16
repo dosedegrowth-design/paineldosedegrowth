@@ -8,6 +8,7 @@ import type { ActionResult } from "@/lib/tayssa/types";
 import { TyBrand } from "@/components/tayssa/ui/brand";
 import { TyInput, TyTextarea } from "@/components/tayssa/ui/field";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
+import { EntryFlowers } from "@/components/tayssa/auth/entry-flowers";
 
 type Result = ActionResult<SignupResult>;
 type Errors = Partial<Record<"name" | "phone" | "birthday" | "email" | "password" | "confirm" | "message", string>>;
@@ -82,6 +83,7 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
   const shell = (children: React.ReactNode) => (
     <div className="tyl ty-scope" data-theme="night" data-photo="off">
       <div className="tyl__photo" aria-hidden />
+      <EntryFlowers />
       <div className="tyl__top">
         <TransitionLink href={ROUTES.home} className="tyl__brand">
           <TyBrand />
