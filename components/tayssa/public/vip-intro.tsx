@@ -7,6 +7,8 @@ import type { BenefitRow, BenefitType } from "@/lib/tayssa/types";
 import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { Magnetic } from "@/components/tayssa/ui/magnetic";
+import { Icone, type IconeNome } from "@/components/tayssa/ui/icones";
+import { Jornada } from "@/components/tayssa/ui/jornada";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -66,6 +68,7 @@ function mix(a: number[], b: number[], t: number) {
  */
 const PRIVILEGIOS: {
   n: string;
+  icone: IconeNome;
   tipo: BenefitType;
   nome: string;
   texto: string;
@@ -73,6 +76,7 @@ const PRIVILEGIOS: {
 }[] = [
   {
     n: "01",
+    icone: "coracao",
     tipo: "referral",
     nome: "Indicação",
     texto:
@@ -81,6 +85,7 @@ const PRIVILEGIOS: {
   },
   {
     n: "02",
+    icone: "cartao",
     tipo: "loyalty",
     nome: "Fidelidade",
     texto:
@@ -89,6 +94,7 @@ const PRIVILEGIOS: {
   },
   {
     n: "03",
+    icone: "presente",
     tipo: "birthday",
     nome: "Aniversário",
     texto:
@@ -204,7 +210,10 @@ export function VipIntro({ benefits }: { benefits: BenefitRow[] }) {
         <ul className="tyvi__lista">
           {PRIVILEGIOS.map((p, i) => (
             <Reveal key={p.n} as="li" delay={i * 0.07} amount={0.3}>
-              <div className="tyvi__linha">
+              <div className="tyvi__linha ty-ico-gatilho">
+                <span className="tyvi__icone">
+                  <Icone nome={p.icone} />
+                </span>
                 <span className="ty-num tyvi__n">{p.n}</span>
                 <h3 className="tyvi__nome">{p.nome}</h3>
                 <p className="tyvi__texto">{p.texto}</p>
@@ -214,16 +223,15 @@ export function VipIntro({ benefits }: { benefits: BenefitRow[] }) {
           ))}
         </ul>
 
-        {/* o trilho diz a regra em quatro tempos: pedido, conferência, liberação */}
-        <Reveal className="tyvi__trilho ty-rail" y={14}>
-          <span>Você pede</span>
-          <i aria-hidden>+</i>
-          <span>Ela confere</span>
-          <i aria-hidden>+</i>
-          <span>Ela libera</span>
-          <i aria-hidden>=</i>
-          <span className="ty-mono--accent">seu acesso</span>
-        </Reveal>
+        {/* a regra em três paradas, ligadas pela linha que se desenha */}
+        <Jornada
+          className="tyvi__jornada"
+          paradas={[
+            { n: "01", nome: "Você pede", texto: "Você preenche o cadastro. É um pedido de acesso, não uma porta aberta.", icone: "mensagem" },
+            { n: "02", nome: "Ela confere", texto: "A Tayssa lê e confere cada pedido, um por um.", icone: "olho" },
+            { n: "03", nome: "Ela libera", texto: "Com o sim dela, o seu acesso abre. E cada benefício também passa por ela.", icone: "check" },
+          ]}
+        />
 
         {/* o caminho real: cadastro de um lado, entrada de quem já é de casa do outro */}
         <div className="ty-split ty-split--wide-right tyvi__porta">

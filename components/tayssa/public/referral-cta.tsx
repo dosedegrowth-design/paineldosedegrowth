@@ -4,6 +4,7 @@ import { ROUTES } from "@/lib/tayssa/config";
 import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
 import { Magnetic } from "@/components/tayssa/ui/magnetic";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
+import { Jornada, type Parada } from "@/components/tayssa/ui/jornada";
 
 /** A declaração, quebrada como o olho lê: três tempos, o último em itálico. */
 const DECLARACAO = ["Indicar alguém", "é emprestar", <em key="confianca">a sua confiança.</em>];
@@ -12,25 +13,25 @@ const DECLARACAO = ["Indicar alguém", "é emprestar", <em key="confianca">a sua
  * Os três tempos do gesto. Cada texto diz, por si, quem confirma: a
  * indicação não vale na promessa, vale na confirmação dela.
  */
-const TEMPOS = [
+const TEMPOS: Parada[] = [
   {
     n: "01",
     nome: "Você passa o nome",
     texto: "Nome e WhatsApp de quem ainda não conhece o trabalho da Tayssa. Nada além disso.",
-    ficha: "nome e whatsapp",
+    icone: "mensagem",
   },
   {
     n: "02",
     nome: "Ela atende",
     texto: "A Tayssa combina o horário com essa pessoa e faz o primeiro atendimento dela.",
-    ficha: "primeiro atendimento",
+    icone: "olho",
   },
   {
     n: "03",
     nome: "Ela confirma",
     texto:
       "Com o atendimento feito, a Tayssa confirma — e é aí que a indicação passa a contar como sua.",
-    ficha: "aí a indicação é sua",
+    icone: "check",
   },
 ];
 
@@ -82,18 +83,7 @@ export function ReferralCta() {
             <b>03</b> tempos
           </span>
         </Reveal>
-        <ol className="tyr__tempos">
-          {TEMPOS.map((t, i) => (
-            <Reveal key={t.n} as="li" delay={i * 0.08} amount={0.25}>
-              <div className="tyr__tempo">
-                <span className="ty-mono ty-num tyr__n">{t.n}</span>
-                <h3 className="tyr__nome">{t.nome}</h3>
-                <p className="tyr__texto">{t.texto}</p>
-                <span className="tyr__ficha">{t.ficha}</span>
-              </div>
-            </Reveal>
-          ))}
-        </ol>
+        <Jornada paradas={TEMPOS} className="tyr__jornada" />
 
         {/* a regra da casa, sem rodeio — e o caminho de indicar */}
         <div className="tyr__regra">
