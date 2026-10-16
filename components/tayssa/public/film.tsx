@@ -3,7 +3,6 @@
 import { useRef } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { VIDEOS, temVideo, type VideoPresence } from "@/lib/tayssa/media";
-import type { PhotoSlot } from "@/lib/tayssa/photos";
 import { MotionMedia } from "@/components/tayssa/ui/motion-media";
 import { useEstrutura } from "@/components/tayssa/ui/estrutura";
 import { Bloom } from "@/components/tayssa/flora/bloom";
@@ -19,11 +18,20 @@ import { useIsMobile } from "@/components/tayssa/ui/use-media";
  * `clip-path`, `transform` e `opacity` se mexem.
  *
  * Sem vídeo real a seção não existe no site publicado (no modo estrutura
- * aparece com o espaço reservado). Com movimento reduzido, a janela já
+ * aparece com o espaço reservado). Foto não substitui o filme: ampliada
+ * à tela cheia, a foto de hoje (recorte de 720px) desmancha. Com movimento reduzido, a janela já
  * nasce aberta e nada fica grudado.
  */
-export function Film({ video, photo }: { video?: VideoPresence; photo?: PhotoSlot }) {
+export function Film({ video }: { video?: VideoPresence }) {
   const estrutura = useEstrutura();
+  // a seção só existe com vídeo (ou na revisão). O palco vive num
+  // componente à parte para o `useScroll` nascer já com a seção montada —
+  // com a referência vazia ele mediria a página inteira.
+  if (!temVideo(video) && !estrutura) return null;
+  return <Palco video={video} />;
+}
+
+function Palco({ video }: { video?: VideoPresence }) {
   const reduced = useReducedMotion();
   const mobile = useIsMobile();
   const ref = useRef<HTMLElement>(null);
@@ -45,8 +53,6 @@ export function Film({ video, photo }: { video?: VideoPresence; photo?: PhotoSlo
   const tituloO = useTransform(scrollYProgress, [0, 0.12, 0.3], reduced ? [1, 1, 1] : [1, 1, 0]);
   const legendaO = useTransform(scrollYProgress, [0.55, 0.7], reduced ? [1, 1] : [0, 1]);
 
-  if (!temVideo(video) && !estrutura) return null;
-
   return (
     <section ref={ref} id="filme" className="tyfm" aria-label="O processo, de perto">
       <div className="tyfm__palco">
@@ -59,7 +65,6 @@ export function Film({ video, photo }: { video?: VideoPresence; photo?: PhotoSlo
             <MotionMedia
               video={VIDEOS.processo}
               presence={video}
-              photo={temVideo(video) ? undefined : photo}
               className="tyfm__midia"
               sizes="100vw"
               pendente={{
@@ -75,10 +80,10 @@ export function Film({ video, photo }: { video?: VideoPresence; photo?: PhotoSlo
         </motion.div>
 
         <motion.div className="tyfm__flor tyfm__flor--e" style={{ x: florE, scale: flor }} aria-hidden>
-          <Bloom kind="peonia" seed={41} tom="vinho" />
+          <Bloom kind="flor" seed={41} tom="magenta" />
         </motion.div>
         <motion.div className="tyfm__flor tyfm__flor--d" style={{ x: florD, scale: flor }} aria-hidden>
-          <Bloom kind="rosa" seed={17} tom="rosa" />
+          <Bloom kind="flor" seed={17} tom="vinho" />
         </motion.div>
       </div>
     </section>

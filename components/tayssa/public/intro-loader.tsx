@@ -2,14 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { Bloom } from "@/components/tayssa/flora/bloom";
 
 const KEY = "ty_intro_seen";
 const LETTERS = ["T", "A", "Y", "S", "S", "A"];
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 /**
- * Abertura: uma vez por sessão. "TAYSSA" sobe por máscara letra a letra,
- * uma linha fina cresce, a cortina levanta revelando o hero. ~1.9s.
+ * Abertura: uma vez por sessão. Sobre o vinho do teto do estúdio, a flor
+ * da parede abre de trás para a frente; "TAYSSA" sobe por máscara letra a
+ * letra, uma linha fina cresce, e a cortina levanta revelando o herói.
+ * ~2.3s no total.
  */
 export function IntroLoader({ onDone }: { onDone: () => void }) {
   const reduced = useReducedMotion();
@@ -34,9 +37,9 @@ export function IntroLoader({ onDone }: { onDone: () => void }) {
         sessionStorage.setItem(KEY, "1");
       } catch {}
       timers.push(setTimeout(() => setPhase("show"), 0));
-      timers.push(setTimeout(() => setPhase("lift"), 1350));
-      timers.push(setTimeout(() => onDone(), 1650));
-      timers.push(setTimeout(() => setPhase("gone"), 2300));
+      timers.push(setTimeout(() => setPhase("lift"), 1700));
+      timers.push(setTimeout(() => onDone(), 2000));
+      timers.push(setTimeout(() => setPhase("gone"), 2650));
     }
     return () => timers.forEach(clearTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -54,6 +57,7 @@ export function IntroLoader({ onDone }: { onDone: () => void }) {
           style={{ willChange: "clip-path" }}
         >
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 28 }}>
+            <Bloom kind="flor" seed={5} tom="magenta" open={phase !== "boot"} className="ty-loader__flor" />
             <div
               className="ty-display"
               style={{

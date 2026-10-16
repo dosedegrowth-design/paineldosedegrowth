@@ -75,6 +75,16 @@
     display: none;
   }
 }
+@media (min-width: 768px) {
+  .tyf-peca[data-show-below="768"] {
+    display: none;
+  }
+}
+@media (min-width: 900px) {
+  .tyf-peca[data-show-below="900"] {
+    display: none;
+  }
+}
 
 /* ---------- movimento reduzido: tudo aberto e parado ---------- */
 @media (prefers-reduced-motion: reduce) {
@@ -277,4 +287,13 @@
    `clip` (e não `hidden`) não cria contêiner de rolagem: o sticky segue. */
 .ty-scope {
   overflow-x: clip;
+}
+
+/* a flor da abertura: abre antes do nome subir */
+.ty-loader {
+  background: var(--t-noir);
+}
+.ty-loader__flor {
+  width: clamp(150px, 22vw, 260px);
+  margin-bottom: -8px;
 }

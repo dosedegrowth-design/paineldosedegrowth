@@ -33,10 +33,10 @@
 }
 .tyfm__titulo {
   position: absolute;
-  top: calc(var(--t-nav-h) + 2vh);
+  top: calc(var(--t-nav-h) - 8px);
   left: 0;
   right: 0;
-  z-index: 1;
+  z-index: 4;
   text-align: center;
   font-family: var(--t-font-display);
   font-weight: 300;
@@ -76,31 +76,33 @@
 .tyfm__flor {
   position: absolute;
   z-index: 3;
-  width: clamp(130px, 19vw, 300px);
   pointer-events: none;
 }
+/* as duas flores guardam o arco: uma no ombro esquerdo, outra no pé direito */
 .tyfm__flor--e {
-  left: calc(33% - clamp(70px, 8vw, 140px));
-  bottom: 9%;
+  width: clamp(170px, 21vw, 340px);
+  left: calc(33% - clamp(110px, 12vw, 200px));
+  top: 16%;
+  transform-origin: 60% 80%;
 }
 .tyfm__flor--d {
-  right: calc(33% - clamp(50px, 6vw, 110px));
-  top: 18%;
-  width: clamp(90px, 12vw, 190px);
+  width: clamp(120px, 14vw, 230px);
+  right: calc(33% - clamp(70px, 8vw, 130px));
+  bottom: 10%;
 }
 @media (max-width: 767px) {
   .tyfm {
     height: 190svh;
   }
   .tyfm__flor--e {
-    left: 2%;
-    bottom: 12%;
-    width: 120px;
+    left: -6%;
+    top: 14%;
+    width: 52vw;
   }
   .tyfm__flor--d {
-    right: 2%;
-    top: 14%;
-    width: 84px;
+    right: -4%;
+    bottom: 14%;
+    width: 36vw;
   }
 }
 @media (prefers-reduced-motion: reduce) {

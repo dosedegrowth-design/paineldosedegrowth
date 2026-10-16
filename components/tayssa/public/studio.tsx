@@ -10,9 +10,9 @@ import { Pendente, useEstrutura } from "@/components/tayssa/ui/estrutura";
 import { Arranjo, type Peca } from "@/components/tayssa/flora/arranjo";
 
 const FLORES: Peca[] = [
-  { kind: "rosa", seed: 53, tom: "vinho", x: 97, y: 4, size: "clamp(90px, 11vw, 170px)", rotate: 12, depth: 0.6 },
+  { kind: "flor", seed: 53, tom: "vinho", x: 97, y: 4, size: "clamp(90px, 11vw, 170px)", rotate: 12, depth: 0.6 },
   { kind: "folha", x: 90, y: -2, size: "clamp(24px, 2.6vw, 40px)", rotate: 40, depth: 0.5 },
-  { kind: "peonia", seed: 59, tom: "pétala", x: 2, y: 100, size: "clamp(140px, 18vw, 280px)", rotate: -20, depth: -0.3 },
+  { kind: "flor", seed: 59, tom: "pétala", x: 2, y: 100, size: "clamp(140px, 18vw, 280px)", rotate: -20, depth: -0.3 },
 ];
 
 /**

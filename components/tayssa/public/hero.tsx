@@ -26,51 +26,19 @@ const LINHAS = [
    frente: um botão bordô e uma rosa pequena que cruzam a ponta do "Lash"
    e correm mais rápido no scroll — é isso que dá profundidade. */
 const FLORES_FUNDO: Peca[] = [
-  { kind: "peonia", seed: 7, tom: "pétala", x: 84, y: 30, size: "clamp(260px, 40vw, 640px)", rotate: -12, depth: -0.4 },
-  {
-    kind: "rosa",
-    seed: 3,
-    tom: "rosa",
-    x: 101,
-    y: 58,
-    size: "clamp(120px, 15vw, 250px)",
-    rotate: 20,
-    depth: -0.2,
-    delay: 260,
-    hideBelow: 768,
-  },
-  { kind: "folha", x: 71, y: 52, size: "clamp(34px, 3.4vw, 54px)", rotate: -58, depth: -0.3, hideBelow: 768 },
+  { kind: "flor", seed: 7, tom: "pétala", x: 88, y: 24, size: "clamp(300px, 46vw, 760px)", rotate: -8, depth: -0.4, hideBelow: 768 },
+  // celular: a flor clara mora atrás da marca, longe do botão
+  { kind: "flor", seed: 7, tom: "pétala", x: 82, y: 13, size: "78vw", rotate: -12, depth: -0.3, showBelow: 768 },
+  { kind: "flor", seed: 3, tom: "rosa", x: 104, y: 70, size: "clamp(140px, 17vw, 280px)", rotate: -32, depth: -0.2, delay: 260, hideBelow: 768 },
 ];
 const FLORES_FRENTE: Peca[] = [
-  {
-    kind: "botao",
-    seed: 11,
-    tom: "bordo",
-    x: 94,
-    y: 16,
-    size: "clamp(70px, 7.5vw, 120px)",
-    rotate: 28,
-    depth: 1,
-    delay: 500,
-  },
-  {
-    kind: "rosa",
-    seed: 21,
-    tom: "vinho",
-    x: 62,
-    y: 39,
-    size: "clamp(64px, 6vw, 104px)",
-    rotate: -8,
-    depth: 0.7,
-    delay: 380,
-    hideBelow: 768,
-  },
+  { kind: "botao", seed: 11, tom: "magenta", x: 95, y: 15, size: "clamp(46px, 4.6vw, 74px)", rotate: 24, depth: 1, delay: 500 },
+  { kind: "folha", x: 91, y: 22, size: "clamp(18px, 1.8vw, 28px)", rotate: -50, depth: 0.9, hideBelow: 768 },
 ];
-/* na janela da mídia: a peônia vinho morde o canto do arco */
+/* na janela da mídia: a flor da parede do estúdio morde o canto do arco */
 const FLORES_JANELA: Peca[] = [
-  { kind: "peonia", seed: 5, tom: "vinho", x: 4, y: 10, size: "46%", rotate: -16, depth: 0.6, delay: 640 },
-  { kind: "folha", x: 22, y: 2, size: "11%", rotate: 34, depth: 0.5 },
-  { kind: "botao", seed: 2, tom: "rosa", x: 98, y: 88, size: "20%", rotate: 150, depth: 0.4, delay: 820 },
+  { kind: "flor", seed: 5, tom: "magenta", x: 6, y: 9, size: "70%", rotate: -24, depth: 0.6, delay: 640 },
+  { kind: "botao", seed: 2, tom: "vinho", x: 99, y: 90, size: "14%", rotate: 160, depth: 0.4, delay: 820 },
 ];
 
 /**

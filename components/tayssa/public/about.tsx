@@ -12,7 +12,7 @@ import { Arranjo, type Peca } from "@/components/tayssa/flora/arranjo";
 /* o retrato fica entre flores: uma peônia atrás do ombro do quadro, um
    botão que cruza a borda da frente */
 const FLORES: Peca[] = [
-  { kind: "peonia", seed: 29, tom: "rosa", x: 92, y: 12, size: "48%", rotate: 18, depth: -0.4 },
+  { kind: "flor", seed: 29, tom: "rosa", x: 92, y: 12, size: "48%", rotate: 18, depth: -0.4 },
   { kind: "folha", x: 2, y: 72, size: "9%", rotate: -140, depth: 0.3 },
   { kind: "botao", seed: 31, tom: "bordo", x: 6, y: 86, size: "18%", rotate: -160, depth: 0.7, delay: 300 },
 ];

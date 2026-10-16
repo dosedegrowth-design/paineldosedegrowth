@@ -1,18 +1,19 @@
 "use client";
 
-import { useId, useMemo, type CSSProperties } from "react";
-import { FLORA_TONS, flor, folha, type FloraTom, type FlowerKind } from "@/lib/tayssa/flora";
+import { useMemo, type CSSProperties } from "react";
+import { flor, folha, type FloraTom, type FlowerKind } from "@/lib/tayssa/flora";
 
 /**
- * Uma flor vetorial. As pétalas abrem de fora para dentro quando `open`
- * vira true (o miolo por último, como abre de verdade). Sem movimento
- * (prefers-reduced-motion) ela já nasce aberta — a regra mora no CSS,
- * então não depende de JS para ficar visível.
+ * A flor da casa (desenho em lib/tayssa/flora.ts, a partir da flor
+ * pintada na parede do estúdio). As pétalas abrem de trás para a frente
+ * quando `open` vira true. Sem movimento (prefers-reduced-motion) ela já
+ * nasce aberta — a regra mora no CSS, então não depende de JS para ficar
+ * visível. O quadro tem a base da flor em (0,0): é dali que ela abre.
  */
 export function Bloom({
-  kind = "peonia",
+  kind = "flor",
   seed = 1,
-  tom = "vinho",
+  tom = "magenta",
   open = true,
   delay = 0,
   className,
@@ -27,41 +28,23 @@ export function Bloom({
   className?: string;
   style?: CSSProperties;
 }) {
-  const raw = useId();
-  const id = `tyf${raw.replace(/[^a-zA-Z0-9]/g, "")}`;
   const petals = useMemo(() => flor(kind, seed, tom), [kind, seed, tom]);
-  const t = FLORA_TONS[tom];
   const n = petals.length;
-  const sepala = kind === "botao" ? folha(52, 14) : null;
+  const caule = kind === "botao" ? folha(46, 11) : null;
 
   return (
     <svg
-      viewBox="-100 -100 200 200"
-      className={["tyf", className ?? ""].join(" ").trim()}
+      viewBox={kind === "botao" ? "-50 -95 100 125" : "-125 -125 250 170"}
+      className={["tyf", `tyf--${kind}`, className ?? ""].join(" ").trim()}
       style={style}
       data-open={open}
       aria-hidden
       focusable="false"
     >
-      <defs>
-        {/* sombra na base, luz na ponta: dá volume sem foto */}
-        <linearGradient id={`${id}s`} x1="0.5" y1="1" x2="0.5" y2="0">
-          <stop offset="0" stopColor={t.base} stopOpacity="0.62" />
-          <stop offset="0.45" stopColor={t.base} stopOpacity="0" />
-          <stop offset="0.82" stopColor={t.luz} stopOpacity="0" />
-          <stop offset="1" stopColor={t.luz} stopOpacity="0.42" />
-        </linearGradient>
-      </defs>
-
-      {sepala ? (
+      {caule ? (
         <g className="tyf-sepala">
-          {[-34, 34].map((a) => (
-            <path
-              key={a}
-              d={sepala.corpo}
-              transform={`translate(0 30) rotate(${a + 180})`}
-              fill="var(--t-folha, #55704f)"
-            />
+          {[-40, 40].map((a) => (
+            <path key={a} d={caule.corpo} transform={`translate(0 4) rotate(${a + 180})`} fill="var(--t-folha, #55704f)" />
           ))}
         </g>
       ) : null}
@@ -73,14 +56,15 @@ export function Bloom({
           style={
             {
               "--a": p.a,
-              // giro extra enquanto fechada: abre girando de leve
-              "--g": kind === "botao" ? 0 : 24 - p.k * 40,
-              "--d": delay + Math.round((i / n) * (kind === "botao" ? 380 : 900)),
+              // giro extra enquanto fechada: as pétalas abrem do centro para fora
+              "--g": -p.a * 0.85,
+              "--d": delay + Math.round((i / n) * (kind === "botao" ? 300 : 820)),
             } as CSSProperties
           }
         >
-          <path d={p.d} fill={p.cor} stroke={t.base} strokeOpacity="0.28" strokeWidth="0.6" />
-          <path d={p.d} fill={`url(#${id}s)`} />
+          {p.camadas.map((c, k) => (
+            <path key={k} d={c.d} fill={c.fill} fillOpacity={c.opacity} />
+          ))}
         </g>
       ))}
     </svg>

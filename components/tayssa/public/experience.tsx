@@ -21,7 +21,6 @@ import { Studio } from "@/components/tayssa/public/studio";
 import { Testimonials } from "@/components/tayssa/public/testimonials";
 import { VisitInfo } from "@/components/tayssa/public/visit-info";
 import { CONTEUDO, temAtendimento, temSobre } from "@/lib/tayssa/content";
-import { temVideo } from "@/lib/tayssa/media";
 import type { VideoAvailability } from "@/lib/tayssa/media-server";
 import { useEstrutura } from "@/components/tayssa/ui/estrutura";
 
@@ -80,7 +79,7 @@ export function PublicExperience({
       <main>
         <Hero business={settings.business} scheduleUrl={links.schedule} photo={photos?.hero} video={videos?.hero} />
         <WorkSequence photos={photos?.work} />
-        <Film video={videos?.processo} photo={temVideo(videos?.processo) ? undefined : photos?.work[0]} />
+        <Film video={videos?.processo} />
         <Services
           services={services}
           scheduleUrl={links.schedule}

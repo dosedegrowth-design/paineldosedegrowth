@@ -31,6 +31,8 @@ export type Peca = {
   delay?: number;
   /** some abaixo desta largura — o arranjo do celular é mais enxuto */
   hideBelow?: 768 | 900;
+  /** só existe abaixo desta largura — a versão de celular de uma peça */
+  showBelow?: 768 | 900;
 };
 
 /**
@@ -108,6 +110,7 @@ function PecaArranjo({
     <motion.div
       className="tyf-peca"
       data-hide-below={peca.hideBelow ?? undefined}
+      data-show-below={peca.showBelow ?? undefined}
       style={{ ...st, y, rotate: r }}
     >
       <div className="tyf-giro" style={{ transform: `translate(-50%, -50%) rotate(${peca.rotate ?? 0}deg)` }}>
