@@ -39,12 +39,13 @@
   --t-wait: #8a5a2e;
 
   /* tipografia */
-  --t-font-display: "Montserrat", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
-  --t-font-body: "Montserrat", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --t-font-display: "League Gothic", "Arial Narrow", Impact, sans-serif;
+  --t-font-body: "DM Sans Variable", "DM Sans", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   /* o acento: itálico serifado de alto contraste, só em palavra marcada */
-  --t-font-serif: "Bodoni Moda Variable", "Bodoni Moda", Didot, "Times New Roman", serif;
+  --t-font-serif: "Fraunces Variable", "Fraunces", Georgia, "Times New Roman", serif;
   /* a ficha: mono para rótulo, contador, hora, estado */
-  --t-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* rótulos: a mesma grotesca, em caixa-alta espaçada (nada de máquina de escrever) */
+  --t-font-mono: "DM Sans Variable", "DM Sans", system-ui, sans-serif;
 
   /* motion — uma física só */
   --t-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -168,7 +169,6 @@ body:has(.ty-scope[data-theme="night"]) {
   font-style: italic;
   font-weight: 400;
   letter-spacing: -0.01em;
-  /* a serifa tem olho menor que a Montserrat: compensa para a linha não quebrar */
   font-size: 1.06em;
 }
 .ty-h {

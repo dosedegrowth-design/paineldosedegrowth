@@ -26,7 +26,7 @@ const LINHAS = [
    frente: um botão bordô e uma rosa pequena que cruzam a ponta do "Lash"
    e correm mais rápido no scroll — é isso que dá profundidade. */
 const FLORES_FUNDO: Peca[] = [
-  { kind: "flor", seed: 7, tom: "pétala", x: 88, y: 24, size: "clamp(300px, 46vw, 760px)", rotate: -8, depth: -0.4, hideBelow: 768 },
+  { kind: "flor", seed: 7, tom: "pétala", x: 56, y: 30, size: "clamp(280px, 30vw, 560px)", rotate: -8, depth: -0.4, hideBelow: 768 },
   // celular: a flor clara mora atrás da marca, longe do botão
   { kind: "flor", seed: 7, tom: "pétala", x: 82, y: 13, size: "78vw", rotate: -12, depth: -0.3, showBelow: 768 },
   { kind: "flor", seed: 3, tom: "rosa", x: 104, y: 70, size: "clamp(140px, 17vw, 280px)", rotate: -32, depth: -0.2, delay: 260, hideBelow: 768 },
@@ -164,7 +164,8 @@ export function Hero({
             transition={{ duration: 0.8, delay: 0.72, ease: EASE }}
           >
             <a href={scheduleUrl} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--solid">
-              Agendar no WhatsApp
+              <span>Agendar no WhatsApp</span>
+              <span className="ty-btn__arrow" aria-hidden />
             </a>
             <TransitionLink href={ROUTES.signup} className="ty-hero__secundario">
               Pedir acesso ao clube

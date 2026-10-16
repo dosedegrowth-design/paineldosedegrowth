@@ -1,0 +1,358 @@
+/* ============================================================
+   TAYSSA — a linguagem (out/2026)
+   Cartaz em caixa-alta condensada (League Gothic) com a palavra
+   pequena em itálico macio (Fraunces) ligando a frase; corpo em
+   DM Sans. Nada quadrado: pílulas, arcos, cantos redondos.
+   Movimento de referência: deltacafes.com (estudado em 16/out).
+   ============================================================ */
+
+.ty-scope {
+  /* a condensada só tem um peso: nunca negrito falso */
+  font-synthesis-weight: none;
+}
+
+/* o app da cliente e o painel são ferramenta: o cartaz fica no site */
+.tyv,
+.tya {
+  --t-font-display: var(--t-font-body);
+}
+
+/* ---------- o cartaz ---------- */
+.ty-display,
+.ty-h,
+.ty-hero__linha,
+.tyw__titulo,
+.tyw__nome,
+.tyw__marca-nome,
+.tysv__titulo,
+.tysv__nome,
+.tyvi__declaracao,
+.tyvi__nome,
+.tyr__declaracao,
+.tyr__nome,
+.tycl__declaracao,
+.tycl__nome,
+.tyfm__titulo,
+.tyab__titulo,
+.tyst__titulo,
+.ty-ig__chamada,
+.tyl__title {
+  font-family: var(--t-font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.004em;
+  line-height: 0.9;
+}
+
+/* a palavra que liga: minúscula, itálico macio, cor da casa */
+.ty-display em,
+.ty-h em,
+.ty-hero__linha em,
+.tyw__titulo em,
+.tyw__dizer em,
+.tysv__titulo em,
+.tysv__nome em,
+.tyvi__declaracao em,
+.tyr__declaracao em,
+.tycl__declaracao em,
+.tyfm__titulo em,
+.tyab__titulo em,
+.tyst__titulo em,
+.ty-ig__chamada em,
+.tyl__title em {
+  font-family: var(--t-font-serif);
+  font-style: italic;
+  font-weight: 300;
+  font-variation-settings: "SOFT" 100;
+  text-transform: none;
+  letter-spacing: -0.01em;
+  font-size: 0.72em;
+  line-height: 1;
+  color: var(--t-accent);
+}
+
+/* a marca gigante: TAYSSA em cartaz, "lash" pequeno e suspenso */
+.ty-wordmark {
+  font-family: var(--t-font-display);
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 0.8;
+  /* TAYSSA (6 letras ~0.42em) + "lash" em itálico a 0.42em */
+  font-size: min(calc((100vw - var(--t-gutter) * 2) / 3.3), 40vw, 17vw + 10svh);
+  margin-left: -0.02em;
+}
+.ty-wordmark em {
+  font-family: var(--t-font-serif);
+  font-weight: 300;
+  font-variation-settings: "SOFT" 100;
+  text-transform: none;
+  font-size: 0.42em;
+  letter-spacing: -0.02em;
+  vertical-align: 0.95em;
+  margin-left: 0.04em;
+}
+
+/* tamanhos: a condensada ocupa metade da largura — o cartaz cresce */
+.ty-hero__linha {
+  font-size: clamp(46px, 5vw, 84px);
+  line-height: 0.92;
+}
+.tyw__titulo,
+.tysv__titulo {
+  font-size: clamp(54px, 7.4vw, 128px);
+}
+.tysv__nome {
+  font-size: clamp(36px, 4.2vw, 68px);
+}
+.tyab__titulo,
+.tyst__titulo {
+  font-size: clamp(56px, 7.6vw, 132px);
+}
+.tyfm__titulo {
+  font-size: clamp(44px, 6.4vw, 110px);
+}
+
+/* ---------- rótulos: grotesca espaçada, não máquina de escrever ---------- */
+.ty-mono,
+.ty-eyebrow,
+.ty-index,
+.ty-rail {
+  font-family: var(--t-font-body);
+  font-weight: 500;
+}
+
+/* ---------- botão: pílula com a seta num círculo ---------- */
+.ty-btn {
+  border-radius: 999px;
+  height: 54px;
+  padding: 0 7px 0 26px;
+  font-family: var(--t-font-body);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  gap: 16px;
+}
+.ty-btn::before {
+  border-radius: inherit;
+}
+/* botão sem seta: a pílula fica simétrica */
+.ty-btn:not(:has(.ty-btn__arrow)) {
+  padding: 0 26px;
+}
+.ty-btn__arrow {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: color-mix(in srgb, currentColor 16%, transparent);
+  flex: none;
+}
+.ty-btn__arrow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2.5 8h10.4M9 3.8 13.2 8 9 12.2' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 16px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2.5 8h10.4M9 3.8 13.2 8 9 12.2' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 16px no-repeat;
+}
+.ty-btn__arrow::after {
+  display: none;
+}
+@media (hover: hover) {
+  .ty-btn:hover .ty-btn__arrow {
+    transform: rotate(-45deg);
+  }
+}
+.ty-btn--sm {
+  height: 46px;
+  padding-left: 20px;
+}
+.ty-btn--sm .ty-btn__arrow {
+  width: 34px;
+  height: 34px;
+}
+.ty-btn--xs {
+  height: 36px;
+  padding: 0 16px;
+  letter-spacing: 0.06em;
+}
+
+/* ---------- nada quadrado ---------- */
+.ty-block {
+  border-radius: clamp(22px, 2.4vw, 36px);
+}
+.ty-figure,
+.ty-photo {
+  border-radius: clamp(18px, 2vw, 28px);
+}
+.ty-oval {
+  border-radius: 999px;
+  font-family: var(--t-font-serif);
+  font-variation-settings: "SOFT" 100;
+}
+
+/* ---------- abertura: tudo na primeira tela ----------
+   Desktop: cartaz e frase à esquerda, a janela em arco em pé à direita,
+   da nav até o chão (como a mídia do Delta). A ficha fecha embaixo. */
+@media (min-width: 900px) {
+  .ty-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+    grid-template-rows: auto auto 1fr auto;
+    column-gap: clamp(32px, 4vw, 72px);
+    height: 100svh;
+    min-height: 620px;
+  }
+  .ty-hero__top {
+    grid-column: 1 / -1;
+  }
+  .ty-hero__marca {
+    grid-column: 1;
+    grid-row: 2;
+    margin: clamp(10px, 2vh, 28px) 0 0;
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+  .ty-hero__marca .ty-wordmark {
+    font-size: min(calc((100vw - var(--t-gutter) * 2) * 0.62 / 3.3), 30svh);
+  }
+  .ty-hero__corpo {
+    display: contents;
+  }
+  .ty-hero__dizer {
+    grid-column: 1;
+    grid-row: 3;
+    align-self: end;
+  }
+  .ty-hero__figura {
+    grid-column: 2;
+    grid-row: 2 / 5;
+    align-self: stretch;
+    max-width: none;
+    justify-self: stretch;
+    min-height: 0;
+    display: flex;
+  }
+  .ty-hero__janela-wrap {
+    flex: 1;
+    min-height: 0;
+  }
+  .ty-hero__janela {
+    aspect-ratio: auto;
+    height: 100%;
+  }
+  .ty-hero__ficha {
+    grid-column: 1;
+    grid-row: 4;
+  }
+  .ty-hero__linha {
+    font-size: clamp(40px, min(4.6vw, 7.4svh), 84px);
+  }
+}
+
+/* ---------- nav: marca · pílula flutuante · ações ---------- */
+.ty-nav {
+  gap: 16px;
+}
+.ty-nav[data-solid="true"] {
+  /* a pílula já é o vidro: o topo some atrás dela */
+  background: transparent;
+  border-bottom-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.ty-nav__pilula {
+  display: none;
+  align-items: center;
+  gap: 2px;
+  padding: 5px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--t-bg) 72%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+  border: 1px solid var(--t-line);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.ty-nav__item {
+  font-family: var(--t-font-body);
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  padding: 10px 16px;
+  border-radius: 999px;
+  color: var(--t-fg);
+  white-space: nowrap;
+  transition: background-color var(--t-micro) var(--t-ease-micro), color var(--t-micro);
+}
+@media (hover: hover) {
+  .ty-nav__item:hover {
+    background: var(--t-accent);
+    color: var(--t-accent-fg);
+  }
+}
+.ty-nav__acoes {
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+.ty-nav__acoes .ty-btn {
+  background-color: color-mix(in srgb, var(--t-bg) 70%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+.ty-nav__acoes .ty-btn--solid {
+  background-color: var(--btn-bg);
+}
+.ty-nav__menu {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--t-bg) 72%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--t-line);
+  flex: none;
+}
+.ty-nav__menu i {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform var(--t-ui) var(--t-ease-out), width var(--t-ui);
+}
+.ty-nav__menu i:first-child {
+  top: 19px;
+}
+.ty-nav__menu i:last-child {
+  top: 25px;
+  right: 19px;
+}
+.ty-nav__menu[data-open="true"] i:first-child {
+  transform: translateY(3px) rotate(45deg);
+}
+.ty-nav__menu[data-open="true"] i:last-child {
+  right: 14px;
+  transform: translateY(-3px) rotate(-45deg);
+}
+@media (min-width: 1100px) {
+  .ty-nav__pilula,
+  .ty-nav__acoes {
+    display: flex;
+  }
+  .ty-nav__menu {
+    display: none;
+  }
+}
+
+/* a máscara das linhas não pode comer o acento da caixa-alta (Í, Ã, Ç):
+   a linha do cartaz é apertada (0.9), então a janela da máscara ganha
+   folga em cima e devolve o espaço com margem negativa */
+.ty-hero__linha,
+.ty-mask {
+  padding-top: 0.16em;
+  margin-top: -0.16em;
+}

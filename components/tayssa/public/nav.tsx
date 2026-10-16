@@ -57,40 +57,37 @@ export function PublicNav({ scheduleUrl, sections = SECTIONS }: { scheduleUrl: s
           <TyBrand />
         </TransitionLink>
 
-        <nav className="ty-nav__links ty-hide-mobile" aria-label="Seções">
+        {/* a pílula flutuante: só as seções e o indicar */}
+        <nav className="ty-nav__pilula" aria-label="Seções">
           {sections.map((s) => (
-            <button key={s.id} className="ty-link" onClick={() => go(s.id)}>
+            <button key={s.id} className="ty-nav__item" onClick={() => go(s.id)}>
               {s.label}
             </button>
           ))}
-          <TransitionLink href={ROUTES.refer} className="ty-link">
+          <TransitionLink href={ROUTES.refer} className="ty-nav__item">
             Indicar
-          </TransitionLink>
-          <a href={scheduleUrl} target="_blank" rel="noopener noreferrer" className="ty-link">
-            Agendar
-          </a>
-          <TransitionLink href={ROUTES.signup} className="ty-link">
-            Pedir acesso
-          </TransitionLink>
-          <TransitionLink href={ROUTES.login} className="ty-btn ty-btn--xs">
-            <span>Entrar</span>
           </TransitionLink>
         </nav>
 
+        <div className="ty-nav__acoes">
+          <TransitionLink href={ROUTES.login} className="ty-btn ty-btn--xs">
+            Entrar
+          </TransitionLink>
+          <a href={scheduleUrl} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--xs ty-btn--solid">
+            Agendar
+          </a>
+        </div>
+
+        {/* menu: dois fios que viram um X */}
         <button
-          className="ty-hide-desktop"
+          className="ty-nav__menu"
+          data-open={open}
           aria-expanded={open}
           aria-label={open ? "Fechar menu" : "Abrir menu"}
           onClick={() => setOpen((v) => !v)}
-          style={{
-            fontSize: 10.5,
-            letterSpacing: "0.24em",
-            textTransform: "uppercase",
-            fontWeight: 600,
-            padding: "10px 0",
-          }}
         >
-          {open ? "Fechar" : "Menu"}
+          <i aria-hidden />
+          <i aria-hidden />
         </button>
       </header>
 
