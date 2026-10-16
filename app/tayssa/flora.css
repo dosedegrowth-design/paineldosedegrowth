@@ -289,14 +289,6 @@
   overflow-x: clip;
 }
 
-/* a flor da abertura: abre antes do nome subir */
-.ty-loader {
-  background: var(--t-noir);
-}
-.ty-loader__flor {
-  width: clamp(150px, 22vw, 260px);
-  margin-bottom: -8px;
-}
 
 /* o app e o painel cobrem a tela inteira: em página curta, o chão claro
    do escopo público não pode aparecer embaixo da noite */

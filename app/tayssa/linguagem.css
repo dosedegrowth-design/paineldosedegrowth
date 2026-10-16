@@ -356,3 +356,59 @@
   padding-top: 0.16em;
   margin-top: -0.16em;
 }
+
+/* ---------- abertura: a flor que vira janela ---------- */
+.ty-loader--flor {
+  background: transparent;
+  pointer-events: none;
+}
+.ty-loader__veu {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.ty-loader__palco {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(4px, 1vw, 14px);
+  will-change: transform, opacity;
+}
+.ty-loader__marca {
+  position: relative;
+  width: clamp(130px, 17vw, 220px);
+  aspect-ratio: 250 / 170;
+  z-index: 1;
+}
+.ty-loader__risco,
+.ty-loader__cor {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.ty-loader__lado {
+  display: block;
+  overflow: hidden;
+  font-family: var(--t-font-display);
+  text-transform: uppercase;
+  font-size: clamp(30px, 4.4vw, 60px);
+  line-height: 1;
+  color: #f8ecef;
+  padding: 0.1em 0.06em;
+  margin-top: 0.6em;
+}
+.ty-loader__lado > span {
+  display: block;
+}
+.ty-loader__lado em {
+  font-family: var(--t-font-serif);
+  font-style: italic;
+  font-weight: 300;
+  font-variation-settings: "SOFT" 100;
+  text-transform: none;
+  color: var(--t-rosa-soft);
+}

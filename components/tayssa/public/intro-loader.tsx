@@ -1,112 +1,152 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { flor } from "@/lib/tayssa/flora";
 import { Bloom } from "@/components/tayssa/flora/bloom";
 
 const KEY = "ty_intro_seen";
-const LETTERS = ["T", "A", "Y", "S", "S", "A"];
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+const INOUT: [number, number, number, number] = [0.65, 0, 0.35, 1];
+
+type Fase = "boot" | "risca" | "cor" | "abre" | "fim";
 
 /**
- * Abertura: uma vez por sessão. Sobre o vinho do teto do estúdio, a flor
- * da parede abre de trás para a frente; "TAYSSA" sobe por máscara letra a
- * letra, uma linha fina cresce, e a cortina levanta revelando o herói.
- * ~2.3s no total.
+ * Abertura — uma vez por sessão (~2,8 s), na linguagem do deltacafes.com:
+ *
+ * 1. risca  — sobre o vinho do teto do estúdio, a flor da parede se
+ *             desenha em contorno, pétala por pétala;
+ * 2. cor    — a flor ganha cor e abre; "Tayssa" e "Lash" deslizam para
+ *             fora de trás dela, um para cada lado;
+ * 3. abre   — as palavras somem e a flor cresce até virar a janela: o
+ *             véu tem um furo no formato dela, que se expande e revela o
+ *             site por dentro da flor.
+ *
+ * Com movimento reduzido (ou na segunda visita da sessão) não existe.
  */
 export function IntroLoader({ onDone }: { onDone: () => void }) {
   const reduced = useReducedMotion();
-  const [phase, setPhase] = useState<"boot" | "show" | "lift" | "gone">("boot");
+  const [fase, setFase] = useState<Fase>("boot");
+  const petalas = useMemo(() => flor("flor", 5, "magenta"), []);
 
   useEffect(() => {
     let seen = false;
     try {
       seen = sessionStorage.getItem(KEY) === "1";
     } catch {}
-    const timers: ReturnType<typeof setTimeout>[] = [];
+    const t: ReturnType<typeof setTimeout>[] = [];
     if (seen || reduced) {
-      // repetiu a visita nesta sessão: some no próximo frame, sem cerimônia
-      timers.push(
+      t.push(
         setTimeout(() => {
-          setPhase("gone");
+          setFase("fim");
           onDone();
-        }, 0)
+        }, 0),
       );
     } else {
       try {
         sessionStorage.setItem(KEY, "1");
       } catch {}
-      timers.push(setTimeout(() => setPhase("show"), 0));
-      timers.push(setTimeout(() => setPhase("lift"), 1700));
-      timers.push(setTimeout(() => onDone(), 2000));
-      timers.push(setTimeout(() => setPhase("gone"), 2650));
+      t.push(setTimeout(() => setFase("risca"), 60));
+      t.push(setTimeout(() => setFase("cor"), 900));
+      t.push(setTimeout(() => setFase("abre"), 2050));
+      t.push(setTimeout(() => onDone(), 2250));
+      t.push(setTimeout(() => setFase("fim"), 3000));
     }
-    return () => timers.forEach(clearTimeout);
+    return () => t.forEach(clearTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const abre = fase === "abre";
+  const comCor = fase === "cor" || abre;
+
   return (
     <AnimatePresence>
-      {phase !== "gone" ? (
+      {fase !== "fim" ? (
         <motion.div
-          className="ty-loader"
+          className="ty-loader ty-loader--flor"
           aria-hidden
-          initial={{ clipPath: "inset(0 0 0 0)" }}
-          animate={{ clipPath: phase === "lift" ? "inset(0 0 100% 0)" : "inset(0 0 0 0)" }}
-          transition={{ duration: 0.9, ease: [0.65, 0, 0.35, 1] }}
-          style={{ willChange: "clip-path" }}
+          exit={{ opacity: 0, transition: { duration: 0.3 } }}
         >
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 28 }}>
-            <Bloom kind="flor" seed={5} tom="magenta" open={phase !== "boot"} className="ty-loader__flor" />
-            <div
-              className="ty-display"
-              style={{
-                display: "flex",
-                gap: "0.06em",
-                fontSize: "clamp(33px, 6.08vw, 60px)",
-                letterSpacing: "0.18em",
-                paddingLeft: "0.18em",
-              }}
-            >
-              {LETTERS.map((l, i) => (
-                <span key={i} className="ty-mask" style={{ display: "inline-block" }}>
-                  <motion.span
-                    style={{ display: "inline-block" }}
-                    initial={{ y: "110%" }}
-                    animate={{ y: phase === "boot" ? "110%" : "0%" }}
-                    transition={{ duration: 0.9, ease: EASE, delay: 0.08 + i * 0.06 }}
+          {/* o véu: vinho com um furo no formato da flor, que cresce */}
+          <svg className="ty-loader__veu" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <mask id="ty-veu" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="1000">
+                <rect width="1000" height="1000" fill="white" />
+                {/* o furo só existe quando abre: antes da hidratação não há
+                    transformação aplicada, e ele apareceria inteiro */}
+                {abre ? (
+                  <motion.g
+                    style={{ transformBox: "view-box", transformOrigin: "500px 520px" }}
+                    initial={{ scale: 0.001 }}
+                    animate={{ scale: 34 }}
+                    transition={{ duration: 1.05, ease: INOUT }}
                   >
-                    {l}
-                  </motion.span>
-                </span>
-              ))}
-            </div>
-            <motion.div
-              style={{
-                width: 160,
-                height: 1,
-                background: "rgba(248,236,239,0.22)",
-                position: "relative",
-                overflow: "hidden",
-              }}
-            >
-              <motion.div
-                style={{ position: "absolute", inset: 0, background: "#f8ecef", transformOrigin: "left" }}
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: phase === "boot" ? 0 : 1 }}
-                transition={{ duration: 1.15, ease: EASE, delay: 0.2 }}
-              />
-            </motion.div>
-            <motion.span
-              className="ty-eyebrow"
-              style={{ color: "rgba(248,236,239,0.55)" }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: phase === "boot" ? 0 : 1 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-            >
-              Private Beauty Experience
-            </motion.span>
-          </div>
+                    <g transform="translate(500 545) scale(0.55)">
+                      {petalas.map((p, i) => (
+                        <path key={i} d={p.camadas[0].d} transform={`rotate(${p.a})`} fill="black" />
+                      ))}
+                    </g>
+                  </motion.g>
+                ) : null}
+              </mask>
+            </defs>
+            <rect width="1000" height="1000" fill="var(--t-noir)" mask="url(#ty-veu)" />
+          </svg>
+
+          <motion.div
+            className="ty-loader__palco"
+            animate={abre ? { scale: 5, opacity: 0 } : { scale: 1, opacity: 1 }}
+            transition={{ duration: abre ? 0.9 : 0.3, ease: INOUT }}
+          >
+            {/* palavra da esquerda sai de trás da flor */}
+            <span className="ty-loader__lado ty-loader__lado--e">
+              <motion.span
+                initial={{ x: "105%" }}
+                animate={{ x: comCor && !abre ? "0%" : "105%" }}
+                transition={{ duration: 0.9, ease: EASE, delay: comCor && !abre ? 0.2 : 0 }}
+              >
+                Tayssa
+              </motion.span>
+            </span>
+
+            <span className="ty-loader__marca">
+              {/* o contorno que se desenha */}
+              <svg className="ty-loader__risco" viewBox="-125 -125 250 170">
+                {petalas.map((p, i) => (
+                  <motion.path
+                    key={i}
+                    d={p.camadas[0].d}
+                    transform={`rotate(${p.a})`}
+                    fill="none"
+                    stroke="#d797a8"
+                    strokeWidth={0.9}
+                    pathLength={1}
+                    initial={{ pathLength: 0, opacity: 1 }}
+                    animate={{
+                      pathLength: fase === "boot" ? 0 : 1,
+                      opacity: comCor ? 0 : 1,
+                    }}
+                    transition={{
+                      pathLength: { duration: 0.75, ease: INOUT, delay: i * 0.018 },
+                      opacity: { duration: 0.5 },
+                    }}
+                  />
+                ))}
+              </svg>
+              {/* a cor chega por cima do risco */}
+              <Bloom kind="flor" seed={5} tom="magenta" open={comCor} className="ty-loader__cor" />
+            </span>
+
+            <span className="ty-loader__lado ty-loader__lado--d">
+              <motion.span
+                initial={{ x: "-105%" }}
+                animate={{ x: comCor && !abre ? "0%" : "-105%" }}
+                transition={{ duration: 0.9, ease: EASE, delay: comCor && !abre ? 0.28 : 0 }}
+              >
+                <em>Lash</em>
+              </motion.span>
+            </span>
+          </motion.div>
         </motion.div>
       ) : null}
     </AnimatePresence>
