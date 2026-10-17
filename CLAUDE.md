@@ -234,7 +234,7 @@ git push origin main
 
 ## Tayssa VIP — Private Beauty Experience (`/tayssa`)
 
-Produto separado dentro deste repo (subdomínio `tayssa.dosedegrowth.com`, também em `painel.dosedegrowth.com/tayssa`). Clube privado de clientes de uma profissional de beleza: site público editorial + área VIP autenticada + admin. **Não reaproveita** componentes de nenhuma outra LP. Direção de design em `docs/tayssa/DESIGN.md`.
+Produto separado dentro deste repo (por enquanto em `painel.dosedegrowth.com/tayssa`; o subdomínio `tayssa.*` continua suportado pelo middleware). Clube privado de clientes de uma profissional de beleza: site público editorial + área VIP autenticada + admin. **Não reaproveita** componentes de nenhuma outra LP. Direção de design em `docs/tayssa/DESIGN.md`.
 
 | Recurso | Onde |
 |---|---|
@@ -273,7 +273,7 @@ Operação:
 - Admin cria cliente em `/tayssa/admin/clientes/novo` → gera link único de primeiro acesso (7 dias) → envia por WhatsApp. Nenhuma senha aparece na tela.
 - Cliente de demonstração em produção: `demo@tayssa.vip` (sem senha definida — entra por link `demo`, ver `docs/tayssa/CONTEXTO.md` §3).
 - Conta admin: login `admin@tayssa.vip` (troque o e-mail no perfil se quiser). Primeiro acesso via link gerado no seed (ver histórico do chat/sessão que criou); para gerar outro: `insert into vip.password_tokens (user_id, token_hash, purpose, expires_at)` com `token_hash = sha256(token)`.
-- Usa as mesmas envs do painel (`NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`). Opcional: `NEXT_PUBLIC_TAYSSA_ORIGIN` (default `https://tayssa.dosedegrowth.com`).
+- Usa as mesmas envs do painel (`NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`). Opcional: `NEXT_PUBLIC_TAYSSA_ORIGIN` (default `https://painel.dosedegrowth.com`; os links ficam em `/tayssa/...`).
 
 Gotchas:
 - O schema `vip` precisa estar em **Exposed schemas** do PostgREST. Foi adicionado via `alter role authenticator set pgrst.db_schemas = '..., vip'` + `notify pgrst, 'reload config'`. Se alguém salvar a lista pelo dashboard do Supabase (Settings → API), confira se `vip` continua lá.

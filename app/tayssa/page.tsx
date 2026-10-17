@@ -8,13 +8,13 @@ import { assignPhotos } from "@/lib/tayssa/photos";
 import { montarCatalogo } from "@/lib/tayssa/catalogo";
 import { PublicExperience } from "@/components/tayssa/public/experience";
 import { PhotoAvailabilityProvider } from "@/components/tayssa/ui/photo-availability";
-import { PUBLIC_ORIGIN } from "@/lib/tayssa/config";
+import { ROUTES, publicUrl } from "@/lib/tayssa/config";
 
 /** Lê o banco a cada pedido: o que a Tayssa muda no painel aparece na hora. */
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  alternates: { canonical: PUBLIC_ORIGIN },
+  alternates: { canonical: publicUrl(ROUTES.home) },
 };
 
 /**
@@ -54,7 +54,7 @@ export default async function TayssaHome() {
     "@type": "BeautySalon",
     name: settings.business.name,
     description: settings.business.specialty,
-    url: PUBLIC_ORIGIN,
+    url: publicUrl(ROUTES.home),
     sameAs: [settings.business.instagram_url],
     telephone: `+${settings.business.whatsapp}`,
   };

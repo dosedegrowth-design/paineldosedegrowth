@@ -6,9 +6,11 @@ import { motion, useReducedMotion } from "framer-motion";
 /** Cores dos gráficos: as normais (azul, amarelo, vermelho) e o rosé da casa. */
 const CORES = {
   rosa: ["#f1c4d2", "#b8578a"],
-  azul: ["#8ec5ff", "#3b82f6"],
-  amarelo: ["#ffe08a", "#f5b301"],
-  vermelho: ["#ff9a9a", "#e5484d"],
+  // azul, amarelo e vermelho, puxados para a paleta da casa: o azul é
+  // lavanda-azulado, o amarelo é ouro, o vermelho é framboesa
+  azul: ["#c3cffc", "#7b8ff0"],
+  amarelo: ["#fbe3b0", "#d9a556"],
+  vermelho: ["#ffb8c6", "#e2506f"],
 } as const;
 export type CorAnel = keyof typeof CORES;
 

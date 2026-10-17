@@ -60,12 +60,14 @@ export const VIDEO_TYPES: Record<string, string> = {
 };
 
 /** URL pública canônica (subdomínio). Caminhos internos continuam /tayssa/... */
+/** Por enquanto o Tayssa mora no domínio do painel: painel.dosedegrowth.com/tayssa. */
 export const PUBLIC_ORIGIN =
-  process.env.NEXT_PUBLIC_TAYSSA_ORIGIN ?? "https://tayssa.dosedegrowth.com";
+  process.env.NEXT_PUBLIC_TAYSSA_ORIGIN ?? "https://painel.dosedegrowth.com";
 
 /**
- * URL absoluta de uma rota interna. No subdomínio `tayssa.*` o middleware
- * reescreve `/x` -> `/tayssa/x`, então o prefixo sai do link público.
+ * URL absoluta de uma rota interna. No domínio do painel o caminho fica como
+ * está (`/tayssa/...`); se um dia voltar para o subdomínio `tayssa.*`, o
+ * middleware reescreve `/x` -> `/tayssa/x` e o prefixo sai do link.
  */
 export function publicUrl(path: string): string {
   const origin = PUBLIC_ORIGIN.replace(/\/$/, "");
