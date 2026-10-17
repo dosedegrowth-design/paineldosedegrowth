@@ -5,10 +5,10 @@ import {
   motion,
   useInView,
   useReducedMotion,
-  useScroll,
   useTransform,
   type MotionValue,
 } from "framer-motion";
+import { useProgressoRolagem } from "@/components/tayssa/ui/rolagem";
 import type { FloraTom, FlowerKind } from "@/lib/tayssa/flora";
 import { Bloom, Leaf } from "@/components/tayssa/flora/bloom";
 
@@ -67,10 +67,7 @@ export function Arranjo({
   // observa a caixa sem recorte (clip-path esconde do observador)
   const naTela = useInView(caixa, { once: true, amount: 0 });
   const abre = open ?? naTela;
-  const { scrollYProgress } = useScroll({
-    target: track ?? caixa,
-    offset: ["start end", "end start"],
-  });
+  const scrollYProgress = useProgressoRolagem(track ?? caixa, ["start end", "end start"]);
 
   return (
     <div

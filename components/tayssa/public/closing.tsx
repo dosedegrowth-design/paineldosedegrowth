@@ -4,6 +4,7 @@ import { useRef, type ReactNode } from "react";
 import { ROUTES } from "@/lib/tayssa/config";
 import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
+import { LinkAgendar } from "@/components/tayssa/public/agendar";
 import { Arranjo, type Peca } from "@/components/tayssa/flora/arranjo";
 import { Icone, type IconeNome } from "@/components/tayssa/ui/icones";
 import { FotoAmbiente } from "@/components/tayssa/ui/foto-ambiente";
@@ -31,7 +32,8 @@ type Caminho = {
   ficha: string;
   href: string;
   /** true = WhatsApp/Instagram, abre fora; false = rota do site */
-  externo: boolean;
+  /** abre a folha de agendar (sem JS, o WhatsApp) */
+  agendar: boolean;
   icone: IconeNome;
 };
 
@@ -49,11 +51,11 @@ export function Closing({ scheduleUrl, ambiente }: { scheduleUrl: string; ambien
   const caminhos: Caminho[] = [
     {
       n: "01",
-      nome: "Agendar no WhatsApp",
-      dizer: "Você fala direto com a Tayssa e vocês combinam o dia e o horário.",
-      ficha: "abre o whatsapp",
+      nome: "Agendar horário",
+      dizer: "Escolha o serviço, o dia e o horário livres: a mensagem chega pronta no WhatsApp da Tayssa.",
+      ficha: "escolher o horário",
       href: scheduleUrl,
-      externo: true,
+      agendar: true,
       icone: "mensagem",
     },
     {
@@ -62,7 +64,7 @@ export function Closing({ scheduleUrl, ambiente }: { scheduleUrl: string; ambien
       dizer: "O cadastro é um pedido de entrada: ela lê, confere e responde.",
       ficha: "aprovação dela",
       href: ROUTES.signup,
-      externo: false,
+      agendar: false,
       icone: "flor",
     },
     {
@@ -71,14 +73,14 @@ export function Closing({ scheduleUrl, ambiente }: { scheduleUrl: string; ambien
       dizer: "Passar o nome de quem você quer ver bem cuidada também é um caminho.",
       ficha: "nome e whatsapp",
       href: ROUTES.refer,
-      externo: false,
+      agendar: false,
       icone: "coracao",
     },
   ];
 
   const ref = useRef<HTMLElement>(null);
   return (
-    <section ref={ref} className="ty-section tycl ty-amb-sec" aria-label="Começar">
+    <section ref={ref} className="ty-section tycl ty-amb-sec ty-night" aria-label="Começar">
       <FotoAmbiente photo={ambiente} posicao="50% 45%" />
       <Arranjo pecas={FLUTUAM} className="tycl__flutua" track={ref} label="fechamento" />
       <div className="ty-container tycl__miolo">
@@ -111,8 +113,8 @@ export function Closing({ scheduleUrl, ambiente }: { scheduleUrl: string; ambien
 }
 
 /**
- * Uma linha do índice. A linha inteira é o link: externo abre em outra
- * aba, interno passa pela cortina de transição. O conteúdo é o mesmo nos
+ * Uma linha do índice. A linha inteira é o link: agendar abre a folha de
+ * horário, interno passa pela cortina de transição. O conteúdo é o mesmo nos
  * dois casos — a reação de hover e de teclado mora no CSS.
  */
 function Linha({ caminho }: { caminho: Caminho }) {
@@ -131,11 +133,11 @@ function Linha({ caminho }: { caminho: Caminho }) {
     </>
   );
 
-  if (caminho.externo) {
+  if (caminho.agendar) {
     return (
-      <a className="tycl__linha ty-ico-gatilho" href={caminho.href} target="_blank" rel="noopener noreferrer">
+      <LinkAgendar className="tycl__linha ty-ico-gatilho" href={caminho.href}>
         {miolo}
-      </a>
+      </LinkAgendar>
     );
   }
   return (

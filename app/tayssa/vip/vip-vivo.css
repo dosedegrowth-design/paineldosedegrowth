@@ -371,7 +371,10 @@ body:has(.tyv) {
   text-transform: none;
   font-weight: 500;
 }
-.tyv .tyv-nav__item[aria-current="page"] {
+.ty-scope .tyv a.tyv-nav__item {
+  color: rgba(255, 225, 234, 0.56);
+}
+.ty-scope .tyv a.tyv-nav__item[aria-current="page"] {
   color: #fff;
 }
 .tyv .tyv-nav__item[aria-current="page"] svg {
@@ -423,4 +426,94 @@ body:has(.tyv) {
 }
 .tyc3__brand > i {
   display: none;
+}
+
+/* ============================================================
+   A BARRA — cápsula de vidro vinho flutuando, como a do iPhone:
+   ícone cheio e lente de vidro atrás da aba atual; as outras em
+   contorno, rosé apagado. Rótulo pequeno e firme, sem sigla.
+   ============================================================ */
+.tyv .tyv-nav {
+  left: 14px;
+  right: 14px;
+  bottom: max(14px, env(safe-area-inset-bottom, 0px));
+  height: 68px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  max-width: calc(var(--tyv-max) - 28px);
+  margin-inline: auto;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02) 60%),
+    rgba(42, 9, 22, 0.66);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  backdrop-filter: blur(22px) saturate(170%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 236, 242, 0.22),
+    inset 0 0 0 1px rgba(255, 214, 228, 0.12),
+    0 18px 40px -16px rgba(5, 0, 2, 0.75),
+    0 4px 14px -6px rgba(5, 0, 2, 0.5);
+}
+.tyv .tyv-nav__in {
+  height: 100%;
+  padding: 6px;
+  gap: 2px;
+}
+.tyv .tyv-nav__item {
+  position: relative;
+  min-height: 0;
+  height: 100%;
+  gap: 3px;
+  border-radius: 999px;
+  color: rgba(255, 225, 234, 0.6);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color 0.2s ease,
+    transform 0.16s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.tyv .tyv-nav__item::after {
+  content: none;
+}
+.tyv .tyv-nav__item:active {
+  transform: scale(0.92);
+}
+.ty-scope .tyv a.tyv-nav__item {
+  color: rgba(255, 225, 234, 0.56);
+}
+.ty-scope .tyv a.tyv-nav__item[aria-current="page"] {
+  color: #fff;
+}
+.tyv .tyv-nav__item[aria-current="page"] svg {
+  color: #fff;
+  filter: none;
+}
+.tyv .tyv-nav__item .tyib,
+.tyv .tyv-nav__rotulo {
+  position: relative;
+  z-index: 1;
+}
+.tyv .tyv-nav__item .tyib {
+  width: 24px;
+  height: 24px;
+}
+/* a lente: vidro claro com brilho no alto, desliza entre as abas */
+.tyv .tyv-nav__lente {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background:
+    radial-gradient(80% 70% at 50% 0%, rgba(247, 193, 209, 0.3), transparent 70%),
+    rgba(255, 255, 255, 0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 0 0 1px rgba(255, 214, 228, 0.16),
+    0 6px 16px -8px rgba(232, 92, 140, 0.55);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ty-scope .tyv a.tyv-nav__item:hover {
+    color: #fff;
+  }
 }

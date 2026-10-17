@@ -8,7 +8,7 @@
    ============================================================ */
 
 .ty-scope {
-  --t-font-sf: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Helvetica Neue", Arial,
+  --t-font-sf: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", var(--t-font-inter, "Inter"), "Helvetica Neue", Arial,
     sans-serif;
   --t-font-display: var(--t-font-sf);
   --t-font-body: var(--t-font-sf);
@@ -1115,6 +1115,9 @@ body:has(.ty-scope[data-theme="night"]) {
   width: 34px;
   height: 24px;
   flex: none;
+}
+/* gira só a flor que está na faixa visível (`data-vivo`, ver PausaForaDaTela) */
+.ty-faixa__flor[data-vivo] {
   animation: ty-giro-flor 9s linear infinite;
 }
 .ty-faixa__flor .tyf {
@@ -1196,7 +1199,7 @@ body:has(.ty-scope[data-theme="night"]) {
 }
 @media (prefers-reduced-motion: reduce) {
   .ty-faixa__trilho,
-  .ty-faixa__flor,
+  .ty-faixa__flor[data-vivo],
   .ty-agendar-flutua__flor .tyf {
     animation: none;
   }
@@ -1315,18 +1318,28 @@ body:has(.ty-scope[data-theme="night"]) {
   height: 58%;
   transform-origin: 50% 100%;
   transform: perspective(520px) rotateX(64deg);
-  background-image:
-    linear-gradient(rgba(247, 193, 209, 0.24) 1.5px, transparent 1.5px),
-    linear-gradient(90deg, rgba(247, 193, 209, 0.24) 1.5px, transparent 1.5px);
-  background-size: 72px 72px;
-  animation: ty-vivo-chao 3.2s linear infinite;
+  overflow: hidden;
   -webkit-mask-image: linear-gradient(0deg, #000 0%, rgba(0, 0, 0, 0.55) 45%, transparent 92%);
   mask-image: linear-gradient(0deg, #000 0%, rgba(0, 0, 0, 0.55) 45%, transparent 92%);
   opacity: 0.75;
 }
+/* a grade anda por transform (placa de vídeo), não por background-position
+   (que redesenha o chão inteiro a cada quadro): uma casa a mais em cima,
+   desce uma casa e recomeça — o mesmo movimento, sem custo */
+.ty-vivo__chao::before {
+  content: "";
+  position: absolute;
+  inset: -72px 0 0;
+  background-image:
+    linear-gradient(rgba(247, 193, 209, 0.24) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, rgba(247, 193, 209, 0.24) 1.5px, transparent 1.5px);
+  background-size: 72px 72px;
+  will-change: transform;
+  animation: ty-vivo-chao 3.2s linear infinite;
+}
 @keyframes ty-vivo-chao {
   to {
-    background-position: 0 72px;
+    transform: translateY(72px);
   }
 }
 /* as bordas: ameixa e vinho fechado, em degradê — a moldura fica perto,
@@ -1351,7 +1364,7 @@ body:has(.ty-scope[data-theme="night"]) {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(230, 190, 130, 0.5), transparent);
 }
-.ty-vivo[data-tom="dia"] .ty-vivo__chao {
+.ty-vivo[data-tom="dia"] .ty-vivo__chao::before {
   background-image:
     linear-gradient(rgba(109, 21, 48, 0.08) 1.5px, transparent 1.5px),
     linear-gradient(90deg, rgba(109, 21, 48, 0.08) 1.5px, transparent 1.5px);
@@ -1366,12 +1379,12 @@ body:has(.ty-scope[data-theme="night"]) {
   }
 }
 @media (max-width: 767px), (hover: none) {
-  .ty-vivo__chao {
+  .ty-vivo__chao::before {
     animation-duration: 5s;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ty-vivo__chao,
+  .ty-vivo__chao::before,
   .ty-vivo__luz--ouro {
     animation: none;
   }
@@ -1393,8 +1406,9 @@ body:has(.ty-scope[data-theme="night"]) {
   width: max-content;
   gap: clamp(14px, 1.6vw, 24px);
   padding-inline: 12px;
-  transform-style: preserve-3d;
-  /* o trilho inteiro inclina de leve: o rolo parece uma vitrine curva */
+  /* sem preserve-3d: com ele cada cartão vira uma camada 3D própria na
+     placa de vídeo (eram 70); a inclinação de 6° é a mesma, e o giro do
+     cartão no mouse leva a própria perspectiva */
   rotate: x 6deg;
   animation: ty-rolo var(--dur, 40s) linear infinite var(--dir, normal);
 }
@@ -1417,7 +1431,11 @@ body:has(.ty-scope[data-theme="night"]) {
   border: 0;
   background: none;
   cursor: zoom-in;
-  /* cada cartão sobe e desce no seu tempo — o rolo respira */
+}
+/* cada cartão sobe e desce no seu tempo — o rolo respira. Só o cartão que
+   está na janela do rolo (`data-vivo`, com folga de um cartão): os outros
+   20 da fila esperam parados fora da vista */
+.ty-rolo__cartao[data-vivo] {
   animation: ty-cartao-onda 6.5s ease-in-out infinite;
   animation-delay: calc(var(--i, 0) * -1.3s);
 }
@@ -1506,7 +1524,7 @@ body:has(.ty-scope[data-theme="night"]) {
 }
 @media (hover: hover) {
   .ty-rolo__cartao:hover .ty-rolo__flutua {
-    transform: translateY(-10px) scale(1.04) rotateY(-4deg);
+    transform: perspective(900px) translateY(-10px) scale(1.04) rotateY(-4deg);
     box-shadow:
       0 40px 80px -30px rgba(5, 0, 2, 0.95),
       0 24px 60px -24px rgba(240, 120, 165, 0.75),
@@ -2175,4 +2193,349 @@ body:has(.ty-scope[data-theme="night"]) {
 }
 .tyl .ty-field__hint {
   color: rgba(251, 227, 235, 0.72);
+}
+
+/* ============================================================
+   MOVIMENTO SÓ ONDE O OLHO ESTÁ
+   `PausaForaDaTela` marca com `data-fora` a peça que saiu da tela (com
+   folga de um quarto de tela). Lá fora a animação contínua sai de cena —
+   desligada, não só pausada: pausada ela ainda prende uma camada na placa
+   de vídeo, e eram ~150 camadas recompostas a cada quadro. Ao voltar, cada
+   uma recomeça antes de entrar no campo de visão; quem olha não vê a troca.
+   ============================================================ */
+/* a lista é das peças que animam de verdade — nunca `[data-fora] *`: o
+   seletor universal recalculava cada pétala de SVG da faixa (30 ms por
+   troca); com as classes nomeadas o navegador só revisita estas */
+[data-fora],
+[data-fora]
+  :is(
+    .ty-vivo__luz,
+    .ty-vivo__grade,
+    .ty-vivo__varre,
+    .tyh__halo,
+    .tyh__janela,
+    .tyh__janela-corpo,
+    .tyh__flor-flutua,
+    .tyh__nome,
+    .tyh__nome-parte,
+    .tyh__selo i,
+    .tyh__descer span,
+    .ty-faixa__trilho,
+    .ty-faixa__flor,
+    .ty-rolo__trilho,
+    .ty-rolo__cartao,
+    .tyf-peca,
+    .tyf-giro > .tyf
+  ),
+[data-fora] .ty-vivo__chao::before,
+[data-fora] .tyh__selo i::after {
+  animation-name: none !important;
+  will-change: auto !important;
+  transform-style: flat !important;
+}
+/* vídeo do rolo só existe para a placa de vídeo quando o cartão está na
+   janela (cada <video> é uma camada própria, até parado) */
+.ty-rolo__cartao:not([data-vivo]) video,
+.ty-rolo[data-fora] video {
+  display: none;
+}
+
+/* ============================================================
+   UM FUNDO POR TÓPICO — cada seção com a sua cor da paleta, e a
+   troca de assunto marcada: a seção seguinte sobe como uma folha de
+   cantos redondos por cima da anterior. Ordem da home (vizinhas nunca
+   repetem): noite → faixa bordô → ameixa → marfim → bordô → noite com
+   foto → rosé → vinho com ouro → champanhe → ameixa com foto → marfim.
+   (Com todo o conteúdo: … noite com foto → marfim (A Tayssa) → ameixa
+   (estúdio) → rosé → marfim (vídeos) → champanhe (depoimentos) → vinho
+   com ouro → champanhe (indicar) → rosé (atendimento) → ameixa com foto.)
+   As seções que só entram com conteúdo da Tayssa também têm o seu.
+   ============================================================ */
+.ty-scope {
+  --ty-folha: clamp(28px, 3.6vw, 48px);
+}
+/* a folha: cantos redondos no alto, sobe por cima da anterior */
+.ty-scope main > :is(.tyw, .tyfm, .tyct, .tysv, .tyab, .tyst, .tyco, .tyri, .tydp, .tyvi, .tyr, .tyat, .tycl),
+.ty-scope main + .typ {
+  position: relative;
+  z-index: 1;
+  margin-top: calc(-1 * var(--ty-folha));
+  border-radius: var(--ty-folha) var(--ty-folha) 0 0;
+  box-shadow: 0 -22px 44px -30px rgba(18, 4, 10, 0.55);
+}
+/* o que pinta o fundo por dentro acompanha a curva */
+.ty-scope main > section > :is(.ty-vivo, .ty-amb),
+.ty-scope main > section::before,
+.ty-scope .ty-amb > * {
+  border-radius: inherit;
+}
+
+/* ---------- claros ---------- */
+/* marfim: o branco do salão (Trabalho, A Tayssa, vídeos do Instagram, rodapé) */
+.ty-scope :is(.tyw, .tyab, .tyri),
+.ty-scope main + .typ {
+  --ty-tom: marfim;
+  background:
+    radial-gradient(55% 45% at 0% 0%, rgba(214, 120, 152, 0.15), transparent 70%),
+    radial-gradient(45% 40% at 100% 28%, rgba(232, 191, 134, 0.14), transparent 70%),
+    linear-gradient(180deg, #fcf8f7 0%, #f9f1f2 100%);
+}
+/* rosé: o Instagram e o atendimento */
+.ty-scope :is(.tyco, .tyat) {
+  background:
+    radial-gradient(60% 45% at 100% 0%, rgba(232, 191, 134, 0.2), transparent 70%),
+    radial-gradient(70% 50% at 0% 100%, rgba(214, 85, 135, 0.16), transparent 70%),
+    linear-gradient(180deg, #f8e3ea 0%, #f2d4de 100%);
+}
+/* champanhe: indicar e depoimentos — marfim aquecido de ouro */
+.ty-scope :is(.tyr, .tydp) {
+  background:
+    radial-gradient(60% 45% at 0% 0%, rgba(214, 120, 152, 0.14), transparent 70%),
+    radial-gradient(55% 45% at 100% 100%, rgba(201, 150, 90, 0.2), transparent 70%),
+    linear-gradient(180deg, #f9f1e7 0%, #f2e5d4 100%);
+}
+.ty-scope :is(.tyco, .tyat, .tyr, .tydp)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 160px 10px rgba(91, 35, 70, 0.08),
+    inset 0 1px 0 rgba(214, 170, 110, 0.5);
+}
+.ty-scope :is(.tyr, .tydp, .tyat) {
+  isolation: isolate;
+}
+
+/* ---------- escuros ---------- */
+/* ameixa: a fileira de serviços e o estúdio */
+.ty-scope :is(.tyfx, .tyst) {
+  background:
+    radial-gradient(70% 60% at 85% 0%, rgba(176, 72, 150, 0.26), transparent 70%),
+    radial-gradient(60% 50% at 0% 100%, rgba(120, 30, 90, 0.3), transparent 70%),
+    linear-gradient(180deg, #2c0c28 0%, #1d0719 100%);
+}
+/* bordô: o catálogo — o vinho mais aceso que a noite */
+.ty-scope .tyct {
+  --t-vivo-1: #93244a;
+  --t-vivo-2: #5a0f28;
+  --t-vivo-3: #3a0a1b;
+}
+/* vinho com ouro: o VIP — a única seção com luz de ouro no fundo */
+.ty-scope .tyvi {
+  --tyvi-gold: #d8b27a;
+  color: var(--t-fg);
+  isolation: isolate;
+  background:
+    radial-gradient(55% 40% at 100% 0%, rgba(226, 182, 118, 0.22), transparent 70%),
+    radial-gradient(60% 45% at 0% 35%, rgba(196, 48, 96, 0.2), transparent 70%),
+    radial-gradient(70% 40% at 50% 100%, rgba(226, 182, 118, 0.1), transparent 70%),
+    linear-gradient(180deg, #3b0a1e 0%, #22060f 100%);
+}
+.ty-scope .tyvi::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  box-shadow: inset 0 1px 0 rgba(232, 191, 134, 0.45);
+}
+/* noite para o filme: a imagem acende sozinha */
+.ty-scope .tyfm {
+  background: linear-gradient(180deg, #1a0610 0%, #12040a 100%);
+}
+/* ameixa com foto: o fechamento, para não repetir a noite dos serviços */
+.ty-scope .tycl {
+  --t-vivo-1: #5c1a52;
+  --t-vivo-2: #2c0c28;
+  --t-vivo-3: #1a0618;
+  background: var(--t-vivo-3);
+}
+.ty-scope .tycl .ty-amb__veu {
+  background:
+    linear-gradient(180deg, rgba(44, 12, 40, 0.92) 0%, rgba(44, 12, 40, 0.35) 30%, rgba(44, 12, 40, 0.4) 70%, rgba(26, 6, 24, 0.95) 100%),
+    radial-gradient(80% 60% at 20% 30%, rgba(150, 50, 130, 0.32), transparent 70%);
+}
+/* quem fica embaixo de uma folha guarda espaço para a curva dela */
+.ty-scope .tyfx {
+  padding-bottom: calc(var(--ty-folha) + clamp(28px, 4vh, 52px));
+}
+.ty-scope .tyct {
+  padding-bottom: calc(var(--ty-folha) + clamp(36px, 5vh, 64px));
+}
+
+/* ============================================================
+   TIPOGRAFIA COM RESPIRO — os títulos estavam em 1,04 de entrelinha
+   e o acento de uma linha encostava na perna da outra ("ç", "g", "p",
+   "é"): parecia texto empilhado. Agora: entrelinha que cabe o
+   português, e no celular uma escala só, menor — título é título,
+   não parede.
+   ============================================================ */
+.ty-scope
+  :is(
+    .ty-display,
+    .tyw__titulo,
+    .tysv__titulo,
+    .tyct__titulo,
+    .tyvi__declaracao,
+    .tyr__declaracao,
+    .tycl__declaracao,
+    .tyfm__titulo,
+    .tyab__titulo,
+    .tyst__titulo,
+    .ty-ig__chamada
+  ) {
+  line-height: 1.09;
+  letter-spacing: -0.032em;
+}
+.ty-scope :is(.ty-h, .tyw__nome, .tysv__nome, .tyvi__nome, .tyr__nome, .tycl__nome, .tyj__nome, .tyfx__nome) {
+  line-height: 1.16;
+  letter-spacing: -0.024em;
+}
+/* a máscara da linha que sobe guarda espaço para o acento e para a perna */
+.ty-scope .ty-mask {
+  padding-block: 0.14em 0.12em;
+  margin-block: -0.14em -0.12em;
+}
+@media (max-width: 767px) {
+  .ty-scope
+    :is(
+      .ty-display,
+      .tyw__titulo,
+      .tysv__titulo,
+      .tyct__titulo,
+      .tyvi__declaracao,
+      .tyr__declaracao,
+      .tycl__declaracao,
+      .tyfm__titulo,
+      .tyab__titulo,
+      .tyst__titulo,
+      .ty-ig__chamada
+    ) {
+    font-size: clamp(30px, 6.4vw + 6px, 36px);
+    line-height: 1.1;
+    letter-spacing: -0.028em;
+  }
+  /* as duas frases-manifesto (Instagram e fechamento) um degrau acima */
+  .ty-scope :is(.tyco, .tycl) .ty-display {
+    font-size: clamp(32px, 7vw + 6px, 40px);
+  }
+  .ty-scope :is(.ty-h, .tysv__nome, .tyvi__nome, .tyr__nome, .tycl__nome, .tyj__nome) {
+    font-size: clamp(21px, 2vw + 14px, 24px);
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+  }
+  /* as linhas de voz (leves) ganham entrelinha de leitura */
+  .ty-scope :is(.tyw__dizer, .tyw__fecho-linha, .tysv__pe-linha, .tyr__regra-linha) {
+    font-size: 17.5px;
+    line-height: 1.45;
+    letter-spacing: -0.012em;
+  }
+}
+
+/* ============================================================
+   ÍCONES DAS BARRAS (app e painel) — par contorno/cheio, no jeito
+   dos símbolos do iPhone. A troca é um cruzamento curto; a aba que
+   acabou de ser tocada dá um pulinho de mola.
+   ============================================================ */
+.tyib {
+  display: block;
+  width: 25px;
+  height: 25px;
+  overflow: visible;
+}
+.tyib__linha,
+.tyib__cheio .tyib__traco {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tyib__linha .tyib__ponto {
+  stroke-width: 2.5;
+}
+.tyib__cheio {
+  fill: currentColor;
+  stroke: none;
+  opacity: 0;
+}
+.tyib__linha,
+.tyib__cheio {
+  transition: opacity 0.18s ease;
+}
+.tyib[data-cheio] .tyib__linha {
+  opacity: 0;
+}
+.tyib[data-cheio] .tyib__cheio {
+  opacity: 1;
+}
+.tyib[data-cheio] {
+  animation: tyib-pulo 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes tyib-pulo {
+  0% {
+    scale: 0.82;
+  }
+  100% {
+    scale: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tyib[data-cheio] {
+    animation: none;
+  }
+}
+
+/* iPhone na horizontal não infla a letra sozinho (os campos do site e do
+   app já têm 16px; os do painel, ver admin/iwin.css) */
+html:has(.ty-scope) {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* ============================================================
+   GRÃO SEM MISTURA — a mesma textura de papel, sem mix-blend: o
+   ruído vira preto (ou branco, na noite) com a intensidade no
+   canal alfa, e a placa de vídeo só sobrepõe. Com multiply/screen
+   ela recalculava a mistura da tela inteira a cada quadro.
+   ============================================================ */
+.ty-scope .ty-grain {
+  mix-blend-mode: normal;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.4 0 0 0 1.05'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.ty-scope[data-theme="night"] .ty-grain,
+.ty-vivo__grao {
+  mix-blend-mode: normal;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1.4 0 0 0 -0.45'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.ty-scope[data-theme="night"] .ty-grain {
+  opacity: 0.05;
+}
+.ty-vivo__grao {
+  opacity: 0.06;
+}
+.ty-vivo[data-tom="dia"] .ty-vivo__grao {
+  mix-blend-mode: normal;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.4 0 0 0 1.05'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* o que a rolagem move a cada quadro vive em camada própria: mover vira só
+   deslocar na placa de vídeo, sem redesenhar a página nem remontar as camadas */
+.ty-scope :is(.tyh__texto, .ty-amb__foto, .tyco__peca, .tyj__vertical, .tyw__corrida i) {
+  will-change: transform;
+}
+
+/* a foto de clima: o tom vinho e o desfoque vão na própria imagem (pintados
+   uma vez), não na camada que a rolagem move — com filtro + mistura
+   "luminosidade" ali, a placa de vídeo refazia a mistura a cada quadro */
+.ty-scope .ty-amb__foto {
+  filter: none;
+  mix-blend-mode: normal;
+}
+.ty-scope .ty-amb__foto img {
+  filter: grayscale(1) sepia(0.6) hue-rotate(296deg) saturate(1.5) brightness(0.42) contrast(1.05) blur(2px);
 }

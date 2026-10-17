@@ -33,6 +33,8 @@ export function Icone({ nome, className, label }: { nome: IconeNome; className?:
   const ref = useRef<SVGSVGElement>(null);
   const reduced = useReducedMotion();
   const visto = useInView(ref, { once: true, amount: 0.4 });
+  // o loop (piscar, bater, girar) só enquanto está na tela
+  const naTela = useInView(ref, { amount: 0 });
   const on = visto || Boolean(reduced);
 
   const corpo: Record<IconeNome, ReactNode> = {
@@ -177,6 +179,7 @@ export function Icone({ nome, className, label }: { nome: IconeNome; className?:
       viewBox="0 0 48 48"
       className={["tyi", `tyi--${nome}`, className ?? ""].join(" ").trim()}
       data-on={on}
+      data-vivo={naTela || undefined}
       role={label ? "img" : undefined}
       aria-label={label}
       aria-hidden={label ? undefined : true}

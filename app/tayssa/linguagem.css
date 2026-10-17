@@ -1003,3 +1003,9 @@
   opacity: 0.9;
   pointer-events: none;
 }
+
+/* o gesto em loop do ícone só roda enquanto ele está na tela (`data-vivo`,
+   ver Icone): fora dela, as partes do SVG param de se redesenhar */
+.tyi:not([data-vivo]) :is(g, path, circle, rect) {
+  animation-name: none !important;
+}

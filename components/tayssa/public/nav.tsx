@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
+import { AnimatePresence, motion, useMotionValueEvent } from "framer-motion";
+import { useRolagemY } from "@/components/tayssa/ui/rolagem";
+import { LinkAgendar } from "@/components/tayssa/public/agendar";
 import { ROUTES } from "@/lib/tayssa/config";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { scrollToTarget } from "@/components/tayssa/ui/smooth-scroll";
@@ -20,7 +22,7 @@ const SECTIONS: Secao[] = [
  * hero, translúcida depois. No mobile vira um menu de tela cheia.
  */
 export function PublicNav({ scheduleUrl, sections = SECTIONS }: { scheduleUrl: string; sections?: Secao[] }) {
-  const { scrollY } = useScroll();
+  const scrollY = useRolagemY();
   const [hidden, setHidden] = useState(false);
   const [solid, setSolid] = useState(false);
   const [over, setOver] = useState(true);
@@ -79,9 +81,9 @@ export function PublicNav({ scheduleUrl, sections = SECTIONS }: { scheduleUrl: s
           <TransitionLink href={ROUTES.login} className="ty-btn ty-btn--xs">
             Entrar
           </TransitionLink>
-          <a href={scheduleUrl} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--xs ty-btn--solid">
+          <LinkAgendar href={scheduleUrl} className="ty-btn ty-btn--xs ty-btn--solid">
             Agendar
-          </a>
+          </LinkAgendar>
         </div>
 
         {/* menu: dois fios que viram um X */}
@@ -160,10 +162,10 @@ export function PublicNav({ scheduleUrl, sections = SECTIONS }: { scheduleUrl: s
               transition={{ delay: 0.6, duration: 0.6 }}
               style={{ marginTop: 36, display: "flex", gap: 20, alignItems: "center" }}
             >
-              <a href={scheduleUrl} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--sm ty-btn--solid">
+              <LinkAgendar href={scheduleUrl} className="ty-btn ty-btn--sm ty-btn--solid" aoAbrir={() => setOpen(false)}>
                 <span>Agendar</span>
                 <span className="ty-btn__arrow" aria-hidden />
-              </a>
+              </LinkAgendar>
             </motion.div>
           </motion.div>
         ) : null}

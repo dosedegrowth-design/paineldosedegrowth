@@ -40,6 +40,7 @@ export function Rolo({
     <div className={`ty-rolo ty-rolo--${tamanho}`} role="region" aria-label={rotulo}>
       <div
         className="ty-rolo__trilho"
+        data-janela
         data-parado={reduced ? "true" : "false"}
         style={{ "--dur": `${segundos}s`, "--dir": sentido === 1 ? "normal" : "reverse" } as CSSProperties}
       >
@@ -51,6 +52,8 @@ export function Rolo({
               key={`${m.id}-${i}`}
               type="button"
               className="ty-rolo__cartao"
+              data-janela-item
+              data-video={m.tipo === "video" || undefined}
               style={{ "--i": i % 5 } as CSSProperties}
               onClick={() => setAberto(original)}
               aria-label={`Abrir ${m.tipo === "video" ? "vídeo" : "foto"}: ${m.produto}`}
@@ -78,18 +81,20 @@ export function Rolo({
 /** Foto leve ou vídeo que toca só enquanto aparece. */
 function Midia({ m, grande = false }: { m: MidiaCatalogo; grande?: boolean }) {
   const ref = useRef<HTMLVideoElement>(null);
+  // no rolo, toca só quando o cartão é o escolhido (`data-tocar`, posto por
+  // PausaForaDaTela: um vídeo por vez, o mais perto do centro da tela)
   useEffect(() => {
     const v = ref.current;
-    if (!v || grande) return;
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) void v.play().catch(() => {});
-        else v.pause();
-      },
-      { threshold: 0.2 }
-    );
-    io.observe(v);
-    return () => io.disconnect();
+    const cartao = v?.closest<HTMLElement>("[data-janela-item]");
+    if (!v || !cartao || grande) return;
+    const seguir = () => {
+      if (cartao.hasAttribute("data-tocar")) void v.play().catch(() => {});
+      else v.pause();
+    };
+    seguir();
+    const mo = new MutationObserver(seguir);
+    mo.observe(cartao, { attributes: true, attributeFilter: ["data-tocar"] });
+    return () => mo.disconnect();
   }, [grande]);
   // no rolo vale o enquadramento que a Tayssa escolheu; no visor, a mídia inteira
   const quadro = grande ? undefined : estiloFoco(m.foco);
@@ -99,7 +104,8 @@ function Midia({ m, grande = false }: { m: MidiaCatalogo; grande?: boolean }) {
         ref={ref}
         className="ty-rolo__midia"
         style={quadro}
-        src={m.url}
+        // #t=0.1: o Safari do iPhone mostra o primeiro quadro do vídeo parado
+        src={grande ? m.url : `${m.url}#t=0.1`}
         muted
         loop
         playsInline

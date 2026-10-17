@@ -37,7 +37,7 @@ export function Studio({
   const { descricao, endereco, mapaUrl } = conteudo.espaco;
 
   return (
-    <section id="estudio" className="ty-section tyst" aria-label="O estúdio">
+    <section id="estudio" className="ty-section tyst ty-night" aria-label="O estúdio">
       <div className="ty-container">
         <Reveal className="tyst__topo" y={14}>
           <span className="ty-mono ty-mono--ink">O estúdio</span>

@@ -1,20 +1,35 @@
 import type { Metadata, Viewport } from "next";
-// uma família sem serifa: a do sistema Apple; Inter de reserva nos outros aparelhos
-import "@fontsource/inter/300.css";
-import "@fontsource/inter/400.css";
-import "@fontsource/inter/500.css";
-import "@fontsource/inter/600.css";
-import "@fontsource/inter/700.css";
+import localFont from "next/font/local";
 import "lenis/dist/lenis.css";
 import "./tayssa.css";
 import "./flora.css";
 import "./casa.css";
 import "./linguagem.css";
 import "./identidade.css";
+import "./agendar.css";
 import { PUBLIC_ORIGIN } from "@/lib/tayssa/config";
 import { SmoothScroll } from "@/components/tayssa/ui/smooth-scroll";
+import { PausaForaDaTela } from "@/components/tayssa/ui/pausa-fora";
 import { TransitionProvider } from "@/components/tayssa/ui/transition";
 import { EstruturaProvider } from "@/components/tayssa/ui/estrutura";
+
+/**
+ * Uma família sem serifa: a do sistema Apple; Inter nos outros aparelhos.
+ * Pelo next/font a Inter vem pré-carregada com a página e com uma reserva
+ * de medidas ajustadas: no Android o texto não nasce numa fonte e pula
+ * para outra (era o "fica se arrumando" ao abrir no celular).
+ */
+const inter = localFont({
+  src: [
+    { path: "../../node_modules/@fontsource/inter/files/inter-latin-300-normal.woff2", weight: "300", style: "normal" },
+    { path: "../../node_modules/@fontsource/inter/files/inter-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../../node_modules/@fontsource/inter/files/inter-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "../../node_modules/@fontsource/inter/files/inter-latin-600-normal.woff2", weight: "600", style: "normal" },
+    { path: "../../node_modules/@fontsource/inter/files/inter-latin-700-normal.woff2", weight: "700", style: "normal" },
+  ],
+  display: "swap",
+  adjustFontFallback: "Arial",
+});
 
 const TITLE = "Tayssa Lash — Private Beauty Experience";
 const DESCRIPTION =
@@ -46,8 +61,12 @@ export const viewport: Viewport = {
 export default function TayssaLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="ty-scope" data-theme="day">
+      {/* a Inter (e a reserva ajustada) num token da raiz: vale também no que
+          abre em portal fora do .ty-scope, como o visor dos rolos */}
+      <style href="ty-fonte" precedence="default">{`:root{--t-font-inter:${inter.style.fontFamily};}`}</style>
       <div className="ty-grain" aria-hidden />
       <SmoothScroll />
+      <PausaForaDaTela />
       <TransitionProvider>
         <EstruturaProvider>{children}</EstruturaProvider>
       </TransitionProvider>

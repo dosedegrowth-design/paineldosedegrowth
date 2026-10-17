@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useReducedMotion, useTransform } from "framer-motion";
+import { useProgressoRolagem } from "@/components/tayssa/ui/rolagem";
 import type { ServiceRow } from "@/lib/tayssa/types";
 import { Icone, type IconeNome } from "@/components/tayssa/ui/icones";
 import { linkDoServico } from "@/components/tayssa/public/services";
+import { LinkAgendar } from "@/components/tayssa/public/agendar";
 
 /** O gesto de cada cuidado; serviço novo cai na flor. */
 const ICONE: Record<string, IconeNome> = {
@@ -29,7 +31,7 @@ export function ServiceStrip({ services, scheduleUrl }: { services: ServiceRow[]
   const trilho = useRef<HTMLUListElement>(null);
   const reduced = useReducedMotion();
   const [sobra, setSobra] = useState(0);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const scrollYProgress = useProgressoRolagem(ref, ["start end", "end start"]);
   const x = useTransform(scrollYProgress, [0.1, 0.9], reduced ? [0, 0] : [0, -sobra]);
 
   useEffect(() => {
@@ -52,13 +54,12 @@ export function ServiceStrip({ services, scheduleUrl }: { services: ServiceRow[]
         <motion.ul ref={trilho} className="tyfx__trilho" style={{ x }}>
           {lista.map((s, i) => (
             <li key={s.id}>
-              <a
+              <LinkAgendar
                 className="tyfx__cartao ty-ico-gatilho"
                 data-cor={CORES[i % CORES.length]}
                 href={linkDoServico(scheduleUrl, s.name)}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Agendar ${s.name} no WhatsApp`}
+                servico={s.slug}
+                aria-label={`Agendar ${s.name}`}
               >
                 <span className="tyfx__n">{String(i + 1).padStart(2, "0")}</span>
                 <Icone nome={ICONE[s.slug] ?? "flor"} className="tyfx__icone" />
@@ -67,7 +68,7 @@ export function ServiceStrip({ services, scheduleUrl }: { services: ServiceRow[]
                   Agendar
                   <span className="ty-btn__arrow" />
                 </span>
-              </a>
+              </LinkAgendar>
             </li>
           ))}
         </motion.ul>

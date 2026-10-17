@@ -1,6 +1,6 @@
 import "server-only";
 import { cache } from "react";
-import { vipDb } from "@/lib/tayssa/db";
+import { isDbConfigured, logServerError, vipDb } from "@/lib/tayssa/db";
 import { getSettings } from "@/lib/tayssa/settings";
 import { getActiveServices } from "@/lib/tayssa/queries/catalog";
 import { getCardState, type CardState } from "@/lib/tayssa/engine";
@@ -94,6 +94,28 @@ export const getAvailability = cache(async (): Promise<{ days: DayAvailability[]
     })),
     services: services.filter((s) => s.slug !== "outro"),
   };
+});
+
+/**
+ * A agenda do site público: só dia e horário livre — nada de quem marcou.
+ * Sem banco (ou com erro nele), cai nas regras da casa sem os horários já
+ * tomados: o pedido vai para o WhatsApp e quem confirma é a Tayssa.
+ */
+export const getAgendaPublica = cache(async (): Promise<{ iso: string; slots: DayAvailability["slots"] }[]> => {
+  if (isDbConfigured()) {
+    try {
+      const { days } = await getAvailability();
+      return days.map((d) => ({ iso: d.iso, slots: d.slots }));
+    } catch (e) {
+      logServerError("agenda.publica", e);
+    }
+  }
+  const b = (await getSettings()).booking;
+  const now = nowInBusinessTz();
+  return bookableDays(now, b).map((d) => ({
+    iso: d.iso,
+    slots: b.slots.map((t) => ({ time: t, available: slotIsBookable(d.iso, t, now, b.lead_hours) })),
+  }));
 });
 
 // ------------------------------------------------------------

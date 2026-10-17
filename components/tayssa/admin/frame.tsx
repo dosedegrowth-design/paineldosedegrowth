@@ -4,16 +4,17 @@ import { useEffect, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { ROUTES } from "@/lib/tayssa/config";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
-import { Icone, type IconeNome } from "@/components/tayssa/admin/icons";
+import { motion, useReducedMotion } from "framer-motion";
+import { IconeBarra, type IconeBarraNome } from "@/components/tayssa/ui/icones-barra";
 import { AdminSidebar, type Atencao } from "@/components/tayssa/admin/sidebar";
 import { AdminTopbar } from "@/components/tayssa/admin/topbar";
 
 /** Os quatro destinos do dia a dia no celular; o resto mora no "Mais". */
-const BAIXO: { href: string; label: string; icone: IconeNome; chave?: keyof Atencao; exato?: boolean }[] = [
-  { href: ROUTES.admin, label: "Início", icone: "visao", exato: true },
+const BAIXO: { href: string; label: string; icone: IconeBarraNome; chave?: keyof Atencao; exato?: boolean }[] = [
+  { href: ROUTES.admin, label: "Início", icone: "grade", exato: true },
   { href: ROUTES.adminAgenda, label: "Agenda", icone: "agenda", chave: "appointments" },
   { href: ROUTES.adminClients, label: "Clientes", icone: "clientes", chave: "signups" },
-  { href: ROUTES.adminBenefits, label: "Benefícios", icone: "beneficios", chave: "benefits" },
+  { href: ROUTES.adminBenefits, label: "Benefícios", icone: "presente", chave: "benefits" },
 ];
 
 /**
@@ -24,6 +25,7 @@ const BAIXO: { href: string; label: string; icone: IconeNome; chave?: keyof Aten
  */
 export function AdminFrame({ atencao, nome, children }: { atencao: Atencao; nome: string; children: ReactNode }) {
   const path = usePathname();
+  const reduced = useReducedMotion();
   const [aberta, setAberta] = useState(false);
 
   // trocou de tela: a gaveta fecha
@@ -54,19 +56,27 @@ export function AdminFrame({ atencao, nome, children }: { atencao: Atencao; nome
             const on = ativo(i.href, i.exato);
             return (
               <TransitionLink key={i.href} href={i.href} className="tya-baixo__item" data-on={on} aria-current={on ? "page" : undefined}>
+                {on ? (
+                  <motion.span
+                    layoutId="tya-baixo-lente"
+                    className="tya-baixo__lente"
+                    transition={reduced ? { duration: 0 } : { type: "spring", stiffness: 520, damping: 40, mass: 0.8 }}
+                    aria-hidden
+                  />
+                ) : null}
                 <span className="tya-baixo__ico">
-                  <Icone nome={i.icone} />
+                  <IconeBarra nome={i.icone} cheio={on} />
                   {n > 0 ? <em aria-label={`${n} esperando`}>{n > 9 ? "9+" : n}</em> : null}
                 </span>
-                {i.label}
+                <span className="tya-baixo__rotulo">{i.label}</span>
               </TransitionLink>
             );
           })}
-          <button type="button" className="tya-baixo__item" onClick={() => setAberta(true)}>
+          <button type="button" className="tya-baixo__item" onClick={() => setAberta(true)} aria-expanded={aberta}>
             <span className="tya-baixo__ico">
-              <Icone nome="mais" />
+              <IconeBarra nome="mais" cheio={aberta} />
             </span>
-            Mais
+            <span className="tya-baixo__rotulo">Mais</span>
           </button>
         </nav>
         <main className="tya-main">

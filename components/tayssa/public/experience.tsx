@@ -28,8 +28,10 @@ import type { CategoriaCatalogo } from "@/lib/tayssa/catalogo";
 import { CONTEUDO, temAtendimento, temSobre } from "@/lib/tayssa/content";
 import type { VideoAvailability } from "@/lib/tayssa/media-server";
 import { useEstrutura } from "@/components/tayssa/ui/estrutura";
+import { AgendarProvider, type AgendaSite } from "@/components/tayssa/public/agendar";
 
 const IntroCtx = createContext(false);
+
 export const useIntroReady = () => useContext(IntroCtx);
 
 /**
@@ -50,9 +52,12 @@ export function PublicExperience({
   photos,
   videos,
   catalogo = [],
+  agenda,
 }: {
   /** fotos e vídeos por categoria e produto (painel → Fotos) */
   catalogo?: CategoriaCatalogo[];
+  /** o que a folha de agendar oferece: serviços, volumes, dias e horários livres */
+  agenda: AgendaSite;
   settings: Settings;
   services: ServiceRow[];
   benefits: BenefitRow[];
@@ -89,35 +94,37 @@ export function PublicExperience({
 
   return (
     <IntroCtx.Provider value={ready}>
-      <IntroLoader onDone={() => setReady(true)} />
-      <PublicNav scheduleUrl={links.schedule} sections={secoes} />
-      <main>
-        <Hero business={settings.business} scheduleUrl={links.schedule} photo={photos?.hero} video={videos?.hero} />
-        <Faixa itens={services.filter((s) => s.slug !== "outro").map((s) => s.name)} />
-        <ServiceStrip services={services} scheduleUrl={links.schedule} />
-        <WorkSequence photos={photos?.work} />
-        <Film video={videos?.processo} />
-        <Catalogo catalogo={catalogo} />
-        <Services
-          services={services}
-          scheduleUrl={links.schedule}
-          photoBySlug={photos?.byService}
-          detalhes={CONTEUDO.servicos}
-          ambiente={colagem[1] ?? colagem[0]}
-          catalogo={catalogo}
-        />
-        <About business={settings.business} conteudo={CONTEUDO} portrait={photos?.portrait} instagramUrl={links.instagram} />
-        <Studio conteudo={CONTEUDO} video={videos?.espaco} photo={photos?.studio} />
-        <Details instagramUrl={links.instagram} handle={links.handle} photos={colagem} />
-        <ReelsInstagram reels={CONTEUDO.instagram} handle={links.handle} perfilUrl={links.instagram} />
-        <Testimonials conteudo={CONTEUDO} />
-        <VipIntro benefits={benefits} />
-        <ReferralCta />
-        <VisitInfo business={settings.business} conteudo={CONTEUDO} />
-        <Closing scheduleUrl={links.schedule} ambiente={colagem[2] ?? colagem[0]} />
-      </main>
-      <PublicFooter business={settings.business} />
-      <AgendarFlutua url={links.schedule} />
+      <AgendarProvider agenda={agenda}>
+        <IntroLoader onDone={() => setReady(true)} />
+        <PublicNav scheduleUrl={links.schedule} sections={secoes} />
+        <main>
+          <Hero business={settings.business} scheduleUrl={links.schedule} photo={photos?.hero} video={videos?.hero} />
+          <Faixa itens={services.filter((s) => s.slug !== "outro").map((s) => s.name)} />
+          <ServiceStrip services={services} scheduleUrl={links.schedule} />
+          <WorkSequence photos={photos?.work} />
+          <Film video={videos?.processo} />
+          <Catalogo catalogo={catalogo} />
+          <Services
+            services={services}
+            scheduleUrl={links.schedule}
+            photoBySlug={photos?.byService}
+            detalhes={CONTEUDO.servicos}
+            ambiente={colagem[1] ?? colagem[0]}
+            catalogo={catalogo}
+          />
+          <About business={settings.business} conteudo={CONTEUDO} portrait={photos?.portrait} instagramUrl={links.instagram} />
+          <Studio conteudo={CONTEUDO} video={videos?.espaco} photo={photos?.studio} />
+          <Details instagramUrl={links.instagram} handle={links.handle} photos={colagem} />
+          <ReelsInstagram reels={CONTEUDO.instagram} handle={links.handle} perfilUrl={links.instagram} />
+          <Testimonials conteudo={CONTEUDO} />
+          <VipIntro benefits={benefits} />
+          <ReferralCta />
+          <VisitInfo business={settings.business} conteudo={CONTEUDO} />
+          <Closing scheduleUrl={links.schedule} ambiente={colagem[2] ?? colagem[0]} />
+        </main>
+        <PublicFooter business={settings.business} />
+        <AgendarFlutua url={links.schedule} />
+      </AgendarProvider>
     </IntroCtx.Provider>
   );
 }

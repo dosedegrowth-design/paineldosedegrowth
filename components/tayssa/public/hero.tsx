@@ -5,12 +5,12 @@ import {
   motion,
   useMotionValue,
   useReducedMotion,
-  useScroll,
   useSpring,
   useTransform,
   type MotionStyle,
   type MotionValue,
 } from "framer-motion";
+import { useProgressoRolagem } from "@/components/tayssa/ui/rolagem";
 import type { BusinessSettings } from "@/lib/tayssa/config";
 import { ROUTES } from "@/lib/tayssa/config";
 import type { PhotoSlot } from "@/lib/tayssa/photos";
@@ -22,6 +22,7 @@ import { FundoVivo } from "@/components/tayssa/ui/fundo-vivo";
 import { useEstrutura } from "@/components/tayssa/ui/estrutura";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { useIntroReady } from "@/components/tayssa/public/experience";
+import { LinkAgendar } from "@/components/tayssa/public/agendar";
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -85,7 +86,7 @@ export function Hero({
   const sx = useSpring(mx, { stiffness: 70, damping: 18, mass: 0.6 });
   const sy = useSpring(my, { stiffness: 70, damping: 18, mass: 0.6 });
 
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const scrollYProgress = useProgressoRolagem(ref, ["start start", "end start"]);
   // ao descer: a frase sobe e apaga, a janela sobe e cresce, como o iPhone da iWin
   const textoY = useTransform(scrollYProgress, [0, 0.6], [0, reduced ? 0 : -90]);
   const textoO = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
@@ -200,10 +201,10 @@ export function Hero({
           animate={entra ? { opacity: 1, y: 0 } : undefined}
           transition={{ duration: 0.8, delay: 0.85, ease: EASE }}
         >
-          <a href={scheduleUrl} target="_blank" rel="noopener noreferrer" className="tyh__btn tyh__btn--claro">
-            Agendar no WhatsApp
+          <LinkAgendar href={scheduleUrl} className="tyh__btn tyh__btn--claro">
+            Agendar horário
             <span className="tyh__seta" aria-hidden />
-          </a>
+          </LinkAgendar>
           <TransitionLink href={ROUTES.signup} className="tyh__btn tyh__btn--vidro">
             Pedir acesso ao VIP
           </TransitionLink>

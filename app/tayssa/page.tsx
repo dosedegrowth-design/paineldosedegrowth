@@ -5,7 +5,9 @@ import { getPhotoAvailability } from "@/lib/tayssa/photos-server";
 import { getVideoAvailability } from "@/lib/tayssa/media-server";
 import { getPhotoLibrary } from "@/lib/tayssa/queries/photos";
 import { assignPhotos } from "@/lib/tayssa/photos";
-import { montarCatalogo } from "@/lib/tayssa/catalogo";
+import { categoriaDoServico, montarCatalogo } from "@/lib/tayssa/catalogo";
+import { getAgendaPublica } from "@/lib/tayssa/queries/vip";
+import type { AgendaSite } from "@/components/tayssa/public/agendar";
 import { PublicExperience } from "@/components/tayssa/public/experience";
 import { PhotoAvailabilityProvider } from "@/components/tayssa/ui/photo-availability";
 import { ROUTES, publicUrl } from "@/lib/tayssa/config";
@@ -22,13 +24,14 @@ export const metadata: Metadata = {
  * a página nunca quebra por causa do Supabase.
  */
 export default async function TayssaHome() {
-  const [settings, services, benefits, photos, library, videos] = await Promise.all([
+  const [settings, services, benefits, photos, library, videos, dias] = await Promise.all([
     getSettings(),
     getActiveServices(),
     getPublicBenefits(),
     getPhotoAvailability(),
     getPhotoLibrary(),
     getVideoAvailability(),
+    getAgendaPublica(),
   ]);
   // uma biblioteca, todos os lugares: o herói, a sequência, o trilho, os serviços.
   // Só entra foto que existe de verdade — da biblioteca, ou arquivo estático
@@ -47,6 +50,28 @@ export default async function TayssaHome() {
     card: assigned.card.filter(existe),
     portrait: existe(assigned.portrait) ? assigned.portrait : undefined,
     studio: existe(assigned.studio) ? assigned.studio : undefined,
+  };
+
+  // a folha de agendar: serviços da casa, os volumes de cílios que ela
+  // publicou no catálogo, os dias e horários livres e o sinal da agenda
+  const agenda: AgendaSite = {
+    telefone: settings.business.whatsapp,
+    servicos: services
+      .filter((s) => s.slug !== "outro")
+      .map((s) => ({
+        slug: s.slug,
+        nome: s.name,
+        tecnicas: categoriaDoServico(s.slug, s.name) === "cilios",
+        manutencao: /manuten/i.test(`${s.slug} ${s.name}`),
+      })),
+    // manutenção já é serviço: não entra como volume
+    tecnicas:
+      catalogo
+        .find((c) => c.slug === "cilios")
+        ?.produtos.map((p) => p.nome)
+        .filter((n) => !/manuten/i.test(n)) ?? [],
+    dias,
+    sinal: settings.booking.deposit_reais,
   };
 
   const jsonLd = {
@@ -70,6 +95,7 @@ export default async function TayssaHome() {
           photos={reais}
           videos={videos}
           catalogo={catalogo}
+          agenda={agenda}
         />
       </PhotoAvailabilityProvider>
     </>

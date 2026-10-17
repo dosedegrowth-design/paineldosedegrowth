@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { motion, useMotionValueEvent, useReducedMotion, useScroll } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ROUTES } from "@/lib/tayssa/config";
 import type { BenefitRow, BenefitType } from "@/lib/tayssa/types";
 import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
@@ -11,45 +10,6 @@ import { Icone, type IconeNome } from "@/components/tayssa/ui/icones";
 import { Jornada } from "@/components/tayssa/ui/jornada";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
-
-/* Tokens dia -> noite, interpolados pelo scroll: o off-white da casa
-   escurece até a noite vinho. O dourado entra na mesma conta — no claro é
-   um ocre fechado, no escuro abre em dourado — e só pinta o selo e o fio. */
-const DAY = {
-  bg: [251, 247, 246],
-  fg: [42, 13, 24],
-  fg2: [122, 82, 96],
-  line: [42, 13, 24],
-  accent: [109, 21, 48],
-  photo: [240, 225, 229],
-  gold: [138, 99, 52],
-};
-const NIGHT = {
-  bg: [26, 8, 16],
-  fg: [248, 236, 239],
-  fg2: [248, 236, 239],
-  line: [248, 236, 239],
-  accent: [215, 151, 168],
-  photo: [45, 16, 25],
-  gold: [201, 163, 108],
-};
-
-/** Propriedades que o componente escreve no escopo — e que precisa devolver. */
-const SOBRESCRITOS = [
-  "--t-bg",
-  "--t-fg",
-  "--t-fg-2",
-  "--t-line",
-  "--t-line-strong",
-  "--t-accent",
-  "--t-photo",
-  "--t-accent-fg",
-  "--tyvi-gold",
-];
-
-function mix(a: number[], b: number[], t: number) {
-  return a.map((v, i) => Math.round(v + (b[i] - v) * t)).join(",");
-}
 
 /**
  * Os três privilégios do clube, na voz da casa. Cada um diz, no próprio
@@ -115,11 +75,11 @@ function descricaoDoCatalogo(benefits: BenefitRow[], tipo: BenefitType): string 
 }
 
 /**
- * Transição 6 — a luz abaixa e vem o convite.
- *
- * Conforme esta seção se aproxima, os tokens da página inteira vão de
- * marfim a noir: não é um bloco escuro, é a página escurecendo. Esse
- * mecanismo é o coração da seção e fica intacto.
+ * A luz abaixa e vem o convite: o VIP é a seção vinho com ouro, entre o
+ * rosé do Instagram e o champanhe da indicação. (A página inteira já
+ * escureceu por scroll aqui; reescrever os tokens da raiz a cada quadro
+ * recalculava o estilo do site todo e travava o celular — e cada tópico
+ * passou a ter o próprio fundo.)
  *
  * A composição é um convite, não uma lista de programa: ficha de topo com
  * o rótulo dourado, o fio dourado que se risca da esquerda (único fio de
@@ -132,37 +92,10 @@ function descricaoDoCatalogo(benefits: BenefitRow[], tipo: BenefitType): string 
  * tipografia, régua e ar.
  */
 export function VipIntro({ benefits }: { benefits: BenefitRow[] }) {
-  const ref = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 95%", "start 30%"] });
-
-  useMotionValueEvent(scrollYProgress, "change", (v) => {
-    const scope = document.querySelector<HTMLElement>(".ty-scope[data-theme='day']");
-    if (!scope) return;
-    const k = Math.max(0, Math.min(1, v));
-    scope.style.setProperty("--t-bg", `rgb(${mix(DAY.bg, NIGHT.bg, k)})`);
-    scope.style.setProperty("--t-fg", `rgb(${mix(DAY.fg, NIGHT.fg, k)})`);
-    scope.style.setProperty("--t-fg-2", `rgba(${mix(DAY.fg2, NIGHT.fg2, k)},${(1 - k) * 1 + k * 0.62})`);
-    scope.style.setProperty("--t-line", `rgba(${mix(DAY.line, NIGHT.line, k)},0.14)`);
-    scope.style.setProperty("--t-line-strong", `rgba(${mix(DAY.line, NIGHT.line, k)},0.33)`);
-    scope.style.setProperty("--t-accent", `rgb(${mix(DAY.accent, NIGHT.accent, k)})`);
-    scope.style.setProperty("--t-photo", `rgb(${mix(DAY.photo, NIGHT.photo, k)})`);
-    scope.style.setProperty("--t-accent-fg", k > 0.5 ? "#1a0810" : "#ffffff");
-    scope.style.setProperty("--tyvi-gold", `rgb(${mix(DAY.gold, NIGHT.gold, k)})`);
-    document.body.style.background = `rgb(${mix(DAY.bg, NIGHT.bg, k)})`;
-  });
-
-  // ao desmontar (troca de rota), devolve os tokens à folha de estilo
-  useEffect(() => {
-    return () => {
-      const scope = document.querySelector<HTMLElement>(".ty-scope[data-theme='day']");
-      if (scope) SOBRESCRITOS.forEach((p) => scope.style.removeProperty(p));
-      document.body.style.background = "";
-    };
-  }, []);
 
   return (
-    <section id="vip" ref={ref} className="ty-section tyvi" aria-label="Tayssa VIP">
+    <section id="vip" className="ty-section tyvi ty-night" aria-label="Tayssa VIP">
       <div className="ty-container">
         {/* ficha de topo: o rótulo dourado de um lado, a regra da casa do outro */}
         <Reveal className="tyvi__topo" y={14}>

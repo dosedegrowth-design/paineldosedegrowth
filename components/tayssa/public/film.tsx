@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useReducedMotion, useTransform } from "framer-motion";
+import { useProgressoRolagem } from "@/components/tayssa/ui/rolagem";
 import { VIDEOS, temVideo, type VideoPresence } from "@/lib/tayssa/media";
 import { MotionMedia } from "@/components/tayssa/ui/motion-media";
 import { useEstrutura } from "@/components/tayssa/ui/estrutura";
@@ -25,7 +26,7 @@ import { useIsMobile } from "@/components/tayssa/ui/use-media";
 export function Film({ video }: { video?: VideoPresence }) {
   const estrutura = useEstrutura();
   // a seção só existe com vídeo (ou na revisão). O palco vive num
-  // componente à parte para o `useScroll` nascer já com a seção montada —
+  // componente à parte para o progresso de rolagem nascer já com a seção montada —
   // com a referência vazia ele mediria a página inteira.
   if (!temVideo(video) && !estrutura) return null;
   return <Palco video={video} />;
@@ -35,7 +36,7 @@ function Palco({ video }: { video?: VideoPresence }) {
   const reduced = useReducedMotion();
   const mobile = useIsMobile();
   const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+  const scrollYProgress = useProgressoRolagem(ref, ["start start", "end end"]);
 
   // o arco: inset do topo/laterais/base em %, raio do topo em px
   const ini = mobile ? [16, 10, 18] : [14, 33, 12];

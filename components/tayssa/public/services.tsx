@@ -13,6 +13,7 @@ import { useFinePointer } from "@/components/tayssa/ui/use-media";
 import { Magnetic } from "@/components/tayssa/ui/magnetic";
 import type { ServicoDetalhe } from "@/lib/tayssa/content";
 import { Pendente } from "@/components/tayssa/ui/estrutura";
+import { LinkAgendar } from "@/components/tayssa/public/agendar";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -159,12 +160,11 @@ export function Services({
             const rolo = itensDaCategoria(catalogo, categoriaDoServico(s.slug, s.name));
             return (
               <Reveal key={s.id} as="li" className="tysv__item" delay={Math.min(i, 4) * 0.05} amount={0.25}>
-                <a
+                <LinkAgendar
                   className="tysv__linha"
                   href={linkDoServico(scheduleUrl, s.name)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`Agendar ${s.name} no WhatsApp`}
+                  servico={s.slug}
+                  aria-label={`Agendar ${s.name}`}
                   onPointerEnter={fine ? () => setAtivo(i) : undefined}
                   onPointerLeave={fine ? () => setAtivo(null) : undefined}
                 >
@@ -209,7 +209,7 @@ export function Services({
                     <span>Agendar</span>
                     <span className="ty-btn__arrow" aria-hidden />
                   </span>
-                </a>
+                </LinkAgendar>
                 {rolo.length ? (
                   <div className="tysv__rolo">
                     <Rolo itens={rolo} tamanho="mini" rotulo={`Fotos e vídeos: ${s.name}`} sentido={i % 2 ? -1 : 1} />
@@ -235,10 +235,10 @@ export function Services({
             a gente escolhe <em>junto</em>.
           </p>
           <Magnetic>
-            <a href={scheduleUrl} target="_blank" rel="noopener noreferrer" className="ty-btn">
+            <LinkAgendar href={scheduleUrl} className="ty-btn">
               <span>Agendar atendimento</span>
               <span className="ty-btn__arrow" aria-hidden />
-            </a>
+            </LinkAgendar>
           </Magnetic>
         </Reveal>
       </div>

@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useMotionValueEvent } from "framer-motion";
+import { useRolagemY } from "@/components/tayssa/ui/rolagem";
+import { LinkAgendar } from "@/components/tayssa/public/agendar";
 import { Bloom } from "@/components/tayssa/flora/bloom";
 
 /**
@@ -13,13 +16,13 @@ export function Faixa({ itens }: { itens: string[] }) {
   const volta = [...lista, ...lista, ...lista];
   return (
     <div className="ty-faixa" aria-hidden>
-      <div className="ty-faixa__trilho">
+      <div className="ty-faixa__trilho" data-janela>
         {[0, 1].map((k) => (
           <div key={k} className="ty-faixa__trilho" style={{ animation: "none" }}>
             {volta.map((t, i) => (
               <span key={`${k}-${i}`} className="ty-faixa__item">
                 {t}
-                <span className="ty-faixa__flor">
+                <span className="ty-faixa__flor" data-janela-item>
                   <Bloom seed={(i % 7) + 2} tom={i % 2 ? "rosa" : "magenta"} />
                 </span>
               </span>
@@ -33,21 +36,31 @@ export function Faixa({ itens }: { itens: string[] }) {
 
 /** O caminho mais curto até ela: aparece depois da abertura e some no fim. */
 export function AgendarFlutua({ url }: { url: string }) {
+  const y = useRolagemY();
   const [on, setOn] = useState(false);
+  // altura da tela e da página medidas só quando mudam; no scroll, só conta
+  const medidas = useRef({ tela: 0, fim: Infinity });
+  const visivel = (v: number) => v > medidas.current.tela * 0.85 && v < medidas.current.fim;
   useEffect(() => {
-    const ver = () => {
-      const fim = document.documentElement.scrollHeight - window.innerHeight - 260;
-      setOn(window.scrollY > window.innerHeight * 0.85 && window.scrollY < fim);
+    const medir = () => {
+      const tela = document.documentElement.clientHeight;
+      medidas.current = { tela, fim: document.documentElement.scrollHeight - tela - 260 };
+      const v = window.scrollY;
+      setOn(v > tela * 0.85 && v < medidas.current.fim);
     };
-    ver();
-    window.addEventListener("scroll", ver, { passive: true });
-    return () => window.removeEventListener("scroll", ver);
+    medir();
+    const ro = new ResizeObserver(medir);
+    ro.observe(document.body);
+    window.addEventListener("resize", medir);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", medir);
+    };
   }, []);
+  useMotionValueEvent(y, "change", (v) => setOn(visivel(v)));
   return (
-    <a
+    <LinkAgendar
       href={url}
-      target="_blank"
-      rel="noopener noreferrer"
       className="ty-agendar-flutua"
       data-on={on}
       aria-hidden={!on}
@@ -57,6 +70,6 @@ export function AgendarFlutua({ url }: { url: string }) {
         <Bloom seed={5} tom="pétala" />
       </span>
       Agendar
-    </a>
+    </LinkAgendar>
   );
 }

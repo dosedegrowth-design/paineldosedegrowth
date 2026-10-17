@@ -135,6 +135,8 @@ export type BookingSettings = {
   default_duration_min: number;
   /** quantos horários futuros uma cliente pode ter ao mesmo tempo */
   max_open_per_client: number;
+  /** sinal pedido no Pix para garantir o horário marcado pelo site, em reais */
+  deposit_reais: number;
 };
 
 export type SignupSettings = {
@@ -209,6 +211,7 @@ export const DEFAULT_SETTINGS: Settings = {
     horizon_days: 30,
     default_duration_min: 90,
     max_open_per_client: 2,
+    deposit_reais: 50,
   },
   signup: {
     open: true,

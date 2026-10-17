@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useInView, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion";
+import { motion, useInView, useReducedMotion, useTransform, type MotionValue } from "framer-motion";
+import { useProgressoRolagem } from "@/components/tayssa/ui/rolagem";
 import type { PhotoSlot } from "@/lib/tayssa/photos";
 import type { FloraTom } from "@/lib/tayssa/flora";
 import { RealPhoto } from "@/components/tayssa/ui/real-photo";
@@ -59,7 +60,7 @@ export function Details({
   const reduced = useReducedMotion();
   const naTela = useInView(ref, { once: true, amount: 0.2 });
   const entra = naTela || Boolean(reduced);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const scrollYProgress = useProgressoRolagem(ref, ["start end", "end start"]);
   const fotos = (photos ?? []).slice(0, LUGARES_FOTO.length);
 
   return (

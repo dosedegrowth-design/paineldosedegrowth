@@ -617,6 +617,14 @@ export function BookingForm({ value }: { value: Settings["booking"] }) {
             error={erroDe(state, "max_open_per_client")}
             hint="Quantos pedidos futuros ela pode ter ao mesmo tempo."
           />
+          <Campo
+            label="Sinal no Pix (R$)"
+            name="deposit_reais"
+            inputMode="decimal"
+            defaultValue={String(value.deposit_reais)}
+            error={erroDe(state, "deposit_reais")}
+            hint="Vai na mensagem de quem agenda pelo site, pedindo a chave Pix."
+          />
         </div>
       </div>
 

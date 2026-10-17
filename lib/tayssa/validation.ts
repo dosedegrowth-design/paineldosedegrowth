@@ -294,6 +294,7 @@ export const bookingSettingsSchema = z.object({
   horizon_days: z.coerce.number().int().min(1).max(120),
   default_duration_min: z.coerce.number().int().min(15).max(480),
   max_open_per_client: z.coerce.number().int().min(1).max(10),
+  deposit_reais: z.coerce.number().min(0, "O sinal não pode ser negativo").max(2000),
 });
 
 export const loyaltySettingsSchema = z.object({

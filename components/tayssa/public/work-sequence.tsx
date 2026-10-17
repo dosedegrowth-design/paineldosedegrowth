@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { AnimatePresence, motion, useReducedMotion, useScroll } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { topoNoDocumento, useProgressoRolagem } from "@/components/tayssa/ui/rolagem";
 import type { PhotoSlot } from "@/lib/tayssa/photos";
 import { RealPhoto } from "@/components/tayssa/ui/real-photo";
 
@@ -67,36 +68,47 @@ export function WorkSequence({ photos }: { photos?: PhotoSlot[] }) {
   const corridaRef = useRef<HTMLOListElement>(null);
   const [ativo, setAtivo] = useState(0);
   // progresso da coluna que corre: alimenta a barrinha do contador
-  const { scrollYProgress } = useScroll({
-    target: corridaRef,
-    offset: ["start center", "end center"],
-  });
+  const scrollYProgress = useProgressoRolagem(corridaRef, ["start center", "end center"]);
 
   // ativa = a última técnica cujo topo já cruzou a linha do meio da tela.
   // Medir posição (em vez de observar entrada) mantém a coluna grudada
-  // certa mesmo num salto de âncora, e independe da altura do item.
+  // certa mesmo num salto de âncora, e independe da altura do item. A
+  // posição de cada técnica no documento é medida só quando a página muda
+  // de tamanho; no scroll é só comparar com `scrollY` — nada de ler layout
+  // a cada quadro.
   useEffect(() => {
     const itens = Array.from(corridaRef.current?.querySelectorAll<HTMLElement>("[data-tecnica]") ?? []);
     if (!itens.length) return;
+    let topos: number[] = [];
+    let linha = 0;
     let quadro = 0;
-    const medir = () => {
-      quadro = 0;
-      const linha = window.innerHeight * 0.52;
+    const escolher = () => {
+      const y = window.scrollY + linha;
       let i = 0;
-      itens.forEach((el, k) => {
-        if (el.getBoundingClientRect().top <= linha) i = k;
+      topos.forEach((t, k) => {
+        if (t <= y) i = k;
       });
       setAtivo(i);
     };
-    const aoRolar = () => {
+    const medir = () => {
+      quadro = 0;
+      // sem transform: a entrada animada do item não desloca a medida
+      topos = itens.map(topoNoDocumento);
+      linha = document.documentElement.clientHeight * 0.52;
+      escolher();
+    };
+    const remedir = () => {
       if (!quadro) quadro = requestAnimationFrame(medir);
     };
     medir();
-    window.addEventListener("scroll", aoRolar, { passive: true });
-    window.addEventListener("resize", aoRolar);
+    const ro = new ResizeObserver(remedir);
+    ro.observe(document.body);
+    window.addEventListener("scroll", escolher, { passive: true });
+    window.addEventListener("resize", remedir);
     return () => {
-      window.removeEventListener("scroll", aoRolar);
-      window.removeEventListener("resize", aoRolar);
+      ro.disconnect();
+      window.removeEventListener("scroll", escolher);
+      window.removeEventListener("resize", remedir);
       if (quadro) cancelAnimationFrame(quadro);
     };
   }, []);

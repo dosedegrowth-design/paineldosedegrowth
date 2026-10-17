@@ -122,6 +122,7 @@ export async function updateBookingSettingsAction(_p: ActionResult | null, fd: F
       horizon_days: str(fd, "horizon_days"),
       default_duration_min: str(fd, "default_duration_min"),
       max_open_per_client: str(fd, "max_open_per_client"),
+      deposit_reais: str(fd, "deposit_reais").replace(",", "."),
     });
     await saveSetting("booking", input, admin.id);
     return undefined;

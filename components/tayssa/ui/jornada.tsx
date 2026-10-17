@@ -1,7 +1,8 @@
 "use client";
 
 import { useId, useRef } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useReducedMotion, useTransform } from "framer-motion";
+import { useProgressoRolagem } from "@/components/tayssa/ui/rolagem";
 import { Icone, type IconeNome } from "@/components/tayssa/ui/icones";
 
 export type Parada = { n: string; nome: string; texto: string; icone: IconeNome };
@@ -34,7 +35,7 @@ export function Jornada({ paradas, className }: { paradas: Parada[]; className?:
   const ref = useRef<HTMLOListElement>(null);
   const id = useId().replace(/[^a-zA-Z0-9]/g, "");
   const reduced = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 85%", "end 55%"] });
+  const scrollYProgress = useProgressoRolagem(ref, ["start 85%", "end 55%"]);
   const desenho = useTransform(scrollYProgress, [0, 1], reduced ? [1, 1] : [0.02, 1]);
 
   const pts = paradas.map((_, i) => ({ x: (W * (i + 0.5)) / paradas.length, y: i % 2 ? 210 : 90 }));

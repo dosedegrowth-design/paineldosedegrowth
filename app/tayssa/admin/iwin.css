@@ -30,9 +30,9 @@
   --tya-top: 64px;
 
   /* a fonte do sistema (SF no Mac e no iPhone, como a iWin); Inter no resto */
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter",
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", var(--t-font-inter, "Inter"),
     "Helvetica Neue", Arial, sans-serif;
-  --t-font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+  --t-font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", var(--t-font-inter, "Inter"), sans-serif;
   font-size: 14px;
   letter-spacing: -0.012em;
   background-image:
@@ -578,70 +578,105 @@ select.tya-field {
     padding: 8px 16px calc(28px + env(safe-area-inset-bottom));
   }
   /* pílula de atalhos: flutua no alto, solta das bordas */
+  /* a pílula de atalhos: vidro claro flutuando no alto, no jeito da barra
+     do iPhone — ícone cheio e lente atrás da aba atual, contorno nas outras */
   .tya-baixo {
     position: sticky;
     top: calc(10px + env(safe-area-inset-top));
     z-index: 40;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    height: 56px;
+    gap: 2px;
+    height: 62px;
     margin: 10px 12px 0;
-    padding: 0 4px;
+    padding: 5px;
     border-radius: 999px;
-    background: rgba(251, 251, 253, 0.82);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
-    backdrop-filter: saturate(180%) blur(20px);
-    border: 1px solid var(--tya-line-soft);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.62)),
+      rgba(251, 247, 248, 0.6);
+    -webkit-backdrop-filter: saturate(180%) blur(22px);
+    backdrop-filter: saturate(180%) blur(22px);
+    border: 0;
     box-shadow:
-      0 10px 30px -12px rgba(26, 8, 16, 0.28),
-      0 2px 6px rgba(26, 8, 16, 0.06);
+      inset 0 1px 0 #fff,
+      inset 0 0 0 1px rgba(75, 12, 32, 0.07),
+      0 14px 34px -14px rgba(26, 8, 16, 0.32),
+      0 2px 8px -2px rgba(26, 8, 16, 0.08);
   }
   .tya-baixo__item {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2px;
-    font-size: 11.5px;
-    color: var(--tya-muted);
-  }
-  .tya-baixo__item[data-on="true"] {
-    color: var(--tya-ink);
+    gap: 3px;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    font: inherit;
+    font-size: 10.5px;
     font-weight: 600;
+    letter-spacing: -0.01em;
+    color: rgba(29, 29, 31, 0.5);
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      color 0.2s ease,
+      transform 0.16s cubic-bezier(0.23, 1, 0.32, 1);
   }
-  .tya-baixo__ico {
-    position: relative;
-    display: grid;
-    place-items: center;
+  .tya-baixo__item:active {
+    transform: scale(0.92);
   }
-  .tya-baixo__ico svg {
-    width: 22px;
-    height: 22px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 1.7;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+  .ty-scope .tya-baixo a.tya-baixo__item {
+    color: rgba(29, 29, 31, 0.5);
   }
-  .tya-baixo__item[data-on="true"] svg {
-    stroke-width: 2.1;
+  .ty-scope .tya-baixo a.tya-baixo__item[data-on="true"] {
     color: var(--tya-brand);
   }
-  .tya-baixo__ico em {
-    position: absolute;
-    top: -4px;
-    right: -9px;
-    min-width: 16px;
-    height: 16px;
-    padding: 0 4px;
-    border-radius: 999px;
-    background: var(--tya-brand);
-    color: #fff;
-    font-style: normal;
-    font-size: 11px;
-    font-weight: 700;
+  .tya-baixo__ico,
+  .tya-baixo__rotulo {
+    position: relative;
+    z-index: 1;
+  }
+  .tya-baixo__ico {
     display: grid;
     place-items: center;
+  }
+  .tya-baixo__ico .tyib {
+    width: 24px;
+    height: 24px;
+  }
+  /* a lente: vinho bem claro com brilho, desliza entre as abas */
+  .tya-baixo__lente {
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background:
+      radial-gradient(80% 70% at 50% 0%, rgba(255, 255, 255, 0.9), transparent 70%),
+      rgba(109, 21, 48, 0.09);
+    box-shadow:
+      inset 0 0 0 1px rgba(109, 21, 48, 0.08),
+      0 4px 12px -6px rgba(109, 21, 48, 0.3);
+  }
+  /* o número de pendências: bolinha firme com aro branco, como o selo do iPhone */
+  .tya-baixo__ico em {
+    position: absolute;
+    top: -5px;
+    left: calc(100% - 7px);
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4.5px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #d9446f, #b0204f);
+    box-shadow: 0 0 0 2px #fff;
+    color: #fff;
+    font-style: normal;
+    font-size: 10.5px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 17px;
+    text-align: center;
   }
 }
 
@@ -1077,5 +1112,13 @@ select.tya-field {
   .tya-quadro__janela {
     width: min(100%, calc(50dvh * 0.74));
     margin-inline: auto;
+  }
+}
+
+/* celular: campo com 16px — abaixo disso o iPhone dá zoom sozinho ao tocar
+   e a tela fica "fora de proporção" até a Tayssa beliscar de volta */
+@media (max-width: 860px) {
+  .tya :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), textarea, select) {
+    font-size: 16px;
   }
 }

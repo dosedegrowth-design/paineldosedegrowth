@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import { useRef } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useReducedMotion, useTransform } from "framer-motion";
+import { useProgressoRolagem } from "@/components/tayssa/ui/rolagem";
 import type { PhotoSlot } from "@/lib/tayssa/photos";
 import { usePhotoAvailable } from "@/components/tayssa/ui/photo-availability";
 import { FundoVivo } from "@/components/tayssa/ui/fundo-vivo";
@@ -17,7 +18,7 @@ export function FotoAmbiente({ photo, posicao = "50% 50%" }: { photo?: PhotoSlot
   const ref = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
   const disponivel = usePhotoAvailable(photo?.src ?? "");
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const scrollYProgress = useProgressoRolagem(ref, ["start end", "end start"]);
   const y = useTransform(scrollYProgress, [0, 1], reduced ? ["0%", "0%"] : ["-12%", "12%"]);
   const escala = useTransform(scrollYProgress, [0, 0.5, 1], reduced ? [1.15, 1.15, 1.15] : [1.25, 1.15, 1.25]);
 
