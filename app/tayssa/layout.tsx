@@ -1,15 +1,16 @@
 import type { Metadata, Viewport } from "next";
-// cartaz: caixa-alta condensada — o grito da página (títulos do site)
-import "@fontsource/league-gothic/index.css";
-// o acento: itálico macio, a palavra pequena que liga o cartaz ("cílios que combinam")
-import "@fontsource-variable/fraunces/soft-italic.css";
-// corpo, rótulos e o app: grotesca humanista, arredondada
-import "@fontsource-variable/dm-sans/index.css";
+// uma família sem serifa: a do sistema Apple; Inter de reserva nos outros aparelhos
+import "@fontsource/inter/300.css";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/inter/700.css";
 import "lenis/dist/lenis.css";
 import "./tayssa.css";
 import "./flora.css";
 import "./casa.css";
 import "./linguagem.css";
+import "./identidade.css";
 import { PUBLIC_ORIGIN } from "@/lib/tayssa/config";
 import { SmoothScroll } from "@/components/tayssa/ui/smooth-scroll";
 import { TransitionProvider } from "@/components/tayssa/ui/transition";

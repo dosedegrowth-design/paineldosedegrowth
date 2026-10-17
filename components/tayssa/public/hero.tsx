@@ -1,53 +1,64 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { useRef, type PointerEvent } from "react";
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+  type MotionStyle,
+  type MotionValue,
+} from "framer-motion";
 import type { BusinessSettings } from "@/lib/tayssa/config";
 import { ROUTES } from "@/lib/tayssa/config";
 import type { PhotoSlot } from "@/lib/tayssa/photos";
+import type { FloraTom, FlowerKind } from "@/lib/tayssa/flora";
 import { VIDEOS, temVideo, type VideoPresence } from "@/lib/tayssa/media";
 import { MotionMedia } from "@/components/tayssa/ui/motion-media";
-import { Arranjo, type Peca } from "@/components/tayssa/flora/arranjo";
+import { Bloom } from "@/components/tayssa/flora/bloom";
+import { FundoVivo } from "@/components/tayssa/ui/fundo-vivo";
 import { useEstrutura } from "@/components/tayssa/ui/estrutura";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { useIntroReady } from "@/components/tayssa/public/experience";
 
-const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
-/** A frase de abertura, quebrada como o olho lê: três tempos. */
-const LINHAS = [
-  { texto: "Cílios que combinam", em: false },
-  { texto: "com o seu rosto —", em: false },
-  { texto: "não com a moda.", em: true },
-];
 
-/* Flores da abertura, em duas camadas. Atrás da marca: uma peônia clara
-   (tom pétala) que a tipografia vinho atravessa sem perder leitura. Na
-   frente: um botão bordô e uma rosa pequena que cruzam a ponta do "Lash"
-   e correm mais rápido no scroll — é isso que dá profundidade. */
-const FLORES_FUNDO: Peca[] = [
-  { kind: "flor", seed: 7, tom: "pétala", x: 56, y: 30, size: "clamp(280px, 30vw, 560px)", rotate: -8, depth: -0.4, hideBelow: 768 },
-  // celular: a flor clara mora atrás da marca, longe do botão
-  { kind: "flor", seed: 7, tom: "pétala", x: 82, y: 13, size: "78vw", rotate: -12, depth: -0.3, showBelow: 768 },
-  { kind: "flor", seed: 3, tom: "rosa", x: 104, y: 70, size: "clamp(140px, 17vw, 280px)", rotate: -32, depth: -0.2, delay: 260, hideBelow: 768 },
-];
-const FLORES_FRENTE: Peca[] = [
-  { kind: "botao", seed: 11, tom: "magenta", x: 95, y: 15, size: "clamp(46px, 4.6vw, 74px)", rotate: 24, depth: 1, delay: 500 },
-  { kind: "folha", x: 91, y: 22, size: "clamp(18px, 1.8vw, 28px)", rotate: -50, depth: 0.9, hideBelow: 768 },
-];
-/* na janela da mídia: a flor da parede do estúdio morde o canto do arco */
-const FLORES_JANELA: Peca[] = [
-  { kind: "flor", seed: 5, tom: "magenta", x: 6, y: 9, size: "70%", rotate: -24, depth: 0.6, delay: 640 },
-  { kind: "botao", seed: 2, tom: "vinho", x: 99, y: 90, size: "14%", rotate: 160, depth: 0.4, delay: 820 },
+/* Flores que vivem em volta da janela, em profundidades diferentes: as de
+   trás andam pouco com o mouse, as da frente andam muito — é isso que dá
+   o volume. Cada uma também flutua sozinha, num tempo próprio. */
+type FlorPalco = {
+  kind: FlowerKind;
+  seed: number;
+  tom: FloraTom;
+  /** posição no palco, em % */
+  x: number;
+  y: number;
+  /** largura, em % da largura do palco */
+  w: number;
+  rotate: number;
+  /** quanto anda com o mouse (negativo = contra) */
+  depth: number;
+  /** some no celular */
+  desktop?: boolean;
+  delay: number;
+  frente?: boolean;
+};
+const FLORES: FlorPalco[] = [
+  { kind: "flor", seed: 7, tom: "pétala", x: -6, y: 52, w: 46, rotate: -18, depth: -0.5, delay: 0.5, desktop: true },
+  { kind: "flor", seed: 5, tom: "magenta", x: 70, y: 6, w: 40, rotate: 16, depth: 0.9, delay: 0.75, frente: true },
+  { kind: "flor", seed: 3, tom: "rosa", x: 82, y: 70, w: 30, rotate: -30, depth: -0.35, delay: 0.9 },
+  { kind: "botao", seed: 11, tom: "magenta", x: 2, y: 8, w: 9, rotate: -22, depth: 1.4, delay: 1.05, frente: true },
+  { kind: "botao", seed: 4, tom: "rosa", x: 96, y: 40, w: 7, rotate: 28, depth: 1.2, delay: 1.15, frente: true, desktop: true },
 ];
 
 /**
- * Abertura. A marca ocupa a largura inteira e sai pelas bordas: a
- * palavra é a imagem — e as flores da casa a atravessam, uma atrás e
- * outras na frente. Ao lado, a declaração em três tempos, com a última
- * linha em itálico serifado. Do outro lado, a janela em arco: vídeo real
- * quando existir, foto real quando não, e o campo tonal com a flor quando
- * nenhum dos dois — a composição nunca depende do material para existir.
+ * Abertura, na linguagem do site da iWin: fundo vinho vivo, o nome dela
+ * entrando letra a letra no centro, com letra de volume, os dois caminhos em cápsula — e embaixo a
+ * janela em arco flutuando em 3D, que segue o mouse (no celular, o
+ * scroll), com as flores da casa em volta em profundidades diferentes.
  */
 export function Hero({
   business,
@@ -57,139 +68,145 @@ export function Hero({
 }: {
   business: BusinessSettings;
   scheduleUrl: string;
-  /** foto de destaque da biblioteca; sem ela, o herói é tipográfico */
+  /** foto de destaque da biblioteca; sem ela, a janela mostra a flor */
   photo?: PhotoSlot;
   /** quais arquivos do vídeo de abertura existem */
   video?: VideoPresence;
 }) {
   const ready = useIntroReady();
   const reduced = useReducedMotion();
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
-
-  // a marca desliza de leve enquanto a página sobe — só isso
-  const marcaX = useTransform(scrollYProgress, [0, 1], [0, reduced ? 0 : -60]);
-  const marcaO = useTransform(scrollYProgress, [0, 0.85], [1, 0.08]);
-
-  const [primeira = "Tayssa", segunda = "Lash"] = business.name.trim().split(/\s+/);
-  // a palavra ocupa a largura da tela: o corpo sai do número de letras
-  const letras = `${primeira} ${segunda}`.length;
-  const entra = ready && !reduced;
-
   const estrutura = useEstrutura();
-  const temJanela = Boolean(photo) || temVideo(video);
+  const ref = useRef<HTMLElement>(null);
+  const entra = ready || Boolean(reduced);
+
+  // mouse: -0.5..0.5 nos dois eixos, com mola (nada anda seco)
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const sx = useSpring(mx, { stiffness: 70, damping: 18, mass: 0.6 });
+  const sy = useSpring(my, { stiffness: 70, damping: 18, mass: 0.6 });
+
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  // ao descer: a frase sobe e apaga, a janela sobe e cresce, como o iPhone da iWin
+  const textoY = useTransform(scrollYProgress, [0, 0.6], [0, reduced ? 0 : -90]);
+  const textoO = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const palcoY = useTransform(scrollYProgress, [0, 1], [0, reduced ? 0 : -140]);
+  const palcoS = useTransform(scrollYProgress, [0, 0.7], [1, reduced ? 1 : 1.08]);
+  // a janela inclina com o mouse; no toque, o scroll dá um giro leve
+  const giroScroll = useTransform(scrollYProgress, [0, 0.8], [0, reduced ? 0 : -10]);
+  const rotY = useTransform(sx, [-0.5, 0.5], [reduced ? 0 : -12, reduced ? 0 : 12]);
+  const rotXmouse = useTransform(sy, [-0.5, 0.5], [reduced ? 0 : 9, reduced ? 0 : -9]);
+  const rotX = useTransform(() => rotXmouse.get() + giroScroll.get());
+  // o brilho do vidro corre no sentido contrário do giro
+  const brilhoX = useTransform(sx, [-0.5, 0.5], ["70%", "30%"]);
+  const brilhoY = useTransform(sy, [-0.5, 0.5], ["70%", "30%"]);
+  const brilho = useTransform(
+    () => `radial-gradient(60% 50% at ${brilhoX.get()} ${brilhoY.get()}, rgba(255,230,238,.28), transparent 70%)`
+  );
+
+  const mover = (e: PointerEvent<HTMLElement>) => {
+    if (reduced || e.pointerType !== "mouse") return;
+    const r = e.currentTarget.getBoundingClientRect();
+    mx.set((e.clientX - r.left) / r.width - 0.5);
+    my.set((e.clientY - r.top) / r.height - 0.5);
+  };
+  const soltar = () => {
+    mx.set(0);
+    my.set(0);
+  };
+
+  const temJanela = Boolean(photo) || temVideo(video) || estrutura;
+  // o nome dela entra letra a letra: sobe, gira de leve no eixo X e ganha foco
+  const [primeira = "Tayssa", segunda = "Lash"] = business.name.trim().split(/\s+/);
+  const letras = (palavra: string, base: number) =>
+    Array.from(palavra).map((l, i) => (
+      <motion.span
+        key={`${l}-${i}`}
+        className="tyh__letra"
+        initial={reduced ? false : { opacity: 0, y: "0.45em", rotateX: -70, filter: "blur(14px)" }}
+        animate={entra ? { opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)" } : undefined}
+        transition={{ duration: 1.1, delay: base + i * 0.055, ease: EASE }}
+      >
+        {l}
+      </motion.span>
+    ));
+  // o nome também acompanha o mouse, mais devagar que a janela
+  const nomeY = useTransform(sy, [-0.5, 0.5], [reduced ? 0 : 5, reduced ? 0 : -5]);
+  const nomeRotY = useTransform(sx, [-0.5, 0.5], [reduced ? 0 : -6, reduced ? 0 : 6]);
+  const nomeRotX = useTransform(sy, [-0.5, 0.5], [reduced ? 0 : 5, reduced ? 0 : -5]);
 
   return (
-    <section ref={ref} className="ty-hero" aria-label="Abertura">
-      <Arranjo
-        pecas={FLORES_FUNDO}
-        className="ty-hero__flores ty-hero__flores--fundo"
-        open={ready}
-        track={ref}
-        label="hero-fundo"
-      />
-      <div className="ty-hero__top">
+    <section
+      ref={ref}
+      className="tyh ty-night"
+      aria-label="Abertura"
+      onPointerMove={mover}
+      onPointerLeave={soltar}
+    >
+      <FundoVivo />
+
+      <motion.div className="tyh__texto" style={{ y: textoY, opacity: textoO }}>
         <motion.p
-          className="ty-mono"
-          initial={reduced ? false : { opacity: 0 }}
-          animate={{ opacity: ready ? 1 : 0 }}
+          className="tyh__selo"
+          initial={reduced ? false : { opacity: 0, y: 12 }}
+          animate={entra ? { opacity: 1, y: 0 } : undefined}
           transition={{ duration: 0.8, delay: 0.1, ease: EASE }}
         >
+          <i aria-hidden />
           {business.specialty}
         </motion.p>
-        <motion.p
-          className="ty-mono"
-          initial={reduced ? false : { opacity: 0 }}
-          animate={{ opacity: ready ? 1 : 0 }}
-          transition={{ duration: 0.8, delay: 0.18, ease: EASE }}
+
+        <motion.h1
+          className="tyh__nome"
+          aria-label={business.name}
+          style={{ rotateX: nomeRotX, rotateY: nomeRotY, y: nomeY }}
         >
-          {business.instagram_handle}
-        </motion.p>
-      </div>
-
-      {/* a marca é a imagem */}
-      <motion.h1 className="ty-hero__marca" style={{ x: marcaX, opacity: marcaO }} aria-label={business.name}>
-        <span className="ty-wordmark" style={{ "--ty-letras": letras } as React.CSSProperties} aria-hidden>
-          <motion.span
-            style={{ display: "inline-block" }}
-            initial={reduced ? false : { y: "16%", opacity: 0 }}
-            animate={entra ? { y: "0%", opacity: 1 } : reduced ? {} : { y: "16%", opacity: 0 }}
-            transition={{ duration: 1.1, ease: EASE }}
-          >
-            {primeira}
-          </motion.span>{" "}
-          <motion.em
-            style={{ display: "inline-block" }}
-            initial={reduced ? false : { y: "16%", opacity: 0 }}
-            animate={entra ? { y: "0%", opacity: 1 } : reduced ? {} : { y: "16%", opacity: 0 }}
-            transition={{ duration: 1.1, delay: 0.09, ease: EASE }}
-          >
-            {segunda}
-          </motion.em>
-        </span>
-      </motion.h1>
-      <Arranjo
-        pecas={FLORES_FRENTE}
-        className="ty-hero__flores ty-hero__flores--frente"
-        open={ready}
-        track={ref}
-        label="hero-frente"
-      />
-
-      <div className="ty-hero__corpo">
-        <div className="ty-hero__dizer">
-          {LINHAS.map((l, i) => (
-            <span key={l.texto} className="ty-hero__linha">
-              <motion.span
-                initial={reduced ? false : { y: "110%" }}
-                animate={entra ? { y: "0%" } : reduced ? {} : { y: "110%" }}
-                transition={{
-                  duration: 0.95,
-                  delay: 0.3 + i * 0.1,
-                  ease: EASE,
-                }}
-              >
-                {l.em ? <em>{l.texto}</em> : l.texto}
-              </motion.span>
+          <span aria-hidden className="tyh__nome-parte">
+            {letras(primeira, 0.15)}
+          </span>
+          {segunda ? (
+            <span aria-hidden className="tyh__nome-parte tyh__nome-parte--leve">
+              {letras(segunda, 0.15 + primeira.length * 0.055 + 0.08)}
             </span>
-          ))}
+          ) : null}
+        </motion.h1>
 
-          <motion.div
-            className="ty-hero__acoes"
-            initial={reduced ? false : { opacity: 0, y: 16 }}
-            animate={entra ? { opacity: 1, y: 0 } : reduced ? {} : { opacity: 0, y: 16 }}
-            transition={{ duration: 0.8, delay: 0.72, ease: EASE }}
-          >
-            <a href={scheduleUrl} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--solid">
-              <span>Agendar no WhatsApp</span>
-              <span className="ty-btn__arrow" aria-hidden />
-            </a>
-            <TransitionLink href={ROUTES.signup} className="ty-hero__secundario">
-              Pedir acesso ao clube
-            </TransitionLink>
-          </motion.div>
-        </div>
+        <motion.div
+          className="tyh__acoes"
+          initial={reduced ? false : { opacity: 0, y: 14 }}
+          animate={entra ? { opacity: 1, y: 0 } : undefined}
+          transition={{ duration: 0.8, delay: 0.85, ease: EASE }}
+        >
+          <a href={scheduleUrl} target="_blank" rel="noopener noreferrer" className="tyh__btn tyh__btn--claro">
+            Agendar no WhatsApp
+            <span className="tyh__seta" aria-hidden />
+          </a>
+          <TransitionLink href={ROUTES.signup} className="tyh__btn tyh__btn--vidro">
+            Pedir acesso ao VIP
+          </TransitionLink>
+        </motion.div>
+      </motion.div>
 
-        {/* a janela em arco: vídeo > foto > campo tonal com flor. Some só
-            se não houver nem vídeo nem foto E não estivermos revisando a
-            estrutura — aí a tipografia e as flores seguram a abertura. */}
-        {temJanela || estrutura ? (
-          <motion.figure
-            className="ty-hero__figura"
-            initial={reduced ? false : { opacity: 0, y: 30 }}
-            animate={entra ? { opacity: 1, y: 0 } : reduced ? {} : { opacity: 0, y: 30 }}
-            transition={{ duration: 1.3, delay: 0.42, ease: EASE }}
-          >
-            <div className="ty-hero__janela-wrap">
+      <motion.div className="tyh__palco" style={{ y: palcoY, scale: palcoS }}>
+        <div className="tyh__halo" aria-hidden />
+        {FLORES.filter((f) => !f.frente).map((f, i) => (
+          <FlorViva key={`t${i}`} f={f} sx={sx} sy={sy} ready={entra} reduced={Boolean(reduced)} />
+        ))}
+
+        <motion.figure
+          className="tyh__janela"
+          style={{ rotateX: rotX, rotateY: rotY }}
+          initial={reduced ? false : { opacity: 0, y: 80, rotateX: 18 }}
+          animate={entra ? { opacity: 1, y: 0 } : undefined}
+          transition={{ duration: 1.4, delay: 0.45, ease: EASE }}
+        >
+          <div className="tyh__janela-corpo">
+            {temJanela ? (
               <MotionMedia
                 video={VIDEOS.hero}
                 presence={video}
                 photo={photo}
-                className="ty-hero__janela"
-                sizes="(max-width: 899px) 100vw, 34vw"
+                className="tyh__midia"
+                sizes="(max-width: 899px) 80vw, 420px"
                 priority
                 pendente={{
                   titulo: "Vídeo de abertura",
@@ -197,32 +214,70 @@ export function Hero({
                     "Loop de 6–10 s, sem som, horizontal 16:9 + vertical 9:16. Enquanto não chega, entra a foto do herói.",
                 }}
               />
-              <Arranjo
-                pecas={FLORES_JANELA}
-                className="ty-hero__flores-janela"
-                open={ready}
-                track={ref}
-                label="hero-janela"
-              />
-            </div>
-          </motion.figure>
-        ) : null}
-      </div>
+            ) : (
+              <div className="tyh__midia tyh__midia--flor" aria-hidden>
+                <Bloom seed={5} tom="magenta" open={entra} delay={600} />
+              </div>
+            )}
+            <motion.span className="tyh__vidro" style={{ background: brilho }} aria-hidden />
+          </div>
+        </motion.figure>
 
-      <motion.div
-        className="ty-hero__ficha ty-rail"
-        initial={reduced ? false : { opacity: 0 }}
-        animate={{ opacity: ready ? 1 : 0 }}
-        transition={{ duration: 0.9, delay: 0.85, ease: EASE }}
-      >
-        <span>Fio a fio</span>
-        <i aria-hidden>+</i>
-        <span>Volume</span>
-        <i aria-hidden>+</i>
-        <span>Manutenção</span>
-        <i aria-hidden>=</i>
-        <span className="ty-mono--accent">o seu olhar</span>
+        {FLORES.filter((f) => f.frente).map((f, i) => (
+          <FlorViva key={`f${i}`} f={f} sx={sx} sy={sy} ready={entra} reduced={Boolean(reduced)} />
+        ))}
       </motion.div>
+
+      <motion.a
+        href="#trabalho"
+        className="tyh__descer"
+        initial={reduced ? false : { opacity: 0 }}
+        animate={entra ? { opacity: 1 } : undefined}
+        transition={{ duration: 0.8, delay: 1.4 }}
+        aria-label="Ver o trabalho"
+      >
+        <span aria-hidden />
+      </motion.a>
     </section>
+  );
+}
+
+function FlorViva({
+  f,
+  sx,
+  sy,
+  ready,
+  reduced,
+}: {
+  f: FlorPalco;
+  sx: MotionValue<number>;
+  sy: MotionValue<number>;
+  ready: boolean;
+  reduced: boolean;
+}) {
+  const x = useTransform(sx, [-0.5, 0.5], [-60 * f.depth, 60 * f.depth]);
+  const y = useTransform(sy, [-0.5, 0.5], [-40 * f.depth, 40 * f.depth]);
+  return (
+    <motion.div
+      className={["tyh__flor", f.frente ? "tyh__flor--frente" : "", f.desktop ? "tyh__flor--desktop" : ""].join(" ")}
+      style={
+        {
+          left: `${f.x}%`,
+          top: `${f.y}%`,
+          width: `${f.w}%`,
+          x: reduced ? 0 : x,
+          y: reduced ? 0 : y,
+          "--r": `${f.rotate}deg`,
+          "--t": `${5 + (f.seed % 4)}s`,
+        } as MotionStyle
+      }
+      initial={reduced ? false : { opacity: 0, scale: 0.6 }}
+      animate={ready ? { opacity: 1, scale: 1 } : undefined}
+      transition={{ duration: 1.2, delay: f.delay, ease: EASE }}
+    >
+      <div className="tyh__flor-flutua">
+        <Bloom kind={f.kind} seed={f.seed} tom={f.tom} open={ready} delay={f.delay * 1000} />
+      </div>
+    </motion.div>
   );
 }

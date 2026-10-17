@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 import "../entrar/entrar.css";
 import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES } from "@/lib/tayssa/config";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
-import { TyBrand } from "@/components/tayssa/ui/brand";
-import { TransitionLink } from "@/components/tayssa/ui/transition";
+import { Entrada } from "@/components/tayssa/auth/entrada";
 
 export const metadata: Metadata = {
   title: "Pedido em análise",
@@ -16,22 +16,10 @@ export default async function PendingPage() {
   const settings = await getSettings();
   const url = whatsappUrl(settings.business.whatsapp, settings.whatsapp.public_vip_info);
   return (
-    <div className="tyl ty-scope" data-theme="night" data-photo="off">
-      <div className="tyl__photo" aria-hidden />
-      <div className="tyl__top">
-        <TransitionLink href={ROUTES.home} className="tyl__brand">
-          <TyBrand />
-        </TransitionLink>
-        <TransitionLink href={ROUTES.login} className="tyl__back">
-          Entrar
-        </TransitionLink>
-      </div>
-      <div className="tyl__body">
-        <span className="tyl__eyebrow">Pedido em análise</span>
+    <Entrada links={[{ href: ROUTES.login, label: "Entrar" }]}>
+      <div className="tyl__body tyl-surge" style={{ "--d": "0.5s" } as CSSProperties}>
         <h1 className="tyl__title">
-          Seu acesso está
-          <br />
-          <em>com a Tayssa.</em>
+          Seu acesso está <em>com a Tayssa</em>
         </h1>
         <div className="tyl__foot">
           <p>
@@ -43,6 +31,6 @@ export default async function PendingPage() {
           </a>
         </div>
       </div>
-    </div>
+    </Entrada>
   );
 }

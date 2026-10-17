@@ -121,7 +121,7 @@ export default async function VipHome() {
             </p>
             <p className="tyv-kpi__foot">
               {ranking.total <= 1
-                ? "primeira do clube"
+                ? "primeira do VIP"
                 : ranking.toClimb > 0
                   ? `${ranking.toClimb} ${plural(ranking.toClimb, "ponto", "pontos")} para subir`
                   : "você lidera o ranking"}
@@ -173,7 +173,7 @@ export default async function VipHome() {
         ) : (
           <div className="tyv-panel">
             <p className="tyv-empty">
-              Você é a primeira do clube. O ranking ganha vizinhas conforme a Tayssa abre acesso para novas clientes.
+              Você é a primeira do VIP. O ranking ganha vizinhas conforme a Tayssa abre acesso para novas clientes.
             </p>
           </div>
         )}

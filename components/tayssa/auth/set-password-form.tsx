@@ -6,7 +6,6 @@ import { setPasswordAction } from "@/lib/tayssa/actions/auth";
 import { MIN_PASSWORD_LENGTH } from "@/lib/tayssa/config";
 import type { ActionResult } from "@/lib/tayssa/types";
 import { TyInput } from "@/components/tayssa/ui/field";
-import { TyButton } from "@/components/tayssa/ui/button";
 import { useTransitionNav } from "@/components/tayssa/ui/transition";
 
 type Result = ActionResult<{ redirectTo: string }>;
@@ -27,7 +26,7 @@ export function SetPasswordForm({ token }: { token: string }) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.5, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      style={{ display: "grid", gap: 26, marginTop: 36, maxWidth: 440 }}
+      className="tyl__form"
     >
       <input type="hidden" name="token" value={token} />
       <TyInput
@@ -53,11 +52,10 @@ export function SetPasswordForm({ token }: { token: string }) {
           {err.error}
         </div>
       ) : null}
-      <div>
-        <TyButton type="submit" variant="solid" arrow disabled={pending || state?.ok === true}>
-          {pending || state?.ok ? "Entrando…" : "Definir senha e entrar"}
-        </TyButton>
-      </div>
+      <button type="submit" className="tyl__submit" disabled={pending || state?.ok === true}>
+        {pending || state?.ok ? <span className="tyl__spin" aria-hidden /> : null}
+        {pending || state?.ok ? "Entrando…" : "Definir senha e entrar"}
+      </button>
     </motion.form>
   );
 }

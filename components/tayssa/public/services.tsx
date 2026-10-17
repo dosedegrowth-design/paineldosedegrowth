@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useMotionValue, useReducedMotion, useSpring } 
 import type { ServiceRow } from "@/lib/tayssa/types";
 import type { PhotoSlot } from "@/lib/tayssa/photos";
 import { RealPhoto } from "@/components/tayssa/ui/real-photo";
+import { FotoAmbiente } from "@/components/tayssa/ui/foto-ambiente";
 import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
 import { useFinePointer } from "@/components/tayssa/ui/use-media";
 import { Magnetic } from "@/components/tayssa/ui/magnetic";
@@ -89,7 +90,10 @@ export function Services({
   scheduleUrl,
   photoBySlug,
   detalhes = {},
+  ambiente,
 }: {
+  /** foto real que vira o fundo da seção, com pouca luz */
+  ambiente?: PhotoSlot;
   services: ServiceRow[];
   scheduleUrl: string;
   /** só chega aqui foto que existe de verdade (a página filtra antes) */
@@ -118,10 +122,11 @@ export function Services({
   return (
     <section
       id="servicos"
-      className="ty-section tysv"
+      className="ty-section tysv ty-night ty-amb-sec"
       aria-label="Serviços"
       onPointerMove={fine ? onMove : undefined}
     >
+      <FotoAmbiente photo={ambiente} posicao="50% 40%" />
       <div className="ty-container">
         {/* ficha da seção */}
         <div className="tysv__topo">

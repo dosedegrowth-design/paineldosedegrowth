@@ -5,10 +5,9 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { signupAction, type SignupResult } from "@/lib/tayssa/actions/signup";
 import { ROUTES, MIN_PASSWORD_LENGTH } from "@/lib/tayssa/config";
 import type { ActionResult } from "@/lib/tayssa/types";
-import { TyBrand } from "@/components/tayssa/ui/brand";
 import { TyInput, TyTextarea } from "@/components/tayssa/ui/field";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
-import { EntryFlowers } from "@/components/tayssa/auth/entry-flowers";
+import { Entrada } from "@/components/tayssa/auth/entrada";
 
 type Result = ActionResult<SignupResult>;
 type Errors = Partial<Record<"name" | "phone" | "birthday" | "email" | "password" | "confirm" | "message", string>>;
@@ -81,17 +80,7 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
   };
 
   const shell = (children: React.ReactNode) => (
-    <div className="tyl ty-scope" data-theme="night" data-photo="off">
-      <div className="tyl__photo" aria-hidden />
-      <EntryFlowers />
-      <div className="tyl__top">
-        <TransitionLink href={ROUTES.home} className="tyl__brand">
-          <TyBrand />
-        </TransitionLink>
-        <TransitionLink href={ROUTES.login} className="tyl__back">
-          Já tenho acesso
-        </TransitionLink>
-      </div>
+    <Entrada links={[{ href: ROUTES.login, label: "Já tenho acesso" }]}>
       <motion.div
         className="tyl__body"
         initial={{ opacity: 0, y: reduced ? 0 : 24 }}
@@ -100,17 +89,14 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
       >
         {children}
       </motion.div>
-    </div>
+    </Entrada>
   );
 
   if (!open) {
     return shell(
       <>
-        <span className="tyl__eyebrow">Acesso VIP</span>
         <h1 className="tyl__title">
-          O cadastro está
-          <br />
-          <em>fechado agora.</em>
+          O cadastro está <em>fechado agora</em>
         </h1>
         <div className="tyl__foot">
           <p>A Tayssa abre novas vagas de tempos em tempos. Fale com ela pelo WhatsApp e conte que quer entrar.</p>
@@ -130,11 +116,8 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
             <path d="M5 12.5l4.2 4.2L19 7.5" />
           </svg>
         </span>
-        <span className="tyl__eyebrow">Pedido recebido</span>
         <h1 className="tyl__title">
-          Obrigada,
-          <br />
-          <em>{done.firstName}.</em>
+          Obrigada, <em>{done.firstName}.</em>
         </h1>
         <div className="tyl__foot">
           <p>
@@ -145,7 +128,7 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
           <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="tyl__link">
             Falar com a Tayssa
           </a>
-          <TransitionLink href={ROUTES.home} className="tyl__ghost" style={{ justifyContent: "flex-start", padding: 0 }}>
+          <TransitionLink href={ROUTES.home} className="tyl__ghost">
             Voltar ao site
           </TransitionLink>
         </div>
@@ -155,11 +138,8 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
 
   return shell(
     <>
-      <span className="tyl__eyebrow">Pedir acesso</span>
       <h1 className="tyl__title">
-        Entrar para
-        <br />
-        <em>o Tayssa Lash.</em>
+        Pedir acesso <em>ao VIP</em>
       </h1>
       <div className="tyl__progress" aria-hidden>
         {STEPS.map((s, i) => (

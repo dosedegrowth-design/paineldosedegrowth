@@ -87,7 +87,7 @@ export function Details({
         <MaskedLines as="h2" className="ty-display tyco__chamada" lines={CHAMADA} />
         <Reveal delay={0.15}>
           <p className="ty-body tyco__texto">
-            Aqui o site conta o essencial: o que a casa faz e como funciona o clube. O trabalho recente fica no
+            Aqui o site conta o essencial: o que a casa faz e como funciona o VIP. O trabalho recente fica no
             Instagram — é lá que o olhar aparece de perto, um por um.
           </p>
         </Reveal>

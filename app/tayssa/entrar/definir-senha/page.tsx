@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 import { vipDb, isDbConfigured, logServerError } from "@/lib/tayssa/db";
 import { hashToken } from "@/lib/tayssa/auth/session";
 import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES } from "@/lib/tayssa/config";
-import { TyBrand } from "@/components/tayssa/ui/brand";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { SetPasswordForm } from "@/components/tayssa/auth/set-password-form";
-import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
+import { Entrada } from "@/components/tayssa/auth/entrada";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 
 export const metadata: Metadata = {
@@ -62,55 +62,33 @@ export default async function SetPasswordPage({
   const supportUrl = whatsappUrl(settings.business.whatsapp, settings.whatsapp.public_vip_info);
 
   return (
-    <main
-      className="ty-container"
-      style={{ minHeight: "100svh", display: "flex", flexDirection: "column", justifyContent: "center", paddingBlock: 96 }}
-    >
-      <TransitionLink href={ROUTES.home} className="ty-nav__brand" style={{ position: "absolute", top: 24, left: "var(--t-gutter)" }}>
-        <TyBrand />
-      </TransitionLink>
-      {state.ok ? (
-        <>
-          <Reveal>
-            <span className="ty-eyebrow" style={{ display: "block", marginBottom: 20 }}>
-              {state.purpose === "setup" ? "Seu primeiro acesso" : "Nova senha"}
-            </span>
-          </Reveal>
-          <MaskedLines
-            as="h1"
-            inView={false}
-            className="ty-display"
-            lineClassName="ty-setpw-title"
-            lines={[`Olá, ${state.name}.`, <em key="e">Escolha sua senha.</em>]}
-          />
-          <SetPasswordForm token={token!} />
-        </>
-      ) : (
-        <>
-          <MaskedLines
-            as="h1"
-            inView={false}
-            className="ty-display"
-            lineClassName="ty-setpw-title"
-            lines={["Esse link", <em key="e">não é mais válido.</em>]}
-          />
-          <Reveal delay={0.4}>
-            <p className="ty-body" style={{ marginTop: 22, maxWidth: 440, fontSize: 16 }}>
-              Links de acesso expiram ou só podem ser usados uma vez. Peça um novo para a Tayssa.
-            </p>
-            <div style={{ display: "flex", gap: 18, flexWrap: "wrap", marginTop: 26 }}>
-              <a href={supportUrl} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--sm ty-btn--solid">
-                <span>Falar com Tayssa</span>
-                <span className="ty-btn__arrow" aria-hidden />
-              </a>
-              <TransitionLink href={ROUTES.login} className="ty-btn ty-btn--sm">
-                <span>Já tenho senha</span>
+    <Entrada links={[{ href: ROUTES.login, label: "Entrar" }]}>
+      <div className="tyl__body tyl-surge" style={{ "--d": "0.5s" } as CSSProperties}>
+        {state.ok ? (
+          <>
+            <h1 className="tyl__title">
+              Olá, {state.name}. <em>Escolha sua senha</em>
+            </h1>
+            <p className="tyl__sub">{state.purpose === "setup" ? "É o seu primeiro acesso ao VIP." : "Uma senha nova para o seu acesso."}</p>
+            <SetPasswordForm token={token!} />
+          </>
+        ) : (
+          <>
+            <h1 className="tyl__title">
+              Esse link <em>não vale mais</em>
+            </h1>
+            <p className="tyl__sub">Links de acesso vencem ou só podem ser usados uma vez. Peça um novo para a Tayssa.</p>
+            <a href={supportUrl} target="_blank" rel="noopener noreferrer" className="tyl__submit">
+              Falar com a Tayssa
+            </a>
+            <div className="tyl__foot">
+              <TransitionLink href={ROUTES.login} className="tyl__link">
+                Já tenho senha
               </TransitionLink>
             </div>
-          </Reveal>
-        </>
-      )}
-      <style>{`.ty-setpw-title { font-size: clamp(33px, 4.26vw, 55px); }`}</style>
-    </main>
+          </>
+        )}
+      </div>
+    </Entrada>
   );
 }

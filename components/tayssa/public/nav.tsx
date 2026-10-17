@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { ROUTES } from "@/lib/tayssa/config";
-import { TyBrand } from "@/components/tayssa/ui/brand";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { scrollToTarget } from "@/components/tayssa/ui/smooth-scroll";
 import { Bloom } from "@/components/tayssa/flora/bloom";
@@ -55,8 +54,13 @@ export function PublicNav({ scheduleUrl, sections = SECTIONS }: { scheduleUrl: s
         data-solid={solid && !open}
         data-menu={open}
       >
-        <TransitionLink href={ROUTES.home} aria-label="Tayssa Lash — início">
-          <TyBrand />
+        <TransitionLink href={ROUTES.home} aria-label="Tayssa Lash — início" className="ty-nav__marca">
+          <span className="ty-nav__flor" aria-hidden>
+            <Bloom seed={5} tom="magenta" />
+          </span>
+          <span className="ty-nav__nome">
+            Tayssa <em>Lash</em>
+          </span>
         </TransitionLink>
 
         {/* a pílula flutuante: só as seções e o indicar */}

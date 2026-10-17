@@ -29,10 +29,10 @@
   --tya-side-min: 76px;
   --tya-top: 64px;
 
-  /* a fonte do sistema (SF no Mac e no iPhone, como a iWin); DM Sans no resto */
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "DM Sans Variable", "DM Sans",
+  /* a fonte do sistema (SF no Mac e no iPhone, como a iWin); Inter no resto */
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter",
     "Helvetica Neue", Arial, sans-serif;
-  --t-font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "DM Sans Variable", "DM Sans", sans-serif;
+  --t-font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
   font-size: 14px;
   letter-spacing: -0.012em;
   background-image:

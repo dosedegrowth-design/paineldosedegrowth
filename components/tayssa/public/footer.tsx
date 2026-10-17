@@ -125,7 +125,7 @@ export function PublicFooter({ business }: { business: BusinessSettings }) {
 
           {/* o clube: pedir acesso, entrar, indicar */}
           <Reveal className="typ__coluna" delay={0.18} y={16}>
-            <span className="ty-mono typ__titulo">Clube</span>
+            <span className="ty-mono typ__titulo">VIP</span>
             <TransitionLink href={ROUTES.signup} className="ty-link typ__link">
               Pedir acesso
             </TransitionLink>

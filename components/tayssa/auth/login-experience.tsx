@@ -4,22 +4,18 @@ import { useEffect, useRef, useState, useActionState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { loginAction } from "@/lib/tayssa/actions/auth";
 import { ROUTES } from "@/lib/tayssa/config";
-import { PHOTOS } from "@/lib/tayssa/photos";
 import type { ActionResult } from "@/lib/tayssa/types";
-import { RealPhoto } from "@/components/tayssa/ui/real-photo";
-import { TyBrand } from "@/components/tayssa/ui/brand";
-import { usePhotoAvailable } from "@/components/tayssa/ui/photo-availability";
 import { TyInput } from "@/components/tayssa/ui/field";
 import { TransitionLink, useTransitionNav } from "@/components/tayssa/ui/transition";
-import { EntryFlowers } from "@/components/tayssa/auth/entry-flowers";
+import { Entrada } from "@/components/tayssa/auth/entrada";
 
 type LoginResult = ActionResult<{ redirectTo: string; name: string }>;
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 /**
- * A entrada. Uma tela: a foto atrás, o formulário ao alcance do polegar.
- * Ao autenticar, a luz abaixa e o nome da cliente aparece antes do espaço
+ * A entrada. Uma tela: o fundo vivo atrás, a marca flutuando, o cartão de
+ * vidro ao alcance do polegar. Ao autenticar, a luz abaixa e o nome da cliente aparece antes do espaço
  * privado — a passagem faz parte da experiência.
  */
 export function LoginExperience({
@@ -33,8 +29,6 @@ export function LoginExperience({
   linkExpirado?: boolean;
 }) {
   const reduced = useReducedMotion();
-  // sem a foto real no lugar, a tela se reorganiza em vez de deixar um vazio
-  const hasPhoto = usePhotoAvailable(PHOTOS.entrance.src);
   const { navigate } = useTransitionNav();
   const [state, action, pending] = useActionState<LoginResult | null, FormData>(
     loginAction as unknown as (prev: LoginResult | null, fd: FormData) => Promise<LoginResult>,
@@ -65,35 +59,17 @@ export function LoginExperience({
   };
 
   return (
-    <div className="tyl ty-scope" data-theme="night" data-photo={hasPhoto ? "on" : "off"}>
-      <div className="tyl__photo" aria-hidden>
-        {hasPhoto ? (
-          <RealPhoto photo={PHOTOS.entrance} ratio="fill" priority sizes="100vw" style={{ height: "100%" }} />
-        ) : null}
-      </div>
-
-      <EntryFlowers />
-      <div className="tyl__top">
-        <TransitionLink href={ROUTES.home} className="tyl__brand">
-          <TyBrand />
-        </TransitionLink>
-        <TransitionLink href={ROUTES.home} className="tyl__back">
-          Voltar
-        </TransitionLink>
-      </div>
-
+    <Entrada links={[{ href: ROUTES.signup, label: "Pedir acesso" }]}>
       <motion.div
         className="tyl__body"
         initial={{ opacity: 0, y: reduced ? 0 : 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: EASE, delay: 0.1 }}
       >
-        <span className="tyl__eyebrow">Área privada</span>
         <h1 className="tyl__title">
-          Entrar no
-          <br />
-          <em>meu VIP.</em>
+          Entrar no <em>meu VIP</em>
         </h1>
+        <p className="tyl__sub">Use o e-mail e a senha do seu acesso.</p>
 
         {linkExpirado ? (
           <div className="tyl__note" role="status">
@@ -209,6 +185,6 @@ export function LoginExperience({
           </motion.div>
         ) : null}
       </AnimatePresence>
-    </div>
+    </Entrada>
   );
 }

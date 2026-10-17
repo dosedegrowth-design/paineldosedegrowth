@@ -11,6 +11,7 @@ import { Hero } from "@/components/tayssa/public/hero";
 import { WorkSequence } from "@/components/tayssa/public/work-sequence";
 import { Services } from "@/components/tayssa/public/services";
 import { ServiceStrip } from "@/components/tayssa/public/service-strip";
+import { AgendarFlutua, Faixa } from "@/components/tayssa/public/faixa";
 import { Details } from "@/components/tayssa/public/details";
 import { VipIntro } from "@/components/tayssa/public/vip-intro";
 import { ReferralCta } from "@/components/tayssa/public/referral-cta";
@@ -86,6 +87,7 @@ export function PublicExperience({
       <PublicNav scheduleUrl={links.schedule} sections={secoes} />
       <main>
         <Hero business={settings.business} scheduleUrl={links.schedule} photo={photos?.hero} video={videos?.hero} />
+        <Faixa itens={services.filter((s) => s.slug !== "outro").map((s) => s.name)} />
         <ServiceStrip services={services} scheduleUrl={links.schedule} />
         <WorkSequence photos={photos?.work} />
         <Film video={videos?.processo} />
@@ -94,6 +96,7 @@ export function PublicExperience({
           scheduleUrl={links.schedule}
           photoBySlug={photos?.byService}
           detalhes={CONTEUDO.servicos}
+          ambiente={colagem[1] ?? colagem[0]}
         />
         <About business={settings.business} conteudo={CONTEUDO} portrait={photos?.portrait} instagramUrl={links.instagram} />
         <Studio conteudo={CONTEUDO} video={videos?.espaco} photo={photos?.studio} />
@@ -102,9 +105,10 @@ export function PublicExperience({
         <VipIntro benefits={benefits} />
         <ReferralCta />
         <VisitInfo business={settings.business} conteudo={CONTEUDO} />
-        <Closing scheduleUrl={links.schedule} />
+        <Closing scheduleUrl={links.schedule} ambiente={colagem[2] ?? colagem[0]} />
       </main>
       <PublicFooter business={settings.business} />
+      <AgendarFlutua url={links.schedule} />
     </IntroCtx.Provider>
   );
 }

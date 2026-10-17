@@ -301,7 +301,7 @@ export function LoyaltyCard({
                   ) : isVip ? (
                     <span className="tyc3__tag tyc3__tag--gold">VIP</span>
                   ) : (
-                    <span className="tyc3__tag">Clube</span>
+                    <span className="tyc3__tag">VIP</span>
                   )}
                 </div>
                 <div className="tyc3__row">

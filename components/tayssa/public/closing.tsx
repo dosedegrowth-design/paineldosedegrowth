@@ -6,6 +6,8 @@ import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { Arranjo, type Peca } from "@/components/tayssa/flora/arranjo";
 import { Icone, type IconeNome } from "@/components/tayssa/ui/icones";
+import { FotoAmbiente } from "@/components/tayssa/ui/foto-ambiente";
+import type { PhotoSlot } from "@/lib/tayssa/photos";
 
 /** A declaração final, em três tempos — o último em itálico serifado. */
 const DECLARACAO = ["Começa com", "uma mensagem.", <em key="cuidado">O resto é cuidado.</em>];
@@ -43,7 +45,7 @@ type Caminho = {
  * botão que não leva a lugar nenhum, e nenhuma foto: a composição se
  * sustenta em tipografia, régua e ar.
  */
-export function Closing({ scheduleUrl }: { scheduleUrl: string }) {
+export function Closing({ scheduleUrl, ambiente }: { scheduleUrl: string; ambiente?: PhotoSlot }) {
   const caminhos: Caminho[] = [
     {
       n: "01",
@@ -56,7 +58,7 @@ export function Closing({ scheduleUrl }: { scheduleUrl: string }) {
     },
     {
       n: "02",
-      nome: "Pedir acesso ao clube",
+      nome: "Pedir acesso ao VIP",
       dizer: "O cadastro é um pedido de entrada: ela lê, confere e responde.",
       ficha: "aprovação dela",
       href: ROUTES.signup,
@@ -76,7 +78,8 @@ export function Closing({ scheduleUrl }: { scheduleUrl: string }) {
 
   const ref = useRef<HTMLElement>(null);
   return (
-    <section ref={ref} className="ty-section tycl" aria-label="Começar">
+    <section ref={ref} className="ty-section tycl ty-amb-sec" aria-label="Começar">
+      <FotoAmbiente photo={ambiente} posicao="50% 45%" />
       <Arranjo pecas={FLUTUAM} className="tycl__flutua" track={ref} label="fechamento" />
       <div className="ty-container tycl__miolo">
         {/* ficha de topo: o momento de um lado, a escolha do outro */}
