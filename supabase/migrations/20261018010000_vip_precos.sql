@@ -19,9 +19,16 @@ create table if not exists vip.produtos (
   updated_at timestamptz not null default now(),
   primary key (categoria, nome)
 );
-drop trigger if exists produtos_updated_at on vip.produtos;
-create trigger produtos_updated_at before update on vip.produtos
-  for each row execute function vip.set_updated_at();
+do $$
+begin
+  if not exists (
+    select 1 from pg_trigger t join pg_class c on c.oid = t.tgrelid join pg_namespace n on n.oid = c.relnamespace
+    where n.nspname = 'vip' and c.relname = 'produtos' and t.tgname = 'produtos_updated_at'
+  ) then
+    create trigger produtos_updated_at before update on vip.produtos
+      for each row execute function vip.set_updated_at();
+  end if;
+end $$;
 alter table vip.produtos enable row level security;
 
 notify pgrst, 'reload schema';
