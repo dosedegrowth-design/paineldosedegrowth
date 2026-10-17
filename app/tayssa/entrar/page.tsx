@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string }>;
+  searchParams: Promise<{ next?: string; link?: string }>;
 }) {
   const [user, settings, params, photos] = await Promise.all([
     getSessionUser(),
@@ -32,6 +32,7 @@ export default async function LoginPage({
       <LoginExperience
         vipInfoUrl={whatsappUrl(settings.business.whatsapp, settings.whatsapp.public_vip_info)}
         next={next}
+        linkExpirado={params.link === "expirado"}
       />
     </PhotoAvailabilityProvider>
   );

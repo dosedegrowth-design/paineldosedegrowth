@@ -148,8 +148,12 @@
 }
 
 /* ---------- entrada de tela ---------- */
+/* `backwards`, não `both`: ao terminar, o transform tem de sumir de vez.
+   Com `both` o invólucro fica com transform (mesmo neutro) e vira o
+   contêiner dos filhos em position: fixed — a folha de raspar o carimbo
+   abria presa ao fim da página, fora da tela. */
 .tyv-enter {
-  animation: tyv-enter 520ms var(--t-ease-out) both;
+  animation: tyv-enter 520ms var(--t-ease-out) backwards;
 }
 @keyframes tyv-enter {
   from { opacity: 0; transform: translateY(10px); }

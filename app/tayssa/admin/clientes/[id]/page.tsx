@@ -4,7 +4,7 @@ import { getClientDetail } from "@/lib/tayssa/queries/admin";
 import { getActiveServices, getPublicBenefits } from "@/lib/tayssa/queries/catalog";
 import { getSettings } from "@/lib/tayssa/settings";
 import { toISODate } from "@/lib/tayssa/rules";
-import { cicloLegivel, currency, dateLong, dateShort, dateTime, isWithinHours } from "@/lib/tayssa/format";
+import { cicloLegivel, currency, dateLong, dateShort, dateTime, isWithinHours, nowInBusinessTz } from "@/lib/tayssa/format";
 import { formatBrPhone } from "@/lib/tayssa/phone";
 import { renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { ROUTES, publicUrl } from "@/lib/tayssa/config";
@@ -419,7 +419,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
           )}
           <div>
             <span className="tya-eyebrow" style={{ display: "block", marginBottom: 12 }}>Registrar atendimento confirmado</span>
-            <AdminServiceEntryForm clientId={user.id} services={services} todayISO={toISODate(new Date())} />
+            <AdminServiceEntryForm clientId={user.id} services={services} todayISO={toISODate(nowInBusinessTz())} />
           </div>
         </div>
       </AdminBlock>

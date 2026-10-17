@@ -47,10 +47,23 @@ export function dayMonth(v: string | Date | null | undefined): string {
   return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
 
+/** "04/09/2026 21:12" — instantes (timestamps) sempre no relógio da casa:
+ *  o servidor roda em UTC e mostraria a hora de Londres. */
 export function dateTime(v: string | Date | null | undefined): string {
   if (!v) return "";
-  const d = toDate(v);
-  return `${dateShort(d)} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  if (typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v)) return `${dateShort(v)} 00:00`;
+  const d = v instanceof Date ? v : new Date(v);
+  const p = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(d);
+  const g = (t: string) => p.find((x) => x.type === t)?.value ?? "";
+  return `${g("day")}/${g("month")}/${g("year")} ${g("hour")}:${g("minute")}`;
 }
 
 export function currency(v: number | null | undefined): string {

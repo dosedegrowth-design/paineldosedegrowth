@@ -61,7 +61,11 @@ export function BookingFlow({
         return;
       }
       setDone({ date: r.data.date, time: r.data.time, serviceName: r.data.serviceName });
-      router.refresh();
+      // A action já revalida a rota, mas em parte das vezes (medido: ~1 em 3)
+      // a tela aplicava a árvore antiga e "Meus horários" ficava sem o pedido
+      // novo até recarregar. O refresh vai DEPOIS que a transição da action
+      // assenta — dentro dela, ele disputava com a própria resposta.
+      setTimeout(() => router.refresh(), 300);
       onDone?.();
     });
   };

@@ -34,20 +34,21 @@ export default async function RestrictedPage() {
           inView={false}
           className="ty-display"
           lineClassName="ty-restricted-title"
-          lines={["Essa área é exclusiva", "para clientes com", <em key="e">acesso VIP.</em>]}
+          lines={["Essa área", "não faz parte", <em key="e">do seu acesso.</em>]}
         />
         <Reveal delay={0.5}>
           <p className="ty-body" style={{ marginTop: 24, maxWidth: 460, fontSize: 16 }}>
-            O acesso é liberado pela Tayssa, de acordo com a relação de cada cliente com o estúdio.
+            Aqui é o painel de trabalho da Tayssa. O seu espaço no clube fica no app — e se algo parecer fora do lugar,
+            é só falar com ela.
           </p>
           <div style={{ display: "flex", gap: 18, flexWrap: "wrap", marginTop: 28 }}>
-            <a href={url} target="_blank" rel="noopener noreferrer" className="ty-btn ty-btn--solid">
-              <span>Quero saber mais</span>
+            <TransitionLink href={ROUTES.vip} className="ty-btn ty-btn--solid">
+              <span>Ir para o meu espaço</span>
               <span className="ty-btn__arrow" aria-hidden />
-            </a>
-            <TransitionLink href={ROUTES.login} className="ty-btn">
-              <span>Entrar</span>
             </TransitionLink>
+            <a href={url} target="_blank" rel="noopener noreferrer" className="ty-btn">
+              <span>Falar com a Tayssa</span>
+            </a>
           </div>
         </Reveal>
         <style>{`.ty-restricted-title { font-size: clamp(30px, 4.1vw, 55px); }`}</style>

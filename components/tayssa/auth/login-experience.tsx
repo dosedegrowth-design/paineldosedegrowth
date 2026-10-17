@@ -22,7 +22,16 @@ const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
  * Ao autenticar, a luz abaixa e o nome da cliente aparece antes do espaço
  * privado — a passagem faz parte da experiência.
  */
-export function LoginExperience({ vipInfoUrl, next }: { vipInfoUrl: string; next?: string }) {
+export function LoginExperience({
+  vipInfoUrl,
+  next,
+  linkExpirado = false,
+}: {
+  vipInfoUrl: string;
+  next?: string;
+  /** chegou por um link de acesso vencido, já usado ou inválido */
+  linkExpirado?: boolean;
+}) {
   const reduced = useReducedMotion();
   // sem a foto real no lugar, a tela se reorganiza em vez de deixar um vazio
   const hasPhoto = usePhotoAvailable(PHOTOS.entrance.src);
@@ -85,6 +94,19 @@ export function LoginExperience({ vipInfoUrl, next }: { vipInfoUrl: string; next
           <br />
           <em>meu VIP.</em>
         </h1>
+
+        {linkExpirado ? (
+          <div className="tyl__note" role="status">
+            <span className="tyl__eyebrow">Link de acesso</span>
+            <p style={{ fontSize: 14.5, lineHeight: 1.5 }}>
+              Esse link não vale mais — ele vence ou já foi usado. Entre com e-mail e senha, ou peça um novo link para a
+              Tayssa.
+            </p>
+            <a href={vipInfoUrl} target="_blank" rel="noopener noreferrer" className="tyl__link">
+              Falar com a Tayssa
+            </a>
+          </div>
+        ) : null}
 
         <form
           ref={formRef}
