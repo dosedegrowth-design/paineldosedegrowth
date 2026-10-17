@@ -983,3 +983,23 @@
     border-color: var(--t-accent);
   }
 }
+
+/* ---------- menu do celular ---------- */
+.ty-nav[data-menu="true"] {
+  color: #f8ecef;
+}
+.ty-menu__item {
+  display: block;
+  text-align: left;
+  font-size: clamp(46px, 13vw, 72px);
+  line-height: 0.95;
+}
+.ty-menu__flor {
+  position: absolute;
+  right: -18%;
+  top: 14%;
+  width: 78vw;
+  max-width: 420px;
+  opacity: 0.9;
+  pointer-events: none;
+}

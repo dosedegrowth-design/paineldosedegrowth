@@ -6,6 +6,7 @@ import { ROUTES } from "@/lib/tayssa/config";
 import { TyBrand } from "@/components/tayssa/ui/brand";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { scrollToTarget } from "@/components/tayssa/ui/smooth-scroll";
+import { Bloom } from "@/components/tayssa/flora/bloom";
 
 type Secao = { id: string; label: string };
 
@@ -52,6 +53,7 @@ export function PublicNav({ scheduleUrl, sections = SECTIONS }: { scheduleUrl: s
         className={`ty-nav ${over && !solid && !open ? "ty-nav--over" : ""}`}
         data-hidden={hidden}
         data-solid={solid && !open}
+        data-menu={open}
       >
         <TransitionLink href={ROUTES.home} aria-label="Tayssa Lash — início">
           <TyBrand />
@@ -113,6 +115,9 @@ export function PublicNav({ scheduleUrl, sections = SECTIONS }: { scheduleUrl: s
               willChange: "clip-path",
             }}
           >
+            <span className="ty-menu__flor" aria-hidden>
+              <Bloom kind="flor" seed={5} tom="magenta" />
+            </span>
             <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 6 }}>
               {[
                 ...sections.map((s) => ({ label: s.label, onClick: () => go(s.id) })),
@@ -129,16 +134,14 @@ export function PublicNav({ scheduleUrl, sections = SECTIONS }: { scheduleUrl: s
                   {"href" in item && item.href ? (
                     <TransitionLink
                       href={item.href}
-                      className="ty-display"
-                      style={{ fontSize: "clamp(31px, 7.6vw, 35px)", display: "block" }}
+                      className="ty-display ty-menu__item"
                       onClick={() => setOpen(false)}
                     >
                       {item.label}
                     </TransitionLink>
                   ) : (
                     <button
-                      className="ty-display"
-                      style={{ fontSize: "clamp(31px, 7.6vw, 35px)", display: "block", textAlign: "left" }}
+                      className="ty-display ty-menu__item"
                       onClick={item.onClick}
                     >
                       {item.label}
