@@ -6,7 +6,7 @@
  * fundo, e uma faixa de brilho que cruza de tempos em tempos. Tudo em transform —
  * no celular e com menos movimento ele assenta (regras em identidade.css).
  */
-export function FundoVivo({ tom = "noite", className }: { tom?: "noite" | "dia" | "vip"; className?: string }) {
+export function FundoVivo({ tom = "noite", className }: { tom?: "noite" | "dia" | "vip" | "perola"; className?: string }) {
   return (
     <div className={["ty-vivo", className ?? ""].join(" ").trim()} data-tom={tom} aria-hidden>
       <span className="ty-vivo__luz ty-vivo__luz--1" />

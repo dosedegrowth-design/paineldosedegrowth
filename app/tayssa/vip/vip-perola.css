@@ -1,0 +1,347 @@
+/* ============================================================
+   VIP PÉROLA (out/2026) — o espaço da cliente com cara própria.
+   O site é vinho e noite; ao entrar no VIP a luz muda: fundo pérola
+   claro e quente, cartões brancos, o OURO como a cor do VIP e o vinho
+   só no detalhe (o nome dela, o item atual, um link). Quem entra
+   sente a diferença na hora. Carregado depois de vip.css e
+   vip-vivo.css: aqui só se troca a pele, nada de estrutura.
+   ============================================================ */
+
+.ty-scope.tyv {
+  --tyv-perola: #f6f1ea;
+  --tyv-perola-2: #efe5d8;
+  --tyv-tinta: #241619;
+  --tyv-tinta-2: rgba(36, 22, 25, 0.62);
+  --tyv-tinta-3: rgba(36, 22, 25, 0.42);
+  --tyv-vinho: #7a1d3a;
+  --tyv-ouro: #c9a161;
+  --tyv-ouro-2: #a8782f;
+  --tyv-ouro-luz: #f3e3c0;
+  --tyv-ouro-grad: linear-gradient(180deg, #ecd3a0 0%, #cfa65c 100%);
+  /* os nomes antigos passam a apontar para a pele nova */
+  --tyv-marfim: var(--tyv-tinta);
+  --tyv-rosa: var(--tyv-vinho);
+  --t-fg: var(--tyv-tinta);
+  --t-fg-2: var(--tyv-tinta-2);
+  --t-line: rgba(36, 22, 25, 0.09);
+  --t-line-strong: rgba(36, 22, 25, 0.2);
+  --t-bg: #fbf8f4;
+  --t-accent: var(--tyv-ouro-2);
+  --t-accent-fg: #fff;
+  --tyv-vidro: rgba(255, 255, 255, 0.82);
+  --tyv-borda: rgba(110, 80, 50, 0.12);
+  --tyv-sombra: 0 1px 2px rgba(80, 50, 30, 0.05), 0 14px 34px -22px rgba(80, 50, 30, 0.35);
+  --tyv-surface: rgba(36, 22, 25, 0.04);
+  --tyv-surface-2: rgba(36, 22, 25, 0.07);
+  color: var(--tyv-tinta);
+  background: var(--tyv-perola);
+  color-scheme: light;
+}
+body:has(.tyv) {
+  background: var(--tyv-perola, #f6f1ea);
+}
+
+/* ---------- o fundo: pérola com luz de champanhe que respira ---------- */
+.ty-vivo[data-tom="perola"] {
+  background:
+    radial-gradient(90% 60% at 15% 0%, #fbf6ee 0%, transparent 60%),
+    linear-gradient(180deg, #f8f3ec 0%, #f1e8dc 100%);
+}
+.ty-vivo[data-tom="perola"] .ty-vivo__luz--1 {
+  background: radial-gradient(closest-side, rgba(236, 206, 150, 0.42), rgba(236, 206, 150, 0.12) 55%, transparent);
+}
+.ty-vivo[data-tom="perola"] .ty-vivo__luz--2 {
+  background: radial-gradient(closest-side, rgba(240, 205, 214, 0.38), rgba(240, 205, 214, 0.1) 55%, transparent);
+}
+.ty-vivo[data-tom="perola"] .ty-vivo__luz--ouro {
+  background: radial-gradient(closest-side, rgba(214, 170, 96, 0.22), rgba(214, 170, 96, 0.06) 55%, transparent);
+}
+.ty-vivo[data-tom="perola"] .ty-vivo__grade {
+  opacity: 0.5;
+  background-image:
+    linear-gradient(rgba(150, 110, 60, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(150, 110, 60, 0.07) 1px, transparent 1px);
+}
+.ty-vivo[data-tom="perola"] .ty-vivo__chao {
+  opacity: 0.45;
+}
+.ty-vivo[data-tom="perola"] .ty-vivo__chao::before {
+  background-image:
+    linear-gradient(rgba(150, 110, 60, 0.16) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, rgba(150, 110, 60, 0.16) 1.5px, transparent 1.5px);
+}
+.ty-vivo[data-tom="perola"] .ty-vivo__varre {
+  background: linear-gradient(100deg, transparent 40%, rgba(255, 255, 255, 0.55) 50%, transparent 60%);
+}
+.ty-vivo[data-tom="perola"] .ty-vivo__borda {
+  background: radial-gradient(130% 95% at 50% 40%, transparent 60%, rgba(214, 190, 160, 0.28) 100%);
+  box-shadow: none;
+}
+.ty-vivo[data-tom="perola"] .ty-vivo__grao {
+  mix-blend-mode: normal;
+  opacity: 0.035;
+}
+
+/* ---------- topo: vidro pérola ---------- */
+.tyv .tyv-top {
+  background: linear-gradient(180deg, rgba(246, 241, 234, 0.92) 0%, rgba(246, 241, 234, 0.7) 70%, transparent 100%);
+}
+.tyv .ty-brand__name {
+  color: var(--tyv-tinta);
+}
+.ty-scope.tyv .ty-brand__name em {
+  color: var(--tyv-ouro-2);
+}
+.tyv .tyv-vip-tag {
+  color: #3a2410;
+  background: var(--tyv-ouro-grad);
+  box-shadow: 0 6px 14px -8px rgba(168, 120, 47, 0.8);
+}
+.tyv .tyv-icon-btn,
+.tyv .tyv-menu__botao {
+  color: var(--tyv-tinta);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--tyv-borda);
+  box-shadow: 0 6px 16px -12px rgba(80, 50, 30, 0.5);
+}
+.tyv .tyv-menu__botao[data-aberto] {
+  background: #fff;
+  border-color: rgba(168, 120, 47, 0.45);
+}
+@media (hover: hover) and (pointer: fine) {
+  .tyv .tyv-menu__botao:hover,
+  .tyv .tyv-icon-btn:hover {
+    background: #fff;
+  }
+}
+
+/* ---------- letra: tinta quente; o nome dela em ouro ---------- */
+.tyv .tyv-hello {
+  color: var(--tyv-tinta);
+  text-shadow: none;
+}
+.tyv .tyv-hello em {
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  color: var(--tyv-ouro-2);
+  filter: none;
+}
+.tyv .tyv-label {
+  color: var(--tyv-ouro-2);
+}
+
+/* ---------- blocos: cartão branco, sombra macia, fio de ouro ---------- */
+.tyv .tyv-panel,
+.tyv-hub__item,
+.tyv-resumo__item {
+  background: var(--tyv-vidro);
+  border-color: var(--tyv-borda);
+  box-shadow: var(--tyv-sombra);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+.tyv .tyv-row {
+  border-top-color: var(--t-line);
+}
+.tyv .tyv-btn--accent {
+  color: #fff;
+  background: var(--tyv-tinta);
+  box-shadow: 0 14px 30px -16px rgba(36, 22, 25, 0.7);
+}
+.tyv .tyv-badge {
+  color: #4a3212;
+  background: var(--tyv-ouro-luz);
+  border: 0;
+}
+.tyv .tyv-badge--quiet {
+  color: var(--tyv-tinta-2);
+  background: var(--tyv-surface-2);
+}
+.tyv-cartao-home {
+  filter: drop-shadow(0 26px 30px rgba(80, 50, 30, 0.28)) drop-shadow(0 8px 14px rgba(80, 50, 30, 0.12));
+}
+
+/* ---------- painel de ícones ---------- */
+@media (hover: hover) and (pointer: fine) {
+  .tyv-hub__item:hover {
+    border-color: rgba(168, 120, 47, 0.4);
+  }
+}
+.tyv-hub__item[data-destaque="true"] {
+  border-color: rgba(168, 120, 47, 0.4);
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(236, 206, 150, 0.45), transparent 70%),
+    #fff;
+}
+.tyv-hub__icone {
+  color: var(--tyv-ouro-2);
+  background: linear-gradient(160deg, #fbf3e4, #f1e2c6);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 0 0 1px rgba(168, 120, 47, 0.16);
+}
+.tyv-hub__titulo,
+.tyv-resumo__nome {
+  color: var(--tyv-tinta);
+}
+
+/* ---------- seu momento ---------- */
+.tyv-resumo .tyv-ring__track {
+  stroke: rgba(36, 22, 25, 0.08);
+}
+.tyv-resumo .tyv-ring__n {
+  color: var(--tyv-tinta);
+}
+.tyv-ring[data-cor] .tyv-ring__svg {
+  filter: none;
+}
+
+/* ---------- próximo horário ---------- */
+.tyv-proximo__dia {
+  color: #fff;
+  background: var(--tyv-tinta);
+}
+
+/* ---------- menu dos três pontinhos: cartão branco ---------- */
+.tyv-menu__veu {
+  background: rgba(60, 40, 25, 0.18);
+}
+.tyv-menu {
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow:
+    inset 0 0 0 1px rgba(110, 80, 50, 0.1),
+    0 30px 60px -24px rgba(80, 50, 30, 0.45);
+}
+.ty-scope .tyv a.tyv-menu__item {
+  color: var(--tyv-tinta);
+}
+.ty-scope .tyv a.tyv-menu__item:active,
+.ty-scope .tyv a.tyv-menu__item[aria-current="page"] {
+  color: var(--tyv-tinta);
+  background: rgba(201, 161, 97, 0.14);
+}
+.tyv-menu__ico {
+  color: var(--tyv-ouro-2);
+  background: linear-gradient(160deg, #fbf3e4, #f1e2c6);
+  box-shadow: inset 0 0 0 1px rgba(168, 120, 47, 0.14);
+}
+.tyv-menu__item[aria-current="page"] .tyv-menu__ico {
+  color: #3a2410;
+  background: var(--tyv-ouro-grad);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ty-scope .tyv a.tyv-menu__item:hover {
+    color: var(--tyv-tinta);
+    background: rgba(201, 161, 97, 0.1);
+  }
+}
+
+/* ---------- folhas, avisos e o marco ---------- */
+.tyv-sheet-bg {
+  background: rgba(60, 40, 25, 0.28);
+}
+.tyv-toast {
+  color: #fff;
+  background: var(--tyv-tinta);
+}
+.tyv-moment__line {
+  background: var(--tyv-ouro-grad);
+}
+.tyv-choice__preco {
+  color: #6a4a1c;
+  background: var(--tyv-ouro-luz);
+}
+
+/* ============================================================
+   MURAL — as fotos da Tayssa passando na diagonal, atrás de tudo.
+   Fileiras em transform (placa de vídeo), um véu pérola por cima
+   (sem filtro: nada é refeito a cada quadro além do deslize).
+   ============================================================ */
+.tyv-mural {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--tyv-perola);
+}
+.tyv-mural__giro {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  gap: clamp(12px, 1.6vw, 22px);
+  width: max-content;
+  translate: -50% -50%;
+  rotate: -13deg;
+}
+.tyv-mural__fileira {
+  display: flex;
+  gap: clamp(12px, 1.6vw, 22px);
+  width: max-content;
+  will-change: transform;
+  animation: tyv-mural-corre var(--dur, 100s) linear infinite;
+}
+.tyv-mural__fileira[data-sentido="direita"] {
+  animation-direction: reverse;
+}
+@keyframes tyv-mural-corre {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.tyv-mural__foto {
+  position: relative;
+  flex: none;
+  width: clamp(170px, 30vw, 300px);
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: clamp(16px, 2vw, 26px);
+  background: var(--tyv-perola-2);
+}
+/* o véu: forte no alto (nome e saudação sobre o fundo), mais leve no
+   meio, onde a foto aparece como no mural da Carol */
+.tyv-mural__veu {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(80% 32% at 30% 8%, rgba(246, 241, 234, 0.6), transparent 75%),
+    linear-gradient(180deg, rgba(246, 241, 234, 0.8) 0%, rgba(246, 241, 234, 0.6) 38%, rgba(246, 241, 234, 0.66) 100%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .tyv-mural__fileira {
+    animation: none;
+  }
+}
+
+/* com fotos passando atrás, vidro (backdrop-filter) seria refeito a cada
+   quadro: os blocos viram branco quase sólido, sem desfoque */
+.tyv .tyv-panel,
+.tyv-hub__item,
+.tyv-resumo__item,
+.tyv .tyv-moment,
+.tyv .tyv-choice:not([aria-pressed="true"]),
+.tyv .tyv-day:not([aria-pressed="true"]),
+.tyv .tyv-slot:not([aria-pressed="true"]) {
+  background-color: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.tyv .tyv-choice[aria-pressed="true"] {
+  background-color: #fbf3e4;
+  border-color: var(--tyv-ouro-2);
+}
+.tyv .tyv-top {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: linear-gradient(180deg, rgba(246, 241, 234, 0.97) 0%, rgba(246, 241, 234, 0.88) 70%, rgba(246, 241, 234, 0) 100%);
+}
+.tyv .tyv-icon-btn,
+.tyv .tyv-menu__botao {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
