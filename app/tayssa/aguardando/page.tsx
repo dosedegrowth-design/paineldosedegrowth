@@ -6,6 +6,9 @@ import { ROUTES } from "@/lib/tayssa/config";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { Entrada } from "@/components/tayssa/auth/entrada";
 
+/** Lê o banco a cada pedido: o que a Tayssa muda no painel aparece na hora. */
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Pedido em análise",
   robots: { index: false, follow: false },

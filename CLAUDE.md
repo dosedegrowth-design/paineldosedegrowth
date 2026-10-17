@@ -243,6 +243,7 @@ Produto separado dentro deste repo (subdomínio `tayssa.dosedegrowth.com`, tamb�
 | Domínio | `lib/tayssa/*` — `auth/` (scrypt + sessão em cookie `tayssa_vip_session` + tabela `sessions`), `actions/` (server actions, Zod, audit), `queries/`, `rules.ts` (puro, testado), `engine.ts` (elegibilidade) |
 | Banco | schema **`vip`** no projeto DDG (`supabase/migrations/20260914000000_vip_init.sql` + `20260914120000_vip_card_booking.sql` + `20260916000000_vip_signup_photos_agenda.sql`: `users.status` ganha `pending/rejected` + campos de cadastro, tabela `vip.photos`, bucket `tayssa-fotos`, `appointments.reviewed_*`, `settings.signup`). RLS ligado sem policies: só service_role acessa |
 | Cadastro | `/cadastro` cria a cliente em `pending` (nada de sessão). A Tayssa aprova/recusa na ficha (`adminReviewSignupAction`) e manda as boas-vindas pelo WhatsApp (`settings.signup.welcome_template`, precisa conter `{url}`). Aberto/fechado em Configurações → Cadastro |
+| Catálogo (rolos) | `vip.photos.category` (cilios/sobrancelha/labios/pele/outro) + `lash_style` = produto ("Volume inglês") + `media_type` (image/video) — migration `20261017000000_vip_media_catalog.sql`. Upload em dois tempos: `adminPrepareMediaUploadAction` (URL assinada) → PUT direto no Storage (passa do limite de 4,5 MB da Vercel) → `adminRegisterMediaAction`. `montarCatalogo()` (`lib/tayssa/catalogo.ts`, testado) agrupa; o site mostra os rolos na seção Catálogo e dentro de cada serviço. Vídeo nunca entra em `assignPhotos()` |
 | Fotos | `vip.photos` + Storage `tayssa-fotos` (público). A Tayssa sobe em `/admin/fotos` com estilo/volume; `assignPhotos()` (`lib/tayssa/photos.ts`) distribui para herói, sequência, detalhes, serviços (palavra-chave) e frente do cartão. Sem foto → campo tonal, nunca imagem inventada |
 | App da cliente | mobile primeiro: `app/tayssa/vip/vip.css` (classes `tyv-*`, cartão `tyc-*`, raspadinha `tys-*`) + nav fixa em `components/tayssa/vip/bottom-nav.tsx` |
 | Cartão | `vip.loyalty_cards` + `vip.loyalty_stamps`. Visita confirmada pela Tayssa → `stampVisit()` cria o carimbo oculto; a cliente raspa (`revealStampAction`) e vê os pontos. Cartão cheio → benefício `card_complete` em `pending_validation`. Na tela é um cartão físico (`components/tayssa/vip/loyalty-card.tsx`): frente com fotos + nome, giro 3D, verso com as posições |
@@ -250,6 +251,8 @@ Produto separado dentro deste repo (subdomínio `tayssa.dosedegrowth.com`, tamb�
 | Middleware | host `tayssa.*` → rewrite de todo path para `/tayssa/...`; `/tayssa/vip*` e `/tayssa/admin*` sem cookie → `/tayssa/entrar` |
 | Fotos reais | `public/tayssa/photos/` com os nomes de `lib/tayssa/photos.ts`; sem arquivo, o slot mostra campo tonal (nunca imagem sintética) |
 | Testes | `node --experimental-strip-types --test lib/tayssa/rules.test.ts lib/tayssa/timeline.test.ts` |
+
+Cache: o cliente `vipDb()` usa `fetch` com `cache: "no-store"` e as páginas públicas do Tayssa são `force-dynamic`. Antes o Next pré-renderizava a home e guardava a resposta do banco por um ano (o site mostrava foto/serviço antigos depois do deploy).
 
 Datas: o servidor roda em UTC — use `nowInBusinessTz()` (`lib/tayssa/format.ts`) em qualquer lógica de "hoje", nunca `new Date()` cru.
 

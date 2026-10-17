@@ -22,6 +22,8 @@ import { About } from "@/components/tayssa/public/about";
 import { Studio } from "@/components/tayssa/public/studio";
 import { Testimonials } from "@/components/tayssa/public/testimonials";
 import { VisitInfo } from "@/components/tayssa/public/visit-info";
+import { Catalogo } from "@/components/tayssa/public/catalogo";
+import type { CategoriaCatalogo } from "@/lib/tayssa/catalogo";
 import { CONTEUDO, temAtendimento, temSobre } from "@/lib/tayssa/content";
 import type { VideoAvailability } from "@/lib/tayssa/media-server";
 import { useEstrutura } from "@/components/tayssa/ui/estrutura";
@@ -46,7 +48,10 @@ export function PublicExperience({
   benefits,
   photos,
   videos,
+  catalogo = [],
 }: {
+  /** fotos e vídeos por categoria e produto (painel → Fotos) */
+  catalogo?: CategoriaCatalogo[];
   settings: Settings;
   services: ServiceRow[];
   benefits: BenefitRow[];
@@ -91,12 +96,14 @@ export function PublicExperience({
         <ServiceStrip services={services} scheduleUrl={links.schedule} />
         <WorkSequence photos={photos?.work} />
         <Film video={videos?.processo} />
+        <Catalogo catalogo={catalogo} />
         <Services
           services={services}
           scheduleUrl={links.schedule}
           photoBySlug={photos?.byService}
           detalhes={CONTEUDO.servicos}
           ambiente={colagem[1] ?? colagem[0]}
+          catalogo={catalogo}
         />
         <About business={settings.business} conteudo={CONTEUDO} portrait={photos?.portrait} instagramUrl={links.instagram} />
         <Studio conteudo={CONTEUDO} video={videos?.espaco} photo={photos?.studio} />

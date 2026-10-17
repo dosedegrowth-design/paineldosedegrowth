@@ -6,6 +6,8 @@ import type { ServiceRow } from "@/lib/tayssa/types";
 import type { PhotoSlot } from "@/lib/tayssa/photos";
 import { RealPhoto } from "@/components/tayssa/ui/real-photo";
 import { FotoAmbiente } from "@/components/tayssa/ui/foto-ambiente";
+import { Rolo } from "@/components/tayssa/public/rolo";
+import { categoriaDoServico, itensDaCategoria, type CategoriaCatalogo } from "@/lib/tayssa/catalogo";
 import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
 import { useFinePointer } from "@/components/tayssa/ui/use-media";
 import { Magnetic } from "@/components/tayssa/ui/magnetic";
@@ -91,7 +93,10 @@ export function Services({
   photoBySlug,
   detalhes = {},
   ambiente,
+  catalogo = [],
 }: {
+  /** rolos por categoria: cada serviço mostra o da sua categoria */
+  catalogo?: CategoriaCatalogo[];
   /** foto real que vira o fundo da seção, com pouca luz */
   ambiente?: PhotoSlot;
   services: ServiceRow[];
@@ -152,6 +157,7 @@ export function Services({
           {list.map((s, i) => {
             const foto = photoBySlug?.[s.slug];
             const n = String(i + 1).padStart(2, "0");
+            const rolo = itensDaCategoria(catalogo, categoriaDoServico(s.slug, s.name));
             return (
               <Reveal key={s.id} as="li" className="tysv__item" delay={Math.min(i, 4) * 0.05} amount={0.25}>
                 <a
@@ -205,6 +211,11 @@ export function Services({
                     <span className="ty-btn__arrow" aria-hidden />
                   </span>
                 </a>
+                {rolo.length ? (
+                  <div className="tysv__rolo">
+                    <Rolo itens={rolo} tamanho="mini" rotulo={`Fotos e vídeos: ${s.name}`} sentido={i % 2 ? -1 : 1} />
+                  </div>
+                ) : null}
               </Reveal>
             );
           })}

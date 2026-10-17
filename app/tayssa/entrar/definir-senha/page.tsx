@@ -9,6 +9,9 @@ import { SetPasswordForm } from "@/components/tayssa/auth/set-password-form";
 import { Entrada } from "@/components/tayssa/auth/entrada";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 
+/** Lê o banco a cada pedido: o que a Tayssa muda no painel aparece na hora. */
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Definir senha",
   robots: { index: false, follow: false },

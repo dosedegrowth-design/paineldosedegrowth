@@ -8,6 +8,9 @@ import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { PublicFooter } from "@/components/tayssa/public/footer";
 
+/** Lê o banco a cada pedido: o que a Tayssa muda no painel aparece na hora. */
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Indicar alguém",
   description: "Indique alguém para conhecer o trabalho da Tayssa. A indicação vale após o primeiro atendimento confirmado.",

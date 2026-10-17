@@ -104,6 +104,8 @@ export type LibraryPhoto = {
   id: string;
   public_url: string;
   lash_style: string;
+  /** vídeo não entra nos lugares de foto (herói, cartão…): só nos rolos */
+  media_type?: "image" | "video";
   caption: string | null;
   alt: string;
   width: number | null;
@@ -175,7 +177,7 @@ const SERVICE_STATICS: Record<string, PhotoSlot> = {
  * arquivo). A Tayssa só sobe a foto — aqui ela encontra o lugar.
  */
 export function assignPhotos(library: LibraryPhoto[]): PhotoAssignment {
-  const ordered = [...library].sort((a, b) => Number(b.featured) - Number(a.featured));
+  const ordered = library.filter((p) => p.media_type !== "video").sort((a, b) => Number(b.featured) - Number(a.featured));
   const slots = ordered.map((p) => slotFromPhoto(p));
   const take = (n: number, from: number) => slots.slice(from, from + n);
   const hero = slots[0] ?? PHOTOS.hero;

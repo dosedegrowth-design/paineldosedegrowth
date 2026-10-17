@@ -7,6 +7,9 @@ import { ROUTES } from "@/lib/tayssa/config";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { SignupExperience } from "@/components/tayssa/auth/signup-experience";
 
+/** Lê o banco a cada pedido: o que a Tayssa muda no painel aparece na hora. */
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Pedir acesso",
   robots: { index: false, follow: false },

@@ -33,6 +33,10 @@ export function vipDb(): VipClient {
   cached = createClient<any, "vip">(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
     db: { schema: "vip" },
+    // Fora do Data Cache do Next: na pré-renderização ele guardava a resposta
+    // do banco por um ano, e o site seguia mostrando foto, serviço e regra
+    // antigos depois do deploy até alguém salvar algo no painel.
+    global: { fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }) },
   }) as unknown as VipClient;
   return cached;
 }

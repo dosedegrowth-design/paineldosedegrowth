@@ -135,7 +135,8 @@ export const reviewSignupSchema = z.object({
 
 /** Metadados de uma foto da biblioteca. */
 export const photoMetaSchema = z.object({
-  lash_style: z.string().trim().min(2, "Diga o volume ou estilo").max(80),
+  lash_style: z.string().trim().min(2, "Diga o produto ou a técnica").max(80),
+  category: z.enum(["cilios", "sobrancelha", "labios", "pele", "outro"]).default("cilios"),
   caption: z.string().trim().max(120).optional().transform((v) => v || null),
   alt: z.string().trim().max(200).optional().transform((v) => v || null),
   featured: z.boolean().optional(),

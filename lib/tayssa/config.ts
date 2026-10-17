@@ -49,6 +49,13 @@ export const PHOTO_TYPES: Record<string, string> = {
   "image/webp": "webp",
   "image/avif": "avif",
 };
+/** Vídeo curto do trabalho (vai direto do aparelho para o Storage). */
+export const VIDEO_MAX_BYTES = 60 * 1024 * 1024;
+export const VIDEO_TYPES: Record<string, string> = {
+  "video/mp4": "mp4",
+  "video/webm": "webm",
+  "video/quicktime": "mov",
+};
 
 /** URL pública canônica (subdomínio). Caminhos internos continuam /tayssa/... */
 export const PUBLIC_ORIGIN =

@@ -7,6 +7,8 @@ import type { PhotoRow } from "@/lib/tayssa/types";
 import { dateShort } from "@/lib/tayssa/format";
 import { Campo } from "@/components/tayssa/admin/forms";
 import { Icone } from "@/components/tayssa/admin/icons";
+import { CATEGORIAS, rotuloCategoria } from "@/lib/tayssa/catalogo";
+import type { CategoriaMidia } from "@/lib/tayssa/types";
 
 /**
  * A biblioteca: tudo que a Tayssa subiu, onde cada foto está, e os
@@ -88,6 +90,7 @@ function PhotoCard({ photo, places, position }: { photo: PhotoRow; places: strin
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [style, setStyle] = useState(photo.lash_style);
+  const [categoria, setCategoria] = useState<CategoriaMidia>(photo.category ?? "cilios");
   const [caption, setCaption] = useState(photo.caption ?? "");
   const [alt, setAlt] = useState(photo.alt);
   const [err, setErr] = useState<string | null>(null);
@@ -111,10 +114,13 @@ function PhotoCard({ photo, places, position }: { photo: PhotoRow; places: strin
       <div className="tya-foto__img">
         {broken ? (
           <span className="tya-foto__tonal">Arquivo fora do ar</span>
+        ) : photo.media_type === "video" ? (
+          <video src={photo.public_url} muted loop playsInline autoPlay preload="metadata" onError={() => setBroken(true)} />
         ) : (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={photo.public_url} alt={photo.alt} loading="lazy" onError={() => setBroken(true)} />
         )}
+        {photo.media_type === "video" ? <span className="tya-pill tya-pill--dark tya-foto__tipo">Vídeo</span> : null}
         {photo.featured ? <span className="tya-pill tya-pill--gold tya-foto__selo">Destaque</span> : null}
         {position ? (
           <span className="tya-foto__n" title={`${position}ª da fila`}>
@@ -125,8 +131,23 @@ function PhotoCard({ photo, places, position }: { photo: PhotoRow; places: strin
 
       {editing ? (
         <div style={{ display: "grid", gap: 10 }}>
+          <div className="tya-sugs" role="radiogroup" aria-label="Categoria">
+            {CATEGORIAS.map((c) => (
+              <button
+                key={c.slug}
+                type="button"
+                role="radio"
+                aria-checked={categoria === c.slug}
+                className="tya-chip"
+                data-on={categoria === c.slug ? "true" : "false"}
+                onClick={() => setCategoria(c.slug)}
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
           <Campo
-            label="Volume / estilo"
+            label="Produto / técnica"
             name={`style-${photo.id}`}
             list="tayssa-styles-lib"
             value={style}
@@ -156,6 +177,7 @@ function PhotoCard({ photo, places, position }: { photo: PhotoRow; places: strin
                   adminUpdatePhotoAction({
                     id: photo.id,
                     lash_style: style,
+                    category: categoria,
                     caption,
                     alt,
                     featured: photo.featured,
@@ -174,6 +196,9 @@ function PhotoCard({ photo, places, position }: { photo: PhotoRow; places: strin
       ) : (
         <>
           <div style={{ display: "grid", gap: 5 }}>
+            <span className="tya-small" style={{ fontWeight: 600, color: "var(--tya-brand)" }}>
+              {rotuloCategoria(photo.category)}
+            </span>
             <strong className="tya-foto__t">{photo.lash_style}</strong>
             <span className="tya-small">{photo.caption ?? "sem legenda"}</span>
             <span className="tya-small" style={{ fontSize: 11, color: "var(--tya-muted-2)" }}>
@@ -213,6 +238,7 @@ function PhotoCard({ photo, places, position }: { photo: PhotoRow; places: strin
                   adminUpdatePhotoAction({
                     id: photo.id,
                     lash_style: photo.lash_style,
+                    category: photo.category,
                     caption: photo.caption ?? "",
                     alt: photo.alt,
                     featured: !photo.featured,
@@ -236,7 +262,7 @@ function PhotoCard({ photo, places, position }: { photo: PhotoRow; places: strin
               className="tya-btn tya-btn--sm tya-btn--danger"
               disabled={pending}
               onClick={() => {
-                if (window.confirm("Apagar esta foto de vez? Ela some do site, do cartão e do bucket.")) {
+                if (window.confirm(`Apagar ${photo.media_type === "video" ? "este vídeo" : "esta foto"} de vez? Some do site, do cartão e do bucket.`)) {
                   run(() => adminDeletePhotoAction({ id: photo.id }));
                 }
               }}

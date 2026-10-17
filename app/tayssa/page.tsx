@@ -5,9 +5,13 @@ import { getPhotoAvailability } from "@/lib/tayssa/photos-server";
 import { getVideoAvailability } from "@/lib/tayssa/media-server";
 import { getPhotoLibrary } from "@/lib/tayssa/queries/photos";
 import { assignPhotos } from "@/lib/tayssa/photos";
+import { montarCatalogo } from "@/lib/tayssa/catalogo";
 import { PublicExperience } from "@/components/tayssa/public/experience";
 import { PhotoAvailabilityProvider } from "@/components/tayssa/ui/photo-availability";
 import { PUBLIC_ORIGIN } from "@/lib/tayssa/config";
+
+/** Lê o banco a cada pedido: o que a Tayssa muda no painel aparece na hora. */
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   alternates: { canonical: PUBLIC_ORIGIN },
@@ -30,6 +34,8 @@ export default async function TayssaHome() {
   // Só entra foto que existe de verdade — da biblioteca, ou arquivo estático
   // presente. Sem isso o site exibiria caixotes vazios no lugar do trabalho.
   const assigned = assignPhotos(library);
+  // o catálogo (foto e vídeo por categoria e produto) alimenta os rolos
+  const catalogo = montarCatalogo(library);
   const existe = (p?: { src: string }) => Boolean(p && (p.src.startsWith("http") || photos[p.src]));
   const reais = {
     ...assigned,
@@ -57,7 +63,14 @@ export default async function TayssaHome() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <PhotoAvailabilityProvider value={photos}>
-        <PublicExperience settings={settings} services={services} benefits={benefits} photos={reais} videos={videos} />
+        <PublicExperience
+          settings={settings}
+          services={services}
+          benefits={benefits}
+          photos={reais}
+          videos={videos}
+          catalogo={catalogo}
+        />
       </PhotoAvailabilityProvider>
     </>
   );

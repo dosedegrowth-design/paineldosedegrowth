@@ -5,6 +5,8 @@ import { assignPhotos, type PhotoSlot } from "@/lib/tayssa/photos";
 import { AdminBlock, AdminHeader, Stat } from "@/components/tayssa/admin/shell";
 import { PhotoUpload } from "@/components/tayssa/admin/photo-upload";
 import { PhotoLibrary } from "@/components/tayssa/admin/photo-library";
+import { montarCatalogo } from "@/lib/tayssa/catalogo";
+import type { CategoriaMidia } from "@/lib/tayssa/types";
 
 /**
  * Fotos: um lugar só. O que entra aqui aparece no site, na frente do
@@ -25,7 +27,16 @@ export default async function PhotosPage() {
   // `activeStyles` é o que está no ar — e é esse que o painel conta, porque
   // só foto no ar entra em `assignPhotos()`.
   const styles = lashStyles(photos);
-  const activeStyles = lashStyles(activePhotos);
+  // sugestões de produto por categoria (inclui arquivadas: é vocabulário)
+  const produtos: Partial<Record<CategoriaMidia, string[]>> = {};
+  for (const p of photos) {
+    const lista = (produtos[p.category] ??= []);
+    if (!lista.includes(p.lash_style)) lista.push(p.lash_style);
+  }
+  // o catálogo no ar: é dele que saem os rolos do site
+  const catalogo = montarCatalogo(activePhotos);
+  const nProdutos = catalogo.reduce((n, c) => n + c.produtos.length, 0);
+  const nVideos = activePhotos.filter((p) => p.media_type === "video").length;
 
   // onde cada foto caiu, lido da mesma distribuição que o site consome
   const assigned = assignPhotos(activePhotos);
@@ -53,6 +64,15 @@ export default async function PhotosPage() {
     if (nome) put(s, nome);
   }
   assigned.card.forEach((s) => put(s, "Frente do cartão"));
+  // todo item no ar está no rolo do produto dele
+  for (const c of catalogo) {
+    for (const prod of c.produtos) {
+      for (const item of prod.itens) {
+        const list = (places[item.id] ??= []);
+        list.push(`Rolo: ${c.label} › ${prod.nome}`);
+      }
+    }
+  }
 
   return (
     <>
@@ -61,7 +81,7 @@ export default async function PhotosPage() {
         title={
           activePhotos.length ? (
             <>
-              {activePhotos.length} <em>{activePhotos.length === 1 ? "foto no ar" : "fotos no ar"}</em>
+              {activePhotos.length} <em>{activePhotos.length === 1 ? "item no catálogo" : "itens no catálogo"}</em>
             </>
           ) : (
             <>
@@ -69,7 +89,7 @@ export default async function PhotosPage() {
             </>
           )
         }
-        lead="Suba a foto e diga o volume ou estilo. O sistema decide onde ela aparece: herói do site, sequência de trabalhos, trilho de detalhes, serviços e a frente do cartão da cliente. Destaques entram primeiro."
+        lead="Escolha a categoria, diga o produto (ex.: Volume inglês) e suba foto ou vídeo. Cada produto vira um rolo no site, que se alimenta sozinho. As fotos também ocupam o herói, a sequência de trabalho, os serviços e a frente do cartão."
       />
 
       {photos.length ? (
@@ -77,21 +97,27 @@ export default async function PhotosPage() {
           <Stat n={activePhotos.length} label="No ar" sub="alimentam o site e o cartão" />
           <Stat n={featured} label="Destaques" sub="vão para o começo da fila" alert={featured > 0} />
           <Stat n={archived} label="Arquivadas" sub="guardadas, fora do ar" />
-          <Stat n={activeStyles.length} label="Volumes / estilos" sub="é o nome que acha o lugar" />
+          <Stat n={nProdutos} label="Produtos" sub="cada um é um rolo no site" />
+          <Stat n={nVideos} label="Vídeos" sub="tocam nos rolos, sem som" />
         </div>
       ) : null}
 
       <div className="tya-fotos">
         <div className="tya-fotos__col">
           <div className="tya-fotos__sobe">
-            <AdminBlock title="Adicionar foto">
-              <PhotoUpload styles={styles} />
+            <AdminBlock title="Adicionar ao catálogo">
+              <PhotoUpload produtos={produtos} />
             </AdminBlock>
           </div>
 
           <div className="tya-fotos__onde">
             <AdminBlock title="Onde a foto aparece">
               <dl className="tya-defs">
+                <dt>Rolos</dt>
+                <dd>
+                  Cada produto vira um rolo no site — foto e vídeo passando sozinhos. Aparece no serviço da categoria e
+                  no catálogo. Destaque abre o rolo.
+                </dd>
                 <dt>Fila</dt>
                 <dd>
                   Destaque primeiro; depois a mais nova. É a posição na fila que decide o resto — o número aparece em
@@ -101,14 +127,14 @@ export default async function PhotosPage() {
                 <dd>A 1ª da fila abre o site.</dd>
                 <dt>Trabalho</dt>
                 <dd>
-                  Aqui não é a fila que manda: cada técnica recebe a primeira foto cujo volume/estilo tem a palavra
+                  Aqui não é a fila que manda: cada técnica recebe a primeira foto cujo produto tem a palavra
                   dela — fio, volume, manutenção. Sem foto com a palavra, a técnica fica sem foto.
                 </dd>
                 <dt>Detalhes</dt>
                 <dd>As seguintes entram no trilho de detalhes.</dd>
                 <dt>Serviços</dt>
                 <dd>
-                  O volume/estilo com a palavra do serviço (volume, fio, manutenção, sobrancelha, lip, limpeza) ilustra
+                  O produto com a palavra do serviço (volume, fio, manutenção, sobrancelha, lip, limpeza) ilustra
                   aquele serviço.
                 </dd>
                 <dt>Cartão</dt>

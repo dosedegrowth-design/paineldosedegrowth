@@ -174,12 +174,17 @@ export type CardStamp = {
 };
 
 /** Foto da biblioteca central: um upload, vários consumidores. */
+export type CategoriaMidia = "cilios" | "sobrancelha" | "labios" | "pele" | "outro";
+
 export type PhotoRow = {
   id: string;
   storage_path: string;
   public_url: string;
-  /** volume/estilo de cílios (ex.: "Volume brasileiro") */
+  /** produto/técnica dentro da categoria (ex.: "Volume inglês") */
   lash_style: string;
+  /** cilios | sobrancelha | labios | pele | outro */
+  category: CategoriaMidia;
+  media_type: "image" | "video";
   caption: string | null;
   alt: string;
   width: number | null;

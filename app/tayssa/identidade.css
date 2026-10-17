@@ -1372,3 +1372,424 @@ body:has(.ty-scope[data-theme="night"]) {
     animation: none;
   }
 }
+
+/* ============================================================
+   ROLO — fotos e vídeos de um produto passando sem fim, flutuando
+   ============================================================ */
+.ty-rolo {
+  position: relative;
+  overflow: hidden;
+  padding-block: 34px 40px;
+  perspective: 1600px;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+.ty-rolo__trilho {
+  display: flex;
+  width: max-content;
+  gap: clamp(14px, 1.6vw, 24px);
+  padding-inline: 12px;
+  transform-style: preserve-3d;
+  /* o trilho inteiro inclina de leve: o rolo parece uma vitrine curva */
+  rotate: x 6deg;
+  animation: ty-rolo var(--dur, 40s) linear infinite var(--dir, normal);
+}
+.ty-rolo:hover .ty-rolo__trilho,
+.ty-rolo:focus-within .ty-rolo__trilho,
+.ty-rolo:active .ty-rolo__trilho {
+  animation-play-state: paused;
+}
+.ty-rolo__trilho[data-parado="true"] {
+  animation: none;
+}
+@keyframes ty-rolo {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.ty-rolo__cartao {
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  /* cada cartão sobe e desce no seu tempo — o rolo respira */
+  animation: ty-cartao-onda 6.5s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * -1.3s);
+}
+@keyframes ty-cartao-onda {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -14px;
+  }
+}
+.ty-rolo__flutua {
+  position: relative;
+  display: block;
+  width: clamp(200px, 22vw, 300px);
+  aspect-ratio: 4 / 5.4;
+  border-radius: 28px;
+  overflow: hidden;
+  background: linear-gradient(160deg, #5a0f28, #24060f);
+  box-shadow:
+    0 30px 60px -28px rgba(5, 0, 2, 0.9),
+    0 18px 40px -26px rgba(232, 92, 140, 0.5),
+    0 0 0 1px rgba(255, 214, 228, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  transition:
+    transform 0.6s var(--t-ease-vivo),
+    box-shadow 0.6s var(--t-ease-vivo);
+}
+.ty-rolo--mini .ty-rolo__flutua {
+  width: clamp(120px, 11vw, 150px);
+  border-radius: 20px;
+}
+.ty-rolo__midia {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s var(--t-ease-vivo);
+}
+.ty-rolo__brilho {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, transparent 50%, rgba(26, 4, 14, 0.75) 100%),
+    linear-gradient(120deg, rgba(255, 255, 255, 0.18), transparent 35%);
+}
+.ty-rolo__rotulo {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #fff;
+  text-align: left;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+.ty-rolo--mini .ty-rolo__rotulo {
+  font-size: 11.5px;
+  left: 9px;
+  bottom: 9px;
+}
+.ty-rolo__play {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  position: relative;
+}
+.ty-rolo__play::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 6px;
+  border: 5px solid transparent;
+  border-left: 8px solid #6d1530;
+  border-right: 0;
+}
+@media (hover: hover) {
+  .ty-rolo__cartao:hover .ty-rolo__flutua {
+    transform: translateY(-10px) scale(1.04) rotateY(-4deg);
+    box-shadow:
+      0 40px 80px -30px rgba(5, 0, 2, 0.95),
+      0 24px 60px -24px rgba(240, 120, 165, 0.75),
+      0 0 0 1px rgba(255, 214, 228, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  .ty-rolo__cartao:hover .ty-rolo__midia {
+    transform: scale(1.08);
+  }
+}
+.ty-rolo__cartao:focus-visible {
+  outline: none;
+}
+.ty-rolo__cartao:focus-visible .ty-rolo__flutua {
+  box-shadow: 0 0 0 3px #f7c1d1;
+}
+
+/* ---------- visor: a mídia grande por cima de tudo ---------- */
+.ty-visor {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: max(24px, env(safe-area-inset-top)) var(--t-gutter) max(24px, env(safe-area-inset-bottom));
+  background:
+    radial-gradient(70% 60% at 50% 45%, rgba(109, 21, 48, 0.55), transparent 70%),
+    rgba(18, 4, 10, 0.88);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  perspective: 1400px;
+  min-height: 0;
+}
+.ty-visor__fig {
+  margin: 0;
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+  cursor: grab;
+  touch-action: pan-y;
+}
+.ty-visor__midia {
+  position: relative;
+  height: min(76svh, 820px);
+  max-width: calc(100vw - var(--t-gutter) * 2);
+  border-radius: 30px;
+  overflow: hidden;
+  background: #24060f;
+  box-shadow:
+    0 60px 120px -40px rgba(0, 0, 0, 0.95),
+    0 0 80px -20px rgba(232, 92, 140, 0.45),
+    0 0 0 1px rgba(255, 214, 228, 0.16);
+}
+.ty-visor__midia .ty-rolo__midia {
+  pointer-events: none;
+}
+.ty-visor figcaption {
+  display: grid;
+  gap: 2px;
+  text-align: center;
+  color: rgba(251, 227, 235, 0.7);
+  font-size: 14px;
+}
+.ty-visor figcaption b {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+.ty-visor__seta,
+.ty-visor__fechar {
+  position: absolute;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 214, 228, 0.22);
+  background: rgba(255, 236, 242, 0.1);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.ty-visor__seta:hover,
+.ty-visor__fechar:hover {
+  background: rgba(255, 236, 242, 0.2);
+}
+.ty-visor__seta::before,
+.ty-visor__fechar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  -webkit-mask: var(--ico) center / 18px no-repeat;
+  mask: var(--ico) center / 18px no-repeat;
+}
+.ty-visor__seta {
+  top: 50%;
+  translate: 0 -50%;
+  --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2.5 8h10.4M9 3.8 13.2 8 9 12.2' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+.ty-visor__seta--ant {
+  left: max(16px, 3vw);
+  rotate: 180deg;
+  translate: 0 50%;
+}
+.ty-visor__seta--prox {
+  right: max(16px, 3vw);
+}
+.ty-visor__fechar {
+  top: max(16px, env(safe-area-inset-top));
+  right: max(16px, 3vw);
+  --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 3l10 10M13 3 3 13' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+.ty-visor__conta {
+  position: absolute;
+  left: 50%;
+  top: max(28px, calc(env(safe-area-inset-top) + 14px));
+  translate: -50% 0;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(251, 227, 235, 0.7);
+}
+@media (max-width: 767px) {
+  .ty-visor__seta {
+    top: auto;
+    bottom: max(20px, env(safe-area-inset-bottom));
+    translate: none;
+  }
+  .ty-visor__seta--ant {
+    translate: none;
+  }
+  .ty-visor__midia {
+    height: min(66svh, 640px);
+  }
+}
+
+/* ---------- a seção do catálogo ---------- */
+.tyct {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  padding-block: clamp(80px, 12vh, 140px) clamp(40px, 6vh, 80px);
+  background: var(--t-vivo-3);
+  color: #fbeff3;
+}
+.tyct > :not(.ty-vivo) {
+  position: relative;
+  z-index: 1;
+}
+.tyct__miolo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.tyct__selo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px 8px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 228, 236, 0.86);
+  background: rgba(255, 236, 242, 0.07);
+  border: 1px solid rgba(255, 214, 228, 0.16);
+}
+.tyct__selo i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #e8bf86;
+  box-shadow: 0 0 10px #e8bf86;
+}
+.tyct__titulo {
+  margin: 18px 0 0;
+  font-size: clamp(36px, 5.2vw, 76px);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+  background: var(--t-letra-noite);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.tyct__titulo em {
+  font-style: normal;
+  background: var(--t-letra-acento);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.tyct__abas {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 30px;
+  padding: 5px;
+  border-radius: 999px;
+  background: rgba(255, 236, 242, 0.07);
+  border: 1px solid rgba(255, 214, 228, 0.14);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+.tyct__aba {
+  position: relative;
+  height: 42px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: rgba(255, 228, 236, 0.76);
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+}
+.tyct__aba[aria-selected="true"] {
+  color: #4b0c20;
+}
+.tyct__aba-fundo {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, #ffffff 0%, #fbe1e9 100%);
+  box-shadow: 0 10px 26px -12px rgba(247, 150, 182, 0.9);
+}
+.tyct__aba-txt {
+  position: relative;
+}
+.tyct__aba small,
+.tyct__produto small {
+  font-size: 11.5px;
+  opacity: 0.6;
+  margin-left: 2px;
+}
+.tyct__produtos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+.tyct__produto {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 214, 228, 0.18);
+  background: transparent;
+  color: rgba(255, 228, 236, 0.8);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 0.25s,
+    color 0.25s,
+    border-color 0.25s;
+}
+.tyct__produto:hover {
+  border-color: rgba(255, 214, 228, 0.4);
+}
+.tyct__produto[data-on="true"] {
+  color: #fff;
+  border-color: rgba(247, 193, 209, 0.7);
+  background: rgba(232, 92, 140, 0.22);
+  box-shadow: 0 0 22px -6px rgba(232, 92, 140, 0.7);
+}
+.tyct .ty-rolo {
+  margin-top: clamp(16px, 3vh, 34px);
+}
+
+/* o rolo pequeno dentro de cada serviço */
+.tysv__rolo {
+  margin: -6px 0 6px;
+}
+.tysv__rolo .ty-rolo {
+  padding-block: 18px 22px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ty-rolo__trilho,
+  .ty-rolo__cartao {
+    animation: none !important;
+  }
+  .ty-rolo {
+    overflow-x: auto;
+  }
+}

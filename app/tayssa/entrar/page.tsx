@@ -9,6 +9,9 @@ import { getPhotoAvailability } from "@/lib/tayssa/photos-server";
 import { LoginExperience } from "@/components/tayssa/auth/login-experience";
 import { PhotoAvailabilityProvider } from "@/components/tayssa/ui/photo-availability";
 
+/** Lê o banco a cada pedido: o que a Tayssa muda no painel aparece na hora. */
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Entrar",
   robots: { index: false, follow: false },

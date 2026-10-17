@@ -6,6 +6,9 @@ import { whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { Entrada } from "@/components/tayssa/auth/entrada";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 
+/** Lê o banco a cada pedido: o que a Tayssa muda no painel aparece na hora. */
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Área exclusiva",
   robots: { index: false, follow: false },
