@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { useCallback, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -15,17 +14,31 @@ import {
 } from "framer-motion";
 import { ROUTES } from "@/lib/tayssa/config";
 import { plural } from "@/lib/tayssa/format";
-import type { PhotoSlot } from "@/lib/tayssa/photos";
 import type { RevealResult } from "@/lib/tayssa/actions/card";
 import type { CardStamp } from "@/lib/tayssa/types";
 import { ScratchSheet } from "@/components/tayssa/vip/scratch-sheet";
 import { useFinePointer } from "@/components/tayssa/ui/use-media";
-import { Bloom } from "@/components/tayssa/flora/bloom";
 
 const Lash = (
   <svg viewBox="0 0 24 24" aria-hidden>
     <path d="M3 15c3.4-4.2 6.6-6.3 9-6.3s5.6 2.1 9 6.3" />
     <path d="M6.4 11.6 5 8.6M12 8.9V5.6M17.6 11.6 19 8.6" />
+  </svg>
+);
+
+/** a flor da casa em fio de ouro, gravada na frente do cartão */
+const LotusOuro = (
+  <svg viewBox="0 0 24 24" aria-hidden>
+    <path d="M12 4.2c-2.1 2.6-2.1 7 0 9.8 2.1-2.8 2.1-7.2 0-9.8z" />
+    <path d="M12 14c-.4-3.6-2.6-6-6-6.6.3 3.9 2.6 6.3 6 6.6zM12 14c.4-3.6 2.6-6 6-6.6-.3 3.9-2.6 6.3-6 6.6z" />
+    <path d="M12 14c-2.7 1-6.3.6-9-1.9 3-1.4 6.6-.9 9 1.9zM12 14c2.7 1 6.3.6 9-1.9-3-1.4-6.6-.9-9 1.9z" />
+  </svg>
+);
+
+/** o brilho de quatro pontas do canto do cartão */
+const Brilho = (
+  <svg viewBox="0 0 24 24" aria-hidden>
+    <path d="M12 2.5c.5 5.2 4.3 9 9.5 9.5-5.2.5-9 4.3-9.5 9.5-.5-5.2-4.3-9-9.5-9.5 5.2-.5 9-4.3 9.5-9.5z" />
   </svg>
 );
 
@@ -48,8 +61,6 @@ export type LoyaltyCardProps = {
   rewardStatus: string | null;
   /** mostra o link para a página do cartão (usado na home) */
   withLink?: boolean;
-  /** fotos reais da biblioteca — a frente do cartão passa por elas devagar */
-  photos: PhotoSlot[];
   holderName: string;
   memberSince?: string | null;
   isVip?: boolean;
@@ -62,67 +73,13 @@ const DEG = Math.PI / 180;
 /** giro com um leve excesso: mola, não curva de CSS */
 const FLIP_SPRING = { stiffness: 64, damping: 13, mass: 1 };
 const TILT_SPRING = { stiffness: 140, damping: 20, mass: 0.5 };
-/** cada foto fica este tempo antes de ceder à próxima */
-const SEQUENCE_MS = 4600;
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
 /**
- * A sequência da frente. Uma foto de cada vez, a câmera se movendo
- * devagar como se fosse o mesmo objeto visto de outro ângulo; a troca é
- * um fade lento. Foto que não carrega sai da sequência; sem nenhuma, a
- * frente é um campo escuro com o emblema — nunca imagem inventada.
- */
-function CardPhotos({ photos, playing, reduced }: { photos: PhotoSlot[]; playing: boolean; reduced: boolean }) {
-  const [broken, setBroken] = useState<ReadonlySet<string>>(() => new Set());
-  const [tick, setTick] = useState(0);
-  const list = photos.filter((p) => !broken.has(p.src));
-  const count = list.length;
-
-  useEffect(() => {
-    if (!playing || reduced || count < 2) return;
-    const id = window.setInterval(() => setTick((t) => t + 1), SEQUENCE_MS);
-    return () => window.clearInterval(id);
-  }, [playing, reduced, count]);
-
-  if (!count) {
-    return (
-      <div className="tyc3__tonal" aria-hidden>
-        {Lash}
-      </div>
-    );
-  }
-  const active = tick % count;
-  const previous = tick > 0 && count > 1 ? (tick - 1) % count : -1;
-
-  return (
-    <div className="tyc3__photos" aria-hidden>
-      {list.map((p, k) => (
-        <div
-          key={p.src}
-          className="tyc3__photo"
-          data-on={k === active ? "" : undefined}
-          data-off={k === previous ? "" : undefined}
-          data-dir={k % 4}
-        >
-          <Image
-            src={p.src}
-            alt=""
-            fill
-            sizes="(max-width: 560px) calc(100vw - 40px), 480px"
-            priority={k === 0}
-            onError={() => setBroken((prev) => new Set(prev).add(p.src))}
-            style={{ objectFit: "cover", objectPosition: "50% 35%" }}
-          />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/**
  * O cartão. Um objeto físico na proporção de cartão de crédito: a frente
- * com as fotos da Tayssa e o nome da cliente; o verso com as posições da
+ * vinho com os detalhes em ouro (flor, chip, aproximação, o fio de ouro e
+ * o nome dela), sem foto; o verso com as posições da
  * visita e, quando há carimbo novo, a folha dourada para raspar. Tocar
  * vira o cartão de verdade (rotação 3D, frente e verso no mesmo corpo);
  * no desktop ele acompanha o cursor.
@@ -135,7 +92,6 @@ export function LoyaltyCard({
   rewardTitle,
   rewardStatus,
   withLink = false,
-  photos,
   holderName,
   memberSince = null,
   isVip = false,
@@ -289,15 +245,26 @@ export function LoyaltyCard({
             }
           >
             <div className="tyc3__face tyc3__face--front" inert={front ? undefined : true} aria-hidden={!front}>
-              <CardPhotos photos={photos} playing={front && !open} reduced={reduced} />
-              <div className="tyc3__scrim" />
+              <div className="tyc3__vinho" aria-hidden>
+                {/* o fio de ouro que atravessa a frente */}
+                <svg className="tyc3__onda" viewBox="0 0 320 202" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="tyc3-onda" x1="0" x2="1" y1="0" y2="0">
+                      <stop offset="0" stopColor="#e8c88c" stopOpacity="0.15" />
+                      <stop offset="0.45" stopColor="#e8c88c" stopOpacity="0.85" />
+                      <stop offset="1" stopColor="#f6e2b6" stopOpacity="0.55" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M-4 150C64 138 128 168 196 138S286 66 326 62" />
+                </svg>
+              </div>
               <div className="tyc3__grain" />
               <motion.div className="tyc3__gloss" style={tilting ? { background: gloss } : undefined} />
               <div className="tyc3__front">
                 <div className="tyc3__row">
                   <span className="tyc3__brand">
                     <span className="tyc3__flor" aria-hidden>
-                      <Bloom seed={5} tom="magenta" />
+                      {LotusOuro}
                     </span>
                     Tayssa <em>Lash</em>
                   </span>
@@ -318,7 +285,7 @@ export function LoyaltyCard({
                     <path d="M8.5 8.5a5 5 0 0 1 0 7M12 6a8.5 8.5 0 0 1 0 12M15.5 3.5a12 12 0 0 1 0 17" />
                   </svg>
                   <span className="tyc3__emblem" aria-hidden>
-                    {Lash}
+                    {Brilho}
                   </span>
                 </div>
                 <div className="tyc3__row tyc3__row--end">

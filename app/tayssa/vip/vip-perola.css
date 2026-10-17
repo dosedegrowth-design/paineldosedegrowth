@@ -81,43 +81,57 @@ body:has(.tyv) {
   color: var(--tyv-ouro-2);
 }
 .tyv .tyv-vip-tag {
-  color: #3a2410;
-  background: var(--tyv-ouro-grad);
-  box-shadow: 0 6px 14px -8px rgba(168, 120, 47, 0.8);
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  padding: 5px 11px 4px 14px;
+  color: #f0d6a2;
+  background: linear-gradient(180deg, #7a1d3a 0%, #561028 100%);
+  border: 1px solid rgba(214, 178, 112, 0.75);
+  box-shadow: 0 6px 14px -8px rgba(90, 15, 40, 0.8);
 }
 .tyv .tyv-icon-btn,
 .tyv .tyv-menu__botao {
-  color: #fbefe4;
-  background: var(--tyv-vinho);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow: 0 10px 20px -12px rgba(122, 29, 58, 0.75);
+  color: var(--tyv-vinho);
+  background: transparent;
+  border: 1.5px solid var(--tyv-vinho);
+  box-shadow: none;
 }
 /* o WhatsApp do topo é um link: a regra de link do site (.ty-scope a) pesa mais */
 .ty-scope .tyv a.tyv-icon-btn {
-  color: #fbefe4;
+  color: var(--tyv-vinho);
 }
 .tyv .tyv-menu__botao[data-aberto] {
-  background: #5e1129;
-  border-color: rgba(201, 161, 97, 0.6);
+  background: rgba(122, 29, 58, 0.1);
 }
 @media (hover: hover) and (pointer: fine) {
   .tyv .tyv-menu__botao:hover,
   .tyv .tyv-icon-btn:hover {
-    background: #8c2445;
+    background: rgba(122, 29, 58, 0.07);
   }
 }
 
 /* ---------- letra: tinta quente; o nome dela em ouro ---------- */
 .tyv .tyv-hello {
-  color: var(--tyv-tinta);
+  font-family: var(--tyv-serifa), Georgia, "Times New Roman", serif;
+  font-weight: 500;
+  font-size: clamp(38px, 11vw, 52px);
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+  color: #4a0d1f;
   text-shadow: none;
 }
 .tyv .tyv-hello em {
   background: none;
   -webkit-background-clip: border-box;
   background-clip: border-box;
-  color: var(--tyv-ouro-2);
+  color: #b08850;
+  font-weight: 400;
   filter: none;
+}
+.tyv .ty-brand__name {
+  font-family: var(--tyv-serifa), Georgia, serif;
+  font-weight: 500;
+  letter-spacing: 0;
 }
 .tyv .tyv-label {
   color: var(--tyv-ouro-2);
@@ -156,7 +170,7 @@ body:has(.tyv) {
   background: var(--tyv-surface-2);
 }
 .tyv-cartao-home {
-  filter: drop-shadow(0 26px 30px rgba(80, 50, 30, 0.28)) drop-shadow(0 8px 14px rgba(80, 50, 30, 0.12));
+  filter: drop-shadow(0 26px 30px rgba(90, 20, 45, 0.3)) drop-shadow(0 8px 14px rgba(80, 30, 40, 0.14));
 }
 
 /* ---------- painel de ícones ---------- */
@@ -166,23 +180,43 @@ body:has(.tyv) {
   }
 }
 .tyv-hub__item[data-destaque="true"] {
-  border-color: rgba(122, 29, 58, 0.35);
+  border-color: rgba(176, 136, 80, 0.6);
   background:
-    radial-gradient(120% 90% at 50% 0%, rgba(236, 206, 150, 0.45), transparent 70%),
-    #fff;
+    radial-gradient(120% 80% at 50% 0%, rgba(232, 200, 140, 0.3), transparent 70%),
+    #f8f1e7;
 }
 .tyv-hub__icone {
-  color: var(--tyv-vinho);
-  background: linear-gradient(160deg, #fbf3e4, #f1e2c6);
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  color: #f1d8a6;
+  background: radial-gradient(circle at 35% 28%, #8c2645 0%, #6a1430 55%, #4a0c20 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    inset 0 0 0 1px rgba(168, 120, 47, 0.16);
+    inset 0 1px 0 rgba(255, 214, 200, 0.22),
+    0 8px 16px -8px rgba(90, 15, 40, 0.7);
 }
-/* os ícones são vinho inteiros: até o carimbo do cartão */
+.tyv-hub__icone .tyi {
+  width: 30px;
+  height: 30px;
+  stroke-width: 1.5;
+}
 .tyv-hub__icone .tyi-carimbo {
-  fill: var(--tyv-vinho);
+  fill: currentColor;
 }
-.tyv-hub__titulo,
+.tyv .tyv-h2 {
+  font-family: var(--tyv-serifa), Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #4a0d1f;
+}
+.tyv-hub__titulo {
+  font-family: var(--tyv-serifa), Georgia, serif;
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.12;
+  color: #4a0d1f;
+}
 .tyv-resumo__nome {
   color: var(--tyv-tinta);
 }
@@ -223,12 +257,13 @@ body:has(.tyv) {
   background: rgba(201, 161, 97, 0.14);
 }
 .tyv-menu__ico {
-  color: var(--tyv-vinho);
-  background: linear-gradient(160deg, #fbf3e4, #f1e2c6);
-  box-shadow: inset 0 0 0 1px rgba(168, 120, 47, 0.14);
+  border-radius: 50%;
+  color: #f1d8a6;
+  background: radial-gradient(circle at 35% 28%, #8c2645 0%, #6a1430 55%, #4a0c20 100%);
+  box-shadow: none;
 }
 .tyv-menu__item[aria-current="page"] .tyv-menu__ico {
-  color: var(--tyv-vinho);
+  color: #4a0d1f;
   background: var(--tyv-ouro-grad);
 }
 @media (hover: hover) and (pointer: fine) {
@@ -259,10 +294,23 @@ body:has(.tyv) {
 
 /* com as luzes do fundo andando, vidro (backdrop-filter) seria refeito a
    cada quadro: os blocos são branco quase sólido, sem desfoque */
+.tyv-hub__item {
+  background-color: #f8f1e7;
+  border-color: rgba(190, 150, 92, 0.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 14px 30px -22px rgba(90, 40, 30, 0.4);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
 .tyv .tyv-panel,
-.tyv-hub__item,
 .tyv-resumo__item,
-.tyv .tyv-moment,
+.tyv .tyv-moment {
+  background-color: #f8f1e7;
+  border-color: rgba(190, 150, 92, 0.4);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
 .tyv .tyv-choice:not([aria-pressed="true"]),
 .tyv .tyv-day:not([aria-pressed="true"]),
 .tyv .tyv-slot:not([aria-pressed="true"]) {
@@ -277,10 +325,142 @@ body:has(.tyv) {
 .tyv .tyv-top {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-  background: linear-gradient(180deg, rgba(243, 234, 221, 0.97) 0%, rgba(243, 234, 221, 0.88) 70%, rgba(243, 234, 221, 0) 100%);
+  background: linear-gradient(180deg, rgb(243, 234, 221) 0%, rgba(243, 234, 221, 0.96) 72%, rgba(243, 234, 221, 0) 100%);
 }
 .tyv .tyv-icon-btn,
 .tyv .tyv-menu__botao {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
+}
+
+/* ============================================================
+   O CARTÃO — vinho profundo, detalhes em ouro (o desenho base está
+   em vip.css; aqui só a letra e o ouro dos detalhes)
+   ============================================================ */
+.tyv .tyc3__brand {
+  gap: 11px;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.34em;
+  color: #e6c993;
+}
+.tyv .tyc3__brand em {
+  font-weight: 300;
+}
+.tyv .tyc3__flor {
+  width: 30px;
+  height: 30px;
+}
+.tyc3__flor svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: #e6c993;
+  stroke-width: 1.05;
+  stroke-linejoin: round;
+}
+.tyv .tyc3__tag--gold {
+  font-size: 11px;
+  padding: 5px 12px 4px 15px;
+  color: #e6c993;
+  border-color: rgba(226, 192, 130, 0.75);
+}
+.tyv .tyc3__holder {
+  font-weight: 500;
+  letter-spacing: 0.34em;
+  color: #f4e6cc;
+  text-shadow: 0 1px 0 rgba(20, 2, 8, 0.5);
+}
+.tyv .tyc3__meta {
+  font-size: 10.5px;
+  letter-spacing: 0.3em;
+  color: rgba(240, 222, 190, 0.82);
+  opacity: 1;
+}
+.tyv .tyc3__flip {
+  background: transparent;
+  border-color: rgba(226, 192, 130, 0.65);
+  color: #e6c993;
+}
+/* a linha embaixo do cartão */
+.tyv .tyc3__below {
+  font-size: 14px;
+  color: #4a0d1f;
+}
+.ty-scope .tyv a.tyc3__link {
+  gap: 6px;
+  font-weight: 500;
+  color: #4a0d1f;
+}
+.tyv .tyc3__link::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  margin-left: 2px;
+  border-top: 1.5px solid currentColor;
+  border-right: 1.5px solid currentColor;
+  rotate: 45deg;
+}
+
+/* ============================================================
+   O PÉ — uma onda vinho com o fio de ouro fecha a página
+   ============================================================ */
+.ty-scope.tyv {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+}
+.ty-scope.tyv > main {
+  flex: 1 0 auto;
+}
+.tyv-pe {
+  position: relative;
+  margin-top: 44px;
+  pointer-events: none;
+}
+/* a faixa do iPhone (barra de gestos) continua vinho */
+.tyv-pe::after {
+  content: "";
+  display: block;
+  height: env(safe-area-inset-bottom, 0px);
+  margin-top: -1px;
+  background: #5a1129;
+}
+.tyv-pe__fio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #6a1430;
+}
+.tyv-pe__fio::before,
+.tyv-pe__fio::after {
+  content: "";
+  width: min(28vw, 130px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(106, 20, 48, 0.6));
+}
+.tyv-pe__fio::after {
+  background: linear-gradient(90deg, rgba(106, 20, 48, 0.6), transparent);
+}
+.tyv-pe__fio svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+.tyv-pe__onda {
+  display: block;
+  width: 100%;
+  height: clamp(70px, 18vw, 130px);
+  margin-top: 18px;
+}
+.tyv-pe__vinho {
+  fill: #5a1129;
+}
+.tyv-pe__ouro {
+  fill: none;
+  stroke: #d4b077;
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
 }

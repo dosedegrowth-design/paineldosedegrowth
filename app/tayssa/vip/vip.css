@@ -803,8 +803,8 @@
 }
 
 /* ---------- cartão de fidelidade: um cartão de verdade ----------
-   Objeto físico na proporção de cartão de crédito. Frente: as fotos da
-   Tayssa em sequência lenta, chip, nome da cliente. Verso: as posições
+   Objeto físico na proporção de cartão de crédito. Frente: vinho com
+   detalhes em ouro (chip, aproximação, número, nome em relevo), sem foto. Verso: as posições
    da visita. Tocar vira (rotação 3D no mesmo corpo); no desktop o cartão
    acompanha o cursor. */
 .tyc3 {
@@ -877,86 +877,39 @@
   opacity: 0;
 }
 
-/* frente: fotos em sequência */
-.tyc3__photos,
-.tyc3__tonal {
+/* frente: vinho profundo com os detalhes em ouro, como um cartão de
+   crédito de verdade — sem foto. Tudo parado (nada é refeito a cada
+   quadro): o brilho que anda é o .tyc3__gloss, que já existia. */
+.tyc3__vinho {
   position: absolute;
   inset: 0;
   z-index: 0;
   border-radius: inherit;
   overflow: hidden;
-  -webkit-mask-image: -webkit-radial-gradient(white, black);
-}
-.tyc3__photo {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity 1.4s var(--t-ease-inout);
-  will-change: transform, opacity;
-}
-.tyc3__photo[data-on] {
-  opacity: 1;
-}
-.tyc3__photo[data-on],
-.tyc3__photo[data-off] {
-  animation: tyc3-kb-0 6.2s linear forwards;
-}
-.tyc3__photo[data-dir="1"][data-on],
-.tyc3__photo[data-dir="1"][data-off] {
-  animation-name: tyc3-kb-1;
-}
-.tyc3__photo[data-dir="2"][data-on],
-.tyc3__photo[data-dir="2"][data-off] {
-  animation-name: tyc3-kb-2;
-}
-.tyc3__photo[data-dir="3"][data-on],
-.tyc3__photo[data-dir="3"][data-off] {
-  animation-name: tyc3-kb-3;
-}
-@keyframes tyc3-kb-0 {
-  from { transform: scale(1.06) translate(1.5%, 1%); }
-  to { transform: scale(1.16) translate(-1.5%, -1%); }
-}
-@keyframes tyc3-kb-1 {
-  from { transform: scale(1.15) translate(-1.5%, 0); }
-  to { transform: scale(1.06) translate(1.5%, 1.2%); }
-}
-@keyframes tyc3-kb-2 {
-  from { transform: scale(1.06) translate(-1%, -1.5%); }
-  to { transform: scale(1.17) translate(1%, 1.5%); }
-}
-@keyframes tyc3-kb-3 {
-  from { transform: scale(1.13) translate(0, 1.5%); }
-  to { transform: scale(1.06) translate(0.5%, -1.5%); }
-}
-.tyc3__tonal {
-  display: grid;
-  place-items: center;
   background:
-    radial-gradient(70% 60% at 30% 20%, rgba(165, 100, 122, 0.35), transparent 60%),
-    radial-gradient(60% 50% at 80% 90%, rgba(201, 163, 108, 0.18), transparent 60%),
-    linear-gradient(160deg, #36101f 0%, #1a0810 100%);
+    linear-gradient(118deg, transparent 52%, rgba(255, 214, 220, 0.07) 52.2%, transparent 78%),
+    radial-gradient(90% 75% at 88% 0%, rgba(255, 196, 206, 0.14), transparent 62%),
+    linear-gradient(135deg, #6c1529 0%, #520e20 45%, #3c0918 100%);
 }
-.tyc3__tonal svg {
-  width: 38%;
-  height: auto;
-  opacity: 0.22;
-  stroke: var(--tyc3-gold-2);
-  fill: none;
-  stroke-width: 0.9;
-  stroke-linecap: round;
-}
-.tyc3__scrim {
+/* o fio de ouro rente à borda */
+.tyc3__vinho::after {
+  content: "";
   position: absolute;
   inset: 0;
-  z-index: 1;
-  background: linear-gradient(
-    180deg,
-    rgba(26, 8, 16, 0.58) 0%,
-    rgba(26, 8, 16, 0.08) 36%,
-    rgba(26, 8, 16, 0.1) 56%,
-    rgba(26, 8, 16, 0.8) 100%
-  );
+  border-radius: inherit;
+  border: 1px solid rgba(226, 192, 130, 0.55);
+}
+.tyc3__onda {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.tyc3__onda path {
+  fill: none;
+  stroke: url(#tyc3-onda);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
 }
 .tyc3__grain {
   position: absolute;
@@ -1003,6 +956,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  color: var(--tyc3-gold-2);
   font-family: var(--t-font-display);
   font-size: 11.5px;
   letter-spacing: 0.24em;
@@ -1089,13 +1043,13 @@
   box-shadow: 0 9px 0 rgba(90, 60, 25, 0.38);
 }
 .tyc3__emblem svg {
-  width: 40px;
-  height: 40px;
-  stroke: var(--tyc3-gold-2);
+  display: block;
+  width: 26px;
+  height: 26px;
   fill: none;
-  stroke-width: 1;
-  stroke-linecap: round;
-  opacity: 0.55;
+  stroke: var(--tyc3-gold-2);
+  stroke-width: 1.1;
+  stroke-linejoin: round;
 }
 .tyc3__id {
   display: grid;
@@ -1110,13 +1064,16 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  color: #f3e3c0;
+  /* relevo: sombra embaixo, luz em cima */
+  text-shadow: 0 1px 0 rgba(30, 4, 14, 0.55), 0 -1px 0 rgba(255, 240, 210, 0.22);
 }
 .tyc3__meta {
   font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  opacity: 0.78;
+  color: var(--tyc3-gold-2);
+  opacity: 0.85;
   white-space: nowrap;
 }
 .tyc3__flip {
@@ -1128,11 +1085,9 @@
   justify-content: center;
   gap: 6px;
   border-radius: 999px;
-  border: 1px solid rgba(241, 234, 225, 0.35);
-  background: rgba(26, 8, 16, 0.28);
-  color: inherit;
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
+  border: 1px solid rgba(232, 200, 140, 0.55);
+  background: rgba(40, 6, 18, 0.25);
+  color: var(--tyc3-gold-2);
   padding: 0;
 }
 .tyc3__flip svg {
@@ -1262,10 +1217,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tyc3__photo {
-    animation: none !important;
-    transform: none;
-  }
   .tyc3__badge,
   .tyc3__slot[data-state="new"] {
     animation: none;

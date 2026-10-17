@@ -5,19 +5,10 @@ import { toCardStamps } from "@/lib/tayssa/queries/vip";
 import { dateLong, plural } from "@/lib/tayssa/format";
 import { BENEFIT_STATUS_LABEL } from "@/lib/tayssa/types";
 import { LoyaltyCard } from "@/components/tayssa/vip/loyalty-card";
-import { getPhotoLibrary } from "@/lib/tayssa/queries/photos";
-import { getPhotoAvailability } from "@/lib/tayssa/photos-server";
-import { assignPhotos } from "@/lib/tayssa/photos";
 
 export default async function CardPage() {
   const user = await requireClientPage();
-  const [card, settings, library, available] = await Promise.all([
-    getCardState(user.id),
-    getSettings(),
-    getPhotoLibrary(),
-    getPhotoAvailability(),
-  ]);
-  const photos = assignPhotos(library).card.filter((p) => available[p.src] ?? true);
+  const [card, settings] = await Promise.all([getCardState(user.id), getSettings()]);
   const stamps = toCardStamps(card.stamps);
   const revealed = stamps.filter((s) => s.revealed).sort((a, b) => b.position - a.position);
 
@@ -40,7 +31,6 @@ export default async function CardPage() {
           completedCards={card.completedCards}
           rewardTitle={settings.loyalty.card_reward_title}
           rewardStatus={card.reward?.status ?? null}
-          photos={photos}
           holderName={user.displayName}
           memberSince={user.profile?.vip_since ?? null}
           isVip={user.isVip}

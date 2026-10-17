@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 import "./vip.css";
 import "./vip-vivo.css";
 import "./vip-perola.css";
@@ -11,6 +12,15 @@ import { ROUTES } from "@/lib/tayssa/config";
 import { PageEnter } from "@/components/tayssa/vip/page-enter";
 import { TyBrand } from "@/components/tayssa/ui/brand";
 import { FundoVivo } from "@/components/tayssa/ui/fundo-vivo";
+
+/** a serifa do VIP (saudação, títulos do painel, marca do topo): só aqui, o site não carrega */
+const serifa = localFont({
+  src: "../../../node_modules/@fontsource-variable/bodoni-moda/files/bodoni-moda-latin-wght-normal.woff2",
+  weight: "400 900",
+  display: "swap",
+  variable: "--tyv-serifa",
+  adjustFontFallback: "Times New Roman",
+});
 
 export const metadata: Metadata = {
   title: "Meu VIP",
@@ -32,7 +42,7 @@ export default async function VipLayout({ children }: { children: React.ReactNod
     renderTemplate(settings.whatsapp.vip_support, { name: user.displayName })
   );
   return (
-    <div className="ty-scope tyv">
+    <div className={`ty-scope tyv ${serifa.variable}`}>
       {/* o VIP tem pele própria: bege dourado e ícones vinho (o site é vinho e noite) */}
       <FundoVivo tom="perola" className="tyv-fundo" />
       <header className="tyv-page tyv-top">
@@ -59,6 +69,18 @@ export default async function VipLayout({ children }: { children: React.ReactNod
       <main className="tyv-page">
         <PageEnter>{children}</PageEnter>
       </main>
+      {/* o pé: o fio com o brilho e a onda vinho fechando a página */}
+      <footer className="tyv-pe" aria-hidden>
+        <span className="tyv-pe__fio">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2.5c.5 5.2 4.3 9 9.5 9.5-5.2.5-9 4.3-9.5 9.5-.5-5.2-4.3-9-9.5-9.5 5.2-.5 9-4.3 9.5-9.5z" />
+          </svg>
+        </span>
+        <svg className="tyv-pe__onda" viewBox="0 0 390 100" preserveAspectRatio="none">
+          <path className="tyv-pe__vinho" d="M0 34C92 92 214 6 390 40V100H0Z" />
+          <path className="tyv-pe__ouro" d="M0 34C92 92 214 6 390 40" />
+        </svg>
+      </footer>
     </div>
   );
 }

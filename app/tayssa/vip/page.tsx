@@ -9,9 +9,6 @@ import { CountUp } from "@/components/tayssa/vip/count-up";
 import { ProgressRing } from "@/components/tayssa/vip/progress-ring";
 import { MilestoneMoment, type Moment } from "@/components/tayssa/vip/milestone-moment";
 import { toCardStamps } from "@/lib/tayssa/queries/vip";
-import { getPhotoLibrary } from "@/lib/tayssa/queries/photos";
-import { getPhotoAvailability } from "@/lib/tayssa/photos-server";
-import { assignPhotos } from "@/lib/tayssa/photos";
 import { Icone, type IconeNome } from "@/components/tayssa/ui/icones";
 import type { CSSProperties } from "react";
 
@@ -22,13 +19,7 @@ import type { CSSProperties } from "react";
  */
 export default async function VipHome() {
   const user = await requireClientPage();
-  const [{ overview: o, card, appointments, ranking }, library, available] = await Promise.all([
-    getVipHome(user),
-    getPhotoLibrary(),
-    getPhotoAvailability(),
-  ]);
-  // só fotos que existem: biblioteca sempre; estáticas se o arquivo está lá (senão a frente nasce tonal, sem 404)
-  const photos = assignPhotos(library).card.filter((p) => available[p.src] ?? true);
+  const { overview: o, card, appointments, ranking } = await getVipHome(user);
 
   const activeBenefits = o.benefits.filter((b) => ["available", "requested", "approved"].includes(b.status));
   const validating = o.benefits.filter((b) => b.status === "pending_validation");
@@ -102,7 +93,6 @@ export default async function VipHome() {
           completedCards={card.completedCards}
           rewardTitle={o.settings.loyalty.card_reward_title}
           rewardStatus={card.reward?.status ?? null}
-          photos={photos}
           holderName={user.displayName}
           memberSince={user.profile?.vip_since ?? null}
           isVip={user.isVip}
