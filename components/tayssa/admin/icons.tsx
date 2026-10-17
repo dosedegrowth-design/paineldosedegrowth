@@ -29,9 +29,19 @@ export type IconeNome =
   | "expandir"
   | "sair"
   | "site"
-  | "cilio";
+  | "cilio"
+  | "menu"
+  | "mais";
 
 const CAMINHOS: Record<IconeNome, React.ReactNode> = {
+  menu: <path d="M4 8h16M4 16h11" />,
+  mais: (
+    <>
+      <circle cx="5.5" cy="12" r="1.2" />
+      <circle cx="12" cy="12" r="1.2" />
+      <circle cx="18.5" cy="12" r="1.2" />
+    </>
+  ),
   visao: (
     <>
       <rect x="3" y="3" width="7.5" height="8.5" rx="1.5" />

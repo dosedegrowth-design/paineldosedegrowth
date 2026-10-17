@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import "./admin.css";
+import "./iwin.css";
 import { requireAdminPage } from "@/lib/tayssa/auth/guards";
 import { vipDb } from "@/lib/tayssa/db";
-import { AdminSidebar, type Atencao } from "@/components/tayssa/admin/sidebar";
-import { AdminTopbar } from "@/components/tayssa/admin/topbar";
+import type { Atencao } from "@/components/tayssa/admin/sidebar";
+import { AdminFrame } from "@/components/tayssa/admin/frame";
 
 export const metadata: Metadata = {
   title: "Painel",
@@ -42,13 +43,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const [user, atencao] = await Promise.all([requireAdminPage(), contarAtencao()]);
   return (
     <div className="ty-scope tya">
-      <AdminSidebar atencao={atencao} />
-      <div className="tya-body">
-        <AdminTopbar nome={user.displayName} />
-        <main className="tya-main">
-          <div className="tya-wrap">{children}</div>
-        </main>
-      </div>
+      <AdminFrame atencao={atencao} nome={user.displayName}>
+        {children}
+      </AdminFrame>
     </div>
   );
 }

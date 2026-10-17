@@ -18,7 +18,7 @@ const ACOES = [
  * O topo: vidro sobre a tela, com a busca de páginas (⌘K) e quem está
  * logada. Nada de métrica aqui — número é assunto da página.
  */
-export function AdminTopbar({ nome }: { nome: string }) {
+export function AdminTopbar({ nome, onAbrirMenu }: { nome: string; onAbrirMenu?: () => void }) {
   const router = useRouter();
   const reduced = useReducedMotion();
   const [aberto, setAberto] = useState(false);
@@ -56,6 +56,9 @@ export function AdminTopbar({ nome }: { nome: string }) {
   return (
     <>
       <header className="tya-top">
+        <button type="button" className="tya-top__menu" aria-label="Abrir menu" onClick={onAbrirMenu}>
+          <Icone nome="menu" />
+        </button>
         <button
           type="button"
           className="tya-search"

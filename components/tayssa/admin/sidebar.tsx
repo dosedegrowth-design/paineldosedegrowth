@@ -65,6 +65,9 @@ function assinarLateral(aviso: () => void) {
   };
 }
 
+export const SECOES_PAINEL = SECOES;
+export type ItemPainel = Item;
+
 export const ROTAS_PAINEL = SECOES.flatMap((s) => s.itens.map((i) => ({ ...i, secao: s.titulo })));
 
 /**
@@ -72,7 +75,16 @@ export const ROTAS_PAINEL = SECOES.flatMap((s) => s.itens.map((i) => ({ ...i, se
  * marcado no próprio item. Recolhe para uma faixa de ícones — a escolha
  * fica no aparelho, não no banco.
  */
-export function AdminSidebar({ atencao }: { atencao: Atencao }) {
+export function AdminSidebar({
+  atencao,
+  aberta = false,
+  onFechar,
+}: {
+  atencao: Atencao;
+  /** no celular a lateral é uma gaveta: aberta por cima da tela */
+  aberta?: boolean;
+  onFechar?: () => void;
+}) {
   const path = usePathname();
   // a escolha mora no aparelho: lida do localStorage como loja externa
   // (no servidor, sempre aberta — sem divergência de hidratação)
@@ -90,8 +102,15 @@ export function AdminSidebar({ atencao }: { atencao: Atencao }) {
   const ativo = (i: Item) => (i.exato ? path === i.href : path.startsWith(i.href));
 
   return (
-    <aside className="tya-side" data-min={min}>
-      <TransitionLink href={ROUTES.admin} className="tya-side__brand" aria-label="Tayssa Lash — painel">
+    <aside className="tya-side" data-min={min} data-aberta={aberta}>
+      {/* fundo vivo (linha do painel iWin): o escuro nunca é chapado —
+          duas luzes lentas e uma grade que some nas bordas */}
+      <div className="tya-vivo" aria-hidden>
+        <span className="tya-vivo__luz tya-vivo__luz--1" />
+        <span className="tya-vivo__luz tya-vivo__luz--2" />
+        <span className="tya-vivo__grade" />
+      </div>
+      <TransitionLink href={ROUTES.admin} className="tya-side__brand" aria-label="Tayssa Lash — painel" onClick={onFechar}>
         <span className="tya-side__mark" aria-hidden>
           T
         </span>
@@ -119,6 +138,7 @@ export function AdminSidebar({ atencao }: { atencao: Atencao }) {
                   data-on={ativo(i)}
                   title={min ? i.label : undefined}
                   aria-current={ativo(i) ? "page" : undefined}
+                  onClick={onFechar}
                 >
                   <Icone nome={i.icone} />
                   <span>{i.label}</span>

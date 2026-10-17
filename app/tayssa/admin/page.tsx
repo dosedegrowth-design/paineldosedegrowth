@@ -25,7 +25,7 @@ export default async function AdminHome() {
         actions={<TyLinkButton href={ROUTES.adminClientNew} size="sm" variant="solid" arrow>Nova cliente</TyLinkButton>}
       />
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "0 28px" }}>
+      <div className="tya-kpis tya-kpis--home">
         <Stat n={o.pendingSignups.length} label="Pedidos de acesso" href={ROUTES.adminClients} alert={o.pendingSignups.length > 0} />
         <Stat n={o.appointmentsRequested} label="Horários a confirmar" href={ROUTES.adminAgenda} alert={o.appointmentsRequested > 0} />
         <Stat n={o.pendingServices} label="Atendimentos a confirmar" href={ROUTES.adminServices} alert={o.pendingServices > 0} />
@@ -36,7 +36,7 @@ export default async function AdminHome() {
         <Stat n={`${o.vipActive}/${o.totalClients}`} label="VIP / clientes" href={ROUTES.adminClients} />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "0 clamp(28px, 4vw, 64px)", marginTop: 24 }}>
+      <div className="tya-home-blocks">
         {o.pendingSignups.length ? (
           <AdminBlock title="Pedidos de acesso" aside={<TransitionLink href={ROUTES.adminClients} className="ty-link ty-link--caps">Ver todos</TransitionLink>}>
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
