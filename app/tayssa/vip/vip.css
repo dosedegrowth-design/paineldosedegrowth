@@ -83,7 +83,7 @@
   font-weight: 600;
 }
 .tyv-label {
-  font-size: 10px;
+  font-size: 11.5px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   font-weight: 600;
@@ -319,7 +319,7 @@
   font-variant-numeric: tabular-nums;
 }
 .tyv-ring__unit {
-  font-size: 9.5px;
+  font-size: 11px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   font-weight: 600;
@@ -403,7 +403,7 @@
   white-space: nowrap;
 }
 .tyv-tl__item[data-tone="gold"] .tyv-tl__value {
-  font-size: 10px;
+  font-size: 11.5px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--tyv-gold);
@@ -429,7 +429,7 @@
   box-shadow: 0 0 0 4px var(--t-bg);
 }
 .tyv-tl__now span {
-  font-size: 9.5px;
+  font-size: 11px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   font-weight: 600;
@@ -619,7 +619,7 @@
   opacity: 0.3;
 }
 .tyv-day__w {
-  font-size: 10px;
+  font-size: 11.5px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -739,7 +739,7 @@
   justify-content: center;
   gap: 5px;
   color: var(--t-fg-2);
-  font-size: 10px;
+  font-size: 11.5px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-weight: 600;
@@ -821,7 +821,7 @@
   padding: 14px 0;
 }
 .tyv .ty-field__label {
-  font-size: 10.5px;
+  font-size: 11.5px;
 }
 
 /* movimento reduzido */
@@ -1053,7 +1053,7 @@
   align-items: center;
   gap: 8px;
   font-family: var(--t-font-display);
-  font-size: 10.5px;
+  font-size: 11.5px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
   font-weight: 600;
@@ -1068,7 +1068,7 @@
   display: grid;
   place-items: center;
   font-style: normal;
-  font-size: 10px;
+  font-size: 11.5px;
   letter-spacing: 0;
   padding-left: 1px;
 }
@@ -1094,7 +1094,7 @@
 }
 .tyc3__badge {
   flex: none;
-  font-size: 9.5px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   font-weight: 600;
@@ -1162,7 +1162,7 @@
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
 }
 .tyc3__meta {
-  font-size: 9.5px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   opacity: 0.78;
@@ -1200,7 +1200,7 @@
   color: var(--tyv-plum);
   border-color: rgba(110, 47, 69, 0.35);
   background: rgba(255, 255, 255, 0.35);
-  font-size: 10px;
+  font-size: 11.5px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   font-weight: 600;
@@ -1216,7 +1216,7 @@
   padding: 7px 16px;
   background: var(--tyv-plum);
   color: #f6ece2;
-  font-size: 9.5px;
+  font-size: 11px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   font-weight: 600;
@@ -1279,7 +1279,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  font-size: 10.5px;
+  font-size: 11.5px;
   letter-spacing: 0.04em;
   color: var(--tyv-cream-muted);
   white-space: nowrap;

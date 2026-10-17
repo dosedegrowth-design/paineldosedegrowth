@@ -189,7 +189,17 @@ export type PhotoRow = {
   alt: string;
   width: number | null;
   height: number | null;
-  status: "active" | "archived";
+  /** enquadramento escolhido ao publicar: centro em % e zoom (1–3) */
+  focus_x: number;
+  focus_y: number;
+  zoom: number;
+  /** o arquivo como chegou (para baixar igual) */
+  original_name: string | null;
+  bytes: number | null;
+  mime: string | null;
+  published_at: string | null;
+  /** gallery = guardado na galeria, ainda fora do site */
+  status: "gallery" | "active" | "archived";
   featured: boolean;
   sort_order: number;
   created_by: string | null;

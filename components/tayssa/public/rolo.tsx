@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import type { MidiaCatalogo } from "@/lib/tayssa/catalogo";
+import Image from "next/image";
+import { estiloFoco, type MidiaCatalogo } from "@/lib/tayssa/catalogo";
 
 /**
  * O rolo: fotos e vídeos de um produto passando sozinhos, sem fim, cada
@@ -90,11 +91,14 @@ function Midia({ m, grande = false }: { m: MidiaCatalogo; grande?: boolean }) {
     io.observe(v);
     return () => io.disconnect();
   }, [grande]);
+  // no rolo vale o enquadramento que a Tayssa escolheu; no visor, a mídia inteira
+  const quadro = grande ? undefined : estiloFoco(m.foco);
   if (m.tipo === "video") {
     return (
       <video
         ref={ref}
         className="ty-rolo__midia"
+        style={quadro}
         src={m.url}
         muted
         loop
@@ -105,8 +109,17 @@ function Midia({ m, grande = false }: { m: MidiaCatalogo; grande?: boolean }) {
       />
     );
   }
-  // eslint-disable-next-line @next/next/no-img-element
-  return <img className="ty-rolo__midia" src={m.url} alt={m.alt} loading="lazy" decoding="async" draggable={false} />;
+  return (
+    <Image
+      className="ty-rolo__midia"
+      src={m.url}
+      alt={m.alt}
+      fill
+      sizes={grande ? "(max-width: 767px) 92vw, 70vw" : "(max-width: 767px) 60vw, 300px"}
+      style={quadro ?? { objectFit: "contain" }}
+      draggable={false}
+    />
+  );
 }
 
 /** A mídia grande, por cima de tudo: setas, Esc e arrastar para os lados. */

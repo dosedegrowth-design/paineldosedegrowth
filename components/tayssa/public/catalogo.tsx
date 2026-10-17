@@ -52,10 +52,6 @@ export function Catalogo({ catalogo }: { catalogo: CategoriaCatalogo[] }) {
           viewport={{ once: true, amount: 0.4 }}
           transition={{ duration: 0.9, ease: EASE }}
         >
-          <p className="tyct__selo">
-            <i aria-hidden />
-            Catálogo em movimento
-          </p>
           <h2 className="tyct__titulo">
             Cada técnica, <em>de perto.</em>
           </h2>

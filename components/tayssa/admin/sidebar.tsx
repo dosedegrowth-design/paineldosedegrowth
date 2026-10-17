@@ -37,7 +37,7 @@ const SECOES: { titulo: string; itens: Item[] }[] = [
   },
   {
     titulo: "Marca",
-    itens: [{ href: ROUTES.adminPhotos, label: "Fotos", icone: "fotos" }],
+    itens: [{ href: ROUTES.adminPhotos, label: "Mídia", icone: "fotos" }],
   },
   {
     titulo: "Ajustes",

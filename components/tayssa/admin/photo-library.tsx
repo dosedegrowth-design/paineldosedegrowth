@@ -1,234 +1,262 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import Image from "next/image";
+import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { adminArchivePhotoAction, adminDeletePhotoAction, adminUpdatePhotoAction } from "@/lib/tayssa/actions/photos";
 import type { PhotoRow } from "@/lib/tayssa/types";
 import { dateShort } from "@/lib/tayssa/format";
-import { Campo } from "@/components/tayssa/admin/forms";
+import { CATEGORIAS, chave } from "@/lib/tayssa/catalogo";
 import { Icone } from "@/components/tayssa/admin/icons";
-import { CATEGORIAS, rotuloCategoria } from "@/lib/tayssa/catalogo";
-import type { CategoriaMidia } from "@/lib/tayssa/types";
+import { estiloQuadro } from "@/components/tayssa/admin/enquadrar";
+import { Publicar, type ProdutosPorCategoria } from "@/components/tayssa/admin/publicar";
+
+const mb = (b: number | null) => (b ? `${(b / 1024 / 1024).toFixed(1)} MB` : null);
+/** de quantos em quantos a galeria mostra: mil fotos não abrem de uma vez */
+const PAGINA = 48;
+
+/** Link de download do arquivo original, com o nome que ele tinha. */
+function linkOriginal(p: PhotoRow) {
+  const nome = p.original_name || p.storage_path.split("/").pop() || "arquivo";
+  return `${p.public_url}?download=${encodeURIComponent(nome)}`;
+}
 
 /**
- * A biblioteca: tudo que a Tayssa subiu, onde cada foto está, e os
- * controles que mudam o site na hora (destaque, arquivar, apagar).
- *
- * `places` vem do servidor e diz, para cada foto, os lugares que ela
- * ocupa de verdade — a mesma distribuição que o site e o cartão leem.
+ * A mídia em dois lugares: a GALERIA (tudo guardado, no original, fora do
+ * site) e NO SITE (o que está publicado, organizado pelo rolo de cada
+ * produto). Publicar, ajustar, tirar do site, baixar o original e apagar
+ * acontecem aqui, e o site muda na hora.
  */
 export function PhotoLibrary({
   photos,
-  styles,
+  produtos,
   places,
+  aba,
 }: {
   photos: PhotoRow[];
-  styles: string[];
+  produtos: ProdutosPorCategoria;
   places?: Record<string, string[]>;
+  aba: "galeria" | "site";
 }) {
-  const active = photos.filter((p) => p.status === "active");
-  const archived = photos.filter((p) => p.status === "archived");
+  const [editando, setEditando] = useState<PhotoRow | null>(null);
+  const galeria = photos.filter((p) => p.status !== "active");
+  const noAr = photos.filter((p) => p.status === "active");
 
-  if (!photos.length) {
+  return (
+    <>
+      {aba === "galeria" ? (
+        <Galeria itens={galeria} onPublicar={setEditando} />
+      ) : (
+        <NoSite itens={noAr} places={places} onAjustar={setEditando} />
+      )}
+      {editando ? <Publicar key={editando.id} item={editando} produtos={produtos} onFechar={() => setEditando(null)} /> : null}
+    </>
+  );
+}
+
+function Galeria({ itens, onPublicar }: { itens: PhotoRow[]; onPublicar: (p: PhotoRow) => void }) {
+  const [ver, setVer] = useState(PAGINA);
+  const [filtro, setFiltro] = useState<"tudo" | "image" | "video">("tudo");
+  const lista = itens.filter((p) => filtro === "tudo" || p.media_type === filtro);
+  if (!itens.length) {
     return (
       <div className="tya-nada">
         <Icone nome="fotos" />
-        <b>Nenhuma foto ainda.</b>
-        <span>
-          Enquanto a biblioteca está vazia, o site se sustenta na tipografia — nunca com foto de banco nem caixote
-          vazio. A primeira que você subir muda isso na hora.
-        </span>
-        <ol className="tya-passos">
-          <li>A 1ª foto abre o site: ela vira o herói.</li>
-          <li>Ela entra também na frente do cartão da cliente.</li>
-          <li>Da 2ª em diante o sistema preenche a sequência de trabalhos, o trilho de detalhes e os serviços.</li>
-          <li>Destaque sobe a foto para o começo da fila; arquivar tira do ar sem apagar.</li>
-        </ol>
+        <b>A galeria está vazia.</b>
+        <span>Suba fotos e vídeos no original, quantos quiser. Eles ficam guardados aqui até você publicar.</span>
       </div>
     );
   }
-
+  const filtros: [typeof filtro, string][] = [
+    ["tudo", `Tudo (${itens.length})`],
+    ["image", `Fotos (${itens.filter((p) => p.media_type !== "video").length})`],
+    ["video", `Vídeos (${itens.filter((p) => p.media_type === "video").length})`],
+  ];
   return (
-    <div style={{ display: "grid", gap: 22 }}>
-      <datalist id="tayssa-styles-lib">
-        {styles.map((s) => (
-          <option key={s} value={s} />
+    <div style={{ display: "grid", gap: 16 }}>
+      <div className="tya-sugs" role="radiogroup" aria-label="Filtrar galeria">
+        {filtros.map(([v, t]) => (
+          <button
+            key={v}
+            type="button"
+            role="radio"
+            aria-checked={filtro === v}
+            className="tya-chip"
+            data-on={filtro === v ? "true" : "false"}
+            onClick={() => setFiltro(v)}
+          >
+            {t}
+          </button>
         ))}
-      </datalist>
-      {active.length ? (
-        <Grid photos={active} places={places} queued />
-      ) : (
-        <div className="tya-nada">
-          <Icone nome="fotos" />
-          <b>Nenhuma foto no ar.</b>
-          <span>Tudo que você subiu está arquivado. Restaure uma foto para o site voltar a mostrar o seu trabalho.</span>
-        </div>
-      )}
-      {archived.length ? (
-        <div>
-          <span className="tya-eyebrow" style={{ display: "block", marginBottom: 12 }}>
-            {archived.length === 1 ? "1 arquivada" : `${archived.length} arquivadas`}
-          </span>
-          <Grid photos={archived} places={places} />
-        </div>
+      </div>
+      <div className="tya-galeria tya-galeria--densa">
+        {lista.slice(0, ver).map((p) => (
+          <Cartao key={p.id} photo={p} onPrincipal={() => onPublicar(p)} principal="Publicar" />
+        ))}
+      </div>
+      {lista.length > ver ? (
+        <button type="button" className="tya-btn tya-btn--ghost" onClick={() => setVer((v) => v + PAGINA)}>
+          Mostrar mais {Math.min(PAGINA, lista.length - ver)} de {lista.length - ver}
+        </button>
       ) : null}
     </div>
   );
 }
 
-function Grid({ photos, places, queued }: { photos: PhotoRow[]; places?: Record<string, string[]>; queued?: boolean }) {
+function NoSite({
+  itens,
+  places,
+  onAjustar,
+}: {
+  itens: PhotoRow[];
+  places?: Record<string, string[]>;
+  onAjustar: (p: PhotoRow) => void;
+}) {
+  // um bloco por rolo: categoria › produto, do jeito que o site agrupa
+  const rolos = useMemo(() => {
+    const out: { cat: string; produto: string; itens: PhotoRow[] }[] = [];
+    for (const c of CATEGORIAS) {
+      const daCat = itens.filter((p) => (p.category ?? "cilios") === c.slug);
+      const grupos = new Map<string, PhotoRow[]>();
+      for (const p of daCat) {
+        const k = chave(p.lash_style);
+        grupos.set(k, [...(grupos.get(k) ?? []), p]);
+      }
+      for (const g of grupos.values()) {
+        g.sort((a, b) => Number(b.featured) - Number(a.featured));
+        out.push({ cat: c.label, produto: g[0].lash_style, itens: g });
+      }
+    }
+    return out;
+  }, [itens]);
+
+  if (!itens.length) {
+    return (
+      <div className="tya-nada">
+        <Icone nome="fotos" />
+        <b>Nada publicado ainda.</b>
+        <span>Na galeria, escolha uma foto ou vídeo e toque em Publicar. Ele entra no rolo do produto no site.</span>
+      </div>
+    );
+  }
   return (
-    <div className="tya-galeria tya-stagger">
-      {photos.map((p, i) => (
-        <PhotoCard key={p.id} photo={p} places={places?.[p.id] ?? []} position={queued ? i + 1 : null} />
+    <div style={{ display: "grid", gap: 26 }}>
+      {rolos.map((r) => (
+        <section key={`${r.cat}-${r.produto}`} className="tya-rolo-admin">
+          <header>
+            <h3>
+              <span>{r.cat} ›</span> {r.produto}
+            </h3>
+            <span className="tya-pill tya-pill--brand">
+              {r.itens.length} {r.itens.length === 1 ? "item" : "itens"} no rolo
+            </span>
+          </header>
+          <div className="tya-galeria tya-galeria--densa">
+            {r.itens.map((p) => (
+              <Cartao key={p.id} photo={p} places={places?.[p.id]} onPrincipal={() => onAjustar(p)} principal="Ajustar" />
+            ))}
+          </div>
+        </section>
       ))}
     </div>
   );
 }
 
-function PhotoCard({ photo, places, position }: { photo: PhotoRow; places: string[]; position: number | null }) {
+function Cartao({
+  photo,
+  places = [],
+  onPrincipal,
+  principal,
+}: {
+  photo: PhotoRow;
+  places?: string[];
+  onPrincipal: () => void;
+  principal: string;
+}) {
   const router = useRouter();
-  const [editing, setEditing] = useState(false);
-  const [style, setStyle] = useState(photo.lash_style);
-  const [categoria, setCategoria] = useState<CategoriaMidia>(photo.category ?? "cilios");
-  const [caption, setCaption] = useState(photo.caption ?? "");
-  const [alt, setAlt] = useState(photo.alt);
   const [err, setErr] = useState<string | null>(null);
-  const [broken, setBroken] = useState(false);
   const [pending, start] = useTransition();
+  const [quebrada, setQuebrada] = useState(false);
   const live = photo.status === "active";
+  const video = photo.media_type === "video";
+  const quadro = { x: Number(photo.focus_x ?? 50), y: Number(photo.focus_y ?? 50), zoom: Number(photo.zoom ?? 1) };
 
   const run = (fn: () => Promise<{ ok: boolean; error?: string }>) =>
     start(async () => {
       setErr(null);
       const r = await fn();
       if (!r.ok) setErr(r.error ?? "Não deu certo.");
-      else {
-        setEditing(false);
-        router.refresh();
-      }
+      else router.refresh();
     });
 
   return (
-    <article className={`tya-foto${live ? "" : " tya-foto--off"}`} data-ocupado={pending ? "true" : "false"}>
-      <div className="tya-foto__img">
-        {broken ? (
+    <article className={`tya-foto${live ? "" : " tya-foto--galeria"}`} data-ocupado={pending ? "true" : "false"}>
+      <button
+        type="button"
+        className="tya-foto__img"
+        onClick={onPrincipal}
+        aria-label={`${principal}: ${photo.original_name ?? photo.lash_style}`}
+      >
+        {quebrada ? (
           <span className="tya-foto__tonal">Arquivo fora do ar</span>
-        ) : photo.media_type === "video" ? (
-          <video src={photo.public_url} muted loop playsInline autoPlay preload="metadata" onError={() => setBroken(true)} />
+        ) : video ? (
+          <video
+            src={photo.public_url}
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            style={live ? estiloQuadro(quadro) : undefined}
+            onError={() => setQuebrada(true)}
+          />
         ) : (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={photo.public_url} alt={photo.alt} loading="lazy" onError={() => setBroken(true)} />
+          <Image
+            src={photo.public_url}
+            alt={photo.alt}
+            fill
+            sizes="(max-width: 860px) 45vw, 220px"
+            style={live ? estiloQuadro(quadro) : { objectFit: "cover" }}
+            onError={() => setQuebrada(true)}
+          />
         )}
-        {photo.media_type === "video" ? <span className="tya-pill tya-pill--dark tya-foto__tipo">Vídeo</span> : null}
-        {photo.featured ? <span className="tya-pill tya-pill--gold tya-foto__selo">Destaque</span> : null}
-        {position ? (
-          <span className="tya-foto__n" title={`${position}ª da fila`}>
-            {position}
+        {video ? <span className="tya-pill tya-pill--dark tya-foto__tipo">Vídeo</span> : null}
+        {photo.featured && live ? <span className="tya-pill tya-pill--gold tya-foto__selo">Destaque</span> : null}
+      </button>
+
+      <div style={{ display: "grid", gap: 3, minWidth: 0 }}>
+        <strong className="tya-foto__t" title={photo.original_name ?? undefined}>
+          {live ? photo.lash_style : photo.original_name ?? "Sem nome"}
+        </strong>
+        <span className="tya-small" style={{ fontSize: 12 }}>
+          {[photo.width && photo.height ? `${photo.width}×${photo.height}` : null, mb(photo.bytes), dateShort(photo.created_at)]
+            .filter(Boolean)
+            .join(", ")}
+        </span>
+        {!live && photo.lash_style ? (
+          <span className="tya-small" style={{ fontSize: 12 }}>
+            Já foi publicado como {photo.lash_style}
           </span>
         ) : null}
       </div>
 
-      {editing ? (
-        <div style={{ display: "grid", gap: 10 }}>
-          <div className="tya-sugs" role="radiogroup" aria-label="Categoria">
-            {CATEGORIAS.map((c) => (
-              <button
-                key={c.slug}
-                type="button"
-                role="radio"
-                aria-checked={categoria === c.slug}
-                className="tya-chip"
-                data-on={categoria === c.slug ? "true" : "false"}
-                onClick={() => setCategoria(c.slug)}
-              >
-                {c.label}
-              </button>
+      {live && places.length ? (
+        <div className="tya-foto__onde">
+          {places
+            .filter((p) => !p.startsWith("Rolo:"))
+            .map((p) => (
+              <span key={p} className={`tya-pill ${p === "Frente do cartão" ? "tya-pill--gold" : "tya-pill--brand"}`}>
+                {p}
+              </span>
             ))}
-          </div>
-          <Campo
-            label="Produto / técnica"
-            name={`style-${photo.id}`}
-            list="tayssa-styles-lib"
-            value={style}
-            onChange={(e) => setStyle(e.target.value)}
-          />
-          <Campo
-            label="Legenda"
-            name={`caption-${photo.id}`}
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            maxLength={120}
-          />
-          <Campo
-            label="Descrição (leitores de tela)"
-            name={`alt-${photo.id}`}
-            value={alt}
-            onChange={(e) => setAlt(e.target.value)}
-            maxLength={200}
-          />
-          <div className="tya-foto__acts">
-            <button
-              type="button"
-              className="tya-btn tya-btn--sm tya-btn--primary"
-              disabled={pending}
-              onClick={() =>
-                run(() =>
-                  adminUpdatePhotoAction({
-                    id: photo.id,
-                    lash_style: style,
-                    category: categoria,
-                    caption,
-                    alt,
-                    featured: photo.featured,
-                    sort_order: photo.sort_order,
-                  })
-                )
-              }
-            >
-              {pending ? "Salvando…" : "Salvar"}
-            </button>
-            <button type="button" className="tya-btn tya-btn--sm tya-btn--ghost" onClick={() => setEditing(false)} disabled={pending}>
-              Cancelar
-            </button>
-          </div>
         </div>
-      ) : (
-        <>
-          <div style={{ display: "grid", gap: 5 }}>
-            <span className="tya-small" style={{ fontWeight: 600, color: "var(--tya-brand)" }}>
-              {rotuloCategoria(photo.category)}
-            </span>
-            <strong className="tya-foto__t">{photo.lash_style}</strong>
-            <span className="tya-small">{photo.caption ?? "sem legenda"}</span>
-            <span className="tya-small" style={{ fontSize: 11, color: "var(--tya-muted-2)" }}>
-              {photo.width && photo.height ? `${photo.width}×${photo.height} · ` : ""}
-              {dateShort(photo.created_at)}
-            </span>
-          </div>
+      ) : null}
 
-          <div className="tya-foto__onde">
-            {live ? (
-              places.length ? (
-                places.map((p) => (
-                  <span key={p} className={`tya-pill ${p === "Frente do cartão" ? "tya-pill--gold" : "tya-pill--brand"}`}>
-                    {p}
-                  </span>
-                ))
-              ) : (
-                <span className="tya-pill tya-pill--quiet" title="No ar, mas a fila ainda não chegou nela">
-                  Na reserva
-                </span>
-              )
-            ) : (
-              <span className="tya-pill tya-pill--quiet">Fora do ar</span>
-            )}
-          </div>
-
-          <div className="tya-foto__acts">
-            <button type="button" className="tya-btn tya-btn--sm tya-btn--ghost" onClick={() => setEditing(true)} disabled={pending}>
-              Editar
-            </button>
+      <div className="tya-foto__acts">
+        <button type="button" className="tya-btn tya-btn--sm tya-btn--primary" onClick={onPrincipal} disabled={pending}>
+          {principal}
+        </button>
+        {live ? (
+          <>
             <button
               type="button"
               className={`tya-btn tya-btn--sm ${photo.featured ? "tya-btn--ghost" : "tya-btn--soft"}`}
@@ -253,25 +281,28 @@ function PhotoCard({ photo, places, position }: { photo: PhotoRow; places: strin
               type="button"
               className="tya-btn tya-btn--sm tya-btn--ghost"
               disabled={pending}
-              onClick={() => run(() => adminArchivePhotoAction({ id: photo.id, archived: live }))}
+              onClick={() => run(() => adminArchivePhotoAction({ id: photo.id, archived: true }))}
             >
-              {live ? "Arquivar" : "Restaurar"}
+              Tirar do site
             </button>
-            <button
-              type="button"
-              className="tya-btn tya-btn--sm tya-btn--danger"
-              disabled={pending}
-              onClick={() => {
-                if (window.confirm(`Apagar ${photo.media_type === "video" ? "este vídeo" : "esta foto"} de vez? Some do site, do cartão e do bucket.`)) {
-                  run(() => adminDeletePhotoAction({ id: photo.id }));
-                }
-              }}
-            >
-              Apagar
-            </button>
-          </div>
-        </>
-      )}
+          </>
+        ) : null}
+        <a className="tya-btn tya-btn--sm tya-btn--ghost" href={linkOriginal(photo)} download={photo.original_name ?? undefined}>
+          Baixar original
+        </a>
+        <button
+          type="button"
+          className="tya-btn tya-btn--sm tya-btn--danger"
+          disabled={pending}
+          onClick={() => {
+            if (window.confirm(`Apagar ${video ? "este vídeo" : "esta foto"} de vez? Some da galeria, do site e da nuvem.`)) {
+              run(() => adminDeletePhotoAction({ id: photo.id }));
+            }
+          }}
+        >
+          Apagar
+        </button>
+      </div>
 
       {err ? (
         <p className="tya-err" role="alert">

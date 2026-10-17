@@ -1,5 +1,7 @@
 import { requireAdminPage } from "@/lib/tayssa/auth/guards";
-import { listAllPhotos, lashStyles } from "@/lib/tayssa/queries/photos";
+import Link from "next/link";
+import { listAllPhotos } from "@/lib/tayssa/queries/photos";
+import { ROUTES } from "@/lib/tayssa/config";
 import { getActiveServices } from "@/lib/tayssa/queries/catalog";
 import { assignPhotos, type PhotoSlot } from "@/lib/tayssa/photos";
 import { AdminBlock, AdminHeader, Stat } from "@/components/tayssa/admin/shell";
@@ -16,20 +18,16 @@ import type { CategoriaMidia } from "@/lib/tayssa/types";
  * mesma função que o site público e o cartão usam. Se a regra mudar lá,
  * esta tela muda com ela.
  */
-export default async function PhotosPage() {
+export default async function PhotosPage({ searchParams }: { searchParams: Promise<{ aba?: string }> }) {
   await requireAdminPage();
+  const aba = (await searchParams).aba === "site" ? "site" : "galeria";
   const [photos, services] = await Promise.all([listAllPhotos(), getActiveServices()]);
   const activePhotos = photos.filter((p) => p.status === "active");
-  const archived = photos.length - activePhotos.length;
-  const featured = activePhotos.filter((p) => p.featured).length;
-  // Dois recortes do mesmo vocabulário. `styles` é tudo que ela já nomeou,
-  // inclusive em foto arquivada: serve para reaproveitar o nome nos campos.
-  // `activeStyles` é o que está no ar — e é esse que o painel conta, porque
-  // só foto no ar entra em `assignPhotos()`.
-  const styles = lashStyles(photos);
-  // sugestões de produto por categoria (inclui arquivadas: é vocabulário)
+  const naGaleria = photos.length - activePhotos.length;
+  // sugestões de produto por categoria (inclui o que saiu do site: é vocabulário)
   const produtos: Partial<Record<CategoriaMidia, string[]>> = {};
   for (const p of photos) {
+    if (!p.lash_style) continue; // item da galeria que nunca foi publicado
     const lista = (produtos[p.category] ??= []);
     if (!lista.includes(p.lash_style)) lista.push(p.lash_style);
   }
@@ -74,96 +72,45 @@ export default async function PhotosPage() {
     }
   }
 
+  const gb = photos.reduce((n, p) => n + (p.bytes ?? 0), 0) / 1024 / 1024 / 1024;
+
   return (
     <>
       <AdminHeader
-        eyebrow="Fotos"
+        eyebrow="Mídia"
         title={
-          activePhotos.length ? (
-            <>
-              {activePhotos.length} <em>{activePhotos.length === 1 ? "item no catálogo" : "itens no catálogo"}</em>
-            </>
-          ) : (
-            <>
-              Sua <em>biblioteca.</em>
-            </>
-          )
+          <>
+            Galeria e <em>rolos do site</em>
+          </>
         }
-        lead="Escolha a categoria, diga o produto (ex.: Volume inglês) e suba foto ou vídeo. Cada produto vira um rolo no site, que se alimenta sozinho. As fotos também ocupam o herói, a sequência de trabalho, os serviços e a frente do cartão."
+        lead="Suba fotos e vídeos na galeria, no original e quantos quiser. Quando for publicar, escolha a categoria, o produto e o enquadramento: o item entra no rolo daquele produto no site."
       />
 
-      {photos.length ? (
-        <div className="tya-kpis tya-kpis--2sm tya-stagger">
-          <Stat n={activePhotos.length} label="No ar" sub="alimentam o site e o cartão" />
-          <Stat n={featured} label="Destaques" sub="vão para o começo da fila" alert={featured > 0} />
-          <Stat n={archived} label="Arquivadas" sub="guardadas, fora do ar" />
-          <Stat n={nProdutos} label="Produtos" sub="cada um é um rolo no site" />
-          <Stat n={nVideos} label="Vídeos" sub="tocam nos rolos, sem som" />
-        </div>
+      <div className="tya-kpis tya-kpis--2sm tya-stagger">
+        <Stat n={naGaleria} label="Na galeria" sub="guardados, fora do site" />
+        <Stat n={activePhotos.length} label="No site" sub="publicados nos rolos" />
+        <Stat n={nProdutos} label="Rolos" sub="um por produto" />
+        <Stat n={nVideos} label="Vídeos no site" sub={gb >= 0.1 ? `${gb.toFixed(1)} GB guardados` : "tocam sem som nos rolos"} />
+      </div>
+
+      <nav className="tya-abas" aria-label="Mídia">
+        <Link href={`${ROUTES.adminPhotos}?aba=galeria`} className="tya-aba" data-on={aba === "galeria"}>
+          Galeria <span>{naGaleria}</span>
+        </Link>
+        <Link href={`${ROUTES.adminPhotos}?aba=site`} className="tya-aba" data-on={aba === "site"}>
+          No site <span>{activePhotos.length}</span>
+        </Link>
+      </nav>
+
+      {aba === "galeria" ? (
+        <AdminBlock title="Subir para a galeria">
+          <PhotoUpload />
+        </AdminBlock>
       ) : null}
 
-      <div className="tya-fotos">
-        <div className="tya-fotos__col">
-          <div className="tya-fotos__sobe">
-            <AdminBlock title="Adicionar ao catálogo">
-              <PhotoUpload produtos={produtos} />
-            </AdminBlock>
-          </div>
-
-          <div className="tya-fotos__onde">
-            <AdminBlock title="Onde a foto aparece">
-              <dl className="tya-defs">
-                <dt>Rolos</dt>
-                <dd>
-                  Cada produto vira um rolo no site — foto e vídeo passando sozinhos. Aparece no serviço da categoria e
-                  no catálogo. Destaque abre o rolo.
-                </dd>
-                <dt>Fila</dt>
-                <dd>
-                  Destaque primeiro; depois a mais nova. É a posição na fila que decide o resto — o número aparece em
-                  cada foto.
-                </dd>
-                <dt>Herói</dt>
-                <dd>A 1ª da fila abre o site.</dd>
-                <dt>Trabalho</dt>
-                <dd>
-                  Aqui não é a fila que manda: cada técnica recebe a primeira foto cujo produto tem a palavra
-                  dela — fio, volume, manutenção. Sem foto com a palavra, a técnica fica sem foto.
-                </dd>
-                <dt>Detalhes</dt>
-                <dd>As seguintes entram no trilho de detalhes.</dd>
-                <dt>Serviços</dt>
-                <dd>
-                  O produto com a palavra do serviço (volume, fio, manutenção, sobrancelha, lip, limpeza) ilustra
-                  aquele serviço.
-                </dd>
-                <dt>Cartão</dt>
-                <dd>As 6 primeiras formam a frente do cartão da cliente.</dd>
-              </dl>
-              <p className="tya-small" style={{ marginTop: 14 }}>
-                Onde não houver foto sua, a composição se sustenta na tipografia: o site nunca mostra caixote vazio nem
-                imagem de banco.
-              </p>
-            </AdminBlock>
-          </div>
-        </div>
-
-        <div className="tya-fotos__lista">
-          <AdminBlock
-            title="Biblioteca"
-            aside={
-              photos.length ? (
-                <span className="tya-pills">
-                  <span className="tya-pill tya-pill--ok">{activePhotos.length} no ar</span>
-                  {archived ? <span className="tya-pill tya-pill--quiet">{archived} arquivadas</span> : null}
-                </span>
-              ) : null
-            }
-          >
-            <PhotoLibrary photos={photos} styles={styles} places={places} />
-          </AdminBlock>
-        </div>
-      </div>
+      <AdminBlock title={aba === "galeria" ? "Galeria" : "Rolos no site"}>
+        <PhotoLibrary photos={photos} produtos={produtos} places={places} aba={aba} />
+      </AdminBlock>
     </>
   );
 }

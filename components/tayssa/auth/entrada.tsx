@@ -29,7 +29,7 @@ export function Entrada({
           {children}
         </main>
         <footer className="tyl__rodape tyl-surge" style={{ "--d": "0.7s" } as CSSProperties}>
-          <p>Tayssa Lash · área privada</p>
+          <p>Área privada da Tayssa Lash</p>
           <nav aria-label="Caminhos">
             <TransitionLink href={ROUTES.home} className="tyl__rodape-link">
               Site

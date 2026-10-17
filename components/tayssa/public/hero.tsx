@@ -145,16 +145,6 @@ export function Hero({
       <FundoVivo />
 
       <motion.div className="tyh__texto" style={{ y: textoY, opacity: textoO }}>
-        <motion.p
-          className="tyh__selo"
-          initial={reduced ? false : { opacity: 0, y: 12 }}
-          animate={entra ? { opacity: 1, y: 0 } : undefined}
-          transition={{ duration: 0.8, delay: 0.1, ease: EASE }}
-        >
-          <i aria-hidden />
-          {business.specialty}
-        </motion.p>
-
         <motion.h1
           className="tyh__nome"
           aria-label={business.name}
@@ -169,6 +159,15 @@ export function Hero({
             </span>
           ) : null}
         </motion.h1>
+
+        <motion.p
+          className="tyh__oficio"
+          initial={reduced ? false : { opacity: 0, y: 12, filter: "blur(6px)" }}
+          animate={entra ? { opacity: 1, y: 0, filter: "blur(0px)" } : undefined}
+          transition={{ duration: 0.9, delay: 0.15 + (primeira.length + (segunda?.length ?? 0)) * 0.055 + 0.2, ease: EASE }}
+        >
+          {business.specialty}
+        </motion.p>
 
         <motion.div
           className="tyh__acoes"

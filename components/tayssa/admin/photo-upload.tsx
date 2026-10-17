@@ -1,46 +1,42 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState, type DragEvent } from "react";
 import { useRouter } from "next/navigation";
-import { adminPrepareMediaUploadAction, adminRegisterMediaAction } from "@/lib/tayssa/actions/photos";
+import { adminPrepareMediaUploadAction, adminSaveToGalleryAction } from "@/lib/tayssa/actions/photos";
 import { PHOTO_MAX_BYTES, PHOTO_TYPES, VIDEO_MAX_BYTES, VIDEO_TYPES } from "@/lib/tayssa/config";
-import { CATEGORIAS } from "@/lib/tayssa/catalogo";
-import type { CategoriaMidia } from "@/lib/tayssa/types";
-import { Campo, Marcar } from "@/components/tayssa/admin/forms";
 import { Icone } from "@/components/tayssa/admin/icons";
 
 const mb = (bytes: number) => `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 const ACEITA = [...Object.keys(PHOTO_TYPES), ...Object.keys(VIDEO_TYPES)].join(",");
+/** quantos arquivos sobem ao mesmo tempo: rápido sem engasgar o celular */
+const SIMULTANEOS = 3;
 
-/** Até onde o nome de um produto aparece inteiro dentro do chip no celular. */
-const CHIP_CARACTERES = 34;
-function atalhos(nomes: string[]): string[] {
-  return nomes
-    .slice(0, 6)
-    .sort((a, b) => Number(a.length > CHIP_CARACTERES) - Number(b.length > CHIP_CARACTERES));
-}
+type Linha = { id: number; nome: string; bytes: number; estado: "fila" | "enviando" | "ok" | "erro"; progresso: number; erro?: string };
 
-type Etapa = "parado" | "preparando" | "enviando" | "registrando";
-
-/** Largura e altura reais do arquivo, lidas no aparelho (o servidor não vê o arquivo). */
-function medir(url: string, video: boolean): Promise<{ width: number; height: number } | null> {
+/** Largura e altura reais, lidas no aparelho (o servidor não abre o arquivo). */
+function medir(file: File): Promise<{ width: number; height: number } | null> {
   return new Promise((ok) => {
-    if (video) {
+    const url = URL.createObjectURL(file);
+    const fim = (v: { width: number; height: number } | null) => {
+      URL.revokeObjectURL(url);
+      ok(v);
+    };
+    if (file.type in VIDEO_TYPES) {
       const v = document.createElement("video");
       v.preload = "metadata";
-      v.onloadedmetadata = () => ok({ width: v.videoWidth, height: v.videoHeight });
-      v.onerror = () => ok(null);
+      v.onloadedmetadata = () => fim({ width: v.videoWidth, height: v.videoHeight });
+      v.onerror = () => fim(null);
       v.src = url;
     } else {
       const i = new Image();
-      i.onload = () => ok({ width: i.naturalWidth, height: i.naturalHeight });
-      i.onerror = () => ok(null);
+      i.onload = () => fim({ width: i.naturalWidth, height: i.naturalHeight });
+      i.onerror = () => fim(null);
       i.src = url;
     }
   });
 }
 
-/** PUT direto no Storage com o endereço assinado, contando o progresso. */
+/** PUT direto no Storage com o endereço assinado: o arquivo vai como está. */
 function enviar(url: string, file: File, onProgresso: (p: number) => void): Promise<void> {
   return new Promise((ok, falha) => {
     const xhr = new XMLHttpRequest();
@@ -58,230 +54,135 @@ function enviar(url: string, file: File, onProgresso: (p: number) => void): Prom
 }
 
 /**
- * ADICIONAR AO CATÁLOGO. A Tayssa escolhe a categoria (cílios,
- * sobrancelha, boca, pele), diz o produto ("Volume inglês") e sobe foto ou
- * vídeo. O arquivo vai direto do aparelho para o Storage; o painel só
- * registra. Daí o site monta sozinho o rolo daquele produto.
+ * SUBIR PARA A GALERIA. Quantos arquivos ela quiser de uma vez — fotos e
+ * vídeos, no original, sem compressão. Nada vai para o site aqui: a galeria
+ * guarda, e ela publica depois, com categoria, produto e enquadramento.
  */
-export function PhotoUpload({ produtos }: { produtos: Partial<Record<CategoriaMidia, string[]>> }) {
+export function PhotoUpload() {
   const router = useRouter();
-  const formRef = useRef<HTMLFormElement>(null);
-  const [categoria, setCategoria] = useState<CategoriaMidia>("cilios");
-  const [produto, setProduto] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-  const [etapa, setEtapa] = useState<Etapa>("parado");
-  const [progresso, setProgresso] = useState(0);
-  const [erro, setErro] = useState<{ campo?: string; texto: string } | null>(null);
-  const [feito, setFeito] = useState<string | null>(null);
+  const input = useRef<HTMLInputElement>(null);
+  const [linhas, setLinhas] = useState<Linha[]>([]);
+  const [arrastando, setArrastando] = useState(false);
+  const [rodando, setRodando] = useState(false);
 
-  const video = !!file && file.type in VIDEO_TYPES;
-  const limite = video ? VIDEO_MAX_BYTES : PHOTO_MAX_BYTES;
-  const grande = !!file && file.size > limite;
-  const ocupado = etapa !== "parado";
-  const sugestoes = produtos[categoria] ?? [];
+  const atualizar = (id: number, mudanca: Partial<Linha>) =>
+    setLinhas((ls) => ls.map((l) => (l.id === id ? { ...l, ...mudanca } : l)));
 
-  useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
-
-  const escolher = (f: File | null) => {
-    if (preview) URL.revokeObjectURL(preview);
-    setFile(f);
-    setPreview(f ? URL.createObjectURL(f) : null);
-    setErro(null);
-    setFeito(null);
-  };
-
-  const subir = async (fd: FormData) => {
-    setErro(null);
-    setFeito(null);
-    if (!file) return setErro({ campo: "file", texto: "Escolha uma foto ou um vídeo." });
-    if (produto.trim().length < 2) return setErro({ campo: "lash_style", texto: "Diga o produto ou a técnica." });
-    if (grande) return;
+  const subirUm = async (id: number, file: File) => {
+    const video = file.type in VIDEO_TYPES;
+    if (!(file.type in PHOTO_TYPES) && !video) return atualizar(id, { estado: "erro", erro: "Tipo não aceito" });
+    const limite = video ? VIDEO_MAX_BYTES : PHOTO_MAX_BYTES;
+    if (file.size > limite) return atualizar(id, { estado: "erro", erro: `Acima de ${limite / 1024 / 1024} MB` });
     try {
-      setEtapa("preparando");
+      atualizar(id, { estado: "enviando", progresso: 0 });
       const prep = await adminPrepareMediaUploadAction({ mime: file.type, bytes: file.size });
-      if (!prep.ok) {
-        setEtapa("parado");
-        return setErro({ campo: prep.field, texto: prep.error });
-      }
-      setEtapa("enviando");
-      setProgresso(0);
-      await enviar(prep.data.signedUrl, file, setProgresso);
-      setEtapa("registrando");
-      const tam = preview ? await medir(preview, video) : null;
-      const r = await adminRegisterMediaAction({
+      if (!prep.ok) return atualizar(id, { estado: "erro", erro: prep.error });
+      await enviar(prep.data.signedUrl, file, (p) => atualizar(id, { progresso: p }));
+      const tam = await medir(file);
+      const r = await adminSaveToGalleryAction({
         path: prep.data.path,
         mime: file.type,
         bytes: file.size,
-        category: categoria,
-        lash_style: produto,
-        caption: String(fd.get("caption") ?? ""),
-        featured: fd.get("featured") === "on",
+        original_name: file.name,
         width: tam?.width ?? null,
         height: tam?.height ?? null,
       });
-      setEtapa("parado");
-      if (!r.ok) return setErro({ campo: r.field, texto: r.error });
-      escolher(null);
-      setFeito(`${video ? "Vídeo" : "Foto"} de ${produto.trim()} no ar. O rolo do site já tem.`);
-      formRef.current?.reset();
-      router.refresh();
+      atualizar(id, r.ok ? { estado: "ok", progresso: 1 } : { estado: "erro", erro: r.error });
     } catch {
-      setEtapa("parado");
-      setErro({ campo: "file", texto: "O envio caiu no meio. Confira a internet e tente de novo." });
+      atualizar(id, { estado: "erro", erro: "O envio caiu. Tente de novo." });
     }
   };
 
-  const textoBotao =
-    etapa === "preparando"
-      ? "Preparando…"
-      : etapa === "enviando"
-        ? `Enviando… ${Math.round(progresso * 100)}%`
-        : etapa === "registrando"
-          ? "Colocando no ar…"
-          : video
-            ? "Adicionar vídeo"
-            : "Adicionar foto";
+  const comecar = async (files: File[]) => {
+    if (!files.length) return;
+    const base = Date.now();
+    const novas = files.map((f, i) => ({ id: base + i, nome: f.name, bytes: f.size, estado: "fila" as const, progresso: 0 }));
+    setLinhas((ls) => [...novas, ...ls].slice(0, 400));
+    setRodando(true);
+    let proximo = 0;
+    let feitos = 0;
+    const trabalhador = async () => {
+      while (proximo < files.length) {
+        const i = proximo++;
+        await subirUm(novas[i].id, files[i]);
+        // a galeria aparece enchendo, sem esperar o lote inteiro
+        if (++feitos % 12 === 0) router.refresh();
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(SIMULTANEOS, files.length) }, trabalhador));
+    setRodando(false);
+    router.refresh();
+  };
+
+  const soltar = (e: DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    setArrastando(false);
+    void comecar([...e.dataTransfer.files]);
+  };
+
+  const ok = linhas.filter((l) => l.estado === "ok").length;
+  const erros = linhas.filter((l) => l.estado === "erro").length;
+  const total = linhas.length;
 
   return (
-    <form
-      ref={formRef}
-      noValidate
-      className="tya-stack"
-      aria-busy={ocupado || undefined}
-      onSubmit={(e) => {
-        e.preventDefault();
-        void subir(new FormData(e.currentTarget));
-      }}
-    >
-      <div>
-        <span className="tya-label" id="cat-label">
-          Categoria
-        </span>
-        <div className="tya-sugs" role="radiogroup" aria-labelledby="cat-label">
-          {CATEGORIAS.map((c) => (
-            <button
-              key={c.slug}
-              type="button"
-              role="radio"
-              aria-checked={categoria === c.slug}
-              className="tya-chip"
-              data-on={categoria === c.slug ? "true" : "false"}
-              onClick={() => setCategoria(c.slug)}
-            >
-              {c.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <Campo
-          label="Produto / técnica"
-          name="lash_style"
-          list={`tayssa-produtos-${categoria}`}
-          placeholder={
-            categoria === "cilios"
-              ? "ex.: Volume inglês"
-              : categoria === "sobrancelha"
-                ? "ex.: Design com henna"
-                : categoria === "labios"
-                  ? "ex.: Lip spa"
-                  : categoria === "pele"
-                    ? "ex.: Limpeza profunda"
-                    : "ex.: Antes e depois"
-          }
-          required
-          value={produto}
-          onChange={(e) => setProduto(e.target.value)}
-          error={erro?.campo === "lash_style" ? erro.texto : undefined}
-          hint="Cada produto vira um rolo no site, com tudo que você subir nele."
-        />
-        <datalist id={`tayssa-produtos-${categoria}`}>
-          {sugestoes.map((s) => (
-            <option key={s} value={s} />
-          ))}
-        </datalist>
-        {sugestoes.length ? (
-          <div className="tya-sugs">
-            {atalhos(sugestoes).map((s) => (
-              <button
-                key={s}
-                type="button"
-                className="tya-chip"
-                title={s}
-                data-on={produto === s ? "true" : "false"}
-                onClick={() => setProduto(s)}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-        ) : null}
-      </div>
-
-      <label className="tya-drop" data-cheio={preview ? "true" : "false"}>
-        {preview ? (
-          <>
-            {video ? (
-              <video src={preview} muted loop playsInline autoPlay />
-            ) : (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={preview} alt="" />
-            )}
-            <span className="tya-pill tya-pill--dark tya-drop__troca">Trocar</span>
-          </>
-        ) : (
-          <span className="tya-drop__hint">
-            <Icone nome="fotos" />
-            <b>Escolher foto ou vídeo</b>
-            <span>
-              Foto JPG, PNG, WebP ou AVIF até {PHOTO_MAX_BYTES / 1024 / 1024} MB
-              <br />
-              Vídeo MP4, MOV ou WebM até {VIDEO_MAX_BYTES / 1024 / 1024} MB · em pé fica melhor
-            </span>
+    <div className="tya-stack">
+      <label
+        className="tya-drop tya-drop--lote"
+        data-arrastando={arrastando ? "true" : "false"}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setArrastando(true);
+        }}
+        onDragLeave={() => setArrastando(false)}
+        onDrop={soltar}
+      >
+        <span className="tya-drop__hint">
+          <Icone nome="fotos" />
+          <b>{arrastando ? "Pode soltar" : "Escolher fotos e vídeos"}</b>
+          <span>
+            Quantos quiser de uma vez, no arquivo original. Foto até {PHOTO_MAX_BYTES / 1024 / 1024} MB, vídeo até{" "}
+            {VIDEO_MAX_BYTES / 1024 / 1024} MB.
           </span>
-        )}
-        <input type="file" name="file" accept={ACEITA} onChange={(e) => escolher(e.target.files?.[0] ?? null)} />
-      </label>
-      {file ? (
-        grande ? (
-          <p className="tya-err" style={{ marginTop: -4 }} role="alert">
-            {file.name} · {mb(file.size)} — acima do limite de {limite / 1024 / 1024} MB.
-          </p>
-        ) : (
-          <p className="tya-small" style={{ marginTop: -4 }}>
-            {video ? "Vídeo" : "Foto"} · {file.name} · {mb(file.size)}
-          </p>
-        )
-      ) : null}
-
-      <Campo label="Legenda (opcional)" name="caption" maxLength={120} placeholder="ex.: Efeito natural, fio a fio" />
-      <Marcar name="featured" label="Destaque — abre o rolo do produto" />
-
-      {erro && erro.campo !== "lash_style" ? (
-        <p className="tya-err" role="alert">
-          {erro.texto}
-        </p>
-      ) : null}
-      {feito ? (
-        <p className="tya-ok" role="status">
-          {feito}
-        </p>
-      ) : null}
-
-      <div>
-        <button type="submit" className="tya-btn tya-btn--primary" disabled={ocupado || grande}>
-          {textoBotao}
-        </button>
-      </div>
-      {etapa === "enviando" ? (
-        <span className="tya-progresso" aria-hidden>
-          <i style={{ transform: `scaleX(${progresso})` }} />
         </span>
-      ) : ocupado ? (
-        <span className="tya-skel tya-skel--bar" aria-hidden />
+        <input
+          ref={input}
+          type="file"
+          multiple
+          accept={ACEITA}
+          onChange={(e) => {
+            void comecar([...(e.target.files ?? [])]);
+            e.target.value = "";
+          }}
+        />
+      </label>
+
+      {total ? (
+        <div className="tya-lote" aria-live="polite">
+          <p className="tya-lote__resumo">
+            {rodando ? "Enviando: " : ""}
+            {ok} de {total} na galeria{erros ? `, ${erros} com problema` : ""}.
+          </p>
+          <span className="tya-progresso" aria-hidden>
+            <i style={{ transform: `scaleX(${total ? (ok + erros) / total : 0})` }} />
+          </span>
+          <ul className="tya-lote__lista">
+            {linhas.slice(0, 60).map((l) => (
+              <li key={l.id} data-estado={l.estado}>
+                <span className="tya-lote__nome">{l.nome}</span>
+                <span className="tya-lote__estado">
+                  {l.estado === "fila"
+                    ? "na fila"
+                    : l.estado === "enviando"
+                      ? `${Math.round(l.progresso * 100)}%`
+                      : l.estado === "ok"
+                        ? `${mb(l.bytes)} guardado`
+                        : l.erro}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
       ) : null}
-    </form>
+    </div>
   );
 }

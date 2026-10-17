@@ -6,7 +6,7 @@ import { vipDb } from "@/lib/tayssa/db";
 import { assertAdmin } from "@/lib/tayssa/auth/guards";
 import { logAudit } from "@/lib/tayssa/audit";
 import { PHOTO_BUCKET, PHOTO_MAX_BYTES, PHOTO_TYPES, ROUTES, VIDEO_MAX_BYTES, VIDEO_TYPES } from "@/lib/tayssa/config";
-import { photoMetaSchema } from "@/lib/tayssa/validation";
+import { enquadramentoSchema, photoMetaSchema } from "@/lib/tayssa/validation";
 import { BusinessError, runAction } from "@/lib/tayssa/actions/_helpers";
 import type { ActionResult, PhotoRow } from "@/lib/tayssa/types";
 
@@ -47,25 +47,27 @@ export async function adminPrepareMediaUploadAction(input: {
   });
 }
 
-export async function adminRegisterMediaAction(input: {
+/** Os nomes de arquivo viram texto seguro para guardar e baixar de volta. */
+const nomeArquivo = (n: string) =>
+  n
+    .replace(/[\u0000-\u001f\\/]/g, "")
+    .trim()
+    .slice(0, 160) || "arquivo";
+
+/**
+ * GUARDAR NA GALERIA: o arquivo já está no Storage, original; aqui ele ganha
+ * a linha no banco com nome, tamanho, tipo e medidas. Ainda não vai ao site.
+ */
+export async function adminSaveToGalleryAction(input: {
   path: string;
   mime: string;
   bytes: number;
-  category: string;
-  lash_style: string;
-  caption?: string;
-  featured?: boolean;
+  original_name: string;
   width?: number | null;
   height?: number | null;
 }): Promise<ActionResult<{ id: string }>> {
-  return runAction("photos.register", async () => {
+  return runAction("photos.gallery", async () => {
     const admin = await assertAdmin();
-    const meta = photoMetaSchema.parse({
-      lash_style: input.lash_style,
-      category: input.category,
-      caption: input.caption,
-      featured: input.featured,
-    });
     const ehVideo = input.mime in VIDEO_TYPES;
     if (!(input.mime in PHOTO_TYPES) && !ehVideo) throw new BusinessError("Tipo de arquivo não aceito.", "file");
     // o caminho tem de ser um que este painel acabou de assinar: ano/uuid.ext
@@ -75,21 +77,22 @@ export async function adminRegisterMediaAction(input: {
     const db = vipDb();
     const { data: pub } = db.storage.from(PHOTO_BUCKET).getPublicUrl(input.path);
     const medida = (n?: number | null) => (Number.isInteger(n) && (n as number) > 0 && (n as number) < 20000 ? n : null);
-
     const { data: created, error } = await db
       .from("photos")
       .insert({
         storage_path: input.path,
         public_url: pub.publicUrl,
-        lash_style: meta.lash_style,
-        category: meta.category,
+        lash_style: "",
+        category: "cilios",
         media_type: ehVideo ? "video" : "image",
-        caption: meta.caption,
-        alt: `${meta.lash_style} — trabalho da Tayssa`,
+        alt: "Trabalho da Tayssa",
         width: medida(input.width),
         height: medida(input.height),
-        featured: Boolean(meta.featured),
-        status: "active",
+        original_name: nomeArquivo(input.original_name),
+        bytes: Number.isFinite(input.bytes) ? Math.round(input.bytes) : null,
+        mime: input.mime,
+        featured: false,
+        status: "gallery",
         sort_order: 0,
         created_by: admin.id,
       })
@@ -107,10 +110,63 @@ export async function adminRegisterMediaAction(input: {
       action: "photo_added",
       entityType: "photo",
       entityId: id,
-      meta: { category: meta.category, produto: meta.lash_style, tipo: ehVideo ? "video" : "image", bytes: input.bytes },
+      meta: { tipo: ehVideo ? "video" : "image", bytes: input.bytes, destino: "galeria" },
+    });
+    revalidatePath(ROUTES.admin, "layout");
+    return { id };
+  });
+}
+
+/**
+ * PUBLICAR: da galeria para o rolo do produto, com o enquadramento que ela
+ * escolheu na prévia. Daí o site, o cartão e os serviços já enxergam.
+ */
+export async function adminPublishMediaAction(input: {
+  id: string;
+  category: string;
+  lash_style: string;
+  caption?: string;
+  featured?: boolean;
+  focus_x?: number;
+  focus_y?: number;
+  zoom?: number;
+}): Promise<ActionResult> {
+  return runAction("photos.publish", async () => {
+    const admin = await assertAdmin();
+    const meta = photoMetaSchema.parse({
+      lash_style: input.lash_style,
+      category: input.category,
+      caption: input.caption,
+      featured: input.featured,
+    });
+    const quadro = enquadramentoSchema.parse({ focus_x: input.focus_x, focus_y: input.focus_y, zoom: input.zoom });
+    const db = vipDb();
+    const { data } = await db.from("photos").select("id, published_at").eq("id", input.id).maybeSingle();
+    if (!data) throw new BusinessError("Item não encontrado.");
+    const { error } = await db
+      .from("photos")
+      .update({
+        lash_style: meta.lash_style,
+        category: meta.category,
+        caption: meta.caption,
+        alt: `${meta.lash_style} — trabalho da Tayssa`,
+        featured: Boolean(meta.featured),
+        ...quadro,
+        status: "active",
+        published_at: (data as { published_at: string | null }).published_at ?? new Date().toISOString(),
+      })
+      .eq("id", input.id);
+    if (error) throw new Error(error.message);
+    await logAudit({
+      actorId: admin.id,
+      actorRole: "admin",
+      action: "photo_updated",
+      entityType: "photo",
+      entityId: input.id,
+      meta: { publicado: true, category: meta.category, produto: meta.lash_style },
     });
     revalidatePhotos();
-    return { id };
+    return undefined;
   });
 }
 
@@ -118,6 +174,9 @@ export async function adminUpdatePhotoAction(input: {
   id: string;
   lash_style: string;
   category?: string;
+  focus_x?: number;
+  focus_y?: number;
+  zoom?: number;
   caption?: string;
   alt?: string;
   featured?: boolean;
@@ -126,6 +185,8 @@ export async function adminUpdatePhotoAction(input: {
   return runAction("photos.update", async () => {
     const admin = await assertAdmin();
     const meta = photoMetaSchema.parse(input);
+    const quadro =
+      input.zoom === undefined ? {} : enquadramentoSchema.parse({ focus_x: input.focus_x, focus_y: input.focus_y, zoom: input.zoom });
     const db = vipDb();
     const { data } = await db.from("photos").select("id").eq("id", input.id).maybeSingle();
     if (!data) throw new BusinessError("Foto não encontrada.");
@@ -135,6 +196,7 @@ export async function adminUpdatePhotoAction(input: {
         lash_style: meta.lash_style,
         category: meta.category,
         caption: meta.caption,
+        ...quadro,
         alt: meta.alt ?? `${meta.lash_style} — trabalho da Tayssa`,
         featured: Boolean(meta.featured),
         sort_order: Number.isInteger(input.sort_order) ? input.sort_order : 0,
@@ -147,13 +209,13 @@ export async function adminUpdatePhotoAction(input: {
   });
 }
 
-/** Arquivar tira do site e do cartão sem apagar; restaurar devolve. */
+/** Tirar do site devolve à galeria (com categoria, produto e enquadramento); voltar publica de novo. */
 export async function adminArchivePhotoAction(input: { id: string; archived: boolean }): Promise<ActionResult> {
   return runAction("photos.archive", async () => {
     const admin = await assertAdmin();
     const { error } = await vipDb()
       .from("photos")
-      .update({ status: input.archived ? "archived" : "active" })
+      .update({ status: input.archived ? "gallery" : "active" })
       .eq("id", input.id);
     if (error) throw new Error(error.message);
     await logAudit({

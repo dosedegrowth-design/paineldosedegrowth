@@ -136,7 +136,6 @@ export function Services({
         {/* ficha da seção */}
         <div className="tysv__topo">
           <span className="ty-mono ty-mono--ink">Serviços</span>
-          <span className="ty-mono ty-num">01 — {String(list.length).padStart(2, "0")}</span>
         </div>
 
         <div className="tysv__cabeca">

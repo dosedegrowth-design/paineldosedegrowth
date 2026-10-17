@@ -134,6 +134,12 @@ export const reviewSignupSchema = z.object({
 });
 
 /** Metadados de uma foto da biblioteca. */
+export const enquadramentoSchema = z.object({
+  focus_x: z.number().min(0).max(100).default(50),
+  focus_y: z.number().min(0).max(100).default(50),
+  zoom: z.number().min(1).max(3).default(1),
+});
+
 export const photoMetaSchema = z.object({
   lash_style: z.string().trim().min(2, "Diga o produto ou a técnica").max(80),
   category: z.enum(["cilios", "sobrancelha", "labios", "pele", "outro"]).default("cilios"),

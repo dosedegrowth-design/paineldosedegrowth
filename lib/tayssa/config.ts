@@ -42,15 +42,16 @@ export const MIN_PASSWORD_LENGTH = 8;
 
 /** Biblioteca de fotos (Supabase Storage, bucket público). */
 export const PHOTO_BUCKET = "tayssa-fotos";
-export const PHOTO_MAX_BYTES = 10 * 1024 * 1024;
+/** o original, sem compressão: a galeria guarda o arquivo como chegou */
+export const PHOTO_MAX_BYTES = 50 * 1024 * 1024;
 export const PHOTO_TYPES: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/png": "png",
   "image/webp": "webp",
   "image/avif": "avif",
 };
-/** Vídeo curto do trabalho (vai direto do aparelho para o Storage). */
-export const VIDEO_MAX_BYTES = 60 * 1024 * 1024;
+/** Vídeo do trabalho, original (vai direto do aparelho para o Storage). */
+export const VIDEO_MAX_BYTES = 200 * 1024 * 1024;
 export const VIDEO_TYPES: Record<string, string> = {
   "video/mp4": "mp4",
   "video/webm": "webm",

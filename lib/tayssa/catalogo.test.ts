@@ -4,7 +4,7 @@
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { categoriaDoServico, itensDaCategoria, montarCatalogo } from "./catalogo.ts";
+import { categoriaDoServico, itensDaCategoria, montarCatalogo, produtoParecido } from "./catalogo.ts";
 
 const linha = (o: Partial<Parameters<typeof montarCatalogo>[0][number]> & { id: string }) => ({
   public_url: `https://x/${o.id}.jpg`,
@@ -66,4 +66,20 @@ test("serviço encontra a categoria pela slug ou pelo nome", () => {
   const cat = montarCatalogo([linha({ id: "a" }), linha({ id: "b", lash_style: "Fio a fio" })]);
   assert.equal(itensDaCategoria(cat, "cilios").length, 2);
   assert.equal(itensDaCategoria(cat, "pele").length, 0);
+});
+
+test("produto parecido: mesma grafia sem acento ou com erro de digitação", () => {
+  const existentes = ["Volume inglês", "Volume brasileiro", "Fio a fio"];
+  assert.equal(produtoParecido("volume ingles", existentes), "Volume inglês");
+  assert.equal(produtoParecido("Volume inglêz", existentes), "Volume inglês");
+  assert.equal(produtoParecido("volume  brasileiro", existentes), "Volume brasileiro");
+  // outro produto de verdade não é confundido
+  assert.equal(produtoParecido("Volume russo", existentes), null);
+  assert.equal(produtoParecido("Fox eyes", existentes), null);
+});
+
+test("enquadramento vai junto e tem padrão no centro", () => {
+  const [c] = montarCatalogo([linha({ id: "a", focus_x: 30, focus_y: 70, zoom: 1.6 }), linha({ id: "b" })]);
+  assert.deepEqual(c.produtos[0].itens[0].foco, { x: 30, y: 70, zoom: 1.6 });
+  assert.deepEqual(c.produtos[0].itens[1].foco, { x: 50, y: 50, zoom: 1 });
 });
