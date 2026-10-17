@@ -1,7 +1,8 @@
 /* ============================================================
    TAYSSA · PAINEL — layout de sistema (mesma arquitetura do Radar DDG:
    barra lateral escura fixa, topo de vidro, tela clara com cards)
-   com a identidade da casa: cassis, dourado e marfim.
+   com a identidade da casa: vinho, off-white e rosa; dourado só no que
+   já está nas mãos da cliente.
 
    CSS puro de propósito: o projeto separado (tayssa-lash) não tem
    Tailwind, e o painel precisa viajar junto sem reescrita.
@@ -9,18 +10,18 @@
    ============================================================ */
 
 .tya {
-  --tya-bg: #f4efe8;
+  --tya-bg: #fbf7f6;
   --tya-surface: #ffffff;
-  --tya-surface-2: #fbf8f4;
-  --tya-line: #e7ded2;
-  --tya-line-soft: #f0e9e0;
-  --tya-ink: #1a1512;
-  --tya-ink-2: #2a2320;
-  --tya-muted: #6b5a4e;
-  --tya-muted-2: #a2948a;
-  --tya-brand: #6e2f45;
-  --tya-brand-2: #8d4059;
-  --tya-brand-ink: #582436;
+  --tya-surface-2: #fcf8f9;
+  --tya-line: #eedfe3;
+  --tya-line-soft: #f5ecef;
+  --tya-ink: #2a0d18;
+  --tya-ink-2: #3a1322;
+  --tya-muted: #7a5260;
+  --tya-muted-2: #b0919b;
+  --tya-brand: #6d1530;
+  --tya-brand-2: #933b6c;
+  --tya-brand-ink: #4b0c20;
   --tya-brand-soft: #f7ecef;
   --tya-gold: #ac802e;
   --tya-gold-soft: #e3d4a6;
@@ -30,9 +31,9 @@
   --tya-bad: #b3403a;
   --tya-radius: 16px;
   --tya-radius-sm: 10px;
-  --tya-shadow: 0 1px 2px rgba(26, 21, 18, 0.04), 0 10px 30px -18px rgba(26, 21, 18, 0.2);
-  --tya-shadow-hover: 0 2px 4px rgba(26, 21, 18, 0.05), 0 18px 40px -20px rgba(110, 47, 69, 0.3);
-  --tya-shadow-pop: 0 24px 60px -24px rgba(26, 21, 18, 0.38);
+  --tya-shadow: 0 1px 2px rgba(42, 13, 24, 0.04), 0 10px 30px -18px rgba(42, 13, 24, 0.2);
+  --tya-shadow-hover: 0 2px 4px rgba(42, 13, 24, 0.05), 0 18px 40px -20px rgba(109, 21, 48, 0.3);
+  --tya-shadow-pop: 0 24px 60px -24px rgba(42, 13, 24, 0.38);
   --tya-ease: cubic-bezier(0.16, 1, 0.3, 1);
   --tya-side: 244px;
   --tya-side-min: 76px;
@@ -42,22 +43,22 @@
   display: flex;
   background-color: var(--tya-bg);
   background-image:
-    radial-gradient(1100px 500px at 100% -10%, rgba(110, 47, 69, 0.07), transparent 60%),
-    radial-gradient(900px 400px at -10% 110%, rgba(172, 128, 46, 0.08), transparent 60%);
+    radial-gradient(1100px 500px at 100% -10%, rgba(109, 21, 48, 0.07), transparent 60%),
+    radial-gradient(900px 400px at -10% 110%, rgba(147, 59, 108, 0.06), transparent 60%);
   color: var(--tya-ink);
   font-family: var(--t-font-body);
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
 }
 .tya ::selection {
-  background: rgba(110, 47, 69, 0.18);
+  background: rgba(109, 21, 48, 0.18);
 }
 .tya *::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 .tya *::-webkit-scrollbar-thumb {
-  background: #d9cec1;
+  background: #e7d2d8;
   border-radius: 4px;
 }
 
@@ -89,7 +90,7 @@
   width: var(--tya-side);
   display: flex;
   flex-direction: column;
-  background: #1a1512;
+  background: #2a0d18;
   color: #fff;
   transition: width 0.3s var(--tya-ease);
   z-index: 40;
@@ -120,7 +121,7 @@
   font-size: 13px;
   font-weight: 600;
   padding-left: 1px;
-  color: #f4efe8;
+  color: #fbf7f6;
   background: linear-gradient(140deg, var(--tya-brand-2), var(--tya-brand));
   box-shadow: 0 0 0 1px rgba(227, 212, 166, 0.35);
 }
@@ -342,7 +343,7 @@
   transition: border-color 0.2s;
 }
 .tya-search:hover {
-  border-color: #d9cec1;
+  border-color: #e7d2d8;
 }
 .tya-search svg {
   width: 15px;
@@ -361,7 +362,7 @@
   font-size: 10.5px;
   font-weight: 600;
   color: var(--tya-muted);
-  background: #f2ece4;
+  background: #f7eef0;
   border-radius: 6px;
   padding: 3px 6px;
 }
@@ -409,7 +410,7 @@
   position: fixed;
   inset: 0;
   z-index: 80;
-  background: rgba(26, 21, 18, 0.45);
+  background: rgba(42, 13, 24, 0.45);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
@@ -513,16 +514,16 @@
   border-color: #e0d3c4;
 }
 .tya-card--dark {
-  background: linear-gradient(160deg, #2a2320 0%, #1a1512 60%, #120f0d 100%);
-  color: #f4efe8;
+  background: linear-gradient(160deg, #3a1322 0%, #2a0d18 60%, #120f0d 100%);
+  color: #fbf7f6;
   border-color: rgba(255, 255, 255, 0.08);
   box-shadow: var(--tya-shadow-pop);
 }
 .tya-card--brand {
-  background: linear-gradient(135deg, var(--tya-brand-2) 0%, var(--tya-brand) 60%, #582436 100%);
+  background: linear-gradient(135deg, var(--tya-brand-2) 0%, var(--tya-brand) 60%, #4b0c20 100%);
   color: #fff;
   border-color: transparent;
-  box-shadow: 0 18px 40px -18px rgba(110, 47, 69, 0.55);
+  box-shadow: 0 18px 40px -18px rgba(109, 21, 48, 0.55);
 }
 .tya-card--gold {
   background: linear-gradient(135deg, #e9dcb6 0%, #cfb374 45%, #ac802e 100%);
@@ -728,15 +729,15 @@
   border-radius: 8px;
 }
 .tya-btn--primary {
-  background: linear-gradient(180deg, var(--tya-brand-2) 0%, var(--tya-brand) 60%, #5e2739 100%);
+  background: linear-gradient(180deg, var(--tya-brand-2) 0%, var(--tya-brand) 60%, #5a1028 100%);
   color: #fff;
   border-color: var(--tya-brand);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 8px 18px -8px rgba(110, 47, 69, 0.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 8px 18px -8px rgba(109, 21, 48, 0.6);
 }
 .tya-btn--dark {
-  background: linear-gradient(180deg, #2a2320 0%, #1a1512 100%);
+  background: linear-gradient(180deg, #3a1322 0%, #2a0d18 100%);
   color: #fff;
-  border-color: #1a1512;
+  border-color: #2a0d18;
 }
 .tya-btn--gold {
   background: linear-gradient(135deg, #e9dcb6 0%, #cfb374 50%, #ac802e 100%);
@@ -749,7 +750,7 @@
   border-color: var(--tya-line);
 }
 .tya-btn--ghost:hover {
-  border-color: #d5c8ba;
+  border-color: #e3cdd4;
   background: var(--tya-surface-2);
 }
 .tya-btn--soft {
@@ -793,7 +794,7 @@
   transition: all 0.2s;
 }
 .tya-chip:hover {
-  border-color: #d5c8ba;
+  border-color: #e3cdd4;
 }
 .tya-chip[data-on="true"] {
   background: var(--tya-ink);
@@ -834,7 +835,7 @@
 .tya-pill--warn {
   background: #fff;
   color: var(--tya-brand);
-  box-shadow: inset 0 0 0 1px rgba(110, 47, 69, 0.4);
+  box-shadow: inset 0 0 0 1px rgba(109, 21, 48, 0.4);
 }
 .tya-pill--warn::before {
   content: "";
@@ -849,7 +850,7 @@
   color: #8f322d;
 }
 .tya-pill--quiet {
-  background: #f2ece4;
+  background: #f7eef0;
   color: var(--tya-muted);
 }
 .tya-pill--dark {
@@ -884,7 +885,7 @@
 }
 .tya-field:focus {
   border-color: var(--tya-brand-2);
-  box-shadow: 0 0 0 4px rgba(110, 47, 69, 0.12);
+  box-shadow: 0 0 0 4px rgba(109, 21, 48, 0.12);
 }
 .tya-field:disabled {
   background: var(--tya-surface-2);
@@ -964,7 +965,7 @@ textarea.tya-field {
   transition: background 0.15s;
 }
 .tya-table tbody tr:hover {
-  background: #fdfbf8;
+  background: #fdf9fa;
 }
 .tya-table tbody tr:last-child td {
   border-bottom: 0;
@@ -1024,7 +1025,7 @@ textarea.tya-field {
   overflow: hidden;
   display: block;
   border-radius: 8px;
-  background: #ece3d8;
+  background: #f4e8ea;
 }
 .tya-skel::after {
   content: "";
@@ -1305,7 +1306,7 @@ textarea.tya-field {
 .tya-bar {
   height: 6px;
   border-radius: 999px;
-  background: #efe7dc;
+  background: #f3e6ea;
   overflow: hidden;
 }
 .tya-bar > i {
@@ -1364,17 +1365,17 @@ textarea.tya-field {
 .tya .ty-btn:hover {
   color: var(--tya-ink);
   background: var(--tya-surface-2);
-  border-color: #d5c8ba;
+  border-color: #e3cdd4;
 }
 .tya .ty-btn--solid,
 .tya .ty-btn--solid:hover {
-  background: linear-gradient(180deg, #2a2320 0%, #1a1512 100%);
-  border-color: #1a1512;
+  background: linear-gradient(180deg, #3a1322 0%, #2a0d18 100%);
+  border-color: #2a0d18;
   color: #fff;
 }
 .tya .ty-btn--accent,
 .tya .ty-btn--accent:hover {
-  background: linear-gradient(180deg, var(--tya-brand-2) 0%, var(--tya-brand) 60%, #5e2739 100%);
+  background: linear-gradient(180deg, var(--tya-brand-2) 0%, var(--tya-brand) 60%, #5a1028 100%);
   border-color: var(--tya-brand);
   color: #fff;
 }
@@ -1409,7 +1410,7 @@ textarea.tya-field {
 }
 .tya .ty-field__input:focus {
   border-color: var(--tya-brand-2);
-  box-shadow: 0 0 0 4px rgba(110, 47, 69, 0.12);
+  box-shadow: 0 0 0 4px rgba(109, 21, 48, 0.12);
 }
 .tya .ty-field__error {
   font-size: 12px;
@@ -1689,14 +1690,14 @@ a.tya-kpi {
     background-image:
       linear-gradient(#fff, #fff),
       linear-gradient(#fff, #fff),
-      linear-gradient(to right, rgba(26, 21, 18, 0.17), rgba(26, 21, 18, 0)),
-      linear-gradient(to left, rgba(26, 21, 18, 0.17), rgba(26, 21, 18, 0));
+      linear-gradient(to right, rgba(42, 13, 24, 0.17), rgba(42, 13, 24, 0)),
+      linear-gradient(to left, rgba(42, 13, 24, 0.17), rgba(42, 13, 24, 0));
     background-position: 0 0, 100% 0, 0 0, 100% 0;
     background-repeat: no-repeat;
     background-size: 22px 100%, 22px 100%, 16px 100%, 16px 100%;
     background-attachment: local, local, scroll, scroll;
     scrollbar-width: thin;
-    scrollbar-color: #c9bbab transparent;
+    scrollbar-color: #d8bcc6 transparent;
   }
   .tya-tablewrap::-webkit-scrollbar {
     height: 7px;
@@ -1706,7 +1707,7 @@ a.tya-kpi {
     background: var(--tya-line-soft);
   }
   .tya-tablewrap::-webkit-scrollbar-thumb {
-    background: #c9bbab;
+    background: #d8bcc6;
   }
 }
 
@@ -1894,13 +1895,13 @@ a.tya-kpi {
 }
 .tya-drop:focus-within {
   border-color: var(--tya-brand-2);
-  box-shadow: 0 0 0 4px rgba(110, 47, 69, 0.12);
+  box-shadow: 0 0 0 4px rgba(109, 21, 48, 0.12);
 }
 .tya-drop[data-cheio="true"] {
   aspect-ratio: 4 / 5;
   border-style: solid;
   border-color: var(--tya-line);
-  background: #ece3d8;
+  background: #f4e8ea;
 }
 .tya-drop img {
   position: absolute;
@@ -2014,7 +2015,7 @@ a.tya-kpi {
   aspect-ratio: 4 / 5;
   overflow: hidden;
   border-radius: 8px;
-  background: #ece3d8;
+  background: #f4e8ea;
 }
 .tya-foto__img img {
   display: block;
@@ -2040,7 +2041,7 @@ a.tya-kpi {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--tya-muted-2);
-  background: linear-gradient(160deg, #ece3d8 0%, #e3d8ca 100%);
+  background: linear-gradient(160deg, #f4e8ea 0%, #e3d8ca 100%);
 }
 .tya-foto__selo {
   position: absolute;
@@ -2062,8 +2063,8 @@ a.tya-kpi {
   font-size: 10.5px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  color: #f4efe8;
-  background: rgba(26, 21, 18, 0.72);
+  color: #fbf7f6;
+  background: rgba(42, 13, 24, 0.72);
 }
 .tya-foto__t {
   font-size: 13.5px;
@@ -2304,7 +2305,7 @@ a.tya-kpi {
   accent-color: var(--tya-brand);
 }
 .tya-marca:hover {
-  border-color: #d5c8ba;
+  border-color: #e3cdd4;
 }
 .tya-marca:has(input:checked) {
   border-color: var(--tya-brand);
