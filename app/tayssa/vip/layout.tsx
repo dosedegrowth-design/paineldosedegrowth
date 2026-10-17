@@ -11,10 +11,6 @@ import { ROUTES } from "@/lib/tayssa/config";
 import { PageEnter } from "@/components/tayssa/vip/page-enter";
 import { TyBrand } from "@/components/tayssa/ui/brand";
 import { FundoVivo } from "@/components/tayssa/ui/fundo-vivo";
-import { MuralFotos } from "@/components/tayssa/vip/mural-fotos";
-import { getPhotoLibrary } from "@/lib/tayssa/queries/photos";
-import { getPhotoAvailability } from "@/lib/tayssa/photos-server";
-import { fotosDoMural } from "@/lib/tayssa/mural";
 
 export const metadata: Metadata = {
   title: "Meu VIP",
@@ -30,28 +26,15 @@ export const dynamic = "force-dynamic";
  * página/action (DAL) — o layout só garante o redirecionamento.
  */
 export default async function VipLayout({ children }: { children: React.ReactNode }) {
-  const [user, settings, biblioteca, arquivos] = await Promise.all([
-    requireClientPage(),
-    getSettings(),
-    getPhotoLibrary(),
-    getPhotoAvailability(),
-  ]);
-  // o mural: as fotos aprovadas para o site; sem elas, as fotos reais que o site já tem
-  const mural = fotosDoMural(
-    biblioteca,
-    Object.entries(arquivos)
-      .filter(([, existe]) => existe)
-      .map(([src]) => src),
-  );
+  const [user, settings] = await Promise.all([requireClientPage(), getSettings()]);
   const supportUrl = whatsappUrl(
     settings.business.whatsapp,
     renderTemplate(settings.whatsapp.vip_support, { name: user.displayName })
   );
   return (
     <div className="ty-scope tyv">
-      {/* o VIP tem pele própria: pérola e ouro (o site é vinho e noite), com o
-          trabalho da Tayssa passando no fundo; sem foto nenhuma, o fundo vivo pérola */}
-      {mural.length ? <MuralFotos fotos={mural} /> : <FundoVivo tom="perola" className="tyv-fundo" />}
+      {/* o VIP tem pele própria: bege dourado e ícones vinho (o site é vinho e noite) */}
+      <FundoVivo tom="perola" className="tyv-fundo" />
       <header className="tyv-page tyv-top">
         <Link href={ROUTES.vip} className="tyv-brand" aria-label="Início do seu espaço">
           <TyBrand size="sm" />
