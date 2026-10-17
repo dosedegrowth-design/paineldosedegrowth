@@ -6,7 +6,7 @@ import { loginAction } from "@/lib/tayssa/actions/auth";
 import { ROUTES } from "@/lib/tayssa/config";
 import type { ActionResult } from "@/lib/tayssa/types";
 import { TyInput } from "@/components/tayssa/ui/field";
-import { TransitionLink, useTransitionNav } from "@/components/tayssa/ui/transition";
+import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { Entrada } from "@/components/tayssa/auth/entrada";
 
 type LoginResult = ActionResult<{ redirectTo: string; name: string }>;
@@ -29,7 +29,6 @@ export function LoginExperience({
   linkExpirado?: boolean;
 }) {
   const reduced = useReducedMotion();
-  const { navigate } = useTransitionNav();
   const [state, action, pending] = useActionState<LoginResult | null, FormData>(
     loginAction as unknown as (prev: LoginResult | null, fd: FormData) => Promise<LoginResult>,
     null
@@ -41,11 +40,14 @@ export function LoginExperience({
   const welcome = state?.ok ? { name: state.data.name, to: state.data.redirectTo } : null;
   const welcomeTo = welcome?.to ?? null;
 
+  // Carga completa, não troca de rota no cliente: o roteador pode guardar a
+  // ida ao VIP de antes do login (que o middleware mandou de volta para cá) e
+  // a cliente ficaria parada na entrada com a sessão já aberta.
   useEffect(() => {
     if (!welcomeTo) return;
-    const t = setTimeout(() => navigate(welcomeTo), reduced ? 250 : 1900);
+    const t = setTimeout(() => window.location.assign(welcomeTo), reduced ? 250 : 1900);
     return () => clearTimeout(t);
-  }, [welcomeTo, navigate, reduced]);
+  }, [welcomeTo, reduced]);
 
   /** validação no cliente: erro imediato, sem ida ao servidor à toa */
   const check = (fd: FormData) => {

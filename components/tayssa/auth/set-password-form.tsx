@@ -6,18 +6,17 @@ import { setPasswordAction } from "@/lib/tayssa/actions/auth";
 import { MIN_PASSWORD_LENGTH } from "@/lib/tayssa/config";
 import type { ActionResult } from "@/lib/tayssa/types";
 import { TyInput } from "@/components/tayssa/ui/field";
-import { useTransitionNav } from "@/components/tayssa/ui/transition";
 
 type Result = ActionResult<{ redirectTo: string }>;
 
 export function SetPasswordForm({ token }: { token: string }) {
-  const { navigate } = useTransitionNav();
   const [state, action, pending] = useActionState<Result | null, FormData>(setPasswordAction, null);
   const err = state && !state.ok ? state : null;
 
+  // carga completa: a sessão acabou de nascer, o VIP tem de vir do servidor
   useEffect(() => {
-    if (state?.ok) navigate(state.data.redirectTo);
-  }, [state, navigate]);
+    if (state?.ok) window.location.assign(state.data.redirectTo);
+  }, [state]);
 
   return (
     <motion.form

@@ -39,6 +39,20 @@ export async function middleware(request: NextRequest) {
   // também funciona no subdomínio.
   const host = request.headers.get("host") ?? "";
   const { pathname } = request.nextUrl;
+  // Preview do Vercel (link *.vercel.app de cada push) não tem banco: lá o
+  // login falha sempre e a pessoa fica presa na tela de entrar. Quem abrir o
+  // Tayssa por esse link vai para o site de verdade, no mesmo caminho.
+  if (
+    process.env.VERCEL_ENV === "preview" &&
+    !(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) &&
+    (pathname === "/tayssa" || pathname.startsWith("/tayssa/"))
+  ) {
+    const destino = new URL(
+      pathname + request.nextUrl.search,
+      process.env.NEXT_PUBLIC_TAYSSA_ORIGIN || "https://painel.dosedegrowth.com"
+    );
+    return NextResponse.redirect(destino);
+  }
   if (host.startsWith("tayssa.")) {
     if (pathname === "/favicon.ico") {
       const url = request.nextUrl.clone();
