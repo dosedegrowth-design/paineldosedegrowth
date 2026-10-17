@@ -22,7 +22,8 @@ const DESCRIPTION =
 
 export const metadata: Metadata = {
   metadataBase: new URL(PUBLIC_ORIGIN),
-  title: { default: TITLE, template: "%s · Tayssa Lash" },
+  // absolute: o título da Tayssa não herda o "· Tráfego DDG" do painel
+  title: { absolute: TITLE, template: "%s · Tayssa Lash" },
   description: DESCRIPTION,
   applicationName: "Tayssa Lash",
   icons: { icon: "/tayssa/favicon.svg" },
