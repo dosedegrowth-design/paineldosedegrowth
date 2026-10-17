@@ -56,7 +56,7 @@ function nomeComEnfase(nome: string): ReactNode {
  * `whatsappUrl()` (`lib/tayssa/whatsapp.ts`) usou para montar `base`,
  * então o link inteiro sai com `%20`, igual ao CTA do pé da seção.
  */
-function linkDoServico(base: string, nome: string): string {
+export function linkDoServico(base: string, nome: string): string {
   // só é seguro concatenar se `text` for o último parâmetro e tiver
   // valor — é assim que whatsappUrl() monta o link. Qualquer outro
   // formato fica exatamente como chegou.

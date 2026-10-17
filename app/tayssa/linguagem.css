@@ -841,3 +841,87 @@
     padding-block: clamp(220px, 60vw, 300px);
   }
 }
+
+/* ============================================================
+   Faixa de serviços (a fileira colorida do Delta)
+   ============================================================ */
+.tyfx {
+  padding-block: clamp(28px, 4vw, 56px) 0;
+}
+.tyfx__janela {
+  overflow: hidden;
+  padding-inline: var(--t-gutter);
+}
+.tyfx__trilho {
+  display: flex;
+  gap: clamp(10px, 1.2vw, 16px);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: max-content;
+  will-change: transform;
+}
+.ty-scope .tyfx__cartao {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  gap: 10px;
+  width: clamp(200px, 18vw, 260px);
+  aspect-ratio: 4 / 5;
+  padding: 20px 20px 18px;
+  border-radius: clamp(22px, 2.2vw, 30px);
+  color: #fbf1f3;
+  overflow: hidden;
+  transition: transform var(--t-ui) var(--t-ease-out);
+}
+.ty-scope .tyfx__cartao[data-cor="vinho"] { background: var(--t-vinho); color: #fbf1f3; }
+.ty-scope .tyfx__cartao[data-cor="magenta"] { background: #933b6c; color: #fbf1f3; }
+.ty-scope .tyfx__cartao[data-cor="rosa"] { background: #e7aabb; color: var(--t-ink); }
+.ty-scope .tyfx__cartao[data-cor="ameixa"] { background: var(--t-ameixa); color: #fbf1f3; }
+.ty-scope .tyfx__cartao[data-cor="bordo"] { background: var(--t-bordo); color: #fbf1f3; }
+.ty-scope .tyfx__cartao[data-cor="blush"] { background: var(--t-blush); color: var(--t-ink); }
+@media (hover: hover) {
+  .tyfx__cartao:hover {
+    transform: translateY(-8px) rotate(-1.2deg);
+  }
+}
+.tyfx__n {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  opacity: 0.7;
+}
+.tyfx__icone {
+  width: clamp(64px, 6vw, 88px);
+  height: auto;
+  align-self: center;
+  justify-self: center;
+  stroke-width: 1.2;
+}
+.tyfx__nome {
+  font-family: var(--t-font-display);
+  text-transform: uppercase;
+  font-size: clamp(30px, 2.6vw, 40px);
+  line-height: 0.92;
+}
+.tyfx__acao {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.tyfx__acao .ty-btn__arrow {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: color-mix(in srgb, currentColor 18%, transparent);
+}
+@media (max-width: 767px) {
+  .ty-scope .tyfx__cartao {
+    width: 62vw;
+  }
+}

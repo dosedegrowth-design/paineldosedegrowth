@@ -10,6 +10,7 @@ import { PublicNav } from "@/components/tayssa/public/nav";
 import { Hero } from "@/components/tayssa/public/hero";
 import { WorkSequence } from "@/components/tayssa/public/work-sequence";
 import { Services } from "@/components/tayssa/public/services";
+import { ServiceStrip } from "@/components/tayssa/public/service-strip";
 import { Details } from "@/components/tayssa/public/details";
 import { VipIntro } from "@/components/tayssa/public/vip-intro";
 import { ReferralCta } from "@/components/tayssa/public/referral-cta";
@@ -85,6 +86,7 @@ export function PublicExperience({
       <PublicNav scheduleUrl={links.schedule} sections={secoes} />
       <main>
         <Hero business={settings.business} scheduleUrl={links.schedule} photo={photos?.hero} video={videos?.hero} />
+        <ServiceStrip services={services} scheduleUrl={links.schedule} />
         <WorkSequence photos={photos?.work} />
         <Film video={videos?.processo} />
         <Services
