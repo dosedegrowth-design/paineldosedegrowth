@@ -10,6 +10,7 @@ import {
   updateBookingSettingsAction,
   updateBusinessSettingsAction,
   updateLoyaltySettingsAction,
+  updateNumerosSettingsAction,
   updateRulesSettingsAction,
   updateSignupSettingsAction,
   updateWhatsappTemplatesAction,
@@ -20,6 +21,7 @@ import type { ActionResult, BenefitRow, BenefitType, BlackoutRow, ServiceRow } f
 import { BENEFIT_TYPE_LABEL } from "@/lib/tayssa/types";
 import { formatBrPhone } from "@/lib/tayssa/phone";
 import { dateShort, hhmm } from "@/lib/tayssa/format";
+import { reais } from "@/lib/tayssa/agendar";
 import { Area, Campo, Marcar, useFormPreservado } from "@/components/tayssa/admin/forms";
 import { ActionButton } from "@/components/tayssa/admin/controls";
 import { Icone } from "@/components/tayssa/admin/icons";
@@ -300,6 +302,9 @@ export function CatalogServiceForm({ service }: { service?: ServiceRow }) {
         <span className="tya-eyebrow">{novo ? "Novo serviço" : service.name}</span>
         {service ? (
           <span className="tya-pills">
+            {service.preco != null ? (
+              <span className="tya-pill tya-pill--brand tya-num">{reais(Number(service.preco))}</span>
+            ) : null}
             <span className="tya-pill tya-pill--quiet tya-num">{service.point_value} pts</span>
             <span className={`tya-pill ${service.active ? "tya-pill--ok" : "tya-pill--quiet"}`}>
               {service.active ? "no site" : "fora do site"}
@@ -320,6 +325,14 @@ export function CatalogServiceForm({ service }: { service?: ServiceRow }) {
           name="description"
           defaultValue={service?.description ?? ""}
           error={erroDe(state, "description")}
+        />
+        <Campo
+          label="Valor (R$)"
+          name="preco"
+          inputMode="decimal"
+          defaultValue={service?.preco != null ? String(service.preco).replace(".", ",") : ""}
+          error={erroDe(state, "preco")}
+          hint="Vazio = o site não mostra valor."
         />
         <Campo
           label="Pontos"
@@ -707,6 +720,89 @@ export function SignupForm({ value }: { value: Settings["signup"] }) {
       />
       <Salvar state={state} pending={pending}>
         Salvar cadastro
+      </Salvar>
+    </form>
+  );
+}
+
+/* ------------------------------------------------------------------
+   Números do site
+   ------------------------------------------------------------------ */
+
+const LINHAS_NUMEROS = 6;
+const EXEMPLOS: [string, string, string][] = [
+  ["2,16 mi", "Visualizações", "96% de quem ainda não te segue"],
+  ["312 mil", "Contas alcançadas", ""],
+  ["+5 mil", "Novos seguidores", ""],
+  ["", "", ""],
+  ["", "", ""],
+  ["", "", ""],
+];
+
+/**
+ * O quadro de números do site: ela copia do Insights (ou de onde quiser)
+ * e o site anima subindo. Nada inventado — sem número, o quadro some.
+ */
+export function NumerosForm({ value }: { value: Settings["numeros"] }) {
+  const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateNumerosSettingsAction, null);
+  const { onReset } = useFormPreservado();
+  const linhas = Array.from({ length: LINHAS_NUMEROS }, (_, i) => value.itens[i] ?? { valor: "", rotulo: "", detalhe: "" });
+  return (
+    <form action={action} noValidate onReset={onReset} className="tya-stack">
+      <div className="tya-grid">
+        <Campo label="Período" name="periodo" defaultValue={value.periodo} maxLength={40} hint="Ex.: Últimos 30 dias" />
+        <Campo label="De onde vêm" name="fonte" defaultValue={value.fonte} maxLength={40} hint="Ex.: Instagram Insights" />
+        <Campo
+          label="% de quem ainda não te segue"
+          name="nao_seguidores"
+          inputMode="decimal"
+          defaultValue={value.nao_seguidores ?? ""}
+          maxLength={6}
+          error={erroDe(state, "nao_seguidores")}
+          hint="A barra do celular. Vazio = sem barra."
+        />
+      </div>
+      <div className="tya-numeros">
+        <div className="tya-numeros__topo" aria-hidden>
+          <span>Número</span>
+          <span>Rótulo</span>
+          <span>Detalhe (opcional)</span>
+        </div>
+        {linhas.map((n, i) => (
+          <div key={i} className="tya-numeros__linha">
+            <input
+              className="tya-field"
+              name="valor"
+              defaultValue={n.valor}
+              placeholder={EXEMPLOS[i][0]}
+              maxLength={14}
+              aria-label={`Número ${i + 1}`}
+            />
+            <input
+              className="tya-field"
+              name="rotulo"
+              defaultValue={n.rotulo}
+              placeholder={EXEMPLOS[i][1]}
+              maxLength={32}
+              aria-label={`Rótulo do número ${i + 1}`}
+            />
+            <input
+              className="tya-field"
+              name="detalhe"
+              defaultValue={n.detalhe}
+              placeholder={EXEMPLOS[i][2]}
+              maxLength={60}
+              aria-label={`Detalhe do número ${i + 1}`}
+            />
+          </div>
+        ))}
+      </div>
+      <p className="tya-small" style={{ marginTop: -4 }}>
+        O primeiro é o destaque do celular; os dois primeiros também flutuam em volta dele. Escreva do jeito que quer ver:
+        “2,16 mi”, “+5 mil”, “98%”.
+      </p>
+      <Salvar state={state} pending={pending}>
+        Salvar números
       </Salvar>
     </form>
   );

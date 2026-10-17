@@ -7,6 +7,7 @@ import "./casa.css";
 import "./linguagem.css";
 import "./identidade.css";
 import "./agendar.css";
+import "./vitrine.css";
 import { PUBLIC_ORIGIN } from "@/lib/tayssa/config";
 import { SmoothScroll } from "@/components/tayssa/ui/smooth-scroll";
 import { PausaForaDaTela } from "@/components/tayssa/ui/pausa-fora";

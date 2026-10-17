@@ -6,8 +6,9 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { createAppointmentAction } from "@/lib/tayssa/actions/booking";
 import { dateLong, dayLabel, plural, weekdayShort } from "@/lib/tayssa/format";
 import { TyTextarea } from "@/components/tayssa/ui/field";
+import { reais } from "@/lib/tayssa/agendar";
 
-export type BookingService = { id: string; name: string; description: string | null; point_value: number };
+export type BookingService = { id: string; name: string; description: string | null; point_value: number; preco?: number | null };
 export type BookingDay = { iso: string; slots: { time: string; available: boolean }[] };
 
 const STEPS = ["Serviço", "Dia e horário", "Confirmar"];
@@ -44,7 +45,8 @@ export function BookingFlow({
 
   const service = services.find((s) => s.id === serviceId) ?? null;
   const day = days.find((d) => d.iso === date) ?? null;
-  const openDays = useMemo(() => days.filter((d) => d.slots.some((s) => s.available)), [days]);
+  // nada some: dia sem horário livre continua na fita, riscado e sem toque
+  const openDays = useMemo(() => new Set(days.filter((d) => d.slots.some((s) => s.available)).map((d) => d.iso)), [days]);
 
   const pick = (fn: () => void) => {
     setError(null);
@@ -118,7 +120,7 @@ export function BookingFlow({
     );
   }
 
-  if (!services.length || !openDays.length) {
+  if (!services.length || !openDays.size) {
     return (
       <div className="tyv-panel">
         <p className="tyv-empty">
@@ -168,7 +170,10 @@ export function BookingFlow({
                   }
                 >
                   <span>
-                    <span className="tyv-choice__t">{s.name}</span>
+                    <span className="tyv-choice__t">
+                      {s.name}
+                      {s.preco != null ? <span className="tyv-choice__preco">{reais(s.preco)}</span> : null}
+                    </span>
                     {s.description ? <span className="tyv-choice__s">{s.description}</span> : null}
                   </span>
                   <span className="tyv-check" aria-hidden />
@@ -180,11 +185,14 @@ export function BookingFlow({
           {step === 1 ? (
             <div>
               <div className="tyv-days" role="group" aria-label="Escolha o dia">
-                {openDays.map((d) => (
+                {days.map((d) => (
                   <button
                     key={d.iso}
                     type="button"
                     className="tyv-day"
+                    disabled={!openDays.has(d.iso)}
+                    data-lotado={!openDays.has(d.iso) || undefined}
+                    aria-label={`${dayLabel(d.iso)}${openDays.has(d.iso) ? "" : ", sem horário livre"}`}
                     aria-pressed={date === d.iso}
                     onClick={() =>
                       pick(() => {
@@ -212,6 +220,7 @@ export function BookingFlow({
                         type="button"
                         className="tyv-slot"
                         disabled={!s.available}
+                        aria-label={`${s.time}${s.available ? "" : ", indisponível"}`}
                         aria-pressed={time === s.time}
                         onClick={() =>
                           pick(() => {

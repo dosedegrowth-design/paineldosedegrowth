@@ -7,7 +7,7 @@ import { useEffect } from "react";
  * recalculava o estilo de todos os elementos dela de uma vez (um quadro de
  * 200 ms no celular a cada troca). Peça pequena, recálculo pequeno.
  */
-const ALVOS = ".ty-vivo, .ty-faixa, .ty-rolo, .tyf-arranjo, .tyh__palco, .tyh__texto, .tyh__descer";
+const ALVOS = ".ty-vivo, .ty-faixa, .ty-rolo, .tyf-arranjo, .tyh__palco, .tyh__texto, .tyh__descer, .typf__palco, .tynu__palco";
 
 /**
  * Animação contínua só onde o olho está. A home tem perto de 150

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { requireAdminPage } from "@/lib/tayssa/auth/guards";
-import { getAgenda } from "@/lib/tayssa/queries/admin";
+import { getAgenda, getGradeAgenda } from "@/lib/tayssa/queries/admin";
+import { AgendaGrade } from "@/components/tayssa/admin/agenda-grade";
 import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES } from "@/lib/tayssa/config";
 import { dateShort, dayLabel, dayMonth, hhmm, nowInBusinessTz, weekdayShort } from "@/lib/tayssa/format";
@@ -177,7 +178,7 @@ function CloseActions({ a }: { a: AppointmentWithClient }) {
 
 export default async function AgendaAdminPage() {
   await requireAdminPage();
-  const [agenda, settings] = await Promise.all([getAgenda(), getSettings()]);
+  const [agenda, settings, grade] = await Promise.all([getAgenda(), getSettings(), getGradeAgenda()]);
   const b = settings.booking;
   const todayISO = agenda.today;
   const now = nowInBusinessTz();
@@ -204,7 +205,7 @@ export default async function AgendaAdminPage() {
             </>
           )
         }
-        lead="A cliente pede o horário pelo app; ele só vale depois que você confirma. Ao marcar como realizado, a visita entra confirmada, com pontos e carimbo."
+        lead="A semana como no Google Agenda: toque num horário para abrir ou fechar. A cliente pede o horário pelo app; ele só vale depois que você confirma. Ao marcar como realizado, a visita entra confirmada, com pontos e carimbo."
         actions={
           <TransitionLink href={`${ROUTES.adminSettings}#agenda`} className="tya-btn tya-btn--ghost">
             <Icone nome="config" />
@@ -224,6 +225,10 @@ export default async function AgendaAdminPage() {
         />
         <Atalho n={agenda.upcoming.length} label="Próximos" href="#proximos" />
       </div>
+
+      <AdminBlock id="semana" title="Semana">
+        <AgendaGrade grade={grade} />
+      </AdminBlock>
 
       <AdminBlock
         id="pedidos"

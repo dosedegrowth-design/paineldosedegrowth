@@ -20,6 +20,8 @@ export type PedidoAgenda = {
   /** "HH:MM" */
   hora: string;
   nome: string;
+  /** valor do serviço/produto, quando a Tayssa cadastrou */
+  valor?: number | null;
   /** valor do sinal, em reais */
   sinal: number;
 };
@@ -54,9 +56,11 @@ export function partesDoDia(iso: string) {
   return { semana: DIAS_CURTOS[d.getDay()], numero: String(d.getDate()), mes: MESES_CURTOS[d.getMonth()] };
 }
 
-/** "R$ 50" (sem centavos quando é redondo) */
+/** "R$ 50", "R$ 1.200", "R$ 37,50" (sem centavos quando é redondo) */
 export function reais(v: number): string {
-  return Number.isInteger(v) ? `R$ ${v}` : `R$ ${v.toFixed(2).replace(".", ",")}`;
+  const [int, dec] = v.toFixed(2).split(".");
+  const milhar = int.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return dec === "00" ? `R$ ${milhar}` : `R$ ${milhar},${dec}`;
 }
 
 /** Só os dias com pelo menos um horário livre. */
@@ -74,6 +78,7 @@ export function mensagemAgendamento(p: PedidoAgenda): string {
     `Serviço: ${servico}`,
     `Dia: ${diaLegivel(p.dia)}`,
     `Horário: ${horaLegivel(p.hora)}`,
+    ...(p.valor != null ? [`Valor: ${reais(p.valor)}`] : []),
     ...(nome ? [`Nome: ${nome}`] : []),
     "",
     `Pode me mandar a chave Pix do sinal de ${reais(p.sinal)} para eu garantir o horário?`,

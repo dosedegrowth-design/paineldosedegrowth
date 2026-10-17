@@ -29,11 +29,15 @@ cada item. Atualizar a cada rodada. Ordem: o que o cliente sente primeiro.
 | Fundo vivo (luzes vinho/rosé/ouro, grade, chão em perspectiva, bordas em ameixa) | feito — otimizado (animação só onde o olho está, chão por transform, grão sem mistura) |
 | Fotos com pouca luz como fundo nas seções vinho | feito |
 | Rolos de foto/vídeo por produto (catálogo), alimentados pelo painel | feito |
-| Vídeos do Instagram tocando no site com "Ver no Instagram" | estrutura pronta, faltam os vídeos |
+| Abertura com foto quadrada (o arco saiu) | feito |
+| Portfólio em celulares com a cara do Instagram (Reel para vídeo, publicação para foto), flutuando soltos embaixo do "O trabalho sai do estúdio…", nunca em fileira; tocar abre o trabalho dentro do site e de lá "Ver no Instagram" vai ao post | feito — alimentado pela Mídia do painel; link de cada post em Mídia → No site (sem link, vai ao perfil) |
+| Quadro de números animado (números subindo, celular com o Insights, selos flutuando) | feito — só aparece com os números reais que a Tayssa escrever em Configurações → Números do site |
+| Valores dos serviços e dos produtos no site e na mensagem do WhatsApp | feito (Configurações → Serviços e Mídia → valor de cada produto) |
+| Agenda que nunca some horário: o que está fechado ou ocupado aparece riscado (site e VIP) | feito |
 | Branco que conversa com o vinho (luz rosé/ouro, sombra vinho) | feito |
 | Agendar → folha de agendamento: serviço (volume/técnica ou manutenção), dia, horário livre, nome → WhatsApp com a mensagem pronta pedindo o Pix do sinal (R$ 50, editável em Configurações → Agenda) | feito |
 | Cada seção com fundo de cor diferente da paleta, a seguinte sobe como folha de cantos redondos | feito |
-| Fluidez nível iWin (sem travar, rápido) | muito melhor, ainda abaixo da iWin na rolagem pesada (ver números em CLAUDE.md) |
+| Fluidez nível iWin (sem travar, rápido) | muito melhor, ainda abaixo da iWin na rolagem pesada (ver números em CLAUDE.md). Computador: o desfoque das luzes do fundo vivo (só no desktop) e filtros esquecidos pela animação de entrada saíram — o dobro de quadros parado |
 | Encaixe perfeito no celular (sem zoom em campo, sem pulo de fonte, sem rolagem lateral 320–414) | feito |
 | Tipografia menos massiva, sem frases encavaladas | feito |
 | "Clube" → "VIP" | feito |
@@ -55,12 +59,16 @@ cada item. Atualizar a cada rodada. Ordem: o que o cliente sente primeiro.
 |---|---|
 | Linguagem do painel operacional da iWin | feito |
 | Celular: gaveta + pílula de atalhos flutuando no alto, ícones nível Apple | feito |
-| Mídia: galeria no original (lote, baixar), publicar com categoria, produto e enquadramento | feito (falta migration no Supabase) |
+| Mídia: galeria no original (lote, baixar), publicar com categoria, produto e enquadramento | feito |
+| Agenda no desenho do Google Agenda: semana em colunas, horário livre fecha/abre com um toque, dia inteiro de uma vez | feito (`vip.agenda_bloqueios`) |
+| Valor no serviço novo e no produto | feito |
+| Aprovação de cadastro limpa: um cartão centrado (recado, contato, interruptor VIP, aprovar/recusar) | feito |
+| Números do site editáveis | feito |
 
 ## Endereço e infraestrutura
 
 - Por enquanto em `painel.dosedegrowth.com/tayssa`.
-- Supabase parado por ora (migration `20261017000000_vip_media_catalog.sql` pendente).
+- Migrations do Tayssa aplicadas no Supabase até `20261018020000_vip_portfolio.sql` (galeria, agenda, valores, link do post).
 - Prévia pública: link de compartilhamento da branch (sem prazo).
 
 ## Materiais pendentes (cliente)

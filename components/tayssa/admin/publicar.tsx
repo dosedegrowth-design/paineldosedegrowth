@@ -33,6 +33,7 @@ export function Publicar({
   const [novo, setNovo] = useState(!!item.lash_style && !lista.includes(item.lash_style) ? true : lista.length === 0);
   const [confirmouNovo, setConfirmouNovo] = useState(false);
   const [legenda, setLegenda] = useState(item.caption ?? "");
+  const [preco, setPreco] = useState("");
   const [destaque, setDestaque] = useState(item.featured);
   const [quadro, setQuadro] = useState<Quadro>({
     x: Number(item.focus_x ?? 50),
@@ -77,7 +78,7 @@ export function Publicar({
       };
       const r = noAr
         ? await adminUpdatePhotoAction({ ...dados, alt: item.alt, sort_order: item.sort_order })
-        : await adminPublishMediaAction(dados);
+        : await adminPublishMediaAction({ ...dados, preco: novo && !existenteIgual ? preco : undefined });
       if (!r.ok) return setErro(r.error);
       dialogo.current?.close();
       onFechar();
@@ -203,6 +204,19 @@ export function Publicar({
                       </button>
                     </span>
                   </div>
+                ) : null}
+                {!noAr && !existenteIgual ? (
+                  <label className="tya-field-wrap" style={{ marginTop: 10 }}>
+                    <span className="tya-label">Valor do produto (opcional)</span>
+                    <input
+                      className="tya-field"
+                      inputMode="decimal"
+                      placeholder="ex.: 180 — vazio, o site não mostra valor"
+                      value={preco}
+                      maxLength={12}
+                      onChange={(e) => setPreco(e.target.value)}
+                    />
+                  </label>
                 ) : null}
               </div>
             ) : null}

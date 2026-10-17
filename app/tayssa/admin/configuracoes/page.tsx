@@ -13,6 +13,7 @@ import {
   BusinessForm,
   CatalogServiceForm,
   LoyaltyForm,
+  NumerosForm,
   RulesForm,
   SignupForm,
   WhatsappForm,
@@ -40,6 +41,7 @@ const INDICE: { href: string; label: string }[] = [
   { href: "#restricoes", label: "Restrições" },
   { href: "#cadastro", label: "Cadastro" },
   { href: "#mensagens", label: "Mensagens" },
+  { href: "#numeros", label: "Números" },
   { href: "#regras", label: "Regras" },
   { href: "#negocio", label: "Negócio" },
 ];
@@ -263,6 +265,19 @@ export default async function SettingsAdminPage() {
         efeito="O texto que já vem escrito quando alguém abre a conversa por um botão do site, do espaço da cliente ou daqui do painel."
       >
         <WhatsappForm value={settings.whatsapp} />
+      </Bloco>
+
+      <Bloco
+        id="numeros"
+        titulo="Números do site"
+        selo={
+          <span className={`tya-pill ${settings.numeros.itens.length ? "tya-pill--ok" : "tya-pill--quiet"}`}>
+            {settings.numeros.itens.length ? `${settings.numeros.itens.length} no site` : "fora do site"}
+          </span>
+        }
+        efeito="O quadro do site com números que sobem na tela e o celular do Insights. Só aparece o que você escrever aqui — sem números, o quadro não entra no site."
+      >
+        <NumerosForm value={settings.numeros} />
       </Bloco>
 
       {/* ---------------- a casa ---------------- */}

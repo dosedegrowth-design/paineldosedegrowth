@@ -216,11 +216,27 @@ export const customBenefitSchema = z.object({
   validity_days: benefitDecisionSchema.shape.validity_days,
 });
 
+/** "180", "180,00", "R$ 1.200,50" → número; vazio → null (não mostra) */
+export const precoField = z
+  .string()
+  .trim()
+  .transform((v, ctx) => {
+    const limpo = v.replace(/r\$|\s/gi, "");
+    if (!limpo) return null;
+    const n = Number(limpo.includes(",") ? limpo.replace(/\./g, "").replace(",", ".") : limpo);
+    if (!Number.isFinite(n) || n < 0 || n > 100000) {
+      ctx.addIssue({ code: "custom", message: "Valor inválido — use só números, ex.: 180 ou 180,50" });
+      return z.NEVER;
+    }
+    return Math.round(n * 100) / 100;
+  });
+
 export const catalogServiceSchema = z.object({
   id: z.string().uuid().optional(),
   name: trimmed(80),
   description: z.string().trim().max(300).optional().transform((v) => v || null),
   point_value: z.coerce.number().int().min(0).max(10000),
+  preco: precoField,
   active: z.boolean(),
   sort_order: z.coerce.number().int().min(0).max(999).optional(),
 });
@@ -306,6 +322,27 @@ export const loyaltySettingsSchema = z.object({
 export const signupSettingsSchema = z.object({
   open: z.boolean(),
   welcome_template: z.string().trim().min(1).max(400),
+});
+
+const numeroSiteSchema = z.object({
+  valor: z.string().trim().max(14),
+  rotulo: z.string().trim().max(32),
+  detalhe: z.string().trim().max(60),
+});
+
+/** Quadro de números do site: linha sem número E rótulo é descartada. */
+export const numerosSettingsSchema = z.object({
+  periodo: z.string().trim().max(40),
+  fonte: z.string().trim().max(40),
+  itens: z
+    .array(numeroSiteSchema)
+    .max(6)
+    .transform((l) => l.filter((n) => n.valor || n.rotulo))
+    .refine((l) => l.every((n) => n.valor && n.rotulo), "Cada número precisa do valor e do rótulo.")
+    .refine((l) => l.every((n) => /\d/.test(n.valor)), "O valor precisa ter número (ex.: 2,16 mi · +5 mil · 98%)."),
+  nao_seguidores: z
+    .union([z.literal(""), z.coerce.number().min(0, "Entre 0 e 100.").max(100, "Entre 0 e 100.")])
+    .transform((v) => (v === "" ? null : v)),
 });
 
 /** Primeiro erro de um ZodError em linguagem humana. */

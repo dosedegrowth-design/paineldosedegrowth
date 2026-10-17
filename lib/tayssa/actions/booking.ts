@@ -9,6 +9,7 @@ import { ROUTES } from "@/lib/tayssa/config";
 import { getSettings } from "@/lib/tayssa/settings";
 import { bookableDays, slotIsBookable, toISODate } from "@/lib/tayssa/rules";
 import { isoDateField } from "@/lib/tayssa/validation";
+import { horariosFechados } from "@/lib/tayssa/queries/vip";
 import { nowInBusinessTz } from "@/lib/tayssa/format";
 import { BusinessError, runAction } from "@/lib/tayssa/actions/_helpers";
 import type { ActionResult, AppointmentRow, ServiceRow } from "@/lib/tayssa/types";
@@ -86,6 +87,9 @@ export async function createAppointmentAction(input: {
       .limit(1);
     if (taken && taken.length) {
       throw new BusinessError("Esse horário acabou de ser reservado. Escolha outro.", "time");
+    }
+    if ((await horariosFechados(parsed.date, parsed.date)).has(`${parsed.date}T${parsed.time}`)) {
+      throw new BusinessError("Esse horário não está disponível. Escolha outro.", "time");
     }
 
     const { data: created, error } = await db

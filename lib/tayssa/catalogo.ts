@@ -41,7 +41,12 @@ export type MidiaCatalogo = {
   /** enquadramento escolhido ao publicar: centro (%) e zoom */
   foco: { x: number; y: number; zoom: number };
 };
-export type ProdutoCatalogo = { nome: string; itens: MidiaCatalogo[] };
+export type ProdutoCatalogo = {
+  nome: string;
+  itens: MidiaCatalogo[];
+  /** valor que a Tayssa deu ao produto (vazio = não mostra) */
+  preco?: number | null;
+};
 export type CategoriaCatalogo = {
   slug: CategoriaMidia;
   label: string;
@@ -149,4 +154,17 @@ export function estiloFoco(f: { x: number; y: number; zoom: number }): CSSProper
     transform: f.zoom > 1 ? `scale(${f.zoom})` : undefined,
     transformOrigin: `${f.x}% ${f.y}%`,
   };
+}
+
+/** Chave do valor de um produto: categoria + nome normalizado (igual ao agrupamento). */
+export function chavePreco(categoria: string, nome: string): string {
+  return `${categoria}:${chave(nome)}`;
+}
+
+/** Põe em cada produto do catálogo o valor que a Tayssa cadastrou. */
+export function comPrecos(catalogo: CategoriaCatalogo[], precos: Record<string, number>): CategoriaCatalogo[] {
+  return catalogo.map((c) => ({
+    ...c,
+    produtos: c.produtos.map((p) => ({ ...p, preco: precos[chavePreco(c.slug, p.nome)] ?? null })),
+  }));
 }

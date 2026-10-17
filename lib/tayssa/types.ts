@@ -66,6 +66,8 @@ export type ServiceRow = {
   point_value: number;
   active: boolean;
   sort_order: number;
+  /** valor que a Tayssa quer mostrar (vazio = não mostra) */
+  preco?: number | null;
 };
 
 export type ClientServiceRow = {
@@ -202,6 +204,8 @@ export type PhotoRow = {
   status: "gallery" | "active" | "archived";
   featured: boolean;
   sort_order: number;
+  /** a publicação dela no Instagram (portfólio do site); vazio = vai ao perfil */
+  instagram_url?: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;

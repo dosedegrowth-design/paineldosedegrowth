@@ -87,11 +87,32 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
   const vip = profile?.vip_status ?? "none";
   const canReleaseBirthday = vip === "active" && profile?.birthday && !d.thisYearBirthday;
   // a faixa só vale se contar tudo o que espera decisão sua nesta ficha
-  const pedidoDeAcesso = user.status === "pending" ? 1 : 0;
   const beneficiosPedidos = d.benefits.filter((b) => b.status === "requested").length;
   const esperando =
-    pedidoDeAcesso + d.summary.pendingServices + d.summary.benefitsPendingValidation + beneficiosPedidos;
+    d.summary.pendingServices + d.summary.benefitsPendingValidation + beneficiosPedidos;
   const revisadoAgora = user.signup_source === "self" && user.status !== "pending" && isWithinHours(user.reviewed_at, 48);
+
+  // pedido de acesso: ainda não há ficha para mostrar — só a decisão, num cartão centrado
+  if (user.status === "pending") {
+    return (
+      <div className="tya-pedido-pagina tya-up">
+        <TransitionLink href={ROUTES.adminClients} className="tya-pedido-pagina__voltar">
+          <svg viewBox="0 0 24 24" aria-hidden>
+            <path d="M14.5 6 8.5 12l6 6" />
+          </svg>
+          Clientes
+        </TransitionLink>
+        <SignupReviewPanel
+          id={user.id}
+          name={user.name}
+          email={user.email}
+          phone={user.phone}
+          message={user.signup_message}
+          requestedAt={user.requested_at}
+        />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -176,26 +197,6 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
           </dd>
         </dl>
       </AdminBlock>
-
-      {/* ---------- o que espera decisão ---------- */}
-      {user.status === "pending" ? (
-        <section className="tya-sec tya-up">
-          <div className="tya-card tya-card--wait">
-            <div className="tya-head">
-              <h2>Pedido de acesso</h2>
-              <Selo tom="tya-pill--warn">Espera você</Selo>
-            </div>
-            <SignupReviewPanel
-              id={user.id}
-              name={user.name}
-              email={user.email}
-              phone={user.phone}
-              message={user.signup_message}
-              requestedAt={user.requested_at}
-            />
-          </div>
-        </section>
-      ) : null}
 
       {revisadoAgora ? (
         <AdminBlock

@@ -58,7 +58,7 @@ const FLORES: FlorPalco[] = [
 /**
  * Abertura, na linguagem do site da iWin: fundo vinho vivo, o nome dela
  * entrando letra a letra no centro, com letra de volume, os dois caminhos em cápsula — e embaixo a
- * janela em arco flutuando em 3D, que segue o mouse (no celular, o
+ * janela quadrada flutuando em 3D, que segue o mouse (no celular, o
  * scroll), com as flores da casa em volta em profundidades diferentes.
  */
 export function Hero({
@@ -124,7 +124,8 @@ export function Hero({
         key={`${l}-${i}`}
         className="tyh__letra"
         initial={reduced ? false : { opacity: 0, y: "0.45em", rotateX: -70, filter: "blur(14px)" }}
-        animate={entra ? { opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)" } : undefined}
+        // no fim, o filtro sai de vez: blur(0px) parado ainda é um efeito refeito a cada quadro
+        animate={entra ? { opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } } : undefined}
         transition={{ duration: 1.1, delay: base + i * 0.055, ease: EASE }}
       >
         {l}
@@ -189,7 +190,7 @@ export function Hero({
         <motion.p
           className="tyh__oficio"
           initial={reduced ? false : { opacity: 0, y: 12, filter: "blur(6px)" }}
-          animate={entra ? { opacity: 1, y: 0, filter: "blur(0px)" } : undefined}
+          animate={entra ? { opacity: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } } : undefined}
           transition={{ duration: 0.9, delay: 0.15 + (primeira.length + (segunda?.length ?? 0)) * 0.055 + 0.2, ease: EASE }}
         >
           {business.specialty}

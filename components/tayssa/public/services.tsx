@@ -14,6 +14,7 @@ import { Magnetic } from "@/components/tayssa/ui/magnetic";
 import type { ServicoDetalhe } from "@/lib/tayssa/content";
 import { Pendente } from "@/components/tayssa/ui/estrutura";
 import { LinkAgendar } from "@/components/tayssa/public/agendar";
+import { reais } from "@/lib/tayssa/agendar";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -175,7 +176,10 @@ export function Services({
                     <i>{n}</i>
                     <i>{n}</i>
                   </span>
-                  <h3 className="tysv__nome">{nomeComEnfase(s.name)}</h3>
+                  <h3 className="tysv__nome">
+                    {nomeComEnfase(s.name)}
+                    {s.preco != null ? <span className="tysv__preco">{reais(Number(s.preco))}</span> : null}
+                  </h3>
                   {s.description || detalhes[s.slug] ? (
                     <div className="tysv__dizer">
                       {s.description ? <p className="ty-body ty-measure--tight">{s.description}</p> : null}

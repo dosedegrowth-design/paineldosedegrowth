@@ -3,10 +3,16 @@
 import Image from "next/image";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { adminArchivePhotoAction, adminDeletePhotoAction, adminUpdatePhotoAction } from "@/lib/tayssa/actions/photos";
+import {
+  adminArchivePhotoAction,
+  adminDeletePhotoAction,
+  adminSalvarLinkInstagramAction,
+  adminSalvarPrecoProdutoAction,
+  adminUpdatePhotoAction,
+} from "@/lib/tayssa/actions/photos";
 import type { PhotoRow } from "@/lib/tayssa/types";
 import { dateShort } from "@/lib/tayssa/format";
-import { CATEGORIAS, chave } from "@/lib/tayssa/catalogo";
+import { CATEGORIAS, chave, chavePreco } from "@/lib/tayssa/catalogo";
 import { Icone } from "@/components/tayssa/admin/icons";
 import { estiloQuadro } from "@/components/tayssa/admin/enquadrar";
 import { Publicar, type ProdutosPorCategoria } from "@/components/tayssa/admin/publicar";
@@ -32,11 +38,14 @@ export function PhotoLibrary({
   produtos,
   places,
   aba,
+  precos = {},
 }: {
   photos: PhotoRow[];
   produtos: ProdutosPorCategoria;
   places?: Record<string, string[]>;
   aba: "galeria" | "site";
+  /** valor de cada produto, pela chave de `chavePreco()` */
+  precos?: Record<string, number>;
 }) {
   const [editando, setEditando] = useState<PhotoRow | null>(null);
   const galeria = photos.filter((p) => p.status !== "active");
@@ -47,7 +56,7 @@ export function PhotoLibrary({
       {aba === "galeria" ? (
         <Galeria itens={galeria} onPublicar={setEditando} />
       ) : (
-        <NoSite itens={noAr} places={places} onAjustar={setEditando} />
+        <NoSite itens={noAr} places={places} onAjustar={setEditando} precos={precos} />
       )}
       {editando ? <Publicar key={editando.id} item={editando} produtos={produtos} onFechar={() => setEditando(null)} /> : null}
     </>
@@ -107,14 +116,16 @@ function NoSite({
   itens,
   places,
   onAjustar,
+  precos,
 }: {
   itens: PhotoRow[];
   places?: Record<string, string[]>;
   onAjustar: (p: PhotoRow) => void;
+  precos: Record<string, number>;
 }) {
   // um bloco por rolo: categoria › produto, do jeito que o site agrupa
   const rolos = useMemo(() => {
-    const out: { cat: string; produto: string; itens: PhotoRow[] }[] = [];
+    const out: { slug: string; cat: string; produto: string; itens: PhotoRow[] }[] = [];
     for (const c of CATEGORIAS) {
       const daCat = itens.filter((p) => (p.category ?? "cilios") === c.slug);
       const grupos = new Map<string, PhotoRow[]>();
@@ -124,7 +135,7 @@ function NoSite({
       }
       for (const g of grupos.values()) {
         g.sort((a, b) => Number(b.featured) - Number(a.featured));
-        out.push({ cat: c.label, produto: g[0].lash_style, itens: g });
+        out.push({ slug: c.slug, cat: c.label, produto: g[0].lash_style, itens: g });
       }
     }
     return out;
@@ -147,8 +158,11 @@ function NoSite({
             <h3>
               <span>{r.cat} ›</span> {r.produto}
             </h3>
-            <span className="tya-pill tya-pill--brand">
-              {r.itens.length} {r.itens.length === 1 ? "item" : "itens"} no rolo
+            <span className="tya-rolo-admin__lado">
+              <PrecoProduto categoria={r.slug} nome={r.produto} preco={precos[chavePreco(r.slug, r.produto)]} />
+              <span className="tya-pill tya-pill--brand">
+                {r.itens.length} {r.itens.length === 1 ? "item" : "itens"} no rolo
+              </span>
             </span>
           </header>
           <div className="tya-galeria tya-galeria--densa">
@@ -251,6 +265,8 @@ function Cartao({
         </div>
       ) : null}
 
+      {live ? <LinkInstagram id={photo.id} url={photo.instagram_url ?? ""} /> : null}
+
       <div className="tya-foto__acts">
         <button type="button" className="tya-btn tya-btn--sm tya-btn--primary" onClick={onPrincipal} disabled={pending}>
           {principal}
@@ -310,5 +326,106 @@ function Cartao({
         </p>
       ) : null}
     </article>
+  );
+}
+
+/**
+ * O post desta mídia no Instagram: no portfólio do site, "Ver no
+ * Instagram" abre ele. Vazio = o botão leva ao perfil.
+ */
+function LinkInstagram({ id, url }: { id: string; url: string }) {
+  const [valor, setValor] = useState(url);
+  const [salvo, setSalvo] = useState(url);
+  const [erro, setErro] = useState<string | null>(null);
+  const [pending, start] = useTransition();
+  const mudou = valor.trim() !== salvo;
+  return (
+    <form
+      className="tya-preco tya-foto__ig"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!mudou || pending) return;
+        start(async () => {
+          setErro(null);
+          const r = await adminSalvarLinkInstagramAction({ id, url: valor });
+          if (!r.ok) return setErro(r.error);
+          setSalvo(valor.trim());
+        });
+      }}
+    >
+      <label>
+        <span>Post</span>
+        <input
+          type="url"
+          inputMode="url"
+          value={valor}
+          placeholder="cole o link do post"
+          aria-label="Link do post no Instagram"
+          maxLength={300}
+          onChange={(e) => setValor(e.target.value)}
+        />
+      </label>
+      {mudou ? (
+        <button type="submit" className="tya-btn tya-btn--sm tya-btn--primary" disabled={pending}>
+          {pending ? "Salvando…" : "Salvar"}
+        </button>
+      ) : null}
+      {erro ? (
+        <span className="tya-err" role="alert">
+          {erro}
+        </span>
+      ) : null}
+    </form>
+  );
+}
+
+/**
+ * O valor do produto, no cabeçalho do rolo: escreve e salva. Vazio = o
+ * site não mostra valor para esse produto.
+ */
+function PrecoProduto({ categoria, nome, preco }: { categoria: string; nome: string; preco?: number }) {
+  const inicial = preco != null ? String(preco).replace(".", ",") : "";
+  const [valor, setValor] = useState(inicial);
+  const [salvo, setSalvo] = useState(inicial);
+  const [erro, setErro] = useState<string | null>(null);
+  const [pending, start] = useTransition();
+  const mudou = valor.trim() !== salvo;
+  const salvar = () =>
+    start(async () => {
+      setErro(null);
+      const r = await adminSalvarPrecoProdutoAction({ categoria, nome, preco: valor });
+      if (!r.ok) return setErro(r.error);
+      setSalvo(valor.trim());
+    });
+  return (
+    <form
+      className="tya-preco"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (mudou && !pending) salvar();
+      }}
+    >
+      <label>
+        <span>R$</span>
+        <input
+          inputMode="decimal"
+          value={valor}
+          placeholder="valor"
+          aria-label={`Valor de ${nome}`}
+          maxLength={12}
+          onChange={(e) => setValor(e.target.value)}
+        />
+      </label>
+      {mudou ? (
+        <button type="submit" className="tya-btn tya-btn--sm tya-btn--primary" disabled={pending}>
+          {pending ? "Salvando…" : "Salvar"}
+        </button>
+      ) : null}
+      {erro ? (
+        <span className="tya-err" role="alert">
+          {erro}
+        </span>
+      ) : null}
+    </form>
   );
 }

@@ -1,0 +1,913 @@
+/* ============================================================
+   VITRINE — o portfólio em celulares (seção do Instagram) e o
+   quadro de números. Os celulares flutuam soltos embaixo do cartaz:
+   alturas, tamanhos e giros diferentes, cada um correndo no scroll na
+   sua profundidade — nunca uma fileira.
+   ============================================================ */
+
+/* ---------- a seção do Instagram com portfólio ---------- */
+.tyco--portfolio {
+  display: block;
+  /* o place-items: center da colagem antiga também vale em bloco nos
+     navegadores novos: encolhia o cartaz e o palco para o tamanho do conteúdo */
+  place-items: normal;
+  min-height: 0;
+  padding: clamp(96px, 11vw, 160px) var(--t-gutter) clamp(72px, 8vw, 120px);
+}
+.tyco--portfolio .tyco__cabeca {
+  position: relative;
+  padding-block: clamp(8px, 2vw, 32px);
+}
+.tyco--portfolio .tyco__centro {
+  margin-inline: auto;
+}
+.tyco--portfolio .tyco__chamada {
+  font-size: clamp(44px, 5.6vw, 96px);
+}
+
+.typf {
+  position: relative;
+  z-index: 1;
+  margin-top: clamp(28px, 4vw, 56px);
+}
+.typf__palco {
+  position: relative;
+  height: clamp(580px, 50vw, 740px);
+  max-width: 1280px;
+  margin-inline: auto;
+}
+.typf__lugar {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  translate: -50% -50%;
+  rotate: var(--r);
+  will-change: transform;
+}
+.typf__giro {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.typf__giro:focus-visible {
+  outline: none;
+}
+.typf__giro:focus-visible .typf__aparelho {
+  box-shadow:
+    0 0 0 3px #fff,
+    0 0 0 6px #b2365f,
+    0 40px 80px -36px rgba(60, 8, 26, 0.6);
+}
+/* a flutuação de cada um, no seu tempo — só enquanto aparece */
+.typf__flutua {
+  display: block;
+  animation: typf-flutua var(--t, 6s) ease-in-out infinite alternate;
+  animation-play-state: paused;
+}
+.typf__giro[data-vivo] .typf__flutua {
+  animation-play-state: running;
+}
+@keyframes typf-flutua {
+  from {
+    translate: 0 -7px;
+  }
+  to {
+    translate: 0 9px;
+  }
+}
+
+/* o aparelho: corpo vinho-noite com fio rosé, ilha dinâmica */
+.typf__aparelho {
+  position: relative;
+  display: block;
+  padding: 7px;
+  border-radius: 38px;
+  background: linear-gradient(160deg, #3a1322 0%, #14050b 45%, #250a15 100%);
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255, 210, 225, 0.22),
+    inset 0 0 0 4px rgba(10, 2, 6, 0.9),
+    0 44px 80px -38px rgba(60, 8, 26, 0.7),
+    0 18px 30px -18px rgba(109, 21, 48, 0.35);
+}
+.typf__aparelho::after {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  translate: -50% 0;
+  width: 31%;
+  height: 12px;
+  border-radius: 999px;
+  background: #0b0206;
+  z-index: 4;
+}
+.typf__tela {
+  position: relative;
+  display: block;
+  aspect-ratio: 9 / 19.5;
+  border-radius: 31px;
+  overflow: hidden;
+  /* o <video> vira camada própria e escapa do overflow+raio no Chromium:
+     o recorte vai no clip-path */
+  clip-path: inset(0 round 31px);
+  background: #000;
+  isolation: isolate;
+}
+
+/* ---------- Reel (vídeo) ---------- */
+.typf__reel,
+.typf__post {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+.typf__midia {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.typf__veu {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, transparent 18%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.3) 26%, transparent 46%);
+}
+.typf__ico {
+  width: 1.15em;
+  height: 1.15em;
+  flex: none;
+}
+.typf__reel-topo {
+  position: absolute;
+  inset: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 36px 13px 0;
+  color: #fff;
+  font-size: 15px;
+}
+.typf__reel-topo b {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.typf__reel-acoes {
+  position: absolute;
+  right: 9px;
+  bottom: 64px;
+  display: grid;
+  gap: 13px;
+  justify-items: center;
+  color: #fff;
+  font-size: 18px;
+}
+.typf__reel-acoes .typf__ico:nth-child(2) {
+  scale: -1 1;
+}
+.typf__reel-base {
+  position: absolute;
+  inset: auto 0 0;
+  display: grid;
+  gap: 5px;
+  padding: 0 40px 15px 12px;
+  color: #fff;
+  text-align: left;
+}
+.typf__autor {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  min-width: 0;
+}
+.typf__autor b {
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.typf__autor i {
+  flex: none;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 9.5px;
+  padding: 2px 7px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 6px;
+}
+.typf__legenda {
+  font-size: 10.5px;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.92);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.typf__audio {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9.5px;
+  color: rgba(255, 255, 255, 0.8);
+}
+.typf__barra {
+  position: absolute;
+  inset: auto 0 0;
+  height: 2.5px;
+  background: rgba(255, 255, 255, 0.22);
+}
+.typf__barra i {
+  display: block;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  transform-origin: left;
+  transform: scaleX(0.04);
+}
+/* a barra corre só no vídeo que está tocando */
+[data-tocar] .typf__barra i {
+  animation: typf-barra 9s linear infinite;
+}
+@keyframes typf-barra {
+  from {
+    transform: scaleX(0.04);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+/* o "play" some quando o vídeo toca */
+.typf__play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46px;
+  height: 46px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: rgba(20, 4, 10, 0.32);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+  transition: opacity 0.4s, scale 0.4s;
+}
+.typf__play::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  clip-path: polygon(41% 32%, 41% 68%, 69% 50%);
+}
+[data-tocar] .typf__play {
+  opacity: 0;
+  scale: 0.7;
+}
+
+/* o avatar: a inicial no vinho, com o anel de story */
+.typf__avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 1.5px;
+  border-radius: 50%;
+  background: conic-gradient(from 210deg, #f5c16c, #e86a8f, #b2365f, #f5c16c);
+}
+.typf__avatar span {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(150deg, #8e2a4b, #3a0a1b);
+  box-shadow: 0 0 0 1.5px #fff;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* ---------- Publicação (foto) ---------- */
+.typf__post {
+  background: #fff;
+  color: #111;
+  padding-top: 30px;
+  font-size: 10.5px;
+}
+.typf__post-barra {
+  display: grid;
+  grid-template-columns: 20px 1fr 20px;
+  align-items: center;
+  padding: 6px 10px 8px;
+  font-size: 15px;
+}
+.typf__post-barra b {
+  font-size: 12.5px;
+  font-weight: 700;
+  text-align: center;
+}
+.typf__post-cabeca {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 10px;
+  font-size: 15px;
+}
+.typf__post-cabeca b {
+  flex: 1;
+  min-width: 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.typf__post-foto {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: #f3e6ea;
+}
+.typf__post-acoes {
+  display: grid;
+  grid-template-columns: auto auto auto 1fr auto;
+  gap: 11px;
+  align-items: center;
+  padding: 9px 10px 4px;
+  font-size: 17px;
+}
+.typf__post-acoes .typf__ico:nth-child(2) {
+  scale: -1 1;
+}
+.typf__post-texto {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  padding: 2px 10px 0;
+  line-height: 1.35;
+  text-align: left;
+}
+.typf__post-texto b {
+  font-weight: 700;
+}
+
+/* ---------- rodapé do palco ---------- */
+.typf__rodape {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px 16px;
+  margin-top: clamp(8px, 1.5vw, 20px);
+  font-size: 13px;
+  color: var(--t-mauve);
+}
+.ty-scope .typf__todos {
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(109, 21, 48, 0.18);
+  background: rgba(255, 255, 255, 0.6);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #5a0f28;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.ty-scope .typf__todos:hover {
+  background: #fff;
+}
+/* no computador todos os celulares aparecem: o botão só existe se sobra trabalho */
+@media (min-width: 900px) {
+  .typf__palco[data-quantos="5"] ~ .typf__rodape .typf__todos:not([data-escondidos]) {
+    display: none;
+  }
+}
+
+@media (max-width: 899px) {
+  .typf__palco {
+    height: 212vw;
+    max-height: 1020px;
+  }
+  /* no celular a colagem é só de celulares: as flores ficavam por cima do título */
+  .tyco--portfolio .tyco__pecas {
+    display: none;
+  }
+  .typf__lugar {
+    left: var(--mx);
+    top: var(--my);
+    width: var(--mw);
+    rotate: var(--mr);
+  }
+  .typf__lugar[data-celular="nao"] {
+    display: none;
+  }
+  .typf__aparelho {
+    border-radius: 32px;
+    padding: 6px;
+  }
+  .typf__tela {
+    border-radius: 26px;
+    clip-path: inset(0 round 26px);
+  }
+  .typf__aparelho::after {
+    top: 12px;
+    height: 10px;
+  }
+  .typf__reel-topo {
+    padding-top: 30px;
+  }
+}
+
+/* ---------- o visor do portfólio ---------- */
+.typf-visor .ty-visor__fig {
+  gap: 16px;
+}
+.typf-visor__midia {
+  height: min(70svh, 780px);
+  aspect-ratio: var(--proporcao, 9 / 16);
+  max-width: calc(100vw - var(--t-gutter) * 2);
+}
+.typf-visor__midia[data-tipo="foto"] {
+  aspect-ratio: var(--proporcao, 4 / 5);
+}
+.typf-visor__midia video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #0d0307;
+}
+.ty-scope .typf-visor__rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  width: min(100%, 520px);
+  text-align: left;
+}
+.typf-visor__quem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.typf-visor__quem .typf__avatar {
+  width: 36px;
+  height: 36px;
+  padding: 2px;
+}
+.typf-visor__quem .typf__avatar span {
+  font-size: 15px;
+  box-shadow: 0 0 0 2px #1a0610;
+}
+.typf-visor__quem > span {
+  display: grid;
+  min-width: 0;
+}
+.ty-scope .typf-visor__quem b {
+  font-size: 14px;
+  color: #fff;
+}
+.typf-visor__quem > span > span {
+  font-size: 13px;
+  color: rgba(251, 227, 235, 0.72);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.typf-visor__acoes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+.ty-scope .typf-visor__som {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 214, 228, 0.22);
+  background: rgba(255, 236, 242, 0.1);
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+}
+.ty-scope a.typf-visor__ig {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 18px 0 14px;
+  border-radius: 999px;
+  background: linear-gradient(100deg, #fbe3ea, #ffffff);
+  color: #3a0a1b;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 14px 30px -16px rgba(232, 92, 140, 0.7);
+}
+.ty-scope a.typf-visor__ig .typf__ico {
+  font-size: 17px;
+}
+@media (max-width: 767px) {
+  .typf-visor__midia {
+    height: min(60svh, 600px);
+  }
+  .ty-scope .typf-visor__rodape {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding-inline: 4px;
+  }
+  .typf-visor__acoes {
+    justify-content: center;
+  }
+  /* as setas descem para o rodapé da tela: o botão do Instagram sobe um pouco */
+  .typf-visor .ty-visor__fig {
+    margin-bottom: 64px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .typf__flutua,
+  [data-tocar] .typf__barra i {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   QUADRO DE NÚMEROS — noite rosé: o vinho mais escuro da casa com
+   a luz rosa por trás do celular. Os números sobem quando aparecem.
+   ============================================================ */
+.tynu {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  padding: clamp(96px, 11vw, 160px) var(--t-gutter) calc(var(--ty-folha, 40px) + clamp(80px, 9vw, 130px));
+  color: var(--t-fg);
+  background:
+    radial-gradient(45% 55% at 82% 45%, rgba(232, 92, 140, 0.3), transparent 70%),
+    radial-gradient(50% 45% at 0% 0%, rgba(150, 30, 70, 0.35), transparent 70%),
+    radial-gradient(40% 40% at 10% 100%, rgba(232, 191, 134, 0.1), transparent 70%),
+    linear-gradient(180deg, #250712 0%, #14040a 100%);
+}
+.tynu::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  box-shadow: inset 0 1px 0 rgba(255, 200, 220, 0.18);
+}
+/* o primeiro número, enorme e vazado, por trás de tudo */
+.tynu__marca {
+  position: absolute;
+  z-index: -1;
+  right: -3%;
+  top: clamp(40px, 6vw, 90px);
+  font-family: var(--t-font-display);
+  font-size: clamp(120px, 22vw, 360px);
+  font-weight: 700;
+  line-height: 0.8;
+  letter-spacing: -0.06em;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 200, 220, 0.12);
+  pointer-events: none;
+  user-select: none;
+}
+.tynu__miolo {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  align-items: center;
+  gap: clamp(48px, 6vw, 96px);
+  max-width: 1200px;
+  margin-inline: auto;
+}
+.tynu__texto {
+  display: grid;
+  gap: clamp(16px, 1.8vw, 24px);
+  align-content: start;
+}
+.ty-scope .tynu__olho {
+  color: #f6b7ca;
+  font-size: 13px;
+}
+.tynu__titulo {
+  font-size: clamp(42px, 5.4vw, 88px);
+}
+.tynu__lead {
+  max-width: 46ch;
+  color: rgba(251, 227, 235, 0.72);
+}
+.tynu__grade {
+  list-style: none;
+  margin: clamp(12px, 2vw, 28px) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(28px, 3vw, 44px) clamp(20px, 2.4vw, 36px);
+}
+.tynu__item {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  padding-left: 18px;
+  border-left: 2px solid transparent;
+  border-image: linear-gradient(180deg, #f7a8c0, rgba(232, 92, 140, 0.15)) 1;
+}
+.tynu__valor {
+  font-family: var(--t-font-display);
+  font-size: clamp(30px, 2.9vw, 44px);
+  white-space: nowrap;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+  background: var(--t-letra-noite);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.tynu__rotulo {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #fbe3eb;
+}
+.tynu__detalhe {
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: rgba(251, 227, 235, 0.6);
+}
+
+/* ---------- o celular do Insights ---------- */
+.tynu__palco {
+  position: relative;
+  justify-self: center;
+  width: clamp(250px, 24vw, 300px);
+}
+.tynu__aparelho {
+  position: relative;
+  padding: 8px;
+  border-radius: 44px;
+  background: linear-gradient(160deg, #4a1a2c 0%, #16060c 45%, #2a0b17 100%);
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255, 210, 225, 0.25),
+    inset 0 0 0 4px rgba(10, 2, 6, 0.9),
+    0 60px 110px -40px rgba(0, 0, 0, 0.9),
+    0 0 90px -20px rgba(232, 92, 140, 0.45);
+}
+.tynu__aparelho::after {
+  content: "";
+  position: absolute;
+  top: 17px;
+  left: 50%;
+  translate: -50% 0;
+  width: 31%;
+  height: 13px;
+  border-radius: 999px;
+  background: #0b0206;
+}
+.tynu__tela {
+  aspect-ratio: 9 / 19.5;
+  border-radius: 36px;
+  overflow: hidden;
+  background: #fafafa;
+  color: #1c1c1c;
+  padding-top: 40px;
+  font-size: 12px;
+}
+.tynu__tela svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tynu__app-topo {
+  display: grid;
+  grid-template-columns: 24px 1fr 24px;
+  align-items: center;
+  padding: 4px 14px 12px;
+}
+.tynu__app-topo b {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+.tynu__app-periodo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 14px;
+  padding: 8px 10px 8px 12px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.05);
+  font-weight: 600;
+}
+.tynu__app-periodo svg {
+  opacity: 0.55;
+}
+.tynu__app-destaque {
+  display: grid;
+  gap: 4px;
+  padding: 18px 14px 14px;
+}
+.tynu__app-destaque > span:first-child {
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.55);
+}
+.tynu__app-destaque > b {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.tynu__app-destaque small {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.55);
+}
+.tynu__app-barra {
+  display: flex;
+  height: 6px;
+  margin-top: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.06);
+}
+.tynu__app-barra i {
+  display: block;
+  height: 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.5s;
+}
+.tynu__app-barra i:first-child {
+  background: linear-gradient(90deg, #6d1530, #b2365f);
+}
+.tynu__app-barra i:last-child {
+  background: #f2a7bf;
+  transition-delay: 1.3s;
+}
+.tynu__app-barra[data-visto] i {
+  transform: scaleX(1);
+}
+.tynu__app-legenda {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.5);
+}
+.tynu__app-linhas {
+  list-style: none;
+  margin: 2px 0 0;
+  padding: 0 14px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+.tynu__app-linhas li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+.tynu__app-linhas span {
+  color: rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tynu__app-linhas b {
+  flex: none;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.tynu__app-fonte {
+  margin: 0;
+  padding: 10px 14px;
+  font-size: 9.5px;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+/* ---------- selos flutuando em volta do celular ---------- */
+.tynu__selo {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  gap: 4px;
+  padding: 12px 16px 13px;
+  border-radius: 20px;
+  background: rgba(46, 12, 26, 0.86);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 200, 220, 0.18),
+    0 24px 48px -20px rgba(0, 0, 0, 0.75);
+  animation: tynu-selo 5.5s ease-in-out infinite alternate;
+  white-space: nowrap;
+}
+.tynu__selo--esq {
+  left: -36%;
+  top: 12%;
+  rotate: -4deg;
+}
+.tynu__selo--dir {
+  right: -24%;
+  bottom: 5%;
+  rotate: 3deg;
+  animation-delay: -2.4s;
+}
+.tynu__selo-rotulo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(251, 227, 235, 0.72);
+}
+.tynu__selo-rotulo svg {
+  width: 15px;
+  height: 15px;
+  color: #f6a6c0;
+}
+.tynu__selo b {
+  font-family: var(--t-font-display);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: #ffc4d6;
+}
+@keyframes tynu-selo {
+  from {
+    translate: 0 -6px;
+  }
+  to {
+    translate: 0 10px;
+  }
+}
+
+@media (max-width: 899px) {
+  .tynu__miolo {
+    grid-template-columns: 1fr;
+  }
+  .tynu__grade {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .tynu__palco {
+    width: min(74vw, 290px);
+    margin-top: 36px;
+  }
+  .tynu__selo {
+    padding: 9px 12px 10px;
+    border-radius: 16px;
+  }
+  .tynu__selo b {
+    font-size: 20px;
+  }
+  .tynu__selo--esq {
+    left: -12%;
+    top: -5%;
+  }
+  .tynu__selo--dir {
+    right: -10%;
+    bottom: -6%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tynu__selo {
+    animation: none;
+  }
+  .tynu__app-barra i {
+    transition: none;
+  }
+}

@@ -2,11 +2,12 @@
 
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { vipDb } from "@/lib/tayssa/db";
 import { assertAdmin } from "@/lib/tayssa/auth/guards";
 import { logAudit } from "@/lib/tayssa/audit";
 import { PHOTO_BUCKET, PHOTO_MAX_BYTES, PHOTO_TYPES, ROUTES, VIDEO_MAX_BYTES, VIDEO_TYPES } from "@/lib/tayssa/config";
-import { enquadramentoSchema, photoMetaSchema } from "@/lib/tayssa/validation";
+import { precoField, enquadramentoSchema, photoMetaSchema } from "@/lib/tayssa/validation";
 import { BusinessError, runAction } from "@/lib/tayssa/actions/_helpers";
 import type { ActionResult, PhotoRow } from "@/lib/tayssa/types";
 
@@ -130,6 +131,8 @@ export async function adminPublishMediaAction(input: {
   focus_x?: number;
   focus_y?: number;
   zoom?: number;
+  /** valor do produto, quando ela cria um produto novo ao publicar (vazio = sem valor) */
+  preco?: string;
 }): Promise<ActionResult> {
   return runAction("photos.publish", async () => {
     const admin = await assertAdmin();
@@ -165,6 +168,7 @@ export async function adminPublishMediaAction(input: {
       entityId: input.id,
       meta: { publicado: true, category: meta.category, produto: meta.lash_style },
     });
+    if (input.preco !== undefined) await salvarPreco(meta.category, meta.lash_style, input.preco);
     revalidatePhotos();
     return undefined;
   });
@@ -243,6 +247,64 @@ export async function adminDeletePhotoAction(input: { id: string }): Promise<Act
     const { error } = await db.from("photos").delete().eq("id", input.id);
     if (error) throw new Error(error.message);
     await logAudit({ actorId: admin.id, actorRole: "admin", action: "photo_deleted", entityType: "photo", entityId: input.id, meta: { lash_style: photo.lash_style } });
+    revalidatePhotos();
+    return undefined;
+  });
+}
+
+/** Grava (ou apaga, se vazio) o valor de um produto. */
+async function salvarPreco(categoria: string, nome: string, bruto: string) {
+  const preco = precoField.parse(bruto);
+  const { error } = await vipDb()
+    .from("produtos")
+    .upsert({ categoria, nome: nome.trim(), preco }, { onConflict: "categoria,nome" });
+  if (error) throw new Error(error.message);
+}
+
+/**
+ * Valor de um produto da galeria ("Volume inglês" etc.). Aparece no
+ * catálogo do site e na folha de agendar; vazio = o site não mostra valor.
+ */
+export async function adminSalvarPrecoProdutoAction(input: {
+  categoria: string;
+  nome: string;
+  preco: string;
+}): Promise<ActionResult> {
+  return runAction("photos.preco", async () => {
+    const admin = await assertAdmin();
+    const { category, lash_style } = photoMetaSchema.parse({ category: input.categoria, lash_style: input.nome });
+    await salvarPreco(category, lash_style, input.preco);
+    await logAudit({
+      actorId: admin.id,
+      actorRole: "admin",
+      action: "produto_preco",
+      entityType: "produto",
+      meta: { categoria: category, produto: lash_style, preco: input.preco },
+    });
+    revalidatePhotos();
+    return undefined;
+  });
+}
+
+const linkInstagramSchema = z
+  .string()
+  .trim()
+  .max(300)
+  .transform((v) => v || null)
+  .refine((v) => v === null || /^https:\/\/(www\.)?instagram\.com\/\S+$/.test(v), "Cole o link do post do Instagram (começa com https://www.instagram.com/).");
+
+/**
+ * O link da publicação no Instagram (portfólio do site): no visor, "Ver no
+ * Instagram" abre o post. Vazio = o botão leva ao perfil.
+ */
+export async function adminSalvarLinkInstagramAction(input: { id: string; url: string }): Promise<ActionResult> {
+  return runAction("photos.instagram", async () => {
+    const admin = await assertAdmin();
+    const url = linkInstagramSchema.parse(input.url);
+    const { data, error } = await vipDb().from("photos").update({ instagram_url: url }).eq("id", input.id).select("id");
+    if (error) throw new Error(error.message);
+    if (!data?.length) throw new BusinessError("Mídia não encontrada.");
+    await logAudit({ actorId: admin.id, actorRole: "admin", action: "photo_instagram", entityType: "photo", entityId: input.id, meta: { url } });
     revalidatePhotos();
     return undefined;
   });

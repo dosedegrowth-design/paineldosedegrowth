@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { vipDb, isDbConfigured, logServerError } from "@/lib/tayssa/db";
 import type { PhotoRow } from "@/lib/tayssa/types";
+import { chavePreco } from "@/lib/tayssa/catalogo";
 
 /**
  * A biblioteca é uma só. Quem consome (site, cartão, herói) recebe a
@@ -45,3 +46,25 @@ export function lashStyles(photos: PhotoRow[]): string[] {
   for (const p of photos) seen.set(p.lash_style, (seen.get(p.lash_style) ?? 0) + 1);
   return [...seen.entries()].sort((a, b) => b[1] - a[1]).map(([k]) => k);
 }
+
+/**
+ * Valor de cada produto da galeria (`vip.produtos`), pela chave
+ * "categoria:nome normalizado" — a mesma que agrupa os rolos. Sem a tabela
+ * (migração ainda não aplicada) ou sem banco: nenhum valor, e o site só não
+ * mostra preço.
+ */
+export const getPrecosProdutos = cache(async (): Promise<Record<string, number>> => {
+  if (!isDbConfigured()) return {};
+  try {
+    const { data, error } = await vipDb().from("produtos").select("categoria, nome, preco").not("preco", "is", null);
+    if (error) throw new Error(error.message);
+    const out: Record<string, number> = {};
+    for (const r of (data ?? []) as { categoria: string; nome: string; preco: number }[]) {
+      out[chavePreco(r.categoria, r.nome)] = Number(r.preco);
+    }
+    return out;
+  } catch (e) {
+    logServerError("photos.precos", e);
+    return {};
+  }
+});

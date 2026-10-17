@@ -1122,3 +1122,647 @@ select.tya-field {
     font-size: 16px;
   }
 }
+
+/* ============================================================
+   AGENDA DA SEMANA — o desenho do Google Agenda: uma coluna por dia,
+   uma linha por horário. Livre (verde da casa), fechado (riscado em
+   listras), pedido (ouro), confirmado (vinho cheio), folga e passado
+   apagados. No celular a grade corre de lado com a hora fixa.
+   ============================================================ */
+.tyag-grade {
+  display: grid;
+  gap: 14px;
+}
+.tyag-grade__barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+}
+.tyag-grade__nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.tyag-grade__seta,
+.tyag-grade__hoje {
+  display: inline-grid;
+  place-items: center;
+  height: 36px;
+  border: 1px solid var(--tya-line);
+  background: var(--tya-surface);
+  color: var(--tya-ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    transform 0.16s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.tyag-grade__seta {
+  width: 36px;
+  border-radius: 50%;
+}
+.tyag-grade__hoje {
+  padding: 0 16px;
+  border-radius: 999px;
+}
+.tyag-grade__seta svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tyag-grade__seta:disabled,
+.tyag-grade__hoje:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.tyag-grade__seta:not(:disabled):active,
+.tyag-grade__hoje:not(:disabled):active {
+  transform: scale(0.95);
+}
+.tyag-grade__titulo {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--tya-ink);
+}
+.tyag-grade__legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 0 0 0 auto;
+  padding: 0;
+  list-style: none;
+  font-size: 12.5px;
+  color: var(--tya-muted);
+}
+.tyag-grade__legenda li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.tyag-grade__legenda li::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+}
+.tyag-grade__legenda [data-tom="livre"]::before {
+  background: #e7f1ea;
+  box-shadow: inset 0 0 0 1px #b9d3c1;
+}
+.tyag-grade__legenda [data-tom="fechado"]::before {
+  background: repeating-linear-gradient(135deg, #efe4e7 0 3px, #fbf7f8 3px 6px);
+  box-shadow: inset 0 0 0 1px #e2d3d8;
+}
+.tyag-grade__legenda [data-tom="pedido"]::before {
+  background: #f6e7c8;
+  box-shadow: inset 0 0 0 1px #e0c58a;
+}
+.tyag-grade__legenda [data-tom="confirmado"]::before {
+  background: #6d1530;
+}
+
+/* a grade corre de lado no celular; a coluna da hora fica parada */
+.tyag-grade__rolo {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  border: 1px solid var(--tya-line);
+  border-radius: var(--tya-radius);
+  background: var(--tya-surface);
+  scrollbar-width: thin;
+}
+.tyag-grade__tabela {
+  display: grid;
+  min-width: min-content;
+}
+.tyag-grade__canto,
+.tyag-grade__hora {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--tya-surface);
+  border-right: 1px solid var(--tya-line-soft);
+}
+.tyag-grade__hora {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--tya-muted);
+  font-variant-numeric: tabular-nums;
+  border-top: 1px solid var(--tya-line-soft);
+}
+.tyag-grade__dia {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 12px 6px 10px;
+  border-left: 1px solid var(--tya-line-soft);
+}
+.tyag-grade__sem {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--tya-muted);
+}
+.tyag-grade__num {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--tya-ink);
+  font-variant-numeric: tabular-nums;
+}
+.tyag-grade__dia[data-hoje] .tyag-grade__sem {
+  color: var(--tya-brand);
+}
+.tyag-grade__dia[data-hoje] .tyag-grade__num {
+  background: var(--tya-brand);
+  color: #fff;
+}
+.tyag-grade__dia[data-folga] .tyag-grade__num,
+.tyag-grade__dia[data-folga] .tyag-grade__sem {
+  color: #b9a3ab;
+}
+.tyag-grade__diaacao {
+  min-height: 24px;
+  margin-top: 2px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--tya-brand);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.tyag-grade__diaacao:not(.tyag-grade__diaacao--quieto):active {
+  background: var(--tya-brand-soft);
+}
+.tyag-grade__diaacao--quieto {
+  color: #b9a3ab;
+  cursor: default;
+}
+
+.tyag-grade__cel {
+  display: grid;
+  gap: 4px;
+  min-height: 64px;
+  padding: 5px;
+  border-top: 1px solid var(--tya-line-soft);
+  border-left: 1px solid var(--tya-line-soft);
+}
+.tyag-grade__cel[data-estado="folga"] {
+  background: #fbf8f8;
+}
+.tyag-grade__cel[data-estado="passou"] {
+  background: #faf7f7;
+}
+.tyag-grade__vaga {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 52px;
+  border: 0;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.16s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.tyag-grade__vaga:active {
+  transform: scale(0.96);
+}
+.tyag-grade__marca svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tyag-grade__cel[data-estado="livre"] .tyag-grade__vaga {
+  background: #e7f1ea;
+  color: #2f6644;
+  box-shadow: inset 0 0 0 1px #b9d3c1;
+}
+.tyag-grade__cel[data-estado="fechado"] .tyag-grade__vaga {
+  background: repeating-linear-gradient(135deg, #efe4e7 0 6px, #fbf7f8 6px 12px);
+  color: #9a7f88;
+  text-decoration: line-through;
+  box-shadow: inset 0 0 0 1px #e2d3d8;
+}
+@media (hover: hover) and (pointer: fine) {
+  .tyag-grade__cel[data-estado="livre"] .tyag-grade__vaga:hover {
+    background: #d9eadf;
+  }
+  .tyag-grade__cel[data-estado="fechado"] .tyag-grade__vaga:hover {
+    color: var(--tya-ink);
+  }
+  .tyag-grade__seta:not(:disabled):hover,
+  .tyag-grade__hoje:not(:disabled):hover {
+    background: var(--tya-brand-soft);
+  }
+}
+.tyag-grade__consulta {
+  display: grid;
+  gap: 1px;
+  padding: 7px 9px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  line-height: 1.3;
+  text-decoration: none;
+  min-width: 0;
+}
+.tyag-grade__consulta b {
+  font-weight: 650;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tyag-grade__consulta span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.85;
+}
+.tyag-grade__consulta i {
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.8;
+}
+.ty-scope a.tyag-grade__consulta[data-status="confirmed"],
+.tyag-grade__consulta[data-status="confirmed"] {
+  background: #6d1530;
+  color: #fff;
+}
+.ty-scope a.tyag-grade__consulta[data-status="requested"],
+.tyag-grade__consulta[data-status="requested"] {
+  background: #f6e7c8;
+  color: #5c4314;
+  box-shadow: inset 0 0 0 1px #e0c58a;
+}
+.ty-scope a.tyag-grade__consulta[data-status="done"],
+.tyag-grade__consulta[data-status="done"] {
+  background: #efe9eb;
+  color: var(--tya-muted);
+}
+.tyag-grade__dica {
+  margin: 0;
+}
+@media (max-width: 860px) {
+  .tyag-grade__legenda {
+    margin-left: 0;
+    width: 100%;
+  }
+  .tyag-grade__titulo {
+    font-size: 17px;
+  }
+}
+
+/* serviço: nome, descrição e três números miúdos (valor, pontos, ordem) */
+.tya-grid--serv {
+  grid-template-columns: minmax(150px, 2fr) minmax(170px, 3fr) minmax(0, 0.9fr) minmax(0, 0.7fr) minmax(0, 0.6fr);
+}
+@media (max-width: 1000px) {
+  .tya-grid--serv {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* valor do produto no cabeçalho do rolo */
+.tya-rolo-admin__lado {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.tya-preco {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.tya-preco label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--tya-line);
+  border-radius: 999px;
+  background: var(--tya-surface);
+  font-size: 13px;
+  color: var(--tya-muted);
+}
+.tya-preco input {
+  width: 84px;
+  border: 0;
+  background: none;
+  outline: none;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tya-ink);
+  font-variant-numeric: tabular-nums;
+}
+.tya-preco label:focus-within {
+  border-color: var(--tya-brand-2, var(--tya-brand));
+  box-shadow: 0 0 0 3px rgba(109, 21, 48, 0.1);
+}
+/* o link do post no cartão da mídia: ocupa a largura do cartão */
+.tya-foto {
+  grid-template-columns: minmax(0, 1fr);
+}
+.tya-foto__ig {
+  display: flex;
+  flex-wrap: wrap;
+}
+.tya-foto__ig label {
+  flex: 1;
+  min-width: 0;
+}
+/* largura 0 + flex: o campo não empurra a coluna do cartão (o tamanho
+   natural de um <input> alargava o cartão e as fotos se sobrepunham) */
+.tya-foto__ig input {
+  flex: 1;
+  width: 0;
+  min-width: 0;
+  font-weight: 500;
+  font-size: 13px;
+  font-variant-numeric: normal;
+}
+
+/* ---------- pedido de acesso: um cartão só, centrado ----------
+   Antes o pedido era uma faixa da largura da tela no meio da ficha (com
+   números zerados em volta). Agora a página do pedido é a decisão. */
+.tya-pedido-pagina {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  padding: clamp(8px, 4vh, 48px) 0 48px;
+}
+.tya-pedido-pagina__voltar {
+  justify-self: center;
+  width: min(100%, 520px);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--tya-muted);
+}
+.tya-pedido-pagina__voltar svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tya-pedido-pagina__voltar:hover {
+  color: var(--tya-ink);
+}
+.tya-pedido {
+  width: min(100%, 520px);
+  display: grid;
+  gap: 22px;
+  padding: 28px;
+  background: var(--tya-surface);
+  border: 1px solid var(--tya-line-soft);
+  border-radius: var(--tya-radius);
+  box-shadow: var(--tya-shadow);
+}
+.tya-pedido__topo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.tya-pedido__ini {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(150deg, #8e2a4b, #4b0c20);
+  color: #fff;
+  font-family: var(--t-font-display);
+  font-size: 22px;
+  font-weight: 600;
+}
+.tya-pedido[data-decidido="approve"] .tya-pedido__ini {
+  background: linear-gradient(150deg, #c9a24e, #8a6420);
+}
+.tya-pedido[data-decidido="reject"] .tya-pedido__ini {
+  background: #c7c7cc;
+}
+.tya-pedido__quem {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.tya-pedido__rotulo {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--tya-brand);
+}
+.tya-pedido[data-decidido="approve"] .tya-pedido__rotulo {
+  color: #8a6420;
+}
+.tya-pedido[data-decidido="reject"] .tya-pedido__rotulo {
+  color: var(--tya-muted);
+}
+.tya-pedido__nome {
+  margin: 0;
+  font-family: var(--t-font-display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.tya-pedido__quando {
+  font-size: 12.5px;
+  color: var(--tya-muted-2);
+}
+.tya-pedido__recado {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: var(--tya-radius-sm);
+  background: var(--tya-surface-2);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--tya-ink);
+}
+.tya-pedido__recado::before {
+  content: "“";
+}
+.tya-pedido__recado::after {
+  content: "”";
+}
+.tya-pedido__dados {
+  display: grid;
+  margin: 0;
+  border-top: 1px solid var(--tya-line-soft);
+}
+.tya-pedido__dados > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--tya-line-soft);
+}
+.tya-pedido__dados dt {
+  font-size: 13px;
+  color: var(--tya-muted);
+}
+.tya-pedido__dados dd {
+  margin: 0;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.tya-pedido__vip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  cursor: pointer;
+}
+.tya-pedido__vip b {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+}
+.tya-pedido__vip small {
+  display: block;
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: var(--tya-muted);
+}
+/* interruptor no jeito do iPhone */
+.tya-switch {
+  appearance: none;
+  flex: none;
+  position: relative;
+  width: 46px;
+  height: 28px;
+  margin: 0;
+  border-radius: 999px;
+  background: #e5e5ea;
+  cursor: pointer;
+  transition: background-color 0.2s var(--tya-ease);
+}
+.tya-switch::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  transition: transform 0.25s var(--tya-ease);
+}
+.tya-switch:checked {
+  background: #b58a2f;
+}
+.tya-switch:checked::after {
+  transform: translateX(18px);
+}
+.tya-switch:focus-visible {
+  outline: 2px solid var(--tya-brand);
+  outline-offset: 2px;
+}
+.tya-pedido__acoes {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+.tya-pedido__acoes .tya-btn {
+  justify-content: center;
+}
+.tya-pedido__recusa,
+.tya-pedido__fim {
+  display: grid;
+  gap: 14px;
+}
+.tya-pedido__fim p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--tya-muted);
+}
+@media (max-width: 480px) {
+  .tya-pedido {
+    padding: 22px 18px;
+  }
+  .tya-pedido__acoes {
+    grid-template-columns: 1fr;
+  }
+  .tya-pedido__dados > div {
+    display: grid;
+    gap: 2px;
+  }
+  .tya-pedido__dados dd {
+    text-align: left;
+  }
+}
+
+/* ---------- números do site: três colunas por linha ---------- */
+.tya-numeros {
+  display: grid;
+  gap: 8px;
+}
+.tya-numeros__topo,
+.tya-numeros__linha {
+  display: grid;
+  grid-template-columns: minmax(90px, 0.7fr) minmax(120px, 1fr) minmax(140px, 1.4fr);
+  gap: 8px;
+}
+.tya-numeros__topo span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--tya-muted);
+}
+@media (max-width: 640px) {
+  .tya-numeros__topo {
+    display: none;
+  }
+  .tya-numeros__linha {
+    grid-template-columns: 1fr 1.4fr;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--tya-line-soft);
+  }
+  .tya-numeros__linha input:last-child {
+    grid-column: 1 / -1;
+  }
+}

@@ -1,5 +1,6 @@
 "use client";
 
+import { reais } from "@/lib/tayssa/agendar";
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import type { CategoriaCatalogo } from "@/lib/tayssa/catalogo";
@@ -89,7 +90,7 @@ export function Catalogo({ catalogo }: { catalogo: CategoriaCatalogo[] }) {
             </button>
             {categoria.produtos.map((p, i) => (
               <button key={p.nome} type="button" className="tyct__produto" data-on={prod === i} onClick={() => setProd(i)}>
-                {p.nome} <small>{p.itens.length}</small>
+                {p.nome} {p.preco != null ? <b className="tyct__preco">{reais(p.preco)}</b> : <small>{p.itens.length}</small>}
               </button>
             ))}
           </div>
@@ -99,7 +100,9 @@ export function Catalogo({ catalogo }: { catalogo: CategoriaCatalogo[] }) {
       <motion.div
         key={`${categoria.slug}-${prod ?? "tudo"}`}
         initial={reduced ? false : { opacity: 0, y: 30, filter: "blur(8px)" }}
-        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+        // o filtro sai no fim: com blur(0px) parado, o rolo inteiro (vídeo e cartões
+        // correndo) virava uma camada filtrada, refeita a cada quadro
+        animate={{ opacity: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }}
         transition={{ duration: 0.7, ease: EASE }}
       >
         <Rolo itens={itens} rotulo={`Fotos e vídeos: ${titulo}`} />

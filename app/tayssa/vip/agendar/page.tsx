@@ -29,6 +29,7 @@ export default async function BookPage() {
             name: s.name,
             description: s.description,
             point_value: s.point_value,
+            preco: s.preco != null ? Number(s.preco) : null,
           }))}
           days={days.map((d) => ({ iso: d.iso, slots: d.slots }))}
           atLimit={full}

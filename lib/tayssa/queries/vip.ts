@@ -60,6 +60,22 @@ export type DayAvailability = {
   slots: { time: string; available: boolean }[];
 };
 
+/**
+ * Horários que a Tayssa fechou à mão no painel (`vip.agenda_bloqueios`),
+ * como "AAAA-MM-DDTHH:MM". Sem a tabela (migração ainda não aplicada) ou
+ * com erro, nenhum horário fica fechado — a agenda nunca quebra por isso.
+ */
+export async function horariosFechados(de: string, ate: string): Promise<Set<string>> {
+  try {
+    const { data, error } = await vipDb().from("agenda_bloqueios").select("dia, hora").gte("dia", de).lte("dia", ate);
+    if (error) throw new Error(error.message);
+    return new Set(((data ?? []) as { dia: string; hora: string }[]).map((r) => `${r.dia}T${r.hora}`));
+  } catch (e) {
+    logServerError("agenda.bloqueios", e);
+    return new Set();
+  }
+}
+
 export const getAvailability = cache(async (): Promise<{ days: DayAvailability[]; services: ServiceRow[] }> => {
   const settings = await getSettings();
   const b = settings.booking;
@@ -67,7 +83,7 @@ export const getAvailability = cache(async (): Promise<{ days: DayAvailability[]
   const days = bookableDays(now, b);
   if (!days.length) return { days: [], services: [] };
 
-  const [{ data, error }, services] = await Promise.all([
+  const [{ data, error }, services, fechados] = await Promise.all([
     vipDb()
       .from("appointments")
       .select("scheduled_date, scheduled_time")
@@ -75,13 +91,17 @@ export const getAvailability = cache(async (): Promise<{ days: DayAvailability[]
       .lte("scheduled_date", days[days.length - 1].iso)
       .in("status", ["requested", "confirmed"]),
     getActiveServices(),
+    horariosFechados(days[0].iso, days[days.length - 1].iso),
   ]);
   if (error) throw new Error(error.message);
+  // ocupado (por qualquer cliente) ou fechado pela Tayssa: para quem marca,
+  // os dois aparecem do mesmo jeito — riscado, sem dizer de quem é
   const taken = new Set(
     ((data ?? []) as { scheduled_date: string; scheduled_time: string }[]).map(
       (r) => `${r.scheduled_date}T${r.scheduled_time.slice(0, 5)}`
     )
   );
+  for (const f of fechados) taken.add(f);
 
   return {
     days: days.map((d) => ({

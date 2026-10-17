@@ -15,6 +15,7 @@ import {
   type ReactNode,
 } from "react";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
+import { agendaPublicaAction } from "@/lib/tayssa/actions/agenda";
 import {
   diasAbertos,
   horaLegivel,
@@ -32,13 +33,15 @@ export type ServicoAgenda = {
   tecnicas: boolean;
   /** manutenção pergunta "de qual volume", aplicação "qual volume" */
   manutencao: boolean;
+  /** valor cadastrado pela Tayssa (vazio = não mostra) */
+  preco?: number | null;
 };
 
 export type AgendaSite = {
   telefone: string;
   servicos: ServicoAgenda[];
-  /** volumes e técnicas de cílios publicados no catálogo */
-  tecnicas: string[];
+  /** volumes e técnicas de cílios publicados no catálogo, com o valor se houver */
+  tecnicas: { nome: string; preco: number | null }[];
   dias: DiaAgenda[];
   sinal: number;
 };
@@ -58,7 +61,9 @@ const NAO_SEI = "Ainda não sei — quero ajuda para escolher";
 export function AgendarProvider({ agenda, children }: { agenda: AgendaSite; children: ReactNode }) {
   const [aberta, setAberta] = useState(false);
   // cada abertura é um pedido novo (o serviço do botão que abriu vem marcado)
-  const [pedido, setPedido] = useState<{ n: number; servico?: string }>({ n: 0 });
+  const [pedido, setPedido] = useState<{ n: number; servico?: string }>({
+    n: 0,
+  });
   const abrir = useCallback((servico?: string) => {
     setPedido((p) => ({ n: p.n + 1, servico }));
     setAberta(true);
@@ -126,7 +131,12 @@ function FolhaAgendar({
   const ref = useRef<HTMLDialogElement>(null);
   const corpoRef = useRef<HTMLDivElement>(null);
   const id = useId();
-  const dias = useMemo(() => diasAbertos(agenda.dias), [agenda.dias]);
+  // a agenda vem da página e é buscada de novo a cada abertura: o que
+  // alguém marcou (ou a Tayssa fechou) depois do carregamento já aparece riscado
+  const [fresca, setFresca] = useState<DiaAgenda[] | null>(null);
+  const dias = fresca ?? agenda.dias;
+  const temLivre = useMemo(() => new Set(diasAbertos(dias).map((d) => d.iso)), [dias]);
+  const semServicos = agenda.servicos.length === 0;
 
   const [servico, setServico] = useState<string | null>(null);
   const [tecnica, setTecnica] = useState<string | null>(null);
@@ -160,6 +170,9 @@ function FolhaAgendar({
     const d = ref.current;
     if (!d) return;
     if (aberta && !d.open) {
+      void agendaPublicaAction().then((r) => {
+        if (r.ok) setFresca(r.data);
+      });
       d.showModal();
       corpoRef.current?.scrollTo(0, 0);
       document.documentElement.classList.add("ty-sem-rolagem");
@@ -200,26 +213,35 @@ function FolhaAgendar({
     if (a.dy > 120 || velocidade > 0.6) onFechar();
   };
 
-  const completo = Boolean(escolhido && dia && hora && nome.trim() && (!perguntaTecnica || tecnica));
+  // o horário escolhido pode ter sido tomado entre um carregamento e outro
+  const horaLivre = Boolean(diaEscolhido?.slots.some((s) => s.time === hora && s.available));
+  const completo = Boolean(
+    (escolhido || semServicos) && dia && horaLivre && nome.trim() && (!perguntaTecnica || tecnica),
+  );
   const mensagem = completo
     ? mensagemAgendamento({
-        servico: escolhido!.nome,
+        servico: escolhido?.nome ?? "a combinar com você",
         tecnica: tecnica === NAO_SEI ? "ainda não sei qual, quero ajuda para escolher" : tecnica,
         dia: dia!,
         hora: hora!,
         nome,
+        valor:
+          (!escolhido?.manutencao ? agenda.tecnicas.find((t) => t.nome === tecnica)?.preco : null) ??
+          escolhido?.preco ??
+          null,
         sinal: agenda.sinal,
       })
     : "";
-  const falta = !escolhido
-    ? "Escolha o serviço"
-    : perguntaTecnica && !tecnica
-      ? "Escolha o volume"
-      : !dia
-        ? "Escolha o dia"
-        : !hora
-          ? "Escolha o horário"
-          : "Escreva seu nome";
+  const falta =
+    !escolhido && !semServicos
+      ? "Escolha o serviço"
+      : perguntaTecnica && !tecnica
+        ? "Escolha o volume"
+        : !dia
+          ? "Escolha o dia"
+          : !horaLivre
+            ? "Escolha o horário"
+            : "Escreva seu nome";
 
   const enviar = () => {
     try {
@@ -240,7 +262,13 @@ function FolhaAgendar({
         if (e.target === e.currentTarget) onFechar();
       }}
     >
-      <div className="tyag__topo" onPointerDown={pegar} onPointerMove={mover} onPointerUp={soltar} onPointerCancel={soltar}>
+      <div
+        className="tyag__topo"
+        onPointerDown={pegar}
+        onPointerMove={mover}
+        onPointerUp={soltar}
+        onPointerCancel={soltar}
+      >
         <span className="tyag__alca" aria-hidden />
         <div className="tyag__cabeca">
           <h2 id={`${id}-t`} className="tyag__titulo">
@@ -255,35 +283,51 @@ function FolhaAgendar({
       </div>
 
       <div className="tyag__corpo" ref={corpoRef}>
-        <fieldset className="tyag__grupo">
-          <legend className="tyag__rotulo">O que você vai fazer?</legend>
-          <div className="tyag__chips">
-            {agenda.servicos.map((s) => (
-              <label key={s.slug} className="tyag__chip">
-                <input
-                  type="radio"
-                  name={`${id}-servico`}
-                  value={s.slug}
-                  checked={servico === s.slug}
-                  onChange={() => {
-                    setServico(s.slug);
-                    setTecnica(null);
-                  }}
-                />
-                <span>{s.nome}</span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
+        {semServicos ? null : (
+          <fieldset className="tyag__grupo">
+            <legend className="tyag__rotulo">O que você vai fazer?</legend>
+            <div className="tyag__chips">
+              {agenda.servicos.map((s) => (
+                <label key={s.slug} className="tyag__chip">
+                  <input
+                    type="radio"
+                    name={`${id}-servico`}
+                    value={s.slug}
+                    checked={servico === s.slug}
+                    onChange={() => {
+                      setServico(s.slug);
+                      setTecnica(null);
+                    }}
+                  />
+                  <span>
+                    {s.nome}
+                    {s.preco != null ? <small className="tyag__preco">{reais(s.preco)}</small> : null}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        )}
 
         {perguntaTecnica ? (
           <fieldset className="tyag__grupo tyag__grupo--entra">
-            <legend className="tyag__rotulo">{escolhido?.manutencao ? "De qual volume é a manutenção?" : "Qual volume você quer?"}</legend>
+            <legend className="tyag__rotulo">
+              {escolhido?.manutencao ? "De qual volume é a manutenção?" : "Qual volume você quer?"}
+            </legend>
             <div className="tyag__chips">
-              {[...agenda.tecnicas, NAO_SEI].map((t) => (
-                <label key={t} className={["tyag__chip", t === NAO_SEI ? "tyag__chip--leve" : ""].join(" ")}>
-                  <input type="radio" name={`${id}-tecnica`} value={t} checked={tecnica === t} onChange={() => setTecnica(t)} />
-                  <span>{t === NAO_SEI ? "Ainda não sei" : t}</span>
+              {[...agenda.tecnicas, { nome: NAO_SEI, preco: null }].map((t) => (
+                <label key={t.nome} className={["tyag__chip", t.nome === NAO_SEI ? "tyag__chip--leve" : ""].join(" ")}>
+                  <input
+                    type="radio"
+                    name={`${id}-tecnica`}
+                    value={t.nome}
+                    checked={tecnica === t.nome}
+                    onChange={() => setTecnica(t.nome)}
+                  />
+                  <span>
+                    {t.nome === NAO_SEI ? "Ainda não sei" : t.nome}
+                    {t.preco != null ? <small className="tyag__preco">{reais(t.preco)}</small> : null}
+                  </span>
                 </label>
               ))}
             </div>
@@ -296,36 +340,42 @@ function FolhaAgendar({
             <div className="tyag__dias" role="presentation">
               {dias.map((d) => {
                 const p = partesDoDia(d.iso);
+                // dia sem horário livre não some: fica riscado, como "lotado"
+                const lotado = !temLivre.has(d.iso);
                 return (
-                  <label key={d.iso} className="tyag__dia">
+                  <label key={d.iso} className="tyag__dia" data-lotado={lotado || undefined}>
                     <input
                       type="radio"
                       name={`${id}-dia`}
                       value={d.iso}
                       checked={dia === d.iso}
+                      disabled={lotado}
                       onChange={() => {
                         setDia(d.iso);
                         setHora((h) => (h && d.slots.some((s) => s.time === h && s.available) ? h : null));
                       }}
-                      aria-label={diaLegivel(d.iso)}
+                      aria-label={`${diaLegivel(d.iso)}${lotado ? ", sem horário livre" : ""}`}
                     />
                     <span aria-hidden>
                       <small>{p.semana}</small>
                       <b>{p.numero}</b>
-                      <small>{p.mes}</small>
+                      <small>{lotado ? "lotado" : p.mes}</small>
                     </span>
                   </label>
                 );
               })}
             </div>
           ) : (
-            <p className="tyag__aviso">A agenda do site está sem horário agora. Chame a Tayssa no WhatsApp que ela encaixa você.</p>
+            <p className="tyag__aviso">
+              A agenda do site está sem horário agora. Chame a Tayssa no WhatsApp que ela encaixa você.
+            </p>
           )}
         </fieldset>
 
         <fieldset className="tyag__grupo" disabled={!diaEscolhido}>
           <legend className="tyag__rotulo">
-            Qual horário?{diaEscolhido ? <span className="tyag__rotulo-dica">{diaLegivel(diaEscolhido.iso)}</span> : null}
+            Qual horário?
+            {diaEscolhido ? <span className="tyag__rotulo-dica">{diaLegivel(diaEscolhido.iso)}</span> : null}
           </legend>
           {diaEscolhido ? (
             <div className="tyag__horas">

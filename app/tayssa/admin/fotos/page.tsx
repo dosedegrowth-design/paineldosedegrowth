@@ -1,6 +1,6 @@
 import { requireAdminPage } from "@/lib/tayssa/auth/guards";
 import Link from "next/link";
-import { listAllPhotos } from "@/lib/tayssa/queries/photos";
+import { getPrecosProdutos, listAllPhotos } from "@/lib/tayssa/queries/photos";
 import { ROUTES } from "@/lib/tayssa/config";
 import { getActiveServices } from "@/lib/tayssa/queries/catalog";
 import { assignPhotos, type PhotoSlot } from "@/lib/tayssa/photos";
@@ -21,7 +21,7 @@ import type { CategoriaMidia } from "@/lib/tayssa/types";
 export default async function PhotosPage({ searchParams }: { searchParams: Promise<{ aba?: string }> }) {
   await requireAdminPage();
   const aba = (await searchParams).aba === "site" ? "site" : "galeria";
-  const [photos, services] = await Promise.all([listAllPhotos(), getActiveServices()]);
+  const [photos, services, precos] = await Promise.all([listAllPhotos(), getActiveServices(), getPrecosProdutos()]);
   const activePhotos = photos.filter((p) => p.status === "active");
   const naGaleria = photos.length - activePhotos.length;
   // sugestões de produto por categoria (inclui o que saiu do site: é vocabulário)
@@ -109,7 +109,7 @@ export default async function PhotosPage({ searchParams }: { searchParams: Promi
       ) : null}
 
       <AdminBlock title={aba === "galeria" ? "Galeria" : "Rolos no site"}>
-        <PhotoLibrary photos={photos} produtos={produtos} places={places} aba={aba} />
+        <PhotoLibrary photos={photos} produtos={produtos} places={places} aba={aba} precos={precos} />
       </AdminBlock>
     </>
   );

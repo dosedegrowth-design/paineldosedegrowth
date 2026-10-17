@@ -3,10 +3,12 @@ import { getSettings } from "@/lib/tayssa/settings";
 import { getActiveServices, getPublicBenefits } from "@/lib/tayssa/queries/catalog";
 import { getPhotoAvailability } from "@/lib/tayssa/photos-server";
 import { getVideoAvailability } from "@/lib/tayssa/media-server";
-import { getPhotoLibrary } from "@/lib/tayssa/queries/photos";
+import { getPhotoLibrary, getPrecosProdutos } from "@/lib/tayssa/queries/photos";
 import { assignPhotos } from "@/lib/tayssa/photos";
-import { categoriaDoServico, montarCatalogo } from "@/lib/tayssa/catalogo";
+import { categoriaDoServico, comPrecos, montarCatalogo } from "@/lib/tayssa/catalogo";
 import { getAgendaPublica } from "@/lib/tayssa/queries/vip";
+import { montarPortfolio } from "@/lib/tayssa/portfolio";
+import { CONTEUDO } from "@/lib/tayssa/content";
 import type { AgendaSite } from "@/components/tayssa/public/agendar";
 import { PublicExperience } from "@/components/tayssa/public/experience";
 import { PhotoAvailabilityProvider } from "@/components/tayssa/ui/photo-availability";
@@ -24,7 +26,7 @@ export const metadata: Metadata = {
  * a página nunca quebra por causa do Supabase.
  */
 export default async function TayssaHome() {
-  const [settings, services, benefits, photos, library, videos, dias] = await Promise.all([
+  const [settings, services, benefits, photos, library, videos, dias, precos] = await Promise.all([
     getSettings(),
     getActiveServices(),
     getPublicBenefits(),
@@ -32,13 +34,17 @@ export default async function TayssaHome() {
     getPhotoLibrary(),
     getVideoAvailability(),
     getAgendaPublica(),
+    getPrecosProdutos(),
   ]);
   // uma biblioteca, todos os lugares: o herói, a sequência, o trilho, os serviços.
   // Só entra foto que existe de verdade — da biblioteca, ou arquivo estático
   // presente. Sem isso o site exibiria caixotes vazios no lugar do trabalho.
   const assigned = assignPhotos(library);
   // o catálogo (foto e vídeo por categoria e produto) alimenta os rolos
-  const catalogo = montarCatalogo(library);
+  // com o valor de cada produto, quando a Tayssa cadastrou
+  const catalogo = comPrecos(montarCatalogo(library), precos);
+  // o portfólio dos celulares: Reels do conteúdo + a mídia publicada
+  const portfolio = montarPortfolio(library, CONTEUDO.instagram);
   const existe = (p?: { src: string }) => Boolean(p && (p.src.startsWith("http") || photos[p.src]));
   const reais = {
     ...assigned,
@@ -63,13 +69,14 @@ export default async function TayssaHome() {
         nome: s.name,
         tecnicas: categoriaDoServico(s.slug, s.name) === "cilios",
         manutencao: /manuten/i.test(`${s.slug} ${s.name}`),
+        preco: s.preco != null ? Number(s.preco) : null,
       })),
     // manutenção já é serviço: não entra como volume
     tecnicas:
       catalogo
         .find((c) => c.slug === "cilios")
-        ?.produtos.map((p) => p.nome)
-        .filter((n) => !/manuten/i.test(n)) ?? [],
+        ?.produtos.filter((p) => !/manuten/i.test(p.nome))
+        .map((p) => ({ nome: p.nome, preco: p.preco ?? null })) ?? [],
     dias,
     sinal: settings.booking.deposit_reais,
   };
@@ -95,6 +102,7 @@ export default async function TayssaHome() {
           photos={reais}
           videos={videos}
           catalogo={catalogo}
+          portfolio={portfolio}
           agenda={agenda}
         />
       </PhotoAvailabilityProvider>

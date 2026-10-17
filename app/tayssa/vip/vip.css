@@ -655,6 +655,14 @@
   opacity: 0.3;
   text-decoration: line-through;
 }
+/* dia sem horário livre: fica na fita, riscado */
+.tyv-day[disabled] {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.tyv-day[disabled] .tyv-day__d {
+  text-decoration: line-through;
+}
 
 /* passos do agendamento */
 .tyv-steps {
@@ -1468,4 +1476,17 @@
     right: -10px;
     width: 200px;
   }
+}
+
+/* valor do serviço, quando a Tayssa cadastrou */
+.tyv-choice__preco {
+  margin-left: 10px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: rgba(226, 182, 118, 0.16);
+  color: #e8c48a;
+  font-size: 0.78em;
+  font-weight: 600;
+  vertical-align: 0.12em;
+  white-space: nowrap;
 }

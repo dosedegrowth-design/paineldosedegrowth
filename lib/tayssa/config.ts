@@ -146,6 +146,20 @@ export type SignupSettings = {
   welcome_template: string;
 };
 
+/** Um número do quadro do site ("2,16 mi" · "Visualizações" · "96% de quem não te segue"). */
+export type NumeroSite = { valor: string; rotulo: string; detalhe: string };
+
+export type NumerosSettings = {
+  /** o período que os números cobrem ("Últimos 30 dias") */
+  periodo: string;
+  /** de onde vêm ("Instagram Insights") */
+  fonte: string;
+  /** até 6; o primeiro é o destaque do celular. Vazio = o quadro não aparece */
+  itens: NumeroSite[];
+  /** % das visualizações que vêm de quem ainda não segue (barra do celular) */
+  nao_seguidores: number | null;
+};
+
 export type Settings = {
   business: BusinessSettings;
   rules: RulesSettings;
@@ -154,6 +168,7 @@ export type Settings = {
   loyalty: LoyaltySettings;
   booking: BookingSettings;
   signup: SignupSettings;
+  numeros: NumerosSettings;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -217,5 +232,12 @@ export const DEFAULT_SETTINGS: Settings = {
     open: true,
     welcome_template:
       "Oi, {name}! Seu acesso ao Tayssa Lash foi liberado. Entre por aqui: {url}",
+  },
+  // números só da Tayssa: nada inventado — vazio, o quadro não aparece
+  numeros: {
+    periodo: "Últimos 30 dias",
+    fonte: "Instagram Insights",
+    itens: [],
+    nao_seguidores: null,
   },
 };

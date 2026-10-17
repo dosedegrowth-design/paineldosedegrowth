@@ -13,6 +13,7 @@ import {
   businessSettingsSchema,
   catalogServiceSchema,
   loyaltySettingsSchema,
+  numerosSettingsSchema,
   rulesSettingsSchema,
   signupSettingsSchema,
   whatsappTemplatesSchema,
@@ -159,6 +160,24 @@ export async function updateSignupSettingsAction(_p: ActionResult | null, fd: Fo
   });
 }
 
+/** Quadro de números do site: só o que ela escreve aparece; vazio = o quadro some. */
+export async function updateNumerosSettingsAction(_p: ActionResult | null, fd: FormData): Promise<ActionResult> {
+  return runAction("settings.numeros", async () => {
+    const admin = await assertAdmin();
+    const valores = list(fd, "valor");
+    const rotulos = list(fd, "rotulo");
+    const detalhes = list(fd, "detalhe");
+    const input = numerosSettingsSchema.parse({
+      periodo: str(fd, "periodo"),
+      fonte: str(fd, "fonte"),
+      itens: valores.map((valor, i) => ({ valor, rotulo: rotulos[i] ?? "", detalhe: detalhes[i] ?? "" })),
+      nao_seguidores: str(fd, "nao_seguidores").replace("%", "").replace(",", ".").trim(),
+    });
+    await saveSetting("numeros", input, admin.id);
+    return undefined;
+  });
+}
+
 // ---------------- Catálogo de serviços ----------------
 
 function slugify(s: string): string {
@@ -179,6 +198,7 @@ export async function upsertCatalogServiceAction(_p: ActionResult | null, fd: Fo
       name: str(fd, "name"),
       description: str(fd, "description"),
       point_value: str(fd, "point_value"),
+      preco: str(fd, "preco"),
       active: bool(fd, "active"),
       sort_order: str(fd, "sort_order") || undefined,
     });
@@ -190,6 +210,7 @@ export async function upsertCatalogServiceAction(_p: ActionResult | null, fd: Fo
           name: input.name,
           description: input.description,
           point_value: input.point_value,
+          preco: input.preco,
           active: input.active,
           sort_order: input.sort_order ?? 0,
         })
@@ -203,6 +224,7 @@ export async function upsertCatalogServiceAction(_p: ActionResult | null, fd: Fo
         name: input.name,
         description: input.description,
         point_value: input.point_value,
+        preco: input.preco,
         active: input.active,
         sort_order: input.sort_order ?? 50,
       });

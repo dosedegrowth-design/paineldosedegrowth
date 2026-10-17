@@ -13,6 +13,7 @@ import { Services } from "@/components/tayssa/public/services";
 import { ServiceStrip } from "@/components/tayssa/public/service-strip";
 import { AgendarFlutua, Faixa } from "@/components/tayssa/public/faixa";
 import { Details } from "@/components/tayssa/public/details";
+import { Numeros } from "@/components/tayssa/public/numeros";
 import { VipIntro } from "@/components/tayssa/public/vip-intro";
 import { ReferralCta } from "@/components/tayssa/public/referral-cta";
 import { Closing } from "@/components/tayssa/public/closing";
@@ -23,8 +24,8 @@ import { Studio } from "@/components/tayssa/public/studio";
 import { Testimonials } from "@/components/tayssa/public/testimonials";
 import { VisitInfo } from "@/components/tayssa/public/visit-info";
 import { Catalogo } from "@/components/tayssa/public/catalogo";
-import { ReelsInstagram } from "@/components/tayssa/public/reels-instagram";
 import type { CategoriaCatalogo } from "@/lib/tayssa/catalogo";
+import type { ItemPortfolio } from "@/lib/tayssa/portfolio";
 import { CONTEUDO, temAtendimento, temSobre } from "@/lib/tayssa/content";
 import type { VideoAvailability } from "@/lib/tayssa/media-server";
 import { useEstrutura } from "@/components/tayssa/ui/estrutura";
@@ -52,8 +53,11 @@ export function PublicExperience({
   photos,
   videos,
   catalogo = [],
+  portfolio = [],
   agenda,
 }: {
+  /** o trabalho dela nos celulares da seção do Instagram */
+  portfolio?: ItemPortfolio[];
   /** fotos e vídeos por categoria e produto (painel → Fotos) */
   catalogo?: CategoriaCatalogo[];
   /** o que a folha de agendar oferece: serviços, volumes, dias e horários livres */
@@ -114,8 +118,8 @@ export function PublicExperience({
           />
           <About business={settings.business} conteudo={CONTEUDO} portrait={photos?.portrait} instagramUrl={links.instagram} />
           <Studio conteudo={CONTEUDO} video={videos?.espaco} photo={photos?.studio} />
-          <Details instagramUrl={links.instagram} handle={links.handle} photos={colagem} />
-          <ReelsInstagram reels={CONTEUDO.instagram} handle={links.handle} perfilUrl={links.instagram} />
+          <Details instagramUrl={links.instagram} handle={links.handle} photos={colagem} portfolio={portfolio} />
+          <Numeros numeros={settings.numeros} handle={links.handle} />
           <Testimonials conteudo={CONTEUDO} />
           <VipIntro benefits={benefits} />
           <ReferralCta />

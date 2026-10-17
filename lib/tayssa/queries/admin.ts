@@ -4,6 +4,7 @@ import { nowInBusinessTz } from "@/lib/tayssa/format";
 import { vipDb } from "@/lib/tayssa/db";
 import { getSettings } from "@/lib/tayssa/settings";
 import { getPublicBenefits } from "@/lib/tayssa/queries/catalog";
+import { horariosFechados } from "@/lib/tayssa/queries/vip";
 import { expireStaleBenefits } from "@/lib/tayssa/engine";
 import {
   birthdayInfo,
@@ -158,6 +159,102 @@ export const getAgenda = cache(async (): Promise<Agenda> => {
       .sort((a, b) => (b.scheduled_date + b.scheduled_time).localeCompare(a.scheduled_date + a.scheduled_time))
       .slice(0, 40),
   };
+});
+
+// ------------------------------------------------------------
+// Grade da agenda (painel): semana a semana, como o Google Agenda
+// ------------------------------------------------------------
+
+export type ConsultaNaGrade = {
+  id: string;
+  clienteId: string | null;
+  nome: string;
+  servico: string;
+  status: AppointmentRow["status"];
+};
+/** livre/fechado: a Tayssa alterna · ocupado: tem pedido ou confirmado · folga: dia que não atende · passou: já foi */
+export type EstadoCelula = "livre" | "fechado" | "ocupado" | "folga" | "passou";
+export type CelulaAgenda = { hora: string; estado: EstadoCelula; consultas: ConsultaNaGrade[] };
+export type DiaGrade = { iso: string; aberto: boolean; celulas: CelulaAgenda[] };
+export type GradeAgenda = { hoje: string; agoraHora: string; dias: DiaGrade[] };
+
+/**
+ * Da semana atual (domingo) até o fim do horizonte de agendamento: cada
+ * dia com todos os horários da grade (Configurações → Agenda) mais
+ * qualquer horário fora dela que tenha cliente marcada. Nada some: o que
+ * está ocupado, fechado ou já passou aparece com o seu estado.
+ */
+export const getGradeAgenda = cache(async (): Promise<GradeAgenda> => {
+  const settings = await getSettings();
+  const b = settings.booking;
+  const now = nowInBusinessTz();
+  const hoje = toISODate(now);
+  const agoraHora = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+  const inicio = shiftDays(now, -now.getDay());
+  const fim = shiftDays(now, Math.max(13, Math.min(b.horizon_days, 84)));
+  const de = toISODate(inicio);
+  const ate = toISODate(fim);
+
+  const [{ data, error }, fechados] = await Promise.all([
+    vipDb()
+      .from("appointments")
+      .select("id, scheduled_date, scheduled_time, service_name, status, client:users!appointments_client_id_fkey(id, name, nickname)")
+      .gte("scheduled_date", de)
+      .lte("scheduled_date", ate)
+      .in("status", ["requested", "confirmed", "done"])
+      .order("scheduled_time"),
+    horariosFechados(de, ate),
+  ]);
+  if (error) throw new Error(error.message);
+  type Linha = {
+    id: string;
+    scheduled_date: string;
+    scheduled_time: string;
+    service_name: string;
+    status: AppointmentRow["status"];
+    client: { id: string; name: string; nickname: string | null } | null;
+  };
+  const porDia = new Map<string, Linha[]>();
+  for (const a of (data ?? []) as unknown as Linha[]) {
+    const l = porDia.get(a.scheduled_date) ?? [];
+    l.push(a);
+    porDia.set(a.scheduled_date, l);
+  }
+
+  const dias: DiaGrade[] = [];
+  for (let d = new Date(inicio); toISODate(d) <= ate; d = shiftDays(d, 1)) {
+    const iso = toISODate(d);
+    const aberto = b.weekdays.includes(d.getDay());
+    const marcadas = porDia.get(iso) ?? [];
+    const horas = [...new Set([...(aberto ? b.slots : []), ...marcadas.map((a) => a.scheduled_time.slice(0, 5))])].sort();
+    dias.push({
+      iso,
+      aberto,
+      celulas: horas.map((hora) => {
+        const consultas = marcadas
+          .filter((a) => a.scheduled_time.slice(0, 5) === hora)
+          .map((a) => ({
+            id: a.id,
+            clienteId: a.client?.id ?? null,
+            nome: a.client?.nickname || a.client?.name || "Cliente",
+            servico: a.service_name,
+            status: a.status,
+          }));
+        const passou = iso < hoje || (iso === hoje && hora <= agoraHora);
+        const estado: EstadoCelula = passou
+          ? "passou"
+          : consultas.some((c) => c.status === "requested" || c.status === "confirmed")
+            ? "ocupado"
+            : !aberto || !b.slots.includes(hora)
+              ? "folga"
+              : fechados.has(`${iso}T${hora}`)
+                ? "fechado"
+                : "livre";
+        return { hora, estado, consultas };
+      }),
+    });
+  }
+  return { hoje, agoraHora, dias };
 });
 
 export type AdminOverview = {

@@ -142,11 +142,10 @@
     transform: translateX(100%);
   }
 }
-@media (min-width: 901px) {
-  .ty-vivo__luz {
-    filter: blur(60px);
-  }
-}
+/* sem filter: blur nas luzes (era só no computador): a luz já é um degradê
+   que some no próprio raio, e o desfoque de 60px numa camada de 900px que
+   anda o tempo todo era refeito a cada quadro — o que deixava o computador
+   travando onde o celular corria a 60 */
 
 /* ---------- marca viva: a flor flutua, o nome tem volume ---------- */
 .ty-marca-viva {
@@ -518,8 +517,15 @@
   aspect-ratio: 1;
   translate: -50% -50%;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(232, 92, 140, 0.45), rgba(150, 30, 70, 0.18) 50%, transparent 72%);
-  filter: blur(30px);
+  /* degradê com mais paradas no lugar do filter: blur(30px) (refeito a cada quadro) */
+  background: radial-gradient(
+    closest-side,
+    rgba(232, 92, 140, 0.4),
+    rgba(200, 60, 105, 0.26) 30%,
+    rgba(150, 30, 70, 0.12) 56%,
+    rgba(150, 30, 70, 0.04) 78%,
+    transparent
+  );
   animation: ty-halo 8s ease-in-out infinite alternate;
   pointer-events: none;
 }
@@ -533,14 +539,15 @@
   position: relative;
   z-index: 2;
   margin: 0;
-  width: clamp(240px, 30vw, 420px);
+  width: clamp(260px, 32vw, 440px);
   transform-style: preserve-3d;
   will-change: transform;
 }
 .tyh__janela-corpo {
   position: relative;
-  aspect-ratio: 4 / 5.2;
-  border-radius: 999px 999px 36px 36px;
+  /* quadrada, cantos macios (o arco saiu: pedido da Tayssa) */
+  aspect-ratio: 1;
+  border-radius: 30px;
   overflow: hidden;
   background: linear-gradient(180deg, #4b0c20, #23060f);
   box-shadow:
@@ -680,7 +687,7 @@
     margin-top: 40px;
   }
   .tyh__janela {
-    width: min(68vw, 300px);
+    width: min(78vw, 330px);
   }
   .tyh__flor--desktop {
     display: none;
@@ -1294,8 +1301,8 @@ body:has(.ty-scope[data-theme="night"]) {
   max-height: 620px;
   left: 38%;
   bottom: -18%;
-  background: radial-gradient(closest-side, rgba(226, 182, 118, 0.3), rgba(196, 140, 80, 0.1) 55%, transparent);
-  mix-blend-mode: screen;
+  /* sem mix-blend-mode: screen — mistura numa camada que anda era refeita a cada quadro */
+  background: radial-gradient(closest-side, rgba(236, 196, 132, 0.26), rgba(206, 150, 90, 0.09) 55%, transparent);
   animation: ty-vivo-luz-ouro 22s ease-in-out infinite alternate;
 }
 @keyframes ty-vivo-luz-ouro {
@@ -1372,11 +1379,6 @@ body:has(.ty-scope[data-theme="night"]) {
 .ty-vivo[data-tom="dia"] .ty-vivo__borda {
   background: radial-gradient(130% 95% at 50% 42%, transparent 55%, rgba(231, 210, 216, 0.6) 100%);
   box-shadow: inset 0 0 120px 20px rgba(214, 160, 180, 0.25);
-}
-@media (min-width: 901px) {
-  .ty-vivo__luz--ouro {
-    filter: blur(50px);
-  }
 }
 @media (max-width: 767px), (hover: none) {
   .ty-vivo__chao::before {
@@ -1628,8 +1630,9 @@ body:has(.ty-scope[data-theme="night"]) {
 }
 .ty-visor__seta--ant {
   left: max(16px, 3vw);
+  /* o translate vale fora do giro: -50% centra igual à seta da direita */
   rotate: 180deg;
-  translate: 0 50%;
+  translate: 0 -50%;
 }
 .ty-visor__seta--prox {
   right: max(16px, 3vw);
@@ -1986,185 +1989,6 @@ body:has(.ty-scope[data-theme="night"]) {
   }
 }
 
-/* ============================================================
-   VÍDEOS DO INSTAGRAM — tocam no site, cada um leva ao post
-   ============================================================ */
-.tyri {
-  position: relative;
-  padding-block: clamp(64px, 9vh, 110px);
-  background:
-    radial-gradient(60% 60% at 20% 0%, rgba(214, 120, 152, 0.16), transparent 70%),
-    linear-gradient(180deg, #f9f1f2 0%, #f4e6e9 100%);
-}
-.tyri__topo {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 26px;
-}
-.tyri__titulo {
-  margin: 0;
-  font-size: clamp(30px, 4vw, 56px);
-  font-weight: 600;
-  letter-spacing: -0.04em;
-  line-height: 1.04;
-  color: var(--t-ink);
-}
-.tyri__titulo em {
-  font-style: normal;
-  color: var(--t-rosa-texto);
-}
-.tyri__setas {
-  display: flex;
-  gap: 8px;
-}
-.tyri__seta {
-  position: relative;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: 1px solid rgba(109, 21, 48, 0.18);
-  background: #fff;
-  color: var(--t-ink);
-  box-shadow: 0 10px 24px -14px rgba(75, 12, 32, 0.5);
-  cursor: pointer;
-}
-.tyri__seta::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: currentColor;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2.5 8h10.4M9 3.8 13.2 8 9 12.2' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 16px no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2.5 8h10.4M9 3.8 13.2 8 9 12.2' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 16px no-repeat;
-}
-.tyri__seta--ant {
-  rotate: 180deg;
-}
-.tyri__trilho {
-  display: flex;
-  gap: clamp(12px, 1.4vw, 20px);
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  --tyri-margem: max(var(--t-gutter), calc((100vw - var(--t-max)) / 2 + var(--t-gutter)));
-  padding: 10px var(--tyri-margem) 30px;
-  /* o encaixe respeita a margem: o primeiro vídeo não cola na borda */
-  scroll-padding-inline: var(--tyri-margem);
-}
-.tyri__trilho::-webkit-scrollbar {
-  display: none;
-}
-.tyri__reel,
-.tyri__perfil {
-  position: relative;
-  flex: none;
-  width: clamp(220px, 21vw, 300px);
-  aspect-ratio: 9 / 16;
-  margin: 0;
-  border-radius: 26px;
-  overflow: hidden;
-  scroll-snap-align: start;
-  background: #2c0818;
-  box-shadow:
-    0 30px 60px -30px rgba(75, 12, 32, 0.6),
-    0 10px 24px -14px rgba(109, 21, 48, 0.3);
-}
-.tyri__reel video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.tyri__veu {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(180deg, transparent 55%, rgba(26, 4, 14, 0.82) 100%);
-}
-.tyri__reel figcaption {
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: 14px;
-  display: grid;
-  gap: 10px;
-  color: #fff;
-}
-.tyri__legenda {
-  font-size: 13.5px;
-  line-height: 1.35;
-}
-.ty-scope a.tyri__ver {
-  justify-self: start;
-  display: inline-flex;
-  align-items: center;
-  height: 38px;
-  padding: 0 16px;
-  border-radius: 999px;
-  font-size: 13.5px;
-  font-weight: 600;
-  color: #4b0c20;
-  background: linear-gradient(180deg, #ffffff 0%, #fbe1e9 100%);
-  box-shadow: 0 10px 24px -12px rgba(247, 150, 182, 0.9);
-}
-.tyri__som {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(26, 4, 14, 0.45);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  color: #fff;
-  cursor: pointer;
-}
-.tyri__som::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: currentColor;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 9v6h4l5 4V5L8 9H4zM17 9l4 6M21 9l-4 6' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 18px no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 9v6h4l5 4V5L8 9H4zM17 9l4 6M21 9l-4 6' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 18px no-repeat;
-}
-.tyri__som[data-som="true"]::before {
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 9v6h4l5 4V5L8 9H4zM16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 9v6h4l5 4V5L8 9H4zM16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-}
-.ty-scope a.tyri__perfil {
-  display: grid;
-  place-content: center;
-  gap: 4px;
-  text-align: center;
-  color: #fff;
-  background:
-    radial-gradient(80% 60% at 50% 30%, #7d1a3a, transparent 70%),
-    linear-gradient(180deg, #4b0c20, #1c0610);
-}
-.tyri__perfil span {
-  font-size: 14px;
-  opacity: 0.8;
-}
-.tyri__perfil b {
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-@media (max-width: 767px) {
-  .tyri__setas {
-    display: none;
-  }
-  .tyri__reel,
-  .tyri__perfil {
-    width: 64vw;
-  }
-}
-
 /* ---------- rodada de confirmação (Impeccable): contraste e ritmo ---------- */
 /* "Lash" da marca: rosé escuro no branco, rosé claro no escuro */
 .ty-scope .ty-brand__name em {
@@ -2225,7 +2049,10 @@ body:has(.ty-scope[data-theme="night"]) {
     .ty-rolo__trilho,
     .ty-rolo__cartao,
     .tyf-peca,
-    .tyf-giro > .tyf
+    .tyf-giro > .tyf,
+    .typf__flutua,
+    .typf__barra i,
+    .tynu__selo
   ),
 [data-fora] .ty-vivo__chao::before,
 [data-fora] .tyh__selo i::after {
@@ -2247,7 +2074,8 @@ body:has(.ty-scope[data-theme="night"]) {
    repetem): noite → faixa bordô → ameixa → marfim → bordô → noite com
    foto → rosé → vinho com ouro → champanhe → ameixa com foto → marfim.
    (Com todo o conteúdo: … noite com foto → marfim (A Tayssa) → ameixa
-   (estúdio) → rosé → marfim (vídeos) → champanhe (depoimentos) → vinho
+   (estúdio) → rosé (Instagram + portfólio) → noite rosé (números, em
+   vitrine.css) → champanhe (depoimentos) → vinho
    com ouro → champanhe (indicar) → rosé (atendimento) → ameixa com foto.)
    As seções que só entram com conteúdo da Tayssa também têm o seu.
    ============================================================ */
@@ -2255,7 +2083,7 @@ body:has(.ty-scope[data-theme="night"]) {
   --ty-folha: clamp(28px, 3.6vw, 48px);
 }
 /* a folha: cantos redondos no alto, sobe por cima da anterior */
-.ty-scope main > :is(.tyw, .tyfm, .tyct, .tysv, .tyab, .tyst, .tyco, .tyri, .tydp, .tyvi, .tyr, .tyat, .tycl),
+.ty-scope main > :is(.tyw, .tyfm, .tyct, .tysv, .tyab, .tyst, .tyco, .tynu, .tydp, .tyvi, .tyr, .tyat, .tycl),
 .ty-scope main + .typ {
   position: relative;
   z-index: 1;
@@ -2271,8 +2099,8 @@ body:has(.ty-scope[data-theme="night"]) {
 }
 
 /* ---------- claros ---------- */
-/* marfim: o branco do salão (Trabalho, A Tayssa, vídeos do Instagram, rodapé) */
-.ty-scope :is(.tyw, .tyab, .tyri),
+/* marfim: o branco do salão (Trabalho, A Tayssa, rodapé) */
+.ty-scope :is(.tyw, .tyab),
 .ty-scope main + .typ {
   --ty-tom: marfim;
   background:
@@ -2538,4 +2366,24 @@ html:has(.ty-scope) {
 }
 .ty-scope .ty-amb__foto img {
   filter: grayscale(1) sepia(0.6) hue-rotate(296deg) saturate(1.5) brightness(0.42) contrast(1.05) blur(2px);
+}
+
+/* valores que a Tayssa cadastrou (só aparecem quando existem) */
+.ty-scope .tysv__preco {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.5em;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--t-rosa-texto, #9c3a59);
+  text-shadow: none;
+}
+.ty-scope .ty-night .tysv__preco {
+  color: #f7c1d1;
+}
+.ty-scope .tyct__preco {
+  margin-left: 4px;
+  font-size: 0.86em;
+  font-weight: 600;
+  opacity: 0.85;
 }

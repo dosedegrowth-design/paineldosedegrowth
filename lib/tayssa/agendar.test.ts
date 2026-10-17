@@ -21,6 +21,7 @@ test("dia civil, sem virar por fuso", () => {
 test("valor do sinal", () => {
   assert.equal(reais(50), "R$ 50");
   assert.equal(reais(37.5), "R$ 37,50");
+  assert.equal(reais(1200), "R$ 1.200");
 });
 
 test("só dias com horário livre", () => {
@@ -60,4 +61,9 @@ test("manutenção sem técnica e sem nome ainda", () => {
   assert.match(m, /Serviço: Manutenção de cílios\n/);
   assert.doesNotMatch(m, /Nome:/);
   assert.match(m, /Horário: 10h30/);
+});
+
+test("com valor cadastrado, a mensagem leva o valor", () => {
+  const m = mensagemAgendamento({ servico: "Aplicação de cílios", tecnica: "Volume inglês", dia: "2026-10-23", hora: "14:00", nome: "Ana", valor: 220, sinal: 50 });
+  assert.match(m, /Horário: 14h\nValor: R\$ 220\nNome: Ana/);
 });
