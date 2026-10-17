@@ -2,24 +2,23 @@ import Link from "next/link";
 import { requireClientPage } from "@/lib/tayssa/auth/guards";
 import { getVipHome } from "@/lib/tayssa/queries/vip";
 import { ROUTES } from "@/lib/tayssa/config";
-import { dayLabel, dateLong, hhmm, isWithinHours, nowInBusinessTz, plural } from "@/lib/tayssa/format";
+import { dayLabel, hhmm, isWithinHours, plural } from "@/lib/tayssa/format";
 import { APPOINTMENT_STATUS_LABEL } from "@/lib/tayssa/types";
 import { LoyaltyCard } from "@/components/tayssa/vip/loyalty-card";
-import { RankingList } from "@/components/tayssa/vip/ranking-list";
 import { CountUp } from "@/components/tayssa/vip/count-up";
 import { ProgressRing } from "@/components/tayssa/vip/progress-ring";
-import { Timeline } from "@/components/tayssa/vip/timeline";
 import { MilestoneMoment, type Moment } from "@/components/tayssa/vip/milestone-moment";
-import { buildTimeline } from "@/lib/tayssa/timeline";
 import { toCardStamps } from "@/lib/tayssa/queries/vip";
 import { getPhotoLibrary } from "@/lib/tayssa/queries/photos";
 import { getPhotoAvailability } from "@/lib/tayssa/photos-server";
 import { assignPhotos } from "@/lib/tayssa/photos";
-import { Bloom } from "@/components/tayssa/flora/bloom";
+import { Icone, type IconeNome } from "@/components/tayssa/ui/icones";
+import type { CSSProperties } from "react";
 
 /**
- * A casa da cliente. Uma tela, de cima para baixo, na ordem do que ela
- * quer saber: como estou, meu cartão, meus pontos, quando eu volto.
+ * A casa da cliente. Leve: o nome dela, o cartão logo abaixo (como o de
+ * pagar no celular) e um painel de ícones que leva a cada parte do VIP.
+ * O detalhe mora nas telas de cada ícone; aqui fica o resumo em cores.
  */
 export default async function VipHome() {
   const user = await requireClientPage();
@@ -41,14 +40,6 @@ export default async function VipHome() {
   const moment: Moment | null = fresh
     ? { id: `${fresh.id}:${fresh.status}`, kind: fresh === released ? "released" : "reached", title: fresh.title }
     : null;
-  const timeline = buildTimeline({
-    services: o.recentServices,
-    benefits: o.benefits,
-    appointments: appointments.upcoming,
-    birthday: o.birthday,
-    loyalty: o.loyalty,
-    today: nowInBusinessTz(),
-  });
 
   const status = card.unrevealed
     ? `Você tem ${card.unrevealed} ${plural(card.unrevealed, "carimbo novo", "carimbos novos")} no cartão.`
@@ -60,22 +51,50 @@ export default async function VipHome() {
           ? `Você tem ${activeBenefits.length} ${plural(activeBenefits.length, "benefício desbloqueado", "benefícios desbloqueados")}.`
           : "Que bom te ver por aqui.";
 
+  const preenchidos = card.stamps.length;
+  const atalhos: { href: string; titulo: string; dica: string; icone: IconeNome; destaque?: boolean }[] = [
+    {
+      href: ROUTES.vipBook,
+      titulo: "Agendar",
+      dica: next ? `${dayLabel(next.scheduled_date)}, ${hhmm(next.scheduled_time)}` : "escolha o seu dia",
+      icone: "calendario",
+      destaque: true,
+    },
+    {
+      href: ROUTES.vipCard,
+      titulo: "Meu cartão",
+      dica: card.unrevealed
+        ? `${card.unrevealed} ${plural(card.unrevealed, "carimbo novo", "carimbos novos")}`
+        : `${preenchidos} de ${card.size} visitas`,
+      icone: "cartao",
+    },
+    {
+      href: ROUTES.vipBenefits,
+      titulo: "Benefícios",
+      dica: activeBenefits.length
+        ? `${activeBenefits.length} ${plural(activeBenefits.length, "desbloqueado", "desbloqueados")}`
+        : validating.length
+          ? "em validação"
+          : "os seus presentes",
+      icone: "presente",
+    },
+    { href: ROUTES.vipJourney, titulo: "Minha jornada", dica: `${o.points} pontos`, icone: "brilho" },
+    { href: `${ROUTES.vipBenefits}#indicar`, titulo: "Indicar alguém", dica: "uma amiga sua", icone: "coracao" },
+    { href: ROUTES.vipProfile, titulo: "Meu perfil", dica: "seus dados", icone: "olho" },
+  ];
+
   return (
     <>
       <div className="tyv-hello-wrap">
-        {/* a flor da parede do estúdio, abrindo no canto: o app é da mesma casa do site */}
-        <span className="tyv-flor" aria-hidden>
-          <Bloom kind="flor" seed={5} tom="magenta" />
-        </span>
         <h1 className="tyv-hello">
           Olá, <em>{user.displayName}</em>.
         </h1>
         <p className="tyv-sub">{status}</p>
       </div>
 
-      {moment ? <MilestoneMoment moment={moment} /> : null}
-
-      <div style={{ marginTop: 22 }}>
+      {/* o cartão logo abaixo do nome, como o cartão de pagar no celular:
+          toca e ele vira, com os carimbos e os pontos atrás */}
+      <div className="tyv-cartao-home">
         <LoyaltyCard
           cycle={card.cycle}
           size={card.size}
@@ -87,142 +106,103 @@ export default async function VipHome() {
           holderName={user.displayName}
           memberSince={user.profile?.vip_since ?? null}
           isVip={user.isVip}
+          points={o.points}
           withLink
         />
       </div>
 
-      <div className="tyv-kpis">
-        <div className="tyv-panel tyv-kpi tyv-kpi--ring">
-          <ProgressRing
-            progress={o.loyalty.next ? o.loyalty.progressToNext : o.points > 0 ? 1 : 0}
-            label={`${o.points} pontos${o.loyalty.next ? `, faltam ${o.loyalty.pointsToNext} para ${o.loyalty.next.title}` : ""}`}
+      {moment ? <MilestoneMoment moment={moment} /> : null}
+
+      <nav className="tyv-hub" aria-label={`O seu espaço, ${user.displayName}`}>
+        {atalhos.map((a, i) => (
+          <Link
+            key={a.href}
+            href={a.href}
+            className="tyv-hub__item ty-ico-gatilho"
+            data-destaque={a.destaque ? "true" : undefined}
+            style={{ "--i": i } as CSSProperties}
           >
-            <CountUp value={o.points} className="tyv-ring__n" />
-            <span className="tyv-ring__unit">pontos</span>
-          </ProgressRing>
-          <p className="tyv-kpi__foot" style={{ marginTop: 10 }}>
-            {o.loyalty.next ? (
-              <>
-                faltam <strong>{o.loyalty.pointsToNext}</strong> para {o.loyalty.next.title}
-              </>
-            ) : o.points > 0 ? (
-              "todos os marcos alcançados"
-            ) : (
-              "sua primeira visita começa aqui"
-            )}
-          </p>
-        </div>
-        <div className="tyv-kpi-col">
-          <div className="tyv-panel tyv-kpi">
-            <span className="tyv-label">Ranking</span>
-            <p className="tyv-stat__n">
-              <CountUp value={ranking.position} />
-              <small>de {ranking.total}</small>
-            </p>
-            <p className="tyv-kpi__foot">
-              {ranking.total <= 1
-                ? "primeira do VIP"
-                : ranking.toClimb > 0
-                  ? `${ranking.toClimb} ${plural(ranking.toClimb, "ponto", "pontos")} para subir`
-                  : "você lidera o ranking"}
-            </p>
-          </div>
-          <div className="tyv-panel tyv-kpi">
-            <span className="tyv-label">Visitas</span>
-            <p className="tyv-stat__n">
-              <CountUp value={o.approvedCount} />
-            </p>
-            <p className="tyv-kpi__foot">
-              {o.lastServiceDate ? `última em ${dateLong(o.lastServiceDate)}` : "confirmadas pela Tayssa"}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <section className="tyv-section">
-        <Link href={ROUTES.vipBook} className="tyv-btn tyv-btn--accent">
-          Agendar meu horário
-        </Link>
-        {next ? (
-          <div className="tyv-panel" style={{ marginTop: 12 }}>
-            <div className="tyv-row" style={{ paddingTop: 0 }}>
-              <div>
-                <span className="tyv-label">Próximo horário</span>
-                <p style={{ fontSize: 17, marginTop: 6 }}>
-                  {dayLabel(next.scheduled_date)} · {hhmm(next.scheduled_time)}
-                </p>
-                <p className="tyv-sub" style={{ fontSize: 13 }}>
-                  {next.service_name} · {APPOINTMENT_STATUS_LABEL[next.status]}
-                </p>
-              </div>
-              <Link href={ROUTES.vipBook} className="tyv-link" style={{ opacity: 0.75 }}>
-                Ver
-              </Link>
-            </div>
-          </div>
-        ) : null}
-      </section>
-
-      <section className="tyv-section">
-        <div className="tyv-section-head">
-          <h2 className="tyv-h2">Ranking</h2>
-          <span className="tyv-label">Pontos confirmados</span>
-        </div>
-        {ranking.total > 1 ? (
-          <RankingList rows={ranking.rows} />
-        ) : (
-          <div className="tyv-panel">
-            <p className="tyv-empty">
-              Você é a primeira do VIP. O ranking ganha vizinhas conforme a Tayssa abre acesso para novas clientes.
-            </p>
-          </div>
-        )}
-      </section>
-
-      <section className="tyv-section">
-        <div className="tyv-section-head">
-          <h2 className="tyv-h2">Benefícios</h2>
-          <Link href={ROUTES.vipBenefits} className="tyv-link" style={{ opacity: 0.75 }}>
-            Ver todos
+            <span className="tyv-hub__icone">
+              <Icone nome={a.icone} />
+            </span>
+            <span className="tyv-hub__titulo">{a.titulo}</span>
+            <span className="tyv-hub__dica">{a.dica}</span>
           </Link>
+        ))}
+      </nav>
+
+      <section className="tyv-section" aria-labelledby="resumo-titulo">
+        <div className="tyv-section-head">
+          <h2 className="tyv-h2" id="resumo-titulo">
+            Seu momento
+          </h2>
         </div>
-        <div className="tyv-panel">
-          {activeBenefits.length || validating.length ? (
-            <>
-              {activeBenefits.slice(0, 2).map((b) => (
-                <div key={b.id} className="tyv-row">
-                  <span style={{ fontSize: 15 }}>{b.title}</span>
-                  <span className="tyv-badge">Desbloqueado</span>
-                </div>
-              ))}
-              {validating.slice(0, 2).map((b) => (
-                <div key={b.id} className="tyv-row">
-                  <span style={{ fontSize: 15 }}>{b.title}</span>
-                  <span className="tyv-badge tyv-badge--quiet">Em validação</span>
-                </div>
-              ))}
-            </>
-          ) : (
-            <p className="tyv-empty">Seu próximo benefício está mais perto do que parece.</p>
-          )}
+        <div className="tyv-resumo">
+          <div className="tyv-resumo__item">
+            <ProgressRing
+              cor="azul"
+              size={92}
+              stroke={7}
+              progress={o.loyalty.next ? o.loyalty.progressToNext : o.points > 0 ? 1 : 0}
+              label={`${o.points} pontos${o.loyalty.next ? `, faltam ${o.loyalty.pointsToNext} para ${o.loyalty.next.title}` : ""}`}
+            >
+              <CountUp value={o.points} className="tyv-ring__n" />
+            </ProgressRing>
+            <span className="tyv-resumo__nome">Pontos</span>
+            <span className="tyv-resumo__dica">
+              {o.loyalty.next ? `faltam ${o.loyalty.pointsToNext}` : o.points > 0 ? "todos os marcos" : "começa aqui"}
+            </span>
+          </div>
+          <div className="tyv-resumo__item">
+            <ProgressRing
+              cor="amarelo"
+              size={92}
+              stroke={7}
+              progress={card.size ? preenchidos / card.size : 0}
+              label={`${preenchidos} de ${card.size} visitas no cartão`}
+            >
+              <span className="tyv-ring__n">
+                {preenchidos}
+                <small>/{card.size}</small>
+              </span>
+            </ProgressRing>
+            <span className="tyv-resumo__nome">Cartão</span>
+            <span className="tyv-resumo__dica">{card.size - preenchidos > 0 ? `faltam ${card.size - preenchidos}` : "completo"}</span>
+          </div>
+          <div className="tyv-resumo__item">
+            <ProgressRing
+              cor="vermelho"
+              size={92}
+              stroke={7}
+              progress={ranking.total ? (ranking.total - ranking.position + 1) / ranking.total : 0}
+              label={`Posição ${ranking.position} de ${ranking.total} no ranking`}
+            >
+              <span className="tyv-ring__n">
+                {ranking.position}º
+              </span>
+            </ProgressRing>
+            <span className="tyv-resumo__nome">Ranking</span>
+            <span className="tyv-resumo__dica">
+              {ranking.total <= 1 ? "a primeira" : ranking.toClimb > 0 ? `${ranking.toClimb} para subir` : "na frente"}
+            </span>
+          </div>
         </div>
       </section>
 
-      <section className="tyv-section">
-        <div className="tyv-section-head">
-          <h2 className="tyv-h2">Sua jornada</h2>
-          <Link href={ROUTES.vipProfile} className="tyv-link" style={{ opacity: 0.75 }}>
-            Histórico
+      {next ? (
+        <section className="tyv-section">
+          <Link href={ROUTES.vipBook} className="tyv-panel tyv-proximo">
+            <span className="tyv-proximo__dia">
+              <b>{dayLabel(next.scheduled_date)}</b>
+              <span>{hhmm(next.scheduled_time)}</span>
+            </span>
+            <span className="tyv-proximo__txt">
+              <b>{next.service_name}</b>
+              <span>{APPOINTMENT_STATUS_LABEL[next.status]}</span>
+            </span>
           </Link>
-        </div>
-        <div className="tyv-panel">
-          {timeline.upcoming.length || timeline.recent.length ? (
-            <Timeline data={timeline} />
-          ) : (
-            <p className="tyv-empty">Sua primeira visita confirmada abre a jornada.</p>
-          )}
-        </div>
-      </section>
+        </section>
+      ) : null}
     </>
   );
 }

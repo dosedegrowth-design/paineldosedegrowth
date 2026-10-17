@@ -19,6 +19,7 @@ export const ROUTES = {
   vipBook: "/tayssa/vip/agendar",
   vipBenefits: "/tayssa/vip/beneficios",
   vipProfile: "/tayssa/vip/perfil",
+  vipJourney: "/tayssa/vip/jornada",
   admin: "/tayssa/admin",
   adminClients: "/tayssa/admin/clientes",
   adminClientNew: "/tayssa/admin/clientes/novo",

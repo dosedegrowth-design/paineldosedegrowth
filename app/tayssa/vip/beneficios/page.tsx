@@ -32,7 +32,7 @@ export default async function BenefitsPage() {
   return (
     <>
       <h1 className="tyv-hello">
-        Seus <em>benefícios</em>.
+        {user.displayName}, <em>seus benefícios</em>.
       </h1>
       <p className="tyv-sub">
         {active.length
@@ -105,7 +105,7 @@ export default async function BenefitsPage() {
         </div>
       </section>
 
-      <section className="tyv-section">
+      <section className="tyv-section" id="indicar">
         <div className="tyv-section-head">
           <h2 className="tyv-h2">Indicações</h2>
           <span className="tyv-label">

@@ -41,7 +41,7 @@ export default async function ReferPage() {
         </TransitionLink>
       </header>
 
-      <main className="ty-container" style={{ paddingTop: "calc(var(--t-nav-h) + clamp(48px, 8vw, 120px))", paddingBottom: "clamp(80px, 10vw, 160px)" }}>
+      <main className="ty-container ty-dia" style={{ paddingTop: "calc(var(--t-nav-h) + clamp(48px, 8vw, 120px))", paddingBottom: "clamp(80px, 10vw, 160px)" }}>
         <div
           style={{
             display: "grid",

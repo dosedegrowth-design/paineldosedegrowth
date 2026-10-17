@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import "./vip.css";
+import "./vip-vivo.css";
 import { requireClientPage } from "@/lib/tayssa/auth/guards";
 import { getSettings } from "@/lib/tayssa/settings";
 import { renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { BottomNav } from "@/components/tayssa/vip/bottom-nav";
 import { PageEnter } from "@/components/tayssa/vip/page-enter";
 import { TyBrand } from "@/components/tayssa/ui/brand";
+import { FundoVivo } from "@/components/tayssa/ui/fundo-vivo";
 
 export const metadata: Metadata = {
   title: "Meu VIP",
@@ -28,7 +30,8 @@ export default async function VipLayout({ children }: { children: React.ReactNod
   );
   return (
     <div className="ty-scope tyv" data-theme="night">
-      <div className="ty-grain" aria-hidden />
+      {/* o mesmo fundo vivo do site, na versão do VIP: vinho com mais ouro */}
+      <FundoVivo tom="vip" className="tyv-fundo" />
       <header className="tyv-page tyv-top">
         <span className="tyv-brand">
           <TyBrand size="sm" />

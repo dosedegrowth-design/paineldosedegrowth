@@ -20,6 +20,7 @@ import type { RevealResult } from "@/lib/tayssa/actions/card";
 import type { CardStamp } from "@/lib/tayssa/types";
 import { ScratchSheet } from "@/components/tayssa/vip/scratch-sheet";
 import { useFinePointer } from "@/components/tayssa/ui/use-media";
+import { Bloom } from "@/components/tayssa/flora/bloom";
 
 const Lash = (
   <svg viewBox="0 0 24 24" aria-hidden>
@@ -53,6 +54,8 @@ export type LoyaltyCardProps = {
   memberSince?: string | null;
   isVip?: boolean;
   initialSide?: Side;
+  /** pontos confirmados: aparecem no verso, ao lado do ciclo */
+  points?: number;
 };
 
 const DEG = Math.PI / 180;
@@ -137,6 +140,7 @@ export function LoyaltyCard({
   memberSince = null,
   isVip = false,
   initialSide = "front",
+  points,
 }: LoyaltyCardProps) {
   const router = useRouter();
   const reduced = useReducedMotion() ?? false;
@@ -292,7 +296,10 @@ export function LoyaltyCard({
               <div className="tyc3__front">
                 <div className="tyc3__row">
                   <span className="tyc3__brand">
-                    <i aria-hidden>T</i>Tayssa <em>Lash</em>
+                    <span className="tyc3__flor" aria-hidden>
+                      <Bloom seed={5} tom="magenta" />
+                    </span>
+                    Tayssa <em>Lash</em>
                   </span>
                   {unrevealed.length ? (
                     <span className="tyc3__badge">
@@ -306,6 +313,10 @@ export function LoyaltyCard({
                 </div>
                 <div className="tyc3__row">
                   <span className="tyc3__chip" aria-hidden />
+                  {/* o símbolo de aproximação: é um cartão de pagar com o celular */}
+                  <svg className="tyc3__nfc" viewBox="0 0 24 24" aria-hidden>
+                    <path d="M8.5 8.5a5 5 0 0 1 0 7M12 6a8.5 8.5 0 0 1 0 12M15.5 3.5a12 12 0 0 1 0 17" />
+                  </svg>
                   <span className="tyc3__emblem" aria-hidden>
                     {Lash}
                   </span>
@@ -331,7 +342,13 @@ export function LoyaltyCard({
                 <span>
                   {size} visitas, <em>um presente.</em>
                 </span>
-                <span>Cartão {pad(cycle)}</span>
+                {typeof points === "number" ? (
+                  <span className="tyc3__pontos">
+                    <strong>{points}</strong> pontos
+                  </span>
+                ) : (
+                  <span>Cartão {pad(cycle)}</span>
+                )}
               </div>
               <div className="tyc3__grid">{slots}</div>
               <div className="tyc3__back-foot">

@@ -24,7 +24,7 @@ export default async function CardPage() {
   return (
     <>
       <h1 className="tyv-hello">
-        Seu <em>cartão</em>.
+        {user.displayName}, <em>seu cartão</em>.
       </h1>
       <p className="tyv-sub">
         {card.unrevealed

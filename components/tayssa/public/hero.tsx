@@ -158,6 +158,31 @@ export function Hero({
               {letras(segunda, 0.15 + primeira.length * 0.055 + 0.08)}
             </span>
           ) : null}
+          {/* o traço de assinatura: corre por baixo do nome e fecha num
+              laço, desenhado depois que a última letra chega */}
+          <svg className="tyh__assina" viewBox="0 0 720 70" preserveAspectRatio="none" aria-hidden focusable="false">
+            <defs>
+              <linearGradient id="tyh-assina-cor" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="0" stopColor="#f7c1d1" stopOpacity="0" />
+                <stop offset="0.18" stopColor="#f7c1d1" />
+                <stop offset="0.7" stopColor="#f08cad" />
+                <stop offset="1" stopColor="#e8bf86" />
+              </linearGradient>
+            </defs>
+            <motion.path
+              d="M6 44 C 120 30, 250 56, 400 40 S 610 24, 668 36 C 704 44, 708 18, 684 20 C 664 22, 672 48, 714 52"
+              fill="none"
+              stroke="url(#tyh-assina-cor)"
+              strokeWidth="3.2"
+              strokeLinecap="round"
+              initial={reduced ? false : { pathLength: 0, opacity: 0 }}
+              animate={entra ? { pathLength: 1, opacity: 1 } : undefined}
+              transition={{
+                pathLength: { duration: 1.4, delay: 0.25 + (primeira.length + (segunda?.length ?? 0)) * 0.055, ease: [0.65, 0, 0.35, 1] },
+                opacity: { duration: 0.2, delay: 0.25 + (primeira.length + (segunda?.length ?? 0)) * 0.055 },
+              }}
+            />
+          </svg>
         </motion.h1>
 
         <motion.p

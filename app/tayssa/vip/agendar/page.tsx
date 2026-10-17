@@ -18,7 +18,7 @@ export default async function BookPage() {
   return (
     <>
       <h1 className="tyv-hello">
-        Marcar <em>horário</em>.
+        {user.displayName}, <em>seu horário</em>.
       </h1>
       <p className="tyv-sub">Escolha o serviço, o dia e a hora. A Tayssa confirma em seguida.</p>
 

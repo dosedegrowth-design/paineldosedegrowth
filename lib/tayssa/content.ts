@@ -32,6 +32,17 @@ export type Depoimento = {
 
 export type Horario = { dias: string; horas: string };
 
+/** Um vídeo do Instagram que toca no próprio site, com o link do post. */
+export type ReelInstagram = {
+  /** arquivo do vídeo (public/tayssa/videos/instagram/… ou URL do Storage) */
+  video: string;
+  /** imagem de capa enquanto o vídeo carrega (opcional) */
+  poster?: string;
+  /** link da publicação no Instagram */
+  url: string;
+  legenda?: string;
+};
+
 export type ConteudoSite = {
   sobre: {
     /** 2 a 4 parágrafos curtos, na voz dela */
@@ -60,6 +71,8 @@ export type ConteudoSite = {
   };
   /** só com autorização de cada cliente — nunca escrito por nós */
   depoimentos: Depoimento[];
+  /** vídeos do Instagram que tocam no site (chegam no fim do projeto) */
+  instagram: ReelInstagram[];
   /** detalhes por slug do catálogo (vip.services) */
   servicos: Record<string, ServicoDetalhe>;
 };
@@ -69,6 +82,7 @@ export const CONTEUDO: ConteudoSite = {
   espaco: { descricao: null, endereco: null, mapaUrl: null },
   atendimento: { horarios: null, comoAgendar: null, politica: null, pagamento: null },
   depoimentos: [],
+  instagram: [],
   servicos: {},
 };
 

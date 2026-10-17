@@ -3,9 +3,18 @@
 import { useId, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
+/** Cores dos gráficos: as normais (azul, amarelo, vermelho) e o rosé da casa. */
+const CORES = {
+  rosa: ["#f1c4d2", "#b8578a"],
+  azul: ["#8ec5ff", "#3b82f6"],
+  amarelo: ["#ffe08a", "#f5b301"],
+  vermelho: ["#ff9a9a", "#e5484d"],
+} as const;
+export type CorAnel = keyof typeof CORES;
+
 /**
- * Anel de progresso. Um traço só, dourado indo ao cassis, que se
- * desenha quando a tela abre. O que vai no centro é de quem chama.
+ * Anel de progresso. Um traço só, que se desenha quando a tela abre. O que
+ * vai no centro é de quem chama.
  */
 export function ProgressRing({
   progress,
@@ -13,7 +22,9 @@ export function ProgressRing({
   stroke = 5,
   children,
   label,
+  cor = "rosa",
 }: {
+  cor?: CorAnel;
   /** 0..1 */
   progress: number;
   size?: number;
@@ -27,12 +38,12 @@ export function ProgressRing({
   const r = (size - stroke) / 2;
   const c = size / 2;
   return (
-    <div className="tyv-ring" style={{ width: size, height: size }} role="img" aria-label={label}>
+    <div className="tyv-ring" data-cor={cor} style={{ width: size, height: size }} role="img" aria-label={label}>
       <svg viewBox={`0 0 ${size} ${size}`} className="tyv-ring__svg" aria-hidden>
         <defs>
           <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#f1c4d2" />
-            <stop offset="1" stopColor="#b8578a" />
+            <stop offset="0" stopColor={CORES[cor][0]} />
+            <stop offset="1" stopColor={CORES[cor][1]} />
           </linearGradient>
         </defs>
         <circle className="tyv-ring__track" cx={c} cy={c} r={r} strokeWidth={stroke} />
