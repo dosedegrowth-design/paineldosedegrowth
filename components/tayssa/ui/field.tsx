@@ -32,7 +32,7 @@ export function TyInput({
         {...rest}
       />
       {error ? (
-        <span id={`${inputId}-err`} className="ty-field__error">
+        <span id={`${inputId}-err`} className="ty-field__error" role="alert">
           {error}
         </span>
       ) : hint ? (
@@ -62,10 +62,13 @@ export function TyTextarea({
         name={name}
         className="ty-field__input"
         aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${inputId}-err` : undefined}
         {...rest}
       />
       {error ? (
-        <span className="ty-field__error">{error}</span>
+        <span id={`${inputId}-err`} className="ty-field__error" role="alert">
+          {error}
+        </span>
       ) : hint ? (
         <span className="ty-field__hint">{hint}</span>
       ) : null}
@@ -89,11 +92,20 @@ export function TySelect({
       <label className="ty-field__label" htmlFor={inputId}>
         {label}
       </label>
-      <select id={inputId} name={name} className="ty-field__input" {...rest}>
+      <select
+        id={inputId}
+        name={name}
+        className="ty-field__input"
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${inputId}-err` : undefined}
+        {...rest}
+      >
         {children}
       </select>
       {error ? (
-        <span className="ty-field__error">{error}</span>
+        <span id={`${inputId}-err`} className="ty-field__error" role="alert">
+          {error}
+        </span>
       ) : hint ? (
         <span className="ty-field__hint">{hint}</span>
       ) : null}

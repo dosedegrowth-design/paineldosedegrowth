@@ -1,7 +1,7 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState, useTransition } from "react";
-import type { ComponentProps, FormEvent, ReactNode } from "react";
+import { useActionState, useState, useTransition } from "react";
+import type { ComponentProps, ReactNode } from "react";
 // (useState/useTransition usados no AccessLinkPanel)
 import {
   adminCreateClientAction,
@@ -35,7 +35,7 @@ type Base = {
 function Aviso({ id, error, hint }: { id: string; error?: string | null; hint?: ReactNode }) {
   if (error) {
     return (
-      <p id={`${id}-err`} className="tya-err">
+      <p id={`${id}-err`} className="tya-err" role="alert">
         {error}
       </p>
     );
@@ -271,7 +271,11 @@ export function AccessLinkPanel({ userId, name, phone, hasPassword }: { userId: 
           ) : null}
         </>
       ) : null}
-      {err ? <p className="tya-err">{err}</p> : null}
+      {err ? (
+        <p className="tya-err" role="alert">
+          {err}
+        </p>
+      ) : null}
       <div>
         <button
           type="button"

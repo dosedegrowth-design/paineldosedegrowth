@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import { ROUTES } from "@/lib/tayssa/config";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
@@ -45,6 +45,26 @@ const SECOES: { titulo: string; itens: Item[] }[] = [
   },
 ];
 
+const CHAVE_LATERAL = "tayssa_painel_lateral";
+const EVENTO_LATERAL = "tayssa:lateral";
+
+function lerLateral(): boolean {
+  try {
+    return window.localStorage.getItem(CHAVE_LATERAL) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function assinarLateral(aviso: () => void) {
+  window.addEventListener(EVENTO_LATERAL, aviso);
+  window.addEventListener("storage", aviso);
+  return () => {
+    window.removeEventListener(EVENTO_LATERAL, aviso);
+    window.removeEventListener("storage", aviso);
+  };
+}
+
 export const ROTAS_PAINEL = SECOES.flatMap((s) => s.itens.map((i) => ({ ...i, secao: s.titulo })));
 
 /**
@@ -54,25 +74,17 @@ export const ROTAS_PAINEL = SECOES.flatMap((s) => s.itens.map((i) => ({ ...i, se
  */
 export function AdminSidebar({ atencao }: { atencao: Atencao }) {
   const path = usePathname();
-  const [min, setMin] = useState(false);
-
-  useEffect(() => {
-    try {
-      setMin(window.localStorage.getItem("tayssa_painel_lateral") === "1");
-    } catch {
-      /* sem armazenamento: começa aberta, e tudo bem */
-    }
-  }, []);
+  // a escolha mora no aparelho: lida do localStorage como loja externa
+  // (no servidor, sempre aberta — sem divergência de hidratação)
+  const min = useSyncExternalStore(assinarLateral, lerLateral, () => false);
 
   const alternar = () => {
-    setMin((v) => {
-      try {
-        window.localStorage.setItem("tayssa_painel_lateral", v ? "0" : "1");
-      } catch {
-        /* idem */
-      }
-      return !v;
-    });
+    try {
+      window.localStorage.setItem(CHAVE_LATERAL, min ? "0" : "1");
+    } catch {
+      /* sem armazenamento: a lateral só não lembra da escolha */
+    }
+    window.dispatchEvent(new Event(EVENTO_LATERAL));
   };
 
   const ativo = (i: Item) => (i.exato ? path === i.href : path.startsWith(i.href));

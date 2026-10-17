@@ -66,14 +66,11 @@ export default async function ReferPage() {
                 atendimento e a Tayssa confirma, sua indicação entra na sua conta e o
                 benefício é liberado.
               </p>
-              {referral ? (
+              {/* só a descrição que a Tayssa escreveu no catálogo — o site não
+                  publica meta numérica (ela muda em Configurações) */}
+              {referral?.description ? (
                 <p className="ty-lead" style={{ marginTop: 22, fontSize: 18 }}>
                   {referral.description}
-                  {referral.threshold ? (
-                    <span className="ty-small" style={{ display: "block", marginTop: 6 }}>
-                      Após {referral.threshold} indicações confirmadas.
-                    </span>
-                  ) : null}
                 </p>
               ) : null}
               <ul style={{ margin: "34px 0 0", padding: 0, listStyle: "none", maxWidth: 460 }}>

@@ -1,96 +1,112 @@
-# Tayssa Lash — direção visual (out/2026)
+# Tayssa Lash — direção visual (atualizada em 17/out/2026)
 
 Contrato de design do produto inteiro. Quem for mexer em qualquer tela
-lê isto antes. Não é inspiração: é a regra da casa.
+lê isto antes. Substitui a versão de 15/out (neutomni.com, Montserrat,
+marfim/cassis): **a cliente não gostou da fonte e o visual estava
+quadrado**. O que vale agora está abaixo.
 
-## A referência e o que foi extraído dela
+## As duas referências
 
-Referência principal, inspecionada em 15/out: **neutomni.com** (medida no
-navegador, não de memória). O que faz ela funcionar, e que adotamos:
+1. **A flor pintada na parede do estúdio da Tayssa** (print de story que o
+   Lucas mandou em 16/out): flor grande vista de lado, pétalas longas e
+   chapadas em magenta-ameixa, com faixas de tom — pintura de parede, não
+   foto. O teto do estúdio é vinho. É daí que saem a flor da casa e a noite
+   vinho do site.
+2. **deltacafes.com** (estudado no navegador, desktop e celular, em
+   16/out): a linguagem de movimento e de forma. O que foi trazido:
+   - abertura: marca em contorno → palavras deslizam de trás dela → a
+     marca vira a janela que revela o site;
+   - cartaz em caixa-alta condensada com a palavra pequena em itálico
+     ligando a frase ("THE journey OF coffee");
+   - nav em pílula flutuante; botão em pílula com a seta num círculo;
+   - ícones animados (lá em Rive; aqui SVG);
+   - linha tracejada que se desenha com o scroll ligando etapas;
+   - colagem de fotos inclinadas em moldura, em volta do título;
+   - objetos flutuando em profundidades diferentes;
+   - fileira colorida de cartões logo depois da abertura.
 
-1. **Duas cores e ponto.** Uma cor de marca saturada sobre um fundo
-   quase-branco. Nada de gradiente decorativo, sombra ou card flutuante.
-   Bloco de cor é chapado.
-2. **A palavra é a imagem.** A marca ocupa a largura inteira da tela, com
-   as pontas tocando as bordas. Tipografia como elemento gráfico, não
-   como rótulo em cima de uma foto.
-3. **Sans neutra + itálico serifado dentro da frase.** A frase corre em
-   sans; a palavra que carrega emoção vira itálico serifado. É o gesto
-   que dá voz ao texto sem precisar de enfeite.
-4. **Mono como ficha técnica.** Rótulo, contador, hora, estado e
-   categoria vão em monoespaçada caixa-alta, pequena, bem espaçada.
-5. **Peso 400 em quase tudo.** A hierarquia vem de corpo, cor e estilo —
-   não de negrito.
-6. **Assimetria com ar.** Blocos desalinhados de propósito, muito branco,
-   ritmo vertical generoso.
+   O que **não** foi trazido: o marrom-café e o vermelho do Delta, os
+   pacotes de produto, o tom de marca de café. A identidade é da Tayssa.
 
-O que **não** copiamos: o vermelho, o humor de agência e o volume de
-movimento. A casa é outra.
+## Cor
 
-## A tradução para a Tayssa
+| Token | Valor | Uso |
+|---|---|---|
+| `--t-paper` | `#fbf7f6` | fundo do site (off-white, levemente rosado — não bege) |
+| `--t-blush` | `#f4e8ea` | faixas e superfícies |
+| `--t-vinho` | `#6d1530` | **a cor da marca** |
+| `--t-bordo` | `#4b0c20` | profundidade |
+| `--t-ameixa` | `#5b2346` | variação |
+| `--t-rosa` / `--t-rosa-soft` | `#b2566f` / `#d797a8` | rosa fechado; acento sobre o escuro |
+| `--t-ink` | `#2a0d18` | texto |
+| `--t-noir` | `#1a0810` | a noite (VIP, abertura, fim do site) — vinho, não café |
+| `--t-folha` | `#55704f` | **só** em folha, como pontuação |
+| magenta da parede | `#933b6c` (flora: `magenta`) | a flor da casa |
 
-| Elemento | Decisão |
-|---|---|
-| Fundo | marfim `--t-ivory` `#f4efe8` |
-| Marca / tinta | cassis `--t-cassis` `#6e2f45` |
-| Texto | `--t-ink` `#1a1512`, secundário `--t-umber` |
-| Dourado | **reservado ao VIP** (cartão, carimbo, benefício). No site público, quase nunca |
-| Sans | Montserrat 200/300/400/500/600 — escolha explícita do Lucas, fica |
-| Itálico serifado | **Bodoni Moda itálico**, só em `<em>` dentro de título ou frase |
-| Mono | JetBrains Mono, só em rótulo/contador/estado |
+Dourado: só no VIP e só no que já está nas mãos da cliente (chip do
+cartão, carimbo novo, botão de liberar no painel). Nunca dominante.
+Nada de bege/marrom/dourado como base.
 
-A troca do `<em>` é global: todo título que já marcava ênfase ganhou a
-serifa itálica automaticamente, no site, no VIP e no painel.
+## Tipografia
 
-## Primitivos (em `app/tayssa/tayssa.css`)
+| Papel | Fonte | Onde |
+|---|---|---|
+| Cartaz | **League Gothic** (caixa-alta condensada) | títulos do site, a marca gigante |
+| Ligação | **Fraunces itálico** (eixo SOFT 100) | a palavra em `<em>` dentro do cartaz, minúscula, em vinho |
+| Corpo e rótulos | **DM Sans** | texto, botões, rótulos em caixa-alta espaçada; app e painel inteiros |
 
-- `.ty-wordmark` — a marca gigante; corpo sai do número de letras
-  (`--ty-letras`), então ela cabe na largura em qualquer tela.
-- `.ty-mono`, `.ty-rail` — ficha técnica; o trilho é `A + B + C = D`.
-- `.ty-block` (`--ink`, `--bone`) — bloco de cor chapado.
-- `.ty-oval` — rótulo em elipse desenhada.
-- `.ty-figure` — foto chapada com legenda em mono.
-- `.ty-split` (`--wide-left`, `--wide-right`, `--offset`) — grade
-  editorial assimétrica; `.ty-measure` para coluna de texto.
-- `.ty-index`, `.ty-rule` — numeração de seção e régua fina.
+A mono saiu. Parágrafo grande não é cartaz: volta para DM Sans leve.
+Tokens em `app/tayssa/tayssa.css`; regras em `app/tayssa/linguagem.css`.
 
-## Regra que manda em tudo: foto só se existir
+## Forma
 
-A biblioteca (`vip.photos`) hoje está **vazia**. Nenhuma tela pode
-depender de foto para ter composição:
+Nada quadrado: pílulas, círculos, arcos (`border-radius: 999px 999px 0 0`
+na janela de mídia), cantos de 18–36px em fotos e blocos.
 
-- `app/tayssa/page.tsx` filtra o que chega: só passa foto que existe
-  mesmo (URL do Storage ou arquivo presente em `public/`).
-- Seção que ficaria só com caixote vazio **se sustenta na tipografia**.
-  Quando a Tayssa subir fotos em `/admin/fotos`, elas entram no mesmo
-  lugar, sem redesenho.
-- Nunca usar foto de banco de imagens, nem de outra marca, como se fosse
-  trabalho dela. (Em 15/out o herói estava servindo o logo da MoveCar:
-  a foto foi arquivada.)
+## A flor
+
+`lib/tayssa/flora.ts` + `components/tayssa/flora/*`. Vetor gerado por
+código (determinístico — mesma semente, mesma flor no servidor e no
+navegador). É ilustração da identidade, **nunca** se passa por trabalho
+da Tayssa. Usada sempre em camadas (atrás e na frente da tipografia ou
+da mídia), cortada pela borda, com profundidade no scroll. Nunca solta
+como adesivo.
+
+## Movimento
+
+- Abertura (`intro-loader.tsx`): uma vez por sessão, ~2,8 s.
+- Entradas: linhas do cartaz sobem por máscara (a máscara tem folga para
+  o acento da caixa-alta); fotos entram girando; flores abrem pétala por
+  pétala.
+- Scroll: profundidade por peça (flores, colagem), faixa de serviços que
+  anda de lado, linha tracejada que se desenha, o "filme" que abre do arco
+  até a tela cheia, a página que escurece até a noite vinho no VIP.
+- Ícones (`components/tayssa/ui/icones.tsx`): se desenham ao entrar e têm
+  um gesto em loop; aceleram no hover.
+- Só `transform`, `opacity`, `clip-path`, `translate` animam.
+- `prefers-reduced-motion`: tudo aparece já no lugar, nada gira nem boia.
 
 ## Conteúdo
 
 Não inventar fato: nada de anos de experiência, número de clientes,
-prêmio, certificação, depoimento ou preço. O que não existe no banco ou
-nos ativos da marca não vai para a tela. Texto em português do Brasil,
-voz de profissional de beleza — não de agência.
+prêmio, certificação, depoimento ou preço. O que só a Tayssa pode dizer
+mora em `lib/tayssa/content.ts`, vazio de propósito; a seção só aparece
+no site quando o conteúdo existe. `?estrutura=1` mostra os espaços
+reservados marcados.
 
-## Movimento
+## Mídia
 
-Entrada por máscara (de baixo para cima), deslize curto no scroll,
-troca de estado com mola. Nada de parallax exagerado, cursor
-personalizado ou animação que atrase a leitura. `prefers-reduced-motion`
-desliga tudo — e a tela precisa continuar correta.
+Foto só se existir (`public/tayssa/photos/` ou a biblioteca do painel).
+Vídeo só se existir (`public/tayssa/videos/`, manifesto em
+`lib/tayssa/media.ts`, versões horizontal e vertical + pôster). Sem
+arquivo, o lugar cai para a foto e depois para o campo tonal com a flor.
+Nunca banco de imagens, nunca imagem gerada se passando por trabalho dela.
 
 ## As três experiências
 
-- **Site público** — a marca. Claro, editorial, desktop e celular com
-  composições próprias. É o produto principal.
-- **VIP** — o relacionamento. Noturno, celular primeiro, dourado
-  permitido. Cartão de 8 posições é peça assinatura.
-- **Painel** — a operação. Casco escuro na lateral, tela clara com
-  cards, mesma identidade (cassis), vocabulário em `app/tayssa/admin/admin.css`.
-
-Os três partilham o mesmo banco e as mesmas regras de negócio. Nenhum
-benefício é concedido automaticamente: o sistema propõe, a Tayssa
-confirma.
+- **Site** — a marca: claro e editorial no começo, escurece até a noite
+  vinho no VIP.
+- **App VIP** — noite vinho, celular primeiro, DM Sans, a flor no topo do
+  início, cartão com dourado contido.
+- **Painel** — lateral vinho-escuro, tela off-white, DM Sans. Sem
+  animação decorativa.

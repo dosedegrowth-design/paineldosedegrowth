@@ -115,7 +115,6 @@ export function MotionMedia({
           {posterH || posterV ? (
             <picture>
               {posterV ? <source media="(orientation: portrait)" srcSet={posterV} /> : null}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img className="tym__poster" src={posterH ?? posterV} alt="" fetchPriority={priority ? "high" : "auto"} />
             </picture>
           ) : photo ? (
