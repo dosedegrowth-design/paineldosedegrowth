@@ -63,6 +63,13 @@ export function PublicExperience({
   };
 
   const estrutura = useEstrutura();
+  // a colagem usa todas as fotos reais que existem, sem repetir
+  const colagem = [
+    ...(photos?.details ?? []),
+    ...(photos?.work ?? []),
+    ...Object.values(photos?.byService ?? {}),
+    ...(photos?.hero ? [photos.hero] : []),
+  ].filter((f, i, todas) => todas.findIndex((g) => g.src === f.src) === i);
   // o menu só aponta para seção que está na página
   const secoes = [
     { id: "trabalho", label: "Trabalho" },
@@ -88,7 +95,7 @@ export function PublicExperience({
         />
         <About business={settings.business} conteudo={CONTEUDO} portrait={photos?.portrait} instagramUrl={links.instagram} />
         <Studio conteudo={CONTEUDO} video={videos?.espaco} photo={photos?.studio} />
-        <Details instagramUrl={links.instagram} handle={links.handle} photos={photos?.details} />
+        <Details instagramUrl={links.instagram} handle={links.handle} photos={colagem} />
         <Testimonials conteudo={CONTEUDO} />
         <VipIntro benefits={benefits} />
         <ReferralCta />

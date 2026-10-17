@@ -1,29 +1,49 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useInView, useReducedMotion } from "framer-motion";
+import { motion, useInView, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import type { PhotoSlot } from "@/lib/tayssa/photos";
+import type { FloraTom } from "@/lib/tayssa/flora";
 import { RealPhoto } from "@/components/tayssa/ui/real-photo";
 import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
+import { Bloom } from "@/components/tayssa/flora/bloom";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
-/** A chamada, quebrada como o olho lê: três tempos, o último em itálico. */
-const CHAMADA = ["O trabalho sai", "do estúdio e vai", <em key="perfil">direto pro perfil.</em>];
+/** A chamada, em três tempos — o do meio em itálico, ligando o cartaz. */
+const CHAMADA = ["O trabalho sai", <em key="estudio">do estúdio e vai</em>, "direto pro perfil."];
 
 /**
- * O convite ao Instagram — hoje é lá que o trabalho dela vive.
+ * Lugares da colagem, em % da seção (centro da peça). As fotos ocupam os
+ * lugares na ordem; as flores ficam nos dela. `m` = posição no celular
+ * (sem `m`, a peça não aparece no celular): acima e abaixo do texto.
+ */
+type Lugar = { x: number; y: number; r: number; w: string; d: number; m?: [number, number] };
+const LUGARES_FOTO: Lugar[] = [
+  { x: 13, y: 22, r: -9, w: "clamp(120px, 15vw, 240px)", d: 0.8, m: [22, 7] },
+  { x: 86, y: 18, r: 7, w: "clamp(110px, 13vw, 210px)", d: 1.1, m: [72, 9] },
+  { x: 9, y: 74, r: 6, w: "clamp(110px, 12vw, 200px)", d: 0.5 },
+  { x: 90, y: 72, r: -6, w: "clamp(130px, 16vw, 250px)", d: 0.9, m: [76, 91] },
+  { x: 27, y: 90, r: -4, w: "clamp(100px, 10vw, 170px)", d: 1.3 },
+  { x: 72, y: 92, r: 10, w: "clamp(100px, 11vw, 180px)", d: 0.6, m: [26, 93] },
+];
+const LUGARES_FLOR: (Lugar & { tom: FloraTom; seed: number; kind: "flor" | "botao" })[] = [
+  { x: 30, y: 12, r: -18, w: "clamp(90px, 9vw, 150px)", d: 1.4, tom: "magenta", seed: 5, kind: "flor", m: [50, 4] },
+  { x: 70, y: 40, r: 22, w: "clamp(50px, 5vw, 80px)", d: 1.6, tom: "vinho", seed: 3, kind: "botao" },
+  { x: 4, y: 48, r: 12, w: "clamp(70px, 7vw, 120px)", d: 0.4, tom: "rosa", seed: 9, kind: "flor" },
+  { x: 96, y: 46, r: -14, w: "clamp(60px, 6vw, 100px)", d: 1.2, tom: "magenta", seed: 13, kind: "flor", m: [50, 96] },
+];
+
+/**
+ * O convite ao Instagram — a colagem do Delta, com o trabalho dela.
  *
- * A seção é um bloco chapado de cassis: a chamada em corpo grande, o @ em
- * mono grande e o link para o perfil. Ao redor, régua fina, ficha em mono
- * e uma coluna curta de texto. Sem nenhuma foto a composição já está
- * completa — nada de caixote vazio. Quando a biblioteca tiver foto, um
- * trilho de figuras chapadas entra embaixo, com legenda em mono.
+ * O cartaz fica no meio; em volta, as fotos reais em moldura de papel,
+ * inclinadas, cada uma numa profundidade (correm em velocidades
+ * diferentes no scroll) e as flores da casa entre elas. Elas entram
+ * girando quando a seção chega; no mouse, a foto endireita e sobe.
  *
- * Movimento: a massa de cor sobe por máscara e o conteúdo entra atrás
- * dela. O gatilho fica no invólucro, nunca no elemento recortado — um
- * elemento com `clip-path: inset(100%)` não é visto pelo observador e
- * ficaria preso fechado para sempre.
+ * Só entra foto que existe (a página filtra). Sem nenhuma, a colagem é só
+ * de flores e o cartaz continua inteiro.
  */
 export function Details({
   instagramUrl,
@@ -32,140 +52,101 @@ export function Details({
 }: {
   instagramUrl: string;
   handle: string;
-  /** já filtradas na página: lista vazia ou undefined = não existe foto */
+  /** já filtradas na página: só fotos reais */
   photos?: PhotoSlot[];
 }) {
+  const ref = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
-  const caixa = useRef<HTMLDivElement>(null);
-  const naTela = useInView(caixa, { once: true, amount: 0.25 });
-  const abre = naTela || Boolean(reduced);
-  const fotos = photos ?? [];
-
-  /** entra junto com o bloco, em cascata curta */
-  const sobe = (delay: number) => ({
-    initial: reduced ? false : { opacity: 0, y: 16 },
-    animate: abre ? { opacity: 1, y: 0 } : reduced ? {} : { opacity: 0, y: 16 },
-    transition: { duration: 0.75, delay, ease: EASE },
-  });
+  const naTela = useInView(ref, { once: true, amount: 0.2 });
+  const entra = naTela || Boolean(reduced);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const fotos = (photos ?? []).slice(0, LUGARES_FOTO.length);
 
   return (
-    <section className="ty-section" id="instagram" aria-label="Instagram">
-      <div className="ty-container">
-        {/* ficha de cabeça: a rede de um lado, o perfil do outro */}
-        <Reveal className="ty-ig__topo" y={14}>
-          <span className="ty-mono ty-mono--ink">Instagram</span>
-          <span className="ty-mono">{handle}</span>
-        </Reveal>
-        <div className="ty-rule" />
-
-        <div className="ty-split ty-split--wide-right ty-split--offset ty-ig__grade">
-          {/* coluna curta: por que ir até lá */}
-          <div className="ty-ig__lado">
-            <Reveal>
-              <span className="ty-eyebrow">Antes de agendar</span>
-            </Reveal>
-            <Reveal delay={0.08}>
-              <p className="ty-lead ty-measure--tight">
-                Aqui o site conta o essencial: o que a casa faz e como funciona o clube. O
-                trabalho recente fica no Instagram — é lá que o olhar aparece de perto, um por
-                um.
-              </p>
-            </Reveal>
-            <Reveal delay={0.16}>
-              <span className="ty-oval">o trabalho vive lá</span>
-            </Reveal>
-          </div>
-
-          {/* o invólucro é quem o observador enxerga; o bloco é o recortado */}
-          <div ref={caixa}>
-            <motion.div
-              className="ty-block ty-ig__bloco"
-              initial={reduced ? false : { clipPath: "inset(100% 0 0 0)" }}
-              animate={abre ? { clipPath: "inset(0% 0 0 0)" } : reduced ? {} : { clipPath: "inset(100% 0 0 0)" }}
-              transition={{ duration: 1.05, ease: EASE }}
-            >
-              <motion.span className="ty-mono" {...sobe(0.18)}>
-                o perfil
-              </motion.span>
-              <MaskedLines
-                as="h2"
-                className="ty-display ty-ig__chamada"
-                lines={CHAMADA}
-                inView={false}
-                play={abre}
-                delay={0.26}
-              />
-              <motion.span className="ty-ig__arroba" {...sobe(0.5)}>
-                {handle}
-              </motion.span>
-              <motion.div className="ty-ig__acao" {...sobe(0.6)}>
-                <a
-                  href={instagramUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ty-ig__cta"
-                  aria-label={`Abrir o perfil ${handle} no Instagram`}
-                >
-                  Abrir o perfil
-                  <span className="ty-ig__seta" aria-hidden />
-                </a>
-                <span className="ty-mono">abre em nova aba</span>
-              </motion.div>
-            </motion.div>
-          </div>
-        </div>
-
-        {/* a ficha fecha a composição: A + B + C = o perfil */}
-        <Reveal className="ty-ig__ficha ty-rail" y={14}>
-          <span>Trabalho recente</span>
-          <i aria-hidden>+</i>
-          <span>Foto do estúdio</span>
-          <i aria-hidden>+</i>
-          <span>Sem banco de imagens</span>
-          <i aria-hidden>=</i>
-          <span className="ty-mono--accent">{handle}</span>
-        </Reveal>
+    <section ref={ref} className="tyco" id="instagram" aria-label="Instagram">
+      <div className="tyco__pecas" aria-hidden>
+        {fotos.map((foto, i) => (
+          <Peca key={foto.src} lugar={LUGARES_FOTO[i]} i={i} entra={entra} progresso={scrollYProgress} parado={Boolean(reduced)}>
+            <figure className="tyco__foto">
+              <RealPhoto photo={foto} ratio={4 / 5} sizes="(max-width: 899px) 40vw, 16vw" />
+              <figcaption>{handle}</figcaption>
+            </figure>
+          </Peca>
+        ))}
+        {LUGARES_FLOR.map((l, i) => (
+          <Peca key={`f${i}`} lugar={l} i={i + fotos.length} entra={entra} progresso={scrollYProgress} parado={Boolean(reduced)}>
+            <Bloom kind={l.kind} seed={l.seed} tom={l.tom} open={entra} delay={300 + i * 120} />
+          </Peca>
+        ))}
       </div>
 
-      {/* foto é bônus, nunca requisito: o trilho só existe se houver foto */}
-      {fotos.length > 0 ? (
-        <div className="ty-ig__fotos">
-          <div className="ty-container ty-ig__topo">
-            <span className="ty-mono ty-mono--ink">Do perfil</span>
-            <span className="ty-mono ty-num">
-              {String(fotos.length).padStart(2, "0")} {fotos.length === 1 ? "foto" : "fotos"}
-            </span>
-          </div>
-          <div className="ty-ig__rolo">
-            {fotos.map((foto, i) => (
-              <Peca key={`${foto.src}-${i}`} foto={foto} indice={i} handle={handle} />
-            ))}
-          </div>
-        </div>
-      ) : null}
+      <div className="tyco__centro">
+        <Reveal y={12}>
+          <span className="ty-mono ty-mono--ink">Instagram · {handle}</span>
+        </Reveal>
+        <MaskedLines as="h2" className="ty-display tyco__chamada" lines={CHAMADA} />
+        <Reveal delay={0.15}>
+          <p className="ty-body tyco__texto">
+            Aqui o site conta o essencial: o que a casa faz e como funciona o clube. O trabalho recente fica no
+            Instagram — é lá que o olhar aparece de perto, um por um.
+          </p>
+        </Reveal>
+        <Reveal delay={0.25}>
+          <a
+            href={instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ty-btn ty-btn--solid"
+            aria-label={`Abrir o perfil ${handle} no Instagram`}
+          >
+            <span>Abrir o perfil</span>
+            <span className="ty-btn__arrow" aria-hidden />
+          </a>
+        </Reveal>
+      </div>
     </section>
   );
 }
 
-/** Peça do trilho: figura chapada, legenda em mono, entrada por máscara. */
-function Peca({ foto, indice, handle }: { foto: PhotoSlot; indice: number; handle: string }) {
-  const reduced = useReducedMotion();
-  const alvo = useRef<HTMLElement>(null);
-  const naTela = useInView(alvo, { once: true, amount: 0.2 });
-  const abre = naTela || Boolean(reduced);
+/** Uma peça da colagem: entra girando, corre no scroll na sua profundidade. */
+function Peca({
+  lugar,
+  i,
+  entra,
+  progresso,
+  parado,
+  children,
+}: {
+  lugar: Lugar;
+  i: number;
+  entra: boolean;
+  progresso: MotionValue<number>;
+  parado: boolean;
+  children: React.ReactNode;
+}) {
+  const y = useTransform(progresso, [0, 1], parado ? [0, 0] : [lugar.d * 140, lugar.d * -140]);
   return (
-    <figure ref={alvo} className="ty-figure ty-ig__peca">
+    <motion.div
+      className="tyco__peca"
+      data-celular={lugar.m ? "sim" : "nao"}
+      style={{
+        ["--x" as string]: `${lugar.x}%`,
+        ["--y" as string]: `${lugar.y}%`,
+        ["--mx" as string]: `${lugar.m?.[0] ?? lugar.x}%`,
+        ["--my" as string]: `${lugar.m?.[1] ?? lugar.y}%`,
+        width: lugar.w,
+        y,
+      }}
+    >
       <motion.div
-        initial={reduced ? false : { clipPath: "inset(100% 0 0 0)" }}
-        animate={abre ? { clipPath: "inset(0% 0 0 0)" } : reduced ? {} : { clipPath: "inset(100% 0 0 0)" }}
-        transition={{ duration: 1.05, delay: Math.min(indice, 4) * 0.06, ease: EASE }}
+        className="tyco__giro"
+        initial={parado ? false : { opacity: 0, scale: 0.55, rotate: lugar.r * 3 }}
+        animate={entra ? { opacity: 1, scale: 1, rotate: lugar.r } : parado ? { rotate: lugar.r } : {}}
+        transition={{ duration: 1.1, delay: 0.08 * i, ease: EASE }}
+        whileHover={parado ? undefined : { rotate: 0, scale: 1.06, transition: { duration: 0.4, ease: EASE } }}
       >
-        <RealPhoto photo={foto} hover sizes="(max-width: 899px) 62vw, 26vw" />
+        {children}
       </motion.div>
-      <figcaption>
-        <span>{foto.caption ?? handle}</span>
-        <span className="ty-num">{String(indice + 1).padStart(2, "0")}</span>
-      </figcaption>
-    </figure>
+    </motion.div>
   );
 }
