@@ -25,7 +25,7 @@ import { Testimonials } from "@/components/tayssa/public/testimonials";
 import { VisitInfo } from "@/components/tayssa/public/visit-info";
 import { Catalogo } from "@/components/tayssa/public/catalogo";
 import type { CategoriaCatalogo } from "@/lib/tayssa/catalogo";
-import type { ItemPortfolio } from "@/lib/tayssa/portfolio";
+import { completarComFotos, type ItemPortfolio } from "@/lib/tayssa/portfolio";
 import { CONTEUDO, temAtendimento, temSobre } from "@/lib/tayssa/content";
 import type { VideoAvailability } from "@/lib/tayssa/media-server";
 import { useEstrutura } from "@/components/tayssa/ui/estrutura";
@@ -118,7 +118,12 @@ export function PublicExperience({
           />
           <About business={settings.business} conteudo={CONTEUDO} portrait={photos?.portrait} instagramUrl={links.instagram} />
           <Studio conteudo={CONTEUDO} video={videos?.espaco} photo={photos?.studio} />
-          <Details instagramUrl={links.instagram} handle={links.handle} photos={colagem} portfolio={portfolio} />
+          <Details
+            instagramUrl={links.instagram}
+            handle={links.handle}
+            photos={colagem}
+            portfolio={completarComFotos(portfolio, colagem)}
+          />
           <Numeros numeros={settings.numeros} handle={links.handle} />
           <Testimonials conteudo={CONTEUDO} />
           <VipIntro benefits={benefits} />

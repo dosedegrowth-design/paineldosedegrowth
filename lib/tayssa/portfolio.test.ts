@@ -4,7 +4,7 @@
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { linkInstagram, montarPortfolio } from "./portfolio.ts";
+import { completarComFotos, linkInstagram, montarPortfolio } from "./portfolio.ts";
 
 const linha = (id: string, media_type: "image" | "video", extra: Record<string, unknown> = {}) => ({
   id,
@@ -72,4 +72,38 @@ test("legenda: a da foto, senão o produto; enquadramento vem junto", () => {
   assert.equal(b.legenda, "Fio a fio");
   assert.deepEqual(b.foco, { x: 30, y: 60, zoom: 1.4 });
   assert.equal(a.legenda, "Volume inglês");
+});
+
+test("sem mídia publicada, as fotos do site viram publicações", () => {
+  const fotos = [
+    { src: "/tayssa/photos/hero.jpg", alt: "olhar", ratio: 0.8, caption: "Olhar · aplicação" },
+    { src: "/tayssa/photos/work-01.jpg", alt: "trabalho", ratio: 0.8 },
+    { src: "/tayssa/photos/hero.jpg", alt: "repetida", ratio: 0.8 },
+  ];
+  const itens = completarComFotos([], fotos);
+  assert.deepEqual(
+    itens.map((i) => i.src),
+    ["/tayssa/photos/hero.jpg", "/tayssa/photos/work-01.jpg"],
+  );
+  assert.equal(itens[0].tipo, "foto");
+  assert.equal(itens[0].legenda, "Olhar · aplicação");
+  assert.equal(itens[0].url, null);
+});
+
+test("com mídia publicada, completa só até o mínimo e não repete", () => {
+  const publicados = montarPortfolio([linha("v", "video"), linha("f", "image")]);
+  const fotos = [
+    { src: "https://x.supabase.co/f", alt: "mesma", ratio: 1 },
+    { src: "/a.jpg", alt: "a", ratio: 1 },
+    { src: "/b.jpg", alt: "b", ratio: 1 },
+    { src: "/c.jpg", alt: "c", ratio: 1 },
+    { src: "/d.jpg", alt: "d", ratio: 1 },
+  ];
+  const itens = completarComFotos(publicados, fotos, 5);
+  assert.deepEqual(
+    itens.map((i) => i.src),
+    ["https://x.supabase.co/v", "https://x.supabase.co/f", "/a.jpg", "/b.jpg", "/c.jpg"],
+  );
+  const cheio = montarPortfolio(["1", "2", "3", "4", "5"].map((id) => linha(id, "image")));
+  assert.equal(completarComFotos(cheio, fotos).length, 5);
 });

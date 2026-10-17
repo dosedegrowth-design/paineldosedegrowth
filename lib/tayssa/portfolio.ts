@@ -7,6 +7,7 @@
  */
 import type { PhotoRow } from "@/lib/tayssa/types";
 import type { ReelInstagram } from "@/lib/tayssa/content";
+import type { PhotoSlot } from "@/lib/tayssa/photos";
 
 export type ItemPortfolio = {
   id: string;
@@ -74,4 +75,32 @@ export function montarPortfolio(linhas: Linha[], reels: ReelInstagram[] = [], ma
   return [...doConteudo, ...alternados]
     .filter((it) => (vistos.has(it.src) ? false : (vistos.add(it.src), true)))
     .slice(0, max);
+}
+
+/**
+ * Enquanto a Mídia do painel tem pouco (ou nada) publicado, o portfólio
+ * completa com as fotos reais que o site já mostra — como publicações. Assim
+ * os celulares existem desde o primeiro dia; quando ela publicar, o trabalho
+ * dela entra na frente.
+ */
+export function completarComFotos(itens: ItemPortfolio[], fotos: PhotoSlot[], minimo = 5): ItemPortfolio[] {
+  if (itens.length >= minimo) return itens;
+  const usados = new Set(itens.map((i) => i.src));
+  const extras = fotos
+    .filter((f) => f.src && !usados.has(f.src))
+    .filter((f, i, todas) => todas.findIndex((g) => g.src === f.src) === i)
+    .slice(0, minimo - itens.length)
+    .map(
+      (f, i): ItemPortfolio => ({
+        id: `foto-${i}`,
+        tipo: "foto",
+        src: f.src,
+        poster: null,
+        legenda: f.caption ?? "",
+        alt: f.alt,
+        url: null,
+        foco: { x: 50, y: 50, zoom: 1 },
+      }),
+    );
+  return [...itens, ...extras];
 }

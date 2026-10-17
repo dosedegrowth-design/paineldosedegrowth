@@ -393,9 +393,9 @@
 .ty-scope .typf__todos:hover {
   background: #fff;
 }
-/* no computador todos os celulares aparecem: o botão só existe se sobra trabalho */
+/* no computador aparecem 5 celulares, no celular 4: o botão só onde sobra trabalho */
 @media (min-width: 900px) {
-  .typf__palco[data-quantos="5"] ~ .typf__rodape .typf__todos:not([data-escondidos]) {
+  .typf__todos[data-so-celular] {
     display: none;
   }
 }

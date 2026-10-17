@@ -40,8 +40,9 @@ export function PortfolioCelulares({ itens, handle, perfilUrl }: { itens: ItemPo
   const progresso = useProgressoRolagem(ref, ["start end", "end start"]);
   const [aberto, setAberto] = useState<number | null>(null);
   const vistos = itens.slice(0, LUGARES.length);
-  const noCelular = LUGARES.filter((l) => l.m).length;
-  const escondidos = itens.length - Math.min(itens.length, noCelular);
+  // o botão "Ver os N" só aparece quando sobra trabalho fora dos celulares da tela
+  const sobraNoCelular = itens.length > LUGARES.filter((l) => l.m).length;
+  const sobraNoComputador = itens.length > LUGARES.length;
 
   return (
     <div ref={ref} className="typf">
@@ -61,9 +62,14 @@ export function PortfolioCelulares({ itens, handle, perfilUrl }: { itens: ItemPo
         ))}
       </div>
       <div className="typf__rodape">
-        <span>Toque num celular para assistir aqui</span>
-        {itens.length > 1 ? (
-          <button type="button" className="typf__todos" data-escondidos={escondidos > 0 || undefined} onClick={() => setAberto(0)}>
+        <span>Toque num celular para ver aqui</span>
+        {sobraNoCelular ? (
+          <button
+            type="button"
+            className="typf__todos"
+            data-so-celular={sobraNoComputador ? undefined : ""}
+            onClick={() => setAberto(0)}
+          >
             Ver os {itens.length} trabalhos
           </button>
         ) : null}
