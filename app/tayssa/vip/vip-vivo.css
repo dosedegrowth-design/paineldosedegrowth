@@ -351,37 +351,6 @@ body:has(.tyv) {
   color: var(--t-fg-2);
 }
 
-/* ---------- a barra de baixo vira cápsula de vidro flutuante ---------- */
-.tyv .tyv-nav {
-  left: 12px;
-  right: 12px;
-  bottom: max(12px, env(safe-area-inset-bottom, 0px));
-  height: var(--tyv-nav-h);
-  padding-bottom: 0;
-  border-radius: 999px;
-  border: 1px solid var(--tyv-borda);
-  background: rgba(30, 6, 16, 0.72);
-  box-shadow: 0 20px 40px -18px rgba(0, 0, 0, 0.7);
-  max-width: calc(var(--tyv-max) - 24px);
-  margin-inline: auto;
-}
-.tyv .tyv-nav__item {
-  font-size: 11.5px;
-  letter-spacing: 0;
-  text-transform: none;
-  font-weight: 500;
-}
-.ty-scope .tyv a.tyv-nav__item {
-  color: rgba(255, 225, 234, 0.56);
-}
-.ty-scope .tyv a.tyv-nav__item[aria-current="page"] {
-  color: #fff;
-}
-.tyv .tyv-nav__item[aria-current="page"] svg {
-  color: var(--tyv-rosa);
-  filter: drop-shadow(0 4px 10px rgba(232, 92, 140, 0.6));
-}
-
 @media (prefers-reduced-motion: reduce) {
   .tyv-hub__item {
     animation: none;
@@ -394,7 +363,6 @@ body:has(.tyv) {
 .tyv .tyv-day__w,
 .tyv .tyv-label,
 .tyv .tyv-link,
-.tyv .tyv-nav__item,
 .tyv .tyv-ring__unit,
 .tyv .tyv-tl__item[data-tone="gold"] .tyv-tl__value,
 .tyv .tyv-tl__now span,
@@ -428,92 +396,112 @@ body:has(.tyv) {
   display: none;
 }
 
+
 /* ============================================================
-   A BARRA — cápsula de vidro vinho flutuando, como a do iPhone:
-   ícone cheio e lente de vidro atrás da aba atual; as outras em
-   contorno, rosé apagado. Rótulo pequeno e firme, sem sigla.
+   MENU NO TOPO — os três pontinhos abrem um cartão de vidro com os
+   destinos. Nada fica preso no rodapé tampando a tela (no iPhone, a
+   barra do Safari já mora ali).
    ============================================================ */
-.tyv .tyv-nav {
-  left: 14px;
-  right: 14px;
-  bottom: max(14px, env(safe-area-inset-bottom, 0px));
-  height: 68px;
-  padding: 0;
-  border: 0;
-  border-radius: 999px;
-  max-width: calc(var(--tyv-max) - 28px);
-  margin-inline: auto;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02) 60%),
-    rgba(42, 9, 22, 0.66);
-  -webkit-backdrop-filter: blur(22px) saturate(170%);
-  backdrop-filter: blur(22px) saturate(170%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 236, 242, 0.22),
-    inset 0 0 0 1px rgba(255, 214, 228, 0.12),
-    0 18px 40px -16px rgba(5, 0, 2, 0.75),
-    0 4px 14px -6px rgba(5, 0, 2, 0.5);
+.ty-scope .tyv a.tyv-brand {
+  color: inherit;
+  text-decoration: none;
 }
-.tyv .tyv-nav__in {
-  height: 100%;
-  padding: 6px;
-  gap: 2px;
+.tyv-top__acoes {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
-.tyv .tyv-nav__item {
-  position: relative;
-  min-height: 0;
-  height: 100%;
-  gap: 3px;
-  border-radius: 999px;
-  color: rgba(255, 225, 234, 0.6);
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  -webkit-tap-highlight-color: transparent;
+.tyv .tyv-menu__botao {
+  cursor: pointer;
+  color: rgba(255, 236, 242, 0.9);
   transition:
-    color 0.2s ease,
+    background-color 0.2s ease,
     transform 0.16s cubic-bezier(0.23, 1, 0.32, 1);
 }
-.tyv .tyv-nav__item::after {
-  content: none;
+.tyv .tyv-menu__botao svg {
+  fill: currentColor;
+  stroke: none;
 }
-.tyv .tyv-nav__item:active {
-  transform: scale(0.92);
+.tyv .tyv-menu__botao:active {
+  transform: scale(0.94);
 }
-.ty-scope .tyv a.tyv-nav__item {
-  color: rgba(255, 225, 234, 0.56);
+.tyv .tyv-menu__botao[data-aberto] {
+  background: rgba(255, 236, 242, 0.2);
 }
-.ty-scope .tyv a.tyv-nav__item[aria-current="page"] {
-  color: #fff;
-}
-.tyv .tyv-nav__item[aria-current="page"] svg {
-  color: #fff;
-  filter: none;
-}
-.tyv .tyv-nav__item .tyib,
-.tyv .tyv-nav__rotulo {
-  position: relative;
-  z-index: 1;
-}
-.tyv .tyv-nav__item .tyib {
-  width: 24px;
-  height: 24px;
-}
-/* a lente: vidro claro com brilho no alto, desliza entre as abas */
-.tyv .tyv-nav__lente {
-  position: absolute;
+.tyv-menu__veu {
+  position: fixed;
   inset: 0;
-  border-radius: 999px;
+  z-index: 60;
+  background: rgba(10, 2, 6, 0.42);
+}
+.tyv-menu {
+  position: fixed;
+  z-index: 61;
+  top: calc(env(safe-area-inset-top, 0px) + 66px);
+  /* alinhado à borda direita da coluna do app, no celular e no computador */
+  right: max(var(--tyv-gutter), calc((100vw - var(--tyv-max)) / 2 + var(--tyv-gutter)));
+  width: min(260px, calc(100vw - var(--tyv-gutter) * 2));
+  display: grid;
+  padding: 8px;
+  border-radius: 24px;
+  transform-origin: top right;
   background:
-    radial-gradient(80% 70% at 50% 0%, rgba(247, 193, 209, 0.3), transparent 70%),
-    rgba(255, 255, 255, 0.12);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.02) 60%),
+    rgba(40, 9, 21, 0.9);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.28),
-    inset 0 0 0 1px rgba(255, 214, 228, 0.16),
-    0 6px 16px -8px rgba(232, 92, 140, 0.55);
+    inset 0 1px 0 rgba(255, 236, 242, 0.2),
+    inset 0 0 0 1px rgba(255, 214, 228, 0.12),
+    0 28px 60px -20px rgba(5, 0, 2, 0.85);
+}
+.ty-scope .tyv a.tyv-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 50px;
+  padding: 6px 10px 6px 6px;
+  border-radius: 16px;
+  color: rgba(255, 236, 242, 0.86);
+  font-size: 15.5px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+.ty-scope .tyv a.tyv-menu__item:active {
+  background: rgba(255, 236, 242, 0.1);
+}
+.ty-scope .tyv a.tyv-menu__item[aria-current="page"] {
+  color: #fff;
+  font-weight: 600;
+  background: rgba(255, 236, 242, 0.1);
+}
+.tyv-menu__ico {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  color: #ffd9e4;
+  background: linear-gradient(150deg, rgba(178, 54, 95, 0.55), rgba(90, 15, 40, 0.55));
+  box-shadow: inset 0 1px 0 rgba(255, 236, 242, 0.18);
+}
+.tyv-menu__ico .tyib {
+  width: 21px;
+  height: 21px;
+}
+.tyv-menu__item[aria-current="page"] .tyv-menu__ico {
+  color: #2a0a12;
+  background: linear-gradient(180deg, var(--tyv-ouro-luz), var(--tyv-ouro-2));
 }
 @media (hover: hover) and (pointer: fine) {
-  .ty-scope .tyv a.tyv-nav__item:hover {
+  .ty-scope .tyv a.tyv-menu__item:hover {
+    background: rgba(255, 236, 242, 0.08);
     color: #fff;
+  }
+  .tyv .tyv-menu__botao:hover {
+    background: rgba(255, 236, 242, 0.16);
   }
 }

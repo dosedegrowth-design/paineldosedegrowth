@@ -6,7 +6,7 @@
  * outro com um cruzamento curto (`.tyib[data-cheio]`).
  */
 
-export type IconeBarraNome = "inicio" | "cartao" | "agenda" | "presente" | "perfil" | "grade" | "clientes" | "mais";
+export type IconeBarraNome = "inicio" | "cartao" | "agenda" | "presente" | "perfil" | "grade" | "clientes" | "mais" | "jornada";
 
 type Par = { linha: React.ReactNode; cheio: React.ReactNode };
 
@@ -16,6 +16,7 @@ const CARTAO = "M6 5.5h12a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-7a3 3 0
 const FOLHA = "M6.7 4.8h10.6a3.2 3.2 0 0 1 3.2 3.2v9.3a3.2 3.2 0 0 1-3.2 3.2H6.7a3.2 3.2 0 0 1-3.2-3.2V8a3.2 3.2 0 0 1 3.2-3.2z";
 const LACO =
   "M12 7.9c-1.1-2.5-3-3.8-4.4-3.2-1 .45-.95 1.9.35 2.7.95.5 2.4.5 4.05.5zM12 7.9c1.1-2.5 3-3.8 4.4-3.2 1 .45.95 1.9-.35 2.7-.95.5-2.4.5-4.05.5z";
+const BRILHO = "M12 3.6c.5 3.8 1.9 5.9 5.9 6.6-4 .7-5.4 2.8-5.9 6.6-.5-3.8-1.9-5.9-5.9-6.6 4-.7 5.4-2.8 5.9-6.6z";
 const quadrado = (x: number, y: number) =>
   `M${x + 2} ${y}h2.6a2 2 0 0 1 2 2v2.6a2 2 0 0 1-2 2H${x + 2}a2 2 0 0 1-2-2V${y + 2}a2 2 0 0 1 2-2z`;
 
@@ -98,6 +99,20 @@ const PARES: Record<IconeBarraNome, Par> = {
         <circle cx="9" cy="8.6" r="3.7" />
         <path d="M2.5 19.8c.5-3.6 3.1-5.8 6.5-5.8s6 2.2 6.5 5.8a.9.9 0 0 1-.9 1H3.4a.9.9 0 0 1-.9-1z" />
         <path className="tyib__traco" d="M15.3 5.5a3.1 3.1 0 1 1 1 6M17.5 14.6c2.1.5 3.4 2.1 3.7 4.6" />
+      </>
+    ),
+  },
+  jornada: {
+    linha: (
+      <>
+        <path d={BRILHO} />
+        <path d="M18.4 15.6c.2 1.4.7 2.2 2.1 2.4-1.4.3-1.9 1-2.1 2.4-.2-1.4-.7-2.1-2.1-2.4 1.4-.2 1.9-1 2.1-2.4z" />
+      </>
+    ),
+    cheio: (
+      <>
+        <path d={BRILHO} />
+        <path d="M18.4 15.6c.2 1.4.7 2.2 2.1 2.4-1.4.3-1.9 1-2.1 2.4-.2-1.4-.7-2.1-2.1-2.4 1.4-.2 1.9-1 2.1-2.4z" />
       </>
     ),
   },
