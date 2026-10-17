@@ -414,7 +414,7 @@
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  color: rgba(251, 227, 235, 0.45);
+  color: rgba(251, 227, 235, 0.66);
   font-size: 12.5px;
 }
 .tyl__rodape-link {

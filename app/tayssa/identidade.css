@@ -2146,3 +2146,33 @@ body:has(.ty-scope[data-theme="night"]) {
     width: 64vw;
   }
 }
+
+/* ---------- rodada de confirmação (Impeccable): contraste e ritmo ---------- */
+/* "Lash" da marca: rosé escuro no branco, rosé claro no escuro */
+.ty-scope .ty-brand__name em {
+  color: var(--t-rosa-texto);
+}
+.ty-scope :is(.ty-nav, .ty-night, [data-theme="night"], .tyv, .tyl) .ty-brand__name em {
+  color: #ffb3cc;
+}
+/* texto rosé dentro de cartão vinho (sobre o branco) vira rosé claro */
+.ty-scope .ty-block:not(.ty-block--blush) :is(.ty-mono, .ty-eyebrow, em) {
+  color: #f7c1d1;
+}
+/* os rótulos que repetiam o título da seção saem; o título manda */
+.ty-scope :is(.tyw__topo, .tysv__topo) {
+  display: none;
+}
+/* brilho com direção (sombra com deslocamento), não halo parado */
+.ty-scope :is(.ty-night, [data-theme="night"], .ty-block--ink) em {
+  text-shadow: 0 8px 28px rgba(240, 120, 165, 0.4);
+}
+.ty-scope :is(.ty-night, [data-theme="night"], .ty-block--ink)
+  :is(.ty-display, .ty-h, .tyw__titulo, .tysv__titulo, .tyvi__declaracao, .tyr__declaracao, .tycl__declaracao, .tyab__titulo, .tyst__titulo) {
+  text-shadow:
+    0 2px 0 rgba(18, 4, 10, 0.25),
+    0 14px 40px rgba(240, 120, 165, 0.24);
+}
+.tyl .ty-field__hint {
+  color: rgba(251, 227, 235, 0.72);
+}
