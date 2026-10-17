@@ -251,11 +251,20 @@ Produto separado dentro deste repo (por enquanto em `painel.dosedegrowth.com/tay
 | Agenda | `vip.appointments`. Regras em `settings.booking` (editáveis em Configurações → Agenda). Pedido nasce `requested`; a Tayssa confirma/recusa/cancela em `/admin/agenda`; "Realizado" registra a visita confirmada (`lib/tayssa/visits.ts` → pontos + carimbo) e liga `client_service_id` |
 | Middleware | host `tayssa.*` → rewrite de todo path para `/tayssa/...`; `/tayssa/vip*` e `/tayssa/admin*` sem cookie → `/tayssa/entrar` |
 | Fotos reais | `public/tayssa/photos/` com os nomes de `lib/tayssa/photos.ts`; sem arquivo, o slot mostra campo tonal (nunca imagem sintética) |
-| Testes | `node --experimental-strip-types --test lib/tayssa/rules.test.ts lib/tayssa/timeline.test.ts` |
+| Testes | `node --experimental-strip-types --test lib/tayssa/rules.test.ts lib/tayssa/timeline.test.ts lib/tayssa/catalogo.test.ts lib/tayssa/agendar.test.ts` |
+| Agendar pelo site | Todo "Agendar" do site público abre a folha `components/tayssa/public/agendar.tsx` (`LinkAgendar`, sem JS cai no WhatsApp): serviço, volume (produtos de cílios do catálogo), dia e horário livres (`getAgendaPublica()` — mesma regra do VIP, só dia/hora, nada de quem marcou), nome → WhatsApp com a mensagem de `lib/tayssa/agendar.ts` pedindo o Pix do sinal. Nada é gravado. Sinal em `settings.booking.deposit_reais` (default 50, Configurações → Agenda) |
+| Fundos | Cada tópico com uma cor da paleta e a seção seguinte subindo como folha de cantos redondos (bloco "UM FUNDO POR TÓPICO" no fim de `identidade.css`). Vizinhas nunca repetem cor |
 
 Cache: o cliente `vipDb()` usa `fetch` com `cache: "no-store"` e as páginas públicas do Tayssa são `force-dynamic`. Antes o Next pré-renderizava a home e guardava a resposta do banco por um ano (o site mostrava foto/serviço antigos depois do deploy).
 
 Datas: o servidor roda em UTC — use `nowInBusinessTz()` (`lib/tayssa/format.ts`) em qualquer lógica de "hoje", nunca `new Date()` cru.
+
+Fluidez (medido com CPU 4x mais lenta, 390×844 @3x): rolagem foi de 28 fps / 91 quadros travados para ~51 fps / ~8; parada, toda seção roda a 59–60 fps (a abertura estava em 49 e o catálogo em 34). A iWin faz 60/0 no mesmo teste — ainda há distância na rolagem pesada. Regras que seguram isso:
+- Progresso de rolagem é `useProgressoRolagem` / `useRolagemY` (`components/tayssa/ui/rolagem.ts`), **nunca** `useScroll` do framer-motion (ele lia o layout ~350×/quadro).
+- Animação infinita só na tela: `PausaForaDaTela` marca `data-fora` em peças pequenas (`.ty-vivo`, `.ty-rolo`, `.ty-faixa`…) e a regra em `identidade.css` lista as **classes** que animam — nunca `[data-fora] *` (recalculava cada pétala de SVG, 30 ms por troca). Trilhos laterais: só o item na janela ganha `data-vivo`; vídeo dos rolos: um só toca (`data-tocar`, o mais central).
+- Nada de escrever tokens na raiz (`.ty-scope`/`body`) a cada quadro, nada de `mix-blend-mode` em camada fixa de tela inteira, nada de filtro na camada que a rolagem move (filtro vai no filho).
+- Sem `<Suspense>` em volta das seções da home: o React manda as grandes depois e a página pinta sem elas (o rodapé sobe — CLS 0,99).
+- Inter via `next/font/local` no layout (pré-carregada, reserva ajustada); campos com 16px no celular (painel incluso) para o iPhone não dar zoom.
 
 Regras que NÃO podem quebrar:
 - **Nenhum benefício é concedido automaticamente.** O sistema cria `client_benefits` em `pending_validation`; só o admin muda para `available`.
