@@ -925,3 +925,61 @@
     width: 62vw;
   }
 }
+
+/* ============================================================
+   Fechamento: flores flutuando (os pacotes do Delta) + ícones
+   ============================================================ */
+.tycl {
+  position: relative;
+  isolation: isolate;
+}
+.tycl__flutua {
+  z-index: 0;
+}
+.tycl__miolo {
+  position: relative;
+  z-index: 1;
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* cada flor boia no seu ritmo (translate compõe com o parallax) */
+  .tycl__flutua .tyf-peca {
+    animation: tyf-boiar 6s ease-in-out infinite alternate;
+  }
+  .tycl__flutua .tyf-peca:nth-child(2n) {
+    animation-duration: 7.5s;
+    animation-delay: -2s;
+  }
+  .tycl__flutua .tyf-peca:nth-child(3n) {
+    animation-duration: 5.2s;
+    animation-delay: -3.5s;
+  }
+}
+@keyframes tyf-boiar {
+  from {
+    translate: 0 -14px;
+  }
+  to {
+    translate: 0 14px;
+  }
+}
+.tycl__icone {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: 1px solid var(--t-line-strong);
+  color: var(--t-accent);
+  transition: background-color var(--t-ui) var(--t-ease-out), color var(--t-ui), border-color var(--t-ui);
+}
+.tycl__icone .tyi {
+  width: 30px;
+  height: 30px;
+}
+@media (hover: hover) {
+  .tycl__linha:hover .tycl__icone {
+    background: var(--t-accent);
+    color: var(--t-accent-fg);
+    border-color: var(--t-accent);
+  }
+}
