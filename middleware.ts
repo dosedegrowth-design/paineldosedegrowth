@@ -132,6 +132,8 @@ export async function middleware(request: NextRequest) {
     "/palavracomalma",
     // Página avulsa "cadê o link" (zoeira, sem destino)
     "/cade",
+    // Briefing que a cliente responde pelo link (a chave ?k= é conferida na página)
+    "/briefing",
     // Webhook receiver
     "/api/webhooks",
     // OAuth callback

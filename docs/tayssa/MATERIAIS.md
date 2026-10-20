@@ -41,6 +41,10 @@ reservado.
 
 ## Como mandar
 
+**Formulário (20/out/2026):** tudo isto virou um formulário que a Tayssa responde pelo celular, no domínio da DDG — `painel.dosedegrowth.com/briefing/tayssa?k=<chave>` (o link com a chave é mandado a ela pelo WhatsApp). Salva sozinho, aceita fotos e vídeos no original e já traz os serviços, a agenda e as regras do VIP de hoje para ela só conferir. As respostas ficam em `vip.briefing` e os arquivos em `vip.briefing_arquivos`.
+
+Outros caminhos, se precisar:
+
 Link do Google Drive com a pasta inteira (fotos e vídeos **originais**), ou
 direto no repositório em `public/tayssa/photos/` e `public/tayssa/videos/`
 com os nomes dos guias. Anexo pelo chat já falhou neste projeto.
