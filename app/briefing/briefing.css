@@ -475,10 +475,12 @@ body:has(.ddgb) {
 }
 .ddgb-regra__ganha {
   margin: 0;
-  padding-left: 12px;
+  padding: 10px 12px;
   font-size: 14.5px;
   line-height: 1.45;
-  border-left: 3px solid var(--ddgb-laranja);
+  background: var(--ddgb-cartao);
+  border: 1px solid var(--ddgb-linha);
+  border-radius: 10px;
 }
 
 .ddgb-link {
