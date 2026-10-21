@@ -297,6 +297,18 @@ Gotchas:
 - `tayssa-lash/` é espelho mecânico: rode `node scratchpad/sync-standalone.mjs`-equivalente (copiar `app/components/lib/public/docs/tayssa` + migrations `*vip*`, trocar `@/lib/tayssa/`→`@/lib/`, `@/components/tayssa/`→`@/components/`, `"/tayssa/`→`"/`) — nunca edite o espelho à mão.
 - ⚠️ Nessa mesma checagem, `trafego_ddg` **não está** na lista de schemas expostos (`pgrst.db_schemas`) — as queries `.schema("trafego_ddg")` do painel retornam PGRST106 na REST. Não foi alterado por estar fora do escopo do Tayssa.
 
+## Skills do projeto (`.claude/skills/`)
+
+Carregam sozinhas em toda sessão deste repo. Vieram da pasta "SKILL SITE / skills-criacao-de-site" do Drive da DDG (21/10/2026), onde o README lista a origem de cada uma — editar lá e copiar de novo para cá.
+- **Design e UI:** frontend-design (global), ui-ux-pro-max, ui-styling, design-system, design, brand, banner-design, slides, ui-design-system, tailwind-patterns
+- **Next/React:** nextjs-best-practices, react-best-practices, senior-fullstack, nextjs-supabase-auth, nextjs (Vercel)
+- **Copy/SEO:** copywriting, seo-optimizer, content-creator + agente `.claude/agents/search-ai-optimization-expert.md`
+- **Mídia:** ddg-studio (precisa de `KIE_API_KEY` no ambiente)
+- **Performance/testes:** web-performance-optimization, webapp-testing, playwright-skill (`npm install` dentro da pasta para usar o `run.js`), frontend-testing-debugging
+- **Referências:** firecrawl-scraper
+- **DDG:** regras-ddg (processo padrão, mobile primeiro, WhatsApp = logo oficial, sem travessão em texto de cliente, painel sem cara de IA, linha visual DDG), siteflow-core
+- **Extras (vindos do Codex):** frontend-app-builder, shadcn-best-practices, vercel-shadcn, figma-design-to-code, figma-implement-motion, magicpath, deployments-cicd, geist, v0-dev, vercel-cli
+
 ## Documentação relacionada
 
 - `AGENTS.md` — regra crítica sobre Next.js 16 (não confiar em training data)
