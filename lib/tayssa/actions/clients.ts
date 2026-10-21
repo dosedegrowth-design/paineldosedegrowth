@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { vipDb } from "@/lib/tayssa/db";
 import { assertAdmin } from "@/lib/tayssa/auth/guards";
 import { hashToken, newToken, revokeAllSessions } from "@/lib/tayssa/auth/session";
@@ -21,6 +22,13 @@ function revalidateAdmin() {
 async function issueAccessLink(userId: string, adminId: string, purpose: "setup" | "reset") {
   const token = newToken();
   const expires = new Date(Date.now() + PASSWORD_TOKEN_DAYS * 24 * 60 * 60 * 1000);
+  // um link novo aposenta os de senha que ainda não foram usados: só o último vale
+  await vipDb()
+    .from("password_tokens")
+    .update({ expires_at: new Date().toISOString() })
+    .eq("user_id", userId)
+    .in("purpose", ["setup", "reset"])
+    .is("used_at", null);
   const { error } = await vipDb().from("password_tokens").insert({
     user_id: userId,
     token_hash: hashToken(token),
@@ -53,7 +61,7 @@ export async function adminCreateClientAction(
       vip: bool(formData, "vip"),
     });
     const db = vipDb();
-    const { data: dupEmail } = await db.from("users").select("id").ilike("email", input.email).maybeSingle();
+    const { data: dupEmail } = await db.from("users").select("id").eq("email", input.email).maybeSingle();
     if (dupEmail) throw new BusinessError("Já existe uma conta com esse e-mail.", "email");
     if (input.phone) {
       const { data: dupPhone } = await db.from("users").select("id").eq("phone", input.phone).maybeSingle();
@@ -125,7 +133,7 @@ export async function adminUpdateClientAction(
     const { data: current } = await db.from("users").select("*").eq("id", id).eq("role", "client").maybeSingle();
     if (!current) throw new BusinessError("Cliente não encontrada.");
 
-    const { data: dupEmail } = await db.from("users").select("id").ilike("email", input.email).neq("id", id).maybeSingle();
+    const { data: dupEmail } = await db.from("users").select("id").eq("email", input.email).neq("id", id).maybeSingle();
     if (dupEmail) throw new BusinessError("Já existe uma conta com esse e-mail.", "email");
     if (input.phone) {
       const { data: dupPhone } = await db.from("users").select("id").eq("phone", input.phone).neq("id", id).maybeSingle();
@@ -161,6 +169,7 @@ export async function adminSetVipAction(input: {
 }): Promise<ActionResult> {
   return runAction("clients.setVip", async () => {
     const admin = await assertAdmin();
+    input = z.object({ id: z.string().uuid("Registro inválido"), vip: z.enum(["active", "none", "suspended"]) }).parse(input);
     const db = vipDb();
     const { data: profile } = await db.from("client_profiles").select("vip_status, vip_since").eq("user_id", input.id).maybeSingle();
     const p = profile as { vip_status: string; vip_since: string | null } | null;
@@ -189,6 +198,8 @@ export async function adminSetClientStatusAction(input: {
 }): Promise<ActionResult> {
   return runAction("clients.setStatus", async () => {
     const admin = await assertAdmin();
+    // aqui só ativa, desativa ou suspende: aprovar/recusar cadastro tem fluxo próprio
+    input = z.object({ id: z.string().uuid("Registro inválido"), status: z.enum(["active", "inactive", "suspended"]) }).parse(input);
     const db = vipDb();
     const { data } = await db.from("users").select("id, status").eq("id", input.id).eq("role", "client").maybeSingle();
     const u = data as Pick<UserRow, "id" | "status"> | null;
@@ -283,6 +294,7 @@ export async function adminIssueAccessLinkAction(input: {
 }): Promise<ActionResult<{ url: string; expiresAt: string }>> {
   return runAction("clients.accessLink", async () => {
     const admin = await assertAdmin();
+    input = { id: z.string().uuid("Registro inválido").parse(input.id) };
     const db = vipDb();
     const { data } = await db.from("users").select("id, password_hash, status").eq("id", input.id).maybeSingle();
     const u = data as Pick<UserRow, "id" | "password_hash" | "status"> | null;
@@ -304,6 +316,7 @@ export async function adminIssueAccessLinkAction(input: {
 export async function adminRevokeSessionsAction(input: { id: string }): Promise<ActionResult> {
   return runAction("clients.revokeSessions", async () => {
     const admin = await assertAdmin();
+    input = { id: z.string().uuid("Registro inválido").parse(input.id) };
     await revokeAllSessions(input.id);
     await logAudit({
       actorId: admin.id,

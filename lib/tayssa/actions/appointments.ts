@@ -100,36 +100,49 @@ export async function adminCompleteAppointmentAction(input: {
     }
 
     const db = vipDb();
-    let service: Pick<ServiceRow, "id" | "name" | "point_value"> | null = null;
+    let service: (Pick<ServiceRow, "name" | "point_value"> & { id: string | null }) | null = null;
     if (a.service_id) {
       const { data } = await db.from("services").select("id, name, point_value").eq("id", a.service_id).maybeSingle();
       service = (data as Pick<ServiceRow, "id" | "name" | "point_value"> | null) ?? null;
     }
     if (!service) {
       if (points === null) throw new BusinessError("O serviço saiu do catálogo: informe os pontos desta visita.", "points");
-      service = { id: a.service_id ?? "", name: a.service_name, point_value: points };
+      service = { id: a.service_id, name: a.service_name, point_value: points };
     }
 
-    const visit = await registerVisit({
-      adminId: admin.id,
-      clientId: a.client_id,
-      service,
-      serviceDate: a.scheduled_date,
-      points,
-      notes: parsed.note,
-      auditMeta: { appointment_id: a.id },
-    });
-
-    const { error } = await db
+    // reserva o horário primeiro: um segundo clique (ou outro aparelho) já
+    // encontra "done" e para aqui, em vez de contar a visita duas vezes
+    const { data: reservado, error: rErr } = await db
       .from("appointments")
-      .update({
-        status: "done",
-        client_service_id: visit.id,
-        admin_note: parsed.note,
-        reviewed_by: admin.id,
-        reviewed_at: new Date().toISOString(),
-      })
-      .eq("id", a.id);
+      .update({ status: "done", admin_note: parsed.note, reviewed_by: admin.id, reviewed_at: new Date().toISOString() })
+      .eq("id", a.id)
+      .in("status", ["requested", "confirmed"])
+      .select("id")
+      .maybeSingle();
+    if (rErr) throw new Error(rErr.message);
+    if (!reservado) throw new BusinessError("Esse horário já foi encerrado.");
+
+    let visit: { id: string; points: number };
+    try {
+      visit = await registerVisit({
+        adminId: admin.id,
+        clientId: a.client_id,
+        service,
+        serviceDate: a.scheduled_date,
+        points,
+        notes: parsed.note,
+        auditMeta: { appointment_id: a.id },
+      });
+    } catch (e) {
+      // devolve o horário como estava: dá para tentar "Realizado" de novo
+      await db
+        .from("appointments")
+        .update({ status: a.status, admin_note: a.admin_note, reviewed_by: a.reviewed_by, reviewed_at: a.reviewed_at })
+        .eq("id", a.id);
+      throw e;
+    }
+
+    const { error } = await db.from("appointments").update({ client_service_id: visit.id }).eq("id", a.id);
     if (error) throw new Error(error.message);
     await logAudit({
       actorId: admin.id,

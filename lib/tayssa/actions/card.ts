@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { vipDb } from "@/lib/tayssa/db";
 import { assertClient } from "@/lib/tayssa/auth/guards";
 import { logAudit } from "@/lib/tayssa/audit";
@@ -29,8 +30,9 @@ export type RevealResult = {
 export async function revealStampAction(input: { id: string }): Promise<ActionResult<RevealResult>> {
   return runAction("card.reveal", async () => {
     const me = await assertClient();
+    const id = z.string().uuid("Registro inválido").parse(input.id);
     const db = vipDb();
-    const { data } = await db.from("loyalty_stamps").select("*").eq("id", input.id).maybeSingle();
+    const { data } = await db.from("loyalty_stamps").select("*").eq("id", id).maybeSingle();
     const stamp = data as LoyaltyStampRow | null;
     if (!stamp || stamp.client_id !== me.id) throw new BusinessError("Carimbo não encontrado.");
 

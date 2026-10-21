@@ -223,72 +223,13 @@
   text-underline-offset: 3px;
 }
 
-/* ============================================================
-   Abertura — camadas: flores de fundo < marca < flores da frente
-   ============================================================ */
-.ty-hero {
-  isolation: isolate;
-}
-.ty-hero__flores {
-  z-index: 0;
-}
-.ty-hero__top,
-.ty-hero__marca {
-  position: relative;
-  z-index: 1;
-}
-.ty-hero__flores--frente {
-  z-index: 2;
-}
-.ty-hero__corpo,
-.ty-hero__ficha {
-  position: relative;
-  z-index: 3;
-}
-.ty-hero__figura {
-  margin: 0;
-}
-.ty-hero__janela-wrap {
-  position: relative;
-}
-/* a janela em arco: a forma da casa para foto e vídeo */
-.ty-hero__janela {
-  aspect-ratio: 4 / 5;
-  border-radius: 999px 999px 0 0;
-}
-.ty-hero__flores-janela {
-  inset: 0;
-  z-index: 2;
-}
-@media (min-width: 900px) {
-  .ty-hero__janela {
-    aspect-ratio: 3 / 4;
-  }
-  .ty-hero__figura {
-    width: 100%;
-    max-width: 400px;
-    justify-self: end;
-  }
-}
 /* tela baixa (notebook 13"): a janela encolhe para a abertura caber */
-@media (min-width: 900px) and (max-height: 820px) {
-  .ty-hero__figura {
-    max-width: 300px;
-  }
-}
-@media (max-width: 899px) {
-  .ty-hero__figura {
-    width: min(100%, 460px);
-    margin-inline: auto 0;
-  }
-}
 
 /* as flores saem pelas bordas de propósito — a página nunca rola de lado.
    `clip` (e não `hidden`) não cria contêiner de rolagem: o sticky segue. */
 .ty-scope {
   overflow-x: clip;
 }
-
 
 /* o app e o painel cobrem a tela inteira: em página curta, o chão claro
    do escopo público não pode aparecer embaixo da noite */

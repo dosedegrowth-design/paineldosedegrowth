@@ -93,7 +93,22 @@ export default async function TayssaHome() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      {/* "<" escapado: um nome com </script> não fecha a tag antes da hora */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+      />
+      {/* abertura só na primeira visita da sessão e sem "reduzir movimento":
+          decidido antes de o JS chegar — antes a tela ficava coberta até ele
+          carregar, mesmo para quem não ia ver a abertura (e sem JS, para sempre) */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `try{if(sessionStorage.getItem("ty_intro_seen")==="1"||matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("ty-sem-abertura")}catch(e){}`,
+        }}
+      />
+      <noscript>
+        <style>{`.ty-loader{display:none!important}`}</style>
+      </noscript>
       <PhotoAvailabilityProvider value={photos}>
         <PublicExperience
           settings={settings}

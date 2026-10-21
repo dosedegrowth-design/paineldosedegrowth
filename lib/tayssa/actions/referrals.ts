@@ -12,6 +12,7 @@ import {
   vipReferralSchema,
 } from "@/lib/tayssa/validation";
 import { BusinessError, runAction, str } from "@/lib/tayssa/actions/_helpers";
+import { ipDaRequisicao, passouDoLimite } from "@/lib/tayssa/limite";
 import type { ActionResult, ReferralRow, ReferralStatus } from "@/lib/tayssa/types";
 
 const ALREADY_CLIENT =
@@ -19,28 +20,35 @@ const ALREADY_CLIENT =
 const ALREADY_REFERRED = "Essa pessoa já foi indicada. Cada indicação vale uma vez.";
 const SELF = "Você não pode indicar a si mesma.";
 
+/** Por que essa indicação não pode contar (null = pode). */
+async function motivoInvalida(referredPhone: string): Promise<"cliente" | "indicada" | null> {
+  const db = vipDb();
+  const [user, ref] = await Promise.all([
+    db.from("users").select("id").eq("phone", referredPhone).limit(1),
+    db.from("referrals").select("id").eq("referred_phone", referredPhone).neq("status", "rejected").limit(1),
+  ]);
+  if (user.error) throw new Error(user.error.message);
+  if (ref.error) throw new Error(ref.error.message);
+  if (user.data?.length) return "cliente";
+  if (ref.data?.length) return "indicada";
+  return null;
+}
+
 async function assertReferredIsNew(referredPhone: string, referrerPhone: string | null) {
   if (referrerPhone && referrerPhone === referredPhone) {
     throw new BusinessError(SELF, "referred_phone");
   }
-  const db = vipDb();
-  const { data: existingUser } = await db
-    .from("users")
-    .select("id")
-    .eq("phone", referredPhone)
-    .maybeSingle();
-  if (existingUser) throw new BusinessError(ALREADY_CLIENT, "referred_phone");
-
-  const { data: existingReferral } = await db
-    .from("referrals")
-    .select("id")
-    .eq("referred_phone", referredPhone)
-    .neq("status", "rejected")
-    .maybeSingle();
-  if (existingReferral) throw new BusinessError(ALREADY_REFERRED, "referred_phone");
+  const motivo = await motivoInvalida(referredPhone);
+  if (motivo === "cliente") throw new BusinessError(ALREADY_CLIENT, "referred_phone");
+  if (motivo === "indicada") throw new BusinessError(ALREADY_REFERRED, "referred_phone");
 }
 
-/** Indicação pública: quem indica não precisa ter conta. */
+/**
+ * Indicação pública: quem indica não precisa ter conta. A resposta é a
+ * mesma quando a pessoa indicada já é cliente ou já foi indicada — o
+ * formulário aberto não revela a ninguém quem é cliente da Tayssa. Nesse
+ * caso nada é gravado como indicação; fica só o registro no audit.
+ */
 export async function submitPublicReferralAction(
   _prev: ActionResult<{ id: string }> | null,
   formData: FormData
@@ -53,20 +61,37 @@ export async function submitPublicReferralAction(
       referred_phone: str(formData, "referred_phone"),
       note: str(formData, "note"),
     });
-    await assertReferredIsNew(input.referred_phone, input.referrer_phone);
+    if (input.referrer_phone === input.referred_phone) throw new BusinessError(SELF, "referred_phone");
+    const ip = await ipDaRequisicao();
+    if (await passouDoLimite({ acoes: ["referral_submitted", "referral_ignored"], ip, maximo: 10, minutos: 60 })) {
+      throw new BusinessError("Muitas indicações daqui em pouco tempo. Tente mais tarde ou fale com a Tayssa pelo WhatsApp.");
+    }
+    const motivo = await motivoInvalida(input.referred_phone);
+    if (motivo) {
+      await logAudit({
+        actorId: null,
+        actorRole: "public",
+        action: "referral_ignored",
+        entityType: "referral",
+        entityId: null,
+        meta: { source: "public", motivo, ip },
+      });
+      return { id: "" };
+    }
 
     // Se quem indica já é cliente cadastrada, a indicação conta pra ela.
-    const { data: referrer } = await vipDb()
+    const { data: referrers } = await vipDb()
       .from("users")
       .select("id")
       .eq("phone", input.referrer_phone)
       .eq("role", "client")
-      .maybeSingle();
+      .limit(1);
+    const referrer = (referrers?.[0] ?? null) as { id: string } | null;
 
     const { data, error } = await vipDb()
       .from("referrals")
       .insert({
-        referrer_user_id: (referrer as { id: string } | null)?.id ?? null,
+        referrer_user_id: referrer?.id ?? null,
         referrer_name: input.referrer_name,
         referrer_phone: input.referrer_phone,
         referred_name: input.referred_name,
@@ -78,7 +103,8 @@ export async function submitPublicReferralAction(
       .select("id")
       .single();
     if (error) {
-      if (error.code === "23505") throw new BusinessError(ALREADY_REFERRED, "referred_phone");
+      // indicada no mesmo instante por outra pessoa: mesma resposta neutra
+      if (error.code === "23505") return { id: "" };
       throw new Error(error.message);
     }
     const row = data as { id: string };
@@ -88,7 +114,7 @@ export async function submitPublicReferralAction(
       action: "referral_submitted",
       entityType: "referral",
       entityId: row.id,
-      meta: { source: "public" },
+      meta: { source: "public", ip },
     });
     revalidatePath(ROUTES.admin, "layout");
     return { id: row.id };
@@ -107,6 +133,10 @@ export async function submitVipReferralAction(
       referred_phone: str(formData, "referred_phone"),
       note: str(formData, "note"),
     });
+    // sem o WhatsApp dela não dá para conferir a auto-indicação
+    if (!me.phone) {
+      throw new BusinessError("Antes de indicar, cadastre seu WhatsApp em Meu perfil.", "referred_phone");
+    }
     await assertReferredIsNew(input.referred_phone, me.phone);
 
     const { data, error } = await vipDb()

@@ -136,6 +136,7 @@ export async function adminPublishMediaAction(input: {
 }): Promise<ActionResult> {
   return runAction("photos.publish", async () => {
     const admin = await assertAdmin();
+    input = { ...input, id: z.string().uuid("Registro inválido").parse(input.id) };
     const meta = photoMetaSchema.parse({
       lash_style: input.lash_style,
       category: input.category,
@@ -188,6 +189,11 @@ export async function adminUpdatePhotoAction(input: {
 }): Promise<ActionResult> {
   return runAction("photos.update", async () => {
     const admin = await assertAdmin();
+    input = {
+      ...input,
+      id: z.string().uuid("Registro inválido").parse(input.id),
+      sort_order: z.number().int().min(-100000).max(100000).optional().parse(input.sort_order),
+    };
     const meta = photoMetaSchema.parse(input);
     const quadro =
       input.zoom === undefined ? {} : enquadramentoSchema.parse({ focus_x: input.focus_x, focus_y: input.focus_y, zoom: input.zoom });
@@ -217,6 +223,7 @@ export async function adminUpdatePhotoAction(input: {
 export async function adminArchivePhotoAction(input: { id: string; archived: boolean }): Promise<ActionResult> {
   return runAction("photos.archive", async () => {
     const admin = await assertAdmin();
+    input = z.object({ id: z.string().uuid("Registro inválido"), archived: z.boolean() }).parse(input);
     const { error } = await vipDb()
       .from("photos")
       .update({ status: input.archived ? "gallery" : "active" })
@@ -238,6 +245,7 @@ export async function adminArchivePhotoAction(input: { id: string; archived: boo
 export async function adminDeletePhotoAction(input: { id: string }): Promise<ActionResult> {
   return runAction("photos.delete", async () => {
     const admin = await assertAdmin();
+    input = { id: z.string().uuid("Registro inválido").parse(input.id) };
     const db = vipDb();
     const { data } = await db.from("photos").select("*").eq("id", input.id).maybeSingle();
     const photo = data as PhotoRow | null;
@@ -300,6 +308,7 @@ const linkInstagramSchema = z
 export async function adminSalvarLinkInstagramAction(input: { id: string; url: string }): Promise<ActionResult> {
   return runAction("photos.instagram", async () => {
     const admin = await assertAdmin();
+    input = { ...input, id: z.string().uuid("Registro inválido").parse(input.id) };
     const url = linkInstagramSchema.parse(input.url);
     const { data, error } = await vipDb().from("photos").update({ instagram_url: url }).eq("id", input.id).select("id");
     if (error) throw new Error(error.message);

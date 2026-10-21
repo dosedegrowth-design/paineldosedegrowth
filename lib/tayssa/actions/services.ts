@@ -1,7 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { vipDb } from "@/lib/tayssa/db";
+import { z } from "zod";
+import { logServerError, vipDb } from "@/lib/tayssa/db";
 import { assertAdmin, assertClient } from "@/lib/tayssa/auth/guards";
 import { logAudit } from "@/lib/tayssa/audit";
 import { ROUTES } from "@/lib/tayssa/config";
@@ -127,45 +128,65 @@ export async function adminReviewServiceAction(input: {
   return runAction("services.adminReview", async () => {
     const admin = await assertAdmin();
     const parsed = reviewSchema.parse({ id: input.id, note: input.note });
+    const decision = z.enum(["approve", "reject"]).parse(input.decision);
+    const pointsOverride = z.number().int().min(0).max(100000).nullable().optional().parse(input.points);
     const db = vipDb();
-    const { data } = await db.from("client_services").select("*").eq("id", parsed.id).single();
+    const { data } = await db.from("client_services").select("*").eq("id", parsed.id).maybeSingle();
     const row = data as ClientServiceRow | null;
     if (!row) throw new BusinessError("Registro não encontrado.");
     if (row.status !== "pending") throw new BusinessError("Esse registro já foi revisado.");
 
-    const points =
-      input.decision === "approve" && Number.isInteger(input.points) && (input.points as number) >= 0
-        ? (input.points as number)
-        : row.points;
+    const points = decision === "approve" && pointsOverride != null ? pointsOverride : row.points;
 
-    const { error } = await db
+    // só passa quem ainda está pendente: dois cliques não revisam duas vezes
+    const { data: revisado, error } = await db
       .from("client_services")
       .update({
-        status: input.decision === "approve" ? "approved" : "rejected",
+        status: decision === "approve" ? "approved" : "rejected",
         points,
         reviewed_by: admin.id,
         reviewed_at: new Date().toISOString(),
         review_note: parsed.note,
       })
-      .eq("id", parsed.id);
+      .eq("id", parsed.id)
+      .eq("status", "pending")
+      .select("id")
+      .maybeSingle();
     if (error) throw new Error(error.message);
+    if (!revisado) throw new BusinessError("Esse registro já foi revisado.");
+
+    if (decision === "approve") {
+      try {
+        await stampVisit(row.client_id, {
+          id: row.id,
+          service_name: row.service_name,
+          points,
+          reviewed_at: new Date().toISOString(),
+        });
+      } catch (e) {
+        // o carimbo não entrou: volta para pendente, dá para aprovar de novo
+        await db
+          .from("client_services")
+          .update({ status: "pending", points: row.points, reviewed_by: null, reviewed_at: null, review_note: row.review_note })
+          .eq("id", parsed.id);
+        throw e;
+      }
+    }
 
     await logAudit({
       actorId: admin.id,
       actorRole: "admin",
-      action: input.decision === "approve" ? "service_approved" : "service_rejected",
+      action: decision === "approve" ? "service_approved" : "service_rejected",
       entityType: "client_service",
       entityId: parsed.id,
       meta: { client_id: row.client_id, points, note: parsed.note },
     });
-    if (input.decision === "approve") {
-      await stampVisit(row.client_id, {
-        id: row.id,
-        service_name: row.service_name,
-        points,
-        reviewed_at: new Date().toISOString(),
-      });
-      await syncLoyaltyEligibility(row.client_id);
+    if (decision === "approve") {
+      try {
+        await syncLoyaltyEligibility(row.client_id);
+      } catch (e) {
+        logServerError("services.syncLoyalty", e);
+      }
     }
     revalidatePath(ROUTES.admin, "layout");
     revalidatePath(ROUTES.vip, "layout");

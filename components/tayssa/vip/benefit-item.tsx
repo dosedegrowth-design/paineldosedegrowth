@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { requestBenefitAction } from "@/lib/tayssa/actions/benefits";
 import { BENEFIT_STATUS_LABEL, type ClientBenefitStatus } from "@/lib/tayssa/types";
-import type { ClientBenefitView } from "@/lib/tayssa/queries/client";
+import { COM_RECADO, type BeneficioNaTela } from "@/lib/tayssa/beneficio-na-tela";
 import { dateLong } from "@/lib/tayssa/format";
 
 const HUMAN: Record<ClientBenefitStatus, string> = {
@@ -25,7 +25,7 @@ export function BenefitItem({
   whatsappUrl,
   isVip,
 }: {
-  item: ClientBenefitView;
+  item: BeneficioNaTela;
   whatsappUrl?: string;
   isVip: boolean;
 }) {
@@ -65,7 +65,7 @@ export function BenefitItem({
           ? ` Válido até ${dateLong(item.expires_at, true)}.`
           : ""}
       </p>
-      {item.admin_note && ["approved", "available", "rejected"].includes(status) ? (
+      {item.admin_note && COM_RECADO.includes(status) ? (
         <p className="tyv-sub" style={{ fontSize: 13, fontWeight: 300, marginTop: 8 }}>
           Tayssa: “{item.admin_note}”
         </p>

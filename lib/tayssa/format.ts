@@ -22,7 +22,10 @@ function toDate(v: string | Date): Date {
     const [y, m, d] = v.split("-").map(Number);
     return new Date(y, m - 1, d);
   }
-  return new Date(v);
+  // instante (timestamp): o dia no relógio da casa — no servidor (UTC) um
+  // registro das 22h já cairia no dia seguinte, e servidor e navegador
+  // escreveriam datas diferentes na mesma tela
+  return nowInBusinessTz(new Date(v));
 }
 
 /** "4 de setembro" */
@@ -105,22 +108,7 @@ export function nowInBusinessTz(base: Date = new Date()): Date {
   return new Date(v("year"), v("month") - 1, v("day"), v("hour") % 24, v("minute"), v("second"));
 }
 
-const WEEKDAYS = [
-  "domingo",
-  "segunda-feira",
-  "terça-feira",
-  "quarta-feira",
-  "quinta-feira",
-  "sexta-feira",
-  "sábado",
-];
-
 const WEEKDAYS_SHORT = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
-
-/** "sexta-feira" */
-export function weekdayLong(v: string | Date): string {
-  return WEEKDAYS[toDate(v).getDay()];
-}
 
 /** "sex" */
 export function weekdayShort(v: string | Date): string {

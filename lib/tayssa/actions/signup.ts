@@ -8,6 +8,7 @@ import { referralCode } from "@/lib/tayssa/codes";
 import { ROUTES } from "@/lib/tayssa/config";
 import { getSettings } from "@/lib/tayssa/settings";
 import { signupSchema } from "@/lib/tayssa/validation";
+import { ipDaRequisicao, passouDoLimite } from "@/lib/tayssa/limite";
 import { BusinessError, runAction, str } from "@/lib/tayssa/actions/_helpers";
 import type { ActionResult } from "@/lib/tayssa/types";
 
@@ -16,7 +17,8 @@ export type SignupResult = { firstName: string; email: string };
 /**
  * A cliente pede acesso pelo site. A conta nasce em `pending`, com a senha
  * que ela escolheu — mas nada abre até a Tayssa aprovar. Nenhuma sessão é
- * criada aqui.
+ * criada aqui. E-mail ou WhatsApp que já têm conta recebem a mesma resposta
+ * de um pedido novo: o formulário não revela a ninguém quem é cliente.
  */
 export async function signupAction(
   _prev: ActionResult<SignupResult> | null,
@@ -36,20 +38,31 @@ export async function signupAction(
       birthday: str(formData, "birthday"),
       message: str(formData, "message"),
     });
-    const db = vipDb();
-
-    const { data: dupEmail } = await db.from("users").select("id, status").ilike("email", input.email).maybeSingle();
-    if (dupEmail) {
-      const st = (dupEmail as { status: string }).status;
-      throw new BusinessError(
-        st === "pending"
-          ? "Esse e-mail já pediu acesso. A Tayssa está revisando."
-          : "Já existe uma conta com esse e-mail. Entre por aqui ou peça um novo link para a Tayssa.",
-        "email"
-      );
+    const ip = await ipDaRequisicao();
+    if (await passouDoLimite({ acoes: ["signup_requested", "signup_repeated"], ip, maximo: 5, minutos: 60 })) {
+      throw new BusinessError("Muitos pedidos daqui em pouco tempo. Tente mais tarde ou fale com a Tayssa pelo WhatsApp.");
     }
-    const { data: dupPhone } = await db.from("users").select("id").eq("phone", input.phone).maybeSingle();
-    if (dupPhone) throw new BusinessError("Esse WhatsApp já está em uma conta.", "phone");
+    const db = vipDb();
+    const firstName = input.name.trim().split(/\s+/)[0];
+
+    const [porEmail, porFone] = await Promise.all([
+      db.from("users").select("id").eq("email", input.email).limit(1),
+      db.from("users").select("id").eq("phone", input.phone).limit(1),
+    ]);
+    if (porEmail.error) throw new Error(porEmail.error.message);
+    if (porFone.error) throw new Error(porFone.error.message);
+    const existente = (porEmail.data?.[0] ?? porFone.data?.[0]) as { id: string } | undefined;
+    if (existente) {
+      await logAudit({
+        actorId: null,
+        actorRole: "public",
+        action: "signup_repeated",
+        entityType: "user",
+        entityId: existente.id,
+        meta: { ip, por: porEmail.data?.length ? "email" : "phone" },
+      });
+      return { firstName, email: input.email };
+    }
 
     const password_hash = await hashPassword(input.password);
     const now = new Date().toISOString();
@@ -77,7 +90,11 @@ export async function signupAction(
       vip_status: "none",
       referral_code: referralCode(),
     });
-    if (pErr) throw new Error(pErr.message);
+    if (pErr) {
+      // sem o perfil a conta fica pela metade (e o e-mail "já em uso"): desfaz
+      await db.from("users").delete().eq("id", id);
+      throw new Error(pErr.message);
+    }
 
     await logAudit({
       actorId: id,
@@ -85,9 +102,9 @@ export async function signupAction(
       action: "signup_requested",
       entityType: "user",
       entityId: id,
-      meta: { source: "self" },
+      meta: { source: "self", ip },
     });
     revalidatePath(ROUTES.admin, "layout");
-    return { firstName: input.name.trim().split(/\s+/)[0], email: input.email };
+    return { firstName, email: input.email };
   });
 }

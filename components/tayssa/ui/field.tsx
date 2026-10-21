@@ -112,16 +112,3 @@ export function TySelect({
     </div>
   );
 }
-
-export function TyCheckbox({
-  label,
-  name,
-  ...rest
-}: { label: ReactNode; name: string } & Omit<ComponentProps<"input">, "name" | "type">) {
-  return (
-    <label className="ty-check">
-      <input type="checkbox" name={name} {...rest} />
-      <span>{label}</span>
-    </label>
-  );
-}

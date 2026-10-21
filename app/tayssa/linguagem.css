@@ -20,7 +20,6 @@
 /* ---------- o cartaz ---------- */
 .ty-display,
 .ty-h,
-.ty-hero__linha,
 .tyw__titulo,
 .tyw__nome,
 .tyw__marca-nome,
@@ -35,7 +34,6 @@
 .tyfm__titulo,
 .tyab__titulo,
 .tyst__titulo,
-.ty-ig__chamada,
 .tyl__title {
   font-family: var(--t-font-display);
   font-weight: 400;
@@ -47,7 +45,6 @@
 /* a palavra que liga: minúscula, itálico macio, cor da casa */
 .ty-display em,
 .ty-h em,
-.ty-hero__linha em,
 .tyw__titulo em,
 .tyw__dizer em,
 .tysv__titulo em,
@@ -58,7 +55,6 @@
 .tyfm__titulo em,
 .tyab__titulo em,
 .tyst__titulo em,
-.ty-ig__chamada em,
 .tyl__title em {
   font-family: var(--t-font-serif);
   font-style: italic;
@@ -92,11 +88,6 @@
   margin-left: 0.04em;
 }
 
-/* tamanhos: a condensada ocupa metade da largura — o cartaz cresce */
-.ty-hero__linha {
-  font-size: clamp(46px, 5vw, 84px);
-  line-height: 0.92;
-}
 .tyw__titulo,
 .tysv__titulo {
   font-size: clamp(54px, 7.4vw, 128px);
@@ -115,8 +106,7 @@
 /* ---------- rótulos: grotesca espaçada, não máquina de escrever ---------- */
 .ty-mono,
 .ty-eyebrow,
-.ty-index,
-.ty-rail {
+.ty-index {
   font-family: var(--t-font-body);
   font-weight: 500;
 }
@@ -193,61 +183,6 @@
 /* ---------- abertura: tudo na primeira tela ----------
    Desktop: cartaz e frase à esquerda, a janela em arco em pé à direita,
    da nav até o chão (como a mídia do Delta). A ficha fecha embaixo. */
-@media (min-width: 900px) {
-  .ty-hero {
-    display: grid;
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
-    grid-template-rows: auto auto 1fr auto;
-    column-gap: clamp(32px, 4vw, 72px);
-    height: 100svh;
-    min-height: 620px;
-  }
-  .ty-hero__top {
-    grid-column: 1 / -1;
-  }
-  .ty-hero__marca {
-    grid-column: 1;
-    grid-row: 2;
-    margin: clamp(10px, 2vh, 28px) 0 0;
-    margin-inline: 0;
-    padding-inline: 0;
-  }
-  .ty-hero__marca .ty-wordmark {
-    font-size: min(calc((100vw - var(--t-gutter) * 2) * 0.62 / 3.3), 30svh);
-  }
-  .ty-hero__corpo {
-    display: contents;
-  }
-  .ty-hero__dizer {
-    grid-column: 1;
-    grid-row: 3;
-    align-self: end;
-  }
-  .ty-hero__figura {
-    grid-column: 2;
-    grid-row: 2 / 5;
-    align-self: stretch;
-    max-width: none;
-    justify-self: stretch;
-    min-height: 0;
-    display: flex;
-  }
-  .ty-hero__janela-wrap {
-    flex: 1;
-    min-height: 0;
-  }
-  .ty-hero__janela {
-    aspect-ratio: auto;
-    height: 100%;
-  }
-  .ty-hero__ficha {
-    grid-column: 1;
-    grid-row: 4;
-  }
-  .ty-hero__linha {
-    font-size: clamp(40px, min(4.6vw, 7.4svh), 84px);
-  }
-}
 
 /* ---------- nav: marca · pílula flutuante · ações ---------- */
 .ty-nav {
@@ -351,7 +286,6 @@
 /* a máscara das linhas não pode comer o acento da caixa-alta (Í, Ã, Ç):
    a linha do cartaz é apertada (0.9), então a janela da máscara ganha
    folga em cima e devolve o espaço com margem negativa */
-.ty-hero__linha,
 .ty-mask {
   padding-top: 0.16em;
   margin-top: -0.16em;
@@ -738,8 +672,7 @@
 .tyw__fecho-linha,
 .tysv__pe-linha,
 .tyr__regra-linha,
-.tydp__texto,
-.ty-h-sm {
+.tydp__texto {
   font-family: var(--t-font-body);
   font-weight: 300;
   letter-spacing: -0.02em;
@@ -748,8 +681,7 @@
 .tyw__fecho-linha em,
 .tysv__pe-linha em,
 .tyr__regra-linha em,
-.tydp__texto em,
-.ty-h-sm em {
+.tydp__texto em {
   font-family: var(--t-font-serif);
   font-style: italic;
   font-variation-settings: "SOFT" 100;

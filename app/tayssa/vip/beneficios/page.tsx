@@ -4,6 +4,7 @@ import { renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { dateLong, plural } from "@/lib/tayssa/format";
 import { REFERRAL_STATUS_LABEL } from "@/lib/tayssa/types";
 import { BenefitItem } from "@/components/tayssa/vip/benefit-item";
+import { beneficioNaTela } from "@/lib/tayssa/beneficio-na-tela";
 import { VipReferralForm } from "@/components/tayssa/vip/forms";
 
 /**
@@ -47,7 +48,7 @@ export default async function BenefitsPage() {
           </div>
           <div className="tyv-stack">
             {active.map((b) => (
-              <BenefitItem key={b.id} item={b} isVip={user.isVip} whatsappUrl={link(b.title, b.benefit?.type)} />
+              <BenefitItem key={b.id} item={beneficioNaTela(b)} isVip={user.isVip} whatsappUrl={link(b.title, b.benefit?.type)} />
             ))}
           </div>
         </section>
@@ -61,7 +62,7 @@ export default async function BenefitsPage() {
           </div>
           <div className="tyv-stack">
             {validating.map((b) => (
-              <BenefitItem key={b.id} item={b} isVip={user.isVip} />
+              <BenefitItem key={b.id} item={beneficioNaTela(b)} isVip={user.isVip} />
             ))}
           </div>
         </section>
@@ -155,7 +156,7 @@ export default async function BenefitsPage() {
           </div>
           <div className="tyv-stack">
             {past.slice(0, 4).map((b) => (
-              <BenefitItem key={b.id} item={b} isVip={user.isVip} />
+              <BenefitItem key={b.id} item={beneficioNaTela(b)} isVip={user.isVip} />
             ))}
           </div>
         </section>

@@ -65,7 +65,6 @@ function assinarLateral(aviso: () => void) {
   };
 }
 
-export const SECOES_PAINEL = SECOES;
 export type ItemPainel = Item;
 
 export const ROTAS_PAINEL = SECOES.flatMap((s) => s.itens.map((i) => ({ ...i, secao: s.titulo })));
@@ -161,7 +160,14 @@ export function AdminSidebar({
             <span>Ponto, benefício e horário só valem depois que você confirma.</span>
           </div>
         ) : null}
-        <button type="button" className="tya-side__toggle" onClick={alternar} title={min ? "Expandir" : "Recolher"}>
+        <button
+          type="button"
+          className="tya-side__toggle"
+          onClick={alternar}
+          title={min ? "Expandir" : "Recolher"}
+          aria-label={min ? "Expandir o menu" : "Recolher o menu"}
+          aria-expanded={!min}
+        >
           <Icone nome={min ? "expandir" : "recolher"} />
           {!min ? <span>Recolher</span> : null}
         </button>

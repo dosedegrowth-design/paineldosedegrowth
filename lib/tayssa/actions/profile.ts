@@ -20,14 +20,19 @@ export async function updateProfileAction(
       nickname: str(formData, "nickname"),
       phone: str(formData, "phone"),
     });
+    // o WhatsApp pode mudar, mas não sumir: é com ele que as indicações
+    // conferem que ninguém indica a si mesma
+    if (!input.phone && me.phone) {
+      throw new BusinessError("Seu WhatsApp não pode ficar vazio. Se mudou de número, escreva o novo.", "phone");
+    }
     if (input.phone) {
       const { data: dup } = await vipDb()
         .from("users")
         .select("id")
         .eq("phone", input.phone)
         .neq("id", me.id)
-        .maybeSingle();
-      if (dup) throw new BusinessError("Esse telefone já está em uso em outra conta.", "phone");
+        .limit(1);
+      if (dup?.length) throw new BusinessError("Esse telefone já está em uso em outra conta.", "phone");
     }
     const { error } = await vipDb()
       .from("users")

@@ -36,7 +36,13 @@ function juntar(padroes: Respostas, partes: BriefingCompleto["partes"]): Respost
 }
 
 const quando = (iso: string) =>
-  new Date(iso).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+  new Date(iso).toLocaleString("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
 export function BriefingForm({
   chave,
@@ -152,6 +158,15 @@ export function BriefingForm({
     setErroEnvio(null);
     sujar("final");
     await descarregar();
+    // alguma parte não chegou ao banco (sem internet)? não marca como enviado
+    if (sujas.current.size) {
+      await descarregar();
+      if (sujas.current.size) {
+        setEnviando(false);
+        setErroEnvio("Algumas respostas ainda não foram salvas. Confira a internet e toque em enviar de novo.");
+        return;
+      }
+    }
     const r = await enviarBriefingAction({ k: chave });
     setEnviando(false);
     if (r.ok) setEnviado(r.data.enviadoEm);

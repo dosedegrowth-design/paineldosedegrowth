@@ -586,7 +586,6 @@
 }
 /* campo que o servidor recusou: a mensagem sozinha não diz QUAL campo é,
    e numa tela de várias alturas ela fica fora do campo de visão. */
-.tya-field__input[aria-invalid="true"],
 .tya-field[aria-invalid="true"] {
   border-color: var(--tya-brand);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--tya-brand) 12%, transparent);
@@ -617,30 +616,7 @@
   justify-content: space-between;
   gap: 10px;
 }
-.tya-kpi__ico {
-  width: 32px;
-  height: 32px;
-  flex: none;
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
-  background: var(--tya-brand-soft);
-  color: var(--tya-brand);
-}
-.tya-card--dark .tya-kpi__ico,
-.tya-card--brand .tya-kpi__ico {
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-}
-.tya-kpi__ico svg {
-  width: 17px;
-  height: 17px;
-  stroke: currentColor;
-  fill: none;
-  stroke-width: 1.7;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
+
 .tya-kpi__n {
   margin-top: 10px;
   font-family: var(--t-font-display);
@@ -1023,22 +999,6 @@ textarea.tya-field {
   color: var(--tya-muted);
 }
 
-/* ---------- esqueleto ---------- */
-.tya-skel {
-  position: relative;
-  overflow: hidden;
-  display: block;
-  border-radius: 8px;
-  background: #f4e8ea;
-}
-.tya-skel::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
-  animation: tya-shimmer 1.4s infinite;
-}
 @keyframes tya-shimmer {
   100% {
     transform: translateX(100%);
@@ -1846,40 +1806,8 @@ a.tya-kpi {
    a foto caiu.
    ============================================================ */
 
-/* o formulário de um lado, a biblioteca ao lado — e no estreito, um sob o outro */
-.tya-fotos {
-  display: grid;
-  gap: 18px;
-  grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
-  align-items: start;
-}
-/* a trilha é o teto. Sem isto o item de grade cresce até o min-content do
-   que está dentro (um nome de volume comprido, que não quebra) e o
-   formulário de 485px passa por baixo do card da Biblioteca. */
-.tya-fotos > * {
-  min-width: 0;
-}
 /* no estreito a coluna da esquerda se dissolve (display:contents) e a ordem
    vira a do trabalho: subir a foto, ver a biblioteca, ler a legenda */
-@media (max-width: 1080px) {
-  .tya-fotos {
-    display: flex;
-    flex-direction: column;
-    /* em coluna o eixo cruzado é o horizontal: sem redefinir aqui, o
-       `align-items: start` da regra base faz cada card assumir a largura de
-       max-content. Era isso que punha a borda do "Adicionar foto" em x=450
-       num aparelho de 390px — e o .tya-main clipa o excedente, então o
-       corte não tinha nem rolagem para alcançar. Esticando, os dois cards
-       empilhados também fecham a borda direita no mesmo lugar. */
-    align-items: stretch;
-  }
-  .tya-fotos__col {
-    display: contents;
-  }
-  .tya-fotos__sobe { order: 1; }
-  .tya-fotos__lista { order: 2; }
-  .tya-fotos__onde { order: 3; }
-}
 
 /* escolher o arquivo: a prévia é o próprio campo */
 .tya-drop {
@@ -1948,14 +1876,6 @@ a.tya-kpi {
   line-height: 1.45;
   color: var(--tya-muted);
 }
-/* sobre a prévia, o convite para trocar */
-.tya-drop__troca {
-  position: absolute;
-  right: 8px;
-  bottom: 8px;
-  z-index: 1;
-  pointer-events: none;
-}
 
 /* a fila de atalhos dos volumes já usados */
 .tya-sugs {
@@ -1984,12 +1904,6 @@ a.tya-kpi {
   line-height: 16px;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-/* a barra que mostra que o arquivo está subindo */
-.tya-skel--bar {
-  height: 6px;
-  border-radius: 999px;
 }
 
 /* ---------- a biblioteca ---------- */
@@ -2029,11 +1943,6 @@ a.tya-kpi {
   height: 100%;
   object-fit: cover;
 }
-/* arquivada continua visível, mas apagada: ela não está no ar */
-.tya-foto--off .tya-foto__img img {
-  filter: grayscale(1);
-  opacity: 0.5;
-}
 /* sem arquivo no Storage não entra imagem inventada: fica o campo tonal */
 .tya-foto__tonal {
   position: absolute;
@@ -2054,24 +1963,6 @@ a.tya-kpi {
   top: 7px;
   left: 7px;
 }
-/* a posição na fila: é ela que decide onde a foto cai */
-.tya-foto__n {
-  position: absolute;
-  right: 7px;
-  bottom: 7px;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 6px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11.5px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  color: #fbf7f6;
-  background: rgba(42, 13, 24, 0.72);
-}
 .tya-foto__t {
   font-size: 13.5px;
   font-weight: 600;
@@ -2088,41 +1979,6 @@ a.tya-kpi {
   height: 30px;
   padding: 0 10px;
   font-size: 11.5px;
-}
-
-/* o que acontece quando ela subir a primeira foto */
-.tya-passos {
-  counter-reset: passo;
-  display: grid;
-  gap: 8px;
-  margin: 4px 0 0;
-  padding: 0;
-  max-width: 48ch;
-  list-style: none;
-  text-align: left;
-}
-.tya-passos li {
-  position: relative;
-  padding-left: 25px;
-  font-size: 12.5px;
-  line-height: 1.5;
-  color: var(--tya-muted);
-}
-.tya-passos li::before {
-  counter-increment: passo;
-  content: counter(passo);
-  position: absolute;
-  left: 0;
-  top: 1px;
-  display: grid;
-  place-items: center;
-  width: 18px;
-  height: 18px;
-  border-radius: 999px;
-  background: var(--tya-brand-soft);
-  color: var(--tya-brand-ink);
-  font-size: 11.5px;
-  font-weight: 600;
 }
 
 /* ============================================================

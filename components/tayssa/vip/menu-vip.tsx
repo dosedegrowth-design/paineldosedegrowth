@@ -49,7 +49,15 @@ export function MenuVip() {
       if (e.key === "Escape") setAberto(false);
     };
     document.addEventListener("keydown", tecla);
-    return () => document.removeEventListener("keydown", tecla);
+    // quem navega por teclado ou leitor de tela cai dentro do menu ao abrir
+    const id = requestAnimationFrame(() => document.querySelector<HTMLElement>("#tyv-menu a")?.focus());
+    const gatilho = botao.current;
+    return () => {
+      document.removeEventListener("keydown", tecla);
+      cancelAnimationFrame(id);
+      // fechou (Esc, véu ou destino): o foco volta para os três pontinhos
+      if (document.activeElement === document.body || document.activeElement?.closest("#tyv-menu")) gatilho?.focus();
+    };
   }, [aberto]);
 
   return (

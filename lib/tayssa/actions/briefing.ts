@@ -78,8 +78,9 @@ export async function salvarParteBriefingAction(input: {
 }): Promise<ActionResult<{ salvoEm: string }>> {
   return runAction("briefing.salvar", async () => {
     await exigirChave(input.k);
+    // Object.hasOwn: "constructor"/"__proto__" não passam por parte do formulário
+    if (!Object.hasOwn(PARTES, input.secao)) throw new BusinessError("Parte desconhecida.");
     const schema = PARTES[input.secao];
-    if (!schema) throw new BusinessError("Parte desconhecida.");
     const dados = schema.parse(input.dados);
     const salvoEm = new Date().toISOString();
     const { error } = await vipDb()

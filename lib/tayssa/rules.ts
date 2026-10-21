@@ -286,15 +286,3 @@ export function slotIsBookable(
   const slot = new Date(d.getFullYear(), d.getMonth(), d.getDate(), h ?? 0, m ?? 0);
   return slot.getTime() - now.getTime() >= leadHours * 60 * 60 * 1000;
 }
-
-// ------------------------------------------------------------
-// Expiração de benefício
-// ------------------------------------------------------------
-
-export function benefitExpiry(
-  from: Date,
-  validityDays: number | null | undefined,
-  fallbackDays: number
-): Date {
-  return addDays(from, validityDays ?? fallbackDays);
-}

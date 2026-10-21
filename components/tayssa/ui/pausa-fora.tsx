@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { ehAreaPrivada } from "@/components/tayssa/ui/area";
 
 /**
  * As peças que se mexem sozinhas — nunca a seção inteira: marcar uma seção
@@ -18,6 +20,9 @@ const ALVOS = ".ty-vivo, .ty-faixa, .ty-rolo, .tyf-arranjo, .tyh__palco, .tyh__t
  * animação recomeça antes de entrar no campo de visão.
  */
 export function PausaForaDaTela() {
+  // VIP e painel não têm trilho nem rolo: o vigia (um intervalo de 300 ms e
+  // um observador do documento inteiro) só gastava bateria lá
+  const privada = ehAreaPrivada(usePathname());
   // trilhos que correm de lado (rolos, faixa): só o item dentro da janela
   // anima, com folga para ganhar o movimento antes de aparecer.
   //
@@ -29,6 +34,7 @@ export function PausaForaDaTela() {
   // vez (só muda se a tela ou os itens mudarem); a cada rodada mede-se só a
   // caixa e o trilho — dois getBoundingClientRect, não um por cartão.
   useEffect(() => {
+    if (privada) return;
     type Mapa = { n: number; largura: number; itens: HTMLElement[]; esq: number[]; larg: number[]; topo: number[]; alt: number[] };
     let mapas = new WeakMap<HTMLElement, Mapa>();
     const mapear = (trilho: HTMLElement): Mapa => {
@@ -90,9 +96,10 @@ export function PausaForaDaTela() {
       window.clearInterval(id);
       window.removeEventListener("resize", aoRedimensionar);
     };
-  }, []);
+  }, [privada]);
 
   useEffect(() => {
+    if (privada) return;
     if (typeof IntersectionObserver === "undefined") return;
     const io = new IntersectionObserver(
       (entradas) => {
@@ -118,7 +125,7 @@ export function PausaForaDaTela() {
       mo.disconnect();
       io.disconnect();
     };
-  }, []);
+  }, [privada]);
 
   return null;
 }

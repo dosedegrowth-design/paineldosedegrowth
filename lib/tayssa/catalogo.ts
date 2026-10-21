@@ -15,8 +15,6 @@ export const CATEGORIAS: { slug: CategoriaMidia; label: string; servicos: string
   { slug: "outro", label: "Outros", servicos: [] },
 ];
 
-export const rotuloCategoria = (slug: string) => CATEGORIAS.find((c) => c.slug === slug)?.label ?? "Outros";
-
 /** Categoria de um serviço do catálogo (pela slug; serviço novo cai pelo nome). */
 export function categoriaDoServico(slug: string, nome = ""): CategoriaMidia {
   const achou = CATEGORIAS.find((c) => c.servicos.includes(slug));

@@ -61,7 +61,7 @@
 .tya-vivo__luz {
   position: absolute;
   border-radius: 50%;
-  filter: blur(70px);
+  /* a luz já some no próprio degradê: sem filtro, que andando seria refeito a cada quadro */
   will-change: transform;
 }
 .tya-vivo__luz--1 {
@@ -812,10 +812,7 @@ select.tya-field {
   height: 100%;
   object-fit: cover;
 }
-.tya-foto--off .tya-foto__img video {
-  filter: grayscale(1);
-  opacity: 0.5;
-}
+
 .tya-foto__tipo {
   position: absolute;
   right: 7px;

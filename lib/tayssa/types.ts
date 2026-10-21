@@ -225,6 +225,8 @@ export type AppointmentRow = {
   client_note: string | null;
   admin_note: string | null;
   client_service_id: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
   created_at: string;
   updated_at: string;
 };

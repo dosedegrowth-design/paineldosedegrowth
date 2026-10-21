@@ -247,21 +247,6 @@
   }
 }
 
-/* ---------- letra com volume (qualquer bloco pode usar) ---------- */
-.ty-letra-viva {
-  background: var(--t-letra-noite);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-.ty-letra-viva em {
-  font-style: normal;
-  background: var(--t-letra-acento);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
 /* ---------- entrada discreta, como na iWin ---------- */
 .tyl-surge {
   animation: ty-surge 0.9s var(--t-ease-vivo) both;
@@ -414,8 +399,7 @@
 }
 
 /* cápsulas da casa: clara com brilho e seta; vidro */
-.tyh__btn,
-.ty-capsula {
+.tyh__btn {
   position: relative;
   overflow: hidden;
   display: inline-flex;
@@ -434,8 +418,7 @@
     box-shadow 0.3s ease,
     background-color 0.3s ease;
 }
-.tyh__btn:active,
-.ty-capsula:active {
+.tyh__btn:active {
   transform: scale(0.97);
 }
 .tyh__btn--claro {
@@ -996,8 +979,7 @@
 .ty-scope .ty-btn--solid {
   box-shadow: 0 16px 36px -16px rgba(75, 12, 32, 0.7);
 }
-.ty-scope .ty-link--caps,
-.ty-scope .ty-hero__secundario {
+.ty-scope .ty-link--caps {
   text-transform: none;
   letter-spacing: -0.01em;
   font-size: 14.5px;
@@ -1818,7 +1800,6 @@ body:has(.ty-scope[data-theme="night"]) {
     overflow-x: auto;
   }
 }
-
 
 /* ============================================================
    REFINO (auditoria Impeccable + Emil): legibilidade, contraste,

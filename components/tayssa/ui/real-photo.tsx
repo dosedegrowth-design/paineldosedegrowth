@@ -45,7 +45,7 @@ export function RealPhoto({
           alt={photo.alt}
           fill
           sizes={sizes}
-          priority={priority}
+          preload={priority}
           onError={() => setErrored(true)}
           style={{ objectFit: "cover" }}
         />

@@ -93,7 +93,7 @@ export function ScratchSheet({
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.round(rect.width * dpr);
       canvas.height = Math.round(rect.height * dpr);
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
       if (!ctx) return;
       ctx.scale(dpr, dpr);
       const g = ctx.createLinearGradient(0, 0, rect.width, rect.height);
@@ -122,7 +122,7 @@ export function ScratchSheet({
 
   const clearedEnough = () => {
     const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
+    const ctx = canvas?.getContext("2d", { willReadFrequently: true });
     if (!canvas || !ctx) return false;
     const { width, height } = canvas;
     const data = ctx.getImageData(0, 0, width, height).data;
@@ -138,7 +138,7 @@ export function ScratchSheet({
   const scratch = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (!drawing.current || open) return;
     const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
+    const ctx = canvas?.getContext("2d", { willReadFrequently: true });
     if (!canvas || !ctx) return;
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;

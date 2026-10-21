@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Lenis from "lenis";
+import { ehAreaPrivada } from "@/components/tayssa/ui/area";
 
 declare global {
   interface Window {
@@ -109,11 +110,14 @@ function seguirHash(id: string): () => void {
  */
 export function SmoothScroll() {
   const pathname = usePathname();
+  // VIP e painel rolam no nativo: o Lenis prendia a roda do mouse no painel
+  // e ficava num laço de quadros sem fim numa tela que não precisa dele
+  const privada = ehAreaPrivada(pathname);
 
   useEffect(() => {
     const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!fine || reduced) return;
+    if (!fine || reduced || privada) return;
 
     const lenis = new Lenis({ lerp: 0.085, smoothWheel: true, wheelMultiplier: 1 });
     window.__tyLenis = lenis;
@@ -128,7 +132,7 @@ export function SmoothScroll() {
       lenis.destroy();
       window.__tyLenis = undefined;
     };
-  }, []);
+  }, [privada]);
 
   // primeira carga e troca de rota: o #hash manda; sem hash, começa do topo
   useEffect(() => {

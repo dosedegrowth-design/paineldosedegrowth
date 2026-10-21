@@ -6,12 +6,14 @@ import { setPasswordAction } from "@/lib/tayssa/actions/auth";
 import { MIN_PASSWORD_LENGTH } from "@/lib/tayssa/config";
 import type { ActionResult } from "@/lib/tayssa/types";
 import { TyInput } from "@/components/tayssa/ui/field";
+import { useFormPreservado } from "@/components/tayssa/ui/form-preservado";
 
 type Result = ActionResult<{ redirectTo: string }>;
 
 export function SetPasswordForm({ token }: { token: string }) {
   const [state, action, pending] = useActionState<Result | null, FormData>(setPasswordAction, null);
   const err = state && !state.ok ? state : null;
+  const { onReset } = useFormPreservado();
 
   // carga completa: a sessão acabou de nascer, o VIP tem de vir do servidor
   useEffect(() => {
@@ -22,6 +24,7 @@ export function SetPasswordForm({ token }: { token: string }) {
     <motion.form
       action={action}
       noValidate
+      onReset={onReset}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.5, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}

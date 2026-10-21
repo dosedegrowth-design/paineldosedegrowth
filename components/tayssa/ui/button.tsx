@@ -63,26 +63,3 @@ export function TyLinkButton({
     </TransitionLink>
   );
 }
-
-/** Link externo (WhatsApp, Instagram). */
-export function TyExternalButton({
-  children,
-  href,
-  variant = "line",
-  size = "md",
-  arrow = false,
-  wide = false,
-  className,
-}: Common & { href: string }) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={classes(variant, size, wide, className)}
-    >
-      <span>{children}</span>
-      {arrow ? <span className="ty-btn__arrow" aria-hidden /> : null}
-    </a>
-  );
-}

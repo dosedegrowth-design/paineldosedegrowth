@@ -122,16 +122,74 @@ export async function stampVisit(
     .maybeSingle();
   if (existing) return null;
 
-  let { data: card } = await db
-    .from("loyalty_cards")
-    .select("*")
-    .eq("client_id", clientId)
-    .is("completed_at", null)
-    .order("cycle_number", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  let c = card as LoyaltyCardRow | null;
-  if (!c) {
+  // Duas confirmações ao mesmo tempo (dois cliques, dois aparelhos) disputam
+  // o mesmo cartão e a mesma posição. As constraints únicas seguram a
+  // disputa; aqui quem perde relê e tenta de novo — o carimbo nunca some calado.
+  for (let tentativa = 0; tentativa < 6; tentativa++) {
+    const c = await cartaoAberto(clientId, size);
+    const { data: last, error: lErr } = await db
+      .from("loyalty_stamps")
+      .select("position")
+      .eq("card_id", c.id)
+      .order("position", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (lErr) throw new Error(lErr.message);
+    const position = ((last as { position: number } | null)?.position ?? 0) + 1;
+    if (position > c.card_size) {
+      // cartão cheio que ainda não foi fechado (quem fechou caiu no meio): fecha e segue no próximo
+      await fecharCartao(c, clientId, settings);
+      continue;
+    }
+
+    const { data: stamp, error: sErr } = await db
+      .from("loyalty_stamps")
+      .insert({
+        card_id: c.id,
+        client_id: clientId,
+        position,
+        client_service_id: service.id,
+        service_name: service.service_name,
+        points: service.points,
+        stamped_at: service.reviewed_at ?? new Date().toISOString(),
+        revealed_at: null, // a cliente raspa para revelar
+      })
+      .select("id")
+      .single();
+    if (sErr) {
+      if (sErr.code !== "23505") throw new Error(sErr.message);
+      // o mesmo atendimento já foi carimbado por outra chamada? então acabou
+      const { data: ja } = await db.from("loyalty_stamps").select("id").eq("client_service_id", service.id).maybeSingle();
+      if (ja) return null;
+      continue; // a posição foi tomada por outro atendimento: tenta a próxima
+    }
+
+    const completed = position >= c.card_size;
+    if (completed) await fecharCartao(c, clientId, settings);
+    return {
+      stampId: (stamp as { id: string }).id,
+      position,
+      cardSize: c.card_size,
+      cardCompleted: completed,
+    };
+  }
+  throw new Error("carimbo: a posição do cartão ficou em disputa");
+}
+
+/** O cartão aberto da cliente; abre um novo se não houver (relê se outra chamada abriu junto). */
+async function cartaoAberto(clientId: string, size: number): Promise<LoyaltyCardRow> {
+  const db = vipDb();
+  for (let tentativa = 0; tentativa < 3; tentativa++) {
+    const { data: card, error } = await db
+      .from("loyalty_cards")
+      .select("*")
+      .eq("client_id", clientId)
+      .is("completed_at", null)
+      .order("cycle_number", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (card) return card as LoyaltyCardRow;
     const { data: last } = await db
       .from("loyalty_cards")
       .select("cycle_number")
@@ -140,82 +198,59 @@ export async function stampVisit(
       .limit(1)
       .maybeSingle();
     const cycle = ((last as { cycle_number: number } | null)?.cycle_number ?? 0) + 1;
-    const { data: created, error } = await db
+    const { data: created, error: cErr } = await db
       .from("loyalty_cards")
       .insert({ client_id: clientId, cycle_number: cycle, card_size: size })
       .select("*")
       .single();
+    if (!cErr) return created as LoyaltyCardRow;
+    if (cErr.code !== "23505") throw new Error(cErr.message);
+  }
+  throw new Error("cartão: abertura em disputa");
+}
+
+/**
+ * Fecha o cartão cheio: nasce o benefício em pending_validation (a Tayssa
+ * libera). Pode rodar mais de uma vez para o mesmo cartão sem duplicar nada.
+ */
+async function fecharCartao(
+  c: LoyaltyCardRow,
+  clientId: string,
+  settings: Awaited<ReturnType<typeof getSettings>>
+): Promise<void> {
+  const db = vipDb();
+  const { data: b } = await db.from("benefits").select("*").eq("key", "card_complete").maybeSingle();
+  let benefitId: string | null = null;
+  if (b) {
+    const benefit = b as BenefitRow;
+    const cycleKey = `card:${c.cycle_number}`;
+    const { error } = await db.from("client_benefits").upsert(
+      {
+        client_id: clientId,
+        benefit_id: benefit.id,
+        cycle_key: cycleKey,
+        status: "pending_validation",
+        title: settings.loyalty.card_reward_title,
+        description: settings.loyalty.card_reward_description,
+      },
+      { onConflict: "client_id,benefit_id,cycle_key", ignoreDuplicates: true }
+    );
     if (error) throw new Error(error.message);
-    card = created;
-    c = created as LoyaltyCardRow;
-  }
-
-  const { data: last } = await db
-    .from("loyalty_stamps")
-    .select("position")
-    .eq("card_id", c.id)
-    .order("position", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  const position = ((last as { position: number } | null)?.position ?? 0) + 1;
-
-  const { data: stamp, error: sErr } = await db
-    .from("loyalty_stamps")
-    .insert({
-      card_id: c.id,
-      client_id: clientId,
-      position,
-      client_service_id: service.id,
-      service_name: service.service_name,
-      points: service.points,
-      stamped_at: service.reviewed_at ?? new Date().toISOString(),
-      revealed_at: null, // a cliente raspa para revelar
-    })
-    .select("id")
-    .single();
-  if (sErr) {
-    if (sErr.code === "23505") return null;
-    throw new Error(sErr.message);
-  }
-
-  const completed = position >= c.card_size;
-  if (completed) {
-    const { data: b } = await db
-      .from("benefits")
-      .select("*")
-      .eq("key", "card_complete")
+    const { data: cb } = await db
+      .from("client_benefits")
+      .select("id")
+      .eq("client_id", clientId)
+      .eq("benefit_id", benefit.id)
+      .eq("cycle_key", cycleKey)
       .maybeSingle();
-    let benefitId: string | null = null;
-    if (b) {
-      const { data: cb } = await db
-        .from("client_benefits")
-        .upsert(
-          {
-            client_id: clientId,
-            benefit_id: (b as BenefitRow).id,
-            cycle_key: `card:${c.cycle_number}`,
-            status: "pending_validation",
-            title: settings.loyalty.card_reward_title,
-            description: settings.loyalty.card_reward_description,
-          },
-          { onConflict: "client_id,benefit_id,cycle_key", ignoreDuplicates: true }
-        )
-        .select("id")
-        .maybeSingle();
-      benefitId = (cb as { id: string } | null)?.id ?? null;
-    }
-    await db
-      .from("loyalty_cards")
-      .update({ completed_at: new Date().toISOString(), client_benefit_id: benefitId })
-      .eq("id", c.id);
+    benefitId = (cb as { id: string } | null)?.id ?? null;
   }
-
-  return {
-    stampId: (stamp as { id: string }).id,
-    position,
-    cardSize: c.card_size,
-    cardCompleted: completed,
-  };
+  const { error } = await db
+    .from("loyalty_cards")
+    .update({ completed_at: new Date().toISOString(), client_benefit_id: benefitId })
+    .eq("id", c.id)
+    .is("completed_at", null);
+  if (error) throw new Error(error.message);
 }
 
 export type CardState = {
@@ -234,25 +269,22 @@ export type CardState = {
 
 export async function getCardState(clientId: string): Promise<CardState> {
   const db = vipDb();
-  const settings = await getSettings();
+  // configurações, cartões e carimbos por raspar não dependem um do outro:
+  // vão juntos ao banco (antes eram três idas em fila)
+  const [settings, cardsRes, pendingRes] = await Promise.all([
+    getSettings(),
+    db.from("loyalty_cards").select("*").eq("client_id", clientId).order("cycle_number", { ascending: false }),
+    // Carimbo por raspar nunca fica para trás: se o cartão anterior ainda
+    // tem dourado, é ele que aparece — a cliente termina de raspar (e ganha
+    // a revelação do presente) antes de seguir para o cartão novo.
+    db.from("loyalty_stamps").select("card_id").eq("client_id", clientId).is("revealed_at", null),
+  ]);
+  if (cardsRes.error) throw new Error(cardsRes.error.message);
+  if (pendingRes.error) throw new Error(pendingRes.error.message);
   const size = settings.loyalty.card_size;
-  const { data: cards, error } = await db
-    .from("loyalty_cards")
-    .select("*")
-    .eq("client_id", clientId)
-    .order("cycle_number", { ascending: false });
-  if (error) throw new Error(error.message);
-  const all = (cards ?? []) as LoyaltyCardRow[];
+  const all = (cardsRes.data ?? []) as LoyaltyCardRow[];
   const completedCards = all.filter((c) => c.completed_at).length;
-
-  // Carimbo por raspar nunca fica para trás: se o cartão anterior ainda
-  // tem dourado, é ele que aparece — a cliente termina de raspar (e ganha
-  // a revelação do presente) antes de seguir para o cartão novo.
-  const { data: pending } = await db
-    .from("loyalty_stamps")
-    .select("card_id")
-    .eq("client_id", clientId)
-    .is("revealed_at", null);
+  const pending = pendingRes.data;
   const pendingCards = new Set(((pending ?? []) as { card_id: string }[]).map((r) => r.card_id));
   const latest =
     [...all].reverse().find((c) => pendingCards.has(c.id)) ?? all[0] ?? null;
@@ -314,6 +346,23 @@ export async function syncReferralEligibility(clientId: string): Promise<number>
   let created = 0;
   for (let c = 1; c <= progress.cyclesEarned; c++) {
     if (await insertEligibility(clientId, referralBenefit, referralCycleKey(c))) created++;
+  }
+  // indicação desaprovada: o ciclo que ela completava deixa de existir. Sai
+  // da fila da Tayssa o que ainda esperava validação (o que ela já liberou
+  // para a cliente não é mexido — essa decisão é dela)
+  const { data: pendentes, error } = await vipDb()
+    .from("client_benefits")
+    .select("id, cycle_key")
+    .eq("client_id", clientId)
+    .eq("benefit_id", referralBenefit.id)
+    .eq("status", "pending_validation");
+  if (error) throw new Error(error.message);
+  const sobrando = ((pendentes ?? []) as { id: string; cycle_key: string }[])
+    .filter((b) => Number(b.cycle_key.replace(/^referral:/, "")) > progress.cyclesEarned)
+    .map((b) => b.id);
+  if (sobrando.length) {
+    const { error: dErr } = await vipDb().from("client_benefits").delete().in("id", sobrando);
+    if (dErr) throw new Error(dErr.message);
   }
   return created;
 }

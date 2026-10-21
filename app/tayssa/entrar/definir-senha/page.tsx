@@ -38,6 +38,7 @@ async function checkToken(token: string | undefined): Promise<TokenState> {
         "expires_at, used_at, purpose, user:users!password_tokens_user_id_fkey(name, nickname, status)"
       )
       .eq("token_hash", hashToken(token))
+      .in("purpose", ["setup", "reset"])
       .maybeSingle();
     if (error) throw new Error(error.message);
     const row = data as unknown as {

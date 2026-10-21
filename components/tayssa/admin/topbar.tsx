@@ -85,7 +85,7 @@ export function AdminTopbar({ nome, onAbrirMenu }: { nome: string; onAbrirMenu?:
             <span className="tya-hide-sm">Ver o site</span>
           </a>
           <form action={logoutAction}>
-            <button type="submit" className="tya-btn tya-btn--ghost tya-btn--sm tya-btn--icon" title="Sair">
+            <button type="submit" className="tya-btn tya-btn--ghost tya-btn--sm tya-btn--icon" title="Sair" aria-label="Sair do painel">
               <Icone nome="sair" />
             </button>
           </form>

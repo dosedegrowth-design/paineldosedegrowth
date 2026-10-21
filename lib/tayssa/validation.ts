@@ -314,7 +314,12 @@ export const bookingSettingsSchema = z.object({
 });
 
 export const loyaltySettingsSchema = z.object({
-  card_size: z.coerce.number().int().min(2).max(20),
+  // o banco só aceita cartões de 4 a 12 posições (vip.loyalty_cards.card_size)
+  card_size: z.coerce
+    .number({ invalid_type_error: "Use um número de 4 a 12" })
+    .int("Use um número inteiro")
+    .min(4, "O cartão tem no mínimo 4 visitas")
+    .max(12, "O cartão tem no máximo 12 visitas"),
   card_reward_title: trimmed(80),
   card_reward_description: z.string().trim().max(300),
 });

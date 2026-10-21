@@ -8,6 +8,7 @@ import type { ActionResult } from "@/lib/tayssa/types";
 import { TyInput } from "@/components/tayssa/ui/field";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { Entrada } from "@/components/tayssa/auth/entrada";
+import { useFormPreservado } from "@/components/tayssa/ui/form-preservado";
 
 type LoginResult = ActionResult<{ redirectTo: string; name: string }>;
 
@@ -35,6 +36,8 @@ export function LoginExperience({
   );
   const [local, setLocal] = useState<{ email?: string; password?: string }>({});
   const formRef = useRef<HTMLFormElement>(null);
+  // senha errada não apaga o e-mail digitado
+  const { onReset } = useFormPreservado();
 
   const serverError = state && !state.ok ? state : null;
   const welcome = state?.ok ? { name: state.data.name, to: state.data.redirectTo } : null;
@@ -90,6 +93,7 @@ export function LoginExperience({
           ref={formRef}
           action={action}
           noValidate
+          onReset={onReset}
           onSubmit={(e) => {
             const fd = new FormData(e.currentTarget);
             const errors = check(fd);

@@ -103,9 +103,6 @@ body:has(.tyv) {
   font-weight: 500;
   color: var(--tyv-rosa);
 }
-.tyv .tyv-flor {
-  display: none;
-}
 
 /* ---------- blocos: vidro com fio de ouro, mais respiro ---------- */
 .tyv .tyv-section {
@@ -363,7 +360,6 @@ body:has(.tyv) {
 .tyv .tyv-day__w,
 .tyv .tyv-label,
 .tyv .tyv-link,
-.tyv .tyv-ring__unit,
 .tyv .tyv-tl__item[data-tone="gold"] .tyv-tl__value,
 .tyv .tyv-tl__now span,
 .tyv .tyv-vip-tag {
@@ -395,7 +391,6 @@ body:has(.tyv) {
 .tyc3__brand > i {
   display: none;
 }
-
 
 /* ============================================================
    MENU NO TOPO — os três pontinhos abrem um cartão de vidro com os

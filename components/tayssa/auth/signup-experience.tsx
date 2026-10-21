@@ -8,6 +8,7 @@ import type { ActionResult } from "@/lib/tayssa/types";
 import { TyInput, TyTextarea } from "@/components/tayssa/ui/field";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { Entrada } from "@/components/tayssa/auth/entrada";
+import { useFormPreservado } from "@/components/tayssa/ui/form-preservado";
 
 type Result = ActionResult<SignupResult>;
 type Errors = Partial<Record<"name" | "phone" | "birthday" | "email" | "password" | "confirm" | "message", string>>;
@@ -32,6 +33,8 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
     null
   );
   const serverError = state && !state.ok ? state : null;
+  // recusou? os sete campos continuam como ela deixou (o React 19 limpava tudo)
+  const { onReset } = useFormPreservado();
   const done = state?.ok ? state.data : null;
 
   // erro do servidor num campo: volta para o passo dele e mostra ali.
@@ -125,6 +128,12 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
             <strong style={{ color: "var(--t-fg)", fontWeight: 600 }}>{done.email}</strong> e a senha que escolheu.
           </p>
           <p>Se quiser adiantar, mande um oi para ela.</p>
+          <p>
+            Já tinha acesso?{" "}
+            <TransitionLink href={ROUTES.login} className="tyl__link">
+              Entre com seu e-mail e senha
+            </TransitionLink>
+          </p>
           <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="tyl__link">
             Falar com a Tayssa
           </a>
@@ -151,6 +160,7 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
         ref={formRef}
         action={action}
         noValidate
+        onReset={onReset}
         onSubmit={(e) => {
           // enter no último passo envia; nos outros, avança
           if (step < STEPS.length - 1) {

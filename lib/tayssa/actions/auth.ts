@@ -2,7 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { vipDb } from "@/lib/tayssa/db";
+import { logServerError, vipDb } from "@/lib/tayssa/db";
+import { lerLinkDeEntrada } from "@/lib/tayssa/auth/link";
 import { hashPassword, verifyPassword } from "@/lib/tayssa/auth/password";
 import {
   createSession,
@@ -25,6 +26,7 @@ import {
 import { BusinessError, runAction, str } from "@/lib/tayssa/actions/_helpers";
 import type { ActionResult, UserRow } from "@/lib/tayssa/types";
 import { assertClient } from "@/lib/tayssa/auth/guards";
+import { ipDaRequisicao, passouDoLimite } from "@/lib/tayssa/limite";
 
 const INVALID = "E-mail ou senha não conferem.";
 
@@ -32,15 +34,19 @@ function safeNext(next: string): string | null {
   return next.startsWith("/tayssa/") && !next.startsWith("//") ? next : null;
 }
 
-async function tooManyAttempts(email: string): Promise<boolean> {
+/** Tentativas erradas na janela: por e-mail (protege a conta) e por endereço de internet (protege todas). */
+async function tooManyAttempts(email: string, ip: string | null): Promise<boolean> {
   const since = new Date(Date.now() - LOGIN_WINDOW_MINUTES * 60 * 1000).toISOString();
-  const { count } = await vipDb()
-    .from("audit_log")
-    .select("id", { count: "exact", head: true })
-    .eq("action", "login_failed")
-    .eq("meta->>email", email)
-    .gte("created_at", since);
-  return (count ?? 0) >= LOGIN_MAX_ATTEMPTS;
+  const [porEmail, porIp] = await Promise.all([
+    vipDb()
+      .from("audit_log")
+      .select("id", { count: "exact", head: true })
+      .eq("action", "login_failed")
+      .eq("meta->>email", email)
+      .gte("created_at", since),
+    passouDoLimite({ acoes: ["login_failed"], ip, maximo: LOGIN_MAX_ATTEMPTS * 4, minutos: LOGIN_WINDOW_MINUTES }),
+  ]);
+  return (porEmail.count ?? 0) >= LOGIN_MAX_ATTEMPTS || porIp;
 }
 
 export async function loginAction(
@@ -53,17 +59,18 @@ export async function loginAction(
       password: str(formData, "password"),
     });
 
-    if (await tooManyAttempts(input.email)) {
+    const ip = await ipDaRequisicao();
+    if (await tooManyAttempts(input.email, ip)) {
       throw new BusinessError(
         "Muitas tentativas. Aguarde alguns minutos e tente novamente."
       );
     }
 
-    const { data } = await vipDb()
-      .from("users")
-      .select("*")
-      .ilike("email", input.email)
-      .maybeSingle();
+    // e-mail exato (o zod já deixa em minúsculas, como está gravado): com
+    // ilike, um "_" no endereço virava curinga e cada variação ganhava sua
+    // própria cota de tentativas
+    const { data, error: uErr } = await vipDb().from("users").select("*").eq("email", input.email).maybeSingle();
+    if (uErr) throw new Error(uErr.message);
     const user = (data ?? null) as UserRow | null;
 
     const valid = user ? await verifyPassword(input.password, user.password_hash) : false;
@@ -74,7 +81,7 @@ export async function loginAction(
         action: "login_failed",
         entityType: "user",
         entityId: user?.id ?? null,
-        meta: { email: input.email },
+        meta: { email: input.email, ip },
       });
       throw new BusinessError(INVALID);
     }
@@ -112,6 +119,50 @@ export async function loginAction(
   return result;
 }
 
+/**
+ * O botão "Entrar" da página do link. Convite (magic) é queimado com uma
+ * atualização condicional: se dois toques chegam juntos, só um entra.
+ * Link que não vale mais volta para a tela de entrada, sem contar história.
+ */
+export async function entrarPorLinkAction(formData: FormData): Promise<void> {
+  const token = str(formData, "t");
+  let destino = `${ROUTES.login}?link=expirado`;
+  try {
+    const link = await lerLinkDeEntrada(token);
+    if (link) {
+      const db = vipDb();
+      let pode = true;
+      if (link.purpose === "magic") {
+        const { data: queimado, error } = await db
+          .from("password_tokens")
+          .update({ used_at: new Date().toISOString() })
+          .eq("id", link.id)
+          .is("used_at", null)
+          .select("id");
+        if (error) throw new Error(error.message);
+        pode = Boolean(queimado?.length);
+      } else {
+        // teste: não queima, só registra a última vez que alguém entrou
+        await db.from("password_tokens").update({ used_at: new Date().toISOString() }).eq("id", link.id);
+      }
+      if (pode) {
+        await createSession(link.user_id);
+        await logAudit({
+          actorId: link.user_id,
+          actorRole: link.role === "admin" ? "admin" : "client",
+          action: link.purpose === "demo" ? "login_link_demo" : "login_link",
+          entityType: "user",
+          entityId: link.user_id,
+        });
+        destino = link.role === "admin" ? ROUTES.admin : ROUTES.vip;
+      }
+    }
+  } catch (e) {
+    logServerError("auth.magicLink", e);
+  }
+  redirect(destino);
+}
+
 export async function logoutAction(): Promise<void> {
   const user = await getSessionUser();
   await destroySession();
@@ -146,6 +197,8 @@ export async function setPasswordAction(
         "id, user_id, expires_at, used_at, user:users!password_tokens_user_id_fkey(id, role, status)"
       )
       .eq("token_hash", hashToken(input.token))
+      // só link de senha: convite (magic) e teste (demo) não trocam senha de ninguém
+      .in("purpose", ["setup", "reset"])
       .maybeSingle();
     // falha de banco não pode virar "link expirado": runAction registra e
     // mostra a mensagem genérica, sem confundir a cliente
@@ -167,16 +220,22 @@ export async function setPasswordAction(
       throw new BusinessError("Esse acesso está pausado. Fale com a Tayssa.");
     }
 
+    // gasta o link antes de tudo: dois envios juntos, só um passa
+    const { data: queimado, error: burnErr } = await db
+      .from("password_tokens")
+      .update({ used_at: new Date().toISOString() })
+      .eq("id", row.id)
+      .is("used_at", null)
+      .select("id");
+    if (burnErr) throw new Error(burnErr.message);
+    if (!queimado?.length) throw new BusinessError("Esse link não é mais válido. Peça um novo para a Tayssa.");
+
     const password_hash = await hashPassword(input.password);
     const { error } = await db
       .from("users")
       .update({ password_hash })
       .eq("id", row.user_id);
     if (error) throw new Error(error.message);
-    await db
-      .from("password_tokens")
-      .update({ used_at: new Date().toISOString() })
-      .eq("id", row.id);
 
     await revokeAllSessions(row.user_id);
     await createSession(row.user_id);
@@ -212,6 +271,9 @@ export async function changePasswordAction(
     const password_hash = await hashPassword(input.password);
     const { error } = await vipDb().from("users").update({ password_hash }).eq("id", me.id);
     if (error) throw new Error(error.message);
+    // senha nova fecha as outras portas: os outros aparelhos saem, este continua
+    await revokeAllSessions(me.id);
+    await createSession(me.id);
     await logAudit({
       actorId: me.id,
       actorRole: "client",

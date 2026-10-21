@@ -8,13 +8,14 @@ export function normalizeBrPhone(input: string): string | null {
   if (!digits) return null;
   // remove zero de operadora / prefixo internacional "00"
   digits = digits.replace(/^0+/, "");
-  if (digits.startsWith("55") && (digits.length === 12 || digits.length === 13)) {
-    return digits;
-  }
-  if (digits.length === 10 || digits.length === 11) {
-    return `55${digits}`;
-  }
-  return null;
+  let nacional: string;
+  if (digits.startsWith("55") && (digits.length === 12 || digits.length === 13)) nacional = digits.slice(2);
+  else if (digits.length === 10 || digits.length === 11) nacional = digits;
+  else return null;
+  // celular escrito sem o 9 (8 dígitos começando em 6–9) é a mesma linha com
+  // o 9: sem isso o mesmo número contava como pessoa nova nas indicações
+  if (nacional.length === 10 && /[6-9]/.test(nacional[2])) nacional = `${nacional.slice(0, 2)}9${nacional.slice(2)}`;
+  return `55${nacional}`;
 }
 
 export function formatBrPhone(digits: string | null | undefined): string {
@@ -26,11 +27,4 @@ export function formatBrPhone(digits: string | null | undefined): string {
   if (rest.length === 9) return `(${ddd}) ${rest.slice(0, 5)}-${rest.slice(5)}`;
   if (rest.length === 8) return `(${ddd}) ${rest.slice(0, 4)}-${rest.slice(4)}`;
   return d;
-}
-
-/** Máscara para exibir a outra pessoa sem expor o número inteiro. */
-export function maskPhone(digits: string | null | undefined): string {
-  if (!digits) return "";
-  const f = formatBrPhone(digits);
-  return f.replace(/\d(?=\d{4}$)/g, "•").replace(/^\((\d{2})\) [\d•]+/, (m) => m);
 }

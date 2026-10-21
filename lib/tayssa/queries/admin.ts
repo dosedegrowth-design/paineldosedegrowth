@@ -79,7 +79,8 @@ export const listClients = cache(async (): Promise<ClientSummary[]> => {
   >[];
   const referrals = (referralsRes.data ?? []) as Pick<ReferralRow, "referrer_user_id" | "status">[];
   const benefits = (benefitsRes.data ?? []) as Pick<ClientBenefitRow, "client_id" | "status">[];
-  const today = new Date();
+  // "hoje" no fuso do estúdio: no relógio do servidor (UTC) já é amanhã depois das 21h
+  const today = nowInBusinessTz();
 
   return users.map((u) => {
     const mine = services.filter((s) => s.client_id === u.id);
@@ -291,8 +292,10 @@ export const getAdminOverview = cache(async (): Promise<AdminOverview> => {
     db.from("client_benefits").select("status").in("status", ["pending_validation", "requested"]),
     db.from("audit_log").select("*").order("created_at", { ascending: false }).limit(12),
   ]);
+  // falha do banco aparece como erro (com "Tentar de novo"), nunca como "0 pendentes"
+  for (const r of [pendingRes, refRes, benRes, auditRes]) if (r.error) throw new Error(r.error.message);
   const ben = (benRes.data ?? []) as Pick<ClientBenefitRow, "status">[];
-  const today = new Date();
+  const today = nowInBusinessTz();
   const month = today.getMonth();
   const withBirthday = clients.filter((c) => c.profile?.birthday);
   const thisMonth = withBirthday.filter((c) => isBirthdayInMonth(c.profile!.birthday!, month));
@@ -366,9 +369,10 @@ export const getClientDetail = cache(async (id: string): Promise<ClientDetail | 
         .is("revoked_at", null)
         .gt("expires_at", new Date().toISOString()),
     ]);
+  for (const r of [servicesRes, referralsRes, benefitsRes, auditRes, sessionsRes]) if (r.error) throw new Error(r.error.message);
   const referralBenefit = catalog.find((b) => b.type === "referral");
   const benefits = (benefitsRes.data ?? []) as ClientDetail["benefits"];
-  const today = new Date();
+  const today = nowInBusinessTz();
   const birthday = summary.profile?.birthday
     ? birthdayInfo(
         summary.profile.birthday,
@@ -445,29 +449,38 @@ export type BirthdayEntry = ClientSummary & {
 };
 
 export const listBirthdays = cache(async (month: number): Promise<BirthdayEntry[]> => {
+  const today = nowInBusinessTz();
+  const ano = today.getFullYear();
+  // perto da virada, o aniversário que está para chegar já é do ano que vem:
+  // o ciclo de cada cliente vem de birthdayInfo, igual ao que o VIP usa
   const [clients, settings, benefitsRes] = await Promise.all([
     listClients(),
     getSettings(),
     vipDb()
       .from("client_benefits")
       .select("*, benefit:benefits(type)")
-      .eq("cycle_key", `birthday:${new Date().getFullYear()}`),
+      .in("cycle_key", [`birthday:${ano}`, `birthday:${ano + 1}`]),
   ]);
+  if (benefitsRes.error) throw new Error(benefitsRes.error.message);
   const released = (benefitsRes.data ?? []) as (ClientBenefitRow & { benefit: { type: string } | null })[];
-  const today = new Date();
   return clients
     .filter((c) => c.profile?.birthday && isBirthdayInMonth(c.profile.birthday, month))
-    .map((c) => ({
-      ...c,
-      info: birthdayInfo(
+    .map((c) => {
+      const info = birthdayInfo(
         c.profile!.birthday!,
         today,
         settings.birthday.window_days_before,
         settings.birthday.window_days_after
-      ),
-      releasedThisYear:
-        released.find((b) => b.client_id === c.user.id && b.benefit?.type === "birthday") ?? null,
-    }))
+      );
+      return {
+        ...c,
+        info,
+        releasedThisYear:
+          released.find(
+            (b) => b.client_id === c.user.id && b.benefit?.type === "birthday" && b.cycle_key === `birthday:${info.cycleYear}`
+          ) ?? null,
+      };
+    })
     .sort((a, b) => {
       const da = a.profile!.birthday!.slice(5);
       const db_ = b.profile!.birthday!.slice(5);
@@ -475,4 +488,3 @@ export const listBirthdays = cache(async (month: number): Promise<BirthdayEntry[
     });
 });
 
-export const todayISO = () => toISODate(new Date());

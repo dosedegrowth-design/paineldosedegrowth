@@ -40,7 +40,9 @@ async function contarAtencao(): Promise<Atencao> {
 }
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const [user, atencao] = await Promise.all([requireAdminPage(), contarAtencao()]);
+  // a porta primeiro: sem sessão de admin, nenhuma contagem chega a rodar
+  const user = await requireAdminPage();
+  const atencao = await contarAtencao();
   return (
     <div className="ty-scope tya">
       <AdminFrame atencao={atencao} nome={user.displayName}>

@@ -106,7 +106,11 @@ export async function createAppointmentAction(input: {
       })
       .select("id")
       .single();
-    if (error) throw new Error(error.message);
+    if (error) {
+      // outra cliente marcou o mesmo horário no mesmo instante (índice único)
+      if (error.code === "23505") throw new BusinessError("Esse horário acabou de ser reservado. Escolha outro.", "time");
+      throw new Error(error.message);
+    }
     const id = (created as { id: string }).id;
 
     await logAudit({
@@ -126,12 +130,17 @@ export async function createAppointmentAction(input: {
 export async function cancelAppointmentAction(input: { id: string }): Promise<ActionResult> {
   return runAction("booking.cancel", async () => {
     const me = await assertClient();
+    const id = z.string().uuid("Registro inválido").parse(input.id);
     const db = vipDb();
-    const { data } = await db.from("appointments").select("*").eq("id", input.id).maybeSingle();
+    const { data } = await db.from("appointments").select("*").eq("id", id).maybeSingle();
     const a = data as AppointmentRow | null;
     if (!a || a.client_id !== me.id) throw new BusinessError("Horário não encontrado.");
     if (!["requested", "confirmed"].includes(a.status)) {
       throw new BusinessError("Esse horário não pode mais ser cancelado.");
+    }
+    // o que já passou não se cancela: quem fecha (realizado ou falta) é a Tayssa
+    if (a.scheduled_date < toISODate(nowInBusinessTz())) {
+      throw new BusinessError("Esse horário já passou. Se algo aconteceu, fale com a Tayssa pelo WhatsApp.");
     }
     const { error } = await db
       .from("appointments")

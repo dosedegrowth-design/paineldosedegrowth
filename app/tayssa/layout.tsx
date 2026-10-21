@@ -12,6 +12,7 @@ import { PUBLIC_ORIGIN } from "@/lib/tayssa/config";
 import { SmoothScroll } from "@/components/tayssa/ui/smooth-scroll";
 import { PausaForaDaTela } from "@/components/tayssa/ui/pausa-fora";
 import { TransitionProvider } from "@/components/tayssa/ui/transition";
+import { MovimentoDoAparelho } from "@/components/tayssa/ui/movimento";
 import { EstruturaProvider } from "@/components/tayssa/ui/estrutura";
 
 /**
@@ -50,6 +51,8 @@ export const metadata: Metadata = {
     locale: "pt_BR",
     siteName: "Tayssa Lash",
   },
+  // a imagem vem de opengraph-image.tsx; no X/Twitter, cartão grande
+  twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION },
   robots: { index: true, follow: true },
 };
 
@@ -68,9 +71,11 @@ export default function TayssaLayout({ children }: { children: React.ReactNode }
       <div className="ty-grain" aria-hidden />
       <SmoothScroll />
       <PausaForaDaTela />
-      <TransitionProvider>
-        <EstruturaProvider>{children}</EstruturaProvider>
-      </TransitionProvider>
+      <MovimentoDoAparelho>
+        <TransitionProvider>
+          <EstruturaProvider>{children}</EstruturaProvider>
+        </TransitionProvider>
+      </MovimentoDoAparelho>
     </div>
   );
 }

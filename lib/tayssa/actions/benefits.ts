@@ -1,13 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { vipDb } from "@/lib/tayssa/db";
 import { assertAdmin, assertClient } from "@/lib/tayssa/auth/guards";
 import { logAudit } from "@/lib/tayssa/audit";
 import { ROUTES } from "@/lib/tayssa/config";
 import { getSettings } from "@/lib/tayssa/settings";
 import { defaultValidityDays } from "@/lib/tayssa/engine";
-import { addDays, birthdayCycleKey } from "@/lib/tayssa/rules";
+import { addDays, birthdayCycleKey, birthdayInfo } from "@/lib/tayssa/rules";
+import { nowInBusinessTz } from "@/lib/tayssa/format";
 import {
   benefitDecisionSchema,
   customBenefitSchema,
@@ -39,10 +41,15 @@ export async function requestBenefitAction(input: {
 }): Promise<ActionResult> {
   return runAction("benefits.request", async () => {
     const me = await assertClient();
-    const cb = await loadClientBenefit(input.id);
+    const p = z.object({ id: z.string().uuid("Registro inválido"), note: z.string().trim().max(500).optional() }).parse(input);
+    const cb = await loadClientBenefit(p.id);
     if (cb.client_id !== me.id) throw new BusinessError("Benefício não encontrado.");
     if (cb.status !== "available") {
       throw new BusinessError("Esse benefício não está disponível para solicitação agora.");
+    }
+    // vencido conta como vencido mesmo antes da varredura que muda o status
+    if (cb.expires_at && new Date(cb.expires_at).getTime() < Date.now()) {
+      throw new BusinessError("Esse benefício venceu. Fale com a Tayssa se quiser combinar outra coisa.");
     }
     if (cb.benefit.type === "birthday" && !me.isVip) {
       throw new BusinessError("Esse benefício faz parte da experiência VIP.");
@@ -52,7 +59,7 @@ export async function requestBenefitAction(input: {
       .update({
         status: "requested",
         requested_at: new Date().toISOString(),
-        client_note: input.note?.slice(0, 500) ?? null,
+        client_note: p.note || null,
       })
       .eq("id", cb.id);
     if (error) throw new Error(error.message);
@@ -246,8 +253,15 @@ export async function adminReleaseBirthdayAction(
     if (!b) throw new BusinessError("Não há benefício de aniversário ativo nas configurações.");
 
     const settings = await getSettings();
-    const year = new Date().getFullYear();
-    const cycleKey = birthdayCycleKey(year);
+    // o mesmo ciclo que o VIP enxerga: perto da virada, o aniversário que
+    // vem já é do ano seguinte (antes o painel gravava o ano do relógio UTC)
+    const { cycleYear } = birthdayInfo(
+      p.birthday,
+      nowInBusinessTz(),
+      settings.birthday.window_days_before,
+      settings.birthday.window_days_after
+    );
+    const cycleKey = birthdayCycleKey(cycleYear);
     if (settings.birthday.once_per_year) {
       const { data: existing } = await db
         .from("client_benefits")
@@ -282,7 +296,7 @@ export async function adminReleaseBirthdayAction(
       action: "birthday_released",
       entityType: "client_benefit",
       entityId: (created as { id: string }).id,
-      meta: { client_id: input.client_id, year, title: input.title },
+      meta: { client_id: input.client_id, year: cycleYear, title: input.title },
     });
     revalidateBoth();
     return undefined;

@@ -665,7 +665,7 @@ export function LoyaltyForm({ value }: { value: Settings["loyalty"] }) {
           inputMode="numeric"
           defaultValue={String(value.card_size)}
           error={erroDe(state, "card_size")}
-          hint="Vale para cartões novos; o cartão aberto de cada cliente mantém o tamanho com que nasceu."
+          hint="De 4 a 12. Vale para cartões novos; o cartão aberto de cada cliente mantém o tamanho com que nasceu."
         />
         <Campo
           label="Nome do presente (a cliente vê)"

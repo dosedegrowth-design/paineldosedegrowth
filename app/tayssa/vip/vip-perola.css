@@ -277,10 +277,7 @@ body:has(.tyv) {
 .tyv-sheet-bg {
   background: rgba(60, 40, 25, 0.28);
 }
-.tyv-toast {
-  color: #fff;
-  background: var(--tyv-vinho);
-}
+
 .tyv-moment__line {
   background: linear-gradient(180deg, #a3345a 0%, var(--tyv-vinho) 100%);
 }

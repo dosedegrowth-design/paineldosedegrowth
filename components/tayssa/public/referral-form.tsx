@@ -6,6 +6,7 @@ import { submitPublicReferralAction } from "@/lib/tayssa/actions/referrals";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { ROUTES } from "@/lib/tayssa/config";
 import { TyInput, TyTextarea } from "@/components/tayssa/ui/field";
+import { useFormPreservado } from "@/components/tayssa/ui/form-preservado";
 import { TyButton, TyLinkButton } from "@/components/tayssa/ui/button";
 import { MaskedLines } from "@/components/tayssa/ui/reveal";
 import type { ActionResult } from "@/lib/tayssa/types";
@@ -20,6 +21,7 @@ export function PublicReferralForm({ whatsapp, referTemplate }: { whatsapp: stri
   const err = state && !state.ok ? state : null;
   const fieldErr = (f: string) => (err?.field === f ? err.error : undefined);
   const done = state?.ok === true;
+  const { onReset } = useFormPreservado();
 
   return (
     <div style={{ position: "relative", minHeight: 420 }}>
@@ -28,6 +30,7 @@ export function PublicReferralForm({ whatsapp, referTemplate }: { whatsapp: stri
           <motion.form
             key="form"
             action={action}
+            onReset={onReset}
             exit={{ opacity: 0, y: -16, transition: { duration: 0.4 } }}
             style={{ display: "grid", gap: 26 }}
             noValidate

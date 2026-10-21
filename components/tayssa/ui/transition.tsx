@@ -43,6 +43,8 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
   const reduced = useReducedMotion();
   const [phase, setPhase] = useState<Phase>("idle");
   const target = useRef<string | null>(null);
+  /** de onde a troca partiu: chegou em qualquer outro lugar, a cortina desce */
+  const origem = useRef<string | null>(null);
 
   const navigate = useCallback(
     (href: string) => {
@@ -52,6 +54,7 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
         return;
       }
       target.current = href;
+      origem.current = pathname;
       setPhase("cover");
     },
     [pathname, reduced, router]
@@ -69,11 +72,13 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
     };
   }, [phase, router]);
 
-  // rota trocou -> revela
+  // rota trocou -> revela. Também quando o destino redirecionou para outro
+  // lugar (cliente já logada tocando "Entrar"): antes a cortina só descia
+  // no caminho exato pedido e ficava 7 s tampando a tela
   useEffect(() => {
     if (phase !== "cover") return;
     const href = target.current;
-    if (href && pathname === caminhoDe(href)) {
+    if (href && (pathname === caminhoDe(href) || (origem.current !== null && pathname !== origem.current))) {
       // sem hash, a página nova começa do topo; com hash, quem posiciona é
       // o SmoothScroll — ele espera a seção existir antes de saltar
       if (!href.includes("#")) window.scrollTo(0, 0);
