@@ -562,7 +562,7 @@
     height: clamp(300px, 26vw, 420px);
     overflow: visible;
   }
-  .tyj__elo {
+  .tyj__onda {
     display: none;
   }
   .tyj__parada {
@@ -586,8 +586,10 @@
   }
 }
 
-/* celular: paradas centradas, uma embaixo da outra; entre uma e a próxima,
-   um elo tracejado que cresce conforme a página desce (jornada.tsx) */
+/* celular: paradas centradas, uma embaixo da outra; a onda tracejada
+   desce em serpentina pela margem, de um círculo ao outro, e se desenha
+   com a rolagem (jornada.tsx mede os círculos). O texto deixa a faixa da
+   margem livre para ela passar. */
 @media (max-width: 899px) {
   .tyj__linha {
     display: none;
@@ -596,8 +598,16 @@
     display: grid;
     gap: 64px;
   }
+  .tyj__onda {
+    position: absolute;
+    left: 0;
+    top: 0;
+    overflow: visible;
+    pointer-events: none;
+  }
   .tyj__parada {
     position: relative;
+    z-index: 1;
     display: grid;
     justify-items: center;
     text-align: center;
@@ -608,14 +618,9 @@
   .tyj__n {
     margin-top: 16px;
   }
-  .tyj__elo {
-    position: absolute;
-    left: calc(50% - 0.7px);
-    top: calc(100% + 12px);
-    width: 0;
-    height: 40px;
-    border-left: 1.4px dashed var(--t-accent);
-    transform-origin: top;
+  .tyj__nome,
+  .tyj__texto {
+    max-width: calc(100% - 52px);
   }
 }
 
@@ -770,99 +775,6 @@
   .tyco {
     min-height: 0;
     padding-block: clamp(220px, 60vw, 300px);
-  }
-}
-
-/* ============================================================
-   Faixa de serviços (a fileira colorida do Delta)
-   ============================================================ */
-.tyfx {
-  padding-block: clamp(28px, 4vw, 56px) 0;
-}
-/* rolagem lateral nativa: o dedo arrasta, e a página só empurra enquanto
-   ninguém mexeu (service-strip.tsx). A folga em cima e embaixo é do
-   cartão que sobe no hover — a rolagem corta o que passa da caixa. */
-.tyfx__janela {
-  overflow-x: auto;
-  overflow-y: hidden;
-  overscroll-behavior-x: contain;
-  scrollbar-width: none;
-  padding-block: 14px;
-  margin-block: -14px;
-}
-.tyfx__janela::-webkit-scrollbar {
-  display: none;
-}
-.tyfx__trilho {
-  display: flex;
-  gap: clamp(10px, 1.2vw, 16px);
-  list-style: none;
-  margin: 0;
-  padding: 0 var(--t-gutter);
-  width: max-content;
-}
-.ty-scope .tyfx__cartao {
-  position: relative;
-  display: grid;
-  grid-template-rows: auto 1fr auto auto;
-  gap: 10px;
-  width: clamp(200px, 18vw, 260px);
-  aspect-ratio: 4 / 5;
-  padding: 20px 20px 18px;
-  border-radius: clamp(22px, 2.2vw, 30px);
-  color: #fbf1f3;
-  overflow: hidden;
-  transition: transform var(--t-ui) var(--t-ease-out);
-}
-.ty-scope .tyfx__cartao[data-cor="vinho"] { background: var(--t-vinho); color: #fbf1f3; }
-.ty-scope .tyfx__cartao[data-cor="magenta"] { background: #933b6c; color: #fbf1f3; }
-.ty-scope .tyfx__cartao[data-cor="rosa"] { background: #e7aabb; color: var(--t-ink); }
-.ty-scope .tyfx__cartao[data-cor="ameixa"] { background: var(--t-ameixa); color: #fbf1f3; }
-.ty-scope .tyfx__cartao[data-cor="bordo"] { background: var(--t-bordo); color: #fbf1f3; }
-.ty-scope .tyfx__cartao[data-cor="blush"] { background: var(--t-blush); color: var(--t-ink); }
-@media (hover: hover) {
-  .tyfx__cartao:hover {
-    transform: translateY(-8px) rotate(-1.2deg);
-  }
-}
-.tyfx__n {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  opacity: 0.7;
-}
-.tyfx__icone {
-  width: clamp(64px, 6vw, 88px);
-  height: auto;
-  align-self: center;
-  justify-self: center;
-  stroke-width: 1.2;
-}
-.tyfx__nome {
-  font-family: var(--t-font-display);
-  text-transform: uppercase;
-  font-size: clamp(30px, 2.6vw, 40px);
-  line-height: 0.92;
-}
-.tyfx__acao {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.tyfx__acao .ty-btn__arrow {
-  position: relative;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: color-mix(in srgb, currentColor 18%, transparent);
-}
-@media (max-width: 767px) {
-  .ty-scope .tyfx__cartao {
-    width: 62vw;
   }
 }
 

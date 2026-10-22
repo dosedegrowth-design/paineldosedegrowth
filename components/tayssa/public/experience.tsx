@@ -10,7 +10,6 @@ import { PublicNav } from "@/components/tayssa/public/nav";
 import { Hero } from "@/components/tayssa/public/hero";
 import { WorkSequence } from "@/components/tayssa/public/work-sequence";
 import { Services } from "@/components/tayssa/public/services";
-import { ServiceStrip } from "@/components/tayssa/public/service-strip";
 import { AgendarFlutua, Faixa } from "@/components/tayssa/public/faixa";
 import { Details } from "@/components/tayssa/public/details";
 import { Numeros } from "@/components/tayssa/public/numeros";
@@ -104,7 +103,6 @@ export function PublicExperience({
         <main>
           <Hero business={settings.business} scheduleUrl={links.schedule} photo={photos?.hero} video={videos?.hero} />
           <Faixa itens={services.filter((s) => s.slug !== "outro").map((s) => s.name)} />
-          <ServiceStrip services={services} scheduleUrl={links.schedule} />
           <WorkSequence photos={photos?.work} />
           <Film video={videos?.processo} />
           <Catalogo catalogo={catalogo} />

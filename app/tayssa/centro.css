@@ -49,13 +49,47 @@
     text-wrap: pretty;
   }
 
-  /* ---------- faixa de serviços (cartões coloridos) ---------- */
-  .ty-scope .tyfx__nome {
-    text-align: center;
+  /* ---------- usar a largura ----------
+     Os títulos em máscara têm uma linha por decisão de desenho do
+     computador ("O que a / Tayssa / faz."). No celular isso dava três
+     linhas curtas no meio da tela, com sobra dos dois lados: as linhas
+     passam a correr juntas e quebram onde a largura pede. Cada palavra
+     continua subindo de dentro da sua máscara. */
+  .ty-scope .ty-linha {
+    display: inline;
   }
-  .ty-scope .tyfx__acao {
-    justify-content: center;
-    gap: 12px;
+  .ty-scope
+    :is(
+      .tysv__titulo,
+      .tyvi__declaracao,
+      .tyr__declaracao,
+      .tycl__declaracao,
+      .tyco__chamada,
+      .tynu__titulo,
+      .tyab__titulo,
+      .tyst__titulo,
+      .tyip__intro h1
+    ) {
+    letter-spacing: -0.022em;
+    line-height: 1.12;
+  }
+  /* texto em coluna estreita no meio da tela parecia espremido: no
+     celular a linha vai até a margem */
+  .ty-scope
+    :is(
+      .ty-measure,
+      .ty-measure--tight,
+      .tyw__dizer,
+      .tyw__fecho,
+      .tysv__pe-linha,
+      .tyvi__texto,
+      .tyr__regra-linha,
+      .tycl__dizer,
+      .typ__dizer,
+      .tynu__lead,
+      .tyab__bio
+    ) {
+    max-width: none;
   }
 
   /* ---------- técnicas: "Três técnicas, um olhar." ---------- */
@@ -92,9 +126,11 @@
     justify-items: center;
     text-align: center;
   }
-  /* no meio a foto encolheria até sumir (não tem largura própria) */
+  /* a foto na largura toda (no meio da grade ela encolheria até sumir:
+     não tem largura própria) */
   .ty-scope .tysv__figura {
-    width: min(80%, 300px);
+    width: 100%;
+    max-width: none;
   }
   .ty-scope :is(.tysv__fio, .tycl__fio, .tyvi__fio) {
     transform-origin: center;
@@ -181,5 +217,55 @@
   }
   .ty-scope .typ__ficha {
     justify-content: center;
+  }
+}
+
+/* rodapé no celular: numa coluna só ele virava uma lista comprida. A
+   marca em cima, o contato em duas caixas lado a lado (WhatsApp e
+   Instagram, o que mais se toca) e "Navegar" e "VIP" em duas colunas. */
+@media (max-width: 759px) {
+  .ty-scope .typ__grade {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "marca marca"
+      "contato contato"
+      "navegar vip";
+    gap: 36px 12px;
+  }
+  .ty-scope .typ__marca {
+    grid-area: marca;
+  }
+  .ty-scope .typ__coluna--navegar {
+    grid-area: navegar;
+  }
+  .ty-scope .typ__coluna--vip {
+    grid-area: vip;
+  }
+  .ty-scope .typ__coluna--contato {
+    grid-area: contato;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .ty-scope .typ__coluna--contato .typ__titulo {
+    grid-column: 1 / -1;
+  }
+  .ty-scope .typ__contato {
+    justify-content: center;
+    gap: 6px;
+    min-height: 84px;
+    padding: 14px 8px;
+    border: 1px solid var(--t-line-strong);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 14px 30px -24px rgba(75, 12, 32, 0.6);
+  }
+  .ty-scope .typ__contato:active {
+    transform: scale(0.97);
+  }
+  .ty-scope .typ__contato .typ__num {
+    font-size: 12.5px;
+    letter-spacing: 0;
+    white-space: nowrap;
   }
 }

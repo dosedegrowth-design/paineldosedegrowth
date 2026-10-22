@@ -93,7 +93,7 @@ export function PublicFooter({ business }: { business: BusinessSettings }) {
           </Reveal>
 
           {/* navegar: as seções do site */}
-          <Reveal className="typ__coluna" delay={0.06} y={16}>
+          <Reveal className="typ__coluna typ__coluna--navegar" delay={0.06} y={16}>
             <span className="ty-mono typ__titulo">Navegar</span>
             {SECOES.map((s) => (
               <LinkDeSecao key={s.id} id={s.id} label={s.label} />
@@ -101,7 +101,7 @@ export function PublicFooter({ business }: { business: BusinessSettings }) {
           </Reveal>
 
           {/* contato: só o que existe de verdade, direto das settings */}
-          <Reveal className="typ__coluna" delay={0.12} y={16}>
+          <Reveal className="typ__coluna typ__coluna--contato" delay={0.12} y={16}>
             <span className="ty-mono typ__titulo">Contato</span>
             <a
               className="typ__contato"
@@ -124,7 +124,7 @@ export function PublicFooter({ business }: { business: BusinessSettings }) {
           </Reveal>
 
           {/* o clube: pedir acesso, entrar, indicar */}
-          <Reveal className="typ__coluna" delay={0.18} y={16}>
+          <Reveal className="typ__coluna typ__coluna--vip" delay={0.18} y={16}>
             <span className="ty-mono typ__titulo">VIP</span>
             <TransitionLink href={ROUTES.signup} className="ty-link typ__link">
               Pedir acesso

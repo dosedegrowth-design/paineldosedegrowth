@@ -1,7 +1,7 @@
 "use client";
 
-import { useId, useRef } from "react";
-import { motion, useReducedMotion, useTransform, type MotionValue } from "framer-motion";
+import { useEffect, useId, useRef, useState, type RefObject } from "react";
+import { motion, useReducedMotion, useTransform } from "framer-motion";
 import { useProgressoRolagem } from "@/components/tayssa/ui/rolagem";
 import { Icone, type IconeNome } from "@/components/tayssa/ui/icones";
 
@@ -29,9 +29,10 @@ function curva(pts: { x: number; y: number }[]): string {
  * Jornada — as etapas ligadas por uma linha tracejada que se desenha
  * conforme a página desce (o "Journey of coffee" do Delta). Cada parada
  * é um círculo com um ícone animado; embaixo, o nome em cartaz e o texto.
- * No celular as paradas ficam centradas, uma embaixo da outra, e a linha
- * vira um elo entre cada parada e a próxima: descendo pelo meio, ela
- * passaria por cima do texto.
+ * No celular as paradas ficam centradas, uma embaixo da outra, e a onda
+ * desce em serpentina: sai do lado de um círculo, contorna o texto pela
+ * margem e entra no próximo — um lado de cada vez —, desenhando com a
+ * rolagem como a do computador.
  */
 export function Jornada({ paradas, className }: { paradas: Parada[]; className?: string }) {
   const ref = useRef<HTMLOListElement>(null);
@@ -42,6 +43,7 @@ export function Jornada({ paradas, className }: { paradas: Parada[]; className?:
 
   const pts = paradas.map((_, i) => ({ x: (W * (i + 0.5)) / paradas.length, y: i % 2 ? 210 : 90 }));
   const d = curva(pts);
+  const onda = useOndaDoCelular(ref);
 
   return (
     <ol ref={ref} className={["tyj", className ?? ""].join(" ").trim()} style={{ ["--tyj-n" as string]: paradas.length }}>
@@ -53,6 +55,16 @@ export function Jornada({ paradas, className }: { paradas: Parada[]; className?:
         </defs>
         <path d={d} className="tyj__traco" mask={`url(#m${id})`} />
       </svg>
+      {onda ? (
+        <svg className="tyj__onda" width={onda.w} height={onda.h} viewBox={`0 0 ${onda.w} ${onda.h}`} aria-hidden>
+          <defs>
+            <mask id={`o${id}`} maskUnits="userSpaceOnUse" x="0" y="0" width={onda.w} height={onda.h}>
+              <motion.path d={onda.d} stroke="white" strokeWidth="10" fill="none" style={{ pathLength: desenho }} />
+            </mask>
+          </defs>
+          <path d={onda.d} className="tyj__traco" mask={`url(#o${id})`} />
+        </svg>
+      ) : null}
       {paradas.map((p, i) => (
         <li
           key={p.n}
@@ -65,17 +77,73 @@ export function Jornada({ paradas, className }: { paradas: Parada[]; className?:
           <span className="tyj__n">{p.n}</span>
           <h3 className="tyj__nome">{p.nome}</h3>
           <p className="tyj__texto">{p.texto}</p>
-          {i < paradas.length - 1 ? (
-            <Elo desenho={desenho} de={i / (paradas.length - 1)} ate={(i + 1) / (paradas.length - 1)} />
-          ) : null}
         </li>
       ))}
     </ol>
   );
 }
 
-/** Celular: o traço até a próxima parada, crescendo no seu trecho da rolagem. */
-function Elo({ desenho, de, ate }: { desenho: MotionValue<number>; de: number; ate: number }) {
-  const escala = useTransform(desenho, [de, ate], [0, 1]);
-  return <motion.span className="tyj__elo" aria-hidden style={{ scaleY: escala }} />;
+type Circulo = { x: number; y: number; raio: number };
+
+/**
+ * A serpentina do celular: de cada círculo até o próximo, sai pelo lado
+ * (direita, esquerda, direita…), desce pela margem e volta pelo mesmo
+ * lado. O texto fica no meio, longe da linha; onde ela encosta no
+ * círculo, o fundo dele a cobre.
+ */
+function serpentina(c: Circulo[], largura: number): string {
+  const margem = 6;
+  let d = "";
+  for (let i = 0; i < c.length - 1; i++) {
+    const a = c[i];
+    const b = c[i + 1];
+    const lado = i % 2 === 0 ? 1 : -1;
+    const borda = lado > 0 ? largura - margem : margem;
+    const ax = a.x + lado * a.raio;
+    const bx = b.x + lado * b.raio;
+    const curva = Math.min(90, (b.y - a.y) / 3);
+    d += `M${ax} ${a.y} C${ax + lado * curva} ${a.y} ${borda} ${a.y + curva * 0.4} ${borda} ${a.y + curva} `;
+    d += `L${borda} ${b.y - curva} C${borda} ${b.y - curva * 0.4} ${bx + lado * curva} ${b.y} ${bx} ${b.y} `;
+  }
+  return d.trim();
+}
+
+/** Mede os círculos no celular (abaixo de 900px) e refaz a onda quando algo muda de tamanho. */
+function useOndaDoCelular(ref: RefObject<HTMLOListElement | null>) {
+  const [onda, setOnda] = useState<{ w: number; h: number; d: string } | null>(null);
+  useEffect(() => {
+    const ol = ref.current;
+    if (!ol) return;
+    const celular = window.matchMedia("(max-width: 899px)");
+    const medir = () => {
+      if (!celular.matches) {
+        setOnda(null);
+        return;
+      }
+      const caixa = ol.getBoundingClientRect();
+      const circulos = Array.from(ol.querySelectorAll<HTMLElement>(".tyj__circulo"), (el) => {
+        const r = el.getBoundingClientRect();
+        return { x: r.left - caixa.left + r.width / 2, y: r.top - caixa.top + r.height / 2, raio: r.width / 2 };
+      });
+      if (circulos.length < 2) {
+        setOnda(null);
+        return;
+      }
+      const w = Math.round(caixa.width);
+      const h = Math.round(caixa.height);
+      setOnda((atual) => {
+        const d = serpentina(circulos, w);
+        return atual && atual.w === w && atual.h === h && atual.d === d ? atual : { w, h, d };
+      });
+    };
+    medir();
+    const ro = new ResizeObserver(medir);
+    ro.observe(ol);
+    celular.addEventListener("change", medir);
+    return () => {
+      ro.disconnect();
+      celular.removeEventListener("change", medir);
+    };
+  }, [ref]);
+  return onda;
 }

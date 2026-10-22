@@ -759,7 +759,15 @@ select.ty-field__input {
 
 /* ---------- utilidades ---------- */
 
+/* títulos em máscara (MaskedLines): uma máscara por palavra, uma linha
+   por bloco no computador; no celular as linhas correm juntas e quebram
+   onde a largura pede (centro.css) */
+.ty-linha {
+  display: block;
+}
 .ty-mask {
+  display: inline-block;
+  vertical-align: top;
   overflow: hidden;
 }
 /* Títulos mascarados com <em> serifado cujo corpo é definido por <style>

@@ -41,9 +41,6 @@ export function PortfolioCelulares({ itens, handle, perfilUrl }: { itens: ItemPo
   const progresso = useProgressoRolagem(ref, ["start end", "end start"]);
   const [aberto, setAberto] = useState<number | null>(null);
   const vistos = itens.slice(0, LUGARES.length);
-  // o botão "Ver os N" só aparece quando sobra trabalho fora dos celulares da tela
-  const sobraNoCelular = itens.length > LUGARES.filter((l) => l.m).length;
-  const sobraNoComputador = itens.length > LUGARES.length;
 
   return (
     <div ref={ref} className="typf">
@@ -64,18 +61,86 @@ export function PortfolioCelulares({ itens, handle, perfilUrl }: { itens: ItemPo
       </div>
       <div className="typf__rodape">
         <span>Toque num celular para ver aqui</span>
-        {sobraNoCelular ? (
-          <button
-            type="button"
-            className="typf__todos"
-            data-so-celular={sobraNoComputador ? undefined : ""}
-            onClick={() => setAberto(0)}
-          >
-            Ver os {itens.length} trabalhos
-          </button>
-        ) : null}
       </div>
+      <FeedInstagram itens={itens} handle={handle} perfilUrl={perfilUrl} onAbrir={setAberto} />
       <VisorPortfolio itens={itens} aberto={aberto} onMudar={setAberto} handle={handle} perfilUrl={perfilUrl} />
+    </div>
+  );
+}
+
+/**
+ * Todas as publicações numa fileira pequena embaixo dos celulares, no
+ * formato do Instagram: miniatura 3:4 como a grade do perfil, ícone de
+ * Reel nos vídeos, o perfil em cima. Rola só com o dedo (nada anda
+ * sozinho); tocar abre o trabalho no visor. Feita para crescer: quando as
+ * publicações do perfil vierem para o site, entram aqui.
+ */
+function FeedInstagram({
+  itens,
+  handle,
+  perfilUrl,
+  onAbrir,
+}: {
+  itens: ItemPortfolio[];
+  handle: string;
+  perfilUrl: string;
+  onAbrir: (i: number) => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  // vídeo sem capa mostra o primeiro quadro: só carrega quando a fileira chega perto
+  const perto = useInView(ref, { once: true, margin: "300px 0px" });
+  const nome = handle.replace(/^@/, "");
+  if (!itens.length) return null;
+  return (
+    <div ref={ref} className="typf-feed">
+      <div className="typf-feed__topo">
+        <Avatar handle={handle} />
+        <span className="typf-feed__quem">
+          <b>{nome}</b>
+          <small>
+            {itens.length} {itens.length === 1 ? "publicação" : "publicações"}
+          </small>
+        </span>
+        <a className="typf-feed__perfil" href={perfilUrl} target="_blank" rel="noopener noreferrer">
+          Ver perfil
+        </a>
+      </div>
+      {/* gesto lateral do trackpad fica com a fileira (o Lenis só cuida do vertical) */}
+      <ul className="typf-feed__trilha" aria-label={`Publicações de ${handle}`} data-lenis-prevent-horizontal="">
+        {itens.map((item, i) => {
+          const video = item.tipo === "video";
+          const capa = video ? item.poster : item.src;
+          return (
+            <li key={item.id}>
+              <button
+                type="button"
+                className="typf-feed__item"
+                onClick={() => onAbrir(i)}
+                aria-label={`Abrir ${video ? "vídeo" : "foto"}${item.legenda ? `: ${item.legenda}` : ""}`}
+              >
+                {capa ? (
+                  <Image src={capa} alt="" fill sizes="(max-width: 899px) 30vw, 150px" style={estiloFoco(item.foco)} draggable={false} />
+                ) : perto ? (
+                  <video
+                    className="typf-feed__video"
+                    src={`${item.src}#t=0.1`}
+                    muted
+                    playsInline
+                    preload="metadata"
+                    style={estiloFoco(item.foco)}
+                    aria-hidden
+                  />
+                ) : null}
+                {video ? (
+                  <span className="typf-feed__selo" aria-hidden>
+                    <Ico nome="reels" />
+                  </span>
+                ) : null}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
@@ -275,6 +340,13 @@ const ICONES: Record<string, ReactNode> = {
   ),
   nota: <path d="M9 17.5V6l10-2v11.5M9 17.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0zM19 15.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />,
   voltar: <path d="M14.5 5.5 8 12l6.5 6.5" />,
+  reels: (
+    <>
+      <rect x="3.5" y="3.5" width="17" height="17" rx="4.5" />
+      <path d="M3.5 8.5h17M9 3.5l2.6 5M14.6 3.5l2.6 5" />
+      <path d="M10.3 11.6v5.2l4.4-2.6z" fill="currentColor" />
+    </>
+  ),
   salvar: <path d="M6.5 4h11v16l-5.5-4.6L6.5 20z" />,
   som: <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4zM15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" />,
   mudo: <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4zM16 9.5l5 5M21 9.5l-5 5" />,
