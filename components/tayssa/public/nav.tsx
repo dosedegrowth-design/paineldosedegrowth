@@ -9,14 +9,42 @@ import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { scrollToTarget } from "@/components/tayssa/ui/smooth-scroll";
 import { Bloom } from "@/components/tayssa/flora/bloom";
 import { useCamadaAberta } from "@/components/tayssa/ui/dialogo";
+import { Icone, type IconeNome } from "@/components/tayssa/ui/icones";
 
 type Secao = { id: string; label: string };
+/** Um destino do menu do celular: rola até uma seção ou abre outra página. */
+type Destino = { label: string; icone: IconeNome } & ({ href: string } | { onClick: () => void });
 
 const SECTIONS: Secao[] = [
   { id: "trabalho", label: "Trabalho" },
   { id: "servicos", label: "Serviços" },
   { id: "vip", label: "VIP" },
 ];
+
+/** O ícone de cada destino no menu do celular; seção nova cai na flor. */
+const ICONE_SECAO: Record<string, IconeNome> = {
+  trabalho: "olho",
+  servicos: "brilho",
+  sobre: "pessoa",
+  vip: "cartaoVip",
+  atendimento: "calendario",
+};
+
+const EASE_MENU: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
+/** A flor do menu nasce fechada e abre logo depois que a tela desce. */
+function FlorDoMenu() {
+  const [aberta, setAberta] = useState(false);
+  useEffect(() => {
+    const t = window.setTimeout(() => setAberta(true), 180);
+    return () => window.clearTimeout(t);
+  }, []);
+  return (
+    <span className="ty-menu__flor" aria-hidden>
+      <Bloom kind="flor" seed={5} tom="magenta" open={aberta} />
+    </span>
+  );
+}
 
 /**
  * Nav que some ao descer e volta compacta ao subir. Transparente sobre o
@@ -105,75 +133,88 @@ export function PublicNav({ scheduleUrl, sections = SECTIONS }: { scheduleUrl: s
         </button>
       </header>
 
+      {/* menu do celular: cada destino é uma caixa com o seu ícone, o acesso
+          ao VIP em duas pílulas e o agendar como o botão principal da casa */}
       <AnimatePresence>
         {open ? (
           <motion.div
             key="menu"
             ref={menu}
-            className="ty-night"
+            className="ty-night ty-menu"
             initial={{ clipPath: "inset(0 0 100% 0)" }}
             animate={{ clipPath: "inset(0 0 0% 0)" }}
             exit={{ clipPath: "inset(0 0 100% 0)" }}
             transition={{ duration: 0.62, ease: [0.65, 0, 0.35, 1] }}
-            style={{
-              position: "fixed",
-              inset: 0,
-              zIndex: 55,
-              background: "var(--t-bg)",
-              color: "var(--t-fg)",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "flex-end",
-              padding: "0 var(--t-gutter) 48px",
-              willChange: "clip-path",
-            }}
           >
-            <span className="ty-menu__flor" aria-hidden>
-              <Bloom kind="flor" seed={5} tom="magenta" />
-            </span>
-            <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 6 }}>
-              {[
-                ...sections.map((s) => ({ label: s.label, onClick: () => go(s.id) })),
-                { label: "Indicar", href: ROUTES.refer },
-                { label: "Pedir acesso", href: ROUTES.signup },
-                { label: "Entrar no VIP", href: ROUTES.login },
-              ].map((item, i) => (
-                <motion.li
-                  key={item.label}
-                  initial={{ y: 28, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.25 + i * 0.06, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            <div className="ty-menu__miolo">
+              <FlorDoMenu />
+              <ul className="ty-menu__grade">
+                {[
+                  ...sections.map(
+                    (s): Destino => ({ label: s.label, icone: ICONE_SECAO[s.id] ?? "flor", onClick: () => go(s.id) })
+                  ),
+                  { label: "Indicar", icone: "coracao", href: ROUTES.refer } satisfies Destino,
+                ].map((item, i) => {
+                  const corpo = (
+                    <>
+                      <span className="ty-menu__icone">
+                        <Icone nome={item.icone} />
+                      </span>
+                      <span className="ty-menu__rotulo">{item.label}</span>
+                    </>
+                  );
+                  return (
+                    <motion.li
+                      key={item.label}
+                      initial={{ y: 22, opacity: 0, scale: 0.96 }}
+                      animate={{ y: 0, opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.24 + i * 0.05, duration: 0.6, ease: EASE_MENU }}
+                    >
+                      {"href" in item ? (
+                        <TransitionLink
+                          href={item.href}
+                          className="ty-menu__caixa ty-ico-gatilho"
+                          onClick={() => setOpen(false)}
+                        >
+                          {corpo}
+                        </TransitionLink>
+                      ) : (
+                        <button type="button" className="ty-menu__caixa ty-ico-gatilho" onClick={item.onClick}>
+                          {corpo}
+                        </button>
+                      )}
+                    </motion.li>
+                  );
+                })}
+              </ul>
+              <motion.div
+                className="ty-menu__conta"
+                initial={{ y: 16, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.6, ease: EASE_MENU }}
+              >
+                <TransitionLink href={ROUTES.signup} className="ty-menu__pilula" onClick={() => setOpen(false)}>
+                  Pedir acesso
+                </TransitionLink>
+                <TransitionLink href={ROUTES.login} className="ty-menu__pilula" onClick={() => setOpen(false)}>
+                  Entrar no VIP
+                </TransitionLink>
+              </motion.div>
+              <motion.div
+                initial={{ y: 16, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.58, duration: 0.6, ease: EASE_MENU }}
+              >
+                <LinkAgendar
+                  href={scheduleUrl}
+                  className="tyh__btn tyh__btn--claro ty-menu__agendar"
+                  aoAbrir={() => setOpen(false)}
                 >
-                  {"href" in item && item.href ? (
-                    <TransitionLink
-                      href={item.href}
-                      className="ty-display ty-menu__item"
-                      onClick={() => setOpen(false)}
-                    >
-                      {item.label}
-                    </TransitionLink>
-                  ) : (
-                    <button
-                      className="ty-display ty-menu__item"
-                      onClick={item.onClick}
-                    >
-                      {item.label}
-                    </button>
-                  )}
-                </motion.li>
-              ))}
-            </ul>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-              style={{ marginTop: 36, display: "flex", gap: 20, alignItems: "center" }}
-            >
-              <LinkAgendar href={scheduleUrl} className="ty-btn ty-btn--sm ty-btn--solid" aoAbrir={() => setOpen(false)}>
-                <span>Agendar</span>
-                <span className="ty-btn__arrow" aria-hidden />
-              </LinkAgendar>
-            </motion.div>
+                  Agendar horário
+                  <span className="tyh__seta" aria-hidden />
+                </LinkAgendar>
+              </motion.div>
+            </div>
           </motion.div>
         ) : null}
       </AnimatePresence>
