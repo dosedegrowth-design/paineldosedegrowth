@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion, useTransform } from "framer-motion";
+import { useEffect, useRef } from "react";
+import { useMotionValueEvent, useReducedMotion } from "framer-motion";
 import { useProgressoRolagem } from "@/components/tayssa/ui/rolagem";
 import type { ServiceRow } from "@/lib/tayssa/types";
 import { Icone, type IconeNome } from "@/components/tayssa/ui/icones";
@@ -22,36 +22,64 @@ const CORES = ["vinho", "magenta", "rosa", "ameixa", "bordo", "blush"] as const;
 /**
  * A faixa de serviços logo depois da abertura (a fileira colorida do
  * Delta). Os nomes vêm do catálogo de verdade; cada cartão leva ao
- * WhatsApp com o serviço já na mensagem. A faixa desliza para o lado
- * conforme a página desce — e percorre toda a sua largura, então no
- * celular todos os cartões passam pela tela sem precisar arrastar.
+ * WhatsApp com o serviço já na mensagem.
+ *
+ * A faixa é uma rolagem lateral de verdade: o dedo arrasta para o lado
+ * (e o trackpad no computador). Enquanto ninguém mexe nela, ela desliza
+ * sozinha conforme a página desce, percorrendo toda a largura. Antes ela
+ * só andava com a página (um `transform` preso à rolagem) e o arrasto
+ * lateral não fazia nada. Quando alguém rola a faixa (ou entra nela pelo
+ * teclado), ela passa a ser de quem mexeu e a página para de empurrar.
+ * Um dedo que só desce a página por cima dela não conta: quem decide é a
+ * própria rolagem lateral, não o toque.
  */
 export function ServiceStrip({ services, scheduleUrl }: { services: ServiceRow[]; scheduleUrl: string }) {
   const ref = useRef<HTMLElement>(null);
-  const trilho = useRef<HTMLUListElement>(null);
+  const janela = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
-  const [sobra, setSobra] = useState(0);
+  const solta = useRef(false);
+  // onde a página deixou a faixa por último: rolagem fora disso é de alguém
+  const alvo = useRef<number | null>(null);
   const scrollYProgress = useProgressoRolagem(ref, ["start end", "end start"]);
-  const x = useTransform(scrollYProgress, [0.1, 0.9], reduced ? [0, 0] : [0, -sobra]);
+
+  // a página empurra a faixa: mesmo trecho de antes (10% a 90% da passagem)
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    const j = janela.current;
+    if (!j || solta.current || reduced) return;
+    const curso = j.scrollWidth - j.clientWidth;
+    if (curso <= 0) return;
+    const p = Math.min(1, Math.max(0, (v - 0.1) / 0.8));
+    alvo.current = Math.round(p * curso);
+    j.scrollLeft = alvo.current;
+  });
 
   useEffect(() => {
-    const medir = () => {
-      const t = trilho.current;
-      if (!t) return;
-      setSobra(Math.max(0, t.scrollWidth - (t.parentElement?.clientWidth ?? 0)));
+    const j = janela.current;
+    if (!j) return;
+    const soltar = () => {
+      solta.current = true;
     };
-    medir();
-    window.addEventListener("resize", medir);
-    return () => window.removeEventListener("resize", medir);
-  }, [services.length]);
+    const aoRolar = () => {
+      if (solta.current) return;
+      if (alvo.current !== null && Math.abs(j.scrollLeft - alvo.current) <= 2) return;
+      soltar();
+    };
+    j.addEventListener("scroll", aoRolar, { passive: true });
+    j.addEventListener("focusin", soltar);
+    return () => {
+      j.removeEventListener("scroll", aoRolar);
+      j.removeEventListener("focusin", soltar);
+    };
+  }, []);
 
   const lista = services.filter((s) => s.slug !== "outro");
   if (!lista.length) return null;
 
   return (
     <section ref={ref} className="tyfx" aria-label="Serviços em destaque">
-      <div className="tyfx__janela">
-        <motion.ul ref={trilho} className="tyfx__trilho" style={{ x }}>
+      {/* gesto lateral do trackpad fica com a faixa (o Lenis só cuida do vertical) */}
+      <div ref={janela} className="tyfx__janela" data-lenis-prevent-horizontal="">
+        <ul className="tyfx__trilho">
           {lista.map((s, i) => (
             <li key={s.id}>
               <LinkAgendar
@@ -71,7 +99,7 @@ export function ServiceStrip({ services, scheduleUrl }: { services: ServiceRow[]
               </LinkAgendar>
             </li>
           ))}
-        </motion.ul>
+        </ul>
       </div>
     </section>
   );

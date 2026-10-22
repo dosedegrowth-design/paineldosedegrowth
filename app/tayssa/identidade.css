@@ -662,9 +662,16 @@
   .tyh__btn {
     height: 54px;
   }
+  /* o texto no meio da cápsula, alinhado com o "Pedir acesso ao VIP" de
+     baixo; a seta mora na ponta e fica fora da conta do centro */
   .tyh__btn--claro {
-    padding-left: 24px;
-    justify-content: space-between;
+    padding-inline: 56px;
+  }
+  .tyh__btn--claro .tyh__seta {
+    position: absolute;
+    top: 50%;
+    right: 9px;
+    margin-top: -18px;
   }
   .tyh__palco {
     margin-top: 40px;
@@ -2350,7 +2357,7 @@ html:has(.ty-scope) {
 
 /* o que a rolagem move a cada quadro vive em camada própria: mover vira só
    deslocar na placa de vídeo, sem redesenhar a página nem remontar as camadas */
-.ty-scope :is(.tyh__texto, .ty-amb__foto, .tyco__peca, .tyj__vertical, .tyw__corrida i) {
+.ty-scope :is(.tyh__texto, .ty-amb__foto, .tyco__peca, .tyj__elo, .tyw__corrida i) {
   will-change: transform;
 }
 

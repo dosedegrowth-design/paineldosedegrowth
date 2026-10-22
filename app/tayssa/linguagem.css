@@ -562,7 +562,7 @@
     height: clamp(300px, 26vw, 420px);
     overflow: visible;
   }
-  .tyj__vertical {
+  .tyj__elo {
     display: none;
   }
   .tyj__parada {
@@ -586,37 +586,36 @@
   }
 }
 
-/* celular: coluna, linha vertical à esquerda */
+/* celular: paradas centradas, uma embaixo da outra; entre uma e a próxima,
+   um elo tracejado que cresce conforme a página desce (jornada.tsx) */
 @media (max-width: 899px) {
   .tyj__linha {
     display: none;
   }
   .tyj {
     display: grid;
-    gap: 34px;
-    padding-left: 0;
-  }
-  .tyj__vertical {
-    position: absolute;
-    left: 46px;
-    top: 46px;
-    bottom: 46px;
-    width: 0;
-    border-left: 1.4px dashed var(--t-accent);
-    transform-origin: top;
+    gap: 64px;
   }
   .tyj__parada {
     position: relative;
     display: grid;
-    grid-template-columns: 92px minmax(0, 1fr);
-    column-gap: 18px;
-    align-items: start;
+    justify-items: center;
+    text-align: center;
   }
   .tyj__circulo {
-    grid-row: 1 / span 3;
+    width: 84px;
   }
   .tyj__n {
-    margin-top: 14px;
+    margin-top: 16px;
+  }
+  .tyj__elo {
+    position: absolute;
+    left: calc(50% - 0.7px);
+    top: calc(100% + 12px);
+    width: 0;
+    height: 40px;
+    border-left: 1.4px dashed var(--t-accent);
+    transform-origin: top;
   }
 }
 
@@ -780,18 +779,27 @@
 .tyfx {
   padding-block: clamp(28px, 4vw, 56px) 0;
 }
+/* rolagem lateral nativa: o dedo arrasta, e a página só empurra enquanto
+   ninguém mexeu (service-strip.tsx). A folga em cima e embaixo é do
+   cartão que sobe no hover — a rolagem corta o que passa da caixa. */
 .tyfx__janela {
-  overflow: hidden;
-  padding-inline: var(--t-gutter);
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  padding-block: 14px;
+  margin-block: -14px;
+}
+.tyfx__janela::-webkit-scrollbar {
+  display: none;
 }
 .tyfx__trilho {
   display: flex;
   gap: clamp(10px, 1.2vw, 16px);
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 var(--t-gutter);
   width: max-content;
-  will-change: transform;
 }
 .ty-scope .tyfx__cartao {
   position: relative;

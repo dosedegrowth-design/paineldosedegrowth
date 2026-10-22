@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useRef } from "react";
-import { motion, useReducedMotion, useTransform } from "framer-motion";
+import { motion, useReducedMotion, useTransform, type MotionValue } from "framer-motion";
 import { useProgressoRolagem } from "@/components/tayssa/ui/rolagem";
 import { Icone, type IconeNome } from "@/components/tayssa/ui/icones";
 
@@ -29,7 +29,9 @@ function curva(pts: { x: number; y: number }[]): string {
  * Jornada — as etapas ligadas por uma linha tracejada que se desenha
  * conforme a página desce (o "Journey of coffee" do Delta). Cada parada
  * é um círculo com um ícone animado; embaixo, o nome em cartaz e o texto.
- * No celular a linha desce na vertical, à esquerda dos círculos.
+ * No celular as paradas ficam centradas, uma embaixo da outra, e a linha
+ * vira um elo entre cada parada e a próxima: descendo pelo meio, ela
+ * passaria por cima do texto.
  */
 export function Jornada({ paradas, className }: { paradas: Parada[]; className?: string }) {
   const ref = useRef<HTMLOListElement>(null);
@@ -51,9 +53,6 @@ export function Jornada({ paradas, className }: { paradas: Parada[]; className?:
         </defs>
         <path d={d} className="tyj__traco" mask={`url(#m${id})`} />
       </svg>
-      {/* celular: a linha vertical cresce com o scroll */}
-      <motion.span className="tyj__vertical" aria-hidden style={{ scaleY: desenho }} />
-
       {paradas.map((p, i) => (
         <li
           key={p.n}
@@ -66,8 +65,17 @@ export function Jornada({ paradas, className }: { paradas: Parada[]; className?:
           <span className="tyj__n">{p.n}</span>
           <h3 className="tyj__nome">{p.nome}</h3>
           <p className="tyj__texto">{p.texto}</p>
+          {i < paradas.length - 1 ? (
+            <Elo desenho={desenho} de={i / (paradas.length - 1)} ate={(i + 1) / (paradas.length - 1)} />
+          ) : null}
         </li>
       ))}
     </ol>
   );
+}
+
+/** Celular: o traço até a próxima parada, crescendo no seu trecho da rolagem. */
+function Elo({ desenho, de, ate }: { desenho: MotionValue<number>; de: number; ate: number }) {
+  const escala = useTransform(desenho, [de, ate], [0, 1]);
+  return <motion.span className="tyj__elo" aria-hidden style={{ scaleY: escala }} />;
 }

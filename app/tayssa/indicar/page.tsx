@@ -50,7 +50,7 @@ export default async function ReferPage() {
             alignItems: "start",
           }}
         >
-          <div>
+          <div className="tyip__intro">
             <Reveal>
               <span className="ty-eyebrow" style={{ display: "block", marginBottom: 22 }}>
                 Indicação

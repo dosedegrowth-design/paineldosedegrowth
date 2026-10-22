@@ -1,0 +1,185 @@
+/* ============================================================
+   O SITE NO CELULAR É CENTRADO
+   Nove em cada dez visitas são no celular, e a dona pediu tudo no meio.
+   Abaixo de 900px cada seção já é uma coluna só: aqui as etiquetas de
+   topo, os títulos, os nomes, os textos curtos, as fotos e as ações vão
+   para o centro. No computador o site continua editorial, alinhado à
+   esquerda. Este arquivo é o último do layout: ganha das regras de
+   mesma força sem precisar de !important.
+   ============================================================ */
+
+/* o brilho dos títulos em máscara (as linhas que sobem) era cortado na
+   caixa de cada linha — a máscara corta tudo que passa dela — e virava um
+   retângulo atrás da palavra, no claro e no escuro. Dentro da máscara fica
+   só a sombra curta de cada tema, que cabe nela. */
+.ty-scope .ty-mask,
+.ty-scope .ty-mask em {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+.ty-scope :is(.ty-night, [data-theme="night"], .ty-block--ink) :is(.ty-mask, .ty-mask em) {
+  text-shadow: 0 2px 0 rgba(18, 4, 10, 0.25);
+}
+
+@media (max-width: 899px) {
+  /* etiquetas de topo e chapéus de lista: as duas empilhadas no meio */
+  .ty-scope
+    :is(
+      .tyvi__topo,
+      .tyvi__chapeu,
+      .tyr__topo,
+      .tyr__chapeu,
+      .tycl__topo,
+      .tycl__chapeu,
+      .tyab__topo,
+      .tyst__topo,
+      .tydp__topo,
+      .tyat__topo
+    ) {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+  }
+  /* centrado, título quebra em linhas do mesmo tamanho e texto não deixa
+     palavra sozinha na última linha */
+  .ty-scope :is(.tyw, .tysv, .tyvi, .tyr, .tycl, .tyab, .tyst, .tydp, .tynu, .tyat) :is(h2, h3) {
+    text-wrap: balance;
+  }
+  .ty-scope :is(.tyw, .tysv, .tyvi, .tyr, .tycl, .tyab, .tyst, .tydp, .tynu, .tyat) p {
+    text-wrap: pretty;
+  }
+
+  /* ---------- faixa de serviços (cartões coloridos) ---------- */
+  .ty-scope .tyfx__nome {
+    text-align: center;
+  }
+  .ty-scope .tyfx__acao {
+    justify-content: center;
+    gap: 12px;
+  }
+
+  /* ---------- técnicas: "Três técnicas, um olhar." ---------- */
+  .ty-scope :is(.tyw__cabeca, .tyw__item, .tyw__fecho) {
+    text-align: center;
+  }
+  .ty-scope :is(.tyw__cabeca > p, .tyw__item-nome .tyw__dizer, .tyw__texto, .tyw__fecho) {
+    margin-inline: auto;
+  }
+  .ty-scope .tyw__marca {
+    justify-content: center;
+  }
+  /* o nome pequeno ao lado do número repete o nome grande logo abaixo:
+     sai do desenho e continua para o leitor de tela (é o h3 da técnica) */
+  .ty-scope .tyw__marca-nome {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ---------- serviços: "O que a Tayssa faz." ---------- */
+  .ty-scope .tysv__cabeca {
+    text-align: center;
+  }
+  .ty-scope .tysv__lead {
+    margin-inline: auto;
+  }
+  .ty-scope .tysv__linha {
+    justify-items: center;
+    text-align: center;
+  }
+  /* no meio a foto encolheria até sumir (não tem largura própria) */
+  .ty-scope .tysv__figura {
+    width: min(80%, 300px);
+  }
+  .ty-scope :is(.tysv__fio, .tycl__fio, .tyvi__fio) {
+    transform-origin: center;
+  }
+  .ty-scope .tysv__pe {
+    align-items: center;
+    text-align: center;
+  }
+
+  /* ---------- VIP: "Um convite para dentro do estúdio." ---------- */
+  .ty-scope :is(.tyvi__cabeca, .tyvi__porta) {
+    text-align: center;
+  }
+  .ty-scope .tyvi__lado {
+    align-items: center;
+  }
+  .ty-scope .tyvi__linha {
+    justify-items: center;
+    text-align: center;
+  }
+  .ty-scope .tyvi__porta .ty-measure {
+    margin-inline: auto;
+  }
+  .ty-scope .tyvi__acoes {
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* ---------- indicação: "Indicar alguém é emprestar a sua confiança." ---------- */
+  .ty-scope :is(.tyr__cabeca, .tyr__regra) {
+    text-align: center;
+  }
+  .ty-scope .tyr__lado {
+    align-items: center;
+  }
+  .ty-scope .tyr__regra-linha {
+    margin-inline: auto;
+  }
+  .ty-scope .tyr__acoes {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* ---------- fechamento: "Começa com uma mensagem." ---------- */
+  .ty-scope .tycl__declaracao {
+    text-align: center;
+  }
+  .ty-scope .tycl__linha {
+    justify-items: center;
+    text-align: center;
+  }
+
+  /* ---------- seções que entram quando a Tayssa mandar o conteúdo ---------- */
+  .ty-scope :is(.tyab__texto, .tyst__texto, .tyst__onde, .tydp__item, .tynu__texto, .tynu__item, .tyat__h) {
+    text-align: center;
+  }
+  .ty-scope :is(.tyab__bio, .tynu__lead) {
+    margin-inline: auto;
+  }
+  .ty-scope .tyst__onde .ty-link {
+    justify-self: center;
+  }
+
+  /* ---------- página de indicação: o cabeçalho no meio; as regras
+     numeradas e o formulário seguem alinhados à esquerda, como todo
+     formulário do site ---------- */
+  .ty-scope .tyip__intro {
+    text-align: center;
+  }
+  .ty-scope .tyip__intro p {
+    margin-inline: auto;
+  }
+  .ty-scope .tyip__intro ul {
+    text-align: left;
+  }
+
+  /* ---------- rodapé ---------- */
+  .ty-scope .typ__grade {
+    text-align: center;
+  }
+  .ty-scope :is(.typ__marca, .typ__coluna, .typ__contato) {
+    align-items: center;
+  }
+  .ty-scope .typ__ficha {
+    justify-content: center;
+  }
+}
