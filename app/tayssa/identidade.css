@@ -1069,16 +1069,18 @@ body:has(.ty-scope[data-theme="night"]) {
 /* ============================================================
    FAIXA QUE CORRE (como a da iWin) e o botão de agendar que flutua
    ============================================================ */
+/* a faixa limpa: uma linha fina no vinho da abertura, nomes pequenos em
+   caixa-alta espaçada e uma florzinha entre eles — sem degradê nas letras
+   e sem brilho (antes era grande e chamativa demais) */
 .ty-faixa {
   position: relative;
   overflow: hidden;
-  padding: 18px 0;
-  background: linear-gradient(90deg, #4b0c20, #6d1530 50%, #4b0c20);
-  border-block: 1px solid rgba(255, 214, 228, 0.12);
+  padding: 13px 0;
+  background: var(--t-vivo-3);
+  border-block: 1px solid rgba(255, 214, 228, 0.08);
 }
-/* as pontas somem no próprio vinho da faixa. Com máscara, a borda ficava
-   transparente e aparecia o fundo claro da página: uma névoa branca nos
-   dois lados da faixa escura */
+/* as pontas somem na própria cor da faixa (com máscara, a borda ficava
+   transparente e aparecia o fundo claro da página: uma névoa branca) */
 .ty-faixa::before,
 .ty-faixa::after {
   content: "";
@@ -1086,22 +1088,28 @@ body:has(.ty-scope[data-theme="night"]) {
   top: 0;
   bottom: 0;
   z-index: 1;
-  width: 12%;
+  width: 14%;
   pointer-events: none;
 }
 .ty-faixa::before {
   left: 0;
-  background: linear-gradient(90deg, #4b0c20, rgba(75, 12, 32, 0));
+  background: linear-gradient(90deg, var(--t-vivo-3), transparent);
 }
 .ty-faixa::after {
   right: 0;
-  background: linear-gradient(270deg, #4b0c20, rgba(75, 12, 32, 0));
+  background: linear-gradient(270deg, var(--t-vivo-3), transparent);
 }
+/* o laço sem emenda: duas cópias iguais, cada uma levando o espaço do
+   fim consigo; andar -50% é andar exatamente uma cópia. Com o espaço
+   entre as cópias fora da conta, a faixa dava um pulo de 14px a cada volta */
 .ty-faixa__trilho {
   display: flex;
   width: max-content;
-  gap: 28px;
-  animation: ty-faixa 38s linear infinite;
+  animation: ty-faixa 60s linear infinite;
+}
+.ty-faixa__trilho > .ty-faixa__trilho {
+  gap: 22px;
+  padding-right: 22px;
 }
 .ty-faixa:hover .ty-faixa__trilho {
   animation-play-state: paused;
@@ -1109,21 +1117,20 @@ body:has(.ty-scope[data-theme="night"]) {
 .ty-faixa__item {
   display: inline-flex;
   align-items: center;
-  gap: 28px;
-  font-size: clamp(18px, 2vw, 26px);
-  font-weight: 600;
-  letter-spacing: -0.03em;
+  gap: 22px;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   white-space: nowrap;
-  background: var(--t-letra-noite);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: rgba(251, 225, 233, 0.62);
 }
 .ty-faixa__flor {
   position: relative;
-  width: 34px;
-  height: 24px;
+  width: 16px;
+  height: 12px;
   flex: none;
+  opacity: 0.75;
 }
 /* gira só a flor que está na faixa visível (`data-vivo`, ver PausaForaDaTela) */
 .ty-faixa__flor[data-vivo] {
@@ -1135,7 +1142,6 @@ body:has(.ty-scope[data-theme="night"]) {
   width: 100%;
   height: 100%;
   overflow: visible;
-  filter: drop-shadow(0 0 10px rgba(247, 150, 182, 0.6));
 }
 @keyframes ty-faixa {
   to {
@@ -2075,8 +2081,9 @@ body:has(.ty-scope[data-theme="night"]) {
    UM FUNDO POR TÓPICO — cada seção com a sua cor da paleta, e a
    troca de assunto marcada: a seção seguinte sobe como uma folha de
    cantos redondos por cima da anterior. Ordem da home (vizinhas nunca
-   repetem): noite → faixa bordô → marfim → bordô → noite com foto →
-   rosé → vinho com ouro → champanhe → ameixa com foto → marfim.
+   repetem): noite → faixa → ameixa (carrossel de serviços) → marfim →
+   bordô → noite com foto → rosé → vinho com ouro → champanhe → ameixa
+   com foto → marfim.
    (Com todo o conteúdo: … noite com foto → marfim (A Tayssa) → ameixa
    (estúdio) → rosé (Instagram + portfólio) → noite rosé (números, em
    vitrine.css) → champanhe (depoimentos) → vinho
@@ -2141,8 +2148,8 @@ body:has(.ty-scope[data-theme="night"]) {
 }
 
 /* ---------- escuros ---------- */
-/* ameixa: o estúdio */
-.ty-scope .tyst {
+/* ameixa: o carrossel de serviços e o estúdio */
+.ty-scope :is(.tyfx, .tyst) {
   background:
     radial-gradient(70% 60% at 85% 0%, rgba(176, 72, 150, 0.26), transparent 70%),
     radial-gradient(60% 50% at 0% 100%, rgba(120, 30, 90, 0.3), transparent 70%),
@@ -2189,14 +2196,9 @@ body:has(.ty-scope[data-theme="night"]) {
     linear-gradient(180deg, rgba(44, 12, 40, 0.92) 0%, rgba(44, 12, 40, 0.35) 30%, rgba(44, 12, 40, 0.4) 70%, rgba(26, 6, 24, 0.95) 100%),
     radial-gradient(80% 60% at 20% 30%, rgba(150, 50, 130, 0.32), transparent 70%);
 }
-/* quem fica embaixo de uma folha guarda espaço para a curva dela. Logo
-   depois da faixa que corre, a folha clara de "Trabalho" sobe sobre o
-   vinho da abertura: um respiro embaixo da faixa, no mesmo vinho */
-.ty-scope main:has(> .ty-faixa) {
-  background: var(--t-vivo-3);
-}
-.ty-scope main > .ty-faixa {
-  margin-bottom: calc(var(--ty-folha) + clamp(22px, 3vh, 40px));
+/* quem fica embaixo de uma folha guarda espaço para a curva dela */
+.ty-scope .tyfx {
+  padding-bottom: calc(var(--ty-folha) + clamp(28px, 4vh, 52px));
 }
 .ty-scope .tyct {
   padding-bottom: calc(var(--ty-folha) + clamp(36px, 5vh, 64px));
