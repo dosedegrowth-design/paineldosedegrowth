@@ -170,7 +170,7 @@
 }
 .tyl .ty-field__hint {
   padding-left: 18px;
-  color: rgba(251, 227, 235, 0.5);
+  color: rgba(251, 227, 235, 0.68);
 }
 .tyl .ty-field__input:-webkit-autofill,
 .tyl .ty-field__input:-webkit-autofill:hover,
@@ -214,6 +214,12 @@
     transform 0.15s ease,
     box-shadow 0.25s ease,
     opacity 0.2s ease;
+}
+/* como <a> ("Falar com a Tayssa", "Ir para o meu espaço"), o reset de link
+   do site (`.ty-scope a:not(.ty-btn) { color: inherit }`) pesava mais e o
+   texto saía claro sobre o botão claro: invisível (1,04:1) */
+.ty-scope a.tyl__submit:not(.ty-btn) {
+  color: #4b0c20;
 }
 .tyl__submit:hover {
   box-shadow:

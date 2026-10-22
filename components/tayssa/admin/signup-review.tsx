@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { adminReviewSignupAction } from "@/lib/tayssa/actions/clients";
 import { dateTime } from "@/lib/tayssa/format";
 import { formatBrPhone } from "@/lib/tayssa/phone";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { Area } from "@/components/tayssa/admin/forms";
+import { useTarefa } from "@/components/tayssa/ui/acao";
 
 /**
  * A Tayssa decide quem entra. Um cartão só, centrado e na largura de um
@@ -36,7 +37,7 @@ export function SignupReviewPanel({
   const [error, setError] = useState<string | null>(null);
   const [welcome, setWelcome] = useState<string | null>(null);
   const [decided, setDecided] = useState<"approve" | "reject" | null>(null);
-  const [pending, start] = useTransition();
+  const [pending, start] = useTarefa();
   const first = name.split(" ")[0];
 
   const run = (decision: "approve" | "reject") =>

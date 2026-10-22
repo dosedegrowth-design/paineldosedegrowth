@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useActionState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { loginAction } from "@/lib/tayssa/actions/auth";
 import { ROUTES } from "@/lib/tayssa/config";
@@ -9,6 +9,7 @@ import { TyInput } from "@/components/tayssa/ui/field";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { Entrada } from "@/components/tayssa/auth/entrada";
 import { useFormPreservado } from "@/components/tayssa/ui/form-preservado";
+import { useAcaoFormulario } from "@/components/tayssa/ui/acao";
 
 type LoginResult = ActionResult<{ redirectTo: string; name: string }>;
 
@@ -30,7 +31,7 @@ export function LoginExperience({
   linkExpirado?: boolean;
 }) {
   const reduced = useReducedMotion();
-  const [state, action, pending] = useActionState<LoginResult | null, FormData>(
+  const [state, enviar, pending] = useAcaoFormulario<LoginResult | null>(
     loginAction as unknown as (prev: LoginResult | null, fd: FormData) => Promise<LoginResult>,
     null
   );
@@ -91,14 +92,17 @@ export function LoginExperience({
 
         <form
           ref={formRef}
-          action={action}
           noValidate
           onReset={onReset}
           onSubmit={(e) => {
             const fd = new FormData(e.currentTarget);
             const errors = check(fd);
             setLocal(errors);
-            if (Object.keys(errors).length) e.preventDefault();
+            if (Object.keys(errors).length) {
+              e.preventDefault();
+              return;
+            }
+            enviar(e);
           }}
         >
           {next ? <input type="hidden" name="next" value={next} /> : null}

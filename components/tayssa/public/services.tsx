@@ -41,9 +41,13 @@ function nomeComEnfase(nome: string): ReactNode {
   if (partes.length < 2) return nome;
   const ligacao = partes.findIndex((p) => LIGACAO.has(p.toLowerCase()));
   const corte = ligacao >= 0 && ligacao + 1 < partes.length ? ligacao + 1 : partes.length - 1;
+  // o espaço vai no mesmo texto da primeira parte: sozinho, entre a
+  // expressão e o <em>, o Chrome tirava o nó da árvore de acessibilidade e o
+  // leitor de tela dizia "Aplicação decílios", "Lipspa"
   return (
     <>
-      {partes.slice(0, corte).join(" ")} <em>{partes.slice(corte).join(" ")}</em>
+      {`${partes.slice(0, corte).join(" ")} `}
+      <em>{partes.slice(corte).join(" ")}</em>
     </>
   );
 }

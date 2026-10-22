@@ -28,7 +28,7 @@ export function TyInput({
         name={name}
         className="ty-field__input"
         aria-invalid={error ? true : undefined}
-        aria-describedby={error ? `${inputId}-err` : undefined}
+        aria-describedby={error ? `${inputId}-err` : hint ? `${inputId}-dica` : undefined}
         {...rest}
       />
       {error ? (
@@ -36,7 +36,9 @@ export function TyInput({
           {error}
         </span>
       ) : hint ? (
-        <span className="ty-field__hint">{hint}</span>
+        <span id={`${inputId}-dica`} className="ty-field__hint">
+          {hint}
+        </span>
       ) : null}
     </div>
   );
@@ -62,7 +64,7 @@ export function TyTextarea({
         name={name}
         className="ty-field__input"
         aria-invalid={error ? true : undefined}
-        aria-describedby={error ? `${inputId}-err` : undefined}
+        aria-describedby={error ? `${inputId}-err` : hint ? `${inputId}-dica` : undefined}
         {...rest}
       />
       {error ? (
@@ -70,7 +72,9 @@ export function TyTextarea({
           {error}
         </span>
       ) : hint ? (
-        <span className="ty-field__hint">{hint}</span>
+        <span id={`${inputId}-dica`} className="ty-field__hint">
+          {hint}
+        </span>
       ) : null}
     </div>
   );
@@ -97,7 +101,7 @@ export function TySelect({
         name={name}
         className="ty-field__input"
         aria-invalid={error ? true : undefined}
-        aria-describedby={error ? `${inputId}-err` : undefined}
+        aria-describedby={error ? `${inputId}-err` : hint ? `${inputId}-dica` : undefined}
         {...rest}
       >
         {children}
@@ -107,7 +111,9 @@ export function TySelect({
           {error}
         </span>
       ) : hint ? (
-        <span className="ty-field__hint">{hint}</span>
+        <span id={`${inputId}-dica`} className="ty-field__hint">
+          {hint}
+        </span>
       ) : null}
     </div>
   );

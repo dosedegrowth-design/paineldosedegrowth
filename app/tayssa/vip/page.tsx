@@ -57,7 +57,7 @@ export default async function VipHome() {
       dica: card.unrevealed
         ? `${card.unrevealed} ${plural(card.unrevealed, "carimbo novo", "carimbos novos")}`
         : `${preenchidos} de ${card.size} visitas`,
-      icone: "cartao",
+      icone: "cartaoVip",
     },
     {
       href: ROUTES.vipBenefits,
@@ -71,7 +71,7 @@ export default async function VipHome() {
     },
     { href: ROUTES.vipJourney, titulo: "Minha jornada", dica: `${o.points} pontos`, icone: "brilho" },
     { href: `${ROUTES.vipBenefits}#indicar`, titulo: "Indicar alguém", dica: "uma amiga sua", icone: "coracao" },
-    { href: ROUTES.vipProfile, titulo: "Meu perfil", dica: "seus dados", icone: "olho" },
+    { href: ROUTES.vipProfile, titulo: "Meu perfil", dica: "seus dados", icone: "pessoa" },
   ];
 
   return (
@@ -173,7 +173,7 @@ export default async function VipHome() {
             </ProgressRing>
             <span className="tyv-resumo__nome">Ranking</span>
             <span className="tyv-resumo__dica">
-              {ranking.total <= 1 ? "a primeira" : ranking.toClimb > 0 ? `${ranking.toClimb} para subir` : "na frente"}
+              {ranking.total <= 1 ? "a primeira" : ranking.toClimb > 0 ? `${ranking.toClimb} pts para subir` : "na frente"}
             </span>
           </div>
         </div>

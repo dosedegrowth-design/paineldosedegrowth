@@ -1,6 +1,5 @@
 "use client";
 
-import { useActionState } from "react";
 import { submitServiceAction } from "@/lib/tayssa/actions/services";
 import { submitVipReferralAction } from "@/lib/tayssa/actions/referrals";
 import { updateProfileAction } from "@/lib/tayssa/actions/profile";
@@ -11,17 +10,18 @@ import type { ActionResult, ServiceRow } from "@/lib/tayssa/types";
 import { TyInput, TySelect, TyTextarea } from "@/components/tayssa/ui/field";
 import { TyButton } from "@/components/tayssa/ui/button";
 import { useFormPreservado } from "@/components/tayssa/ui/form-preservado";
+import { useAcaoFormulario } from "@/components/tayssa/ui/acao";
 
 /** Cliente registra um atendimento para validação. Nada conta antes da Tayssa confirmar. */
 export function SubmitServiceForm({ services, todayISO }: { services: ServiceRow[]; todayISO: string }) {
-  const [state, action, pending] = useActionState<ActionResult<{ id: string }> | null, FormData>(
+  const [state, onSubmit, pending] = useAcaoFormulario<ActionResult<{ id: string }> | null>(
     submitServiceAction,
     null
   );
   const err = state && !state.ok ? state : null;
   const { ref, onReset } = useFormPreservado(state);
   return (
-    <form ref={ref} onReset={onReset} action={action} noValidate style={{ display: "grid", gap: 22 }}>
+    <form ref={ref} onReset={onReset} onSubmit={onSubmit} noValidate style={{ display: "grid", gap: 22 }}>
       <TySelect label="Atendimento" name="service_id" required defaultValue="" error={err?.field === "service_id" ? err.error : undefined}>
         <option value="" disabled>
           Escolha
@@ -54,14 +54,14 @@ export function SubmitServiceForm({ services, todayISO }: { services: ServiceRow
 
 /** Indicação feita de dentro do VIP. */
 export function VipReferralForm() {
-  const [state, action, pending] = useActionState<ActionResult<{ id: string }> | null, FormData>(
+  const [state, onSubmit, pending] = useAcaoFormulario<ActionResult<{ id: string }> | null>(
     submitVipReferralAction,
     null
   );
   const err = state && !state.ok ? state : null;
   const { ref, onReset } = useFormPreservado(state);
   return (
-    <form ref={ref} onReset={onReset} action={action} noValidate style={{ display: "grid", gap: 22 }}>
+    <form ref={ref} onReset={onReset} onSubmit={onSubmit} noValidate style={{ display: "grid", gap: 22 }}>
       <TyInput label="Nome de quem você indica" name="referred_name" required error={err?.field === "referred_name" ? err.error : undefined} />
       <TyInput
         label="WhatsApp dela"
@@ -88,10 +88,12 @@ export function VipReferralForm() {
 }
 
 export function ProfileForm({ nickname, phone }: { nickname: string | null; phone: string | null }) {
-  const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateProfileAction, null);
+  const [state, onSubmit, pending] = useAcaoFormulario<ActionResult | null>(updateProfileAction, null);
   const err = state && !state.ok ? state : null;
+  // o erro não apaga o que ela digitou (nem volta o telefone antigo ao lado da mensagem)
+  const { onReset } = useFormPreservado();
   return (
-    <form action={action} noValidate style={{ display: "grid", gap: 22 }}>
+    <form onReset={onReset} onSubmit={onSubmit} noValidate style={{ display: "grid", gap: 22 }}>
       <TyInput label="Como você gosta de ser chamada" name="nickname" defaultValue={nickname ?? ""} maxLength={60} hint="Aparece nas boas-vindas." />
       <TyInput
         label="WhatsApp"
@@ -113,11 +115,11 @@ export function ProfileForm({ nickname, phone }: { nickname: string | null; phon
 }
 
 export function ChangePasswordForm() {
-  const [state, action, pending] = useActionState<ActionResult | null, FormData>(changePasswordAction, null);
+  const [state, onSubmit, pending] = useAcaoFormulario<ActionResult | null>(changePasswordAction, null);
   const err = state && !state.ok ? state : null;
   const { ref, onReset } = useFormPreservado(state);
   return (
-    <form ref={ref} onReset={onReset} action={action} noValidate style={{ display: "grid", gap: 22 }}>
+    <form ref={ref} onReset={onReset} onSubmit={onSubmit} noValidate style={{ display: "grid", gap: 22 }}>
       <TyInput label="Senha atual" name="current" type="password" autoComplete="current-password" required error={err?.field === "current" ? err.error : undefined} />
       <TyInput label="Nova senha" name="password" type="password" autoComplete="new-password" required minLength={MIN_PASSWORD_LENGTH} error={err?.field === "password" ? err.error : undefined} />
       <TyInput label="Repetir nova senha" name="confirm" type="password" autoComplete="new-password" required error={err?.field === "confirm" ? err.error : undefined} />

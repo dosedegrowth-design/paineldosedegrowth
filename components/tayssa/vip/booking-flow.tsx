@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { createAppointmentAction } from "@/lib/tayssa/actions/booking";
-import { dateLong, dayLabel, plural, weekdayShort } from "@/lib/tayssa/format";
+import { dateLong, dayLabel, monthName, plural, weekdayShort } from "@/lib/tayssa/format";
 import { TyTextarea } from "@/components/tayssa/ui/field";
 import { reais } from "@/lib/tayssa/agendar";
+import { useTarefa } from "@/components/tayssa/ui/acao";
 
 export type BookingService = { id: string; name: string; description: string | null; point_value: number; preco?: number | null };
 export type BookingDay = { iso: string; slots: { time: string; available: boolean }[] };
@@ -41,12 +42,28 @@ export function BookingFlow({
   const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<{ date: string; time: string; serviceName: string } | null>(null);
-  const [pending, start] = useTransition();
+  const [pending, start] = useTarefa();
 
   const service = services.find((s) => s.id === serviceId) ?? null;
   const day = days.find((d) => d.iso === date) ?? null;
   // nada some: dia sem horário livre continua na fita, riscado e sem toque
   const openDays = useMemo(() => new Set(days.filter((d) => d.slots.some((s) => s.available)).map((d) => d.iso)), [days]);
+
+  // a cada passo (e no "Pedido enviado") a tela volta ao topo do fluxo e o
+  // foco vai para o título: no celular pequeno a confirmação ficava acima
+  // da tela, e o foco caía no <body>
+  const topo = useRef<HTMLDivElement>(null);
+  const titulo = useRef<HTMLHeadingElement>(null);
+  const primeira = useRef(true);
+  useEffect(() => {
+    if (primeira.current) {
+      primeira.current = false;
+      return;
+    }
+    const el = topo.current;
+    if (el && el.getBoundingClientRect().top < 72) el.scrollIntoView({ block: "start", behavior: reduced ? "auto" : "smooth" });
+    titulo.current?.focus({ preventScroll: true });
+  }, [step, done, reduced]);
 
   const pick = (fn: () => void) => {
     setError(null);
@@ -73,19 +90,23 @@ export function BookingFlow({
   };
 
   if (done) {
+    const dia = dayLabel(done.date);
     return (
       <motion.div
-        className="tyv-panel"
+        ref={topo}
+        className="tyv-panel tyv-fluxo"
+        role="status"
         initial={{ opacity: 0, y: reduced ? 0 : 12 }}
         animate={{ opacity: 1, y: 0 }}
         style={{ textAlign: "center", padding: "30px 20px" }}
       >
         <span className="tyv-label">Pedido enviado</span>
-        <h2 className="tyv-h2" style={{ margin: "12px 0 8px" }}>
-          {dayLabel(done.date)}, às {done.time}.
+        <h2 ref={titulo} tabIndex={-1} className="tyv-h2" style={{ margin: "12px 0 8px" }}>
+          {dia}, às {done.time}.
         </h2>
         <p className="tyv-sub" style={{ fontSize: 14 }}>
-          {done.serviceName} · {dateLong(done.date, true)}
+          {done.serviceName}
+          {dia === "hoje" || dia === "amanhã" ? ` · ${dateLong(done.date)}` : ""}
         </p>
         <p className="tyv-sub" style={{ fontSize: 13.5, marginTop: 14 }}>
           A Tayssa confirma o horário e você vê aqui como confirmado.
@@ -131,14 +152,16 @@ export function BookingFlow({
   }
 
   return (
-    <div>
+    <div ref={topo} className="tyv-fluxo">
       <div className="tyv-steps" aria-hidden>
         {STEPS.map((s, i) => (
           <i key={s} data-on={i <= step} />
         ))}
       </div>
       <div className="tyv-section-head" style={{ marginBottom: 16 }}>
-        <h2 className="tyv-h2">{STEPS[step]}</h2>
+        <h2 ref={titulo} tabIndex={-1} className="tyv-h2">
+          {STEPS[step]}
+        </h2>
         {step > 0 ? (
           <button type="button" className="tyv-link" style={{ opacity: 0.7 }} onClick={() => setStep((s) => s - 1)}>
             Voltar
@@ -185,11 +208,14 @@ export function BookingFlow({
           {step === 1 ? (
             <div>
               <div className="tyv-days" role="group" aria-label="Escolha o dia">
-                {days.map((d) => (
+                {days.map((d, i) => (
                   <button
                     key={d.iso}
                     type="button"
                     className="tyv-day"
+                    // no computador os dias viram um calendário: cada um na coluna do seu dia da
+                    // semana (o domingo fechado vira buraco, e as colunas continuam batendo)
+                    style={{ "--tyv-col": new Date(`${d.iso}T12:00:00`).getDay() + 1 } as CSSProperties}
                     disabled={!openDays.has(d.iso)}
                     data-lotado={!openDays.has(d.iso) || undefined}
                     aria-label={`${dayLabel(d.iso)}${openDays.has(d.iso) ? "" : ", sem horário livre"}`}
@@ -201,6 +227,10 @@ export function BookingFlow({
                       })
                     }
                   >
+                    {/* o mês aparece no primeiro dia da fita e quando vira (sáb 31 → seg 02 não se lia) */}
+                    {i === 0 || d.iso.slice(5, 7) !== days[i - 1].iso.slice(5, 7) ? (
+                      <span className="tyv-day__m">{monthName(Number(d.iso.slice(5, 7)) - 1).slice(0, 3)}</span>
+                    ) : null}
                     <span className="tyv-day__w">{weekdayShort(d.iso)}</span>
                     <span className="tyv-day__d">{d.iso.slice(8, 10)}</span>
                   </button>

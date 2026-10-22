@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import {
   addBlackoutAction,
@@ -25,6 +25,7 @@ import { reais } from "@/lib/tayssa/agendar";
 import { Area, Campo, Marcar, useFormPreservado } from "@/components/tayssa/admin/forms";
 import { ActionButton } from "@/components/tayssa/admin/controls";
 import { Icone } from "@/components/tayssa/admin/icons";
+import { useAcaoFormulario } from "@/components/tayssa/ui/acao";
 
 /* ------------------------------------------------------------------
    Os formulários das Configurações, no vocabulário do painel (.tya-*).
@@ -60,10 +61,31 @@ function Salvar({
   antes?: ReactNode;
 }) {
   const falhou = state && !state.ok ? state : null;
+  // mexeu de novo depois de salvar: o "Salvo" sai (antes ficava ali com o
+  // valor novo ainda não salvo, e ela saía achando que tinha salvado)
+  const botao = useRef<HTMLButtonElement>(null);
+  const [mexeu, setMexeu] = useState(false);
+  const [visto, setVisto] = useState(state);
+  if (visto !== state) {
+    setVisto(state);
+    setMexeu(false);
+  }
+  useEffect(() => {
+    const form = botao.current?.form;
+    if (!form) return;
+    const marca = () => setMexeu(true);
+    form.addEventListener("input", marca);
+    form.addEventListener("change", marca);
+    return () => {
+      form.removeEventListener("input", marca);
+      form.removeEventListener("change", marca);
+    };
+  }, []);
   return (
     <div className="tya-salvar">
       {antes}
       <button
+        ref={botao}
         type="submit"
         className={`tya-btn tya-btn--sm tya-btn--${tom}`}
         disabled={pending}
@@ -71,7 +93,7 @@ function Salvar({
       >
         {pending ? "Salvando…" : children}
       </button>
-      {state?.ok && !pending ? <span className="tya-pill tya-pill--ok">{feito}</span> : null}
+      {state?.ok && !pending && !mexeu ? <span className="tya-pill tya-pill--ok">{feito}</span> : null}
       {falhou && !falhou.field ? (
         <span className="tya-err" role="alert">
           {falhou.error}
@@ -99,10 +121,10 @@ function Vazio({ titulo, children }: { titulo: string; children?: ReactNode }) {
    ------------------------------------------------------------------ */
 
 export function BusinessForm({ value }: { value: Settings["business"] }) {
-  const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateBusinessSettingsAction, null);
+  const [state, onSubmit, pending] = useAcaoFormulario<ActionResult | null>(updateBusinessSettingsAction, null);
   const { onReset } = useFormPreservado();
   return (
-    <form action={action} noValidate onReset={onReset} className="tya-stack">
+    <form onSubmit={onSubmit} noValidate onReset={onReset} className="tya-stack">
       <div className="tya-grid">
         <Campo label="Nome" name="name" defaultValue={value.name} required error={erroDe(state, "name")} />
         <Campo label="Assinatura" name="tagline" defaultValue={value.tagline} error={erroDe(state, "tagline")} />
@@ -144,10 +166,10 @@ export function BusinessForm({ value }: { value: Settings["business"] }) {
    ------------------------------------------------------------------ */
 
 export function RulesForm({ value }: { value: Settings["rules"] }) {
-  const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateRulesSettingsAction, null);
+  const [state, onSubmit, pending] = useAcaoFormulario<ActionResult | null>(updateRulesSettingsAction, null);
   const { onReset } = useFormPreservado();
   return (
-    <form action={action} noValidate onReset={onReset} className="tya-stack">
+    <form onSubmit={onSubmit} noValidate onReset={onReset} className="tya-stack">
       <div className="tya-grid">
         <Campo
           label="Atendimentos sugeridos p/ VIP"
@@ -184,10 +206,10 @@ export function RulesForm({ value }: { value: Settings["rules"] }) {
    ------------------------------------------------------------------ */
 
 export function BirthdayForm({ value }: { value: Settings["birthday"] }) {
-  const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateBirthdaySettingsAction, null);
+  const [state, onSubmit, pending] = useAcaoFormulario<ActionResult | null>(updateBirthdaySettingsAction, null);
   const { onReset } = useFormPreservado();
   return (
-    <form action={action} noValidate onReset={onReset} className="tya-stack">
+    <form onSubmit={onSubmit} noValidate onReset={onReset} className="tya-stack">
       <div className="tya-grid tya-grid--num">
         <Campo
           label="Dias antes"
@@ -249,10 +271,10 @@ const WA_GRUPOS: { titulo: string; campos: WaCampo[] }[] = [
 ];
 
 export function WhatsappForm({ value }: { value: Settings["whatsapp"] }) {
-  const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateWhatsappTemplatesAction, null);
+  const [state, onSubmit, pending] = useAcaoFormulario<ActionResult | null>(updateWhatsappTemplatesAction, null);
   const { onReset } = useFormPreservado();
   return (
-    <form action={action} noValidate onReset={onReset} className="tya-stack" style={{ gap: 22 }}>
+    <form onSubmit={onSubmit} noValidate onReset={onReset} className="tya-stack" style={{ gap: 22 }}>
       {WA_GRUPOS.map((g) => (
         <div key={g.titulo} className="tya-set">
           <span className="tya-set__t">
@@ -284,7 +306,7 @@ export function WhatsappForm({ value }: { value: Settings["whatsapp"] }) {
    ------------------------------------------------------------------ */
 
 export function CatalogServiceForm({ service }: { service?: ServiceRow }) {
-  const [state, action, pending] = useActionState<ActionResult | null, FormData>(upsertCatalogServiceAction, null);
+  const [state, onSubmit, pending] = useAcaoFormulario<ActionResult | null>(upsertCatalogServiceAction, null);
   const novo = !service;
   // só o formulário do "novo serviço" se esvazia; o de um serviço existente
   // continua mostrando o que foi salvo
@@ -292,7 +314,7 @@ export function CatalogServiceForm({ service }: { service?: ServiceRow }) {
   return (
     <form
       ref={ref}
-      action={action}
+      onSubmit={onSubmit}
       noValidate
       onReset={onReset}
       className={`tya-sub${novo ? " tya-sub--novo" : ""}`}
@@ -375,7 +397,7 @@ const TOM_TIPO: Record<BenefitType, "gold" | "brand" | "warn" | "quiet"> = {
 };
 
 export function BenefitConfigForm({ benefit }: { benefit: BenefitRow }) {
-  const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateBenefitConfigAction, null);
+  const [state, onSubmit, pending] = useAcaoFormulario<ActionResult | null>(updateBenefitConfigAction, null);
   const unit =
     benefit.threshold_unit === "referrals"
       ? "indicações"
@@ -385,7 +407,7 @@ export function BenefitConfigForm({ benefit }: { benefit: BenefitRow }) {
   const percent = typeof benefit.config?.percent === "number" ? String(benefit.config.percent) : "";
   const { onReset } = useFormPreservado();
   return (
-    <form action={action} noValidate onReset={onReset} className="tya-sub">
+    <form onSubmit={onSubmit} noValidate onReset={onReset} className="tya-sub">
       <input type="hidden" name="id" value={benefit.id} />
       <div className="tya-sub__top">
         <span className="tya-eyebrow">{benefit.name}</span>
@@ -462,10 +484,10 @@ const TIPOS_BLACKOUT: { value: string; label: string }[] = [
 ];
 
 export function BlackoutForm() {
-  const [state, action, pending] = useActionState<ActionResult | null, FormData>(addBlackoutAction, null);
+  const [state, onSubmit, pending] = useAcaoFormulario<ActionResult | null>(addBlackoutAction, null);
   const { ref, onReset } = useFormPreservado(state);
   return (
-    <form ref={ref} action={action} noValidate onReset={onReset} className="tya-sub tya-sub--novo">
+    <form ref={ref} onSubmit={onSubmit} noValidate onReset={onReset} className="tya-sub tya-sub--novo">
       <div className="tya-sub__top">
         <span className="tya-eyebrow">Novo período</span>
       </div>
@@ -546,10 +568,10 @@ const WEEKDAY_LABELS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sex
 
 /** Disponibilidade: o que a cliente enxerga ao marcar. Muda na hora. */
 export function BookingForm({ value }: { value: Settings["booking"] }) {
-  const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateBookingSettingsAction, null);
+  const [state, onSubmit, pending] = useAcaoFormulario<ActionResult | null>(updateBookingSettingsAction, null);
   const { onReset } = useFormPreservado();
   return (
-    <form action={action} noValidate onReset={onReset} className="tya-stack" style={{ gap: 22 }}>
+    <form onSubmit={onSubmit} noValidate onReset={onReset} className="tya-stack" style={{ gap: 22 }}>
       <div className="tya-set">
         <span className="tya-set__t">
           <span className="tya-eyebrow">Dias abertos</span>
@@ -654,10 +676,10 @@ export function BookingForm({ value }: { value: Settings["booking"] }) {
 
 /** O cartão: quantas visitas e qual o presente ao fechar. */
 export function LoyaltyForm({ value }: { value: Settings["loyalty"] }) {
-  const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateLoyaltySettingsAction, null);
+  const [state, onSubmit, pending] = useAcaoFormulario<ActionResult | null>(updateLoyaltySettingsAction, null);
   const { onReset } = useFormPreservado();
   return (
-    <form action={action} noValidate onReset={onReset} className="tya-stack">
+    <form onSubmit={onSubmit} noValidate onReset={onReset} className="tya-stack">
       <div className="tya-grid">
         <Campo
           label="Visitas por cartão"
@@ -696,10 +718,10 @@ export function LoyaltyForm({ value }: { value: Settings["loyalty"] }) {
 
 /** Cadastro pelo site: aberto/fechado e a mensagem de boas-vindas ao aprovar. */
 export function SignupForm({ value }: { value: Settings["signup"] }) {
-  const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateSignupSettingsAction, null);
+  const [state, onSubmit, pending] = useAcaoFormulario<ActionResult | null>(updateSignupSettingsAction, null);
   const { onReset } = useFormPreservado();
   return (
-    <form action={action} noValidate onReset={onReset} className="tya-stack">
+    <form onSubmit={onSubmit} noValidate onReset={onReset} className="tya-stack">
       <div className="tya-marcas">
         <label className="tya-marca">
           <input type="checkbox" name="open" defaultChecked={value.open} />
@@ -744,11 +766,11 @@ const EXEMPLOS: [string, string, string][] = [
  * e o site anima subindo. Nada inventado — sem número, o quadro some.
  */
 export function NumerosForm({ value }: { value: Settings["numeros"] }) {
-  const [state, action, pending] = useActionState<ActionResult | null, FormData>(updateNumerosSettingsAction, null);
+  const [state, onSubmit, pending] = useAcaoFormulario<ActionResult | null>(updateNumerosSettingsAction, null);
   const { onReset } = useFormPreservado();
   const linhas = Array.from({ length: LINHAS_NUMEROS }, (_, i) => value.itens[i] ?? { valor: "", rotulo: "", detalhe: "" });
   return (
-    <form action={action} noValidate onReset={onReset} className="tya-stack">
+    <form onSubmit={onSubmit} noValidate onReset={onReset} className="tya-stack">
       <div className="tya-grid">
         <Campo label="Período" name="periodo" defaultValue={value.periodo} maxLength={40} hint="Ex.: Últimos 30 dias" />
         <Campo label="De onde vêm" name="fonte" defaultValue={value.fonte} maxLength={40} hint="Ex.: Instagram Insights" />

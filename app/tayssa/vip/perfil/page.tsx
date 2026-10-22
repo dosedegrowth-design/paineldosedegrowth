@@ -3,7 +3,7 @@ import { getClientServiceHistory } from "@/lib/tayssa/queries/client";
 import { getActiveServices } from "@/lib/tayssa/queries/catalog";
 import { logoutAction } from "@/lib/tayssa/actions/auth";
 import { toISODate } from "@/lib/tayssa/rules";
-import { dateLong, nowInBusinessTz } from "@/lib/tayssa/format";
+import { dateLong, nowInBusinessTz, plural } from "@/lib/tayssa/format";
 import { SERVICE_STATUS_LABEL, VIP_STATUS_LABEL } from "@/lib/tayssa/types";
 import { ChangePasswordForm, ProfileForm, SubmitServiceForm } from "@/components/tayssa/vip/forms";
 
@@ -26,7 +26,7 @@ export default async function ProfilePage() {
           </div>
           <div className="tyv-row">
             <span className="tyv-label">VIP desde</span>
-            <span style={{ fontSize: 15 }}>{p?.vip_since ? dateLong(p.vip_since, true) : "—"}</span>
+            <span style={{ fontSize: 15 }}>{p?.vip_since ? dateLong(p.vip_since, true) : "ainda não"}</span>
           </div>
           <div className="tyv-row">
             <span className="tyv-label">Visitas confirmadas</span>
@@ -49,7 +49,9 @@ export default async function ProfilePage() {
       <section className="tyv-section">
         <div className="tyv-section-head">
           <h2 className="tyv-h2">Histórico</h2>
-          <span className="tyv-label">{history.length} registros</span>
+          <span className="tyv-label">
+            {history.length} {plural(history.length, "registro", "registros")}
+          </span>
         </div>
         <div className="tyv-panel">
           {history.length ? (

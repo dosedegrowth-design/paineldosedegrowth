@@ -1,8 +1,8 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
+import { useState } from "react";
 import type { ComponentProps, ReactNode } from "react";
-// (useState/useTransition usados no AccessLinkPanel)
+// (useState/useTarefa usados no AccessLinkPanel)
 import {
   adminCreateClientAction,
   adminIssueAccessLinkAction,
@@ -17,6 +17,7 @@ import type { ActionResult, BenefitRow, ClientProfileRow, ServiceRow, UserRow } 
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { CopyField } from "@/components/tayssa/admin/controls";
 import { useFormPreservado } from "@/components/tayssa/ui/form-preservado";
+import { useAcaoFormulario, useTarefa } from "@/components/tayssa/ui/acao";
 
 export { useFormPreservado };
 
@@ -152,7 +153,7 @@ function inviteMessage(name: string, url: string) {
 type CreatedClient = { id: string; accessUrl: string; phone: string | null; firstName: string };
 
 export function ClientCreateForm() {
-  const [state, action, pending] = useActionState<ActionResult<CreatedClient> | null, FormData>(
+  const [state, onSubmit, pending] = useAcaoFormulario<ActionResult<CreatedClient> | null>(
     adminCreateClientAction,
     null
   );
@@ -192,7 +193,7 @@ export function ClientCreateForm() {
   }
 
   return (
-    <form action={action} noValidate onReset={onReset} style={{ display: "grid", gap: 16 }}>
+    <form onSubmit={onSubmit} noValidate onReset={onReset} style={{ display: "grid", gap: 16 }}>
       <div className="tya-grid">
         <Campo label="Nome completo" name="name" required error={err?.field === "name" ? err.error : undefined} />
         <Campo label="Apelido" name="nickname" maxLength={60} hint="Como ela gosta de ser chamada." />
@@ -217,11 +218,11 @@ export function ClientCreateForm() {
 }
 
 export function ClientEditForm({ user, profile }: { user: UserRow; profile: ClientProfileRow | null }) {
-  const [state, action, pending] = useActionState<ActionResult | null, FormData>(adminUpdateClientAction, null);
+  const [state, onSubmit, pending] = useAcaoFormulario<ActionResult | null>(adminUpdateClientAction, null);
   const err = state && !state.ok ? state : null;
   const { onReset } = useFormPreservado();
   return (
-    <form action={action} noValidate onReset={onReset} style={{ display: "grid", gap: 16 }}>
+    <form onSubmit={onSubmit} noValidate onReset={onReset} style={{ display: "grid", gap: 16 }}>
       <input type="hidden" name="id" value={user.id} />
       <div className="tya-grid">
         <Campo label="Nome completo" name="name" defaultValue={user.name} required error={err?.field === "name" ? err.error : undefined} />
@@ -247,7 +248,7 @@ export function ClientEditForm({ user, profile }: { user: UserRow; profile: Clie
 }
 
 export function AccessLinkPanel({ userId, name, phone, hasPassword }: { userId: string; name: string; phone: string | null; hasPassword: boolean }) {
-  const [pending, start] = useTransition();
+  const [pending, start] = useTarefa();
   const [link, setLink] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   return (
@@ -298,11 +299,11 @@ export function AccessLinkPanel({ userId, name, phone, hasPassword }: { userId: 
 }
 
 export function AdminServiceEntryForm({ clientId, services, todayISO }: { clientId: string; services: ServiceRow[]; todayISO: string }) {
-  const [state, action, pending] = useActionState<ActionResult<{ id: string }> | null, FormData>(adminAddServiceAction, null);
+  const [state, onSubmit, pending] = useAcaoFormulario<ActionResult<{ id: string }> | null>(adminAddServiceAction, null);
   const err = state && !state.ok ? state : null;
   const { ref, onReset } = useFormPreservado(state);
   return (
-    <form ref={ref} action={action} noValidate onReset={onReset} style={{ display: "grid", gap: 14 }}>
+    <form ref={ref} onSubmit={onSubmit} noValidate onReset={onReset} style={{ display: "grid", gap: 14 }}>
       <input type="hidden" name="client_id" value={clientId} />
       <div className="tya-grid">
         <Escolha label="Serviço" name="service_id" required defaultValue="" error={err?.field === "service_id" ? err.error : undefined}>
@@ -336,12 +337,12 @@ export function AdminServiceEntryForm({ clientId, services, todayISO }: { client
 }
 
 export function ReleaseBirthdayForm({ clientId, defaultDays }: { clientId: string; defaultDays: number }) {
-  const [state, action, pending] = useActionState<ActionResult | null, FormData>(adminReleaseBirthdayAction, null);
+  const [state, onSubmit, pending] = useAcaoFormulario<ActionResult | null>(adminReleaseBirthdayAction, null);
   const err = state && !state.ok ? state : null;
   const { onReset } = useFormPreservado();
   if (state?.ok) return <p className="tya-ok">Benefício de aniversário liberado. Ela já vê no espaço dela.</p>;
   return (
-    <form action={action} noValidate onReset={onReset} style={{ display: "grid", gap: 14, maxWidth: 560 }}>
+    <form onSubmit={onSubmit} noValidate onReset={onReset} style={{ display: "grid", gap: 14, maxWidth: 560 }}>
       <input type="hidden" name="client_id" value={clientId} />
       <Campo label="O presente (ela vê este título)" name="title" required placeholder="Ex.: Lip spa de aniversário" error={err?.field === "title" ? err.error : undefined} />
       <Area label="Descrição (opcional)" name="description" rows={2} maxLength={500} />
@@ -361,12 +362,12 @@ export function ReleaseBirthdayForm({ clientId, defaultDays }: { clientId: strin
 }
 
 export function GrantCustomBenefitForm({ clientId, benefits, defaultDays }: { clientId: string; benefits: BenefitRow[]; defaultDays: number }) {
-  const [state, action, pending] = useActionState<ActionResult | null, FormData>(adminGrantCustomBenefitAction, null);
+  const [state, onSubmit, pending] = useAcaoFormulario<ActionResult | null>(adminGrantCustomBenefitAction, null);
   const err = state && !state.ok ? state : null;
   const { ref, onReset } = useFormPreservado(state);
   const options = benefits.filter((b) => b.active && b.type !== "birthday");
   return (
-    <form ref={ref} action={action} noValidate onReset={onReset} style={{ display: "grid", gap: 14, maxWidth: 560 }}>
+    <form ref={ref} onSubmit={onSubmit} noValidate onReset={onReset} style={{ display: "grid", gap: 14, maxWidth: 560 }}>
       <input type="hidden" name="client_id" value={clientId} />
       <Escolha
         label="Tipo"

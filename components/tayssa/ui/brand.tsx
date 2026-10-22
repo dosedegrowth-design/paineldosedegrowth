@@ -24,7 +24,9 @@ export function TyBrand({
         <Bloom seed={5} tom="magenta" />
       </span>
       <span className="ty-brand__name">
-        {name} <em>{suffix}</em>
+        {/* espaço no mesmo texto do nome (sozinho, o Chrome lia "TayssaLash") */}
+        {`${name} `}
+        <em>{suffix}</em>
       </span>
     </span>
   );

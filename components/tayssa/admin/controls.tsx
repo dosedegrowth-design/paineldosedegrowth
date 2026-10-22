@@ -1,8 +1,9 @@
 "use client";
 
-import { useId, useState, useTransition, type ReactNode } from "react";
+import { useId, useState, type ReactNode } from "react";
 import type { ActionResult, ReferralStatus } from "@/lib/tayssa/types";
 import { REFERRAL_STATUS_LABEL, REFERRAL_STATUS_ORDER } from "@/lib/tayssa/types";
+import { useTarefa } from "@/components/tayssa/ui/acao";
 
 /* ------------------------------------------------------------------
    Controles do painel: cada um chama uma server action e mostra o erro
@@ -42,7 +43,7 @@ export function ActionButton<T>({
   confirm?: string;
   onDone?: () => void;
 }) {
-  const [pending, start] = useTransition();
+  const [pending, start] = useTarefa();
   const [err, setErr] = useState<string | null>(null);
   const run = () => {
     if (confirm && !window.confirm(confirm)) return;
@@ -87,7 +88,7 @@ export function NoteAction<T extends object>({
   const fid = useId();
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState("");
-  const [pending, start] = useTransition();
+  const [pending, start] = useTarefa();
   const [err, setErr] = useState<string | null>(null);
   const run = (form: HTMLFormElement) => {
     setErr(null);
@@ -169,7 +170,7 @@ export function ReferralStatusControl({
   const fid = useId();
   const [status, setStatus] = useState<ReferralStatus>(current);
   const [note, setNote] = useState("");
-  const [pending, start] = useTransition();
+  const [pending, start] = useTarefa();
   const [err, setErr] = useState<string | null>(null);
   const [ok, setOk] = useState(false);
   const changed = status !== current;

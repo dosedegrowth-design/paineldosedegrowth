@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   adminArchivePhotoAction,
@@ -16,6 +16,7 @@ import { CATEGORIAS, chave, chavePreco } from "@/lib/tayssa/catalogo";
 import { Icone } from "@/components/tayssa/admin/icons";
 import { estiloQuadro } from "@/components/tayssa/admin/enquadrar";
 import { Publicar, type ProdutosPorCategoria } from "@/components/tayssa/admin/publicar";
+import { useTarefa } from "@/components/tayssa/ui/acao";
 
 const mb = (b: number | null) => (b ? `${(b / 1024 / 1024).toFixed(1)} MB` : null);
 /** de quantos em quantos a galeria mostra: mil fotos não abrem de uma vez */
@@ -189,7 +190,7 @@ function Cartao({
 }) {
   const router = useRouter();
   const [err, setErr] = useState<string | null>(null);
-  const [pending, start] = useTransition();
+  const [pending, start] = useTarefa();
   const [quebrada, setQuebrada] = useState(false);
   const live = photo.status === "active";
   const video = photo.media_type === "video";
@@ -337,7 +338,7 @@ function LinkInstagram({ id, url }: { id: string; url: string }) {
   const [valor, setValor] = useState(url);
   const [salvo, setSalvo] = useState(url);
   const [erro, setErro] = useState<string | null>(null);
-  const [pending, start] = useTransition();
+  const [pending, start] = useTarefa();
   const mudou = valor.trim() !== salvo;
   return (
     <form
@@ -388,7 +389,7 @@ function PrecoProduto({ categoria, nome, preco }: { categoria: string; nome: str
   const [valor, setValor] = useState(inicial);
   const [salvo, setSalvo] = useState(inicial);
   const [erro, setErro] = useState<string | null>(null);
-  const [pending, start] = useTransition();
+  const [pending, start] = useTarefa();
   const mudou = valor.trim() !== salvo;
   const salvar = () =>
     start(async () => {

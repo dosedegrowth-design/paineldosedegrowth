@@ -43,7 +43,8 @@ export const metadata: Metadata = {
   title: { absolute: TITLE, template: "%s · Tayssa Lash" },
   description: DESCRIPTION,
   applicationName: "Tayssa Lash",
-  icons: { icon: "/tayssa/favicon.svg" },
+  // com `icons` declarado, o apple-icon.tsx não entra sozinho no <head>
+  icons: { icon: "/tayssa/favicon.svg", apple: "/tayssa/apple-icon" },
   openGraph: {
     title: TITLE,
     description: DESCRIPTION,

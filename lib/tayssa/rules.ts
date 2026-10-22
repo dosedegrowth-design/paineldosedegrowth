@@ -274,6 +274,39 @@ export function timeToMinutes(hhmm: string): number {
   return (h ?? 0) * 60 + (m ?? 0);
 }
 
+/** Início e fim de um horário marcado, no relógio da casa (como `now`). */
+export function appointmentWindow(
+  dateISO: string,
+  hhmm: string,
+  durationMin: number | null | undefined
+): { start: Date; end: Date } {
+  const d = parseISODate(dateISO);
+  const [h, m] = hhmm.slice(0, 5).split(":").map(Number);
+  const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), h ?? 0, m ?? 0);
+  const minutes = Number.isFinite(durationMin) && (durationMin ?? 0) > 0 ? (durationMin as number) : 60;
+  return { start, end: new Date(start.getTime() + minutes * 60_000) };
+}
+
+/**
+ * O horário já terminou? Sai de "próximos" e para de contar no limite de
+ * horários em aberto — antes, o das 10h30 de hoje seguia como "próximo"
+ * até a meia-noite.
+ */
+export function appointmentEnded(
+  a: { scheduled_date: string; scheduled_time: string; duration_min?: number | null },
+  now: Date
+): boolean {
+  return appointmentWindow(a.scheduled_date, a.scheduled_time, a.duration_min).end.getTime() <= now.getTime();
+}
+
+/** O horário já começou? Daí em diante só a Tayssa encerra (realizado ou falta). */
+export function appointmentStarted(
+  a: { scheduled_date: string; scheduled_time: string },
+  now: Date
+): boolean {
+  return appointmentWindow(a.scheduled_date, a.scheduled_time, null).start.getTime() <= now.getTime();
+}
+
 /** O horário ainda respeita a antecedência mínima? */
 export function slotIsBookable(
   dateISO: string,

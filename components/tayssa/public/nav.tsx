@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useMotionValueEvent } from "framer-motion";
 import { useRolagemY } from "@/components/tayssa/ui/rolagem";
 import { LinkAgendar } from "@/components/tayssa/public/agendar";
@@ -8,6 +8,7 @@ import { ROUTES } from "@/lib/tayssa/config";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { scrollToTarget } from "@/components/tayssa/ui/smooth-scroll";
 import { Bloom } from "@/components/tayssa/flora/bloom";
+import { useCamadaAberta } from "@/components/tayssa/ui/dialogo";
 
 type Secao = { id: string; label: string };
 
@@ -27,6 +28,10 @@ export function PublicNav({ scheduleUrl, sections = SECTIONS }: { scheduleUrl: s
   const [solid, setSolid] = useState(false);
   const [over, setOver] = useState(true);
   const [open, setOpen] = useState(false);
+  const menu = useRef<HTMLDivElement>(null);
+  const botao = useRef<HTMLButtonElement>(null);
+  // aberto: Esc fecha e o Tab fica entre o "Fechar menu" e os itens
+  useCamadaAberta(open, menu, { aoEsc: () => setOpen(false), extras: [botao] });
 
   useMotionValueEvent(scrollY, "change", (y) => {
     const prev = scrollY.getPrevious() ?? 0;
@@ -88,6 +93,7 @@ export function PublicNav({ scheduleUrl, sections = SECTIONS }: { scheduleUrl: s
 
         {/* menu: dois fios que viram um X */}
         <button
+          ref={botao}
           className="ty-nav__menu"
           data-open={open}
           aria-expanded={open}
@@ -103,6 +109,7 @@ export function PublicNav({ scheduleUrl, sections = SECTIONS }: { scheduleUrl: s
         {open ? (
           <motion.div
             key="menu"
+            ref={menu}
             className="ty-night"
             initial={{ clipPath: "inset(0 0 100% 0)" }}
             animate={{ clipPath: "inset(0 0 0% 0)" }}

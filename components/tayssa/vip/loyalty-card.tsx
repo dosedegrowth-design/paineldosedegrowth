@@ -13,7 +13,7 @@ import {
   useTransform,
 } from "framer-motion";
 import { ROUTES } from "@/lib/tayssa/config";
-import { plural } from "@/lib/tayssa/format";
+import { plural, yearOf } from "@/lib/tayssa/format";
 import type { RevealResult } from "@/lib/tayssa/actions/card";
 import type { CardStamp } from "@/lib/tayssa/types";
 import { ScratchSheet } from "@/components/tayssa/vip/scratch-sheet";
@@ -114,6 +114,9 @@ export function LoyaltyCard({
   const [open, setOpen] = useState<CardStamp | null>(null);
   const [side, setSide] = useState<Side>(initialSide);
   const touched = useRef(false);
+  const cartao = useRef<HTMLDivElement>(null);
+  const botaoFrente = useRef<HTMLButtonElement>(null);
+  const botaoVerso = useRef<HTMLButtonElement>(null);
 
   // o giro é um valor só; sombra e recuo derivam dele
   const rotTarget = useMotionValue(initialSide === "back" ? 180 : 0);
@@ -141,12 +144,18 @@ export function LoyaltyCard({
   const filled = list.length;
   const unrevealed = list.filter((s) => !s.revealed);
   const missing = Math.max(0, size - filled);
-  const sinceYear = memberSince ? new Date(memberSince).getFullYear() : NaN;
+  const sinceYear = memberSince ? yearOf(memberSince) : NaN;
 
   const flip = useCallback(() => {
     const nextSide: Side = side === "front" ? "back" : "front";
+    // virou pelo teclado: a face que sai fica inerte e o foco cairia no
+    // <body>; ele segue para o botão de virar da face que chegou
+    const focoNoCartao = cartao.current?.contains(document.activeElement) ?? false;
     setSide(nextSide);
     rotTarget.set(nextSide === "back" ? 180 : 0);
+    if (focoNoCartao) {
+      requestAnimationFrame(() => (nextSide === "back" ? botaoVerso : botaoFrente).current?.focus({ preventScroll: true }));
+    }
   }, [side, rotTarget]);
 
   const onBodyClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -227,6 +236,7 @@ export function LoyaltyCard({
   return (
     <>
       <div
+        ref={cartao}
         className="tyc3"
         data-side={side}
         onPointerMove={tilting ? onMove : undefined}
@@ -238,11 +248,7 @@ export function LoyaltyCard({
             style={{ rotateY: rot, scale: recede }}
             onClick={onBodyClick}
             role="group"
-            aria-label={
-              front
-                ? "Cartão de fidelidade, frente. Toque para ver o verso."
-                : "Cartão de fidelidade, verso. Toque para ver a frente."
-            }
+            aria-label={front ? "Cartão de fidelidade, frente" : "Cartão de fidelidade, verso"}
           >
             <div className="tyc3__face tyc3__face--front" inert={front ? undefined : true} aria-hidden={!front}>
               <div className="tyc3__vinho" aria-hidden>
@@ -274,9 +280,7 @@ export function LoyaltyCard({
                     </span>
                   ) : isVip ? (
                     <span className="tyc3__tag tyc3__tag--gold">VIP</span>
-                  ) : (
-                    <span className="tyc3__tag">VIP</span>
-                  )}
+                  ) : null}
                 </div>
                 <div className="tyc3__row">
                   <span className="tyc3__chip" aria-hidden />
@@ -296,7 +300,7 @@ export function LoyaltyCard({
                       {Number.isFinite(sinceYear) ? ` · desde ${sinceYear}` : ""}
                     </span>
                   </div>
-                  <button type="button" className="tyc3__flip" data-noflip onClick={flip} aria-label="Virar o cartão">
+                  <button ref={botaoFrente} type="button" className="tyc3__flip" data-noflip onClick={flip} aria-label="Virar o cartão">
                     {Turn}
                   </button>
                 </div>
@@ -325,6 +329,7 @@ export function LoyaltyCard({
                   {missing > 0 ? ` · ${missing === 1 ? "falta" : "faltam"} ${missing}` : ""}
                 </span>
                 <button
+                  ref={botaoVerso}
                   type="button"
                   className="tyc3__flip tyc3__flip--back"
                   data-noflip
@@ -360,6 +365,7 @@ export function LoyaltyCard({
             onRevealed={onRevealed}
             onNext={next}
             onClose={close}
+            onFocusReturn={() => botaoVerso.current?.focus({ preventScroll: true })}
           />
         ) : null}
       </AnimatePresence>

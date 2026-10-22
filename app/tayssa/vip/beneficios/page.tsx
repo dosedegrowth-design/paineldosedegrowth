@@ -14,6 +14,10 @@ import { VipReferralForm } from "@/components/tayssa/vip/forms";
 export default async function BenefitsPage() {
   const user = await requireClientPage();
   const [o, referrals] = await Promise.all([getClientOverview(user), getClientReferrals(user.id)]);
+  // o prêmio pelo que ele é ("10% de desconto no seu próximo atendimento"), não pelo
+  // nome interno do benefício ("Indicação confirmada" lia como mais uma indicação)
+  const descricao = o.referral.rewardDescription?.trim().replace(/\.$/, "");
+  const premio = descricao ? `${descricao.charAt(0).toLowerCase()}${descricao.slice(1)}` : `“${o.referral.rewardTitle}”`;
   const phone = o.settings.business.whatsapp;
   const wa = o.settings.whatsapp;
 
@@ -72,7 +76,8 @@ export default async function BenefitsPage() {
         <section className="tyv-section">
           <div className="tyv-panel">
             <p className="tyv-empty">
-              Seu próximo benefício está mais perto do que parece: o cartão completo é o primeiro deles.
+              Seu próximo benefício está mais perto do que parece: cada visita confirmada soma pontos e um carimbo no
+              cartão.
             </p>
           </div>
         </section>
@@ -116,10 +121,10 @@ export default async function BenefitsPage() {
         <div className="tyv-panel">
           <p className="tyv-sub" style={{ fontSize: 14.5 }}>
             {o.referral.approved === 0
-              ? `Indique ${o.referral.threshold} pessoas e a Tayssa libera “${o.referral.rewardTitle}”.`
+              ? `Indique ${o.referral.threshold} pessoas e ganhe ${premio}.`
               : o.referral.remaining === o.referral.threshold
                 ? `Rodada completa. Você já liberou ${o.referral.cyclesEarned} ${plural(o.referral.cyclesEarned, "benefício", "benefícios")} de indicação.`
-                : `${plural(o.referral.remaining, "Falta", "Faltam")} ${o.referral.remaining} ${plural(o.referral.remaining, "indicação confirmada", "indicações confirmadas")} para “${o.referral.rewardTitle}”.`}
+                : `${plural(o.referral.remaining, "Falta", "Faltam")} ${o.referral.remaining} ${plural(o.referral.remaining, "indicação confirmada", "indicações confirmadas")} para ganhar ${premio}.`}
           </p>
           <div className="tyv-dots" style={{ marginTop: 14 }}>
             {Array.from({ length: o.referral.threshold }, (_, i) => (

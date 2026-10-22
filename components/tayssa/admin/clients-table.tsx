@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { ClientSummary } from "@/lib/tayssa/queries/admin";
 import { ROUTES } from "@/lib/tayssa/config";
 import { dateShort } from "@/lib/tayssa/format";
+import { bateBusca } from "@/lib/tayssa/busca";
 import { USER_STATUS_LABEL, VIP_STATUS_LABEL } from "@/lib/tayssa/types";
 import type { UserStatus, VipStatus } from "@/lib/tayssa/types";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
@@ -70,9 +71,8 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
   const attentionCount = clients.filter((c) => espera(c) > 0).length;
   const [only, setOnly] = useState<Filtro>(pendingCount ? "pending" : "all");
   const list = useMemo(() => {
-    const s = q.trim().toLowerCase();
     return clients.filter((c) => {
-      if (s && !`${c.user.name} ${c.user.nickname ?? ""} ${c.user.email} ${c.user.phone ?? ""}`.toLowerCase().includes(s)) return false;
+      if (!bateBusca(q, [c.user.name, c.user.nickname, c.user.email, c.user.phone])) return false;
       if (only === "pending") return c.user.status === "pending";
       if (only === "vip") return c.profile?.vip_status === "active";
       if (only === "attention") return espera(c) > 0;
@@ -104,7 +104,14 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
         </div>
         <div className="tya-chips">
           {filtros.map(([k, label, n]) => (
-            <button key={k} type="button" className="tya-chip" data-on={only === k} onClick={() => setOnly(k)}>
+            <button
+              key={k}
+              type="button"
+              className="tya-chip"
+              data-on={only === k}
+              aria-pressed={only === k}
+              onClick={() => setOnly(k)}
+            >
               {label}
               {n ? <span className="tya-chip__n">{n}</span> : null}
             </button>

@@ -51,7 +51,9 @@ export default async function VipJornada() {
           <span className="tyv-label">Pontos confirmados</span>
         </div>
         {ranking.total > 1 ? (
-          <RankingList rows={ranking.rows} />
+          <div className="tyv-panel tyv-panel--lista">
+            <RankingList rows={ranking.rows} />
+          </div>
         ) : (
           <div className="tyv-panel">
             <p className="tyv-empty">

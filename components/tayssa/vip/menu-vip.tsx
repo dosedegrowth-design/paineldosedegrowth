@@ -105,6 +105,20 @@ export function MenuVip() {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.97, y: -4, transition: { duration: 0.14 } }}
                     transition={{ duration: reduced ? 0 : 0.22, ease: EASE }}
+                    // aberto, o Tab gira dentro do menu (ele fica no fim da página
+                    // no DOM; sem isso o Tab passeava pela tela atrás do véu)
+                    onKeyDown={(e) => {
+                      if (e.key !== "Tab") return;
+                      const itens = Array.from(e.currentTarget.querySelectorAll<HTMLElement>("a"));
+                      const i = itens.indexOf(document.activeElement as HTMLElement);
+                      if (e.shiftKey && i <= 0) {
+                        e.preventDefault();
+                        itens[itens.length - 1]?.focus();
+                      } else if (!e.shiftKey && i === itens.length - 1) {
+                        e.preventDefault();
+                        itens[0]?.focus();
+                      }
+                    }}
                   >
                     {ITEMS.map((item) => {
                       const atual = item.href === ROUTES.vip ? pathname === item.href : pathname.startsWith(item.href);

@@ -151,9 +151,11 @@ body:has(.tyv) {
 }
 
 /* ---------- o cartão logo abaixo do nome ---------- */
+/* sem filter aqui: o drop-shadow num ancestral prendia a folha de raspar
+   dentro da caixa do cartão e derrubava a home para ~35 fps; a sombra
+   mora nas faces (vip-perola.css) */
 .tyv-cartao-home {
   margin-top: 22px;
-  filter: drop-shadow(0 30px 40px rgba(5, 0, 2, 0.55)) drop-shadow(0 10px 30px rgba(232, 92, 140, 0.18));
 }
 .tyc3__nfc {
   width: 26px;

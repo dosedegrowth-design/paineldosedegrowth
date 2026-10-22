@@ -169,9 +169,6 @@ body:has(.tyv) {
   color: var(--tyv-tinta-2);
   background: var(--tyv-surface-2);
 }
-.tyv-cartao-home {
-  filter: drop-shadow(0 26px 30px rgba(90, 20, 45, 0.3)) drop-shadow(0 8px 14px rgba(80, 30, 40, 0.14));
-}
 
 /* ---------- painel de ícones ---------- */
 @media (hover: hover) and (pointer: fine) {
@@ -460,4 +457,242 @@ body:has(.tyv) {
   stroke: #d4b077;
   stroke-width: 1.2;
   vector-effect: non-scaling-stroke;
+}
+
+/* ============================================================
+   PENTE FINO (out/2026) — o que a auditoria do VIP achou
+   ============================================================ */
+
+/* topo: barra opaca de ponta a ponta (no computador era uma caixa de
+   520px de bordas duras). O esmaecido mora num ::after que não pega
+   toque: antes a faixa esmaecida do próprio topo engolia o toque no que
+   passava por baixo ("Ver o cartão" só respondia na metade de baixo) */
+.tyv .tyv-top {
+  background: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+.tyv .tyv-top::before,
+.tyv .tyv-top::after {
+  content: "";
+  position: absolute;
+  left: calc(50% - 50vw);
+  right: calc(50% - 50vw);
+  pointer-events: none;
+}
+.tyv .tyv-top::before {
+  top: 0;
+  bottom: 0;
+  z-index: -1;
+  background: #f3eadd;
+}
+.tyv .tyv-top::after {
+  top: 100%;
+  height: 16px;
+  background: linear-gradient(180deg, rgba(243, 234, 221, 0.95), rgba(243, 234, 221, 0));
+}
+
+/* com viewport-fit=cover (layout do VIP), nada encosta no entalhe deitado */
+.tyv .tyv-page {
+  padding-left: max(var(--tyv-gutter), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--tyv-gutter), env(safe-area-inset-right, 0px));
+}
+
+/* o cartão: a sombra vinho mora nas faces (antes era um filter no
+   invólucro da home, que prendia a folha de raspar e pesava a página) */
+.tyv .tyc3__face {
+  box-shadow:
+    0 26px 30px -12px rgba(90, 20, 45, 0.32),
+    0 8px 14px -4px rgba(80, 30, 40, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+/* o "frente" do verso: ameixa sobre o creme (o ouro da frente sumia ali, 1,2:1) */
+.tyv .tyc3__flip.tyc3__flip--back {
+  color: var(--tyv-plum);
+  border-color: rgba(110, 47, 69, 0.38);
+  background: rgba(255, 255, 255, 0.55);
+}
+.tyv .tyc3__band em {
+  font-weight: 400;
+}
+.tyv .tyc3__meta {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ouro que se lê: rótulos e valores no ouro escuro (4,6–5,4:1), o nome
+   no ouro velho (texto grande, 3,1:1+), erro em vinho, não em ouro */
+.tyv .tyv-label,
+.tyv .tyv-tl__item[data-tone="gold"] .tyv-tl__value,
+.tyv .tyv-rank__row[data-me="true"] .tyv-rank__pos {
+  color: #805b24;
+}
+.tyv .tyv-hello em {
+  color: #9b7846;
+}
+.tyv .tyv-hello {
+  overflow-wrap: anywhere;
+}
+.tyv .ty-form-error {
+  color: #7a1d3a;
+  border-color: rgba(122, 29, 58, 0.35);
+  background: rgba(122, 29, 58, 0.05);
+  border-radius: 12px;
+}
+.tyv .ty-field__error {
+  color: #7a1d3a;
+}
+.tyv .ty-form-ok {
+  border-radius: 12px;
+}
+
+/* botões dos formulários com a cara do resto do VIP: pílula, frase, vinho */
+.tyv .ty-btn {
+  --btn-fg: var(--t-fg);
+  --btn-bg: transparent;
+  --btn-hover-bg: rgba(122, 29, 58, 0.08);
+  --btn-hover-fg: var(--t-fg);
+  height: 56px;
+  padding: 0 24px;
+  border-radius: 999px;
+  border-color: var(--t-line-strong);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  box-shadow: none;
+}
+.tyv .ty-btn--solid {
+  --btn-fg: #fff;
+  --btn-bg: var(--tyv-vinho);
+  --btn-hover-bg: #8e2547;
+  --btn-hover-fg: #fff;
+  border-color: var(--tyv-vinho);
+  box-shadow: 0 14px 30px -16px rgba(122, 29, 58, 0.75);
+}
+.tyv .ty-btn__arrow {
+  display: none;
+}
+
+/* ranking dentro de um bloco como o resto; a linha dela em ouro claro */
+.tyv .tyv-panel--lista {
+  padding: 8px;
+}
+.tyv .tyv-rank__row[data-me="true"] {
+  background: rgba(201, 161, 97, 0.14);
+  border-color: rgba(168, 120, 47, 0.35);
+}
+
+/* dias: a fita não encosta na borda; o mês aparece quando vira */
+.tyv .tyv-days {
+  scroll-padding-inline: var(--tyv-gutter);
+}
+.tyv-day__m {
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1;
+  color: #805b24;
+}
+.tyv .tyv-day[aria-pressed="true"] .tyv-day__m {
+  color: inherit;
+  opacity: 0.8;
+}
+/* no computador a roda do mouse não anda de lado: os dias viram um
+   calendário de sete colunas (antes só ~7 de 27 dias se alcançavam) */
+@media (hover: hover) and (pointer: fine) {
+  .tyv .tyv-days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    overflow: visible;
+    margin: 0;
+    padding: 4px 0 8px;
+  }
+  .tyv .tyv-day {
+    width: auto;
+    min-height: 74px;
+  }
+  .tyv .tyv-days > .tyv-day {
+    grid-column-start: var(--tyv-col, auto);
+  }
+}
+
+/* desmarcar: a pergunta numa linha própria, longe do primeiro toque */
+.tyv .tyv-horario {
+  flex-wrap: wrap;
+}
+.tyv-confirma {
+  flex-basis: 100%;
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(122, 29, 58, 0.05);
+  border: 1px solid rgba(122, 29, 58, 0.18);
+}
+.tyv-confirma p {
+  font-size: 15px;
+  font-weight: 500;
+}
+.tyv-confirma > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.tyv .tyv-confirma .tyv-btn {
+  min-height: 48px;
+  font-size: 15px;
+}
+.tyv-feito {
+  margin: 0 0 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  color: var(--tyv-tinta);
+  background: rgba(201, 161, 97, 0.14);
+  border: 1px solid rgba(168, 120, 47, 0.3);
+}
+.tyv-feito[hidden] {
+  display: none;
+}
+/* o agendamento volta ao topo do passo sem esconder o título sob o topo */
+.tyv-fluxo {
+  scroll-margin-top: calc(84px + env(safe-area-inset-top, 0px));
+}
+
+/* alvos de toque de 44px sem mudar o desenho */
+.tyv .tyc3__flip,
+.tyv .tyv-moment__close {
+  position: relative;
+}
+.tyv .tyc3__flip::after,
+.tyv .tyv-moment__close::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 999px;
+}
+.tyv .tyc3__flip.tyc3__flip--back::after {
+  inset: -7px -2px;
+}
+.ty-scope .tyv a.tyv-brand {
+  padding-block: 8px;
+  margin-block: -8px;
+}
+.ty-scope .tyv a.tyc3__link {
+  min-height: 44px;
+}
+.tyv .tyv-section-head .tyv-link {
+  padding-inline: 8px;
+  margin-inline: -8px;
+}
+
+/* 320px: o topo respira (a etiqueta VIP encostava no WhatsApp) */
+@media (max-width: 359px) {
+  .tyv .tyv-top .ty-brand__name em {
+    display: none;
+  }
+  .tyv .tyv-top__acoes {
+    gap: 4px;
+  }
 }

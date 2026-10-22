@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { estiloFoco, type MidiaCatalogo } from "@/lib/tayssa/catalogo";
+import { useCamadaAberta } from "@/components/tayssa/ui/dialogo";
 
 /**
  * O rolo: fotos e vídeos de um produto passando sozinhos, sem fim, cada
@@ -141,6 +142,9 @@ function Visor({
   const reduced = useReducedMotion();
   const [dir, setDir] = useState(1);
   const fecharRef = useRef<HTMLButtonElement>(null);
+  const camada = useRef<HTMLDivElement>(null);
+  // antes do efeito que foca o "Fechar": lê quem abriu, para o foco voltar lá
+  useCamadaAberta(aberto !== null, camada);
   // o portal só existe no navegador: no servidor (e na hidratação) não há visor
   const montado = useSyncExternalStore(
     () => () => {},
@@ -176,6 +180,7 @@ function Visor({
     <AnimatePresence>
       {m ? (
         <motion.div
+          ref={camada}
           className="ty-visor ty-scope"
           data-theme="night"
           role="dialog"

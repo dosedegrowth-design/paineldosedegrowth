@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./vip.css";
 import "./vip-vivo.css";
@@ -25,6 +25,16 @@ const serifa = localFont({
 export const metadata: Metadata = {
   title: "Meu VIP",
   robots: { index: false, follow: false },
+};
+
+/**
+ * A barra do navegador na cor do topo do VIP (bege, não o rosado do site),
+ * e a página até a borda do iPhone: com `cover` o pé vinho desce por trás
+ * da barra de gestos (`env(safe-area-inset-bottom)` deixa de ser 0).
+ */
+export const viewport: Viewport = {
+  themeColor: "#f3eadd",
+  viewportFit: "cover",
 };
 
 /** Nada aqui pode ser prerenderizado: é sempre o espaço de UMA cliente. */

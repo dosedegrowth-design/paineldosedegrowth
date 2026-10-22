@@ -7,7 +7,7 @@ import { assertClient } from "@/lib/tayssa/auth/guards";
 import { logAudit } from "@/lib/tayssa/audit";
 import { ROUTES } from "@/lib/tayssa/config";
 import { getSettings } from "@/lib/tayssa/settings";
-import { bookableDays, slotIsBookable, toISODate } from "@/lib/tayssa/rules";
+import { appointmentEnded, appointmentStarted, bookableDays, slotIsBookable, toISODate } from "@/lib/tayssa/rules";
 import { isoDateField } from "@/lib/tayssa/validation";
 import { horariosFechados } from "@/lib/tayssa/queries/vip";
 import { nowInBusinessTz } from "@/lib/tayssa/format";
@@ -66,15 +66,20 @@ export async function createAppointmentAction(input: {
       );
     }
 
-    const { count: openCount } = await db
+    // em aberto = ainda não terminou (o de hoje cedo já não segura a vaga)
+    const { data: abertos, error: aErr } = await db
       .from("appointments")
-      .select("id", { count: "exact", head: true })
+      .select("scheduled_date, scheduled_time, duration_min")
       .eq("client_id", me.id)
       .in("status", ["requested", "confirmed"])
       .gte("scheduled_date", toISODate(now));
-    if ((openCount ?? 0) >= b.max_open_per_client) {
+    if (aErr) throw new Error(aErr.message);
+    const openCount = ((abertos ?? []) as Pick<AppointmentRow, "scheduled_date" | "scheduled_time" | "duration_min">[]).filter(
+      (a) => !appointmentEnded(a, now)
+    ).length;
+    if (openCount >= b.max_open_per_client) {
       throw new BusinessError(
-        `Você já tem ${openCount} ${openCount === 1 ? "horário marcado" : "horários marcados"}. Cancele um para marcar outro.`
+        `Você já tem ${openCount} ${openCount === 1 ? "horário marcado" : "horários marcados"}. Desmarque um para marcar outro.`
       );
     }
 
@@ -136,11 +141,11 @@ export async function cancelAppointmentAction(input: { id: string }): Promise<Ac
     const a = data as AppointmentRow | null;
     if (!a || a.client_id !== me.id) throw new BusinessError("Horário não encontrado.");
     if (!["requested", "confirmed"].includes(a.status)) {
-      throw new BusinessError("Esse horário não pode mais ser cancelado.");
+      throw new BusinessError("Esse horário não pode mais ser desmarcado.");
     }
-    // o que já passou não se cancela: quem fecha (realizado ou falta) é a Tayssa
-    if (a.scheduled_date < toISODate(nowInBusinessTz())) {
-      throw new BusinessError("Esse horário já passou. Se algo aconteceu, fale com a Tayssa pelo WhatsApp.");
+    // o que já começou não se desmarca: quem fecha (realizado ou falta) é a Tayssa
+    if (appointmentStarted(a, nowInBusinessTz())) {
+      throw new BusinessError("Esse horário já começou ou passou. Se algo aconteceu, fale com a Tayssa pelo WhatsApp.");
     }
     const { error } = await db
       .from("appointments")

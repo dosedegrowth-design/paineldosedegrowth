@@ -1,17 +1,18 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { setPasswordAction } from "@/lib/tayssa/actions/auth";
 import { MIN_PASSWORD_LENGTH } from "@/lib/tayssa/config";
 import type { ActionResult } from "@/lib/tayssa/types";
 import { TyInput } from "@/components/tayssa/ui/field";
 import { useFormPreservado } from "@/components/tayssa/ui/form-preservado";
+import { useAcaoFormulario } from "@/components/tayssa/ui/acao";
 
 type Result = ActionResult<{ redirectTo: string }>;
 
 export function SetPasswordForm({ token }: { token: string }) {
-  const [state, action, pending] = useActionState<Result | null, FormData>(setPasswordAction, null);
+  const [state, onSubmit, pending] = useAcaoFormulario<Result | null>(setPasswordAction, null);
   const err = state && !state.ok ? state : null;
   const { onReset } = useFormPreservado();
 
@@ -22,7 +23,7 @@ export function SetPasswordForm({ token }: { token: string }) {
 
   return (
     <motion.form
-      action={action}
+      onSubmit={onSubmit}
       noValidate
       onReset={onReset}
       initial={{ opacity: 0, y: 16 }}

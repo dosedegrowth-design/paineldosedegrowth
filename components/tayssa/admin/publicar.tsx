@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { adminPublishMediaAction, adminUpdatePhotoAction } from "@/lib/tayssa/actions/photos";
 import { CATEGORIAS, chave, produtoParecido } from "@/lib/tayssa/catalogo";
 import type { CategoriaMidia, PhotoRow } from "@/lib/tayssa/types";
 import { Enquadrar, type Quadro } from "@/components/tayssa/admin/enquadrar";
+import { useTarefa } from "@/components/tayssa/ui/acao";
 
 export type ProdutosPorCategoria = Partial<Record<CategoriaMidia, string[]>>;
 
@@ -41,7 +42,7 @@ export function Publicar({
     zoom: Number(item.zoom ?? 1),
   });
   const [erro, setErro] = useState<string | null>(null);
-  const [pending, start] = useTransition();
+  const [pending, start] = useTarefa();
 
   useEffect(() => {
     const d = dialogo.current;

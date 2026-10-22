@@ -13,7 +13,18 @@ import { motion, useInView, useReducedMotion } from "framer-motion";
  * Com movimento reduzido: já desenhados e parados.
  */
 
-export type IconeNome = "olho" | "flor" | "calendario" | "presente" | "coracao" | "mensagem" | "brilho" | "check" | "cartao";
+export type IconeNome =
+  | "olho"
+  | "flor"
+  | "calendario"
+  | "presente"
+  | "coracao"
+  | "mensagem"
+  | "brilho"
+  | "check"
+  | "cartao"
+  | "cartaoVip"
+  | "pessoa";
 
 const DRAW = { duration: 1.1, ease: [0.65, 0, 0.35, 1] as [number, number, number, number] };
 
@@ -169,6 +180,32 @@ export function Icone({ nome, className, label }: { nome: IconeNome; className?:
             transition={{ duration: 0.35, delay: 0.6 + i * 0.12 }}
           />
         ))}
+      </>
+    ),
+    // o cartão do VIP como o menu mostra: faixa em cima e os carimbos acendendo embaixo
+    cartaoVip: (
+      <>
+        <Traco on={on} d="M9 12h30a4 4 0 0 1 4 4v16a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4z" />
+        <Traco on={on} delay={0.25} d="M5 19.5h38" />
+        {[13.5, 20.5, 27.5].map((x, i) => (
+          <motion.circle
+            key={x}
+            cx={x}
+            cy="28.5"
+            r="2.3"
+            className={`tyi-carimbo tyi-carimbo--${i}`}
+            initial={{ scale: 0 }}
+            animate={{ scale: on ? 1 : 0 }}
+            transition={{ duration: 0.35, delay: 0.6 + i * 0.12 }}
+          />
+        ))}
+      </>
+    ),
+    // pessoa: cabeça e ombros (o perfil dela, igual ao menu)
+    pessoa: (
+      <>
+        <Traco on={on} d="M24 10.5a6.75 6.75 0 1 1 0 13.5 6.75 6.75 0 0 1 0-13.5z" />
+        <Traco on={on} delay={0.3} d="M11 40c1.3-7.6 6.5-11.8 13-11.8S35.7 32.4 37 40" />
       </>
     ),
   };

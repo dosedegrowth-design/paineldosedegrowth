@@ -13,6 +13,7 @@ import {
   type MouseEvent,
 } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { ehAreaPrivada } from "@/components/tayssa/ui/area";
 
 /**
  * Transição de rota: uma cortina de tinta sobe, a rota troca por baixo,
@@ -125,9 +126,18 @@ export function useTransitionNav() {
 
 type TLinkProps = ComponentProps<typeof Link> & { href: string };
 
-/** Link que usa a cortina. Mantém prefetch e abre normal com modificadores. */
-export function TransitionLink({ href, onClick, ...rest }: TLinkProps) {
+/**
+ * Link que usa a cortina. Abre normal com modificadores.
+ *
+ * No VIP e no painel não pré-carrega: as telas são dinâmicas, e depois de
+ * cada ação com revalidação o roteador refazia ~50 pré-carregamentos e
+ * cancelava parte deles no meio — num em cada três ou quatro "Salvar" o
+ * botão ficava preso em "Salvando…" (medido no celular). No site público
+ * o pré-carregamento continua.
+ */
+export function TransitionLink({ href, onClick, prefetch, ...rest }: TLinkProps) {
   const { navigate } = useTransitionNav();
+  const pathname = usePathname() ?? "";
   const handle = (e: MouseEvent<HTMLAnchorElement>) => {
     onClick?.(e);
     if (e.defaultPrevented) return;
@@ -136,5 +146,5 @@ export function TransitionLink({ href, onClick, ...rest }: TLinkProps) {
     e.preventDefault();
     navigate(href);
   };
-  return <Link href={href} onClick={handle} {...rest} />;
+  return <Link href={href} onClick={handle} prefetch={prefetch ?? (ehAreaPrivada(pathname) ? false : undefined)} {...rest} />;
 }

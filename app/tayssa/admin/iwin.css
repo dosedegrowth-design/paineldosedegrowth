@@ -1763,3 +1763,42 @@ select.tya-field {
     grid-column: 1 / -1;
   }
 }
+
+/* ============================================================
+   ALVOS DE TOQUE NO CELULAR (de novo, no fim deste arquivo)
+   O bloco igual do fim de admin.css perdia para este arquivo, que é
+   importado depois: no celular "Confirmar", "Validar", "Suspender" e
+   os filtros voltavam a 30–32px. Aqui ele vence por ordem.
+   ============================================================ */
+@media (max-width: 860px) {
+  .tya-btn {
+    height: 44px;
+  }
+  .tya-btn--sm,
+  .tya-foto .tya-btn--sm {
+    height: 42px;
+    padding: 0 14px;
+    font-size: 13px;
+  }
+  .tya-btn--sm.tya-btn--icon,
+  .tya-btn--icon {
+    width: 42px;
+    padding: 0;
+  }
+  .tya-chip {
+    height: 42px;
+    padding: 0 15px;
+  }
+  /* os "Ver todos", "Ver agenda" dos blocos: o texto fica, o alvo cresce */
+  .tya .ty-link--caps {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: 4px;
+  }
+}
+
+/* rótulos pequenos de cinza ("PONTOS"): o cinza secundário que se lê (4,9:1) */
+.tya-mini span {
+  color: #6e6e73;
+}

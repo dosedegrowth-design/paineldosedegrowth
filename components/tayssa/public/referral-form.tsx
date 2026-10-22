@@ -1,6 +1,5 @@
 "use client";
 
-import { useActionState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { submitPublicReferralAction } from "@/lib/tayssa/actions/referrals";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
@@ -10,11 +9,12 @@ import { useFormPreservado } from "@/components/tayssa/ui/form-preservado";
 import { TyButton, TyLinkButton } from "@/components/tayssa/ui/button";
 import { MaskedLines } from "@/components/tayssa/ui/reveal";
 import type { ActionResult } from "@/lib/tayssa/types";
+import { useAcaoFormulario } from "@/components/tayssa/ui/acao";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 export function PublicReferralForm({ whatsapp, referTemplate }: { whatsapp: string; referTemplate: string }) {
-  const [state, action, pending] = useActionState<ActionResult<{ id: string }> | null, FormData>(
+  const [state, onSubmit, pending] = useAcaoFormulario<ActionResult<{ id: string }> | null>(
     submitPublicReferralAction,
     null
   );
@@ -29,7 +29,7 @@ export function PublicReferralForm({ whatsapp, referTemplate }: { whatsapp: stri
         {!done ? (
           <motion.form
             key="form"
-            action={action}
+            onSubmit={onSubmit}
             onReset={onReset}
             exit={{ opacity: 0, y: -16, transition: { duration: 0.4 } }}
             style={{ display: "grid", gap: 26 }}

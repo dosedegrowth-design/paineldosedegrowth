@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ROUTES } from "@/lib/tayssa/config";
+import { bateBusca } from "@/lib/tayssa/busca";
 import { logoutAction } from "@/lib/tayssa/actions/auth";
 import { Icone } from "@/components/tayssa/admin/icons";
 import { ROTAS_PAINEL } from "@/components/tayssa/admin/sidebar";
@@ -41,9 +42,8 @@ export function AdminTopbar({ nome, onAbrirMenu }: { nome: string; onAbrirMenu?:
 
   const itens = useMemo(() => {
     const todos = [...ACOES, ...ROTAS_PAINEL.map((r) => ({ href: r.href, label: r.label, secao: r.secao }))];
-    const n = q.trim().toLowerCase();
-    if (!n) return todos;
-    return todos.filter((i) => `${i.label} ${i.secao}`.toLowerCase().includes(n));
+    if (!q.trim()) return todos;
+    return todos.filter((i) => bateBusca(q, [i.label, i.secao]));
   }, [q]);
 
   const ir = (href: string) => {

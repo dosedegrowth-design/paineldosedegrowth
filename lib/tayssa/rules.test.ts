@@ -6,6 +6,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   activeBlackout,
+  appointmentEnded,
+  appointmentStarted,
   birthdayInfo,
   isInactive,
   loyaltyProgress,
@@ -83,4 +85,18 @@ test("whatsapp: template e url", () => {
   assert.equal(renderTemplate("Oi, {name}! {benefit}", { name: "Mariana", benefit: "Lip spa" }), "Oi, Mariana! Lip spa");
   assert.equal(renderTemplate("{x}", {}), "");
   assert.equal(whatsappUrl("5511999827606", "Oi, Tayssa!"), "https://wa.me/5511999827606?text=Oi%2C%20Tayssa!");
+});
+
+test("horário marcado: começou, terminou", () => {
+  const a = { scheduled_date: "2026-10-21", scheduled_time: "10:30:00", duration_min: 90 };
+  // 10h29: nem começou; 10h30: começou (não desmarca mais); 12h00: terminou
+  assert.equal(appointmentStarted(a, new Date(2026, 9, 21, 10, 29)), false);
+  assert.equal(appointmentStarted(a, new Date(2026, 9, 21, 10, 30)), true);
+  assert.equal(appointmentEnded(a, new Date(2026, 9, 21, 11, 59)), false);
+  assert.equal(appointmentEnded(a, new Date(2026, 9, 21, 12, 0)), true);
+  // às 20h15 do mesmo dia o das 10h30 já não é "próximo"
+  assert.equal(appointmentEnded(a, new Date(2026, 9, 21, 20, 15)), true);
+  // amanhã ainda está por vir; sem duração conta 1h
+  assert.equal(appointmentEnded({ ...a, scheduled_date: "2026-10-22" }, new Date(2026, 9, 21, 20, 15)), false);
+  assert.equal(appointmentEnded({ ...a, duration_min: null }, new Date(2026, 9, 21, 11, 31)), true);
 });

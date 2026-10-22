@@ -374,10 +374,10 @@
   gap: 10px 16px;
   margin-top: clamp(8px, 1.5vw, 20px);
   font-size: 13px;
-  color: var(--t-mauve);
+  color: color-mix(in srgb, var(--t-mauve) 82%, var(--t-fg));
 }
 .ty-scope .typf__todos {
-  height: 40px;
+  height: 44px;
   padding: 0 18px;
   border-radius: 999px;
   border: 1px solid rgba(109, 21, 48, 0.18);
@@ -781,7 +781,7 @@
   justify-content: space-between;
   gap: 8px;
   font-size: 10px;
-  color: rgba(0, 0, 0, 0.5);
+  color: rgba(0, 0, 0, 0.6);
 }
 .tynu__app-linhas {
   list-style: none;
@@ -814,7 +814,7 @@
   margin: 0;
   padding: 10px 14px;
   font-size: 9.5px;
-  color: rgba(0, 0, 0, 0.4);
+  color: rgba(0, 0, 0, 0.58);
 }
 
 /* ---------- selos flutuando em volta do celular ---------- */

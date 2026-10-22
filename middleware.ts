@@ -107,6 +107,8 @@ export async function middleware(request: NextRequest) {
     "/_next",
     "/brand",
     "/favicon.ico",
+    // robôs de busca: sem isso o /robots.txt caía no login do painel
+    "/robots.txt",
     // Landing pública do André Ar Condicionado
     "/andre",
     // Relatórios públicos compartilháveis (HTML estático em public/relatorios)

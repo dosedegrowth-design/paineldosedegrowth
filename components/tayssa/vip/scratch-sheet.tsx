@@ -1,10 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { revealStampAction, type RevealResult } from "@/lib/tayssa/actions/card";
 import { dateLong } from "@/lib/tayssa/format";
 import type { CardStamp } from "@/lib/tayssa/types";
+import { useFinePointer } from "@/components/tayssa/ui/use-media";
+import { useTarefa } from "@/components/tayssa/ui/acao";
 
 /** vibração curta — só onde o aparelho suporta */
 function buzz(pattern: number | number[]) {
@@ -26,6 +29,10 @@ const SPARKS = Array.from({ length: 14 }, (_, i) => {
  * A raspada. O carimbo já existe desde que a Tayssa confirmou o
  * atendimento — raspar é descobrir, não sortear. O dedo tira a folha
  * dourada; aos 55% a folha some sozinha para não cansar.
+ *
+ * Abre em portal na raiz do app (.tyv): dentro do cartão da home ela
+ * ficava presa na caixa dele (um ancestral com filter/transform vira o
+ * contêiner do position: fixed) — o "Olá" pintava por cima da folha.
  */
 export function ScratchSheet({
   stamp,
@@ -34,6 +41,7 @@ export function ScratchSheet({
   onRevealed,
   remaining,
   onNext,
+  onFocusReturn,
 }: {
   stamp: CardStamp;
   cardSize: number;
@@ -41,8 +49,15 @@ export function ScratchSheet({
   onRevealed: (id: string, result: RevealResult | null) => void;
   remaining: number;
   onNext?: () => void;
+  /** para onde vai o foco ao fechar, se o botão que abriu já não existe (virou carimbo revelado) */
+  onFocusReturn?: () => void;
 }) {
   const reduced = useReducedMotion();
+  const fine = useFinePointer();
+  const [raiz] = useState<HTMLElement | null>(() =>
+    typeof document === "undefined" ? null : (document.querySelector<HTMLElement>(".tyv") ?? document.body)
+  );
+  const folha = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
   const last = useRef<{ x: number; y: number } | null>(null);
@@ -51,7 +66,7 @@ export function ScratchSheet({
   const [open, setOpen] = useState(false);
   const [result, setResult] = useState<RevealResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [pending, start] = useTransition();
+  const [pending, start] = useTarefa();
 
   const reveal = useCallback(() => {
     if (open) return;
@@ -67,7 +82,7 @@ export function ScratchSheet({
         onRevealed(stamp.id, null);
       }
     });
-  }, [open, stamp.id, onRevealed]);
+  }, [open, stamp.id, onRevealed, start]);
 
   // enquanto a folha está aberta, a página atrás não rola e ESC fecha
   useEffect(() => {
@@ -82,6 +97,42 @@ export function ScratchSheet({
       window.removeEventListener("keydown", onKey);
     };
   }, [onClose]);
+
+  // foco: entra na folha ao abrir e volta para quem abriu ao fechar (o
+  // carimbo raspado vira <div>; aí volta para o botão do verso)
+  useEffect(() => {
+    const volta = document.activeElement as HTMLElement | null;
+    const el = folha.current;
+    const id = requestAnimationFrame(() => el?.querySelector<HTMLElement>("button")?.focus({ preventScroll: true }));
+    return () => {
+      cancelAnimationFrame(id);
+      const agora = document.activeElement;
+      // a folha seguinte ("Raspar o próximo") já pegou o foco: não rouba
+      if (agora && agora !== document.body && !el?.contains(agora)) return;
+      if (volta && volta.isConnected && volta !== document.body) volta.focus({ preventScroll: true });
+      else onFocusReturn?.();
+    };
+    // só na montagem/desmontagem desta folha
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /** Tab fica dentro da folha enquanto ela está aberta (é um diálogo modal) */
+  const prenderTab = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== "Tab") return;
+    const alvos = Array.from(
+      folha.current?.querySelectorAll<HTMLElement>("button:not([disabled]), a[href], [tabindex]:not([tabindex='-1'])") ?? []
+    );
+    if (!alvos.length) return;
+    const primeiro = alvos[0];
+    const ultimo = alvos[alvos.length - 1];
+    if (e.shiftKey && document.activeElement === primeiro) {
+      e.preventDefault();
+      ultimo.focus();
+    } else if (!e.shiftKey && document.activeElement === ultimo) {
+      e.preventDefault();
+      primeiro.focus();
+    }
+  };
 
   // folha dourada
   useEffect(() => {
@@ -178,7 +229,8 @@ export function ScratchSheet({
   const done = result ?? (open && !pending);
   const cardClosed = result?.cardCompleted ?? false;
 
-  return (
+  if (!raiz) return null;
+  return createPortal(
     <>
       <motion.div
         className="tyv-sheet-bg"
@@ -189,10 +241,12 @@ export function ScratchSheet({
         aria-hidden
       />
       <motion.div
+        ref={folha}
         className="tyv-sheet"
         role="dialog"
         aria-modal="true"
         aria-label={`Carimbo ${stamp.position}`}
+        onKeyDown={prenderTab}
         initial={{ y: reduced ? 0 : "100%" }}
         animate={{ y: 0 }}
         exit={{ y: reduced ? 0 : "100%" }}
@@ -200,7 +254,7 @@ export function ScratchSheet({
       >
         <div className="tyv-sheet__grip" aria-hidden />
         <p className="tyv-label" style={{ marginBottom: 4 }}>
-          {open ? "Seu carimbo" : "Raspe com o dedo"}
+          {open ? "Seu carimbo" : fine ? "Raspe com o mouse" : "Raspe com o dedo"}
         </p>
         <h2 className="tyv-h2" style={{ marginBottom: 16 }}>
           {open ? (cardClosed ? "Cartão completo." : "Mais uma visita sua.") : "O que essa visita te deu."}
@@ -234,7 +288,7 @@ export function ScratchSheet({
               />
             ) : null}
           </AnimatePresence>
-          {!open ? <span className="tys__hint">deslize o dedo</span> : null}
+          {!open ? <span className="tys__hint">{fine ? "arraste o mouse" : "deslize o dedo"}</span> : null}
           <AnimatePresence>
             {open && !reduced
               ? SPARKS.map((s, i) => (
@@ -280,6 +334,7 @@ export function ScratchSheet({
           </button>
         </div>
       </motion.div>
-    </>
+    </>,
+    raiz,
   );
 }

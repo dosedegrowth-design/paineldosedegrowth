@@ -102,6 +102,10 @@ export function MaskedLines({
             style={{ display: "block", willChange: "transform" }}
           >
             {l}
+            {/* espaço no fim da linha: some no desenho, mas o título vira
+                "Indique alguém que merece." para leitor de tela e busca
+                (sem ele, "Indiquealguém quemerece.") */}
+            {i < lines.length - 1 ? " " : null}
           </motion.span>
         </span>
       ))}

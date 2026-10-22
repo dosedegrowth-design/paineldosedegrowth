@@ -36,6 +36,11 @@ export function dateLong(v: string | Date | null | undefined, withYear = false):
   return withYear ? `${base} de ${d.getFullYear()}` : base;
 }
 
+/** O ano no relógio da casa (servidor e navegador concordam na virada do ano). */
+export function yearOf(v: string | Date): number {
+  return toDate(v).getFullYear();
+}
+
 /** "04/09/2026" */
 export function dateShort(v: string | Date | null | undefined): string {
   if (!v) return "";

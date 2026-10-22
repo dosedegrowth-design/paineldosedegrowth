@@ -484,8 +484,8 @@ body:has(.ddgb) {
 }
 
 .ddgb-link {
-  min-height: 36px;
-  padding: 0 4px;
+  min-height: 44px;
+  padding: 0 6px;
   font-size: 14px;
   font-weight: 600;
   background: none;

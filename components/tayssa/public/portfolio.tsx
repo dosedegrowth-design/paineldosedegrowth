@@ -7,6 +7,7 @@ import { AnimatePresence, motion, useInView, useReducedMotion, useTransform, typ
 import { useProgressoRolagem } from "@/components/tayssa/ui/rolagem";
 import { estiloFoco } from "@/lib/tayssa/catalogo";
 import type { ItemPortfolio } from "@/lib/tayssa/portfolio";
+import { useCamadaAberta } from "@/components/tayssa/ui/dialogo";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -332,6 +333,9 @@ function VisorPortfolio({
   };
   const fecharRef = useRef<HTMLButtonElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const camada = useRef<HTMLDivElement>(null);
+  // antes do efeito que foca o "Fechar": lê quem abriu, para o foco voltar lá
+  useCamadaAberta(aberto !== null, camada);
   const montado = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -380,6 +384,7 @@ function VisorPortfolio({
     <AnimatePresence>
       {m ? (
         <motion.div
+          ref={camada}
           className="ty-visor typf-visor ty-scope"
           data-theme="night"
           role="dialog"

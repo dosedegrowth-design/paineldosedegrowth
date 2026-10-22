@@ -147,11 +147,6 @@
   background-size: 200% 100%;
   animation: tyv-skel 1.5s ease-in-out infinite;
 }
-.tyv-skel--card {
-  aspect-ratio: 1.586;
-  border-radius: 22px;
-  margin-top: 22px;
-}
 @keyframes tyv-skel {
   from { background-position: 200% 0; }
   to { background-position: -200% 0; }
@@ -233,17 +228,6 @@
 }
 
 /* ---------- painel de números: anel + contadores ---------- */
-.tyv-kpis {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 18px;
-}
-.tyv-kpi-col {
-  display: grid;
-  gap: 12px;
-  align-content: stretch;
-}
 .tyv-kpi {
   display: grid;
   align-content: start;

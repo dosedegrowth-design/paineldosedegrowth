@@ -1,9 +1,19 @@
 import { requireClientPage } from "@/lib/tayssa/auth/guards";
 import { getAppointments, getAvailability } from "@/lib/tayssa/queries/vip";
 import { getSettings } from "@/lib/tayssa/settings";
-import { plural } from "@/lib/tayssa/format";
+import { dateLong, hhmm, plural } from "@/lib/tayssa/format";
+import type { AppointmentRow } from "@/lib/tayssa/types";
 import { BookingFlow } from "@/components/tayssa/vip/booking-flow";
 import { AppointmentList } from "@/components/tayssa/vip/appointment-list";
+
+/** No histórico, cada horário diz como terminou (pedido que ninguém confirmou não é "encerrado"). */
+function comoTerminou(a: AppointmentRow): string {
+  if (a.status === "done") return "Realizado";
+  if (a.status === "cancelled") return "Cancelado";
+  if (a.status === "no_show") return "Não compareceu";
+  if (a.status === "requested") return "Não confirmado";
+  return "Confirmado";
+}
 
 export default async function BookPage() {
   const user = await requireClientPage();
@@ -50,7 +60,7 @@ export default async function BookPage() {
       {appointments.past.length ? (
         <section className="tyv-section">
           <div className="tyv-section-head">
-            <h2 className="tyv-h2">Já passaram</h2>
+            <h2 className="tyv-h2">Histórico</h2>
           </div>
           <div className="tyv-panel">
             {appointments.past.slice(0, 5).map((a) => (
@@ -58,13 +68,11 @@ export default async function BookPage() {
                 <div>
                   <p style={{ fontSize: 15 }}>{a.service_name}</p>
                   <p className="tyv-sub" style={{ fontSize: 12.5 }}>
-                    {a.scheduled_date.split("-").reverse().join("/")} · {a.scheduled_time.slice(0, 5)}
+                    {dateLong(a.scheduled_date)} · {hhmm(a.scheduled_time)}
                     {a.status === "cancelled" && a.admin_note ? ` · ${a.admin_note}` : ""}
                   </p>
                 </div>
-                <span className="tyv-badge tyv-badge--quiet">
-                  {a.status === "done" ? "Realizado" : a.status === "cancelled" ? "Cancelado" : a.status === "no_show" ? "Não compareceu" : "Encerrado"}
-                </span>
+                <span className="tyv-badge tyv-badge--quiet">{comoTerminou(a)}</span>
               </div>
             ))}
           </div>

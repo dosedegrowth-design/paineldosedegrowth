@@ -7,7 +7,7 @@
  * que a Tayssa deu no admin.
  */
 import { APPOINTMENT_STATUS_LABEL, type AppointmentRow, type ClientBenefitRow, type ClientServiceRow } from "./types.ts";
-import { toISODate, type BirthdayInfo, type LoyaltyProgress } from "./rules.ts";
+import { appointmentEnded, toISODate, type BirthdayInfo, type LoyaltyProgress } from "./rules.ts";
 import { dateLong, dayLabel, hhmm, plural } from "./format.ts";
 
 export type TimelineKind =
@@ -69,7 +69,7 @@ export function buildTimeline({
   const recent: TimelineItem[] = [];
 
   for (const a of appointments) {
-    if (!["requested", "confirmed"].includes(a.status) || a.scheduled_date < todayISO) continue;
+    if (!["requested", "confirmed"].includes(a.status) || appointmentEnded(a, today)) continue;
     upcoming.push({
       id: `apt:${a.id}`,
       kind: "appointment",
@@ -138,7 +138,7 @@ export function buildTimeline({
         date: day(b.available_at ?? b.approved_at ?? b.updated_at),
         title: b.title,
         detail: b.status === "approved" ? "aprovado — combine com a Tayssa" : "liberado pela Tayssa",
-        value: "seu",
+        value: "é seu",
         tone: "gold",
       });
     } else if (b.status === "pending_validation") {

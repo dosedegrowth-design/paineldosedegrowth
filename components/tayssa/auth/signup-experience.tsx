@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { signupAction, type SignupResult } from "@/lib/tayssa/actions/signup";
 import { ROUTES, MIN_PASSWORD_LENGTH } from "@/lib/tayssa/config";
@@ -9,6 +9,7 @@ import { TyInput, TyTextarea } from "@/components/tayssa/ui/field";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { Entrada } from "@/components/tayssa/auth/entrada";
 import { useFormPreservado } from "@/components/tayssa/ui/form-preservado";
+import { useAcaoFormulario } from "@/components/tayssa/ui/acao";
 
 type Result = ActionResult<SignupResult>;
 type Errors = Partial<Record<"name" | "phone" | "birthday" | "email" | "password" | "confirm" | "message", string>>;
@@ -28,7 +29,7 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
   const [dir, setDir] = useState(1);
   const [local, setLocal] = useState<Errors>({});
   const formRef = useRef<HTMLFormElement>(null);
-  const [state, action, pending] = useActionState<Result | null, FormData>(
+  const [state, enviar, pending] = useAcaoFormulario<Result | null>(
     signupAction as unknown as (prev: Result | null, fd: FormData) => Promise<Result>,
     null
   );
@@ -50,6 +51,19 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
       setStep(STEP_OF[f]);
     }
   }
+
+  // passo novo: o foco vai para o primeiro campo dele (antes caía no <body>
+  // quando o "Continuar" sumia no último passo)
+  const primeiroRender = useRef(true);
+  useEffect(() => {
+    if (primeiroRender.current) {
+      primeiroRender.current = false;
+      return;
+    }
+    formRef.current
+      ?.querySelector<HTMLElement>(".tyl__row:not([hidden]) :is(input, textarea, select)")
+      ?.focus({ preventScroll: true });
+  }, [step]);
 
   const read = () => new FormData(formRef.current ?? undefined);
 
@@ -158,7 +172,6 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
 
       <form
         ref={formRef}
-        action={action}
         noValidate
         onReset={onReset}
         onSubmit={(e) => {
@@ -174,7 +187,9 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
             setLocal(errs);
             setDir(-1);
             setStep(STEP_OF[Object.keys(errs)[0] as keyof Errors]);
+            return;
           }
+          enviar(e);
         }}
       >
         <AnimatePresence mode="wait" initial={false}>

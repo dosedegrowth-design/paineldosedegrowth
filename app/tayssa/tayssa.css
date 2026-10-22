@@ -97,6 +97,14 @@
 body:has(.ty-scope) {
   background: #fbf7f6;
 }
+/* e a barra de rolagem da página também (o <html> do app DDG é "dark":
+   no painel claro a barra saía preta) */
+html:has(.ty-scope) {
+  color-scheme: light;
+}
+html:has(.ty-scope[data-theme="night"]) {
+  color-scheme: dark;
+}
 body:has(.ty-scope[data-theme="night"]) {
   background: #1a0810;
 }
@@ -1905,7 +1913,8 @@ select.ty-field__input {
   font-style: italic;
   font-weight: 400;
   font-size: 1.06em;
-  color: var(--t-accent);
+  /* o rosé puxado para a tinta da seção: 5:1 no bege (o rosé puro dava 3,7) */
+  color: color-mix(in srgb, var(--t-accent) 72%, var(--t-fg));
 }
 .tyr__acoes {
   display: flex;
@@ -1913,6 +1922,10 @@ select.ty-field__input {
   align-items: center;
   gap: 16px clamp(18px, 2.4vw, 30px);
   margin-top: clamp(26px, 3.2vw, 40px);
+}
+/* as notas pequenas da indicação no bege: malva mais firme (4,2 → 5:1) */
+.tyr .ty-mono:not(.ty-mono--ink):not(.tyr__selo) {
+  color: color-mix(in srgb, var(--t-mauve) 82%, var(--t-fg));
 }
 
 /* ============================================================

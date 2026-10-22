@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { requestBenefitAction } from "@/lib/tayssa/actions/benefits";
 import { BENEFIT_STATUS_LABEL, type ClientBenefitStatus } from "@/lib/tayssa/types";
 import { COM_RECADO, type BeneficioNaTela } from "@/lib/tayssa/beneficio-na-tela";
 import { dateLong } from "@/lib/tayssa/format";
+import { useTarefa } from "@/components/tayssa/ui/acao";
 
 const HUMAN: Record<ClientBenefitStatus, string> = {
   pending_validation: "A Tayssa está validando. Assim que confirmar, ele aparece desbloqueado aqui.",
@@ -29,7 +30,7 @@ export function BenefitItem({
   whatsappUrl?: string;
   isVip: boolean;
 }) {
-  const [pending, start] = useTransition();
+  const [pending, start] = useTarefa();
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<ClientBenefitStatus>(item.status);
   const locked = item.benefit?.type === "birthday" && !isVip;
