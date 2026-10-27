@@ -35,8 +35,9 @@
 .lj-rv.is-in{opacity:1;transform:none}
 @media(scripting:none){.lj-rv{opacity:1;transform:none}}
 
-/* troca de página */
-.lj-passagem{animation:lj-entra .5s var(--suave) both}
+/* troca de página: só opacidade e sem preencher depois. Um transform aqui (mesmo parado no fim)
+   vira o bloco de referência dos position:fixed de dentro: o menu do celular e o WhatsApp sumiam da tela. */
+.lj-passagem{animation:lj-aparece .45s ease backwards}
 @keyframes lj-entra{from{opacity:0;transform:translateY(10px)}}
 @keyframes lj-aparece{from{opacity:0}}
 
@@ -54,7 +55,7 @@
 .lj-btn.is-cheio{width:100%}
 .lj-btn:disabled{opacity:.5;cursor:not-allowed}
 .lj-icone-btn{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:999px;position:relative;transition:background-color .2s}
-.lj-icone-btn:hover{background:rgba(243,234,219,.08)}
+@media(hover:hover){.lj-icone-btn:hover{background:rgba(243,234,219,.08)}}
 
 /* ---------- recado + cabeçalho ---------- */
 .lj-recado{height:var(--recado);display:grid;place-items:center;overflow:hidden;background:var(--vinho);font-size:12.5px;font-weight:600;
