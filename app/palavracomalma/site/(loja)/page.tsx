@@ -1,20 +1,20 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { ArrowRight, Hand, Instagram, Palette, ShieldCheck, Truck } from "lucide-react";
+import { ArrowRight, Instagram } from "lucide-react";
 import { CartaoProduto } from "@/components/palavracomalma/site/cartao";
 import { WhatsAppIcon } from "@/components/palavracomalma/site/whatsapp";
 import { BASE, INSTAGRAM, MENU, PRODUTOS, cartao, categoriaPorId, daCategoria, porId, waLink } from "../catalogo";
 
-function Titulo({ titulo, sub, link, rotulo }: { titulo: string; sub?: string; link?: string; rotulo?: string }) {
+const ROMANOS = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+
+function Titulo({ titulo, nota, link, rotulo }: { titulo: string; nota?: string; link?: string; rotulo?: string }) {
   return (
     <div className="lj-tit lj-rv">
-      <div>
-        <h2>{titulo}</h2>
-        {sub && <p>{sub}</p>}
-      </div>
+      <h2>{titulo}</h2>
+      {nota && <p className="lj-mao">{nota}</p>}
       {link && (
         <Link href={link} className="lj-tit-link">
-          {rotulo ?? "Ver todos"} <ArrowRight size={16} />
+          {rotulo ?? "Ver todos"} <ArrowRight size={15} />
         </Link>
       )}
     </div>
@@ -26,7 +26,7 @@ const FITA = Array.from({ length: 2 }, (_, k) => (
   <span key={k}>
     {Array.from({ length: 5 }, (_, j) => (
       <b key={j}>
-        Seu vídeo aqui <i />
+        Seu vídeo aqui <i aria-hidden>✶</i>
       </b>
     ))}
   </span>
@@ -67,78 +67,81 @@ export default function Home() {
         </div>
         <div className="lj-hero-veu" />
         <div className="lj-hero-txt">
-          <h1>Cadernos, baralhos e magias feitos à mão</h1>
+          <p className="lj-hero-olho">Ateliê de cadernos, baralhos e magias</p>
+          <h1>
+            <span className="lj-linha">
+              <span>Cada peça,</span>
+            </span>
+            <span className="lj-linha">
+              <span>
+                <em>feita à mão</em>
+              </span>
+            </span>
+            <span className="lj-linha">
+              <span>com intenção.</span>
+            </span>
+          </h1>
           <p className="lj-hero-sub">Peças autorais e personalizadas, com produção própria. Enviamos para todo o Brasil.</p>
           <div className="lj-hero-ctas">
-            <Link href={`${BASE}/loja`} className="lj-btn is-ouro">
+            <Link href={`${BASE}/loja`} className="lj-btn is-lacre">
               Ver a loja
             </Link>
-            <Link href={`${BASE}/loja?c=personalizados`} className="lj-btn is-contorno">
+            <Link href={`${BASE}/loja?c=personalizados`} className="lj-btn is-papel">
               Personalizar o meu
             </Link>
           </div>
         </div>
       </section>
 
-      {/* vantagens */}
+      {/* ============ VANTAGENS ============ */}
       <div className="lj-vant">
         <div className="lj-wrap lj-vant-in">
           <p>
-            <Hand size={20} />
-            <span>
-              <b>Produção própria</b> Feito à mão no ateliê
-            </span>
+            <b>Produção própria</b> feito à mão no ateliê
           </p>
           <p>
-            <Palette size={20} />
-            <span>
-              <b>Personalize</b> Capa, miolo e cartas
-            </span>
+            <b>Personalize</b> capa, miolo e cartas
           </p>
           <p>
-            <Truck size={20} />
-            <span>
-              <b>Todo o Brasil</b> Envio com rastreio
-            </span>
+            <b>Todo o Brasil</b> envio com rastreio
           </p>
           <p>
-            <ShieldCheck size={20} />
-            <span>
-              <b>Pague como quiser</b> Pix, boleto ou cartão em até 3x
-            </span>
+            <b>Pague como quiser</b> Pix, boleto ou cartão em até 3x
           </p>
         </div>
       </div>
 
-      {/* ============ COLEÇÕES ============ */}
-      <section className="lj-sec" id="colecoes">
-        <div className="lj-wrap">
-          <Titulo titulo="Compre por coleção" link={`${BASE}/loja`} rotulo="Toda a loja" />
-          <div className="lj-colecoes">
-            {colecoes.map((c, k) => (
-              <Link
-                key={c.id}
-                href={`${BASE}/loja?c=${encodeURIComponent(c.slug)}`}
-                className="lj-colecao lj-rv"
-                style={{ ["--i" as string]: String(k % 4) }}
-              >
-                <span className="lj-colecao-fig">
-                  <img src={c.img} alt="" loading={k < 4 ? "eager" : "lazy"} />
-                </span>
-                <b>{c.nome}</b>
-                <small>
-                  {c.total} {c.total === 1 ? "produto" : "produtos"}
-                </small>
-              </Link>
-            ))}
+      {/* ============ SUMÁRIO (coleções) ============ */}
+      <section className="lj-sec lj-papel" id="colecoes">
+        <div className="lj-wrap lj-sumario">
+          <div className="lj-sumario-cab lj-rv">
+            <h2>Sumário</h2>
+            <p className="lj-mao">escolha por onde começar</p>
           </div>
+          <ol className="lj-sumario-lista">
+            {colecoes.map((c, k) => (
+              <li key={c.id} className="lj-rv" style={{ ["--i" as string]: String(k) }}>
+                <Link href={`${BASE}/loja?c=${encodeURIComponent(c.slug)}`}>
+                  <i>{ROMANOS[k]}.</i>
+                  <b>{c.nome}</b>
+                  <span className="lj-pontos" aria-hidden />
+                  <small>
+                    {c.total} {c.total === 1 ? "peça" : "peças"}
+                  </small>
+                  <span className="lj-sumario-foto">
+                    <img src={c.img} alt="" loading={k < 3 ? "eager" : "lazy"} />
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
       {/* ============ DESTAQUES ============ */}
-      <section className="lj-sec">
+      <section className="lj-sec lj-papel is-mural">
         <div className="lj-wrap">
-          <Titulo titulo="Destaques da loja" link={`${BASE}/loja`} />
+          <Titulo titulo="Destaques do ateliê" nota="os que mais saem daqui" link={`${BASE}/loja`} />
         </div>
         <div className="lj-trilho lj-rv">
           <div className="lj-trilho-in">
@@ -153,12 +156,14 @@ export default function Home() {
       <section className="lj-orixas">
         <div className="lj-wrap lj-orixas-in">
           <div className="lj-orixas-txt lj-rv">
-            <span className="lj-selo">Cadernos A4 e A5</span>
-            <h2>Coleção Orixás</h2>
+            <p className="lj-olho">Cadernos A4 e A5</p>
+            <h2>
+              Coleção <em>Orixás</em>
+            </h2>
             {descOrixas.slice(1, 3).map((t, k) => (
               <p key={k}>{t.replace(/\s{2,}/g, " ")}</p>
             ))}
-            <Link href={`${BASE}/loja?c=${encodeURIComponent("cadernos-personalizados/colecao-orixas")}`} className="lj-btn is-ouro">
+            <Link href={`${BASE}/loja?c=${encodeURIComponent("cadernos-personalizados/colecao-orixas")}`} className="lj-btn is-papel">
               Ver a coleção
             </Link>
           </div>
@@ -181,13 +186,10 @@ export default function Home() {
       </section>
 
       {/* ============ BARALHOS ============ */}
-      <section className="lj-sec">
+      <section className="lj-sec lj-papel">
         <div className="lj-wrap">
-          <Titulo
-            titulo="Baralhos"
-            sub="Escolha o deck e personalize o verso. Produção em até 20 dias úteis."
-            link={`${BASE}/loja?c=baralho-personalizado`}
-          />
+          <Titulo titulo="Baralhos" nota="o verso pode ser seu" link={`${BASE}/loja?c=baralho-personalizado`} />
+          <p className="lj-sub lj-rv">Escolha o deck e personalize o verso. Produção em até 20 dias úteis.</p>
           <div className="lj-grade">
             {decks.map((c) => (
               <CartaoProduto key={c.id} c={c} />
@@ -196,38 +198,42 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ============ PERSONALIZAÇÃO ============ */}
-      <section className="lj-sec">
+      {/* ============ PERSONALIZAÇÃO (receita) ============ */}
+      <section className="lj-sec lj-papel is-pautado">
         <div className="lj-wrap lj-pers">
           <div className="lj-pers-fotos lj-rv">
             {fotoPers.map((src) => (
-              <img key={src} src={src} alt="Caderno personalizado da Palavra com Alma" loading="lazy" />
+              <figure key={src}>
+                <img src={src} alt="Caderno personalizado da Palavra com Alma" loading="lazy" />
+              </figure>
             ))}
           </div>
           <div className="lj-pers-txt lj-rv">
-            <h2>Como funciona a personalização</h2>
+            <p className="lj-olho">Do seu jeito</p>
+            <h2>Como se faz um personalizado</h2>
             <ol className="lj-passos">
               {[
                 { t: "Escolha a peça", d: "Caderno, refil, baralho ou kit. Capa, contracapa e páginas internas podem ser suas." },
                 { t: "Envie a sua ideia", d: "Depois da compra, mande pelo WhatsApp a foto, a frase ou como quer personalizar." },
                 { t: "Aprove a arte", d: "A gente cria e você aprova antes de ir para a produção." },
                 { t: "Produção e envio", d: "De 10 a 15 dias úteis depois da aprovação da arte. Envio com rastreio." },
-              ].map((p) => (
+              ].map((p, k) => (
                 <li key={p.t}>
+                  <i>{ROMANOS[k]}</i>
                   <b>{p.t}</b>
                   <span>{p.d}</span>
                 </li>
               ))}
             </ol>
             <div className="lj-pers-ctas">
-              <Link href={`${BASE}/loja?c=personalizados`} className="lj-btn is-ouro">
+              <Link href={`${BASE}/loja?c=personalizados`} className="lj-btn is-lacre">
                 Ver personalizados
               </Link>
               <a
                 href={waLink("Oi! Vim pelo site e quero personalizar uma peça.")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="lj-btn is-contorno"
+                className="lj-btn is-tinta"
               >
                 <WhatsAppIcon size={18} /> Tirar dúvidas
               </a>
@@ -238,9 +244,9 @@ export default function Home() {
 
       {/* ============ NOVIDADES ============ */}
       {novidades.length > 0 && (
-        <section className="lj-sec">
+        <section className="lj-sec lj-papel">
           <div className="lj-wrap">
-            <Titulo titulo="Novidades" link={`${BASE}/loja`} />
+            <Titulo titulo="Recém-saídos do ateliê" link={`${BASE}/loja`} />
             <div className="lj-grade">
               {novidades.map((c) => (
                 <CartaoProduto key={c.id} c={c} />
@@ -253,10 +259,12 @@ export default function Home() {
       {/* ============ INSTAGRAM ============ */}
       <section className="lj-insta">
         <div className="lj-wrap lj-insta-in lj-rv">
-          <Instagram size={26} />
-          <h2>Acompanhe a produção no Instagram</h2>
-          <p>Bastidores, lançamentos e as peças personalizadas saindo do ateliê.</p>
-          <a href={INSTAGRAM} target="_blank" rel="noopener noreferrer" className="lj-btn is-claro">
+          <Instagram size={24} />
+          <h2>
+            Os bastidores ficam <em>no Instagram</em>
+          </h2>
+          <p>Lançamentos e as peças personalizadas saindo do ateliê.</p>
+          <a href={INSTAGRAM} target="_blank" rel="noopener noreferrer" className="lj-btn is-papel">
             @loja.palavracomalma
           </a>
         </div>
