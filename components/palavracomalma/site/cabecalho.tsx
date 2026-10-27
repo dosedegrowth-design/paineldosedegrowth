@@ -78,9 +78,7 @@ export function Cabecalho({ menu, cartoes }: { menu: ItemMenu[]; cartoes: Cartao
           </button>
 
           <Link href={BASE} className="lj-marca" aria-label="Palavra com Alma, início">
-            {/* clara sobre a abertura escura, escura sobre o papel */}
-            <img className="is-clara" src="/palavracomalma/logo-claro.png" alt="Palavra com Alma" width={900} height={385} />
-            <img className="is-escura" src="/palavracomalma/logo-escuro.png" alt="" width={900} height={385} aria-hidden />
+            <img src="/palavracomalma/logo-claro.png" alt="Palavra com Alma" width={900} height={385} />
           </Link>
 
           <nav className="lj-nav" aria-label="Categorias">
