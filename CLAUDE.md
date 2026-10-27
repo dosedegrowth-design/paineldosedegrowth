@@ -325,7 +325,7 @@ Cliente da DDG com loja na **Tray** (loja 1403992, www.palavracomalma.com.br). P
 ## Skills do projeto (`.claude/skills/`)
 
 Carregam sozinhas em toda sessão deste repo. Vieram da pasta "SKILL SITE / skills-criacao-de-site" do Drive da DDG (21/10/2026), onde o README lista a origem de cada uma — editar lá e copiar de novo para cá.
-- **Design e UI:** frontend-design (global), ui-ux-pro-max, ui-styling, design-system, design, brand, banner-design, slides, ui-design-system, tailwind-patterns
+- **Design e UI:** frontend-design, ui-ux-pro-max, ui-styling, design-system, design, brand, banner-design, slides, ui-design-system, tailwind-patterns
 - **Next/React:** nextjs-best-practices, react-best-practices, senior-fullstack, nextjs-supabase-auth, nextjs (Vercel)
 - **Copy/SEO:** copywriting, seo-optimizer, content-creator + agente `.claude/agents/search-ai-optimization-expert.md`
 - **Mídia:** ddg-studio (precisa de `KIE_API_KEY` no ambiente)
