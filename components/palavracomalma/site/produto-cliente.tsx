@@ -2,7 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useMemo, useRef, useState } from "react";
-import { Barcode, Check, ChevronDown, ChevronLeft, ChevronRight, CreditCard, MapPin, Minus, Plus, QrCode, ShoppingBag } from "lucide-react";
+import { Barcode, Check, ChevronDown, ChevronLeft, ChevronRight, CreditCard, Landmark, MapPin, Minus, Plus, QrCode, ShoppingBag } from "lucide-react";
 import { brl, parcelamento, waLink, type Produto, type Variacao } from "@/app/palavracomalma/site/catalogo";
 import { useSacola } from "./sacola";
 import { WhatsAppIcon } from "./whatsapp";
@@ -142,12 +142,15 @@ export function CompraProduto(p: Props) {
           </>
         )}
       </div>
-      {parc && (
-        <p className="lj-parc">
-          ou <b>{parc.n}x de {brl(parc.valor)}</b> no cartão{parc.juros ? " (com juros)" : " sem juros"}
-        </p>
-      )}
-      <Pagamentos total={!escolhida && faixa ? Math.min(...precos) : final} parc={parc} />
+      <p className="lj-parc">
+        à vista no Pix
+        {parc && (
+          <>
+            {" "}· ou <b>{parc.n}x de {brl(parc.valor)}</b> no cartão{parc.juros ? " (com juros)" : " sem juros"}
+          </>
+        )}
+      </p>
+      <Pagamentos />
 
       {tipos.map((tipo) => (
         <fieldset className="lj-op" key={tipo}>
@@ -231,8 +234,8 @@ export function CompraProduto(p: Props) {
   );
 }
 
-/** Formas de pagamento do jeito que a loja recebe hoje (Pix, boleto e cartão pela Vindi). */
-function Pagamentos({ total, parc }: { total: number; parc: ReturnType<typeof parcelamento> }) {
+/** Formas de pagamento ativas hoje na loja (Vindi e transferência), sem inventar valor: cada uma é calculada pela Tray no carrinho. */
+function Pagamentos() {
   return (
     <details className="lj-formas">
       <summary>
@@ -244,27 +247,19 @@ function Pagamentos({ total, parc }: { total: number; parc: ReturnType<typeof pa
       </summary>
       <ul>
         <li>
-          <QrCode size={18} /> <span>Pix</span> <b>{brl(total)}</b>
+          <QrCode size={18} /> <span>Pix</span> <b>preço à vista</b>
         </li>
         <li>
-          <Barcode size={18} /> <span>Boleto bancário</span> <b>{brl(total)}</b>
+          <CreditCard size={18} /> <span>Cartão de crédito: Visa, Mastercard, Elo, Amex e Diners</span> <b>até 3x</b>
         </li>
         <li>
-          <CreditCard size={18} /> <span>Cartão de crédito 1x</span> <b>{brl(total)}</b>
+          <Barcode size={18} /> <span>Boleto bancário</span> <b />
         </li>
-        {parc && (
-          <li>
-            <CreditCard size={18} />{" "}
-            <span>
-              Cartão de crédito {parc.n}x{parc.juros ? " (com juros)" : ""}
-            </span>{" "}
-            <b>
-              {parc.n}x {brl(parc.valor)}
-            </b>
-          </li>
-        )}
+        <li>
+          <Landmark size={18} /> <span>Transferência: Bradesco e Banco do Brasil</span> <b />
+        </li>
       </ul>
-      <p>Pagamento processado com segurança pela Vindi, a plataforma de pagamentos da loja.</p>
+      <p>O valor de cada forma aparece no carrinho, calculado pela Tray. Cartão, Pix e boleto passam pela Vindi.</p>
     </details>
   );
 }
@@ -317,7 +312,7 @@ function Frete({ prazo }: { prazo: string }) {
       {res?.ok && (
         <p>
           Entrega para <b>{[res.bairro, `${res.cidade}/${res.uf}`].filter(Boolean).join(", ")}</b> com rastreio.
-          {prazo ? ` ${prazo}.` : ""} As opções de frete e o valor aparecem na finalização.
+          {prazo ? ` ${prazo}.` : ""} Na loja, aqui aparecem o valor e o prazo de cada opção da Tray Envios.
         </p>
       )}
       <a href="https://buscacepinter.correios.com.br/app/endereco/index.php" target="_blank" rel="noopener noreferrer">

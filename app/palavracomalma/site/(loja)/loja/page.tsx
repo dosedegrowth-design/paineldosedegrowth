@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Vitrine, type Filtro } from "@/components/palavracomalma/site/vitrine";
-import { BASE, MENU, PRODUTOS, cartao, categoriaPorSlug, categoriaPorId, daCategoria } from "../catalogo";
+import { BASE, MENU, PRODUTOS, cartao, categoriaPorSlug, categoriaPorId, daCategoria } from "../../catalogo";
 
 export const metadata: Metadata = { title: { absolute: "Loja · Palavra com Alma" } };
 

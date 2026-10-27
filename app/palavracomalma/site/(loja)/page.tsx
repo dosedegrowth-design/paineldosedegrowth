@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Hand, Instagram, Palette, ShieldCheck, Truck } from "lucide-react";
 import { CartaoProduto } from "@/components/palavracomalma/site/cartao";
 import { WhatsAppIcon } from "@/components/palavracomalma/site/whatsapp";
-import { BASE, INSTAGRAM, MENU, PRODUTOS, cartao, categoriaPorId, daCategoria, porId, waLink } from "./catalogo";
+import { BASE, INSTAGRAM, MENU, PRODUTOS, cartao, categoriaPorId, daCategoria, porId, waLink } from "../catalogo";
 
 function Titulo({ titulo, sub, link, rotulo }: { titulo: string; sub?: string; link?: string; rotulo?: string }) {
   return (

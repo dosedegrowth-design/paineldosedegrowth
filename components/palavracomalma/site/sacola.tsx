@@ -201,7 +201,7 @@ function Gaveta() {
                 <strong>{brl(total)}</strong>
               </div>
               <p>Frete calculado na próxima etapa. Pix, boleto ou cartão em até 3x.</p>
-              <Link href={`${BASE}/finalizar`} className="lj-btn is-ouro is-cheio" onClick={fechar}>
+              <Link href={`${BASE}/checkout`} className="lj-btn is-ouro is-cheio" onClick={fechar}>
                 <Lock size={16} /> Finalizar compra
               </Link>
               <button className="lj-gav-continuar" onClick={fechar}>

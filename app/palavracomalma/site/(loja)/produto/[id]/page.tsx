@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Clock, Sparkles, Truck } from "lucide-react";
 import { CartaoProduto } from "@/components/palavracomalma/site/cartao";
 import { CompraProduto, Galeria } from "@/components/palavracomalma/site/produto-cliente";
-import { BASE, PRODUTOS, cartao, nomeCurto, porId, prazoLegivel, raiz } from "../../catalogo";
+import { BASE, PRODUTOS, cartao, nomeCurto, porId, prazoLegivel, raiz } from "../../../catalogo";
 
 export function generateStaticParams() {
   return PRODUTOS.map((p) => ({ id: String(p.id) }));
