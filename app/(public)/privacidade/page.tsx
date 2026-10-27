@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Política de Privacidade",
-  description: "Política de privacidade do Tráfego DDG — Dose de Growth",
+  description: "Política de privacidade das plataformas da Dose de Growth: Tráfego DDG, CRM Dose de Growth e Disparador de WhatsApp",
 };
 
 export default function PrivacidadePage() {
@@ -10,40 +10,62 @@ export default function PrivacidadePage() {
     <article>
       <h1>Política de Privacidade</h1>
       <p className="text-xs text-muted-foreground">
-        Última atualização: 29 de abril de 2026 · Vigência imediata
+        Última atualização: 27 de outubro de 2026 · Vigência imediata
       </p>
 
       <h2>1. Quem somos</h2>
       <p>
-        O <strong>Tráfego DDG</strong> é uma plataforma proprietária de gestão
-        de tráfego pago, operada pela <strong>Dose de Growth (&ldquo;DDG&rdquo;)</strong>,
-        agência brasileira especializada em marketing digital. Esta política descreve
-        como coletamos, usamos, armazenamos e protegemos os dados pessoais
-        tratados pelo sistema.
-      </p>
-      <p>
-        <strong>Controlador dos dados:</strong> Dose de Growth (DD Growth) <br />
-        <strong>Email para questões de privacidade:</strong> lucas@dmaisum.com.br <br />
-        <strong>Site:</strong>{" "}
-        <a href="https://paineldosedegrowth.vercel.app">
-          paineldosedegrowth.vercel.app
-        </a>
-      </p>
-
-      <h2>2. Para quem essa política se aplica</h2>
-      <p>
-        O painel é uma <strong>ferramenta operacional interna</strong> da agência,
-        utilizada por:
+        A <strong>Dose de Growth (&ldquo;DDG&rdquo;)</strong>{" "}é uma agência brasileira
+        de marketing digital e atendimento. Esta política descreve como coletamos,
+        usamos, armazenamos e protegemos os dados pessoais tratados pelas nossas
+        plataformas, todas ligadas ao app &ldquo;Dose de Growth&rdquo; na Meta:
       </p>
       <ul>
-        <li>Equipe da DDG (gestores de tráfego)</li>
         <li>
-          Clientes contratantes da DDG (acesso somente leitura aos próprios dados)
+          <strong>Tráfego DDG</strong> (
+          <a href="https://painel.dosedegrowth.com">painel.dosedegrowth.com</a>):
+          gestão de tráfego pago (Meta Ads e Google Ads)
+        </li>
+        <li>
+          <strong>CRM Dose de Growth</strong> (
+          <a href="https://painel.dosedegrowthcrm.com.br">painel.dosedegrowthcrm.com.br</a>):
+          central de atendimento onde as empresas clientes respondem os próprios
+          clientes pelo número oficial de WhatsApp delas
+        </li>
+        <li>
+          <strong>Disparador</strong>: envio de mensagens com modelos aprovados
+          pela Meta, pelo número oficial de WhatsApp da empresa cliente
         </li>
       </ul>
       <p>
-        <strong>O painel não é destinado ao público em geral nem ao usuário final
-        de nossos clientes.</strong>
+        <strong>Empresa:</strong> Dose de Growth (DD Growth), CNPJ 44.474.032/0001-02 <br />
+        <strong>Email para questões de privacidade:</strong> lucas@dmaisum.com.br <br />
+        <strong>Site:</strong>{" "}
+        <a href="https://painel.dosedegrowth.com">painel.dosedegrowth.com</a>
+      </p>
+      <p>
+        Nos dados dos nossos usuários e da própria operação, a DDG é a
+        <strong> controladora</strong>. Nas conversas de WhatsApp, a empresa
+        cliente é a controladora dos dados dos clientes dela, e a DDG atua como
+        <strong> operadora</strong>, tratando esses dados só para prestar o
+        serviço contratado e conforme as instruções da empresa.
+      </p>
+
+      <h2>2. Para quem essa política se aplica</h2>
+      <ul>
+        <li>Equipe da DDG</li>
+        <li>
+          Empresas clientes da DDG e as pessoas da equipe delas que usam as
+          plataformas
+        </li>
+        <li>
+          Pessoas que conversam pelo WhatsApp com uma empresa cliente que usa o
+          CRM Dose de Growth ou o Disparador
+        </li>
+      </ul>
+      <p>
+        <strong>As plataformas não são abertas ao público em geral.</strong> Cada
+        acesso é liberado individualmente pela DDG.
       </p>
 
       <h2>3. Quais dados coletamos</h2>
@@ -91,8 +113,49 @@ export default function PrivacidadePage() {
         <li>Valor da venda e data do fechamento</li>
       </ul>
 
+      <h3>3.4. Dados do WhatsApp Business (CRM Dose de Growth e Disparador)</h3>
+      <p>
+        Quando uma empresa cliente conecta o número oficial de WhatsApp dela às
+        nossas plataformas, recebemos da Plataforma do WhatsApp Business (Meta):
+      </p>
+      <ul>
+        <li>
+          Dados da conta do WhatsApp Business e dos números: identificadores,
+          nome de exibição, status e qualidade do número
+        </li>
+        <li>Modelos de mensagem da empresa e o status de aprovação de cada um</li>
+        <li>
+          Das pessoas que conversam com a empresa: número de telefone, nome do
+          perfil do WhatsApp, conteúdo das mensagens trocadas (texto, imagens,
+          áudios, vídeos e documentos), data e hora, e o status de entrega e
+          leitura
+        </li>
+        <li>
+          Token de acesso à Plataforma do WhatsApp Business, guardado só no
+          servidor e nunca exibido no navegador
+        </li>
+      </ul>
+      <p>
+        Esses dados chegam por webhook assinado pela Meta e são usados apenas
+        para prestar o atendimento da empresa cliente. Não usamos dados do
+        WhatsApp para publicidade, não montamos perfis para terceiros e não
+        vendemos esses dados.
+      </p>
+
       <h2>4. Como usamos os dados</h2>
       <ul>
+        <li>
+          <strong>Atendimento pelo WhatsApp:</strong> mostrar as conversas na caixa
+          de entrada da empresa cliente, enviar as respostas da equipe dela,
+          enviar modelos aprovados pela Meta quando a janela de 24 horas está
+          fechada e criar ou gerenciar esses modelos a pedido da empresa
+        </li>
+        <li>
+          <strong>Assistente de atendimento (opcional):</strong> quando a empresa
+          cliente ativa o atendimento automático, o conteúdo da conversa é
+          processado por provedores de IA só para gerar a resposta daquela
+          conversa
+        </li>
         <li>
           <strong>Operação do painel:</strong> exibir métricas, alertas, relatórios
         </li>
@@ -119,23 +182,37 @@ export default function PrivacidadePage() {
       <ul>
         <li>
           <strong>Meta (Facebook):</strong> via Marketing API e Conversions API,
-          para gerenciar campanhas e enviar conversões
+          para gerenciar campanhas e enviar conversões, e via Plataforma do
+          WhatsApp Business (Cloud API), para enviar e receber as mensagens das
+          empresas clientes
         </li>
         <li>
           <strong>Google:</strong> via Google Ads API e Enhanced Conversions
         </li>
         <li>
-          <strong>Supabase (PostgreSQL gerenciado):</strong> banco de dados
-          principal, hospedado em São Paulo (sa-east-1)
+          <strong>Supabase (PostgreSQL gerenciado):</strong> banco de dados,
+          hospedado em São Paulo (sa-east-1)
         </li>
         <li>
-          <strong>Vercel:</strong> hospedagem da aplicação web
+          <strong>DigitalOcean:</strong> servidores, banco de dados e
+          armazenamento de arquivos do CRM e do atendimento pelo WhatsApp,
+          nos Estados Unidos
         </li>
         <li>
-          <strong>Anthropic (Claude):</strong> processamento de IA — apenas dados
-          agregados e métricas, nunca dados pessoais identificáveis
+          <strong>Vercel:</strong> hospedagem das aplicações web
+        </li>
+        <li>
+          <strong>Anthropic (Claude), OpenAI e Google (Gemini):</strong>{" "}
+          processamento de IA. No Tráfego DDG, apenas métricas agregadas. No
+          atendimento pelo WhatsApp, o conteúdo da conversa, somente quando a
+          empresa cliente ativa o assistente de atendimento. Esses provedores não
+          usam os dados para treinar os modelos deles
         </li>
       </ul>
+      <p>
+        Por causa desses provedores, parte dos dados é tratada fora do Brasil
+        (Estados Unidos), sempre com as garantias previstas na LGPD.
+      </p>
       <p>
         <strong>Não vendemos, alugamos ou compartilhamos dados pessoais com
         terceiros para fins de marketing.</strong>
@@ -166,6 +243,12 @@ export default function PrivacidadePage() {
         <li>
           <strong>Auditoria:</strong> todos os acessos e ações são registrados
         </li>
+        <li>
+          <strong>WhatsApp:</strong> webhooks da Meta conferidos pela assinatura
+          do app antes de qualquer gravação; cada empresa só enxerga as
+          conversas dos próprios números, e cada pessoa da equipe só as caixas
+          que a empresa liberou para ela
+        </li>
       </ul>
 
       <h2>7. Por quanto tempo guardamos</h2>
@@ -179,6 +262,10 @@ export default function PrivacidadePage() {
         </li>
         <li>
           <strong>Tokens OAuth:</strong> até o cliente desconectar a integração
+        </li>
+        <li>
+          <strong>Conversas e arquivos do WhatsApp:</strong> enquanto o contrato
+          da empresa cliente estiver ativo, ou até ela pedir a exclusão
         </li>
         <li>
           <strong>Após encerramento do contrato:</strong> dados são arquivados
@@ -199,9 +286,15 @@ export default function PrivacidadePage() {
       </ul>
       <p>
         Para exercer qualquer desses direitos, envie email para{" "}
-        <a href="mailto:lucas@dmaisum.com.br">lucas@dmaisum.com.br</a> com o
+        <a href="mailto:lucas@dmaisum.com.br">lucas@dmaisum.com.br</a>{" "}com o
         assunto &ldquo;LGPD - [direito desejado]&rdquo;. Responderemos em até 15
         dias úteis.
+      </p>
+      <p>
+        Se você conversou pelo WhatsApp com uma empresa que usa as nossas
+        plataformas, pode fazer o pedido direto a essa empresa ou a nós pelo
+        mesmo email, informando o número de telefone e o nome da empresa. Nós
+        avisamos a empresa e cumprimos o pedido conforme a instrução dela e a LGPD.
       </p>
 
       <h2>9. Exclusão de dados</h2>
@@ -213,9 +306,9 @@ export default function PrivacidadePage() {
 
       <h2>10. Cookies e tracking</h2>
       <p>
-        O painel usa apenas cookies estritamente necessários para autenticação
-        (Supabase Auth). Não usamos cookies de marketing, retargeting ou
-        analytics de terceiros no painel.
+        As plataformas usam apenas cookies estritamente necessários para
+        autenticação. Não usamos cookies de marketing, retargeting ou analytics
+        de terceiros nas plataformas.
       </p>
 
       <h2>11. Crianças</h2>

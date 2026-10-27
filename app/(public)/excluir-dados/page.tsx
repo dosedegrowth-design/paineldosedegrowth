@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Exclusão de Dados",
-  description: "Como solicitar a exclusão dos seus dados do Tráfego DDG",
+  description: "Como solicitar a exclusão dos seus dados das plataformas da Dose de Growth",
 };
 
 export default function ExcluirDadosPage() {
@@ -10,25 +10,29 @@ export default function ExcluirDadosPage() {
     <article>
       <h1>Solicitação de Exclusão de Dados</h1>
       <p className="text-xs text-muted-foreground">
-        Última atualização: 29 de abril de 2026
+        Última atualização: 27 de outubro de 2026
       </p>
 
       <h2>Visão geral</h2>
       <p>
-        O <strong>Tráfego DDG</strong>, plataforma operada pela{" "}
-        <strong>Dose de Growth</strong>, respeita o seu direito à exclusão de
+        As plataformas da <strong>Dose de Growth</strong> (Tráfego DDG, CRM Dose
+        de Growth e Disparador de WhatsApp) respeitam o seu direito à exclusão de
         dados pessoais conforme estabelecido pela{" "}
         <strong>Lei Geral de Proteção de Dados (LGPD - Lei 13.709/2018)</strong>{" "}
-        e pelas políticas de plataformas como Meta (Facebook) e Google.
+        e pelas políticas de plataformas como Meta (Facebook e WhatsApp) e Google.
       </p>
 
       <h2>Quem pode solicitar</h2>
       <ul>
-        <li>Usuários do painel (equipe DDG ou clientes contratantes)</li>
+        <li>Usuários das plataformas (equipe DDG ou clientes contratantes)</li>
         <li>Pessoas que acessaram o painel via Login do Facebook</li>
         <li>
           Leads cujos dados (email/telefone hash) foram enviados via webhook do
           painel comercial de algum cliente
+        </li>
+        <li>
+          Pessoas que conversaram pelo WhatsApp com uma empresa cliente que usa o
+          CRM Dose de Growth ou o Disparador
         </li>
       </ul>
 
@@ -54,6 +58,10 @@ export default function ExcluirDadosPage() {
             <li>
               Ou: ID do lead no sistema do cliente (se você é lead que apareceu
               em webhook de cliente)
+            </li>
+            <li>
+              Ou: o número de telefone usado no WhatsApp e o nome da empresa com
+              quem você conversou (se o pedido for sobre conversas de WhatsApp)
             </li>
             <li>Confirmação de que está solicitando exclusão dos seus dados</li>
           </ul>
@@ -99,6 +107,12 @@ export default function ExcluirDadosPage() {
         <li>Tokens OAuth (se houver)</li>
         <li>
           Hashes de email/telefone enviados via webhook (caso aplicável)
+        </li>
+        <li>
+          Conversas de WhatsApp ligadas ao seu número (mensagens, fotos, áudios
+          e documentos) e o seu cadastro de contato na empresa indicada, depois
+          de avisarmos essa empresa, que é a responsável pelos dados dos
+          clientes dela
         </li>
       </ul>
 
