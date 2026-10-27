@@ -579,8 +579,9 @@
 .pa-pers{margin-top:28px;padding:24px 20px;display:grid;gap:22px}
 @media(min-width:900px){.pa-pers{grid-template-columns:300px 1fr;padding:32px;gap:40px;align-items:center}}
 .pa-pers-img{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--linha-2);aspect-ratio:4/5}
-.pa-pers-selo{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);white-space:nowrap;padding:8px 14px;border-radius:99px;
+.pa-pers-selo{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);white-space:nowrap;max-width:calc(100% - 20px);overflow:hidden;text-overflow:ellipsis;padding:8px 14px;border-radius:99px;
   background:var(--vinho-2);color:var(--ouro-2);font-family:var(--f-cap);font-size:12px;letter-spacing:.12em;box-shadow:0 8px 24px rgba(0,0,0,.5);animation:pa-entra .5s both}
+@media(max-width:360px){.pa-pers-selo{font-size:10px;letter-spacing:.06em;padding:7px 10px}}
 .pa-pers-img img{width:100%;height:100%;object-fit:cover}
 .pa-passos{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:0;counter-reset:p}
 .pa-passos li{position:relative;padding:0 0 18px 44px;font-size:14px;color:var(--corpo);animation:pa-entra .5s both}
