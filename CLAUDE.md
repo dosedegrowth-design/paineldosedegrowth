@@ -310,10 +310,24 @@ Gotchas:
 - `tayssa-lash/` é espelho mecânico (⚠️ desatualizado desde 16/09/2026 — sincronizar antes de usar o deploy separado): rode `node scratchpad/sync-standalone.mjs`-equivalente (copiar `app/components/lib/public/docs/tayssa` + migrations `*vip*`, trocar `@/lib/tayssa/`→`@/lib/`, `@/components/tayssa/`→`@/components/`, `"/tayssa/`→`"/`) — nunca edite o espelho à mão.
 - ⚠️ Nessa mesma checagem, `trafego_ddg` **não está** na lista de schemas expostos (`pgrst.db_schemas`) — as queries `.schema("trafego_ddg")` do painel retornam PGRST106 na REST. Não foi alterado por estar fora do escopo do Tayssa.
 
+## Palavra com Alma (`/palavracomalma`)
+
+Cliente da DDG com loja na **Tray** (loja 1403992, www.palavracomalma.com.br). Projeto: tema novo da Tray. Neste repo há só material de venda: o guia `/palavracomalma` (o que dá e o que não dá) e o site experimental `/palavracomalma/site` (catálogo real em `app/palavracomalma/site/dados.json`, retrato da API pública `web_api` da Tray; tudo escopado em `.lj`).
+
+Visual da vitrine (decidido pelo Lucas depois de ver as três): **a primeira versão, vinho e dourado** — fundo noite/vinho, Fraunces com a palavra de destaque em itálico dourado, rótulos em Cinzel espaçado, botões em pílula dourada, coleções em arco, estrelas e brasas na abertura, cartas que viram nos baralhos, abertura com o logo na primeira visita. O vídeo da abertura saiu a pedido dele: no lugar ficam as faixas "Seu vídeo aqui" em X (vinho e dourado). Também testadas e recusadas: "escuro limpo" (fundo preto, sem dourado; ele disse que antes estava melhor) e "caderno-grimório" (papel pautado, letra de livro antigo, fita; "cara de amador"). O "tá muito IA" do começo veio junto com o pedido de melhorar as fotos e o enquadramento; com as fotos já editadas, ele preferiu esta linha às outras duas.
+
+**Regra principal (pedido do Lucas): o preview só mostra o que a Tray deixa entregar.** Promessa que o tema não cumpre não entra. O que a Tray não deixa mudar aparece no desenho de hoje dela.
+- **Nosso (tema):** home, categorias, busca, página de produto, sacola lateral, cabeçalho, rodapé, cores, letras, animações. Vídeo fica hospedado fora da Tray.
+- **Da Tray, só cor/fonte/logo** (Configurações › Minha Loja › Aparência do carrinho; a Tray não permite HTML nessas páginas): página do carrinho (`/checkout/cart`), checkout (identificação, entrega, pagamento), central do cliente, login/cadastro. No preview, `site/checkout` é uma **réplica** do carrinho e da identificação dela, capturados em 27/out/2026, só com as cores da marca. Nunca desenhar checkout próprio.
+- **Pagamento real** (visto no carrinho dela): o preço mostrado é o **à vista no Pix**; no cartão sai mais caro (ex.: R$ 79,11 no Pix = R$ 94,11 em 1x ou 3x de R$ 32,91 no cartão). Ativos: Pix, boleto e cartão (Visa, Mastercard, Elo, Amex, Diners) pela Vindi, e transferência Bradesco/Banco do Brasil. O 3x vem de `payment_option_details` da API. Não inventar valor de boleto nem de cartão 1x.
+- **Frete:** a página de produto da Tray tem cálculo real (`product.shipping-calculate`), então o tema mostra valor e prazo de verdade. O preview só confirma a cidade pelo CEP.
+- **Fotos editadas** (`public/palavracomalma/site/fotos/`: baralhos só com as cartas, cadernos sem a etiqueta) só chegam ao site novo trocando as fotos no cadastro do produto na Tray, o que muda a loja de hoje (e o que for integrado). Precisa de aprovação dela.
+- Nunca mexer na loja publicada sem aprovação: nada de `tray upload/watch/remove` no tema publicado 3541761 e nada em "Aparência do carrinho" antes do lançamento (muda a loja na hora). Token da Tray nunca vai para o repo.
+
 ## Skills do projeto (`.claude/skills/`)
 
 Carregam sozinhas em toda sessão deste repo. Vieram da pasta "SKILL SITE / skills-criacao-de-site" do Drive da DDG (21/10/2026), onde o README lista a origem de cada uma — editar lá e copiar de novo para cá.
-- **Design e UI:** frontend-design (global), ui-ux-pro-max, ui-styling, design-system, design, brand, banner-design, slides, ui-design-system, tailwind-patterns
+- **Design e UI:** frontend-design, ui-ux-pro-max, ui-styling, design-system, design, brand, banner-design, slides, ui-design-system, tailwind-patterns
 - **Next/React:** nextjs-best-practices, react-best-practices, senior-fullstack, nextjs-supabase-auth, nextjs (Vercel)
 - **Copy/SEO:** copywriting, seo-optimizer, content-creator + agente `.claude/agents/search-ai-optimization-expert.md`
 - **Mídia:** ddg-studio (precisa de `KIE_API_KEY` no ambiente)

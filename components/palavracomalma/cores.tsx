@@ -117,7 +117,7 @@ export function Cores() {
             <div className="pa-amostra" key={r.chave}>
               <i style={{ background: c[r.chave] }} />
               {r.nome}
-              <code>{c[r.chave].startsWith("#") ? c[r.chave] : "—"}</code>
+              <code>{c[r.chave]}</code>
             </div>
           ))}
         </div>

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Termos de Serviço",
-  description: "Termos de uso do Tráfego DDG — Dose de Growth",
+  description: "Termos de uso das plataformas da Dose de Growth: Tráfego DDG, CRM Dose de Growth e Disparador de WhatsApp",
 };
 
 export default function TermosPage() {
@@ -10,26 +10,34 @@ export default function TermosPage() {
     <article>
       <h1>Termos de Serviço</h1>
       <p className="text-xs text-muted-foreground">
-        Última atualização: 29 de abril de 2026
+        Última atualização: 27 de outubro de 2026
       </p>
 
       <h2>1. Aceitação</h2>
       <p>
-        Ao acessar e utilizar a plataforma <strong>Tráfego DDG</strong>{" "}
-        (&ldquo;Plataforma&rdquo;), operada pela <strong>Dose de Growth</strong>{" "}
+        Ao acessar e utilizar as plataformas <strong>Tráfego DDG</strong>,{" "}
+        <strong>CRM Dose de Growth</strong> e <strong>Disparador</strong>{" "}
+        (&ldquo;Plataforma&rdquo;), operadas pela <strong>Dose de Growth</strong>{" "}
         (&ldquo;DDG&rdquo;), você concorda com estes Termos de Serviço. Se você
         não concorda, não utilize a Plataforma.
       </p>
 
       <h2>2. Sobre a Plataforma</h2>
       <p>
-        Tráfego DDG é uma ferramenta proprietária de gestão de tráfego pago
-        utilizada internamente pela DDG para operação de campanhas publicitárias
-        de seus clientes. A Plataforma se conecta a:
+        A Plataforma reúne as ferramentas proprietárias que a DDG usa para operar
+        o marketing e o atendimento dos seus clientes: gestão de tráfego pago
+        (Tráfego DDG), central de atendimento pelo WhatsApp oficial da empresa
+        cliente (CRM Dose de Growth, em painel.dosedegrowthcrm.com.br) e envio de
+        modelos de mensagem aprovados pela Meta (Disparador). A Plataforma se
+        conecta a:
       </p>
       <ul>
         <li>Meta Ads (Facebook/Instagram) via Marketing API e Conversions API</li>
         <li>Google Ads via Google Ads API e Enhanced Conversions</li>
+        <li>
+          Plataforma do WhatsApp Business (Meta), via Cloud API, para enviar e
+          receber mensagens do número oficial da empresa cliente
+        </li>
         <li>Painéis comerciais de clientes via webhook autenticado</li>
       </ul>
 
@@ -67,6 +75,11 @@ export default function TermosPage() {
         <li>Gerenciar campanhas publicitárias dos clientes da DDG</li>
         <li>Visualizar relatórios e métricas das próprias campanhas</li>
         <li>Configurar integrações entre seu sistema e o Tráfego DDG</li>
+        <li>
+          Atender os clientes da sua empresa pelo número oficial de WhatsApp dela
+          e enviar modelos aprovados pela Meta para quem já se relaciona com a
+          empresa
+        </li>
       </ul>
 
       <h2>6. Uso proibido</h2>
@@ -137,7 +150,46 @@ export default function TermosPage() {
         </li>
       </ul>
 
-      <h2>10. Disponibilidade</h2>
+      <h2>10. WhatsApp Business (CRM Dose de Growth e Disparador)</h2>
+      <p>
+        Quando a sua empresa conecta o número oficial de WhatsApp dela à
+        Plataforma, você confirma que:
+      </p>
+      <ul>
+        <li>
+          A empresa é dona do número ou tem autorização legítima para usá-lo
+        </li>
+        <li>
+          A empresa segue a{" "}
+          <a href="https://business.whatsapp.com/policy" target="_blank" rel="noopener">
+            Política do WhatsApp Business
+          </a>{" "}
+          e a{" "}
+          <a href="https://www.whatsapp.com/legal/commerce-policy" target="_blank" rel="noopener">
+            Política Comercial do WhatsApp
+          </a>
+        </li>
+        <li>
+          Só envia mensagens para quem já se relaciona com a empresa e aceitou
+          receber contato pelo WhatsApp, e atende na hora qualquer pedido para
+          parar de receber
+        </li>
+        <li>
+          Fora da janela de 24 horas, só usa modelos aprovados pela Meta, e os
+          custos dessas mensagens cobrados pela Meta são da empresa
+        </li>
+        <li>
+          É a responsável pelos dados dos clientes dela; a DDG trata esses dados
+          só para prestar o atendimento, conforme a{" "}
+          <a href="/privacidade">Política de Privacidade</a>
+        </li>
+      </ul>
+      <p>
+        A empresa pode desconectar o número a qualquer momento, pedindo à DDG ou
+        removendo o acesso no Gerenciador de Negócios da Meta.
+      </p>
+
+      <h2>11. Disponibilidade</h2>
       <p>
         Buscamos manter a Plataforma operacional 24/7, mas não garantimos
         disponibilidade contínua. Manutenções programadas e falhas eventuais de
@@ -145,7 +197,7 @@ export default function TermosPage() {
         temporária.
       </p>
 
-      <h2>11. Limitação de responsabilidade</h2>
+      <h2>12. Limitação de responsabilidade</h2>
       <p>
         A Plataforma é fornecida &ldquo;como está&rdquo;. A DDG não se
         responsabiliza por:
@@ -161,7 +213,7 @@ export default function TermosPage() {
         de responsabilidade dos seus operadores.
       </p>
 
-      <h2>12. Encerramento</h2>
+      <h2>13. Encerramento</h2>
       <p>
         A DDG pode suspender ou encerrar o acesso de qualquer usuário que viole
         estes termos. O cliente também pode encerrar o acesso a qualquer momento
@@ -173,20 +225,20 @@ export default function TermosPage() {
         <a href="/privacidade">Política de Privacidade</a>.
       </p>
 
-      <h2>13. Alterações nos termos</h2>
+      <h2>14. Alterações nos termos</h2>
       <p>
         Podemos atualizar estes Termos a qualquer momento. Mudanças significativas
         serão notificadas com pelo menos 30 dias de antecedência aos usuários
         ativos.
       </p>
 
-      <h2>14. Lei aplicável e foro</h2>
+      <h2>15. Lei aplicável e foro</h2>
       <p>
         Estes Termos são regidos pelas leis brasileiras. Fica eleito o foro da
         comarca de São Paulo/SP para dirimir quaisquer controvérsias.
       </p>
 
-      <h2>15. Contato</h2>
+      <h2>16. Contato</h2>
       <p>
         Para qualquer questão sobre estes Termos:
         <br />
