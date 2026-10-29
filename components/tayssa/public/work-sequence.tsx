@@ -16,15 +16,17 @@ const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
  */
 const TECNICAS: { n: string; nome: string; dizer: ReactNode; texto: string }[] = [
   {
+    // o volume inglês, com as palavras dela para ele (pedido de 29/10/2026);
+    // os outros volumes estão nos serviços, cada um com o seu valor
     n: "01",
-    nome: "Volume",
+    nome: "Volume inglês",
     dizer: (
       <>
-        <em>Presença</em>, sem exagero.
+        Preenchido e <em>elegante</em>.
       </>
     ),
     texto:
-      "Brasileiro, inglês, egípcio ou marrom: o volume preenche a linha e dá destaque ao olhar, com efeito definido e sem exagero. A prioridade é preencher 100% dos seus fios; se você preferir um efeito mais leve, ela ajusta com você.",
+      "Um olhar com definição na medida. A prioridade é preencher 100% dos seus fios; se você preferir um efeito mais leve, ela ajusta com você.",
   },
   {
     n: "02",

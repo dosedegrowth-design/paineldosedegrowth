@@ -145,17 +145,18 @@ export type PhotoAssignment = {
 
 /**
  * As três técnicas da sequência de trabalho, na ordem em que o site as
- * mostra (Volume, Fox eyes, Manutenção), com as palavras que identificam
- * cada uma no nome que a Tayssa dá à foto (`lash_style`) e as que a tiram
- * dali (foto de Fox eyes também diz "volume", mas é da segunda).
+ * mostra (Volume inglês, Fox eyes, Manutenção), com as palavras que
+ * identificam cada uma no nome que a Tayssa dá à foto (`lash_style`) e as
+ * que a tiram dali. A primeira é o volume inglês (pedido dela, 29/10/2026):
+ * "Volume inglês" e "Mega inglês", nunca outro volume debaixo desse nome.
  */
 const WORK_KEYWORDS: { palavras: string[]; fora?: string[] }[] = [
-  { palavras: ["volume", "brasileiro", "inglês", "ingles", "egípcio", "egipcio", "marrom", "mega"], fora: ["fox", "manuten"] },
+  { palavras: ["inglês", "ingles"], fora: ["fox", "manuten"] },
   { palavras: ["fox"] },
   { palavras: ["manuten"] },
 ];
 /** os rótulos dos três lugares, para o painel de mídia dizer onde a foto está */
-export const TECNICAS_TRABALHO = ["Volume", "Fox eyes", "Manutenção"] as const;
+export const TECNICAS_TRABALHO = ["Volume inglês", "Fox eyes", "Manutenção"] as const;
 
 /**
  * A foto de cada serviço, pelo nome que a Tayssa dá a ela: cada serviço
