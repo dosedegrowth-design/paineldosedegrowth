@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
 import type { ServiceRow } from "@/lib/tayssa/types";
 import type { PhotoSlot } from "@/lib/tayssa/photos";
@@ -11,8 +11,30 @@ import { estiloFoco, midiasDoServico, type CapaServico, type MidiaCatalogo } fro
 import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
 import { useFinePointer } from "@/components/tayssa/ui/use-media";
 import { Magnetic } from "@/components/tayssa/ui/magnetic";
+import { Icone, type IconeNome } from "@/components/tayssa/ui/icones";
 import { LinkAgendar } from "@/components/tayssa/public/agendar";
 import { duracaoLegivel, ehManutencao, reais, valorLegivel } from "@/lib/tayssa/agendar";
+
+/** O gesto de cada cuidado, pelo nome (serviço novo acha o seu sozinho; o resto cai na flor). */
+export function iconeDoServico(slug: string, nome: string): IconeNome {
+  const n = `${slug} ${nome}`.toLowerCase();
+  if (/manuten/.test(n)) return "calendario";
+  if (/remo[cç]/.test(n)) return "brilho";
+  if (/sobrancelh|brow/.test(n)) return "flor";
+  if (/l[aá]bio|lip|gloss|boca/.test(n)) return "coracao";
+  if (/volume|fox|lash|c[ií]lio|extens/.test(n)) return "olho";
+  return "flor";
+}
+
+/** O id do serviço numa âncora `#servico-<slug>` (vazio se não for uma). */
+const servicoDoHash = (hash: string) => {
+  if (!hash.startsWith("#servico-")) return "";
+  try {
+    return decodeURIComponent(hash.slice("#servico-".length));
+  } catch {
+    return "";
+  }
+};
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -106,6 +128,14 @@ export function linkDoServico(base: string, nome: string): string {
  *
  * Pontos (`point_value`) não aparecem: aquilo é moeda do clube VIP, não
  * matéria do site.
+ *
+ * No celular a lista vira cardápio (pedido do Lucas, 29/10/2026: eram oito
+ * telas de rolagem): cada serviço é uma linha com a capa, o nome e o valor
+ * com o tempo, e tocar abre a descrição, as informações, o "Agendar" e a
+ * galeria grande. O primeiro já vem aberto, para mostrar o que tem dentro;
+ * abrir um não fecha os outros (nada acima do dedo muda de lugar). O "Valor
+ * e fotos" da apresentação abre o serviço dele. No computador nada muda:
+ * todas abertas, a linha inteira agenda.
  */
 export function Services({
   services,
@@ -127,6 +157,35 @@ export function Services({
   const fine = useFinePointer();
   const reduced = useReducedMotion();
   const [ativo, setAtivo] = useState<number | null>(null);
+  // cardápio do celular: quem está aberto (o primeiro começa aberto)
+  const [abertos, setAbertos] = useState<ReadonlySet<string>>(() => new Set(list[0] ? [list[0].slug] : []));
+  const alternar = (slug: string) =>
+    setAbertos((a) => {
+      const novo = new Set(a);
+      if (novo.has(slug)) novo.delete(slug);
+      else novo.add(slug);
+      return novo;
+    });
+
+  // "Valor e fotos" (e qualquer link para #servico-…) abre o serviço que pediu
+  useEffect(() => {
+    const abrir = (slug: string) => {
+      if (slug) setAbertos((a) => (a.has(slug) ? a : new Set(a).add(slug)));
+    };
+    const clique = (e: MouseEvent) => {
+      const a = (e.target as Element | null)?.closest?.('a[href^="#servico-"]');
+      if (a) abrir(servicoDoHash(a.getAttribute("href") ?? ""));
+    };
+    const peloHash = () => abrir(servicoDoHash(window.location.hash));
+    const quadro = requestAnimationFrame(peloHash);
+    document.addEventListener("click", clique);
+    window.addEventListener("hashchange", peloHash);
+    return () => {
+      cancelAnimationFrame(quadro);
+      document.removeEventListener("click", clique);
+      window.removeEventListener("hashchange", peloHash);
+    };
+  }, []);
 
   // a foto que segue o cursor: só existe se a linha ativa tiver foto
   const mx = useMotionValue(0);
@@ -175,6 +234,12 @@ export function Services({
             // a galeria do serviço: a capa primeiro, depois as outras fotos e vídeos dele
             const galeria = midiasDoServico(rolos[s.slug] ?? [], capas[s.slug] ?? null, s.name);
             const ficha = fichaDo(s, list);
+            const capa = capas[s.slug] ?? null;
+            const aberto = abertos.has(s.slug);
+            // a linha do cardápio: o valor (da aplicação) e o tempo, numa linha só
+            const valor = ficha.find((f) => f.rotulo === "Aplicação" || f.rotulo === "Valor")?.valor;
+            const duracao = ficha.find((f) => f.rotulo === "Tempo")?.valor;
+            const resumo = [valor, duracao].filter(Boolean).join(" · ");
             return (
               <Reveal
                 key={s.id}
@@ -184,49 +249,76 @@ export function Services({
                 delay={Math.min(i, 4) * 0.05}
                 amount={0.25}
               >
-                <LinkAgendar
-                  className="tysv__linha"
-                  href={linkDoServico(scheduleUrl, s.name)}
-                  servico={s.slug}
-                  aria-label={`Agendar ${s.name}`}
-                  onPointerEnter={fine ? () => setAtivo(i) : undefined}
-                  onPointerLeave={fine ? () => setAtivo(null) : undefined}
-                >
-                  {/* a régua da linha acende em cassis quando ela é a escolhida */}
-                  <span className="tysv__fio" aria-hidden />
-                  {/* o índice troca de lugar: o número sai por cima e volta em cassis */}
-                  <span className="tysv__num" aria-hidden>
-                    <i>{n}</i>
-                    <i>{n}</i>
-                  </span>
-                  <h3 className="tysv__nome">{nomeComEnfase(s.name)}</h3>
-                  {/* o efeito numa frase e as informações práticas; o jeito dela
-                      de fazer já foi contado na apresentação das técnicas */}
-                  {s.description || ficha.length ? (
-                    <div className="tysv__dizer">
-                      {s.description ? <p className="ty-body ty-measure--tight">{s.description}</p> : null}
-                      {ficha.length ? (
-                        <dl className="tysv__ficha">
-                          {ficha.map((f) => (
-                            <div key={f.rotulo}>
-                              <dt>{f.rotulo}</dt>
-                              <dd>{f.valor}</dd>
-                            </div>
-                          ))}
-                        </dl>
-                      ) : null}
-                    </div>
-                  ) : (
-                    // mantém a prumada das colunas quando o serviço não tem
-                    // texto (no celular não há coluna: a casca some)
-                    <span className="tysv__vazio" aria-hidden />
-                  )}
-                  <span className="tysv__acao ty-btn ty-btn--sm">
-                    <span>Agendar</span>
-                    <span className="ty-btn__arrow" aria-hidden />
-                  </span>
-                </LinkAgendar>
-                <Galeria itens={galeria} nome={s.name} sentido={i % 2 ? -1 : 1} />
+                {/* celular: a linha do cardápio, que abre o serviço (no computador some) */}
+                <h3 className="tysv__cardapio">
+                  <button
+                    type="button"
+                    className="tysv__abrir"
+                    aria-expanded={aberto}
+                    aria-controls={`tysv-corpo-${s.slug}`}
+                    onClick={() => alternar(s.slug)}
+                  >
+                    <span className="tysv__mini" aria-hidden>
+                      {capa ? (
+                        <Image src={capa.url} alt="" fill sizes="72px" style={estiloFoco(capa.foco)} draggable={false} />
+                      ) : (
+                        <Icone nome={iconeDoServico(s.slug, s.name)} className="tysv__mini-icone" />
+                      )}
+                    </span>
+                    <span className="tysv__resumo">
+                      <span className="tysv__resumo-nome">{s.name}</span>
+                      {resumo ? <span className="tysv__resumo-info">{resumo}</span> : null}
+                    </span>
+                    <span className="tysv__chevron" aria-hidden />
+                  </button>
+                </h3>
+                <div className="tysv__corpo" id={`tysv-corpo-${s.slug}`} data-aberto={aberto}>
+                  <div className="tysv__corpo-dentro">
+                    <LinkAgendar
+                      className="tysv__linha"
+                      href={linkDoServico(scheduleUrl, s.name)}
+                      servico={s.slug}
+                      aria-label={`Agendar ${s.name}`}
+                      onPointerEnter={fine ? () => setAtivo(i) : undefined}
+                      onPointerLeave={fine ? () => setAtivo(null) : undefined}
+                    >
+                      {/* a régua da linha acende em cassis quando ela é a escolhida */}
+                      <span className="tysv__fio" aria-hidden />
+                      {/* o índice troca de lugar: o número sai por cima e volta em cassis */}
+                      <span className="tysv__num" aria-hidden>
+                        <i>{n}</i>
+                        <i>{n}</i>
+                      </span>
+                      <h3 className="tysv__nome">{nomeComEnfase(s.name)}</h3>
+                      {/* o efeito numa frase e as informações práticas; o jeito dela
+                          de fazer já foi contado na apresentação das técnicas */}
+                      {s.description || ficha.length ? (
+                        <div className="tysv__dizer">
+                          {s.description ? <p className="ty-body ty-measure--tight">{s.description}</p> : null}
+                          {ficha.length ? (
+                            <dl className="tysv__ficha">
+                              {ficha.map((f) => (
+                                <div key={f.rotulo}>
+                                  <dt>{f.rotulo}</dt>
+                                  <dd>{f.valor}</dd>
+                                </div>
+                              ))}
+                            </dl>
+                          ) : null}
+                        </div>
+                      ) : (
+                        // mantém a prumada das colunas quando o serviço não tem
+                        // texto (no celular não há coluna: a casca some)
+                        <span className="tysv__vazio" aria-hidden />
+                      )}
+                      <span className="tysv__acao ty-btn ty-btn--sm">
+                        <span>Agendar</span>
+                        <span className="ty-btn__arrow" aria-hidden />
+                      </span>
+                    </LinkAgendar>
+                    <Galeria itens={galeria} nome={s.name} sentido={i % 2 ? -1 : 1} />
+                  </div>
+                </div>
               </Reveal>
             );
           })}

@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import { PRIORIDADE_VIP, ROUTES, type Settings } from "@/lib/tayssa/config";
 import type { BenefitRow, BenefitType } from "@/lib/tayssa/types";
 import { criterioLegivel, numero } from "@/lib/tayssa/format";
@@ -10,6 +11,8 @@ import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { Magnetic } from "@/components/tayssa/ui/magnetic";
 import { Icone, type IconeNome } from "@/components/tayssa/ui/icones";
 import { Jornada } from "@/components/tayssa/ui/jornada";
+import { NavDeck, useDeck } from "@/components/tayssa/ui/deck";
+import { useCelular } from "@/components/tayssa/ui/use-media";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -106,6 +109,12 @@ const FORMAS: Forma[] = [
 export function VipIntro({ benefits, settings }: { benefits: BenefitRow[]; settings: Settings }) {
   const reduced = useReducedMotion();
   const marcos = doCatalogo(benefits, "loyalty", marcoDePontos).sort((a, b) => (a.threshold ?? 0) - (b.threshold ?? 0));
+  // celular: as quatro formas viram cartões de lado, e entram juntas quando a
+  // lista aparece (a escondida à direita não chega apagada quando o dedo a traz)
+  const listaRef = useRef<HTMLUListElement>(null);
+  const celular = useCelular();
+  const listaVista = useInView(listaRef, { once: true, amount: 0.15 });
+  const deck = useDeck(listaRef);
 
   return (
     <section id="vip" className="ty-section tyvi ty-night" aria-label="Tayssa VIP">
@@ -153,9 +162,9 @@ export function VipIntro({ benefits, settings }: { benefits: BenefitRow[]; setti
             <b>04</b> formas
           </span>
         </Reveal>
-        <ul className="tyvi__lista">
+        <ul className="tyvi__lista" ref={listaRef}>
           {FORMAS.map((f, i) => (
-            <Reveal key={f.n} as="li" delay={i * 0.07} amount={0.3}>
+            <Reveal key={f.n} as="li" delay={i * 0.07} amount={0.3} visivel={celular && listaVista}>
               <div className="tyvi__linha ty-ico-gatilho">
                 <span className="tyvi__icone">
                   <Icone nome={f.icone} />
@@ -168,6 +177,8 @@ export function VipIntro({ benefits, settings }: { benefits: BenefitRow[]; setti
             </Reveal>
           ))}
         </ul>
+        {/* só no celular, onde as formas viram cartões de lado */}
+        <NavDeck atual={deck.atual} total={FORMAS.length} ir={deck.ir} barra={deck.barra} nome="forma" />
 
         {/* o caminho até o VIP: o VIP é de quem volta, não de quem gasta de uma vez */}
         <Reveal className="tyvi__chapeu tyvi__chapeu--caminho" y={14}>

@@ -5,21 +5,11 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useReducedMotion } from "framer-motion";
 import type { ServiceRow } from "@/lib/tayssa/types";
 import { estiloFoco, midiasDoServico, type CapaServico, type MidiaCatalogo } from "@/lib/tayssa/catalogo";
-import { Icone, type IconeNome } from "@/components/tayssa/ui/icones";
-import { linkDoServico } from "@/components/tayssa/public/services";
+import { Icone } from "@/components/tayssa/ui/icones";
+import { iconeDoServico, linkDoServico } from "@/components/tayssa/public/services";
 import { LinkAgendar } from "@/components/tayssa/public/agendar";
 import { Visor } from "@/components/tayssa/public/rolo";
 
-/** O gesto de cada cuidado, pelo nome (serviço novo acha o seu sozinho; o resto cai na flor). */
-function iconeDo(slug: string, nome: string): IconeNome {
-  const n = `${slug} ${nome}`.toLowerCase();
-  if (/manuten/.test(n)) return "calendario";
-  if (/remo[cç]/.test(n)) return "brilho";
-  if (/sobrancelh|brow/.test(n)) return "flor";
-  if (/l[aá]bio|lip|gloss|boca/.test(n)) return "coracao";
-  if (/volume|fox|lash|c[ií]lio|extens/.test(n)) return "olho";
-  return "flor";
-}
 /** As cores da casa, em rodízio: o carrossel é a paleta inteira. */
 const CORES = ["vinho", "magenta", "rosa", "ameixa", "bordo", "blush"] as const;
 /**
@@ -39,7 +29,7 @@ function Tira({ fotos }: { fotos: MidiaCatalogo[] }) {
     return (
       <span className="tyfx__tira tyfx__tira--uma" aria-hidden>
         <span className="tyfx__tira-foto">
-          <Image src={fotos[0].url} alt="" fill sizes="104px" style={estiloFoco(fotos[0].foco)} draggable={false} />
+          <Image src={fotos[0].url} alt="" fill sizes="(max-width: 899px) 150px, 104px" style={estiloFoco(fotos[0].foco)} draggable={false} />
         </span>
       </span>
     );
@@ -51,7 +41,7 @@ function Tira({ fotos }: { fotos: MidiaCatalogo[] }) {
       <span className="tyfx__tira-trilho" style={{ "--dur": `${base.length * 2.8}s` } as CSSProperties}>
         {[...base, ...base].map((m, i) => (
           <span key={`${m.id}-${i}`} className="tyfx__tira-foto">
-            <Image src={m.url} alt="" fill sizes="104px" style={estiloFoco(m.foco)} draggable={false} />
+            <Image src={m.url} alt="" fill sizes="(max-width: 899px) 150px, 104px" style={estiloFoco(m.foco)} draggable={false} />
           </span>
         ))}
       </span>
@@ -145,7 +135,7 @@ export function ServiceStrip({
                 <Tira fotos={fotos} />
               ) : (
                 <span className="tyfx__selo">
-                  <Icone nome={iconeDo(s.slug, s.name)} className="tyfx__icone" />
+                  <Icone nome={iconeDoServico(s.slug, s.name)} className="tyfx__icone" />
                 </span>
               )}
             </span>

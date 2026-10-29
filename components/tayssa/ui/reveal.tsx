@@ -16,6 +16,7 @@ export function Reveal({
   amount = 0.12,
   as = "div",
   id,
+  visivel,
 }: {
   children: ReactNode;
   delay?: number;
@@ -27,6 +28,13 @@ export function Reveal({
   once?: boolean;
   amount?: number;
   as?: "div" | "section" | "p" | "li" | "span" | "h1" | "h2" | "h3";
+  /**
+   * Entra mesmo fora da tela. Num carrossel de lado, o cartão escondido à
+   * direita só "aparecia" quando a cliente o arrastava para a vista, e
+   * chegava apagado; quem monta o carrossel liga isto quando ele entra na
+   * tela, e todos os cartões entram juntos.
+   */
+  visivel?: boolean;
 }) {
   const reduced = useReducedMotion();
   const Tag = motion[as];
@@ -37,6 +45,7 @@ export function Reveal({
       className={className}
       style={style}
       initial={reduced ? false : { opacity: 0, y }}
+      animate={visivel ? { opacity: 1, y: 0 } : undefined}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once, amount }}
       transition={{ duration: 0.82, ease: EASE_OUT, delay }}

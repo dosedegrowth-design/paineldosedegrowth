@@ -4,8 +4,9 @@
    Abaixo de 900px cada seção já é uma coluna só: aqui as etiquetas de
    topo, os títulos, os nomes, os textos curtos, as fotos e as ações vão
    para o centro. No computador o site continua editorial, alinhado à
-   esquerda. Este arquivo é o último do layout: ganha das regras de
-   mesma força sem precisar de !important.
+   esquerda. Este arquivo vem depois dos outros (só o `celular.css` vem
+   depois dele): ganha das regras de mesma força sem precisar de
+   !important.
    ============================================================ */
 
 /* o brilho dos títulos em máscara (as linhas que sobem) era cortado na

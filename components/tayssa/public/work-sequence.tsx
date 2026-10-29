@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useInView, useReducedMotion } from "framer-motion";
 import { topoNoDocumento, useProgressoRolagem } from "@/components/tayssa/ui/rolagem";
+import { NavDeck, useDeck } from "@/components/tayssa/ui/deck";
+import { useCelular } from "@/components/tayssa/ui/use-media";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -36,9 +38,10 @@ function comEnfase(frase: string): ReactNode[] {
  * No desktop a coluna da esquerda fica grudada: nome do serviço em corpo
  * grande, a frase com a palavra em itálico, o contador e o índice em mono
  * que acende no serviço ativo. A coluna da direita corre com o jeito dela de
- * fazer cada um; quem cruza o meio da tela vira o ativo. No celular a mesma
- * matéria vira pilha, cada serviço com o seu nome grande — sem coluna
- * grudada, que no toque só atrapalha. Sem foto: as fotos moram na galeria
+ * fazer cada um; quem cruza o meio da tela vira o ativo. No celular cada
+ * serviço vira um cartão e os cartões passam de lado com o dedo (eram cinco
+ * telas de texto empilhado; pedido do Lucas, 29/10/2026: "muda a direção"),
+ * com o contador e as setas embaixo. Sem foto: as fotos moram na galeria
  * de cada serviço, logo abaixo.
  */
 export function WorkSequence({ servicos }: { servicos: ItemTrabalho[] }) {
@@ -47,6 +50,11 @@ export function WorkSequence({ servicos }: { servicos: ItemTrabalho[] }) {
   const [ativo, setAtivo] = useState(0);
   // progresso da coluna que corre: alimenta a barrinha do contador
   const scrollYProgress = useProgressoRolagem(corridaRef, ["start center", "end center"]);
+  // celular: os cartões de lado. Entram todos quando o trilho aparece (o
+  // escondido à direita não pode chegar apagado quando o dedo o traz)
+  const celular = useCelular();
+  const trilhoVisto = useInView(corridaRef, { once: true, amount: 0.15 });
+  const deck = useDeck(corridaRef);
 
   // ativa = a última técnica cujo topo já cruzou a linha do meio da tela.
   // Medir posição (em vez de observar entrada) mantém a coluna grudada
@@ -174,9 +182,10 @@ export function WorkSequence({ servicos }: { servicos: ItemTrabalho[] }) {
                     data-reveal=""
                     className="tyw__item"
                     initial={reduced ? false : { opacity: 0, y: 24 }}
+                    animate={celular && trilhoVisto ? { opacity: 1, y: 0 } : undefined}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-8% 0px -8% 0px" }}
-                    transition={tempo(0.85)}
+                    transition={{ ...tempo(0.85), delay: celular && !reduced ? Math.min(i, 3) * 0.08 : 0 }}
                   >
                     <div className="tyw__marca">
                       <span className="ty-mono">{dois(i + 1)}</span>
@@ -210,6 +219,8 @@ export function WorkSequence({ servicos }: { servicos: ItemTrabalho[] }) {
                 );
               })}
             </ol>
+            {/* só no celular, onde a lista vira cartões de lado */}
+            <NavDeck atual={deck.atual} total={total} ir={deck.ir} barra={deck.barra} nome="técnica" />
 
             {/* fecho em bloco chapado: a cor da casa entra como peça, não como enfeite */}
             <motion.div

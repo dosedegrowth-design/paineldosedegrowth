@@ -16,3 +16,5 @@ export function useMedia(query: string, initial = false): boolean {
 
 export const useIsMobile = () => useMedia("(max-width: 767px)");
 export const useFinePointer = () => useMedia("(hover: hover) and (pointer: fine)");
+/** O site do celular (`app/tayssa/celular.css`): o mesmo corte do `centro.css`. */
+export const useCelular = () => useMedia("(max-width: 899px)");

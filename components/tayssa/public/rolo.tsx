@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type RefObject } from "react";
 import { createPortal } from "react-dom";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
 import Image from "next/image";
 import { estiloFoco, type MidiaCatalogo } from "@/lib/tayssa/catalogo";
 import { useCamadaAberta } from "@/components/tayssa/ui/dialogo";
@@ -316,7 +316,11 @@ function Midia({ m, grande = false }: { m: MidiaCatalogo; grande?: boolean }) {
   );
 }
 
-/** A mídia grande, por cima de tudo: setas, Esc e arrastar para os lados. */
+/**
+ * A mídia grande, por cima de tudo: setas, Esc e arrastar para os lados. No
+ * celular a foto vai de ponta a ponta e arrastar para baixo fecha, como no
+ * Instagram e na galeria do iPhone (a foto encolhe um pouco enquanto desce).
+ */
 export function Visor({
   itens,
   aberto,
@@ -328,6 +332,9 @@ export function Visor({
 }) {
   const reduced = useReducedMotion();
   const [dir, setDir] = useState(1);
+  // a foto descendo com o dedo: encolhe um pouco, para dizer que vai fechar
+  const descida = useMotionValue(0);
+  const encolhe = useTransform(descida, [0, 320], [1, 0.84]);
   const fecharRef = useRef<HTMLButtonElement>(null);
   const camada = useRef<HTMLDivElement>(null);
   // antes do efeito que foca o "Fechar": lê quem abriu, para o foco voltar lá
@@ -345,6 +352,8 @@ export function Visor({
   };
   useEffect(() => {
     if (aberto === null) return;
+    // quem fechou arrastando deixou a foto lá embaixo: a próxima abre no lugar
+    descida.set(0);
     fecharRef.current?.focus();
     const tecla = (e: KeyboardEvent) => {
       if (e.key === "Escape") onMudar(null);
@@ -390,17 +399,22 @@ export function Visor({
               animate={{ opacity: 1, x: 0, scale: 1, rotateY: 0 }}
               exit={reduced ? { opacity: 0 } : { opacity: 0, x: dir * -80, scale: 0.94 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              drag={reduced ? false : "x"}
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.4}
+              style={{ y: descida }}
+              drag={!reduced}
+              dragDirectionLock
+              dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+              dragElastic={{ left: 0.4, right: 0.4, top: 0.08, bottom: 0.7 }}
               onDragEnd={(_, info) => {
-                if (info.offset.x < -70) ir(1);
+                if (info.offset.y > 110 || info.velocity.y > 650) onMudar(null);
+                else if (info.offset.x < -70) ir(1);
                 else if (info.offset.x > 70) ir(-1);
               }}
             >
-              <div className="ty-visor__midia" style={{ aspectRatio: String(m.ratio) }}>
-                <Midia m={m} grande />
-              </div>
+              <motion.div className="ty-visor__encolhe" style={{ scale: encolhe }}>
+                <div className="ty-visor__midia" style={{ aspectRatio: String(m.ratio), "--r": m.ratio } as CSSProperties}>
+                  <Midia m={m} grande />
+                </div>
+              </motion.div>
               <figcaption>
                 <b>{m.produto}</b>
                 {m.legenda ? <span>{m.legenda}</span> : null}
