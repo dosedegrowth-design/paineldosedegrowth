@@ -4,13 +4,14 @@
  * lados. As regras de validação ficam na action.
  */
 
-export const MESES = ["novembro", "dezembro"] as const;
+// Só novembro por enquanto. Acrescentar dezembro (ou janeiro) é
+// uma entrada aqui e outra em MES_TITULO: o banco já aceita.
+export const MESES = ["novembro"] as const;
 export type Mes = (typeof MESES)[number];
 
-/** Como o mês aparece escrito na tela. Acrescentar mês novo é uma linha aqui e uma em MESES. */
+/** Como o mês aparece escrito na tela. */
 export const MES_TITULO: Record<Mes, string> = {
   novembro: "Anúncios de novembro",
-  dezembro: "Anúncios de dezembro",
 };
 
 export type ArquivoAnuncio = {
