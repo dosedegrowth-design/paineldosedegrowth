@@ -90,7 +90,20 @@ export const DIAS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"] as const;
 
 export const PAGAMENTOS = ["Pix", "Cartão de crédito", "Cartão de débito", "Dinheiro"] as const;
 
-export const TECNICAS = ["Fio a fio", "Volume brasileiro", "Volume russo", "Volume egípcio", "Manutenção", "Sobrancelha", "Outro"] as const;
+/** As técnicas de cada foto do trabalho, na lista que ela pediu (sem fio a fio nem russo). */
+export const TECNICAS = [
+  "Volume brasileiro",
+  "Mega brasileiro",
+  "Mega inglês",
+  "Volume egípcio",
+  "Mega Fox eyes",
+  "Manutenção",
+  "Brow Lamination",
+  "Sobrancelha",
+  "Hidragloss",
+  "Spa dos lábios",
+  "Outro",
+] as const;
 
 /** Os grupos de arquivo da parte "Fotos e vídeos" (os outros moram na sua parte). */
 export const GRUPOS_MIDIA: { tipo: TipoArquivo; titulo: string; dica: string; varios: boolean; aceita: "foto" | "video" | "ambos" }[] = [
