@@ -220,6 +220,22 @@ export function roloAbaixoDaCapa(rolo: MidiaCatalogo[], capa: CapaServico | null
   return rolo.length >= 2 ? rolo : [];
 }
 
+/**
+ * Tudo do serviço com a capa na frente: é o que passa dentro do cartão do
+ * carrossel de cima (só as fotos) e o que o visor abre ao tocar nele. A
+ * capa vem com o enquadramento dela; se a Tayssa escolheu uma foto que não
+ * está no rolo do serviço, ela entra assim mesmo, com o nome do serviço.
+ */
+export function midiasDoServico(rolo: MidiaCatalogo[], capa: CapaServico | null, nome: string): MidiaCatalogo[] {
+  if (!capa) return rolo;
+  const noRolo = rolo.find((m) => m.id === capa.id);
+  const primeira: MidiaCatalogo = {
+    ...(noRolo ?? { id: capa.id, url: capa.url, tipo: "image", produto: nome, legenda: null, alt: capa.alt, ratio: 4 / 5 }),
+    foco: capa.foco,
+  };
+  return [primeira, ...rolo.filter((m) => m.id !== capa.id)];
+}
+
 /** Distância de edição entre duas palavras (quantas letras trocar). */
 function distancia(a: string, b: string): number {
   const linha = Array.from({ length: b.length + 1 }, (_, i) => i);

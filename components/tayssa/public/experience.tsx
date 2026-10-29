@@ -8,6 +8,8 @@ import { whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { IntroLoader } from "@/components/tayssa/public/intro-loader";
 import { PublicNav } from "@/components/tayssa/public/nav";
 import { Hero } from "@/components/tayssa/public/hero";
+import { WorkSequence } from "@/components/tayssa/public/work-sequence";
+import { Services } from "@/components/tayssa/public/services";
 import { ServiceStrip } from "@/components/tayssa/public/service-strip";
 import { AgendarFlutua, Faixa } from "@/components/tayssa/public/faixa";
 import { Details } from "@/components/tayssa/public/details";
@@ -21,7 +23,8 @@ import { About } from "@/components/tayssa/public/about";
 import { Studio } from "@/components/tayssa/public/studio";
 import { Testimonials } from "@/components/tayssa/public/testimonials";
 import { VisitInfo } from "@/components/tayssa/public/visit-info";
-import type { CapaServico, MidiaCatalogo } from "@/lib/tayssa/catalogo";
+import { Catalogo } from "@/components/tayssa/public/catalogo";
+import type { CapaServico, CategoriaCatalogo, MidiaCatalogo } from "@/lib/tayssa/catalogo";
 import { completarComFotos, type ItemPortfolio } from "@/lib/tayssa/portfolio";
 import { CONTEUDO, temAtendimento, temSobre } from "@/lib/tayssa/content";
 import type { VideoAvailability } from "@/lib/tayssa/media-server";
@@ -34,12 +37,11 @@ export const useIntroReady = () => useContext(IntroCtx);
 
 /**
  * A experiência pública inteira. Uma só narrativa em scroll:
- * abertura (marca + flores + janela) → serviços (cada um com a capa e,
- * embaixo, as fotos dele passando) → o filme → a profissional → o
- * estúdio → Instagram → depoimentos → a luz abaixa → VIP → indicação →
- * atendimento → fechamento. Os serviços aparecem uma vez só: antes havia
- * também "Três técnicas" e "Cada técnica, de perto" entre o carrossel e a
- * lista, e o site ia e voltava (pedido do Lucas, 29/10/2026).
+ * abertura (marca + flores + janela) → os serviços em cartões (com as
+ * fotos de cada um passando dentro) → trabalho (pin) → o filme → cada
+ * técnica de perto → serviços (capa + carrossel do serviço) → a
+ * profissional → o estúdio → Instagram → depoimentos → a luz abaixa →
+ * VIP → indicação → atendimento → fechamento.
  *
  * As seções que dependem de conteúdo que só a Tayssa pode dar (filme,
  * biografia, estúdio, depoimentos, horários) só entram quando ele
@@ -51,6 +53,7 @@ export function PublicExperience({
   benefits,
   photos,
   videos,
+  catalogo = [],
   capas = {},
   rolos = {},
   portfolio = [],
@@ -58,9 +61,11 @@ export function PublicExperience({
 }: {
   /** o trabalho dela nos celulares da seção do Instagram */
   portfolio?: ItemPortfolio[];
+  /** fotos e vídeos por categoria e produto (painel → Fotos) */
+  catalogo?: CategoriaCatalogo[];
   /** a capa de cada serviço (escolhida em Mídia → Capas, ou a primeira foto dele) */
   capas?: Record<string, CapaServico | null>;
-  /** as fotos de cada serviço, que passam embaixo da capa */
+  /** as fotos de cada serviço (passam no cartão de cima e embaixo da capa na lista) */
   rolos?: Record<string, MidiaCatalogo[]>;
   /** o que a folha de agendar oferece: serviços, volumes, dias e horários livres */
   agenda: AgendaSite;
@@ -91,6 +96,7 @@ export function PublicExperience({
   ].filter((f, i, todas) => todas.findIndex((g) => g.src === f.src) === i);
   // o menu só aponta para seção que está na página
   const secoes = [
+    { id: "trabalho", label: "Trabalho" },
     { id: "servicos", label: "Serviços" },
     ...(temSobre(CONTEUDO) || estrutura ? [{ id: "sobre", label: "A Tayssa" }] : []),
     { id: "vip", label: "VIP" },
@@ -105,14 +111,18 @@ export function PublicExperience({
         <main>
           <Hero business={settings.business} scheduleUrl={links.schedule} photo={photos?.hero} video={videos?.hero} />
           <Faixa itens={services.filter((s) => s.slug !== "outro").map((s) => s.name)} />
-          <ServiceStrip
+          <ServiceStrip services={services} scheduleUrl={links.schedule} capas={capas} rolos={rolos} />
+          <WorkSequence photos={photos?.work} />
+          <Film video={videos?.processo} />
+          <Catalogo catalogo={catalogo} />
+          <Services
             services={services}
             scheduleUrl={links.schedule}
             capas={capas}
             rolos={rolos}
             detalhes={CONTEUDO.servicos}
+            ambiente={colagem[1] ?? colagem[0]}
           />
-          <Film video={videos?.processo} />
           <About business={settings.business} conteudo={CONTEUDO} portrait={photos?.portrait} instagramUrl={links.instagram} />
           <Studio conteudo={CONTEUDO} video={videos?.espaco} photo={photos?.studio} />
           <Details

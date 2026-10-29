@@ -771,21 +771,18 @@
 }
 
 /* ============================================================
-   Serviços (depois da abertura)
+   Carrossel de serviços (depois da abertura)
    Carrossel de verdade: o dedo passa para o lado e o cartão encaixa no
-   meio; os pontinhos (e as setas, no mouse) mostram onde está. Nada anda
-   sozinho. Cada cartão é um serviço: em cima a capa (ou o ícone do
-   cuidado, no mesmo formato, quando não há foto), embaixo o nome, o
-   valor, o texto e o tempo. Abaixo do carrossel passam as fotos do
-   serviço que está no meio.
+   meio; os pontinhos (e as setas, no mouse) mostram onde está. O
+   carrossel não anda sozinho: dentro de cada cartão, as fotos daquele
+   serviço passam. No celular o cartão do meio fica inteiro e os vizinhos
+   aparecem pela borda, um pouco menores.
    ============================================================ */
 .tyfx {
   padding-block: clamp(30px, 4vw, 56px) 0;
-  --tyfx-cartao: min(78vw, 318px);
-  color: var(--t-fg);
-}
-.tyfx__cabeca {
-  margin-bottom: clamp(14px, 2.4vw, 28px);
+  --tyfx-cartao: min(70vw, 290px);
+  /* as fotos que passam dentro do cartão (4:5, como no Instagram) */
+  --tyfx-foto: 84px;
 }
 .tyfx__trilho {
   position: relative;
@@ -810,11 +807,15 @@
   scroll-snap-align: center;
 }
 .ty-scope .tyfx__cartao {
-  display: flex;
-  flex-direction: column;
+  position: relative;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 14px;
   width: 100%;
   min-width: 0;
-  overflow: hidden;
+  min-height: 214px;
+  padding: 26px 18px 22px;
   border-radius: 28px;
   color: #fbf1f3;
   text-align: center;
@@ -837,30 +838,42 @@
     transform: translateY(-6px);
   }
 }
-/* a capa: quadrada, com o enquadramento que a Tayssa escolheu no painel */
-.tyfx__capa {
-  position: relative;
+/* o cartão inteiro é o botão de ver as fotos; o "Agendar" fica por cima */
+.ty-scope .tyfx__ver {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  cursor: pointer;
+}
+.ty-scope .tyfx__ver:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: -6px;
+}
+/* a vitrine: as fotos passando de ponta a ponta do cartão, ou o ícone do
+   cuidado quando não há foto. Mesma altura nos dois casos: nome e
+   "Agendar" ficam na mesma linha em todos os cartões */
+.tyfx__vitrine {
   display: grid;
   place-items: center;
-  flex: none;
-  aspect-ratio: 1;
-  overflow: hidden;
-  background: color-mix(in srgb, currentColor 8%, transparent);
+  width: calc(100% + 36px);
+  min-width: 0;
+  height: calc(var(--tyfx-foto) * 1.25);
+  margin-inline: -18px;
 }
-.tyfx__capa img {
-  -webkit-user-drag: none;
-}
-/* as outras fotos do serviço passando dentro do cartão, embaixo da capa */
 .tyfx__tira {
   display: block;
-  flex: none;
   width: 100%;
   min-width: 0;
   overflow: hidden;
-  padding-block: 10px;
-  background: rgba(20, 4, 12, 0.22);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+}
+.tyfx__tira--uma {
+  display: grid;
+  place-items: center;
+  -webkit-mask-image: none;
+  mask-image: none;
 }
 .tyfx__tira-trilho {
   display: flex;
@@ -874,11 +887,15 @@
   position: relative;
   display: block;
   flex: none;
-  width: 64px;
+  width: var(--tyfx-foto);
   aspect-ratio: 4 / 5;
   overflow: hidden;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  box-shadow: 0 10px 20px -14px rgba(10, 2, 8, 0.7);
+}
+.tyfx__tira-foto img {
+  -webkit-user-drag: none;
 }
 @keyframes tyfx-tira {
   to {
@@ -893,24 +910,16 @@
 .tyfx__selo {
   display: grid;
   place-items: center;
-  width: 88px;
-  height: 88px;
+  width: 66px;
+  height: 66px;
   border-radius: 50%;
   background: color-mix(in srgb, currentColor 10%, transparent);
   border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
 }
 .tyfx__icone {
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   stroke-width: 1.3;
-}
-.tyfx__corpo {
-  display: grid;
-  flex: 1;
-  align-content: start;
-  justify-items: center;
-  gap: 8px;
-  padding: 18px 18px 20px;
 }
 .ty-scope .tyfx__nome {
   font-size: 20px;
@@ -919,35 +928,21 @@
   letter-spacing: -0.02em;
   text-wrap: balance;
 }
-.tyfx__preco {
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-.tyfx__texto {
-  display: -webkit-box;
-  overflow: hidden;
-  font-size: 14px;
-  line-height: 1.5;
-  opacity: 0.84;
-  text-wrap: pretty;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-}
-.tyfx__ficha {
-  font-size: 12.5px;
-  letter-spacing: 0.01em;
-  opacity: 0.72;
-}
-.tyfx__acao {
+.ty-scope .tyfx__acao {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
-  align-self: end;
   gap: 10px;
-  margin-top: 4px;
+  /* área de toque maior que o desenho */
+  margin: -7px -8px;
+  padding: 7px 8px;
+  border-radius: 999px;
+  color: inherit;
   font-size: 14px;
   font-weight: 600;
   letter-spacing: -0.01em;
+  text-decoration: none;
 }
 .tyfx__acao .ty-btn__arrow {
   position: relative;
@@ -1054,21 +1049,24 @@
     background: rgba(255, 214, 228, 0.12);
   }
 }
-/* computador: os cartões começam na margem do conteúdo (embaixo do título,
-   sem metade da tela vazia) e o da vez é o primeiro; setas para andar */
+/* computador: os cartões começam na margem do conteúdo e o da vez é o
+   primeiro; setas e pontinhos para andar (com o mouse não há arrasto) */
 @media (min-width: 1100px) {
   .tyfx {
-    --tyfx-cartao: 300px;
+    --tyfx-cartao: 236px;
     --tyfx-lado: max(var(--t-gutter), calc((100% - 1240px) / 2));
   }
   .tyfx__trilho {
-    gap: 20px;
+    gap: 16px;
     /* no fim sobra espaço para o último cartão também chegar ao começo */
     padding-inline: var(--tyfx-lado) calc(100% - var(--tyfx-lado) - var(--tyfx-cartao));
     scroll-padding-inline: var(--tyfx-lado);
   }
   .tyfx__item {
     scroll-snap-align: start;
+  }
+  .ty-scope .tyfx__cartao {
+    min-height: 280px;
   }
 }
 

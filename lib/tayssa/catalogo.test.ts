@@ -9,6 +9,7 @@ import {
   categoriaDoServico,
   intercalar,
   itensDaCategoria,
+  midiasDoServico,
   montarCatalogo,
   produtoParecido,
   roloAbaixoDaCapa,
@@ -183,4 +184,18 @@ test("o carrossel abaixo da capa não repete a capa; com uma foto só, não há 
   assert.deepEqual(roloAbaixoDaCapa([item("a"), item("b")], capa).map((m) => m.id), ["a", "b"]);
   assert.deepEqual(roloAbaixoDaCapa([item("a")], capa), []);
   assert.deepEqual(roloAbaixoDaCapa([], null), []);
+});
+
+test("o cartão de cima passa tudo do serviço com a capa na frente, no enquadramento dela", () => {
+  const item = (id: string) => ({ id, url: `https://x/${id}.jpg`, tipo: "image" as const, produto: "Volume inglês", legenda: null, alt: id, ratio: 0.8, foco: { x: 50, y: 50, zoom: 1 } });
+  const foco = { x: 30, y: 20, zoom: 1.3 };
+  // a capa está no rolo: vai para a frente, com o enquadramento da capa
+  const doRolo = midiasDoServico([item("a"), item("b"), item("c")], { id: "b", url: "https://x/b.jpg", alt: "b", foco, escolhida: true }, "Volume inglês");
+  assert.deepEqual(doRolo.map((m) => m.id), ["b", "a", "c"]);
+  assert.deepEqual(doRolo[0].foco, foco);
+  // a capa veio da galeria: entra na frente com o nome do serviço
+  const daGaleria = midiasDoServico([item("a")], { id: "g", url: "https://x/g.jpg", alt: "g", foco, escolhida: true }, "Volume inglês");
+  assert.deepEqual(daGaleria.map((m) => [m.id, m.produto, m.tipo]), [["g", "Volume inglês", "image"], ["a", "Volume inglês", "image"]]);
+  // sem capa (serviço sem foto): o rolo como está
+  assert.deepEqual(midiasDoServico([], null, "Lip spa"), []);
 });

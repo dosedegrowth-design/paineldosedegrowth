@@ -138,7 +138,7 @@ function Midia({ m, grande = false }: { m: MidiaCatalogo; grande?: boolean }) {
 }
 
 /** A mídia grande, por cima de tudo: setas, Esc e arrastar para os lados. */
-function Visor({
+export function Visor({
   itens,
   aberto,
   onMudar,

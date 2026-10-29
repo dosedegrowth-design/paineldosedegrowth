@@ -3,9 +3,9 @@ import { getSettings } from "@/lib/tayssa/settings";
 import { getActiveServices, getPublicBenefits } from "@/lib/tayssa/queries/catalog";
 import { getPhotoAvailability } from "@/lib/tayssa/photos-server";
 import { getVideoAvailability } from "@/lib/tayssa/media-server";
-import { getFotosPorIds, getPhotoLibrary } from "@/lib/tayssa/queries/photos";
+import { getFotosPorIds, getPhotoLibrary, getPrecosProdutos } from "@/lib/tayssa/queries/photos";
 import { assignPhotos } from "@/lib/tayssa/photos";
-import { capasDosServicos, montarCatalogo, rolosDosServicos } from "@/lib/tayssa/catalogo";
+import { capasDosServicos, comPrecos, montarCatalogo, rolosDosServicos } from "@/lib/tayssa/catalogo";
 import { ehManutencao } from "@/lib/tayssa/agendar";
 import { getAgendaPublica } from "@/lib/tayssa/queries/vip";
 import { montarPortfolio } from "@/lib/tayssa/portfolio";
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
  * a página nunca quebra por causa do Supabase.
  */
 export default async function TayssaHome() {
-  const [settings, services, benefits, photos, library, videos, dias] = await Promise.all([
+  const [settings, services, benefits, photos, library, videos, dias, precos] = await Promise.all([
     getSettings(),
     getActiveServices(),
     getPublicBenefits(),
@@ -35,6 +35,7 @@ export default async function TayssaHome() {
     getPhotoLibrary(),
     getVideoAvailability(),
     getAgendaPublica(),
+    getPrecosProdutos(),
   ]);
   // uma biblioteca, todos os lugares: a abertura, os serviços, o Instagram.
   // Só entra foto que existe de verdade — da biblioteca, ou arquivo estático
@@ -43,7 +44,9 @@ export default async function TayssaHome() {
   // cada serviço com as fotos dele (o produto com o nome dele) e a capa que a
   // Tayssa escolheu em Mídia → Capas (que pode ser uma foto da galeria)
   const ativos = services.filter((s) => s.slug !== "outro");
-  const rolos = rolosDosServicos(montarCatalogo(library), ativos);
+  // o catálogo (foto e vídeo por categoria e produto) com o valor de cada produto
+  const catalogo = comPrecos(montarCatalogo(library), precos);
+  const rolos = rolosDosServicos(catalogo, ativos);
   const fotosDasCapas = await getFotosPorIds(ativos.map((s) => s.capa_photo_id ?? ""));
   const capas = capasDosServicos(ativos, rolos, fotosDasCapas);
   // o portfólio dos celulares: Reels do conteúdo + a mídia publicada
@@ -115,6 +118,7 @@ export default async function TayssaHome() {
           benefits={benefits}
           photos={reais}
           videos={videos}
+          catalogo={catalogo}
           capas={capas}
           rolos={rolos}
           portfolio={portfolio}
