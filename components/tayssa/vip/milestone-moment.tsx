@@ -60,7 +60,7 @@ export function MilestoneMoment({ moment }: { moment: Moment }) {
         <span className="tyv-label">{reached ? "Marco alcançado" : "Benefício liberado"}</span>
         <p className="tyv-moment__title">{moment.title}</p>
         <p className="tyv-sub" style={{ fontSize: 13.5 }}>
-          {reached ? "A Tayssa valida e ele aparece em Benefícios." : "Já está em Benefícios — combine com a Tayssa quando quiser."}
+          {reached ? "A Tayssa valida e ele aparece em Benefícios." : "Já está em Benefícios. Combine com a Tayssa quando quiser."}
         </p>
         <Link href={ROUTES.vipBenefits} className="tyv-link">
           Ver benefícios

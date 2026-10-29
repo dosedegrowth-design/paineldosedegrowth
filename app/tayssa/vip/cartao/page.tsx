@@ -47,7 +47,7 @@ export default async function CardPage() {
             </p>
             <p className="tyv-sub" style={{ fontSize: 12.5, marginTop: 10 }}>
               {BENEFIT_STATUS_LABEL[card.reward.status]}
-              {card.reward.status === "pending_validation" ? " — a Tayssa confirma e ele aparece em Benefícios." : "."}
+              {card.reward.status === "pending_validation" ? ". A Tayssa confirma e ele aparece em Benefícios." : "."}
             </p>
           </div>
         </section>

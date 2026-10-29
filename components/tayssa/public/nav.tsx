@@ -89,7 +89,7 @@ export function PublicNav({ scheduleUrl, sections = SECTIONS }: { scheduleUrl: s
         data-solid={solid && !open}
         data-menu={open}
       >
-        <TransitionLink href={ROUTES.home} aria-label="Tayssa Lash — início" className="ty-nav__marca">
+        <TransitionLink href={ROUTES.home} aria-label="Tayssa Lash, início" className="ty-nav__marca">
           <span className="ty-nav__flor" aria-hidden>
             <Bloom seed={5} tom="magenta" />
           </span>

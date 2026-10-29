@@ -194,7 +194,7 @@ export function LoyaltyCard({
   }, [list, open]);
 
   const caption = unrevealed.length
-    ? `${unrevealed.length} ${plural(unrevealed.length, "carimbo novo", "carimbos novos")} no verso — toque para virar`
+    ? `${unrevealed.length} ${plural(unrevealed.length, "carimbo novo", "carimbos novos")} no verso: toque para virar`
     : missing > 0
       ? `${missing === 1 ? "falta" : "faltam"} ${missing} ${plural(missing, "visita", "visitas")} para o presente`
       : rewardStatus === "available" || rewardStatus === "approved"

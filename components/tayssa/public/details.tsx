@@ -108,8 +108,8 @@ export function Details({
           <Reveal delay={0.15}>
             <p className="ty-body tyco__texto">
               {comPortfolio
-                ? "O trabalho recente, do jeito que aparece no perfil. Toque num celular para assistir aqui mesmo — e, se quiser, abrir a publicação no Instagram."
-                : "Aqui o site conta o essencial: o que a casa faz e como funciona o VIP. O trabalho recente fica no Instagram — é lá que o olhar aparece de perto, um por um."}
+                ? "O trabalho recente, do jeito que aparece no perfil. Toque num celular para assistir aqui mesmo e, se quiser, abrir a publicação no Instagram."
+                : "Aqui o site conta o essencial: o que a casa faz e como funciona o VIP. O trabalho recente fica no Instagram: é lá que o olhar aparece de perto, um por um."}
             </p>
           </Reveal>
           <Reveal delay={0.25}>

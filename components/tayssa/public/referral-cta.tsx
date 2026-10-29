@@ -30,7 +30,7 @@ const TEMPOS: Parada[] = [
     n: "03",
     nome: "Ela confirma",
     texto:
-      "Com o atendimento feito, a Tayssa confirma — e é aí que a indicação passa a contar como sua.",
+      "Com o atendimento feito, a Tayssa confirma. É aí que a indicação passa a contar como sua.",
     icone: "check",
   },
 ];
@@ -93,7 +93,7 @@ export function ReferralCta() {
           <Reveal delay={0.1}>
             <p className="tyr__regra-linha">
               A indicação conta <em>depois</em> que a Tayssa confirma o primeiro atendimento de
-              quem você indicou — nunca na promessa. É ela quem confere cada atendimento e quem
+              quem você indicou, nunca na promessa. É ela quem confere cada atendimento e quem
               libera cada benefício: automático, aqui, não existe.
             </p>
             <div className="tyr__acoes">
