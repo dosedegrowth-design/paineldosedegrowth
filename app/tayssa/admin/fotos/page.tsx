@@ -137,7 +137,7 @@ export default async function PhotosPage({ searchParams }: { searchParams: Promi
           No site <span>{activePhotos.length}</span>
         </Link>
         <Link href={`${ROUTES.adminPhotos}?aba=capas`} className="tya-aba" data-on={aba === "capas"}>
-          Capas dos serviços <span>{servicosCapa.filter((s) => s.capa).length}</span>
+          Capas <span>{servicosCapa.filter((s) => s.capa).length}</span>
         </Link>
       </nav>
 

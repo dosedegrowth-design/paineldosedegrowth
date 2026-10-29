@@ -837,8 +837,12 @@ select.tya-field {
 /* ---------- mídia: abas, galeria, rolos, publicar ---------- */
 .tya-abas {
   display: inline-flex;
+  max-width: 100%;
   gap: 4px;
   padding: 4px;
+  /* no celular estreito a fileira rola para o lado em vez de quebrar o nome */
+  overflow-x: auto;
+  scrollbar-width: none;
   margin: 18px 0 4px;
   border-radius: 999px;
   background: #fff;
@@ -846,10 +850,12 @@ select.tya-field {
 }
 .tya-aba {
   display: inline-flex;
+  flex: none;
   align-items: center;
   gap: 8px;
   height: 38px;
   padding: 0 16px;
+  white-space: nowrap;
   border-radius: 999px;
   font-size: 14px;
   font-weight: 600;
