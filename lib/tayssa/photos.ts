@@ -199,7 +199,8 @@ export function assignPhotos(library: LibraryPhoto[]): PhotoAssignment {
   // primeira foto cujo nome a declara; quem não tiver foto declarada fica
   // com o estático, que não afirma técnica nenhuma.
   const estaticos = [PHOTOS.work01, PHOTOS.work02, PHOTOS.work03];
-  const usadas = new Set<string>();
+  // a foto da abertura não se repete logo abaixo, na primeira técnica
+  const usadas = new Set<string>(ordered.length > 1 ? [ordered[0].id] : []);
   const work = WORK_KEYWORDS.map(({ palavras, fora = [] }, i) => {
     const achou = ordered.find((p) => {
       const nome = p.lash_style.toLowerCase();
@@ -214,12 +215,17 @@ export function assignPhotos(library: LibraryPhoto[]): PhotoAssignment {
   const detailStatics = [PHOTOS.detail01, PHOTOS.detail02, PHOTOS.detail03, PHOTOS.detail04, PHOTOS.detail05, PHOTOS.detail06];
   const details = detailStatics.map((st, i) => take(1, 4 + i)[0] ?? st);
   // por serviço: a foto declarada na biblioteca; sem ela, o estático do
-  // serviço (que a página descarta se o arquivo não existir)
+  // serviço (que a página descarta se o arquivo não existir). A abertura e a
+  // sequência já mostraram as suas logo acima: o serviço pega outra do mesmo
+  // nome quando houver, e cada serviço fica com uma foto só dele.
   const byService: Record<string, PhotoSlot> = {};
   for (const [slug, words] of Object.entries(SERVICE_KEYWORDS)) {
-    const hit = ordered.find((p) => words.some((w) => p.lash_style.toLowerCase().includes(w)));
-    if (hit) byService[slug] = slotFromPhoto(hit, 3 / 4);
-    else if (SERVICE_STATICS[slug]) byService[slug] = SERVICE_STATICS[slug];
+    const casa = (p: LibraryPhoto) => words.some((w) => p.lash_style.toLowerCase().includes(w));
+    const hit = ordered.find((p) => casa(p) && !usadas.has(p.id)) ?? ordered.find(casa);
+    if (hit) {
+      usadas.add(hit.id);
+      byService[slug] = slotFromPhoto(hit, 3 / 4);
+    } else if (SERVICE_STATICS[slug]) byService[slug] = SERVICE_STATICS[slug];
   }
   const porNome = (palavras: string[]) =>
     ordered.find((p) => palavras.some((w) => p.lash_style.toLowerCase().includes(w)));

@@ -23,7 +23,7 @@ export type ServicoDetalhe = {
 };
 
 export type Depoimento = {
-  /** primeiro nome ou como a cliente autorizou ser citada */
+  /** o tema da fala ("Durabilidade") ou o primeiro nome, se a cliente autorizou */
   nome: string;
   texto: string;
   /** de onde veio: "Instagram", "WhatsApp" — com autorização da cliente */
@@ -78,7 +78,27 @@ export type ConteudoSite = {
 };
 
 export const CONTEUDO: ConteudoSite = {
-  sobre: { bio: null, formacao: null, assinatura: null },
+  // a história e os cursos que ela escreveu no formulário (28/10/2026), nas palavras dela
+  sobre: {
+    bio: [
+      "Minha história com os cílios começou em abril de 2023, quando eu ainda trabalhava em uma joalheria, estudava e recebia R$\u00a0600 por mês. Foi com esse dinheiro que comecei a juntar para investir no meu primeiro curso.",
+      "Depois, fui comprando meus materiais aos poucos, conciliando trabalho, escola e os primeiros atendimentos. Não tinha uma estrutura pronta, mas tinha vontade de construir algo meu. Olhando para trás, sinto que encontrei esse caminho antes mesmo de entender tudo o que ele poderia se tornar.",
+      "Hoje, enxergo os cílios como o começo de algo muito maior do que uma profissão. Quero construir uma marca forte, ter minha própria empresa, formar uma equipe em que eu possa confiar e, futuramente, ensinar outras mulheres a construírem seus próprios caminhos. Não quero oferecer apenas um curso técnico, mas compartilhar conhecimento, mostrar possibilidades e ajudar outras profissionais a desenvolverem não só suas habilidades, mas também seu posicionamento, sua visão de negócio e sua independência.",
+      "O que me move é saber que posso construir algo que tenha propósito. Quero olhar para tudo o que conquistei e sentir que meu trabalho fez diferença, que abriu portas e criou oportunidades. Minha filha faz parte dessa motivação, assim como o desejo de conquistar liberdade para viver e escolher o meu futuro.",
+      "Na minha profissão, levo esse pensamento para cada atendimento: escuto, observo, respeito as individualidades e cuido dos detalhes para que cada cliente se sinta segura, valorizada e à vontade. Porque, para mim, construir uma marca não é apenas sobre o que eu entrego, mas também sobre o impacto que posso deixar nas pessoas ao longo do caminho.",
+    ],
+    formacao: [
+      "Extensão de cílios · formação presencial, 2023",
+      "Design de sobrancelhas · formação presencial",
+      "Hidragloss · formação presencial",
+      "Lash lifting · curso on-line",
+      "Técnicas de capping · curso on-line",
+      "Técnicas de durabilidade da extensão de cílios · curso on-line",
+      "Assistente pessoal · SENAC",
+      "Informática · curso de formação",
+    ],
+    assinatura: null,
+  },
   // ela quer mostrar só o bairro
   espaco: { descricao: null, endereco: "Pirituba, São Paulo", mapaUrl: null },
   atendimento: {
@@ -93,7 +113,82 @@ export const CONTEUDO: ConteudoSite = {
     ],
     pagamento: ["Pix", "Cartão de crédito", "Cartão de débito", "Dinheiro"],
   },
-  depoimentos: [],
+  // as falas que ela mandou: 9 prints de conversa (só o texto, sem nome nem
+  // foto de cliente; erros de digitação corrigidos e trechos encurtados, sem
+  // mudar o que a cliente disse) e as 5 que ela escreveu, com o tema que ela deu
+  depoimentos: [
+    {
+      nome: "Fidelidade",
+      fonte: "cliente, no WhatsApp",
+      texto:
+        "Sou cliente da Tayssa há 3 anos e, desde que fui atendida por ela, nunca mais troquei de profissional! Ela é atenciosa, delicada e faz exatamente como você quer. Ela cria um projeto para você, do jeito que você gosta, e esse é o diferencial dela.",
+    },
+    {
+      nome: "Durabilidade",
+      fonte: "cliente, no WhatsApp",
+      texto:
+        "Os cílios ficam lindos, com um resultado natural e perfeito, e a durabilidade é incrível: durou 29 dias completos sem cair um cílio meu. Sempre saio me sentindo linda e muito mais confiante. Recomendo de olhos fechados!",
+    },
+    {
+      nome: "Autoestima",
+      fonte: "cliente, no WhatsApp",
+      texto:
+        "Vai muito além de fazer só os cílios! Eu me sinto muito mais bonita, minha autoestima muda completamente e me sinto muito melhor comigo mesma. Obrigada por realçar ainda mais a minha beleza e cuidar de mim com tanto carinho!",
+    },
+    {
+      nome: "Fidelidade",
+      fonte: "cliente, no WhatsApp",
+      texto:
+        "Fiz um teste num dia qualquer e desde então não larguei mais. Não falo isso somente por conta da durabilidade impecável, que me deixa por 1 mês despreocupada e lindíssima: ela preenche perfeitamente e não ficam aquelas falhas. Falo pelo atendimento em si, que cativa.",
+    },
+    {
+      nome: "Fidelidade",
+      fonte: "cliente, no WhatsApp",
+      texto:
+        "Há mais de um ano usufruindo desse trabalho impecável e, sinceramente, nunca cheguei a cogitar procurar outra profissional. Já troquei os métodos e fiquei satisfeita com todos. Qualidade, delicadeza e dedicação com a mesma profissional!",
+    },
+    {
+      nome: "Durabilidade",
+      fonte: "cliente, no WhatsApp",
+      texto:
+        "Já faço os meus cílios com a Tayssa há quase um ano. Além de me sentir em casa quando chego, a Tayssa preza por conforto, detalhes e cuidado. A durabilidade dos meus cílios é de exatamente um mês. Não me vejo fazendo cílios com outra pessoa.",
+    },
+    {
+      nome: "Atendimento",
+      fonte: "cliente, no WhatsApp",
+      texto:
+        "Tayssa, amei o atendimento! Você é muito atenciosa, cuidadosa e caprichosa no que faz. Fui muito bem atendida e fiquei muito satisfeita com tudo: dá para ver o carinho que você coloca no seu trabalho.",
+    },
+    {
+      nome: "Resultado",
+      fonte: "cliente, no WhatsApp",
+      texto:
+        "Meus cílios ficaram lindos, curvados e com um aspecto super natural. O procedimento foi muito tranquilo e o atendimento foi maravilhoso, com muito cuidado e carinho em cada detalhe. Fiquei apaixonada pelo resultado e com certeza faria novamente!",
+    },
+    {
+      nome: "Resultado",
+      fonte: "cliente, no WhatsApp",
+      texto:
+        "Eu amo o seu trabalho! Os cílios duram muito, o resultado é sempre perfeito, sem falar do ambiente perfeito e do atendimento impecável. Você é maravilhosa, sucesso sempre!",
+    },
+    { nome: "Resultado", fonte: "cliente", texto: "Ficou exatamente como eu queria! Amei o resultado, valorizou muito o meu olhar." },
+    { nome: "Durabilidade", fonte: "cliente", texto: "Além de lindos, os meus fios duram muito." },
+    {
+      nome: "Atendimento",
+      fonte: "cliente",
+      texto: "Obrigada pelo ótimo atendimento, por respeitar sempre o que eu quero e me deixar muito à vontade.",
+    },
+    {
+      nome: "Fidelização",
+      fonte: "cliente",
+      texto: "Depois que comecei a fazer os cílios com você, não troco nunca mais. Confio de olhos fechados.",
+    },
+    {
+      nome: "Experiência",
+      fonte: "cliente",
+      texto: "A gente vai para fazer os cílios e acaba tendo um momento só nosso. Amo o cuidado em cada detalhe.",
+    },
+  ],
   instagram: [],
   // o que a Tayssa escreveu no formulário (28/10/2026), sem os erros do ditado
   servicos: {

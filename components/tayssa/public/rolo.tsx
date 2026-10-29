@@ -7,6 +7,9 @@ import Image from "next/image";
 import { estiloFoco, type MidiaCatalogo } from "@/lib/tayssa/catalogo";
 import { useCamadaAberta } from "@/components/tayssa/ui/dialogo";
 
+/** Quantas mídias diferentes passam no rolo; o visor abre todas. */
+const AMOSTRA = { grande: 12, mini: 10 } as const;
+
 /**
  * O rolo: fotos e vídeos de um produto passando sozinhos, sem fim, cada
  * cartão flutuando no seu tempo. Mouse em cima (ou dedo) pausa; tocar
@@ -29,11 +32,15 @@ export function Rolo({
   const reduced = useReducedMotion();
   const [aberto, setAberto] = useState<number | null>(null);
   if (!itens.length) return null;
+  // passa só o começo da fila (quem chama já intercala os produtos): com as
+  // 46 fotos de cílios eram 92 cartões animados e o celular perdia quadros.
+  // Tocar abre o visor com a fila inteira.
+  const mostrados = itens.slice(0, AMOSTRA[tamanho]);
   // o laço precisa de largura: repete até ter cartões suficientes, e dobra
   // a fila inteira para a emenda nunca aparecer
   const minimo = tamanho === "mini" ? 8 : 7;
   const base: MidiaCatalogo[] = [];
-  while (base.length < minimo) base.push(...itens);
+  while (base.length < minimo) base.push(...mostrados);
   const fila = [...base, ...base];
   const segundos = base.length * (tamanho === "mini" ? 3.2 : 4.6);
 
@@ -46,8 +53,9 @@ export function Rolo({
         style={{ "--dur": `${segundos}s`, "--dir": sentido === 1 ? "normal" : "reverse" } as CSSProperties}
       >
         {fila.map((m, i) => {
-          const original = i % itens.length;
-          const copia = i >= itens.length;
+          // a amostra é o começo da fila: o índice vale para o visor também
+          const original = i % mostrados.length;
+          const copia = i >= mostrados.length;
           return (
             <button
               key={`${m.id}-${i}`}

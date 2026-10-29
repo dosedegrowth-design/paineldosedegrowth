@@ -241,7 +241,11 @@ export async function adminArchivePhotoAction(input: { id: string; archived: boo
   });
 }
 
-/** Apagar de verdade: some do bucket e do banco. */
+/**
+ * Apagar de verdade: some do bucket e do banco. Foto que veio do formulário
+ * da Tayssa (`briefing/…`) é o próprio arquivo que ela mandou: sai só da
+ * Mídia, o original continua no formulário.
+ */
 export async function adminDeletePhotoAction(input: { id: string }): Promise<ActionResult> {
   return runAction("photos.delete", async () => {
     const admin = await assertAdmin();
@@ -250,8 +254,10 @@ export async function adminDeletePhotoAction(input: { id: string }): Promise<Act
     const { data } = await db.from("photos").select("*").eq("id", input.id).maybeSingle();
     const photo = data as PhotoRow | null;
     if (!photo) throw new BusinessError("Foto não encontrada.");
-    const { error: rmErr } = await db.storage.from(PHOTO_BUCKET).remove([photo.storage_path]);
-    if (rmErr) throw new Error(`storage: ${rmErr.message}`);
+    if (!photo.storage_path.startsWith("briefing/")) {
+      const { error: rmErr } = await db.storage.from(PHOTO_BUCKET).remove([photo.storage_path]);
+      if (rmErr) throw new Error(`storage: ${rmErr.message}`);
+    }
     const { error } = await db.from("photos").delete().eq("id", input.id);
     if (error) throw new Error(error.message);
     await logAudit({ actorId: admin.id, actorRole: "admin", action: "photo_deleted", entityType: "photo", entityId: input.id, meta: { lash_style: photo.lash_style } });

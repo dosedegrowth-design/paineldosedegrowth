@@ -123,10 +123,22 @@ export function itensDaCategoria(catalogo: CategoriaCatalogo[], slug: CategoriaM
 }
 
 /**
+ * Um de cada lista por vez: [a1, b1, c1, a2, b2, a3…]. O rolo mostra só o
+ * começo da fila; assim cada produto aparece logo, em vez de doze fotos do
+ * produto maior e nenhuma dos outros.
+ */
+export function intercalar<T>(listas: T[][]): T[] {
+  const out: T[] = [];
+  const maior = Math.max(0, ...listas.map((l) => l.length));
+  for (let i = 0; i < maior; i++) for (const l of listas) if (i < l.length) out.push(l[i]);
+  return out;
+}
+
+/**
  * O rolo de cada serviço da lista do site: as fotos e vídeos do produto
- * que tem o nome dele ("Volume brasileiro", ou "Fox eyes" para "Volume Fox
- * eyes", ou "Manutenção" para "Manutenção de cílios"). Produto que não é de
- * um serviço só ("Volume", "Mega brasileiro") vai para o primeiro serviço
+ * que tem o nome dele ("Volume brasileiro", ou "Fox eyes" e "Mega Fox eyes"
+ * para "Volume Fox eyes", ou "Manutenção" para "Manutenção de cílios").
+ * Produto que não é de um serviço só ("Volume") vai para o primeiro serviço
  * da categoria. Antes cada serviço levava a categoria inteira: com oito
  * serviços de cílios, o mesmo rolo aparecia oito vezes.
  */
@@ -134,20 +146,22 @@ export function rolosDosServicos(
   catalogo: CategoriaCatalogo[],
   servicos: { slug: string; name: string }[]
 ): Record<string, MidiaCatalogo[]> {
-  const out: Record<string, MidiaCatalogo[]> = {};
-  const semVolume = (k: string) => k.replace(/^volume\s+/, "");
+  const listas: Record<string, MidiaCatalogo[][]> = {};
+  // "Volume inglês", "Mega inglês" e "inglês" são o mesmo volume
+  const base = (k: string) => k.replace(/^(volume|mega)\s+/, "");
   for (const cat of catalogo) {
     const daCategoria = servicos.filter((s) => categoriaDoServico(s.slug, s.name) === cat.slug);
     if (!daCategoria.length) continue;
     for (const p of cat.produtos) {
       const kp = chave(p.nome);
-      const exatos = daCategoria.filter((s) => chave(s.name) === kp || semVolume(chave(s.name)) === kp);
+      const exatos = daCategoria.filter((s) => chave(s.name) === kp || base(chave(s.name)) === base(kp));
       const contem = daCategoria.filter((s) => chave(s.name).includes(kp) || kp.includes(chave(s.name)));
       const dono = exatos.length === 1 ? exatos[0] : contem.length === 1 ? contem[0] : daCategoria[0];
-      out[dono.slug] = [...(out[dono.slug] ?? []), ...p.itens];
+      (listas[dono.slug] ??= []).push(p.itens);
     }
   }
-  return out;
+  // Volume inglês e Mega inglês se alternam no rolo, em vez de um depois do outro
+  return Object.fromEntries(Object.entries(listas).map(([slug, ls]) => [slug, intercalar(ls)]));
 }
 
 /** Distância de edição entre duas palavras (quantas letras trocar). */

@@ -4,7 +4,7 @@
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { categoriaDoServico, itensDaCategoria, montarCatalogo, produtoParecido, rolosDosServicos } from "./catalogo.ts";
+import { categoriaDoServico, intercalar, itensDaCategoria, montarCatalogo, produtoParecido, rolosDosServicos } from "./catalogo.ts";
 
 const linha = (o: Partial<Parameters<typeof montarCatalogo>[0][number]> & { id: string }) => ({
   public_url: `https://x/${o.id}.jpg`,
@@ -92,6 +92,7 @@ test("cada serviço leva o rolo do seu produto, sem repetir a categoria inteira"
     linha({ id: "d", lash_style: "Volume" }),
     linha({ id: "e", lash_style: "Mega brasileiro" }),
     linha({ id: "f", lash_style: "Brow Lamination", category: "sobrancelha" }),
+    linha({ id: "g", lash_style: "Mega inglês" }),
   ]);
   const servicos = [
     { slug: "volume-brasileiro", name: "Volume brasileiro" },
@@ -103,9 +104,9 @@ test("cada serviço leva o rolo do seu produto, sem repetir a categoria inteira"
   ];
   const rolos = rolosDosServicos(cat, servicos);
   const ids = (slug: string) => (rolos[slug] ?? []).map((i) => i.id).sort().join(",");
-  // o seu, mais o que não é de um serviço só ("Volume", "Mega brasileiro")
+  // o seu, o Mega do mesmo volume e o que não é de um serviço só ("Volume")
   assert.equal(ids("volume-brasileiro"), "a,d,e");
-  assert.equal(ids("volume-ingles"), "");
+  assert.equal(ids("volume-ingles"), "g");
   assert.equal(ids("volume-fox-eyes"), "b");
   assert.equal(ids("manutencao-cilios"), "c");
   assert.equal(ids("brow-lamination"), "f");
@@ -113,6 +114,12 @@ test("cada serviço leva o rolo do seu produto, sem repetir a categoria inteira"
   // nenhuma foto aparece em dois serviços
   const todos = Object.values(rolos).flat().map((i) => i.id);
   assert.equal(new Set(todos).size, todos.length);
+});
+
+test("intercalar: um de cada produto por vez, sem perder nenhum", () => {
+  assert.deepEqual(intercalar([["a1", "a2", "a3"], ["b1"], ["c1", "c2"]]), ["a1", "b1", "c1", "a2", "c2", "a3"]);
+  assert.deepEqual(intercalar([]), []);
+  assert.deepEqual(intercalar([[], ["x"]]), ["x"]);
 });
 
 test("serviços novos caem na categoria certa", () => {

@@ -274,6 +274,10 @@
   font-family: var(--t-font-serif);
   color: var(--t-accent);
 }
+.tydp__mais {
+  margin-top: clamp(28px, 4vw, 44px);
+  text-align: center;
+}
 .tydp__quem {
   margin-top: 14px;
 }

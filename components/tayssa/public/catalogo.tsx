@@ -3,7 +3,7 @@
 import { reais } from "@/lib/tayssa/agendar";
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import type { CategoriaCatalogo } from "@/lib/tayssa/catalogo";
+import { intercalar, type CategoriaCatalogo } from "@/lib/tayssa/catalogo";
 import { FundoVivo } from "@/components/tayssa/ui/fundo-vivo";
 import { Pendente, useEstrutura } from "@/components/tayssa/ui/estrutura";
 import { Rolo } from "@/components/tayssa/public/rolo";
@@ -39,7 +39,8 @@ export function Catalogo({ catalogo }: { catalogo: CategoriaCatalogo[] }) {
 
   const categoria = catalogo[Math.min(cat, catalogo.length - 1)];
   const produto = prod === null ? null : categoria.produtos[prod];
-  const itens = produto ? produto.itens : categoria.produtos.flatMap((p) => p.itens);
+  // "Tudo" alterna os produtos: o rolo passa o começo da fila, e assim mostra um pouco de cada
+  const itens = produto ? produto.itens : intercalar(categoria.produtos.map((p) => p.itens));
   const titulo = produto ? produto.nome : categoria.label;
 
   return (
