@@ -94,9 +94,11 @@ export const PAGAMENTOS = ["Pix", "Cartão de crédito", "Cartão de débito", "
 export const TECNICAS = [
   "Volume brasileiro",
   "Mega brasileiro",
+  "Volume inglês",
   "Mega inglês",
   "Volume egípcio",
   "Mega Fox eyes",
+  "Lash lifting",
   "Manutenção",
   "Brow Lamination",
   "Sobrancelha",
