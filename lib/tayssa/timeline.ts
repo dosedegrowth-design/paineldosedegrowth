@@ -85,11 +85,13 @@ export function buildTimeline({
       id: "birthday",
       kind: "birthday",
       date: birthday.inWindow ? todayISO : toISODate(birthday.nextDate),
-      title: "Semana de aniversário",
+      title: birthday.mesInteiro ? "Mês do aniversário" : "Semana de aniversário",
       detail: birthday.isToday
-        ? "é hoje — parabéns"
+        ? "é hoje, parabéns"
         : birthday.inWindow
-          ? "sua janela está aberta"
+          ? birthday.mesInteiro
+            ? "chegou o seu mês"
+            : "sua janela está aberta"
           : `em ${birthday.daysUntil} ${plural(birthday.daysUntil, "dia", "dias")} · ${dateLong(birthday.nextDate)}`,
       tone: "gold",
     });

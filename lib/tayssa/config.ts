@@ -99,6 +99,8 @@ export type RulesSettings = {
 };
 
 export type BirthdaySettings = {
+  /** o presente vale o mês inteiro do aniversário (a regra da Tayssa); desligado, valem os dias em volta da data */
+  mes_inteiro: boolean;
   window_days_before: number;
   window_days_after: number;
   once_per_year: boolean;
@@ -195,12 +197,13 @@ export const DEFAULT_SETTINGS: Settings = {
     benefit_validity_days: 60,
   },
   birthday: {
+    mes_inteiro: true,
     window_days_before: 3,
     window_days_after: 3,
     once_per_year: true,
     rules: [
       "Exclusivo para clientes com acesso VIP ativo.",
-      "Pode ser usado uma vez por ano, na semana do seu aniversário.",
+      "Pode ser usado uma vez por ano, no mês do seu aniversário.",
       "Precisa de agendamento e depende da disponibilidade da agenda.",
       "É pessoal e intransferível.",
       "Não vira dinheiro, desconto ou crédito.",

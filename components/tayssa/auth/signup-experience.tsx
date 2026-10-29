@@ -218,7 +218,7 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
             enterKeyHint="next"
             error={local.phone}
           />
-          <TyInput label="Aniversário (opcional)" name="birthday" type="date" error={local.birthday} hint="Para a sua semana especial, quando for VIP." />
+          <TyInput label="Aniversário (opcional)" name="birthday" type="date" error={local.birthday} hint="Para o seu presente de aniversário, quando for VIP." />
         </div>
         <div className="tyl__row" hidden={step !== 1}>
           <TyInput

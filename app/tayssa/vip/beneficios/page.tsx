@@ -92,16 +92,20 @@ export default async function BenefitsPage() {
           {!user.isVip ? (
             <p className="tyv-empty">Esse benefício faz parte da experiência VIP. O acesso é liberado pela Tayssa.</p>
           ) : !o.birthday ? (
-            <p className="tyv-empty">Conte sua data de aniversário para a Tayssa. Ela cadastra, e sua semana aparece aqui.</p>
-          ) : o.birthday.inWindow ? (
-            <p className="tyv-sub" style={{ fontSize: 15 }}>
-              É a sua semana. A Tayssa libera seu presente por aqui.
-            </p>
+            <p className="tyv-empty">Conte sua data de aniversário para a Tayssa. Ela cadastra, e o seu presente aparece aqui.</p>
           ) : (
-            <p className="tyv-sub" style={{ fontSize: 15 }}>
-              Seu aniversário é em {dateLong(o.birthday.nextDate)}. Na sua semana, uma experiência escolhida pela Tayssa
-              para você.
-            </p>
+            <>
+              <p className="tyv-sub" style={{ fontSize: 15 }}>
+                {o.birthday.inWindow
+                  ? `${o.birthday.mesInteiro ? "É o mês do seu aniversário." : "É a sua semana."} A Tayssa libera seu presente por aqui.`
+                  : `Seu aniversário é em ${dateLong(o.birthday.nextDate)}.`}
+              </p>
+              {/* o presente, no texto dela; sem texto no catálogo, a frase de sempre */}
+              <p className="tyv-sub" style={{ fontSize: 14, marginTop: 8 }}>
+                {o.birthdayDescription ??
+                  `${o.birthday.mesInteiro ? "No mês do seu aniversário" : "Na sua semana"}, uma experiência escolhida pela Tayssa para você.`}
+              </p>
+            </>
           )}
           {o.blackout ? (
             <p className="tyv-sub" style={{ fontSize: 12.5, marginTop: 10 }}>

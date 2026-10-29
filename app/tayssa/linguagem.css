@@ -657,14 +657,6 @@
     grid-row: 1;
   }
 }
-@media (min-width: 1200px) {
-  .tyvi__linha {
-    grid-template-columns: 72px minmax(0, 3.6fr) minmax(0, 5.4fr) minmax(0, 2.2fr);
-  }
-  .tyvi__ficha {
-    grid-row: 1;
-  }
-}
 .tyvi__jornada,
 .tyr__jornada {
   margin-top: clamp(48px, 7vw, 110px);

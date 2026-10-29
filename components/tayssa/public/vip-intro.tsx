@@ -58,8 +58,8 @@ const PRIVILEGIOS: {
     tipo: "birthday",
     nome: "Aniversário",
     texto:
-      "Uma vez por ano o estúdio para por você. O que vem é escolhido por ela, combinado com você e encaixado na agenda — não é desconto automático nem cupom que cai sozinho.",
-    fichaPadrao: "na semana do seu aniversário",
+      "Uma vez por ano o estúdio para por você. O presente é combinado com você e encaixado na agenda: não é desconto automático nem cupom que cai sozinho.",
+    fichaPadrao: "uma vez por ano, no seu aniversário",
   },
 ];
 
@@ -123,7 +123,7 @@ export function VipIntro({ benefits }: { benefits: BenefitRow[] }) {
             <Reveal delay={0.12}>
               <p className="ty-lead ty-measure">
                 É a forma da Tayssa cuidar de quem já faz parte da rotina do estúdio: ela
-                sabe seu nome, seu olhar e o seu tempo — e decide, uma a uma, cada coisa que
+                sabe seu nome, seu olhar e o seu tempo, e decide, uma a uma, cada coisa que
                 te oferece.
               </p>
             </Reveal>
@@ -174,7 +174,7 @@ export function VipIntro({ benefits }: { benefits: BenefitRow[] }) {
           <Reveal delay={0.1}>
             <p className="ty-body ty-measure">
               O cadastro é um pedido de acesso, não uma porta aberta: a Tayssa lê, confere e
-              responde. E nenhum benefício cai sozinho na sua conta — cada um passa pela
+              responde. E nenhum benefício cai sozinho na sua conta: cada um passa pela
               confirmação dela.
             </p>
             <div className="tyvi__acoes">

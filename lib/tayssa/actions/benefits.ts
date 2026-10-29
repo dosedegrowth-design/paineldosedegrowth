@@ -8,7 +8,7 @@ import { logAudit } from "@/lib/tayssa/audit";
 import { ROUTES } from "@/lib/tayssa/config";
 import { getSettings } from "@/lib/tayssa/settings";
 import { defaultValidityDays } from "@/lib/tayssa/engine";
-import { addDays, birthdayCycleKey, birthdayInfo } from "@/lib/tayssa/rules";
+import { addDays, birthdayCycleKey, birthdayInfo, validadeDoAniversario } from "@/lib/tayssa/rules";
 import { nowInBusinessTz } from "@/lib/tayssa/format";
 import {
   benefitDecisionSchema,
@@ -255,13 +255,15 @@ export async function adminReleaseBirthdayAction(
     const settings = await getSettings();
     // o mesmo ciclo que o VIP enxerga: perto da virada, o aniversário que
     // vem já é do ano seguinte (antes o painel gravava o ano do relógio UTC)
-    const { cycleYear } = birthdayInfo(
+    const hoje = nowInBusinessTz();
+    const info = birthdayInfo(
       p.birthday,
-      nowInBusinessTz(),
+      hoje,
       settings.birthday.window_days_before,
-      settings.birthday.window_days_after
+      settings.birthday.window_days_after,
+      settings.birthday.mes_inteiro
     );
-    const cycleKey = birthdayCycleKey(cycleYear);
+    const cycleKey = birthdayCycleKey(info.cycleYear);
     if (settings.birthday.once_per_year) {
       const { data: existing } = await db
         .from("client_benefits")
@@ -272,7 +274,8 @@ export async function adminReleaseBirthdayAction(
         .maybeSingle();
       if (existing) throw new BusinessError("O benefício de aniversário deste ano já foi liberado.");
     }
-    const days = input.validity_days ?? (await defaultValidityDays(b));
+    // sem validade escrita: no modo mês inteiro, vale até o fim do mês dela
+    const days = input.validity_days ?? validadeDoAniversario(info, hoje, await defaultValidityDays(b));
     const now = new Date();
     const { data: created, error } = await db
       .from("client_benefits")
@@ -296,7 +299,7 @@ export async function adminReleaseBirthdayAction(
       action: "birthday_released",
       entityType: "client_benefit",
       entityId: (created as { id: string }).id,
-      meta: { client_id: input.client_id, year: cycleYear, title: input.title },
+      meta: { client_id: input.client_id, year: info.cycleYear, title: input.title },
     });
     revalidateBoth();
     return undefined;

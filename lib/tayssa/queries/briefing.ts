@@ -86,7 +86,7 @@ export async function getBriefing(): Promise<BriefingCompleto> {
     descricao: b.key === "card_complete" ? loyalty.card_reward_description : (b.description ?? ""),
     regra:
       b.type === "birthday"
-        ? `Na semana do aniversário: de ${birthday.window_days_before} dias antes a ${birthday.window_days_after} depois${birthday.once_per_year ? ", uma vez por ano" : ""}.`
+        ? `${birthday.mes_inteiro ? "Durante o mês do aniversário" : `Na semana do aniversário: de ${birthday.window_days_before} dias antes a ${birthday.window_days_after} depois`}${birthday.once_per_year ? ", uma vez por ano" : ""}.`
         : b.threshold_unit === "points"
           ? `Ao juntar ${b.threshold} pontos.`
           : b.threshold_unit === "services"

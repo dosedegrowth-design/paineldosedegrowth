@@ -6,7 +6,7 @@ import { getSettings } from "@/lib/tayssa/settings";
 import { getPublicBenefits } from "@/lib/tayssa/queries/catalog";
 import { ROUTES } from "@/lib/tayssa/config";
 import { dateShort, dayMonth, monthName, nowInBusinessTz, plural } from "@/lib/tayssa/format";
-import { daysBetween } from "@/lib/tayssa/rules";
+import { daysBetween, validadeDoAniversario } from "@/lib/tayssa/rules";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { BENEFIT_STATUS_LABEL, type ClientBenefitStatus } from "@/lib/tayssa/types";
 import { AdminBlock, AdminHeader, Empty } from "@/components/tayssa/admin/shell";
@@ -88,12 +88,15 @@ export default async function BirthdaysAdminPage({ searchParams }: { searchParam
   const month = mes && /^\d{1,2}$/.test(mes) ? Math.min(11, Math.max(0, Number(mes) - 1)) : now.getMonth();
   const [list, settings, benefits] = await Promise.all([listBirthdays(month), getSettings(), getPublicBenefits()]);
   const defaultDays = benefits.find((b) => b.type === "birthday")?.validity_days ?? settings.rules.benefit_validity_days;
+  // a regra dela é o mês inteiro do aniversário; desligada, os dias em volta da data
+  const mesInteiro = settings.birthday.mes_inteiro;
+  const naDela = mesInteiro ? "no mês dela" : "na semana dela";
 
   const vips = list.filter((c) => c.profile?.vip_status === "active");
   const naJanela = list.filter((c) => c.info.inWindow);
   const liberados = list.filter((c) => c.releasedThisYear);
   const aLiberar = vips.filter((c) => !c.releasedThisYear);
-  /** Espera de verdade: a semana dela está aberta hoje e o presente não saiu. */
+  /** Espera de verdade: o mês (ou a semana) dela está aberto hoje e o presente não saiu. */
   const esperandoAgora = aLiberar.filter((c) => c.info.inWindow);
 
   return (
@@ -105,7 +108,7 @@ export default async function BirthdaysAdminPage({ searchParams }: { searchParam
             {mesTitulo(month)}: {list.length} <em>{plural(list.length, "aniversariante", "aniversariantes")}</em>
           </>
         }
-        lead="Só VIP ativo recebe o benefício, e nenhum sai sozinho: você escolhe o presente e libera. Ela agenda na semana dela."
+        lead={`Só VIP ativo recebe o benefício, e nenhum sai sozinho: você escolhe o presente e libera. Ela agenda ${naDela}.`}
       />
 
       <div className="tya-toolbar">
@@ -124,8 +127,7 @@ export default async function BirthdaysAdminPage({ searchParams }: { searchParam
         </div>
         {esperandoAgora.length ? (
           <span className="tya-pill tya-pill--gold">
-            {esperandoAgora.length} {plural(esperandoAgora.length, "VIP", "VIPs")} na semana dela, sem presente
-            liberado
+            {esperandoAgora.length} {plural(esperandoAgora.length, "VIP", "VIPs")} {naDela}, sem presente liberado
           </span>
         ) : aLiberar.length ? (
           <span className="tya-pill tya-pill--quiet">
@@ -136,7 +138,7 @@ export default async function BirthdaysAdminPage({ searchParams }: { searchParam
 
       <div className="tya-kpis tya-kpis--2sm tya-stagger">
         <Atalho n={list.length} label="No mês" />
-        <Atalho n={naJanela.length} label="Na semana dela" alerta={naJanela.length > 0} />
+        <Atalho n={naJanela.length} label={mesInteiro ? "Valendo agora" : "Na semana dela"} alerta={naJanela.length > 0} />
         <Atalho n={vips.length} label="VIP ativo" />
         <Atalho n={liberados.length} label="Já liberados" />
       </div>
@@ -177,7 +179,9 @@ export default async function BirthdaysAdminPage({ searchParams }: { searchParam
                       <span className={`tya-pill ${vip ? "tya-pill--gold" : "tya-pill--quiet"}`}>
                         {vip ? "VIP ativo" : "não VIP"}
                       </span>
-                      {c.info.inWindow ? <span className="tya-pill tya-pill--brand">é a semana dela</span> : null}
+                      {c.info.inWindow ? (
+                        <span className="tya-pill tya-pill--brand">{mesInteiro ? "é o mês dela" : "é a semana dela"}</span>
+                      ) : null}
                       <span className="tya-pill tya-pill--quiet tya-num">{c.points} pts</span>
                     </div>
                     <p className="tya-slot__meta">
@@ -226,7 +230,7 @@ export default async function BirthdaysAdminPage({ searchParams }: { searchParam
                       </div>
                     ) : vip ? (
                       <div className="tya-give">
-                        <ReleaseBirthdayForm clientId={c.user.id} defaultDays={defaultDays} />
+                        <ReleaseBirthdayForm clientId={c.user.id} defaultDays={validadeDoAniversario(c.info, now, defaultDays)} />
                       </div>
                     ) : null}
                   </div>

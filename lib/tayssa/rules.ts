@@ -168,6 +168,8 @@ export type BirthdayInfo = {
   inWindow: boolean;
   windowStart: Date;
   windowEnd: Date;
+  /** a janela é o mês inteiro do aniversário (as telas falam "mês", não "semana") */
+  mesInteiro: boolean;
   /** Ano do ciclo a que a janela atual pertence. */
   cycleYear: number;
 };
@@ -176,18 +178,22 @@ export function birthdayInfo(
   birthdayISO: string,
   today: Date,
   before: number,
-  after: number
+  after: number,
+  /** do dia 1º ao último dia do mês do aniversário, no lugar dos dias antes e depois */
+  mesInteiro = false
 ): BirthdayInfo {
   const b = parseISODate(birthdayISO);
-  const thisYear = new Date(today.getFullYear(), b.getMonth(), b.getDate());
+  const mes = b.getMonth();
+  const ultimoDia = (ano: number) => new Date(ano, mes + 1, 0).getDate();
+  // 29/02 em ano sem esse dia cai no 28, não em 1º de março
+  const naData = (ano: number) => new Date(ano, mes, Math.min(b.getDate(), ultimoDia(ano)));
+  const inicio = (d: Date) => (mesInteiro ? new Date(d.getFullYear(), mes, 1) : addDays(d, -before));
+  const fim = (d: Date) => (mesInteiro ? new Date(d.getFullYear(), mes, ultimoDia(d.getFullYear())) : addDays(d, after));
   // se a janela deste ano já passou, a próxima ocorrência é no ano que vem
-  const endThis = addDays(thisYear, after);
-  let occurrence = thisYear;
-  if (daysBetween(today, endThis) < 0) {
-    occurrence = new Date(today.getFullYear() + 1, b.getMonth(), b.getDate());
-  }
-  const windowStart = addDays(occurrence, -before);
-  const windowEnd = addDays(occurrence, after);
+  let occurrence = naData(today.getFullYear());
+  if (daysBetween(today, fim(occurrence)) < 0) occurrence = naData(today.getFullYear() + 1);
+  const windowStart = inicio(occurrence);
+  const windowEnd = fim(occurrence);
   const daysUntil = daysBetween(today, occurrence);
   const inWindow =
     daysBetween(windowStart, today) >= 0 && daysBetween(today, windowEnd) >= 0;
@@ -198,8 +204,19 @@ export function birthdayInfo(
     inWindow,
     windowStart,
     windowEnd,
+    mesInteiro,
     cycleYear: occurrence.getFullYear(),
   };
+}
+
+/**
+ * Validade do presente de aniversário liberado hoje no modo mês inteiro: até
+ * o último dia do mês dela (1 dia no mínimo). Fora desse modo, a validade
+ * padrão do benefício.
+ */
+export function validadeDoAniversario(info: BirthdayInfo, today: Date, padrao: number): number {
+  if (!info.mesInteiro) return padrao;
+  return Math.min(365, Math.max(1, daysBetween(today, info.windowEnd) + 1));
 }
 
 /** Aniversariantes de um mês (0-11) a partir de uma lista de datas. */

@@ -65,6 +65,6 @@ test("jornada: limites e aniversário na janela", () => {
   });
   assert.equal(t.recent.length, 4);
   assert.equal(t.upcoming[0].kind, "birthday");
-  assert.equal(t.upcoming[0].detail, "é hoje — parabéns");
+  assert.equal(t.upcoming[0].detail, "é hoje, parabéns");
   assert.equal(t.upcoming[0].date, "2026-09-16");
 });

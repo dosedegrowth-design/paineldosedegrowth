@@ -3,7 +3,7 @@ import { requireAdminPage } from "@/lib/tayssa/auth/guards";
 import { getClientDetail } from "@/lib/tayssa/queries/admin";
 import { getActiveServices, getPublicBenefits } from "@/lib/tayssa/queries/catalog";
 import { getSettings } from "@/lib/tayssa/settings";
-import { toISODate } from "@/lib/tayssa/rules";
+import { toISODate, validadeDoAniversario } from "@/lib/tayssa/rules";
 import { cicloLegivel, currency, dateLong, dateShort, dateTime, isWithinHours, nowInBusinessTz } from "@/lib/tayssa/format";
 import { formatBrPhone } from "@/lib/tayssa/phone";
 import { renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
@@ -335,7 +335,8 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
         aside={
           profile?.birthday ? (
             <span className="tya-small">
-              {dateLong(profile.birthday)} · semana de {dateShort(d.birthday!.windowStart)} a {dateShort(d.birthday!.windowEnd)}
+              {dateLong(profile.birthday)} · {d.birthday!.mesInteiro ? "presente" : "semana"} de {dateShort(d.birthday!.windowStart)} a{" "}
+              {dateShort(d.birthday!.windowEnd)}
             </span>
           ) : (
             <span className="tya-small">sem data</span>
@@ -351,7 +352,11 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
         ) : canReleaseBirthday ? (
           <ReleaseBirthdayForm
             clientId={user.id}
-            defaultDays={benefits.find((b) => b.type === "birthday")?.validity_days ?? settings.rules.benefit_validity_days}
+            defaultDays={validadeDoAniversario(
+              d.birthday!,
+              nowInBusinessTz(),
+              benefits.find((b) => b.type === "birthday")?.validity_days ?? settings.rules.benefit_validity_days
+            )}
           />
         ) : (
           <Empty>

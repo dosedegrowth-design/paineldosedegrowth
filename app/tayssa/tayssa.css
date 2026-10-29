@@ -1683,11 +1683,15 @@ select.ty-field__input {
   line-height: 1.62;
   color: var(--t-fg-2);
 }
+/* a ficha é o que a Tayssa escreveu no catálogo, em frase inteira ("15% de
+   desconto e um spa dos lábios…"): mono em caixa normal. Caixa-alta
+   espaçada só serve para rótulo curto; com o texto dela virava um bloco */
 .tyvi__ficha {
+  max-width: 52ch;
   font-family: var(--t-font-mono);
-  font-size: 11.5px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-size: 12.5px;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
   color: var(--t-fg-2);
 }
 @media (min-width: 900px) {
@@ -1706,19 +1710,6 @@ select.ty-field__input {
   }
   .tyvi__ficha {
     margin-top: 14px;
-  }
-}
-/* com largura de sobra a ficha vira coluna própria, rente à margem:
-   o índice ganha cara de livro-caixa da casa */
-@media (min-width: 1200px) {
-  .tyvi__linha {
-    grid-template-columns: 56px minmax(0, 3.6fr) minmax(0, 5.4fr) minmax(0, 2.2fr);
-  }
-  .tyvi__ficha {
-    grid-column: 4;
-    margin-top: 0;
-    padding-top: 10px;
-    text-align: right;
   }
 }
 

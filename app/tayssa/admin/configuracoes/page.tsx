@@ -197,10 +197,12 @@ export default async function SettingsAdminPage() {
           titulo="Aniversário"
           selo={
             <span className="tya-pill tya-pill--quiet">
-              {settings.birthday.window_days_before} + {settings.birthday.window_days_after} dias
+              {settings.birthday.mes_inteiro
+                ? "mês inteiro"
+                : `${settings.birthday.window_days_before} + ${settings.birthday.window_days_after} dias`}
             </span>
           }
-          efeito="A janela em volta da data dela e as regras que ela lê na tela de benefícios. Só VIP ativo recebe, e o presente é você quem escolhe e libera."
+          efeito="Quando o presente vale: o mês inteiro do aniversário ou alguns dias em volta da data. Só VIP ativo recebe, e o presente é você quem escolhe e libera."
         >
           <BirthdayForm value={settings.birthday} />
         </Bloco>

@@ -16,6 +16,7 @@ import {
   loyaltyProgress,
   referralProgress,
   trechosOcupados,
+  validadeDoAniversario,
 } from "./rules.ts";
 import { normalizeBrPhone, formatBrPhone } from "./phone.ts";
 import { renderTemplate, whatsappUrl } from "./whatsapp.ts";
@@ -65,6 +66,44 @@ test("aniversário: janela e próxima data", () => {
   assert.equal(c.nextDate.getFullYear(), 2027);
   const d = birthdayInfo("2000-09-14", today, 0, 0);
   assert.equal(d.isToday, true);
+});
+
+test("aniversário: o mês inteiro (a regra da Tayssa)", () => {
+  const today = new Date(2026, 8, 14); // 14/09/2026
+  // fez aniversário dia 2: a janela é setembro inteiro, ainda aberta
+  const a = birthdayInfo("1995-09-02", today, 3, 3, true);
+  assert.equal(a.inWindow, true);
+  assert.equal(a.mesInteiro, true);
+  assert.equal(a.cycleYear, 2026);
+  assert.equal(a.windowStart.getDate(), 1);
+  assert.equal(a.windowEnd.getDate(), 30);
+  // nos dias antes/depois ela estaria fora (janela de 31/08 a 05/09)
+  assert.equal(birthdayInfo("1995-09-02", today, 3, 3).inWindow, false);
+  // agosto passou: o próximo é o de 2027, fora da janela
+  const b = birthdayInfo("1995-08-31", today, 3, 3, true);
+  assert.equal(b.inWindow, false);
+  assert.equal(b.cycleYear, 2027);
+  // outubro: ainda não abriu
+  assert.equal(birthdayInfo("1995-10-01", today, 3, 3, true).inWindow, false);
+  // perto da virada: dezembro de 2026 é o ciclo de 2026, janeiro o de 2027
+  assert.equal(birthdayInfo("1990-12-31", new Date(2026, 11, 1), 0, 0, true).cycleYear, 2026);
+  assert.equal(birthdayInfo("1990-01-20", new Date(2026, 11, 20), 0, 0, true).cycleYear, 2027);
+  // 29/02 em ano sem esse dia: fevereiro até o dia 28, aniversário no 28
+  const f = birthdayInfo("1996-02-29", new Date(2027, 1, 10), 0, 0, true);
+  assert.equal(f.inWindow, true);
+  assert.equal(f.windowEnd.getDate(), 28);
+  assert.equal(f.nextDate.getMonth(), 1);
+  assert.equal(f.nextDate.getDate(), 28);
+});
+
+test("aniversário: validade do presente até o fim do mês dela", () => {
+  const today = new Date(2026, 8, 14); // 14/09/2026
+  // de 14 a 30/09: 17 dias contando hoje
+  assert.equal(validadeDoAniversario(birthdayInfo("1995-09-02", today, 3, 3, true), today, 14), 17);
+  // liberado antes do mês (outubro): até 31/10
+  assert.equal(validadeDoAniversario(birthdayInfo("1995-10-20", today, 3, 3, true), today, 14), 48);
+  // fora do modo mês inteiro, a validade padrão
+  assert.equal(validadeDoAniversario(birthdayInfo("1995-09-16", today, 3, 3), today, 14), 14);
 });
 
 test("blackout e inatividade", () => {

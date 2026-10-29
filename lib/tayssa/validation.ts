@@ -296,6 +296,7 @@ export const rulesSettingsSchema = z.object({
 });
 
 export const birthdaySettingsSchema = z.object({
+  mes_inteiro: z.boolean(),
   window_days_before: z.coerce.number().int().min(0).max(30),
   window_days_after: z.coerce.number().int().min(0).max(30),
   once_per_year: z.boolean(),

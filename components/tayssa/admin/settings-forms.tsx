@@ -211,6 +211,7 @@ export function BirthdayForm({ value }: { value: Settings["birthday"] }) {
   const { onReset } = useFormPreservado();
   return (
     <form onSubmit={onSubmit} noValidate onReset={onReset} className="tya-stack">
+      <Marcar name="mes_inteiro" label="Vale o mês inteiro do aniversário" defaultChecked={value.mes_inteiro} />
       <div className="tya-grid tya-grid--num">
         <Campo
           label="Dias antes"
@@ -218,6 +219,7 @@ export function BirthdayForm({ value }: { value: Settings["birthday"] }) {
           inputMode="numeric"
           defaultValue={String(value.window_days_before)}
           error={erroDe(state, "window_days_before")}
+          hint="Só contam com o mês inteiro desligado."
         />
         <Campo
           label="Dias depois"

@@ -39,6 +39,8 @@ export type ClientOverview = {
   pendingServices: number;
   referralsInProgress: number;
   birthday: BirthdayInfo | null;
+  /** o que o presente de aniversário é, no texto da Tayssa (catálogo de benefícios) */
+  birthdayDescription: string | null;
   birthdayBenefit: ClientBenefitView | null;
   blackout: { name: string; endsOn: Date } | null;
   recentServices: ClientServiceRow[];
@@ -88,7 +90,8 @@ export const getClientOverview = cache(async (user: SessionUser): Promise<Client
           user.profile.birthday,
           today,
           settings.birthday.window_days_before,
-          settings.birthday.window_days_after
+          settings.birthday.window_days_after,
+          settings.birthday.mes_inteiro
         )
       : null;
   const birthdayBenefit =
@@ -110,6 +113,7 @@ export const getClientOverview = cache(async (user: SessionUser): Promise<Client
     pendingServices,
     referralsInProgress: inProgress,
     birthday,
+    birthdayDescription: benefitsCatalog.find((b) => b.type === "birthday")?.description?.trim() || null,
     birthdayBenefit,
     blackout: activeBlackout(today, blackouts, "birthday"),
     recentServices: services.slice(0, 5),

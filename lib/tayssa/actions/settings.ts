@@ -79,6 +79,7 @@ export async function updateBirthdaySettingsAction(_p: ActionResult | null, fd: 
       .map((l) => l.trim())
       .filter(Boolean);
     const input = birthdaySettingsSchema.parse({
+      mes_inteiro: bool(fd, "mes_inteiro"),
       window_days_before: str(fd, "window_days_before"),
       window_days_after: str(fd, "window_days_after"),
       once_per_year: bool(fd, "once_per_year"),

@@ -397,7 +397,8 @@ export const getClientDetail = cache(async (id: string): Promise<ClientDetail | 
         summary.profile.birthday,
         today,
         settings.birthday.window_days_before,
-        settings.birthday.window_days_after
+        settings.birthday.window_days_after,
+        settings.birthday.mes_inteiro
       )
     : null;
   return {
@@ -489,7 +490,8 @@ export const listBirthdays = cache(async (month: number): Promise<BirthdayEntry[
         c.profile!.birthday!,
         today,
         settings.birthday.window_days_before,
-        settings.birthday.window_days_after
+        settings.birthday.window_days_after,
+        settings.birthday.mes_inteiro
       );
       return {
         ...c,
