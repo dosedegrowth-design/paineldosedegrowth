@@ -78,7 +78,7 @@ export const SECOES: Secao[] = [
   { id: "voce", titulo: "Você", para: "Vira a parte “Tayssa, de perto” do site." },
   { id: "servicos", titulo: "Seus serviços", para: "Aparecem na lista de serviços e na hora de agendar." },
   { id: "atendimento", titulo: "Como você atende", para: "Vira a agenda do site e a parte “Atendimento”." },
-  { id: "midia", titulo: "Fotos e vídeos", para: "O original do rolo da câmera deixa o site nítido — do Instagram sai borrado." },
+  { id: "midia", titulo: "Fotos e vídeos", para: "O original do rolo da câmera deixa o site nítido. Do Instagram sai borrado." },
   { id: "depoimentos", titulo: "Depoimentos", para: "Frases de clientes, com a autorização delas." },
   { id: "vip", titulo: "Regras do VIP", para: "É o que o VIP promete hoje às clientes. Confira cada uma." },
   { id: "numeros", titulo: "Seus números", para: "Um quadro com números do Instagram. Só aparece se você quiser.", opcional: true },
@@ -115,7 +115,7 @@ export const GRUPOS_MIDIA: { tipo: TipoArquivo; titulo: string; dica: string; va
   { tipo: "video_abertura", titulo: "Vídeo de abertura", dica: "6 a 10 segundos, sem som. Pode ser um em pé e um deitado.", varios: true, aceita: "video" },
   { tipo: "video_processo", titulo: "Vídeo do processo", dica: "20 a 40 segundos da aplicação de perto, sem legenda.", varios: true, aceita: "video" },
   { tipo: "estudio", titulo: "O estúdio", dica: "A cadeira, a luz, a parede da flor. Foto ou vídeo curto.", varios: true, aceita: "ambos" },
-  { tipo: "flor", titulo: "A flor da parede", dica: "Uma foto de frente, com boa luz — vira o desenho da marca.", varios: false, aceita: "foto" },
+  { tipo: "flor", titulo: "A flor da parede", dica: "Uma foto de frente, com boa luz. Vira o desenho da marca.", varios: false, aceita: "foto" },
 ];
 
 /** Em que parte cada tipo de arquivo mora (subir arquivo também é responder). */

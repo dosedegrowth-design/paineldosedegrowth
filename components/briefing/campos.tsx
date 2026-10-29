@@ -185,6 +185,7 @@ function enviar(url: string, file: File, onProgresso: (p: number) => void): Prom
 }
 
 export function Arquivos({
+  exemplo = false,
   chave,
   tipo,
   titulo,
@@ -194,6 +195,8 @@ export function Arquivos({
   arquivos,
   onMudou,
 }: {
+  /** a cópia de exemplo não sobe nada: mostra a prévia só neste aparelho */
+  exemplo?: boolean;
   chave: string;
   tipo: TipoArquivo;
   titulo: string;
@@ -214,6 +217,12 @@ export function Arquivos({
     setEnvios((l) => l.map((e) => (e.id === id ? { ...e, ...patch } : e)));
 
   async function subir(file: File, id: number) {
+    if (exemplo) {
+      const local = { id: `local-${id}`, tipo, url: URL.createObjectURL(file), nome: file.name, mime: file.type, bytes: file.size, tecnica: null };
+      onMudou((l) => [...l, local]);
+      setEnvios((l) => l.filter((e) => e.id !== id));
+      return;
+    }
     const prep = await prepararArquivoBriefingAction({ k: chave, tipo, mime: file.type, bytes: file.size });
     if (!prep.ok) return atualizar(id, { erro: prep.error });
     try {
@@ -253,12 +262,14 @@ export function Arquivos({
 
   async function remover(a: ArquivoBriefing) {
     onMudou((l) => l.filter((x) => x.id !== a.id));
+    if (exemplo) return;
     const r = await removerArquivoBriefingAction({ k: chave, id: a.id });
     if (!r.ok) onMudou((l) => [...l, a]);
   }
 
   async function tecnica(a: ArquivoBriefing, valor: string) {
     onMudou((l) => l.map((x) => (x.id === a.id ? { ...x, tecnica: valor || null } : x)));
+    if (exemplo) return;
     await tecnicaArquivoBriefingAction({ k: chave, id: a.id, tecnica: valor });
   }
 

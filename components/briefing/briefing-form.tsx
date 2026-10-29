@@ -16,6 +16,7 @@ import {
 } from "@/lib/tayssa/briefing";
 import type { BeneficioAtual, BriefingCompleto } from "@/lib/tayssa/queries/briefing";
 import { Arquivos, Campo, Chips, Escolha, Interruptor, Texto } from "@/components/briefing/campos";
+import { GRUPOS_MIDIA_EXEMPLO, PARA_EXEMPLO, enviarExemplo, guardarParteExemplo } from "@/components/briefing/exemplo";
 
 type Estado = "" | "salvando" | "salvo" | "erro";
 type Prontos = Partial<Record<SecaoId, boolean>>;
@@ -51,7 +52,12 @@ export function BriefingForm({
   arquivos: arquivosIniciais,
   beneficios,
   enviadoEm,
-}: BriefingCompleto & { chave: string }) {
+  exemplo = false,
+}: BriefingCompleto & {
+  chave: string;
+  /** a cópia de exemplo (/briefing/exemplo): sem nome de cliente e sem banco, guarda só no aparelho */
+  exemplo?: boolean;
+}) {
   const [resp, setResp] = useState<Respostas>(() => juntar(padroes, partes));
   const [prontos, setProntos] = useState<Prontos>(() =>
     Object.fromEntries(SECOES.map((s) => [s.id, Boolean(partes[s.id]?.pronto)])),
@@ -90,13 +96,17 @@ export function BriefingForm({
     fila.current = fila.current.then(async () => {
       let falhou = false;
       for (const secao of vez) {
-        const r = await salvarParteBriefingAction({
-          k: chave,
-          secao,
-          dados: respRef.current[secao],
-          pronto: prontosRef.current[secao],
-        }).catch(() => null);
-        if (!r?.ok) {
+        const ok = exemplo
+          ? guardarParteExemplo(secao, { ...respRef.current[secao], pronto: prontosRef.current[secao] })
+          : (
+              await salvarParteBriefingAction({
+                k: chave,
+                secao,
+                dados: respRef.current[secao],
+                pronto: prontosRef.current[secao],
+              }).catch(() => null)
+            )?.ok;
+        if (!ok) {
           falhou = true;
           sujas.current.add(secao); // tenta de novo na próxima pausa
         }
@@ -104,7 +114,7 @@ export function BriefingForm({
       setEstado(falhou ? "erro" : sujas.current.size ? "salvando" : "salvo");
     });
     return fila.current;
-  }, [chave]);
+  }, [chave, exemplo]);
 
   const sujar = useCallback(
     (secao: SecaoId) => {
@@ -167,6 +177,12 @@ export function BriefingForm({
         return;
       }
     }
+    if (exemplo) {
+      // no exemplo nada é enviado: só mostra como fica
+      setEnviando(false);
+      setEnviado(enviarExemplo());
+      return;
+    }
     const r = await enviarBriefingAction({ k: chave });
     setEnviando(false);
     if (r.ok) setEnviado(r.data.enviadoEm);
@@ -183,7 +199,7 @@ export function BriefingForm({
   const corpo: Record<SecaoId, React.ReactNode> = {
     voce: (
       <>
-        <Campo rotulo="Como você quer ser chamada no site" valor={resp.voce.nome} onChange={(v) => mudar("voce", { nome: v })} placeholder="Tayssa" />
+        <Campo rotulo="Como você quer ser chamada no site" valor={resp.voce.nome} onChange={(v) => mudar("voce", { nome: v })} placeholder={exemplo ? "Seu nome" : "Tayssa"} />
         <Texto
           rotulo="Sua história, em poucas linhas"
           dica="2 a 4 parágrafos curtos, do seu jeito: como começou, o que te move, como é ser atendida por você."
@@ -199,6 +215,7 @@ export function BriefingForm({
           onChange={(v) => mudar("voce", { formacao: v })}
         />
         <Arquivos
+          exemplo={exemplo}
           chave={chave}
           tipo="retrato"
           titulo="Uma foto sua"
@@ -212,7 +229,11 @@ export function BriefingForm({
     ),
     servicos: (
       <>
-        <p className="ddgb-nota">Já estão aqui os serviços que o site mostra hoje. Corrija, complete ou tire o que não faz mais.</p>
+        <p className="ddgb-nota">
+          {exemplo
+            ? "Um bloco para cada serviço. Para pôr outro, toque em “Adicionar serviço”."
+            : "Já estão aqui os serviços que o site mostra hoje. Corrija, complete ou tire o que não faz mais."}
+        </p>
         {resp.servicos.itens.map((s, i) => {
           const muda = (patch: Partial<typeof s>) =>
             mudar("servicos", { itens: resp.servicos.itens.map((x, j) => (j === i ? { ...x, ...patch } : x)) });
@@ -311,8 +332,8 @@ export function BriefingForm({
     ),
     midia: (
       <>
-        {GRUPOS_MIDIA.map((g) => (
-          <Arquivos key={g.tipo} chave={chave} {...g} arquivos={arquivos} onMudou={setArquivos} />
+        {(exemplo ? GRUPOS_MIDIA_EXEMPLO : GRUPOS_MIDIA).map((g) => (
+          <Arquivos exemplo={exemplo} key={g.tipo} chave={chave} {...g} arquivos={arquivos} onMudou={setArquivos} />
         ))}
         <Campo
           rotulo="Arquivo grande demais? Mande pelo Google Drive"
@@ -356,6 +377,7 @@ export function BriefingForm({
           + Adicionar depoimento
         </button>
         <Arquivos
+          exemplo={exemplo}
           chave={chave}
           tipo="depoimento"
           titulo="Ou mande os prints"
@@ -392,7 +414,7 @@ export function BriefingForm({
               ) : (
                 <Campo
                   rotulo="Quer detalhar? (opcional)"
-                  dica="Ex.: o que é o presente na prática — “uma manutenção grátis”."
+                  dica="Ex.: o que é o presente na prática, como “uma manutenção grátis”."
                   valor={c.texto}
                   onChange={(v) => muda({ texto: v })}
                 />
@@ -405,7 +427,7 @@ export function BriefingForm({
     numeros: (
       <>
         <p className="ddgb-nota">
-          No Instagram: Painel profissional → Insights da conta. Só número de verdade — se preferir, mande o print e a gente copia.
+          No Instagram: Painel profissional → Insights da conta. Só número de verdade. Se preferir, mande o print e a gente copia.
         </p>
         <Campo rotulo="Período" valor={resp.numeros.periodo} onChange={(v) => mudar("numeros", { periodo: v })} placeholder="Últimos 30 dias" />
         {resp.numeros.itens.map((n, i) => {
@@ -423,12 +445,12 @@ export function BriefingForm({
             + Adicionar número
           </button>
         ) : null}
-        <Arquivos chave={chave} tipo="insights" titulo="Print do Insights" varios aceita="foto" arquivos={arquivos} onMudou={setArquivos} />
+        <Arquivos exemplo={exemplo} chave={chave} tipo="insights" titulo="Print do Insights" varios aceita="foto" arquivos={arquivos} onMudou={setArquivos} />
       </>
     ),
     marca: (
       <>
-        <Campo rotulo="Seu @ do Instagram" valor={resp.marca.instagram} onChange={(v) => mudar("marca", { instagram: v })} placeholder="@1.tayssa" />
+        <Campo rotulo="Seu @ do Instagram" valor={resp.marca.instagram} onChange={(v) => mudar("marca", { instagram: v })} placeholder={exemplo ? "@seuperfil" : "@1.tayssa"} />
         <Campo
           rotulo="WhatsApp de atendimento"
           dica="Com DDD. É para onde vai o botão “Agendar”."
@@ -448,6 +470,7 @@ export function BriefingForm({
         />
         {resp.marca.logo === "sim" ? (
           <Arquivos
+            exemplo={exemplo}
             chave={chave}
             tipo="logo"
             titulo="O logotipo"
@@ -471,14 +494,23 @@ export function BriefingForm({
         />
         {enviado ? (
           <div className="ddgb-enviado" role="status">
-            <strong>Recebido em {quando(enviado)}.</strong> Obrigado, Tayssa! Se lembrar de mais alguma coisa, é só mudar aqui
-            — continua salvando sozinho.
+            {exemplo ? (
+              <>
+                <strong>Pronto.</strong> Neste exemplo nada é enviado. No formulário de verdade, as respostas chegam para a DDG
+                nesta hora.
+              </>
+            ) : (
+              <>
+                <strong>Recebido em {quando(enviado)}.</strong> Obrigado, Tayssa! Se lembrar de mais alguma coisa, é só mudar
+                aqui: continua salvando sozinho.
+              </>
+            )}
           </div>
         ) : (
           <>
             <p className="ddgb-nota">
               {feitas < total
-                ? `Faltam ${total - feitas} ${total - feitas === 1 ? "parte" : "partes"}, mas pode mandar assim mesmo — dá para completar depois.`
+                ? `Faltam ${total - feitas} ${total - feitas === 1 ? "parte" : "partes"}, mas pode mandar assim mesmo. Dá para completar depois.`
                 : "Tudo respondido. É só mandar."}
             </p>
             <button type="button" className="ddgb-enviar" onClick={enviar} disabled={enviando}>
@@ -508,7 +540,17 @@ export function BriefingForm({
             Dose de Growth
           </span>
           <span className="ddgb-salvo" data-estado={estado} role="status" aria-live="polite">
-            {estado === "salvando" ? "Salvando…" : estado === "salvo" ? "Salvo" : estado === "erro" ? "Sem conexão — tentando de novo" : ""}
+            {estado === "salvando"
+              ? "Salvando…"
+              : estado === "salvo"
+                ? exemplo
+                  ? "Salvo neste aparelho"
+                  : "Salvo"
+                : estado === "erro"
+                  ? exemplo
+                    ? "Não deu para guardar neste aparelho"
+                    : "Sem conexão, tentando de novo"
+                  : ""}
           </span>
         </div>
         <div className="ddgb-progresso" aria-label={`${feitas} de ${total} partes respondidas`}>
@@ -518,12 +560,17 @@ export function BriefingForm({
 
       <main className="ddgb-pagina">
         <section className="ddgb-abre">
-          <p className="ddgb-abre__cliente">Briefing do site · Tayssa Lash</p>
-          <h1>Oi, Tayssa!</h1>
+          <p className="ddgb-abre__cliente">Briefing do site · {exemplo ? "Exemplo" : "Tayssa Lash"}</p>
+          <h1>{exemplo ? "Oi!" : "Oi, Tayssa!"}</h1>
           <p>
             Aqui está tudo o que falta para o seu site ficar com a sua cara. Responda no seu tempo: <strong>salva sozinho</strong> enquanto
             você escreve, e dá para fechar e voltar por este mesmo link.
           </p>
+          {exemplo ? (
+            <p className="ddgb-nota">
+              Este é um formulário de exemplo. As respostas ficam só neste aparelho e nada chega à DDG.
+            </p>
+          ) : null}
           <ul className="ddgb-abre__dicas">
             <li>{feitas} de {total} partes prontas</li>
             <li>Uns 20 minutos no total</li>
@@ -558,7 +605,7 @@ export function BriefingForm({
                       {s.titulo}
                       {s.opcional ? <em> · opcional</em> : null}
                     </span>
-                    <span className="ddgb-parte__para">{s.para}</span>
+                    <span className="ddgb-parte__para">{(exemplo && PARA_EXEMPLO[s.id]) || s.para}</span>
                   </span>
                   <svg className="ddgb-parte__seta" viewBox="0 0 24 24" aria-hidden>
                     <path d="m6 9 6 6 6-6" />
@@ -582,7 +629,7 @@ export function BriefingForm({
           })}
         </ol>
 
-        <p className="ddgb-rodape">Dúvida em alguma pergunta? Chame a DDG no WhatsApp — e pode pular, voltamos nela depois.</p>
+        <p className="ddgb-rodape">Dúvida em alguma pergunta? Chame a DDG no WhatsApp. E pode pular: voltamos nela depois.</p>
       </main>
     </div>
   );
