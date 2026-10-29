@@ -233,7 +233,7 @@ export const CONTEUDO: ConteudoSite = {
   instagram: [],
   // o que a Tayssa escreveu no formulário (28/10/2026), sem os erros do ditado
   // Cada técnica aparece em dois lugares, cada um com uma função (pedido da
-  // Tayssa, 30/10/2026: "menos repetição"):
+  // Tayssa, 29/10/2026: "menos repetição"):
   // - apresentação ("Cada serviço, um olhar"): `frase` (a diferença, em
   //   poucas palavras) e `texto` (o jeito dela de fazer), das palavras dela;
   // - lista de serviços: a descrição curta do serviço (no banco), valor,

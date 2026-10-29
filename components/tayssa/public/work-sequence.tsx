@@ -31,7 +31,7 @@ function comEnfase(frase: string): ReactNode[] {
  * A apresentação das técnicas: todos os serviços da casa, para a cliente
  * conhecer as opções e a diferença entre elas. Só apresenta: valor, tempo e
  * fotos de cada técnica ficam na lista de serviços, e cada item leva até lá
- * (pedido da Tayssa, 30/10/2026: a técnica não se explica duas vezes).
+ * (pedido da Tayssa, 29/10/2026: a técnica não se explica duas vezes).
  *
  * No desktop a coluna da esquerda fica grudada: nome do serviço em corpo
  * grande, a frase com a palavra em itálico, o contador e o índice em mono

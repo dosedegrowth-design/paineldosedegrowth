@@ -131,7 +131,7 @@ export function PublicExperience({
           </SemQuebrar>
           <WorkSequence servicos={trabalho} />
           <Film video={videos?.processo} />
-          {/* a sequência que a Tayssa pediu (30/10/2026): a cliente entende o
+          {/* a sequência que a Tayssa pediu (29/10/2026): a cliente entende o
               efeito (apresentação, acima), vê as informações práticas e a
               galeria de cada técnica (serviços) e depois explora tudo (catálogo) */}
           <SemQuebrar onde="lista de servicos">

@@ -1442,6 +1442,19 @@ body:has(.ty-scope[data-theme="night"]) {
 .ty-rolo__trilho[data-parado="true"] {
   animation: none;
 }
+/* a cliente manda: arrastar de lado leva a fila na mão (useArrastoDoRolo);
+   de cima para baixo continua sendo a página que rola */
+@media (prefers-reduced-motion: no-preference) {
+  .ty-rolo__trilho:not([data-parado="true"]) {
+    touch-action: pan-y;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+.ty-rolo__trilho[data-manual] {
+  animation: none;
+  transform: translateX(var(--x, 0px));
+}
 @keyframes ty-rolo {
   to {
     transform: translateX(-50%);

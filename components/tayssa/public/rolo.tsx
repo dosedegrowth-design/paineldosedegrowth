@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type RefObject } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
@@ -10,11 +10,182 @@ import { useCamadaAberta } from "@/components/tayssa/ui/dialogo";
 /** Quantas mídias diferentes passam no rolo; o visor abre todas. */
 const AMOSTRA = { grande: 12, mini: 10 } as const;
 
+/** Parada (sem tocar) por esse tempo, a fila volta a andar sozinha. */
+const VOLTA_MS = 2500;
+
+/**
+ * A cliente manda no rolo (pedido do Lucas, 29/10/2026: "se ela põe o dedo
+ * para rolar, a animação para e ela que manda"). Arrastar de lado com o dedo
+ * ou o mouse, ou rolar de lado no trackpad, para a animação e a fila passa a
+ * seguir a mão, com o embalo do gesto; parada uns segundos, a fila volta a
+ * andar sozinha de onde ela deixou. A fila é dobrada, então arrastar dá a
+ * volta sem fim, para os dois lados. Tocar sem arrastar continua abrindo a
+ * foto; o arrasto de cima para baixo continua rolando a página.
+ *
+ * A animação sozinha é a do CSS (`ty-rolo`, na placa de vídeo). Ao pegar, o
+ * trilho ganha `data-manual` (animação desligada, `--x` na mão); ao soltar
+ * de vez, a animação volta com um atraso negativo que a faz começar onde a
+ * mão deixou.
+ */
+function useArrastoDoRolo(ref: RefObject<HTMLDivElement | null>, ativo: boolean, segundos: number, sentido: 1 | -1) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !ativo) return;
+    let metade = 0;
+    let x = 0;
+    let manual = false;
+    let inicio: { x: number; y: number; base: number; id: number } | null = null;
+    let arrastando = false;
+    let arrastou = false;
+    let vel = 0;
+    let ultimo = { x: 0, t: 0 };
+    let embalo = 0;
+    let volta = 0;
+
+    // uma volta é metade do trilho (a fila é dobrada): a posição fica em (-metade, 0]
+    const dar = (v: number) => {
+      const r = v % metade;
+      return r > 0 ? r - metade : r;
+    };
+    const mover = (v: number) => {
+      x = dar(v);
+      el.style.setProperty("--x", `${x}px`);
+    };
+    const pegar = () => {
+      clearTimeout(volta);
+      cancelAnimationFrame(embalo);
+      if (manual) return;
+      metade = el.offsetWidth / 2 || 1;
+      // onde a animação está agora (ou parada, com o mouse em cima)
+      const agora = new DOMMatrixReadOnly(getComputedStyle(el).transform).m41;
+      manual = true;
+      mover(agora);
+      el.setAttribute("data-manual", "");
+    };
+    const soltarDeVez = () => {
+      clearTimeout(volta);
+      volta = window.setTimeout(() => {
+        if (!manual) return;
+        // a animação recomeça do ponto onde a mão deixou (atraso negativo)
+        const andado = -x / metade;
+        const progresso = sentido === 1 ? andado : 1 - andado;
+        el.style.animationDelay = `${-progresso * segundos}s`;
+        el.removeAttribute("data-manual");
+        manual = false;
+      }, VOLTA_MS);
+    };
+
+    const baixo = (e: PointerEvent) => {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      arrastou = false;
+      inicio = { x: e.clientX, y: e.clientY, base: 0, id: e.pointerId };
+      arrastando = false;
+      // um toque durante o embalo segura a fila onde está
+      if (manual) {
+        cancelAnimationFrame(embalo);
+        clearTimeout(volta);
+      }
+    };
+    const mexer = (e: PointerEvent) => {
+      if (!inicio || e.pointerId !== inicio.id) return;
+      const dx = e.clientX - inicio.x;
+      const dy = e.clientY - inicio.y;
+      if (!arrastando) {
+        // de cima para baixo é a página rolando: o rolo não se mete
+        if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) {
+          inicio = null;
+          return;
+        }
+        if (Math.abs(dx) < 6) return;
+        arrastando = true;
+        arrastou = true;
+        pegar();
+        inicio.base = x - dx;
+        try {
+          el.setPointerCapture(e.pointerId);
+        } catch {}
+        vel = 0;
+        ultimo = { x: e.clientX, t: e.timeStamp };
+      }
+      mover(inicio.base + dx);
+      const dt = e.timeStamp - ultimo.t;
+      if (dt > 0) vel = 0.8 * ((e.clientX - ultimo.x) / dt) + 0.2 * vel;
+      ultimo = { x: e.clientX, t: e.timeStamp };
+    };
+    const cima = (e: PointerEvent) => {
+      if (!inicio || e.pointerId !== inicio.id) return;
+      const foi = arrastando;
+      inicio = null;
+      arrastando = false;
+      if (!foi) {
+        if (manual) soltarDeVez();
+        return;
+      }
+      // o embalo do gesto: segue na velocidade do dedo, freando
+      let antes = performance.now();
+      const passo = (agora: number) => {
+        const dt = Math.min(48, agora - antes);
+        antes = agora;
+        vel *= Math.pow(0.94, dt / 16);
+        if (Math.abs(vel) < 0.02) {
+          soltarDeVez();
+          return;
+        }
+        mover(x + vel * dt);
+        embalo = requestAnimationFrame(passo);
+      };
+      embalo = requestAnimationFrame(passo);
+    };
+    const cancela = (e: PointerEvent) => {
+      if (!inicio || e.pointerId !== inicio.id) return;
+      inicio = null;
+      arrastando = false;
+      if (manual) soltarDeVez();
+    };
+    // depois de arrastar, o clique que o navegador manda não abre a foto
+    const clique = (e: MouseEvent) => {
+      if (!arrastou) return;
+      e.preventDefault();
+      e.stopPropagation();
+      arrastou = false;
+    };
+    // trackpad de lado (ou roda com shift): a fila anda com ele
+    const roda = (e: WheelEvent) => {
+      const dx = e.deltaX || (e.shiftKey ? e.deltaY : 0);
+      if (!dx || (!e.shiftKey && Math.abs(e.deltaY) > Math.abs(dx))) return;
+      e.preventDefault();
+      pegar();
+      mover(x - dx);
+      soltarDeVez();
+    };
+
+    el.addEventListener("pointerdown", baixo);
+    el.addEventListener("pointermove", mexer);
+    el.addEventListener("pointerup", cima);
+    el.addEventListener("pointercancel", cancela);
+    el.addEventListener("click", clique, true);
+    el.addEventListener("wheel", roda, { passive: false });
+    return () => {
+      el.removeEventListener("pointerdown", baixo);
+      el.removeEventListener("pointermove", mexer);
+      el.removeEventListener("pointerup", cima);
+      el.removeEventListener("pointercancel", cancela);
+      el.removeEventListener("click", clique, true);
+      el.removeEventListener("wheel", roda);
+      clearTimeout(volta);
+      cancelAnimationFrame(embalo);
+      el.removeAttribute("data-manual");
+      el.style.removeProperty("animation-delay");
+    };
+  }, [ref, ativo, segundos, sentido]);
+}
+
 /**
  * O rolo: fotos e vídeos de um produto passando sozinhos, sem fim, cada
- * cartão flutuando no seu tempo. Mouse em cima (ou dedo) pausa; tocar
- * abre a mídia grande, com as setas para ir e voltar. Vídeo só toca
- * quando está na tela — e sempre sem som.
+ * cartão flutuando no seu tempo. Mouse em cima (ou dedo parado) pausa;
+ * arrastar de lado leva a fila na mão (`useArrastoDoRolo`); tocar abre a
+ * mídia grande, com as setas para ir e voltar. Vídeo só toca quando está
+ * na tela — e sempre sem som.
  */
 export function Rolo({
   itens,
@@ -31,7 +202,8 @@ export function Rolo({
 }) {
   const reduced = useReducedMotion();
   const [aberto, setAberto] = useState<number | null>(null);
-  if (!itens.length) return null;
+  const trilho = useRef<HTMLDivElement>(null);
+  const vazio = !itens.length;
   // passa só o começo da fila (quem chama já intercala os produtos): com as
   // 46 fotos de cílios eram 92 cartões animados e o celular perdia quadros.
   // Tocar abre o visor com a fila inteira.
@@ -40,15 +212,19 @@ export function Rolo({
   const unica = mostrados.length === 1;
   // o laço precisa de largura: repete até ter cartões suficientes, e dobra
   // a fila inteira para a emenda nunca aparecer
-  const minimo = unica ? 1 : tamanho === "mini" ? 8 : 7;
+  const minimo = vazio ? 0 : unica ? 1 : tamanho === "mini" ? 8 : 7;
   const base: MidiaCatalogo[] = [];
   while (base.length < minimo) base.push(...mostrados);
   const fila = unica ? base : [...base, ...base];
   const segundos = base.length * (tamanho === "mini" ? 3.2 : 4.6);
+  useArrastoDoRolo(trilho, !vazio && !unica && !reduced, segundos, sentido);
+  if (vazio) return null;
 
   return (
-    <div className={`ty-rolo ty-rolo--${tamanho}`} role="region" aria-label={rotulo}>
+    // gesto de lado do trackpad fica com o rolo (o Lenis só cuida do vertical)
+    <div className={`ty-rolo ty-rolo--${tamanho}`} role="region" aria-label={rotulo} data-lenis-prevent-horizontal="">
       <div
+        ref={trilho}
         className="ty-rolo__trilho"
         data-janela
         data-unica={unica || undefined}

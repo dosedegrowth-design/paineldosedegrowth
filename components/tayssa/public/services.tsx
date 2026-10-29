@@ -311,7 +311,7 @@ function Galeria({ itens, nome, sentido }: { itens: MidiaCatalogo[]; nome: strin
   return (
     <div className="tysv__rolo">
       <p className="ty-mono tysv__galeria">
-        {conta} de {nome} · toque para ver de perto
+        {conta} de {nome} · arraste para o lado ou toque para ampliar
       </p>
       <Rolo itens={itens} tamanho="mini" rotulo={`Fotos de ${nome}`} sentido={sentido} />
     </div>
