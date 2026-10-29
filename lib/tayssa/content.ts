@@ -25,9 +25,15 @@ export type ServicoDetalhe = {
 export type Depoimento = {
   /** o tema da fala ("Durabilidade") ou o primeiro nome, se a cliente autorizou */
   nome: string;
+  /** o que a cliente escreveu, transcrito: vira a descrição da imagem (leitor de tela, busca) */
   texto: string;
   /** de onde veio: "Instagram", "WhatsApp" — com autorização da cliente */
   fonte: string;
+  /**
+   * o print da mensagem, recortado no balão (sem nome, foto ou telefone de
+   * cliente; sem o menu do WhatsApp), em public/tayssa/depoimentos/
+   */
+  print: { src: string; largura: number; altura: number };
 };
 
 export type Horario = { dias: string; horas: string };
@@ -113,80 +119,73 @@ export const CONTEUDO: ConteudoSite = {
     ],
     pagamento: ["Pix", "Cartão de crédito", "Cartão de débito", "Dinheiro"],
   },
-  // as falas que ela mandou: 9 prints de conversa (só o texto, sem nome nem
-  // foto de cliente; erros de digitação corrigidos e trechos encurtados, sem
-  // mudar o que a cliente disse) e as 5 que ela escreveu, com o tema que ela deu
+  // as avaliações são os prints que ela mandou no formulário (pedido do Lucas,
+  // 29/10/2026): o balão de cada mensagem, recortado do print, sem nome nem
+  // foto de cliente. O texto transcrito fica como descrição da imagem. As 5
+  // frases que ela escreveu sem print saíram: avaliação no site é print.
   depoimentos: [
     {
       nome: "Fidelidade",
       fonte: "cliente, no WhatsApp",
       texto:
         "Sou cliente da Tayssa há 3 anos e, desde que fui atendida por ela, nunca mais troquei de profissional! Ela é atenciosa, delicada e faz exatamente como você quer. Ela cria um projeto para você, do jeito que você gosta, e esse é o diferencial dela.",
+      print: { src: "/tayssa/depoimentos/whatsapp-01.webp", largura: 720, altura: 528 },
     },
     {
       nome: "Durabilidade",
       fonte: "cliente, no WhatsApp",
       texto:
         "Os cílios ficam lindos, com um resultado natural e perfeito, e a durabilidade é incrível: durou 29 dias completos sem cair um cílio meu. Sempre saio me sentindo linda e muito mais confiante. Recomendo de olhos fechados!",
+      print: { src: "/tayssa/depoimentos/whatsapp-02.webp", largura: 720, altura: 782 },
     },
     {
       nome: "Autoestima",
       fonte: "cliente, no WhatsApp",
       texto:
         "Vai muito além de fazer só os cílios! Eu me sinto muito mais bonita, minha autoestima muda completamente e me sinto muito melhor comigo mesma. Obrigada por realçar ainda mais a minha beleza e cuidar de mim com tanto carinho!",
+      print: { src: "/tayssa/depoimentos/whatsapp-03.webp", largura: 720, altura: 597 },
     },
     {
       nome: "Fidelidade",
       fonte: "cliente, no WhatsApp",
       texto:
         "Fiz um teste num dia qualquer e desde então não larguei mais. Não falo isso somente por conta da durabilidade impecável, que me deixa por 1 mês despreocupada e lindíssima: ela preenche perfeitamente e não ficam aquelas falhas. Falo pelo atendimento em si, que cativa.",
+      print: { src: "/tayssa/depoimentos/whatsapp-04.webp", largura: 720, altura: 1228 },
     },
     {
       nome: "Fidelidade",
       fonte: "cliente, no WhatsApp",
       texto:
         "Há mais de um ano usufruindo desse trabalho impecável e, sinceramente, nunca cheguei a cogitar procurar outra profissional. Já troquei os métodos e fiquei satisfeita com todos. Qualidade, delicadeza e dedicação com a mesma profissional!",
+      print: { src: "/tayssa/depoimentos/whatsapp-05.webp", largura: 720, altura: 817 },
     },
     {
       nome: "Durabilidade",
       fonte: "cliente, no WhatsApp",
       texto:
         "Já faço os meus cílios com a Tayssa há quase um ano. Além de me sentir em casa quando chego, a Tayssa preza por conforto, detalhes e cuidado. A durabilidade dos meus cílios é de exatamente um mês. Não me vejo fazendo cílios com outra pessoa.",
+      print: { src: "/tayssa/depoimentos/whatsapp-06.webp", largura: 720, altura: 818 },
     },
     {
       nome: "Atendimento",
       fonte: "cliente, no WhatsApp",
       texto:
         "Tayssa, amei o atendimento! Você é muito atenciosa, cuidadosa e caprichosa no que faz. Fui muito bem atendida e fiquei muito satisfeita com tudo: dá para ver o carinho que você coloca no seu trabalho.",
+      print: { src: "/tayssa/depoimentos/whatsapp-07.webp", largura: 720, altura: 528 },
     },
     {
       nome: "Resultado",
       fonte: "cliente, no WhatsApp",
       texto:
         "Meus cílios ficaram lindos, curvados e com um aspecto super natural. O procedimento foi muito tranquilo e o atendimento foi maravilhoso, com muito cuidado e carinho em cada detalhe. Fiquei apaixonada pelo resultado e com certeza faria novamente!",
+      print: { src: "/tayssa/depoimentos/whatsapp-08.webp", largura: 720, altura: 477 },
     },
     {
       nome: "Resultado",
       fonte: "cliente, no WhatsApp",
       texto:
         "Eu amo o seu trabalho! Os cílios duram muito, o resultado é sempre perfeito, sem falar do ambiente perfeito e do atendimento impecável. Você é maravilhosa, sucesso sempre!",
-    },
-    { nome: "Resultado", fonte: "cliente", texto: "Ficou exatamente como eu queria! Amei o resultado, valorizou muito o meu olhar." },
-    { nome: "Durabilidade", fonte: "cliente", texto: "Além de lindos, os meus fios duram muito." },
-    {
-      nome: "Atendimento",
-      fonte: "cliente",
-      texto: "Obrigada pelo ótimo atendimento, por respeitar sempre o que eu quero e me deixar muito à vontade.",
-    },
-    {
-      nome: "Fidelização",
-      fonte: "cliente",
-      texto: "Depois que comecei a fazer os cílios com você, não troco nunca mais. Confio de olhos fechados.",
-    },
-    {
-      nome: "Experiência",
-      fonte: "cliente",
-      texto: "A gente vai para fazer os cílios e acaba tendo um momento só nosso. Amo o cuidado em cada detalhe.",
+      print: { src: "/tayssa/depoimentos/whatsapp-09.webp", largura: 720, altura: 405 },
     },
   ],
   instagram: [],
