@@ -73,6 +73,8 @@ const d = (n: number) => ({ ["--d" as string]: String(n) }) as React.CSSProperti
 export function Apresentacao() {
   const [atual, setAtual] = useState(0);
   const [cheia, setCheia] = useState(false);
+  // o valor do slide 5 começa escondido numa carta virada; vira no clique ou no "avançar"
+  const [revelado, setRevelado] = useState(false);
   const toque = useRef<{ x: number; y: number } | null>(null);
 
   const ir = useCallback((n: number) => {
@@ -80,6 +82,11 @@ export function Apresentacao() {
     setAtual(alvo);
     history.replaceState(null, "", `#${alvo + 1}`);
   }, []);
+
+  const avancar = useCallback(() => {
+    if (atual === 4 && !revelado) setRevelado(true);
+    else ir(atual + 1);
+  }, [atual, revelado, ir]);
 
   const telaCheia = useCallback(() => {
     if (document.fullscreenElement) document.exitFullscreen?.();
@@ -108,7 +115,7 @@ export function Apresentacao() {
       const k = e.key;
       if (["ArrowRight", "ArrowDown", "PageDown", " ", "Enter"].includes(k)) {
         e.preventDefault();
-        ir(atual + 1);
+        avancar();
       } else if (["ArrowLeft", "ArrowUp", "PageUp", "Backspace"].includes(k)) {
         e.preventDefault();
         ir(atual - 1);
@@ -119,7 +126,7 @@ export function Apresentacao() {
     };
     window.addEventListener("keydown", tecla);
     return () => window.removeEventListener("keydown", tecla);
-  }, [atual, ir, telaCheia]);
+  }, [atual, ir, avancar, telaCheia]);
 
   const cls = (n: number, extra: string) => `ap-slide ${extra}${n === atual ? " is-ativo" : ""}`;
 
@@ -131,7 +138,10 @@ export function Apresentacao() {
         if (!toque.current) return;
         const dx = e.changedTouches[0].clientX - toque.current.x;
         const dy = e.changedTouches[0].clientY - toque.current.y;
-        if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) ir(atual + (dx < 0 ? 1 : -1));
+        if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+          if (dx < 0) avancar();
+          else ir(atual - 1);
+        }
         toque.current = null;
       }}
     >
@@ -341,9 +351,26 @@ export function Apresentacao() {
             <p className="ap-rotulo ap-in" style={d(0)}>
               Investimento
             </p>
-            <p className="ap-valor ap-in" style={d(1)}>
-              R$ 6.500
-            </p>
+            <button
+              type="button"
+              className={`ap-revela ap-in${revelado ? " is-revelado" : ""}`}
+              style={d(1)}
+              onClick={() => setRevelado(true)}
+              aria-label={revelado ? "Investimento: R$ 6.500" : "Revelar o investimento"}
+            >
+              <span className="ap-revela-in">
+                <span className="ap-revela-verso" aria-hidden>
+                  <img src="/palavracomalma/logo-claro.png" alt="" width={900} height={385} />
+                  <i>
+                    <span className="ap-so-mouse">Clique</span>
+                    <span className="ap-so-toque">Toque</span> para revelar
+                  </i>
+                </span>
+                <span className="ap-revela-frente" aria-hidden={!revelado}>
+                  <span className="ap-valor">R$ 6.500</span>
+                </span>
+              </span>
+            </button>
             <p className="ap-valor-sub ap-in" style={d(2)}>
               Desenvolvimento completo do tema personalizado
             </p>
@@ -423,7 +450,7 @@ export function Apresentacao() {
         <span aria-live="polite">
           {atual + 1} / {TOTAL}
         </span>
-        <button onClick={() => ir(atual + 1)} disabled={atual === TOTAL - 1} aria-label="Próximo slide">
+        <button onClick={avancar} disabled={atual === TOTAL - 1} aria-label="Próximo slide">
           <ChevronRight size={18} />
         </button>
         <button className="ap-cheia" onClick={telaCheia} aria-label={cheia ? "Sair da tela cheia" : "Tela cheia"}>

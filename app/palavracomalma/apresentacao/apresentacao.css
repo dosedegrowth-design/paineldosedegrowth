@@ -136,9 +136,39 @@
 
 /* ---------- 5. investimento ---------- */
 .ap-s5 .ap-quadro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:calc(var(--u) * 5)}
-.ap-valor{margin-top:calc(var(--u) * 1.6)!important;font-family:var(--f-disp);font-size:calc(var(--u) * 9.5);line-height:1;letter-spacing:-.03em;
+.ap-valor{display:block;font-family:var(--f-disp);font-size:calc(var(--u) * 9.5);line-height:1;letter-spacing:-.03em;
   font-variation-settings:"opsz" 144;background:var(--grad);background-size:200% auto;-webkit-background-clip:text;background-clip:text;
   color:transparent;-webkit-text-fill-color:transparent;padding-bottom:.06em}
+
+/* a carta do valor: começa virada (verso vinho com o logo) e vira no clique ou no "avançar" */
+.ap .ap-revela{display:block;width:calc(var(--u) * 40);max-width:100%;height:calc(var(--u) * 12.5);margin-top:calc(var(--u) * 1.6);padding:0;border:0;
+  background:none;color:inherit;font:inherit;cursor:pointer;perspective:calc(var(--u) * 140);-webkit-tap-highlight-color:transparent}
+.ap .ap-revela.is-revelado{cursor:default}
+.ap-revela-in{position:relative;display:block;width:100%;height:100%;transform-style:preserve-3d;transition:transform 1.1s cubic-bezier(.3,.7,.2,1)}
+.ap-revela.is-revelado .ap-revela-in{transform:rotateY(180deg)}
+.ap-revela-verso,.ap-revela-frente{position:absolute;inset:0;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.ap-revela-verso{display:grid;place-content:center;justify-items:center;gap:calc(var(--u) * 1.1);border-radius:calc(var(--u) * 1.2);
+  background:repeating-linear-gradient(45deg,transparent 0 calc(var(--u) * 1.1),rgba(236,217,164,.06) calc(var(--u) * 1.1) calc(var(--u) * 1.2)),
+    repeating-linear-gradient(-45deg,transparent 0 calc(var(--u) * 1.1),rgba(236,217,164,.06) calc(var(--u) * 1.1) calc(var(--u) * 1.2)),
+    radial-gradient(circle at 50% 40%,#6B1428,#3A0C17 75%);
+  border:1px solid rgba(236,217,164,.55);
+  box-shadow:inset 0 0 0 calc(var(--u) * .55) rgba(42,10,18,.85),inset 0 0 0 calc(var(--u) * .62) rgba(236,217,164,.4),
+    0 calc(var(--u) * 2) calc(var(--u) * 4) calc(var(--u) * -1.6) rgba(0,0,0,.75);
+  animation:ap-chama 2.6s ease-in-out infinite}
+.ap-revela-verso img{width:calc(var(--u) * 11);height:auto}
+.ap-revela-verso i{font-style:normal;font-family:var(--f-cap);font-size:calc(var(--u) * .82);font-weight:600;letter-spacing:.32em;text-transform:uppercase;
+  color:var(--ouro-2);animation:ap-pisca-dica 2.6s ease-in-out infinite}
+@keyframes ap-chama{50%{box-shadow:inset 0 0 0 calc(var(--u) * .55) rgba(42,10,18,.85),inset 0 0 0 calc(var(--u) * .62) rgba(236,217,164,.6),
+  0 calc(var(--u) * 2) calc(var(--u) * 4) calc(var(--u) * -1.6) rgba(0,0,0,.75),0 0 calc(var(--u) * 3.4) rgba(201,164,92,.38)}}
+@keyframes ap-pisca-dica{50%{opacity:.55}}
+.ap-so-toque{display:none}
+@media(hover:none){.ap-so-mouse{display:none}.ap-so-toque{display:inline}}
+.ap-revela:hover .ap-revela-verso,.ap-revela:focus-visible .ap-revela-verso{border-color:var(--ouro-2)}
+.ap-revela:focus-visible{outline:2px solid var(--ouro-2);outline-offset:calc(var(--u) * .5);border-radius:calc(var(--u) * 1.2)}
+.ap-revela-frente{display:grid;align-items:center;justify-items:start;transform:rotateY(180deg)}
+/* depois de virar, um brilho passa pelo número */
+.ap-revela.is-revelado .ap-valor{animation:ap-brilho-valor 1.6s .85s ease-out both}
+@keyframes ap-brilho-valor{from{background-position:100% 0}to{background-position:0 0}}
 .ap-valor-sub{margin-top:calc(var(--u) * .6)!important;font-size:var(--t-sub);color:var(--perg)}
 .ap-prazo{display:grid;gap:calc(var(--u) * .3);margin-top:calc(var(--u) * 3);padding-top:calc(var(--u) * 2.2);border-top:1px solid rgba(236,217,164,.25)}
 .ap-prazo span{font-family:var(--f-cap);font-size:var(--t-rotulo);letter-spacing:.24em;text-transform:uppercase;color:var(--ouro-2)}
@@ -223,6 +253,9 @@
   .ap-lado.is-tray figure{width:55%;justify-self:center}
   .ap-notas{grid-template-columns:1fr}
   .ap-valor{font-size:64px}
+  .ap .ap-revela{width:100%;height:120px}
+  .ap-revela-verso img{width:120px}
+  .ap-revela-verso i{font-size:11px}
   .ap-prazo b{font-size:30px}
   .ap-arcos{gap:10px}
   .ap-frase{font-size:18px}
@@ -243,4 +276,6 @@
   .ap-slide.is-ativo .ap-in{animation:none;opacity:1}
   .ap-in{opacity:1}
   .ap-ceu i{animation:none}
+  .ap-revela-in{transition:none}
+  .ap-revela-verso,.ap-revela-verso i,.ap-revela.is-revelado .ap-valor{animation:none}
 }
