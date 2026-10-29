@@ -47,7 +47,7 @@ export function RealPhoto({
           sizes={sizes}
           preload={priority}
           onError={() => setErrored(true)}
-          style={{ objectFit: "cover" }}
+          style={{ objectFit: "cover", objectPosition: photo.posicao }}
         />
       ) : (
         <div className="ty-photo__ph" role="img" aria-label={`${photo.alt} (foto a inserir)`}>

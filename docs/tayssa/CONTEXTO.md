@@ -738,7 +738,7 @@ nova: são 5 escalas do mesmo close.
 
 ```ts
 // 1. ordena a biblioteca: destaques primeiro
-// 2. hero  = primeira foto (ou o estático)
+// 2. hero  = o retrato da seção "A Tayssa" (a mesma foto; pedido dela em 29/10/2026)
 // 3. work  = POR TÉCNICA, não por ordem:
 const WORK_KEYWORDS = [
   ["fio a fio", "fio-a-fio", "fio", "clássico", "classico"],  // slot 01

@@ -4,7 +4,7 @@
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { assignPhotos, type LibraryPhoto } from "./photos.ts";
+import { PHOTOS, assignPhotos, type LibraryPhoto } from "./photos.ts";
 
 const foto = (id: string, lash_style: string, featured = false): LibraryPhoto => ({
   id,
@@ -17,15 +17,31 @@ const foto = (id: string, lash_style: string, featured = false): LibraryPhoto =>
   featured,
 });
 
-test("a foto da abertura e as da sequência não se repetem logo abaixo", () => {
+test("a abertura mostra o mesmo retrato da biografia", () => {
+  const a = assignPhotos([foto("h", "Volume inglês", true), foto("f1", "Volume Fox eyes")]);
+  assert.equal(a.hero?.src, PHOTOS.portrait.src);
+  assert.equal(a.portrait?.src, PHOTOS.portrait.src);
+  // na janela quadrada, o rosto dela fica no terço de cima
+  assert.equal(a.hero?.posicao, PHOTOS.portrait.posicao);
+  // a foto em destaque não some: abre a sequência de trabalho
+  assert.equal(a.work[0].src, "https://x/h.jpg");
+});
+
+test("o retrato da biblioteca abre o site e não vira foto de trabalho", () => {
+  const a = assignPhotos([foto("r", "Retrato da Tayssa Lash", true), foto("v1", "Volume brasileiro")]);
+  assert.equal(a.hero?.src, "https://x/r.jpg");
+  assert.equal(a.portrait?.src, "https://x/r.jpg");
+  assert.equal(a.work[0].src, "https://x/v1.jpg");
+  // "Lash" no nome não põe o retrato no lugar de um serviço de cílios
+  assert.notEqual(a.byService["aplicacao-cilios"]?.src, "https://x/r.jpg");
+});
+
+test("as fotos da sequência não se repetem logo abaixo, nos serviços", () => {
   const a = assignPhotos([
-    foto("h", "Volume inglês", true),
     foto("m1", "Mega brasileiro", true),
     foto("v1", "Volume brasileiro"),
     foto("f1", "Volume Fox eyes"),
   ]);
-  assert.equal(a.hero?.src, "https://x/h.jpg");
-  // a primeira técnica não repete a abertura
   assert.equal(a.work[0].src, "https://x/m1.jpg");
   assert.equal(a.work[1].src, "https://x/f1.jpg");
   // o serviço pega outra foto do mesmo nome, não a da sequência

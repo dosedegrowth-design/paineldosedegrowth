@@ -48,7 +48,8 @@ export default async function PhotosPage({ searchParams }: { searchParams: Promi
     const list = (places[id] ??= []);
     if (!list.includes(label)) list.push(label);
   };
-  put(assigned.hero, "Herói do site");
+  put(assigned.hero, "Abertura do site");
+  put(assigned.portrait, "A Tayssa");
   // a sequência de trabalho é escolhida por palavra-chave de técnica
   // (WORK_KEYWORDS em lib/tayssa/photos.ts), não por posição na fila
   TECNICAS_TRABALHO.forEach((tecnica, i) => put(assigned.work[i], tecnica));

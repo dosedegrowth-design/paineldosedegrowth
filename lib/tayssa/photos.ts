@@ -15,6 +15,8 @@ export type PhotoSlot = {
   ratio: number;
   /** legenda curta opcional (aparece no hover / abaixo) */
   caption?: string;
+  /** onde a foto se ancora quando o quadro a corta (object-position); sem ela, no centro */
+  posicao?: string;
 };
 
 const base = "/tayssa/photos";
@@ -72,10 +74,13 @@ export const PHOTOS = {
   detail04: { src: `${base}/detail-04.jpg`, alt: "Publicação do Instagram @1.tayssa", ratio: 4 / 5 },
   detail05: { src: `${base}/detail-05.jpg`, alt: "Resultado de cliente", ratio: 4 / 5 },
   detail06: { src: `${base}/detail-06.jpg`, alt: "Publicação do Instagram @1.tayssa", ratio: 4 / 5 },
+  // também é a foto da abertura: na janela quadrada, o rosto dela fica no
+  // terço de cima e o cabelo inteiro aparece (no centro, o topo da cabeça cortava)
   portrait: {
     src: `${base}/portrait.jpg`,
     alt: "Retrato da Tayssa",
     ratio: 4 / 5,
+    posicao: "50% 28%",
   },
   studio: {
     src: `${base}/studio.jpg`,
@@ -121,7 +126,10 @@ export function slotFromPhoto(p: LibraryPhoto, ratio?: number): PhotoSlot {
 }
 
 export type PhotoAssignment = {
-  /** undefined quando não existe foto real — a composição se vira sem ela */
+  /**
+   * a abertura: a mesma foto da biografia (pedido da Tayssa). undefined
+   * quando não existe foto real — a composição se vira sem ela
+   */
   hero?: PhotoSlot;
   entrance?: PhotoSlot;
   work: PhotoSlot[];
@@ -192,15 +200,21 @@ export function assignPhotos(library: LibraryPhoto[]): PhotoAssignment {
   const ordered = library.filter((p) => p.media_type !== "video").sort((a, b) => Number(b.featured) - Number(a.featured));
   const slots = ordered.map((p) => slotFromPhoto(p));
   const take = (n: number, from: number) => slots.slice(from, from + n);
-  const hero = slots[0] ?? PHOTOS.hero;
+  const porNome = (palavras: string[]) =>
+    ordered.find((p) => palavras.some((w) => p.lash_style.toLowerCase().includes(w)));
+  const retrato = porNome(PORTRAIT_KEYWORDS);
+  const estudio = porNome(STUDIO_KEYWORDS);
+  // o retrato dela abre o site e volta na biografia: a mesma foto nos dois
+  // lugares, como a Tayssa pediu
+  const portrait = retrato ? slotFromPhoto(retrato, 4 / 5) : PHOTOS.portrait;
   // A sequência de trabalho é por TÉCNICA, não por ordem de destaque.
   // Pegar a 2ª, 3ª e 4ª foto da fila fazia o site pôr uma foto de
   // sobrancelha debaixo do título de uma técnica. Então cada técnica recebe a
   // primeira foto cujo nome a declara; quem não tiver foto declarada fica
   // com o estático, que não afirma técnica nenhuma.
   const estaticos = [PHOTOS.work01, PHOTOS.work02, PHOTOS.work03];
-  // a foto da abertura não se repete logo abaixo, na primeira técnica
-  const usadas = new Set<string>(ordered.length > 1 ? [ordered[0].id] : []);
+  // o retrato da biblioteca não vira foto de trabalho
+  const usadas = new Set<string>(retrato ? [retrato.id] : []);
   const work = WORK_KEYWORDS.map(({ palavras, fora = [] }, i) => {
     const achou = ordered.find((p) => {
       const nome = p.lash_style.toLowerCase();
@@ -215,30 +229,27 @@ export function assignPhotos(library: LibraryPhoto[]): PhotoAssignment {
   const detailStatics = [PHOTOS.detail01, PHOTOS.detail02, PHOTOS.detail03, PHOTOS.detail04, PHOTOS.detail05, PHOTOS.detail06];
   const details = detailStatics.map((st, i) => take(1, 4 + i)[0] ?? st);
   // por serviço: a foto declarada na biblioteca; sem ela, o estático do
-  // serviço (que a página descarta se o arquivo não existir). A abertura e a
-  // sequência já mostraram as suas logo acima: o serviço pega outra do mesmo
-  // nome quando houver, e cada serviço fica com uma foto só dele.
+  // serviço (que a página descarta se o arquivo não existir). A sequência já
+  // mostrou as suas logo acima: o serviço pega outra do mesmo nome quando
+  // houver, e cada serviço fica com uma foto só dele.
   const byService: Record<string, PhotoSlot> = {};
   for (const [slug, words] of Object.entries(SERVICE_KEYWORDS)) {
     const casa = (p: LibraryPhoto) => words.some((w) => p.lash_style.toLowerCase().includes(w));
-    const hit = ordered.find((p) => casa(p) && !usadas.has(p.id)) ?? ordered.find(casa);
+    const hit =
+      ordered.find((p) => casa(p) && !usadas.has(p.id)) ?? ordered.find((p) => casa(p) && p.id !== retrato?.id);
     if (hit) {
       usadas.add(hit.id);
       byService[slug] = slotFromPhoto(hit, 3 / 4);
     } else if (SERVICE_STATICS[slug]) byService[slug] = SERVICE_STATICS[slug];
   }
-  const porNome = (palavras: string[]) =>
-    ordered.find((p) => palavras.some((w) => p.lash_style.toLowerCase().includes(w)));
-  const retrato = porNome(PORTRAIT_KEYWORDS);
-  const estudio = porNome(STUDIO_KEYWORDS);
   return {
-    hero,
+    hero: portrait,
     entrance: slots[1] ?? slots[0] ?? PHOTOS.entrance,
     work,
     details,
     byService,
     card: slots.length ? slots.slice(0, 6) : [PHOTOS.hero, PHOTOS.work01, PHOTOS.work02, PHOTOS.work03],
-    portrait: retrato ? slotFromPhoto(retrato, 4 / 5) : PHOTOS.portrait,
+    portrait,
     studio: estudio ? slotFromPhoto(estudio, 16 / 10) : PHOTOS.studio,
   };
 }

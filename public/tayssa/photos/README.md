@@ -6,7 +6,8 @@ o site mostra um campo tonal no lugar (nunca imagem sintética). Trocar a foto
 
 | Arquivo | Onde aparece | Proporção sugerida | Tamanho |
 |---|---|---|---|
-| `hero.jpg` | Abertura (tela cheia) | vertical 4:5 (corta bem no desktop) | ≥ 2000px no lado maior |
+| `portrait.jpg` | Abertura (janela quadrada) e "A Tayssa": a mesma foto nos dois | vertical 4:5, rosto no terço de cima | ≥ 1600px no lado maior |
+| `hero.jpg` | Frente do cartão, só quando a biblioteca está vazia | vertical 4:5 | ≥ 2000px no lado maior |
 | `work-01.jpg` | Trabalho · Volume | 4:5 | ≥ 1600px |
 | `work-02.jpg` | Trabalho · Fox eyes | 4:5 | ≥ 1600px |
 | `work-03.jpg` | Trabalho · Manutenção | 4:5 | ≥ 1600px |

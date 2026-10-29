@@ -80,12 +80,12 @@ export function PublicExperience({
   };
 
   const estrutura = useEstrutura();
-  // a colagem usa todas as fotos reais que existem, sem repetir
+  // a colagem usa todas as fotos reais do trabalho que existem, sem repetir
+  // (a da abertura é o retrato dela, que já volta em "A Tayssa")
   const colagem = [
     ...(photos?.details ?? []),
     ...(photos?.work ?? []),
     ...Object.values(photos?.byService ?? {}),
-    ...(photos?.hero ? [photos.hero] : []),
   ].filter((f, i, todas) => todas.findIndex((g) => g.src === f.src) === i);
   // o menu só aponta para seção que está na página
   const secoes = [
