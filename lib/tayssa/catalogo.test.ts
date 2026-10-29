@@ -7,6 +7,7 @@ import assert from "node:assert/strict";
 import {
   capasDosServicos,
   categoriaDoServico,
+  fotoDoTrabalho,
   intercalar,
   itensDaCategoria,
   midiasDoServico,
@@ -198,4 +199,17 @@ test("o cartão de cima passa tudo do serviço com a capa na frente, no enquadra
   assert.deepEqual(daGaleria.map((m) => [m.id, m.produto, m.tipo]), [["g", "Volume inglês", "image"], ["a", "Volume inglês", "image"]]);
   // sem capa (serviço sem foto): o rolo como está
   assert.deepEqual(midiasDoServico([], null, "Lip spa"), []);
+});
+
+test("a foto do serviço na seção Trabalho não repete a capa da lista", () => {
+  const item = (id: string, tipo: "image" | "video" = "image") => ({ id, url: `https://x/${id}.jpg`, tipo, produto: "Volume inglês", legenda: null, alt: id, ratio: 0.8, foco: { x: 50, y: 50, zoom: 1 } });
+  const capa = { id: "a", url: "https://x/a.jpg", alt: "a", foco: { x: 40, y: 30, zoom: 1.2 }, escolhida: false };
+  // a primeira foto depois da capa (vídeo não entra)
+  assert.equal(fotoDoTrabalho([item("a"), item("v", "video"), item("b")], capa)?.id, "b");
+  // com uma foto só, a capa, com o enquadramento dela
+  assert.deepEqual(fotoDoTrabalho([item("a")], capa), { id: "a", url: "https://x/a.jpg", alt: "a", foco: { x: 40, y: 30, zoom: 1.2 } });
+  // capa escolhida de fora do rolo: a primeira do rolo
+  assert.equal(fotoDoTrabalho([item("b"), item("c")], { ...capa, id: "g" })?.id, "b");
+  // serviço sem foto fica sem foto
+  assert.equal(fotoDoTrabalho([], null), null);
 });

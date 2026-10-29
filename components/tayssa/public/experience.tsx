@@ -8,7 +8,7 @@ import { whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { IntroLoader } from "@/components/tayssa/public/intro-loader";
 import { PublicNav } from "@/components/tayssa/public/nav";
 import { Hero } from "@/components/tayssa/public/hero";
-import { WorkSequence } from "@/components/tayssa/public/work-sequence";
+import { WorkSequence, type ItemTrabalho } from "@/components/tayssa/public/work-sequence";
 import { Services } from "@/components/tayssa/public/services";
 import { ServiceStrip } from "@/components/tayssa/public/service-strip";
 import { AgendarFlutua, Faixa } from "@/components/tayssa/public/faixa";
@@ -25,7 +25,7 @@ import { Testimonials } from "@/components/tayssa/public/testimonials";
 import { VisitInfo } from "@/components/tayssa/public/visit-info";
 import { Catalogo } from "@/components/tayssa/public/catalogo";
 import { SemQuebrar } from "@/components/tayssa/ui/sem-quebrar";
-import type { CapaServico, CategoriaCatalogo, MidiaCatalogo } from "@/lib/tayssa/catalogo";
+import { fotoDoTrabalho, type CapaServico, type CategoriaCatalogo, type MidiaCatalogo } from "@/lib/tayssa/catalogo";
 import { completarComFotos, type ItemPortfolio } from "@/lib/tayssa/portfolio";
 import { CONTEUDO, temAtendimento, temSobre } from "@/lib/tayssa/content";
 import type { VideoAvailability } from "@/lib/tayssa/media-server";
@@ -95,6 +95,20 @@ export function PublicExperience({
     ...(photos?.work ?? []).filter((f): f is NonNullable<typeof f> => Boolean(f)),
     ...Object.values(photos?.byService ?? {}),
   ].filter((f, i, todas) => todas.findIndex((g) => g.src === f.src) === i);
+  // a seção "Trabalho" com todos os serviços: a frase e o texto das palavras
+  // dela (content.ts), senão a descrição do serviço; a foto é do próprio serviço
+  const trabalho: ItemTrabalho[] = services
+    .filter((s) => s.slug !== "outro")
+    .map((s) => {
+      const d = CONTEUDO.servicos[s.slug];
+      return {
+        slug: s.slug,
+        nome: s.name,
+        frase: d?.frase ?? null,
+        texto: d?.texto ?? d?.diferencial ?? (s.description?.trim() || null),
+        foto: fotoDoTrabalho(rolos[s.slug] ?? [], capas[s.slug] ?? null),
+      };
+    });
   // o menu só aponta para seção que está na página
   const secoes = [
     { id: "trabalho", label: "Trabalho" },
@@ -116,7 +130,7 @@ export function PublicExperience({
           <SemQuebrar onde="carrossel de servicos">
             <ServiceStrip services={services} scheduleUrl={links.schedule} capas={capas} rolos={rolos} />
           </SemQuebrar>
-          <WorkSequence photos={photos?.work} />
+          <WorkSequence servicos={trabalho} />
           <Film video={videos?.processo} />
           <SemQuebrar onde="catalogo">
             <Catalogo catalogo={catalogo} />

@@ -3,12 +3,12 @@ import Link from "next/link";
 import { getPrecosProdutos, listAllPhotos } from "@/lib/tayssa/queries/photos";
 import { ROUTES } from "@/lib/tayssa/config";
 import { getActiveServices } from "@/lib/tayssa/queries/catalog";
-import { TECNICAS_TRABALHO, assignPhotos, type PhotoSlot } from "@/lib/tayssa/photos";
+import { assignPhotos, type PhotoSlot } from "@/lib/tayssa/photos";
 import { AdminBlock, AdminHeader, Stat } from "@/components/tayssa/admin/shell";
 import { PhotoUpload } from "@/components/tayssa/admin/photo-upload";
 import { PhotoLibrary } from "@/components/tayssa/admin/photo-library";
 import { CapasServicos, type OpcaoCapa, type ServicoCapa } from "@/components/tayssa/admin/capas";
-import { capasDosServicos, montarCatalogo, roloAbaixoDaCapa, rolosDosServicos } from "@/lib/tayssa/catalogo";
+import { capasDosServicos, fotoDoTrabalho, montarCatalogo, roloAbaixoDaCapa, rolosDosServicos } from "@/lib/tayssa/catalogo";
 import type { CategoriaMidia } from "@/lib/tayssa/types";
 
 type Aba = "galeria" | "site" | "capas";
@@ -84,16 +84,17 @@ export default async function PhotosPage({ searchParams }: { searchParams: Promi
   };
   put(assigned.hero, "Abertura do site");
   put(assigned.portrait, "A Tayssa");
-  // a sequência de trabalho é escolhida por palavra-chave de técnica
-  // (WORK_KEYWORDS em lib/tayssa/photos.ts), não por posição na fila
-  TECNICAS_TRABALHO.forEach((tecnica, i) => put(assigned.work[i], `Trabalho: ${tecnica}`));
-  // detalhes e fotos dos serviços passam na colagem (Instagram e fechamento)
+  // fotos de trabalho, detalhes e dos serviços passam na colagem (Instagram e fechamento)
+  assigned.work.forEach((s) => put(s, "Colagem"));
   assigned.details.forEach((s) => put(s, "Colagem"));
   Object.values(assigned.byService).forEach((s) => put(s, "Colagem"));
-  // a capa de cada serviço (o selo leva o nome do serviço, não a slug)
+  // a capa de cada serviço (o selo leva o nome do serviço, não a slug) e a
+  // foto dele na seção "Trabalho" (a primeira depois da capa)
   for (const s of servicosNoSite) {
     const capa = capas[s.slug];
     if (capa) marcar(capa.id, `Capa: ${s.name}`);
+    const doTrabalho = fotoDoTrabalho(rolos[s.slug] ?? [], capa ?? null);
+    if (doTrabalho) marcar(doTrabalho.id, `Trabalho: ${s.name}`);
   }
   assigned.card.forEach((s) => put(s, "Frente do cartão"));
   // todo item no ar passa nas fotos do serviço dele (carrossel de cima e

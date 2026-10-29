@@ -989,7 +989,7 @@ select.ty-field__input {
    em vez de jogar os sinais para as pontas */
 
 /* ============================================================
-   TRABALHO (.tyw) — as três técnicas como peça editorial.
+   TRABALHO (.tyw) — todos os serviços como peça editorial.
    Desktop: nome grudado à esquerda em corpo grande, explicação
    correndo à direita, índice em mono que acende na ativa.
    Celular: a mesma matéria em pilha, cada técnica com o seu nome.
@@ -1081,8 +1081,8 @@ select.ty-field__input {
 .tyw__palco {
   position: relative;
   margin-top: clamp(18px, 2.2vw, 28px);
-  /* cabe o nome mais alto com a frase em duas linhas */
-  min-height: clamp(152px, 12.4vw, 184px);
+  /* cabe o nome em duas linhas ("Design de sobrancelhas") com a frase em duas */
+  min-height: clamp(210px, 17vw, 256px);
 }
 .tyw__tecnica {
   position: absolute;
@@ -1093,7 +1093,7 @@ select.ty-field__input {
   display: block;
   font-family: var(--t-font-display);
   font-weight: 300;
-  font-size: clamp(44px, 5.6vw, 92px);
+  font-size: clamp(40px, 4.8vw, 78px);
   line-height: 0.98;
   letter-spacing: -0.045em;
   color: var(--t-fg);
@@ -1140,6 +1140,17 @@ select.ty-field__input {
 }
 .tyw__indice-item[data-ativo="true"] {
   color: var(--t-accent);
+}
+/* com todos os serviços o índice corre em duas colunas, para caber
+   inteiro na coluna grudada mesmo em tela baixa de notebook */
+.tyw__indice[data-colunas="2"] {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: clamp(18px, 2.2vw, 36px);
+}
+.tyw__indice[data-colunas="2"] .tyw__indice-item {
+  padding: 10px 0;
+  gap: 10px;
 }
 .tyw__fio {
   position: relative;

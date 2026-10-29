@@ -1,72 +1,49 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { topoNoDocumento, useProgressoRolagem } from "@/components/tayssa/ui/rolagem";
-import type { PhotoSlot } from "@/lib/tayssa/photos";
-import { RealPhoto } from "@/components/tayssa/ui/real-photo";
+import { estiloFoco, type FotoServico } from "@/lib/tayssa/catalogo";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 /**
- * As três técnicas da casa. `dizer` é a frase curta que vai no corpo
- * grande — a palavra em <em> é a que carrega a emoção e vira itálico
- * serifado. `texto` é a explicação, na coluna que corre. Os textos vêm do
- * que a Tayssa escreveu no formulário (28/10/2026).
+ * Um serviço da seção. `frase` é a linha curta que vai no corpo grande (das
+ * palavras da Tayssa; `*assim*` é a palavra em destaque, que vira itálico);
+ * `texto` é a explicação, na coluna que corre. Sem texto no formulário dela
+ * (volume egípcio e marrom), o serviço entra só com o nome e a foto.
  */
-const TECNICAS: { n: string; nome: string; dizer: ReactNode; texto: string }[] = [
-  {
-    // o volume inglês, com as palavras dela para ele (pedido de 29/10/2026);
-    // os outros volumes estão nos serviços, cada um com o seu valor
-    n: "01",
-    nome: "Volume inglês",
-    dizer: (
-      <>
-        Preenchido e <em>elegante</em>.
-      </>
-    ),
-    texto:
-      "Um olhar com definição na medida. A prioridade é preencher 100% dos seus fios; se você preferir um efeito mais leve, ela ajusta com você.",
-  },
-  {
-    n: "02",
-    nome: "Fox eyes",
-    dizer: (
-      <>
-        Alongado e <em>marcante</em>.
-      </>
-    ),
-    texto:
-      "Os comprimentos são distribuídos para alongar o olhar e valorizar o canto externo dos olhos. O mapeamento segue o formato dos seus olhos e o efeito que você quer, sem perder a harmonia.",
-  },
-  {
-    n: "03",
-    nome: "Manutenção",
-    dizer: (
-      <>
-        O cuidado que <em>mantém</em> o resultado.
-      </>
-    ),
-    texto:
-      "Entre 15 e 20 dias, no ritmo do crescimento dos seus fios: sai o que cresceu, entra o que caiu, o desenho volta ao lugar. Se sobrar pouca extensão, o caminho é uma nova aplicação.",
-  },
-];
+export type ItemTrabalho = {
+  slug: string;
+  nome: string;
+  frase: string | null;
+  texto: string | null;
+  foto: FotoServico | null;
+};
+
+const dois = (n: number) => String(n).padStart(2, "0");
+
+/** `*assim*` vira a palavra em destaque. */
+function comEnfase(frase: string): ReactNode[] {
+  return frase.split(/\*([^*]+)\*/).map((parte, i) => (i % 2 ? <em key={i}>{parte}</em> : parte));
+}
 
 /**
- * Trabalho — as três técnicas como peça editorial.
+ * Trabalho: todos os serviços da casa como peça editorial (eram três
+ * técnicas; a dona pediu todos, no computador e no celular, 29/10/2026).
  *
- * No desktop a coluna da esquerda fica grudada: nome da técnica em corpo
- * grande, a frase com a palavra em itálico serifado, o contador e o
- * índice em mono que acende na técnica ativa. A coluna da direita corre
- * com a explicação de cada uma; quem cruza o meio da tela vira a ativa.
- * No celular a mesma matéria vira pilha, cada técnica com o seu nome
- * grande — sem coluna grudada, que no toque só atrapalha.
+ * No desktop a coluna da esquerda fica grudada: nome do serviço em corpo
+ * grande, a frase com a palavra em itálico, o contador e o índice em mono
+ * que acende no serviço ativo. A coluna da direita corre com a explicação
+ * de cada um; quem cruza o meio da tela vira o ativo. No celular a mesma
+ * matéria vira pilha, cada serviço com o seu nome grande — sem coluna
+ * grudada, que no toque só atrapalha.
  *
  * A seção se sustenta em tipografia, régua e bloco chapado: sem foto ela
- * está completa. Quando a biblioteca tiver foto, ela entra chapada na
- * coluna que corre e melhora a composição — nunca é requisito.
+ * está completa. Com foto, ela entra chapada na coluna que corre.
  */
-export function WorkSequence({ photos }: { photos?: (PhotoSlot | undefined)[] }) {
+export function WorkSequence({ servicos }: { servicos: ItemTrabalho[] }) {
   const reduced = useReducedMotion();
   const corridaRef = useRef<HTMLOListElement>(null);
   const [ativo, setAtivo] = useState(0);
@@ -114,15 +91,16 @@ export function WorkSequence({ photos }: { photos?: (PhotoSlot | undefined)[] })
       window.removeEventListener("resize", remedir);
       if (quadro) cancelAnimationFrame(quadro);
     };
-  }, []);
+  }, [servicos.length]);
 
-  const atual = TECNICAS[ativo] ?? TECNICAS[0];
-  const fotos = photos ?? [];
+  const total = servicos.length;
   // quem não quer movimento recebe o mesmo desenho, sem tempo de animação.
   // Duração zero não basta: o `initial` de cada bloco também tem de sair
   // (`initial={reduced ? false : ...}`), senão o estado escondido é o que
   // vale enquanto o bloco não entra em vista.
   const tempo = (s: number) => ({ duration: reduced ? 0 : s, ease: EASE });
+  if (!total) return null;
+  const atual = servicos[Math.min(ativo, total - 1)];
 
   return (
     <section id="trabalho" className="ty-section tyw" aria-labelledby="tyw-titulo">
@@ -130,12 +108,12 @@ export function WorkSequence({ photos }: { photos?: (PhotoSlot | undefined)[] })
         {/* ficha da seção */}
         <div className="tyw__topo">
           <span className="ty-mono ty-mono--ink">Trabalho</span>
-          <span className="ty-mono">01 a 03</span>
+          <span className="ty-mono">01 a {dois(total)}</span>
         </div>
 
         <div className="tyw__cabeca">
           <h2 id="tyw-titulo" className="tyw__titulo">
-            Três técnicas, um <em>olhar</em>.
+            Cada serviço, um <em>olhar</em>.
           </h2>
           <p className="ty-body ty-measure--tight">
             Não é sobre colocar cílio: é sobre devolver ao olho o desenho que ele já tem.
@@ -150,17 +128,17 @@ export function WorkSequence({ photos }: { photos?: (PhotoSlot | undefined)[] })
           <div className="tyw__fixa" aria-hidden>
             <div className="tyw__conta">
               <span className="ty-index">
-                <b>{atual.n}</b> / 03
+                <b>{dois(ativo + 1)}</b> / {dois(total)}
               </span>
               <span className="tyw__barra">
-                <motion.i style={{ scaleX: reduced ? (ativo + 1) / TECNICAS.length : scrollYProgress }} />
+                <motion.i style={{ scaleX: reduced ? (ativo + 1) / total : scrollYProgress }} />
               </span>
             </div>
 
             <div className="tyw__palco">
               <AnimatePresence initial={false}>
                 <motion.div
-                  key={atual.n}
+                  key={atual.slug}
                   className="tyw__tecnica"
                   initial={{ clipPath: "inset(0% 0% 100% 0%)", y: "12%" }}
                   animate={{ clipPath: "inset(0% 0% 0% 0%)", y: "0%" }}
@@ -168,15 +146,16 @@ export function WorkSequence({ photos }: { photos?: (PhotoSlot | undefined)[] })
                   transition={tempo(0.72)}
                 >
                   <span className="tyw__nome">{atual.nome}</span>
-                  <p className="tyw__dizer">{atual.dizer}</p>
+                  {atual.frase ? <p className="tyw__dizer">{comEnfase(atual.frase)}</p> : null}
                 </motion.div>
               </AnimatePresence>
             </div>
 
-            <ul className="tyw__indice">
-              {TECNICAS.map((t, i) => (
-                <li key={t.n} className="tyw__indice-item" data-ativo={i === ativo}>
-                  <span>{t.n}</span>
+            {/* com muitos serviços o índice vira duas colunas: inteiro na tela */}
+            <ul className="tyw__indice" data-colunas={total > 6 ? "2" : undefined}>
+              {servicos.map((t, i) => (
+                <li key={t.slug} className="tyw__indice-item" data-ativo={i === ativo}>
+                  <span>{dois(i + 1)}</span>
                   <span className="tyw__fio">
                     <i />
                   </span>
@@ -189,12 +168,11 @@ export function WorkSequence({ photos }: { photos?: (PhotoSlot | undefined)[] })
           {/* coluna que corre */}
           <div className="tyw__corre">
             <ol className="tyw__corrida" ref={corridaRef}>
-              {TECNICAS.map((t, i) => {
-                const foto = fotos[i];
-                const legenda = foto?.caption?.trim();
+              {servicos.map((t, i) => {
+                const foto = t.foto;
                 return (
                   <motion.li
-                    key={t.n}
+                    key={t.slug}
                     data-tecnica={i}
                     data-reveal=""
                     className="tyw__item"
@@ -204,7 +182,7 @@ export function WorkSequence({ photos }: { photos?: (PhotoSlot | undefined)[] })
                     transition={tempo(0.85)}
                   >
                     <div className="tyw__marca">
-                      <span className="ty-mono">{t.n}</span>
+                      <span className="ty-mono">{dois(i + 1)}</span>
                       <h3 className="tyw__marca-nome">{t.nome}</h3>
                     </div>
 
@@ -214,7 +192,7 @@ export function WorkSequence({ photos }: { photos?: (PhotoSlot | undefined)[] })
                         frase tem a cópia abaixo, que é a que vai ser lida. */}
                     <div className="tyw__item-nome" aria-hidden>
                       <span className="tyw__nome">{t.nome}</span>
-                      <p className="tyw__dizer">{t.dizer}</p>
+                      {t.frase ? <p className="tyw__dizer">{comEnfase(t.frase)}</p> : null}
                     </div>
 
                     {/* a frase da técnica como conteúdo de verdade: as duas
@@ -223,24 +201,25 @@ export function WorkSequence({ photos }: { photos?: (PhotoSlot | undefined)[] })
                         duas está sempre em `display: none` — esta aqui é a
                         única que entra na árvore de acessibilidade, em
                         qualquer largura, e sem leitura dobrada */}
-                    <p className="sr-only">{t.dizer}</p>
+                    {t.frase ? <p className="sr-only">{comEnfase(t.frase)}</p> : null}
 
-                    <p className="ty-body ty-measure tyw__texto">{t.texto}</p>
+                    {t.texto ? <p className="ty-body ty-measure tyw__texto">{t.texto}</p> : null}
 
-                    {/* foto é bônus: entra chapada, sem moldura, só se existir */}
+                    {/* foto é bônus: entra chapada, sem moldura, só se existir.
+                        É a foto do próprio serviço (nunca a de outro) */}
                     {foto ? (
                       <figure className="tyw__figura">
                         <div className="ty-figure">
-                          <RealPhoto photo={foto} ratio={4 / 5} sizes="(max-width: 899px) 100vw, 42vw" />
+                          <div className="ty-photo" style={{ aspectRatio: 4 / 5 }}>
+                            <Image
+                              src={foto.url}
+                              alt={foto.alt}
+                              fill
+                              sizes="(max-width: 899px) 100vw, 42vw"
+                              style={estiloFoco(foto.foco)}
+                            />
+                          </div>
                         </div>
-                        {/* a legenda só pode afirmar o que a própria foto
-                            declara — nada além disso. O nome da técnica não
-                            entra aqui: o perfil de onde a foto veio também
-                            não, porque a biblioteca é alimentada por upload
-                            em /tayssa/admin/fotos e nenhum dado diz que o
-                            arquivo saiu do Instagram. Sem legenda própria,
-                            não há legenda. */}
-                        {legenda ? <figcaption className="tyw__legenda">{legenda}</figcaption> : null}
                       </figure>
                     ) : null}
                   </motion.li>
