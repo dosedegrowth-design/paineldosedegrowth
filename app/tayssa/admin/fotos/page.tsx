@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getPrecosProdutos, listAllPhotos } from "@/lib/tayssa/queries/photos";
 import { ROUTES } from "@/lib/tayssa/config";
 import { getActiveServices } from "@/lib/tayssa/queries/catalog";
-import { assignPhotos, type PhotoSlot } from "@/lib/tayssa/photos";
+import { TECNICAS_TRABALHO, assignPhotos, type PhotoSlot } from "@/lib/tayssa/photos";
 import { AdminBlock, AdminHeader, Stat } from "@/components/tayssa/admin/shell";
 import { PhotoUpload } from "@/components/tayssa/admin/photo-upload";
 import { PhotoLibrary } from "@/components/tayssa/admin/photo-library";
@@ -84,17 +84,27 @@ export default async function PhotosPage({ searchParams }: { searchParams: Promi
   };
   put(assigned.hero, "Abertura do site");
   put(assigned.portrait, "A Tayssa");
+  // a sequência de trabalho é escolhida por palavra-chave de técnica
+  // (WORK_KEYWORDS em lib/tayssa/photos.ts), não por posição na fila
+  TECNICAS_TRABALHO.forEach((tecnica, i) => put(assigned.work[i], `Trabalho: ${tecnica}`));
+  // detalhes e fotos dos serviços passam na colagem (Instagram e fechamento)
+  assigned.details.forEach((s) => put(s, "Colagem"));
+  Object.values(assigned.byService).forEach((s) => put(s, "Colagem"));
   // a capa de cada serviço (o selo leva o nome do serviço, não a slug)
   for (const s of servicosNoSite) {
     const capa = capas[s.slug];
     if (capa) marcar(capa.id, `Capa: ${s.name}`);
   }
   assigned.card.forEach((s) => put(s, "Frente do cartão"));
-  // todo item no ar passa no carrossel do serviço dele
+  // todo item no ar passa nas fotos do serviço dele (carrossel de cima e
+  // lista de serviços) e no rolo do produto ("Cada técnica, de perto")
   const nomeDoServico = new Map(servicosNoSite.map((s) => [s.slug, s.name]));
   for (const [slug, itens] of Object.entries(rolos)) {
     const nome = nomeDoServico.get(slug);
     if (nome) for (const item of itens) marcar(item.id, `Carrossel: ${nome}`);
+  }
+  for (const c of catalogo) {
+    for (const prod of c.produtos) for (const item of prod.itens) marcar(item.id, `Rolo: ${c.label} › ${prod.nome}`);
   }
 
   const gb = photos.reduce((n, p) => n + (p.bytes ?? 0), 0) / 1024 / 1024 / 1024;
@@ -139,9 +149,9 @@ export default async function PhotosPage({ searchParams }: { searchParams: Promi
       {aba === "capas" ? (
         <AdminBlock title="Capas dos serviços">
           <p className="tya-small" style={{ marginBottom: 16 }}>
-            Cada serviço aparece no site com a capa e, embaixo dela, o carrossel das outras fotos do mesmo serviço. Sem
-            capa escolhida, entra a primeira foto do serviço. Serviço sem foto aparece sem foto: publique fotos com o nome
-            dele na aba Galeria.
+            Na lista de serviços do site, cada serviço aparece com a capa e, embaixo dela, o carrossel das outras fotos
+            dele. No carrossel do topo, as fotos passam dentro do cartão, começando pela capa. Sem capa escolhida, entra a
+            primeira foto do serviço. Serviço sem foto aparece sem foto: publique fotos com o nome dele na aba Galeria.
           </p>
           <CapasServicos servicos={servicosCapa} outras={outrasFotos} pronto={capaNoBanco} />
         </AdminBlock>

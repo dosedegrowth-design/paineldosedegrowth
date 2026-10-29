@@ -21,8 +21,12 @@ export type ServicoCapa = {
   daqui: OpcaoCapa[];
 };
 
-/** A capa no site é quadrada: o painel mostra e enquadra no mesmo formato. */
-const FORMATO = "1 / 1";
+/**
+ * A capa aparece maior na lista de serviços do site, em pé (3:4): o painel
+ * mostra e enquadra no mesmo formato. No carrossel de cima ela abre a fila
+ * de fotos que passa dentro do cartão.
+ */
+const FORMATO = "3 / 4";
 
 /**
  * Mídia → Capas: um cartão por serviço, com a capa como o site mostra. Ela

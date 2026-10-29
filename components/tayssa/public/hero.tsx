@@ -27,9 +27,10 @@ import { LinkAgendar } from "@/components/tayssa/public/agendar";
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 
-/* Flores que vivem em volta da janela, em profundidades diferentes: as de
-   trás andam pouco com o mouse, as da frente andam muito — é isso que dá
-   o volume. Cada uma também flutua sozinha, num tempo próprio. */
+/* Flores no fundo, atrás da janela: pequenas, aparecendo pelas bordas da
+   foto, e andam pouco com o mouse (o que está longe anda pouco). Nenhuma
+   passa na frente da foto dela (pedido do Lucas, 29/10/2026: estavam em
+   cima do retrato e grandes demais). Cada uma flutua no seu tempo. */
 type FlorPalco = {
   kind: FlowerKind;
   seed: number;
@@ -44,15 +45,19 @@ type FlorPalco = {
   depth: number;
   /** some no celular */
   desktop?: boolean;
+  /**
+   * lugar no celular, em %: lá a janela ocupa quase toda a largura e em cima
+   * dela estão os botões, então as flores ficam no chão, embaixo e dos lados
+   */
+  cel?: { x: number; y: number };
   delay: number;
-  frente?: boolean;
 };
 const FLORES: FlorPalco[] = [
-  { kind: "flor", seed: 7, tom: "pétala", x: -6, y: 52, w: 46, rotate: -18, depth: -0.5, delay: 0.5, desktop: true },
-  { kind: "flor", seed: 5, tom: "magenta", x: 70, y: 6, w: 40, rotate: 16, depth: 0.9, delay: 0.75, frente: true },
-  { kind: "flor", seed: 3, tom: "rosa", x: 82, y: 70, w: 30, rotate: -30, depth: -0.35, delay: 0.9 },
-  { kind: "botao", seed: 11, tom: "magenta", x: 2, y: 8, w: 9, rotate: -22, depth: 1.4, delay: 1.05, frente: true },
-  { kind: "botao", seed: 4, tom: "rosa", x: 96, y: 40, w: 7, rotate: 28, depth: 1.2, delay: 1.15, frente: true, desktop: true },
+  { kind: "flor", seed: 5, tom: "magenta", x: 64, y: -16, w: 17, rotate: 16, depth: 0.3, delay: 0.75, cel: { x: 70, y: 97 } },
+  { kind: "flor", seed: 3, tom: "rosa", x: 12, y: 78, w: 14, rotate: -24, depth: -0.25, delay: 0.9, cel: { x: 10, y: 99 } },
+  { kind: "flor", seed: 7, tom: "pétala", x: 76, y: 62, w: 16, rotate: -14, depth: -0.2, delay: 0.5, desktop: true },
+  { kind: "botao", seed: 11, tom: "magenta", x: 20, y: -6, w: 5, rotate: -22, depth: 0.4, delay: 1.05, cel: { x: 0.5, y: 34 } },
+  { kind: "botao", seed: 4, tom: "rosa", x: 84, y: 30, w: 4.5, rotate: 28, depth: 0.35, delay: 1.15, desktop: true },
 ];
 
 /**
@@ -214,8 +219,9 @@ export function Hero({
 
       <motion.div className="tyh__palco" style={{ y: palcoY, scale: palcoS }}>
         <div className="tyh__halo" aria-hidden />
-        {FLORES.filter((f) => !f.frente).map((f, i) => (
-          <FlorViva key={`t${i}`} f={f} sx={sx} sy={sy} ready={entra} reduced={Boolean(reduced)} />
+        {/* as flores moram no fundo: todas antes da janela, nenhuma por cima da foto */}
+        {FLORES.map((f, i) => (
+          <FlorViva key={i} f={f} sx={sx} sy={sy} ready={entra} reduced={Boolean(reduced)} />
         ))}
 
         <motion.figure
@@ -248,10 +254,6 @@ export function Hero({
             <motion.span className="tyh__vidro" style={{ background: brilho }} aria-hidden />
           </div>
         </motion.figure>
-
-        {FLORES.filter((f) => f.frente).map((f, i) => (
-          <FlorViva key={`f${i}`} f={f} sx={sx} sy={sy} ready={entra} reduced={Boolean(reduced)} />
-        ))}
       </motion.div>
 
       <motion.a
@@ -285,11 +287,13 @@ function FlorViva({
   const y = useTransform(sy, [-0.5, 0.5], [-40 * f.depth, 40 * f.depth]);
   return (
     <motion.div
-      className={["tyh__flor", f.frente ? "tyh__flor--frente" : "", f.desktop ? "tyh__flor--desktop" : ""].join(" ")}
+      className={["tyh__flor", f.desktop ? "tyh__flor--desktop" : ""].join(" ")}
       style={
         {
-          left: `${f.x}%`,
-          top: `${f.y}%`,
+          "--x": `${f.x}%`,
+          "--y": `${f.y}%`,
+          "--xc": `${f.cel?.x ?? f.x}%`,
+          "--yc": `${f.cel?.y ?? f.y}%`,
           width: `${f.w}%`,
           x: reduced ? 0 : x,
           y: reduced ? 0 : y,

@@ -132,7 +132,11 @@ export type PhotoAssignment = {
    */
   hero?: PhotoSlot;
   entrance?: PhotoSlot;
-  work: PhotoSlot[];
+  /**
+   * uma foto por técnica da sequência, na ordem dela (Volume inglês, Fox
+   * eyes, Manutenção); undefined quando a técnica ainda não tem foto
+   */
+  work: (PhotoSlot | undefined)[];
   details: PhotoSlot[];
   byService: Record<string, PhotoSlot>;
   /** sequência para a frente do cartão (destaques primeiro) */
@@ -155,6 +159,8 @@ const WORK_KEYWORDS: { palavras: string[]; fora?: string[] }[] = [
   { palavras: ["fox"] },
   { palavras: ["manuten"] },
 ];
+/** os rótulos dos três lugares, para o painel de mídia dizer onde a foto está */
+export const TECNICAS_TRABALHO = ["Volume inglês", "Fox eyes", "Manutenção"] as const;
 
 /**
  * A foto de cada serviço, pelo nome que a Tayssa dá a ela: cada serviço
@@ -210,11 +216,11 @@ export function assignPhotos(library: LibraryPhoto[]): PhotoAssignment {
   // Pegar a 2ª, 3ª e 4ª foto da fila fazia o site pôr uma foto de
   // sobrancelha debaixo do título de uma técnica. Então cada técnica recebe a
   // primeira foto cujo nome a declara; quem não tiver foto declarada fica
-  // com o estático, que não afirma técnica nenhuma.
-  const estaticos = [PHOTOS.work01, PHOTOS.work02, PHOTOS.work03];
+  // sem foto. O estático entrava no lugar e a Manutenção aparecia com um
+  // close que não era manutenção (Lucas, 29/10/2026).
   // o retrato da biblioteca não vira foto de trabalho
   const usadas = new Set<string>(retrato ? [retrato.id] : []);
-  const work = WORK_KEYWORDS.map(({ palavras, fora = [] }, i) => {
+  const work = WORK_KEYWORDS.map(({ palavras, fora = [] }) => {
     const achou = ordered.find((p) => {
       const nome = p.lash_style.toLowerCase();
       return !usadas.has(p.id) && palavras.some((w) => nome.includes(w)) && !fora.some((w) => nome.includes(w));
@@ -223,7 +229,7 @@ export function assignPhotos(library: LibraryPhoto[]): PhotoAssignment {
       usadas.add(achou.id);
       return slotFromPhoto(achou);
     }
-    return estaticos[i];
+    return undefined;
   });
   const detailStatics = [PHOTOS.detail01, PHOTOS.detail02, PHOTOS.detail03, PHOTOS.detail04, PHOTOS.detail05, PHOTOS.detail06];
   const details = detailStatics.map((st, i) => take(1, 4 + i)[0] ?? st);

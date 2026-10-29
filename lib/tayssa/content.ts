@@ -49,11 +49,21 @@ export type ReelInstagram = {
   legenda?: string;
 };
 
+export type TrechoSobre = {
+  rotulo: string;
+  paragrafos: string[];
+  /** uma frase dela em destaque, fechando a parte (opcional) */
+  frase?: string;
+};
+
 export type ConteudoSite = {
   sobre: {
-    /** 2 a 4 parágrafos curtos, na voz dela */
-    bio: string[] | null;
-    /** formação/cursos que ela queira mostrar, com nome real da instituição */
+    /**
+     * a história dela, na voz dela, em partes curtas com um título cada
+     * ("Como começou", "Hoje"…). `*assim*` destaca uma frase
+     */
+    bio: TrechoSobre[] | null;
+    /** cursos que ela queira mostrar (todos presenciais), com nome real da instituição */
     formacao: string[] | null;
     /** frase de assinatura dela (opcional) */
     assinatura: string | null;
@@ -86,22 +96,49 @@ export type ConteudoSite = {
 export const CONTEUDO: ConteudoSite = {
   // a história e os cursos que ela escreveu no formulário (28/10/2026), nas palavras dela
   sobre: {
+    // o texto inteiro dela, em quatro partes com título: em bloco único era
+    // "um textão" (Lucas, 29/10/2026). Nenhuma palavra saiu; só os cortes de
+    // parágrafo e os destaques são nossos
     bio: [
-      "Minha história com os cílios começou em abril de 2023, quando eu ainda trabalhava em uma joalheria, estudava e recebia R$\u00a0600 por mês. Foi com esse dinheiro que comecei a juntar para investir no meu primeiro curso.",
-      "Depois, fui comprando meus materiais aos poucos, conciliando trabalho, escola e os primeiros atendimentos. Não tinha uma estrutura pronta, mas tinha vontade de construir algo meu. Olhando para trás, sinto que encontrei esse caminho antes mesmo de entender tudo o que ele poderia se tornar.",
-      "Hoje, enxergo os cílios como o começo de algo muito maior do que uma profissão. Quero construir uma marca forte, ter minha própria empresa, formar uma equipe em que eu possa confiar e, futuramente, ensinar outras mulheres a construírem seus próprios caminhos. Não quero oferecer apenas um curso técnico, mas compartilhar conhecimento, mostrar possibilidades e ajudar outras profissionais a desenvolverem não só suas habilidades, mas também seu posicionamento, sua visão de negócio e sua independência.",
-      "O que me move é saber que posso construir algo que tenha propósito. Quero olhar para tudo o que conquistei e sentir que meu trabalho fez diferença, que abriu portas e criou oportunidades. Minha filha faz parte dessa motivação, assim como o desejo de conquistar liberdade para viver e escolher o meu futuro.",
-      "Na minha profissão, levo esse pensamento para cada atendimento: escuto, observo, respeito as individualidades e cuido dos detalhes para que cada cliente se sinta segura, valorizada e à vontade. Porque, para mim, construir uma marca não é apenas sobre o que eu entrego, mas também sobre o impacto que posso deixar nas pessoas ao longo do caminho.",
+      {
+        rotulo: "Como começou",
+        paragrafos: [
+          "Minha história com os cílios começou em *abril de 2023*, quando eu ainda trabalhava em uma joalheria, estudava e recebia R$\u00a0600 por mês. Foi com esse dinheiro que comecei a juntar para investir no meu primeiro curso.",
+          "Depois, fui comprando meus materiais aos poucos, conciliando trabalho, escola e os primeiros atendimentos. Não tinha uma estrutura pronta, mas tinha *vontade de construir algo meu*. Olhando para trás, sinto que encontrei esse caminho antes mesmo de entender tudo o que ele poderia se tornar.",
+        ],
+      },
+      {
+        rotulo: "Hoje",
+        paragrafos: [
+          "Hoje, enxergo os cílios como *o começo de algo muito maior* do que uma profissão. Quero construir uma marca forte, ter minha própria empresa, formar uma equipe em que eu possa confiar e, futuramente, ensinar outras mulheres a construírem seus próprios caminhos.",
+          "Não quero oferecer apenas um curso técnico, mas compartilhar conhecimento, mostrar possibilidades e ajudar outras profissionais a desenvolverem não só suas habilidades, mas também seu posicionamento, sua visão de negócio e sua independência.",
+        ],
+      },
+      {
+        rotulo: "O que me move",
+        paragrafos: [
+          "O que me move é saber que posso construir *algo que tenha propósito*. Quero olhar para tudo o que conquistei e sentir que meu trabalho fez diferença, que abriu portas e criou oportunidades. *Minha filha faz parte dessa motivação*, assim como o desejo de conquistar liberdade para viver e escolher o meu futuro.",
+        ],
+      },
+      {
+        rotulo: "No atendimento",
+        paragrafos: [
+          "Na minha profissão, levo esse pensamento para cada atendimento: *escuto, observo, respeito as individualidades e cuido dos detalhes* para que cada cliente se sinta segura, valorizada e à vontade.",
+        ],
+        frase:
+          "Porque, para mim, construir uma marca não é apenas sobre o que eu entrego, mas também sobre o impacto que posso deixar nas pessoas ao longo do caminho.",
+      },
     ],
+    // todos presenciais (Lucas, 29/10/2026: não há curso on-line)
     formacao: [
-      "Extensão de cílios · formação presencial, 2023",
-      "Design de sobrancelhas · formação presencial",
-      "Hidragloss · formação presencial",
-      "Lash lifting · curso on-line",
-      "Técnicas de capping · curso on-line",
-      "Técnicas de durabilidade da extensão de cílios · curso on-line",
-      "Assistente pessoal · SENAC",
-      "Informática · curso de formação",
+      "Extensão de cílios, 2023",
+      "Design de sobrancelhas",
+      "Hidragloss",
+      "Lash lifting",
+      "Técnicas de capping",
+      "Técnicas de durabilidade da extensão de cílios",
+      "Assistente pessoal, SENAC",
+      "Informática",
     ],
     assinatura: null,
   },

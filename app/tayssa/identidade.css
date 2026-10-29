@@ -579,10 +579,9 @@
 .tyh__flor {
   position: absolute;
   z-index: 1;
+  left: var(--x);
+  top: var(--y);
   pointer-events: none;
-}
-.tyh__flor--frente {
-  z-index: 3;
 }
 .tyh__flor-flutua {
   rotate: var(--r);
@@ -593,10 +592,9 @@
   width: 100%;
   height: auto;
   overflow: visible;
-  filter: drop-shadow(0 18px 30px rgba(10, 0, 4, 0.55)) drop-shadow(0 0 22px rgba(232, 92, 140, 0.25));
-}
-.tyh__flor--frente .tyf {
-  filter: drop-shadow(0 24px 34px rgba(10, 0, 4, 0.7)) drop-shadow(0 0 26px rgba(240, 120, 165, 0.35));
+  /* no fundo: sombra curta e um pouco de transparência, para ficar atrás */
+  opacity: 0.88;
+  filter: drop-shadow(0 10px 16px rgba(10, 0, 4, 0.5));
 }
 @keyframes ty-flor-flutua {
   from {
@@ -681,6 +679,11 @@
   }
   .tyh__flor--desktop {
     display: none;
+  }
+  /* no celular as flores moram no chão, embaixo e dos lados da janela */
+  .tyh__flor {
+    left: var(--xc);
+    top: var(--yc);
   }
   .tyh__descer {
     display: none;

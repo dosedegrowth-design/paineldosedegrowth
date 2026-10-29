@@ -191,6 +191,18 @@
   .ty-scope :is(.tyab__bio, .tynu__lead) {
     margin-inline: auto;
   }
+  .ty-scope .tyab__parte {
+    justify-items: center;
+  }
+  .ty-scope .tyab__frase {
+    padding: 18px 0 0;
+    border-left: 0;
+    /* um traço curto no meio, em cima da frase */
+    background: linear-gradient(var(--t-accent), var(--t-accent)) top center / 44px 2px no-repeat;
+  }
+  .ty-scope .tyab__formacao ul {
+    justify-content: center;
+  }
   .ty-scope .tyst__onde .ty-link {
     justify-self: center;
   }

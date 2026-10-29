@@ -66,7 +66,7 @@ const TECNICAS: { n: string; nome: string; dizer: ReactNode; texto: string }[] =
  * está completa. Quando a biblioteca tiver foto, ela entra chapada na
  * coluna que corre e melhora a composição — nunca é requisito.
  */
-export function WorkSequence({ photos }: { photos?: PhotoSlot[] }) {
+export function WorkSequence({ photos }: { photos?: (PhotoSlot | undefined)[] }) {
   const reduced = useReducedMotion();
   const corridaRef = useRef<HTMLOListElement>(null);
   const [ativo, setAtivo] = useState(0);

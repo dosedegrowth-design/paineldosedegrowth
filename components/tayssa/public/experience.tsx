@@ -24,6 +24,7 @@ import { Studio } from "@/components/tayssa/public/studio";
 import { Testimonials } from "@/components/tayssa/public/testimonials";
 import { VisitInfo } from "@/components/tayssa/public/visit-info";
 import { Catalogo } from "@/components/tayssa/public/catalogo";
+import { SemQuebrar } from "@/components/tayssa/ui/sem-quebrar";
 import type { CapaServico, CategoriaCatalogo, MidiaCatalogo } from "@/lib/tayssa/catalogo";
 import { completarComFotos, type ItemPortfolio } from "@/lib/tayssa/portfolio";
 import { CONTEUDO, temAtendimento, temSobre } from "@/lib/tayssa/content";
@@ -91,7 +92,7 @@ export function PublicExperience({
   // (a da abertura é o retrato dela, que já volta em "A Tayssa")
   const colagem = [
     ...(photos?.details ?? []),
-    ...(photos?.work ?? []),
+    ...(photos?.work ?? []).filter((f): f is NonNullable<typeof f> => Boolean(f)),
     ...Object.values(photos?.byService ?? {}),
   ].filter((f, i, todas) => todas.findIndex((g) => g.src === f.src) === i);
   // o menu só aponta para seção que está na página
@@ -111,26 +112,35 @@ export function PublicExperience({
         <main>
           <Hero business={settings.business} scheduleUrl={links.schedule} photo={photos?.hero} video={videos?.hero} />
           <Faixa itens={services.filter((s) => s.slug !== "outro").map((s) => s.name)} />
-          <ServiceStrip services={services} scheduleUrl={links.schedule} capas={capas} rolos={rolos} />
+          {/* as seções de foto e vídeo: se uma quebrar no celular, some sozinha e o erro vai para o log */}
+          <SemQuebrar onde="carrossel de servicos">
+            <ServiceStrip services={services} scheduleUrl={links.schedule} capas={capas} rolos={rolos} />
+          </SemQuebrar>
           <WorkSequence photos={photos?.work} />
           <Film video={videos?.processo} />
-          <Catalogo catalogo={catalogo} />
-          <Services
-            services={services}
-            scheduleUrl={links.schedule}
-            capas={capas}
-            rolos={rolos}
-            detalhes={CONTEUDO.servicos}
-            ambiente={colagem[1] ?? colagem[0]}
-          />
+          <SemQuebrar onde="catalogo">
+            <Catalogo catalogo={catalogo} />
+          </SemQuebrar>
+          <SemQuebrar onde="lista de servicos">
+            <Services
+              services={services}
+              scheduleUrl={links.schedule}
+              capas={capas}
+              rolos={rolos}
+              detalhes={CONTEUDO.servicos}
+              ambiente={colagem[1] ?? colagem[0]}
+            />
+          </SemQuebrar>
           <About business={settings.business} conteudo={CONTEUDO} portrait={photos?.portrait} instagramUrl={links.instagram} />
           <Studio conteudo={CONTEUDO} video={videos?.espaco} photo={photos?.studio} />
-          <Details
-            instagramUrl={links.instagram}
-            handle={links.handle}
-            photos={colagem}
-            portfolio={completarComFotos(portfolio, colagem)}
-          />
+          <SemQuebrar onde="instagram">
+            <Details
+              instagramUrl={links.instagram}
+              handle={links.handle}
+              photos={colagem}
+              portfolio={completarComFotos(portfolio, colagem)}
+            />
+          </SemQuebrar>
           <Numeros numeros={settings.numeros} handle={links.handle} />
           <Testimonials conteudo={CONTEUDO} />
           <VipIntro benefits={benefits} settings={settings} />

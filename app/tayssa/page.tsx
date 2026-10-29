@@ -56,7 +56,8 @@ export default async function TayssaHome() {
     ...assigned,
     hero: existe(assigned.hero) ? assigned.hero : undefined,
     entrance: existe(assigned.entrance) ? assigned.entrance : undefined,
-    work: assigned.work.filter(existe),
+    // cada técnica no seu lugar: sem foto, o lugar fica vazio (não anda para cima)
+    work: assigned.work.map((p) => (existe(p) ? p : undefined)),
     details: assigned.details.filter(existe),
     byService: Object.fromEntries(Object.entries(assigned.byService).filter(([, v]) => existe(v))),
     card: assigned.card.filter(existe),

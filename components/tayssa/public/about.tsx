@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import type { BusinessSettings } from "@/lib/tayssa/config";
 import type { ConteudoSite } from "@/lib/tayssa/content";
 import { temSobre } from "@/lib/tayssa/content";
@@ -16,6 +17,11 @@ const FLORES: Peca[] = [
   { kind: "folha", x: 2, y: 72, size: "9%", rotate: -140, depth: 0.3 },
   { kind: "botao", seed: 31, tom: "bordo", x: 6, y: 86, size: "18%", rotate: -160, depth: 0.7, delay: 300 },
 ];
+
+/** `*assim*` no texto dela vira destaque: a frase que a leitura rápida pega. */
+function comDestaques(texto: string): ReactNode[] {
+  return texto.split(/\*([^*]+)\*/).map((parte, i) => (i % 2 ? <strong key={i}>{parte}</strong> : parte));
+}
 
 /**
  * A Tayssa — a profissional por trás do trabalho.
@@ -75,11 +81,22 @@ export function About({
               lines={[primeiro + ",", <em key="perto">de perto.</em>]}
             />
 
+            {/* a história em partes curtas, cada uma com o seu título: em
+                bloco único era um textão (Lucas, 29/10/2026) */}
             {bio?.length ? (
               <div className="tyab__bio">
-                {bio.map((p, i) => (
-                  <Reveal key={i} delay={0.08 * i}>
-                    <p className={i === 0 ? "ty-lead" : "ty-body"}>{p}</p>
+                {bio.map((trecho, i) => (
+                  <Reveal key={trecho.rotulo} className="tyab__parte" delay={Math.min(i, 2) * 0.06}>
+                    <span className="ty-mono tyab__rotulo">
+                      <b>{String(i + 1).padStart(2, "0")}</b>
+                      {trecho.rotulo}
+                    </span>
+                    {trecho.paragrafos.map((p, j) => (
+                      <p key={j} className={i === 0 && j === 0 ? "ty-lead" : "ty-body"}>
+                        {comDestaques(p)}
+                      </p>
+                    ))}
+                    {trecho.frase ? <blockquote className="tyab__frase">{trecho.frase}</blockquote> : null}
                   </Reveal>
                 ))}
               </div>
@@ -92,7 +109,7 @@ export function About({
 
             {formacao?.length ? (
               <Reveal className="tyab__formacao">
-                <span className="ty-mono ty-mono--ink">Formação</span>
+                <span className="ty-mono ty-mono--ink">Formação · cursos presenciais</span>
                 <ul>
                   {formacao.map((f) => (
                     <li key={f}>{f}</li>

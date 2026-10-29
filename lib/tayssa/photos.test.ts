@@ -24,14 +24,14 @@ test("a abertura mostra o mesmo retrato da biografia", () => {
   // na janela quadrada, o rosto dela fica no terço de cima
   assert.equal(a.hero?.posicao, PHOTOS.portrait.posicao);
   // a foto em destaque não some: abre a sequência de trabalho
-  assert.equal(a.work[0].src, "https://x/h.jpg");
+  assert.equal(a.work[0]?.src, "https://x/h.jpg");
 });
 
 test("o retrato da biblioteca abre o site e não vira foto de trabalho", () => {
   const a = assignPhotos([foto("r", "Retrato da Tayssa Lash", true), foto("v1", "Volume inglês")]);
   assert.equal(a.hero?.src, "https://x/r.jpg");
   assert.equal(a.portrait?.src, "https://x/r.jpg");
-  assert.equal(a.work[0].src, "https://x/v1.jpg");
+  assert.equal(a.work[0]?.src, "https://x/v1.jpg");
   // "Lash" no nome não põe o retrato no lugar de um serviço de cílios
   assert.notEqual(a.byService["aplicacao-cilios"]?.src, "https://x/r.jpg");
 });
@@ -42,10 +42,13 @@ test("a primeira técnica é o volume inglês: outro volume não entra no lugar"
     foto("e", "Volume egípcio", true),
     foto("i", "Volume inglês"),
   ]);
-  assert.equal(a.work[0].src, "https://x/i.jpg");
-  // sem foto de volume inglês, entra o estático, que não afirma técnica
+  assert.equal(a.work[0]?.src, "https://x/i.jpg");
+  // sem foto de volume inglês, a técnica fica sem foto (nunca um close qualquer)
   const s = assignPhotos([foto("b", "Mega brasileiro", true)]);
-  assert.equal(s.work[0].src, PHOTOS.work01.src);
+  assert.equal(s.work[0], undefined);
+  // a Manutenção sem foto fica sem foto, e as outras não mudam de lugar
+  assert.equal(s.work.length, 3);
+  assert.equal(s.work[2], undefined);
 });
 
 test("as fotos da sequência não se repetem logo abaixo, nos serviços", () => {
@@ -54,8 +57,8 @@ test("as fotos da sequência não se repetem logo abaixo, nos serviços", () => 
     foto("v1", "Volume inglês"),
     foto("f1", "Volume Fox eyes"),
   ]);
-  assert.equal(a.work[0].src, "https://x/m1.jpg");
-  assert.equal(a.work[1].src, "https://x/f1.jpg");
+  assert.equal(a.work[0]?.src, "https://x/m1.jpg");
+  assert.equal(a.work[1]?.src, "https://x/f1.jpg");
   // o serviço pega outra foto do mesmo nome, não a da sequência
   assert.equal(a.byService["volume-ingles"].src, "https://x/v1.jpg");
   // com uma foto só do serviço, ela se repete em vez de faltar
