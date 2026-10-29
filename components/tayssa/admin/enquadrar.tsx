@@ -23,11 +23,14 @@ export function Enquadrar({
   tipo,
   valor,
   onMudar,
+  formato,
 }: {
   url: string;
   tipo: "image" | "video";
   valor: Quadro;
   onMudar: (q: Quadro) => void;
+  /** proporção da janela (CSS aspect-ratio); sem ela, o cartão do rolo */
+  formato?: string;
 }) {
   const caixa = useRef<HTMLDivElement>(null);
   const toques = useRef(new Map<number, { x: number; y: number }>());
@@ -89,6 +92,7 @@ export function Enquadrar({
       <div
         ref={caixa}
         className="tya-quadro__janela"
+        style={formato ? { aspectRatio: formato } : undefined}
         onPointerDown={comecar}
         onPointerMove={mover}
         onPointerUp={soltar}

@@ -155,8 +155,6 @@ const WORK_KEYWORDS: { palavras: string[]; fora?: string[] }[] = [
   { palavras: ["fox"] },
   { palavras: ["manuten"] },
 ];
-/** os rótulos dos três lugares, para o painel de mídia dizer onde a foto está */
-export const TECNICAS_TRABALHO = ["Volume inglês", "Fox eyes", "Manutenção"] as const;
 
 /**
  * A foto de cada serviço, pelo nome que a Tayssa dá a ela: cada serviço

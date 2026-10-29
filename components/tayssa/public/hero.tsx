@@ -255,12 +255,12 @@ export function Hero({
       </motion.div>
 
       <motion.a
-        href="#trabalho"
+        href="#servicos"
         className="tyh__descer"
         initial={reduced ? false : { opacity: 0 }}
         animate={entra ? { opacity: 1 } : undefined}
         transition={{ duration: 0.8, delay: 1.4 }}
-        aria-label="Ver o trabalho"
+        aria-label="Ver os serviços"
       >
         <span aria-hidden />
       </motion.a>

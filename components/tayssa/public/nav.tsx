@@ -16,14 +16,12 @@ type Secao = { id: string; label: string };
 type Destino = { label: string; icone: IconeNome } & ({ href: string } | { onClick: () => void });
 
 const SECTIONS: Secao[] = [
-  { id: "trabalho", label: "Trabalho" },
   { id: "servicos", label: "Serviços" },
   { id: "vip", label: "VIP" },
 ];
 
 /** O ícone de cada destino no menu do celular; seção nova cai na flor. */
 const ICONE_SECAO: Record<string, IconeNome> = {
-  trabalho: "olho",
   servicos: "brilho",
   sobre: "pessoa",
   vip: "cartaoVip",

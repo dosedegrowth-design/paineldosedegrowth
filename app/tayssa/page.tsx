@@ -3,9 +3,9 @@ import { getSettings } from "@/lib/tayssa/settings";
 import { getActiveServices, getPublicBenefits } from "@/lib/tayssa/queries/catalog";
 import { getPhotoAvailability } from "@/lib/tayssa/photos-server";
 import { getVideoAvailability } from "@/lib/tayssa/media-server";
-import { getPhotoLibrary, getPrecosProdutos } from "@/lib/tayssa/queries/photos";
+import { getFotosPorIds, getPhotoLibrary } from "@/lib/tayssa/queries/photos";
 import { assignPhotos } from "@/lib/tayssa/photos";
-import { comPrecos, montarCatalogo } from "@/lib/tayssa/catalogo";
+import { capasDosServicos, montarCatalogo, rolosDosServicos } from "@/lib/tayssa/catalogo";
 import { ehManutencao } from "@/lib/tayssa/agendar";
 import { getAgendaPublica } from "@/lib/tayssa/queries/vip";
 import { montarPortfolio } from "@/lib/tayssa/portfolio";
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
  * a página nunca quebra por causa do Supabase.
  */
 export default async function TayssaHome() {
-  const [settings, services, benefits, photos, library, videos, dias, precos] = await Promise.all([
+  const [settings, services, benefits, photos, library, videos, dias] = await Promise.all([
     getSettings(),
     getActiveServices(),
     getPublicBenefits(),
@@ -35,15 +35,17 @@ export default async function TayssaHome() {
     getPhotoLibrary(),
     getVideoAvailability(),
     getAgendaPublica(),
-    getPrecosProdutos(),
   ]);
-  // uma biblioteca, todos os lugares: o herói, a sequência, o trilho, os serviços.
+  // uma biblioteca, todos os lugares: a abertura, os serviços, o Instagram.
   // Só entra foto que existe de verdade — da biblioteca, ou arquivo estático
   // presente. Sem isso o site exibiria caixotes vazios no lugar do trabalho.
   const assigned = assignPhotos(library);
-  // o catálogo (foto e vídeo por categoria e produto) alimenta os rolos
-  // com o valor de cada produto, quando a Tayssa cadastrou
-  const catalogo = comPrecos(montarCatalogo(library), precos);
+  // cada serviço com as fotos dele (o produto com o nome dele) e a capa que a
+  // Tayssa escolheu em Mídia → Capas (que pode ser uma foto da galeria)
+  const ativos = services.filter((s) => s.slug !== "outro");
+  const rolos = rolosDosServicos(montarCatalogo(library), ativos);
+  const fotosDasCapas = await getFotosPorIds(ativos.map((s) => s.capa_photo_id ?? ""));
+  const capas = capasDosServicos(ativos, rolos, fotosDasCapas);
   // o portfólio dos celulares: Reels do conteúdo + a mídia publicada
   const portfolio = montarPortfolio(library, CONTEUDO.instagram);
   const existe = (p?: { src: string }) => Boolean(p && (p.src.startsWith("http") || photos[p.src]));
@@ -62,7 +64,6 @@ export default async function TayssaHome() {
   // a folha de agendar: os serviços da casa com valor e tempo, os volumes
   // (a manutenção pergunta de qual é, e o valor vem dele), os dias e
   // horários livres e o sinal da agenda
-  const ativos = services.filter((s) => s.slug !== "outro");
   const agenda: AgendaSite = {
     telefone: settings.business.whatsapp,
     servicos: ativos.map((s) => ({
@@ -114,7 +115,8 @@ export default async function TayssaHome() {
           benefits={benefits}
           photos={reais}
           videos={videos}
-          catalogo={catalogo}
+          capas={capas}
+          rolos={rolos}
           portfolio={portfolio}
           agenda={agenda}
         />

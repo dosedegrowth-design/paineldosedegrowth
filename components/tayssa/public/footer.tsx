@@ -14,8 +14,8 @@ const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 /** As seções do site. O href é real: de outra página, leva até a home. */
 const SECOES = [
-  { id: "trabalho", label: "Trabalho" },
   { id: "servicos", label: "Serviços" },
+  { id: "sobre", label: "A Tayssa" },
   { id: "vip", label: "Tayssa VIP" },
 ];
 

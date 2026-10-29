@@ -324,3 +324,58 @@ export async function adminSalvarLinkInstagramAction(input: { id: string; url: s
     return undefined;
   });
 }
+
+const capaSchema = z.object({
+  service_id: z.string().uuid("Serviço inválido"),
+  /** vazio = volta para a automática (a primeira foto do serviço) */
+  photo_id: z.string().uuid("Foto inválida").nullable(),
+  x: z.number().min(0).max(100).default(50),
+  y: z.number().min(0).max(100).default(50),
+  zoom: z.number().min(1).max(3).default(1),
+});
+
+/**
+ * A capa de um serviço no site (Mídia → Capas): a foto e o enquadramento
+ * que a Tayssa escolheu. Só foto (vídeo não vira capa). Sem foto, o serviço
+ * volta a usar a primeira foto dele.
+ */
+export async function adminSalvarCapaServicoAction(input: {
+  service_id: string;
+  photo_id: string | null;
+  x?: number;
+  y?: number;
+  zoom?: number;
+}): Promise<ActionResult> {
+  return runAction("photos.capa", async () => {
+    const admin = await assertAdmin();
+    const dados = capaSchema.parse(input);
+    const db = vipDb();
+    if (dados.photo_id) {
+      const { data: foto } = await db.from("photos").select("id, media_type").eq("id", dados.photo_id).maybeSingle();
+      if (!foto) throw new BusinessError("Foto não encontrada.");
+      if ((foto as { media_type: string }).media_type === "video") throw new BusinessError("A capa precisa ser uma foto.");
+    }
+    const { data, error } = await db
+      .from("services")
+      .update({
+        capa_photo_id: dados.photo_id,
+        capa_x: dados.photo_id ? dados.x : 50,
+        capa_y: dados.photo_id ? dados.y : 50,
+        capa_zoom: dados.photo_id ? dados.zoom : 1,
+      })
+      .eq("id", dados.service_id)
+      .select("id");
+    if (error) throw new Error(error.message);
+    if (!data?.length) throw new BusinessError("Serviço não encontrado.");
+    await logAudit({
+      actorId: admin.id,
+      actorRole: "admin",
+      action: "servico_capa",
+      entityType: "service",
+      entityId: dados.service_id,
+      meta: { photo_id: dados.photo_id, x: dados.x, y: dados.y, zoom: dados.zoom },
+    });
+    revalidatePhotos();
+    return undefined;
+  });
+}

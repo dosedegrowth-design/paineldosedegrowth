@@ -72,6 +72,12 @@ export type ServiceRow = {
   duration_min?: number | null;
   /** valor da manutenção deste volume (vazio = sem manutenção própria) */
   preco_manutencao?: number | null;
+  /** foto de capa escolhida no painel (vazio = a primeira foto do serviço) */
+  capa_photo_id?: string | null;
+  /** enquadramento da capa: centro em % e zoom */
+  capa_x?: number;
+  capa_y?: number;
+  capa_zoom?: number;
 };
 
 export type ClientServiceRow = {

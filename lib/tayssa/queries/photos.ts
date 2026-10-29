@@ -40,6 +40,24 @@ export const listAllPhotos = cache(async (): Promise<PhotoRow[]> => {
   return (data ?? []) as PhotoRow[];
 });
 
+/**
+ * As fotos escolhidas como capa dos serviços, pelo id. A capa pode ser uma
+ * foto da galeria que não está nos carrosséis, então não vem da biblioteca
+ * do site. Falha de banco: nenhuma, e cada serviço usa a primeira foto dele.
+ */
+export async function getFotosPorIds(ids: string[]): Promise<Record<string, PhotoRow>> {
+  const unicos = [...new Set(ids.filter(Boolean))];
+  if (!unicos.length || !isDbConfigured()) return {};
+  try {
+    const { data, error } = await vipDb().from("photos").select("*").in("id", unicos);
+    if (error) throw new Error(error.message);
+    return Object.fromEntries(((data ?? []) as PhotoRow[]).map((p) => [p.id, p]));
+  } catch (e) {
+    logServerError("photos.porId", e);
+    return {};
+  }
+}
+
 /** Estilos existentes, para a Tayssa reaproveitar o nome em vez de digitar de novo. */
 export function lashStyles(photos: PhotoRow[]): string[] {
   const seen = new Map<string, number>();

@@ -3,12 +3,15 @@ import Link from "next/link";
 import { getPrecosProdutos, listAllPhotos } from "@/lib/tayssa/queries/photos";
 import { ROUTES } from "@/lib/tayssa/config";
 import { getActiveServices } from "@/lib/tayssa/queries/catalog";
-import { TECNICAS_TRABALHO, assignPhotos, type PhotoSlot } from "@/lib/tayssa/photos";
+import { assignPhotos, type PhotoSlot } from "@/lib/tayssa/photos";
 import { AdminBlock, AdminHeader, Stat } from "@/components/tayssa/admin/shell";
 import { PhotoUpload } from "@/components/tayssa/admin/photo-upload";
 import { PhotoLibrary } from "@/components/tayssa/admin/photo-library";
-import { montarCatalogo } from "@/lib/tayssa/catalogo";
+import { CapasServicos, type OpcaoCapa, type ServicoCapa } from "@/components/tayssa/admin/capas";
+import { capasDosServicos, montarCatalogo, roloAbaixoDaCapa, rolosDosServicos } from "@/lib/tayssa/catalogo";
 import type { CategoriaMidia } from "@/lib/tayssa/types";
+
+type Aba = "galeria" | "site" | "capas";
 
 /**
  * Fotos: um lugar só. O que entra aqui aparece no site, na frente do
@@ -20,7 +23,8 @@ import type { CategoriaMidia } from "@/lib/tayssa/types";
  */
 export default async function PhotosPage({ searchParams }: { searchParams: Promise<{ aba?: string }> }) {
   await requireAdminPage();
-  const aba = (await searchParams).aba === "site" ? "site" : "galeria";
+  const pedida = (await searchParams).aba;
+  const aba: Aba = pedida === "site" || pedida === "capas" ? pedida : "galeria";
   const [photos, services, precos] = await Promise.all([listAllPhotos(), getActiveServices(), getPrecosProdutos()]);
   const activePhotos = photos.filter((p) => p.status === "active");
   const naGaleria = photos.length - activePhotos.length;
@@ -36,10 +40,36 @@ export default async function PhotosPage({ searchParams }: { searchParams: Promi
   const nProdutos = catalogo.reduce((n, c) => n + c.produtos.length, 0);
   const nVideos = activePhotos.filter((p) => p.media_type === "video").length;
 
+  // os serviços do site, cada um com o carrossel das fotos dele e a capa
+  // (escolhida aqui, na aba Capas, ou a primeira foto do serviço)
+  const servicosNoSite = services.filter((s) => s.slug !== "outro");
+  // a coluna da capa só existe depois da migração 20261029010000; antes dela,
+  // a aba mostra as capas automáticas e não oferece trocar
+  const capaNoBanco = services.length > 0 && "capa_photo_id" in services[0];
+  const rolos = rolosDosServicos(catalogo, servicosNoSite);
+  const porId = Object.fromEntries(photos.map((p) => [p.id, p]));
+  const capas = capasDosServicos(servicosNoSite, rolos, porId);
+  const opcao = (p: (typeof photos)[number]): OpcaoCapa => ({
+    id: p.id,
+    url: p.public_url,
+    produto: p.lash_style || "Sem nome",
+    foco: { x: Number(p.focus_x ?? 50), y: Number(p.focus_y ?? 50), zoom: Number(p.zoom ?? 1) },
+  });
+  const servicosCapa: ServicoCapa[] = servicosNoSite.map((s) => {
+    const rolo = rolos[s.slug] ?? [];
+    return {
+      id: s.id,
+      nome: s.name,
+      capa: capas[s.slug] ?? null,
+      noCarrossel: roloAbaixoDaCapa(rolo, capas[s.slug] ?? null).length,
+      daqui: rolo.filter((m) => m.tipo === "image").map((m) => opcao(porId[m.id])),
+    };
+  });
+  const outrasFotos = photos.filter((p) => p.media_type !== "video").map(opcao);
+
   // onde cada foto caiu, lido da mesma distribuição que o site consome
   const assigned = assignPhotos(activePhotos);
   const idByUrl = new Map(activePhotos.map((p) => [p.public_url, p.id]));
-  const serviceName = new Map(services.map((s) => [s.slug, s.name]));
   const places: Record<string, string[]> = {};
   const put = (slot: PhotoSlot | undefined, label: string) => {
     if (!slot) return;
@@ -48,29 +78,23 @@ export default async function PhotosPage({ searchParams }: { searchParams: Promi
     const list = (places[id] ??= []);
     if (!list.includes(label)) list.push(label);
   };
+  const marcar = (id: string, label: string) => {
+    const list = (places[id] ??= []);
+    if (!list.includes(label)) list.push(label);
+  };
   put(assigned.hero, "Abertura do site");
   put(assigned.portrait, "A Tayssa");
-  // a sequência de trabalho é escolhida por palavra-chave de técnica
-  // (WORK_KEYWORDS em lib/tayssa/photos.ts), não por posição na fila
-  TECNICAS_TRABALHO.forEach((tecnica, i) => put(assigned.work[i], tecnica));
-  assigned.details.forEach((s) => put(s, "Detalhes"));
-  // `assignPhotos()` casa as slugs fixas de SERVICE_KEYWORDS, esteja o
-  // serviço ativo ou não; a página pública só desenha os serviços ativos.
-  // Serviço desativado, então, não é lugar: a foto não ganha selo por ele. E
-  // o selo leva o nome do catálogo — slug é endereço, não palavra de tela.
-  for (const [slug, s] of Object.entries(assigned.byService)) {
-    const nome = serviceName.get(slug);
-    if (nome) put(s, nome);
+  // a capa de cada serviço (o selo leva o nome do serviço, não a slug)
+  for (const s of servicosNoSite) {
+    const capa = capas[s.slug];
+    if (capa) marcar(capa.id, `Capa: ${s.name}`);
   }
   assigned.card.forEach((s) => put(s, "Frente do cartão"));
-  // todo item no ar está no rolo do produto dele
-  for (const c of catalogo) {
-    for (const prod of c.produtos) {
-      for (const item of prod.itens) {
-        const list = (places[item.id] ??= []);
-        list.push(`Rolo: ${c.label} › ${prod.nome}`);
-      }
-    }
+  // todo item no ar passa no carrossel do serviço dele
+  const nomeDoServico = new Map(servicosNoSite.map((s) => [s.slug, s.name]));
+  for (const [slug, itens] of Object.entries(rolos)) {
+    const nome = nomeDoServico.get(slug);
+    if (nome) for (const item of itens) marcar(item.id, `Carrossel: ${nome}`);
   }
 
   const gb = photos.reduce((n, p) => n + (p.bytes ?? 0), 0) / 1024 / 1024 / 1024;
@@ -101,6 +125,9 @@ export default async function PhotosPage({ searchParams }: { searchParams: Promi
         <Link href={`${ROUTES.adminPhotos}?aba=site`} className="tya-aba" data-on={aba === "site"}>
           No site <span>{activePhotos.length}</span>
         </Link>
+        <Link href={`${ROUTES.adminPhotos}?aba=capas`} className="tya-aba" data-on={aba === "capas"}>
+          Capas dos serviços <span>{servicosCapa.filter((s) => s.capa).length}</span>
+        </Link>
       </nav>
 
       {aba === "galeria" ? (
@@ -109,9 +136,20 @@ export default async function PhotosPage({ searchParams }: { searchParams: Promi
         </AdminBlock>
       ) : null}
 
-      <AdminBlock title={aba === "galeria" ? "Galeria" : "Rolos no site"}>
-        <PhotoLibrary photos={photos} produtos={produtos} places={places} aba={aba} precos={precos} />
-      </AdminBlock>
+      {aba === "capas" ? (
+        <AdminBlock title="Capas dos serviços">
+          <p className="tya-small" style={{ marginBottom: 16 }}>
+            Cada serviço aparece no site com a capa e, embaixo dela, o carrossel das outras fotos do mesmo serviço. Sem
+            capa escolhida, entra a primeira foto do serviço. Serviço sem foto aparece sem foto: publique fotos com o nome
+            dele na aba Galeria.
+          </p>
+          <CapasServicos servicos={servicosCapa} outras={outrasFotos} pronto={capaNoBanco} />
+        </AdminBlock>
+      ) : (
+        <AdminBlock title={aba === "galeria" ? "Galeria" : "Rolos no site"}>
+          <PhotoLibrary photos={photos} produtos={produtos} places={places} aba={aba} precos={precos} />
+        </AdminBlock>
+      )}
     </>
   );
 }

@@ -4,7 +4,16 @@
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { categoriaDoServico, intercalar, itensDaCategoria, montarCatalogo, produtoParecido, rolosDosServicos } from "./catalogo.ts";
+import {
+  capasDosServicos,
+  categoriaDoServico,
+  intercalar,
+  itensDaCategoria,
+  montarCatalogo,
+  produtoParecido,
+  roloAbaixoDaCapa,
+  rolosDosServicos,
+} from "./catalogo.ts";
 
 const linha = (o: Partial<Parameters<typeof montarCatalogo>[0][number]> & { id: string }) => ({
   public_url: `https://x/${o.id}.jpg`,
@@ -127,4 +136,51 @@ test("serviços novos caem na categoria certa", () => {
   assert.equal(categoriaDoServico("volume-fox-eyes-x1", "Volume Fox eyes"), "cilios");
   assert.equal(categoriaDoServico("hidragloss-x1", "Hidragloss"), "labios");
   assert.equal(categoriaDoServico("brow-x1", "Brow Lamination"), "sobrancelha");
+});
+
+test("capa: a escolhida no painel, com o enquadramento dela; senão a primeira foto do serviço", () => {
+  const cat = montarCatalogo([
+    linha({ id: "b1", lash_style: "Volume brasileiro", featured: true }),
+    linha({ id: "b2", lash_style: "Volume brasileiro" }),
+    linha({ id: "v", lash_style: "Video brasileiro", media_type: "video" }),
+  ]);
+  const servicos = [
+    { slug: "volume-brasileiro", name: "Volume brasileiro" },
+    { slug: "manutencao-cilios", name: "Manutenção de cílios" },
+  ];
+  const rolos = rolosDosServicos(cat, servicos);
+  // sem escolha: a primeira foto do próprio serviço
+  const auto = capasDosServicos(servicos, rolos, {});
+  assert.equal(auto["volume-brasileiro"]?.id, "b1");
+  assert.equal(auto["volume-brasileiro"]?.escolhida, false);
+  // serviço sem foto fica sem capa (nunca a de outro serviço)
+  assert.equal(auto["manutencao-cilios"], null);
+  // escolhida no painel, mesmo fora do carrossel do serviço, com o enquadramento salvo
+  const escolhidas = capasDosServicos(
+    [{ ...servicos[0], capa_photo_id: "g9", capa_x: 30, capa_y: 20, capa_zoom: 1.4 }, servicos[1]],
+    rolos,
+    { g9: { id: "g9", public_url: "https://x/g9.jpg", alt: "galeria" } }
+  );
+  assert.deepEqual(escolhidas["volume-brasileiro"], {
+    id: "g9",
+    url: "https://x/g9.jpg",
+    alt: "galeria",
+    foco: { x: 30, y: 20, zoom: 1.4 },
+    escolhida: true,
+  });
+  // vídeo não vira capa: volta para a primeira foto
+  const video = capasDosServicos([{ ...servicos[0], capa_photo_id: "v" }], rolos, {
+    v: { id: "v", public_url: "https://x/v.mp4", alt: "v", media_type: "video" },
+  });
+  assert.equal(video["volume-brasileiro"]?.id, "b1");
+});
+
+test("o carrossel abaixo da capa não repete a capa; com uma foto só, não há carrossel", () => {
+  const item = (id: string) => ({ id, url: `https://x/${id}.jpg`, tipo: "image" as const, produto: "p", legenda: null, alt: id, ratio: 0.8, foco: { x: 50, y: 50, zoom: 1 } });
+  const capa = { id: "a", url: "https://x/a.jpg", alt: "a", foco: { x: 50, y: 50, zoom: 1 }, escolhida: false };
+  assert.deepEqual(roloAbaixoDaCapa([item("a"), item("b"), item("c")], capa).map((m) => m.id), ["b", "c"]);
+  // capa + uma: as duas passam juntas
+  assert.deepEqual(roloAbaixoDaCapa([item("a"), item("b")], capa).map((m) => m.id), ["a", "b"]);
+  assert.deepEqual(roloAbaixoDaCapa([item("a")], capa), []);
+  assert.deepEqual(roloAbaixoDaCapa([], null), []);
 });

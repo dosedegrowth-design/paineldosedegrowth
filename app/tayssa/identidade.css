@@ -2058,6 +2058,7 @@ body:has(.ty-scope[data-theme="night"]) {
     .ty-faixa__flor,
     .ty-rolo__trilho,
     .ty-rolo__cartao,
+    .tyfx__tira-trilho,
     .tyf-peca,
     .tyf-giro > .tyf,
     .typf__flutua,

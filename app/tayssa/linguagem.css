@@ -771,15 +771,21 @@
 }
 
 /* ============================================================
-   Carrossel de serviços (depois da abertura)
+   Serviços (depois da abertura)
    Carrossel de verdade: o dedo passa para o lado e o cartão encaixa no
-   meio; os pontinhos mostram onde está. Nada anda sozinho. No celular o
-   cartão do meio fica inteiro e os vizinhos aparecem pela borda, um
-   pouco menores. No computador cabem todos numa linha.
+   meio; os pontinhos (e as setas, no mouse) mostram onde está. Nada anda
+   sozinho. Cada cartão é um serviço: em cima a capa (ou o ícone do
+   cuidado, no mesmo formato, quando não há foto), embaixo o nome, o
+   valor, o texto e o tempo. Abaixo do carrossel passam as fotos do
+   serviço que está no meio.
    ============================================================ */
 .tyfx {
   padding-block: clamp(30px, 4vw, 56px) 0;
-  --tyfx-cartao: min(70vw, 290px);
+  --tyfx-cartao: min(78vw, 318px);
+  color: var(--t-fg);
+}
+.tyfx__cabeca {
+  margin-bottom: clamp(14px, 2.4vw, 28px);
 }
 .tyfx__trilho {
   position: relative;
@@ -799,16 +805,16 @@
 .tyfx__item {
   display: flex;
   flex: 0 0 var(--tyfx-cartao);
+  /* sem isto a faixa de fotos (largura da fila inteira) esticava o cartão */
+  min-width: 0;
   scroll-snap-align: center;
 }
 .ty-scope .tyfx__cartao {
-  display: grid;
-  align-content: center;
-  justify-items: center;
-  gap: 14px;
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  min-height: 214px;
-  padding: 26px 18px 22px;
+  min-width: 0;
+  overflow: hidden;
   border-radius: 28px;
   color: #fbf1f3;
   text-align: center;
@@ -831,19 +837,80 @@
     transform: translateY(-6px);
   }
 }
+/* a capa: quadrada, com o enquadramento que a Tayssa escolheu no painel */
+.tyfx__capa {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+.tyfx__capa img {
+  -webkit-user-drag: none;
+}
+/* as outras fotos do serviço passando dentro do cartão, embaixo da capa */
+.tyfx__tira {
+  display: block;
+  flex: none;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  padding-block: 10px;
+  background: rgba(20, 4, 12, 0.22);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.tyfx__tira-trilho {
+  display: flex;
+  gap: 8px;
+  width: max-content;
+  /* o espaço do fim dentro de cada cópia: andar -50% é andar uma cópia exata */
+  padding-right: 8px;
+  animation: tyfx-tira var(--dur, 18s) linear infinite;
+}
+.tyfx__tira-foto {
+  position: relative;
+  display: block;
+  flex: none;
+  width: 64px;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+}
+@keyframes tyfx-tira {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tyfx__tira-trilho {
+    animation: none;
+  }
+}
 .tyfx__selo {
   display: grid;
   place-items: center;
-  width: 66px;
-  height: 66px;
+  width: 88px;
+  height: 88px;
   border-radius: 50%;
   background: color-mix(in srgb, currentColor 10%, transparent);
   border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
 }
 .tyfx__icone {
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
   stroke-width: 1.3;
+}
+.tyfx__corpo {
+  display: grid;
+  flex: 1;
+  align-content: start;
+  justify-items: center;
+  gap: 8px;
+  padding: 18px 18px 20px;
 }
 .ty-scope .tyfx__nome {
   font-size: 20px;
@@ -852,10 +919,32 @@
   letter-spacing: -0.02em;
   text-wrap: balance;
 }
+.tyfx__preco {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.tyfx__texto {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.5;
+  opacity: 0.84;
+  text-wrap: pretty;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+.tyfx__ficha {
+  font-size: 12.5px;
+  letter-spacing: 0.01em;
+  opacity: 0.72;
+}
 .tyfx__acao {
   display: inline-flex;
   align-items: center;
+  align-self: end;
   gap: 10px;
+  margin-top: 4px;
   font-size: 14px;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -888,15 +977,22 @@
     opacity: 1;
   }
 }
+.tyfx__nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 2px;
+}
 .tyfx__pontos {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 2px;
-  margin-top: 2px;
 }
 .ty-scope .tyfx__ponto {
   position: relative;
-  width: 28px;
+  width: 24px;
   height: 28px;
 }
 .ty-scope .tyfx__ponto::before {
@@ -914,29 +1010,65 @@
     background-color 0.3s;
 }
 .ty-scope .tyfx__ponto[data-on="true"]::before {
-  width: 22px;
+  width: 20px;
   background: #f59dbb;
 }
-/* computador: todos numa linha, no meio; sem pontinhos (não há o que rolar) */
+/* setas: só para quem usa mouse (no toque, o dedo já passa) */
+.ty-scope .tyfx__seta {
+  display: none;
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 214, 228, 0.28);
+  color: #fbe7ee;
+  transition:
+    background-color var(--t-ui) var(--t-ease-out),
+    opacity var(--t-ui);
+}
+.ty-scope .tyfx__seta::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  border-top: 1.6px solid currentColor;
+  border-right: 1.6px solid currentColor;
+  translate: -65% -50%;
+  rotate: 45deg;
+}
+.ty-scope .tyfx__seta--ant::before {
+  translate: -35% -50%;
+  rotate: -135deg;
+}
+.ty-scope .tyfx__seta:disabled {
+  opacity: 0.3;
+}
+@media (hover: hover) and (pointer: fine) {
+  .ty-scope .tyfx__seta {
+    display: block;
+  }
+  .ty-scope .tyfx__seta:not(:disabled):hover {
+    background: rgba(255, 214, 228, 0.12);
+  }
+}
+/* computador: os cartões começam na margem do conteúdo (embaixo do título,
+   sem metade da tela vazia) e o da vez é o primeiro; setas para andar */
 @media (min-width: 1100px) {
+  .tyfx {
+    --tyfx-cartao: 300px;
+    --tyfx-lado: max(var(--t-gutter), calc((100% - 1240px) / 2));
+  }
   .tyfx__trilho {
-    padding-inline: var(--t-gutter);
-    gap: 16px;
+    gap: 20px;
+    /* no fim sobra espaço para o último cartão também chegar ao começo */
+    padding-inline: var(--tyfx-lado) calc(100% - var(--tyfx-lado) - var(--tyfx-cartao));
+    scroll-padding-inline: var(--tyfx-lado);
   }
   .tyfx__item {
-    flex: 0 0 236px;
-  }
-  .tyfx__item:first-child {
-    margin-left: auto;
-  }
-  .tyfx__item:last-child {
-    margin-right: auto;
-  }
-  .ty-scope .tyfx__cartao {
-    min-height: 280px;
-  }
-  .tyfx__pontos {
-    display: none;
+    scroll-snap-align: start;
   }
 }
 

@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type { CategoriaMidia, PhotoRow } from "@/lib/tayssa/types";
+import type { CategoriaMidia, PhotoRow, ServiceRow } from "@/lib/tayssa/types";
 
 /**
  * O catálogo de mídia do site: cada foto ou vídeo que a Tayssa sobe no
@@ -162,6 +162,62 @@ export function rolosDosServicos(
   }
   // Volume inglês e Mega inglês se alternam no rolo, em vez de um depois do outro
   return Object.fromEntries(Object.entries(listas).map(([slug, ls]) => [slug, intercalar(ls)]));
+}
+
+/** Uma foto do banco que pode virar capa: só o que a capa precisa. */
+export type FotoDeCapa = Pick<PhotoRow, "id" | "public_url" | "alt"> & { media_type?: "image" | "video" };
+
+export type CapaServico = {
+  id: string;
+  url: string;
+  alt: string;
+  foco: { x: number; y: number; zoom: number };
+  /** a Tayssa escolheu no painel (senão é a primeira foto do serviço) */
+  escolhida: boolean;
+};
+
+/**
+ * A capa de cada serviço: a foto que a Tayssa escolheu no painel (Mídia →
+ * Capas), com o enquadramento dela; sem escolha, a primeira foto do
+ * carrossel do próprio serviço, com o enquadramento que ela deu ao
+ * publicar. Serviço sem foto fica sem capa: nunca a foto de outro serviço
+ * no lugar (a Manutenção mostrava um close qualquer).
+ */
+export function capasDosServicos(
+  servicos: Pick<ServiceRow, "slug" | "capa_photo_id" | "capa_x" | "capa_y" | "capa_zoom">[],
+  rolos: Record<string, MidiaCatalogo[]>,
+  fotos: Record<string, FotoDeCapa>
+): Record<string, CapaServico | null> {
+  const capas: Record<string, CapaServico | null> = {};
+  for (const s of servicos) {
+    const escolhida = s.capa_photo_id ? fotos[s.capa_photo_id] : undefined;
+    if (escolhida && escolhida.media_type !== "video") {
+      capas[s.slug] = {
+        id: escolhida.id,
+        url: escolhida.public_url,
+        alt: escolhida.alt,
+        foco: { x: Number(s.capa_x ?? 50), y: Number(s.capa_y ?? 50), zoom: Number(s.capa_zoom ?? 1) },
+        escolhida: true,
+      };
+      continue;
+    }
+    const primeira = (rolos[s.slug] ?? []).find((m) => m.tipo === "image");
+    capas[s.slug] = primeira
+      ? { id: primeira.id, url: primeira.url, alt: primeira.alt, foco: primeira.foco, escolhida: false }
+      : null;
+  }
+  return capas;
+}
+
+/**
+ * O carrossel que passa embaixo da capa: as outras fotos do serviço (a capa
+ * não se repete logo abaixo dela). Com menos de duas além da capa, vão todas
+ * juntas; com uma foto só (ou nenhuma), não há carrossel.
+ */
+export function roloAbaixoDaCapa(rolo: MidiaCatalogo[], capa: CapaServico | null): MidiaCatalogo[] {
+  const resto = capa ? rolo.filter((m) => m.id !== capa.id) : rolo;
+  if (resto.length >= 2) return resto;
+  return rolo.length >= 2 ? rolo : [];
 }
 
 /** Distância de edição entre duas palavras (quantas letras trocar). */
