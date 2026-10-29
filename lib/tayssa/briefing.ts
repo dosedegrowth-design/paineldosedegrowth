@@ -97,6 +97,8 @@ export const TECNICAS = [
   "Volume inglês",
   "Mega inglês",
   "Volume egípcio",
+  "Volume marrom",
+  "Volume Fox eyes",
   "Mega Fox eyes",
   "Lash lifting",
   "Manutenção",
