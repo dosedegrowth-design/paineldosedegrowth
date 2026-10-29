@@ -92,6 +92,31 @@ export function plural(n: number, one: string, many: string): string {
 }
 
 /**
+ * O que falta para um marco ou para o VIP, com o verbo concordando:
+ * "faltam 20 pontos e 1 mês seguido", "falta 1 mês seguido". Vazio
+ * quando não falta nada.
+ */
+/** Número como se escreve no Brasil: 1.020, não 1020. */
+export function numero(n: number): string {
+  return new Intl.NumberFormat("pt-BR").format(n);
+}
+
+export function faltaLegivel(pontos: number, meses: number): string {
+  const partes: string[] = [];
+  if (pontos > 0) partes.push(`${numero(pontos)} ${plural(pontos, "ponto", "pontos")}`);
+  if (meses > 0) partes.push(`${meses} ${plural(meses, "mês seguido", "meses seguidos")}`);
+  if (!partes.length) return "";
+  const umSo = partes.length === 1 && (pontos === 1 || (pontos === 0 && meses === 1));
+  return `${umSo ? "falta" : "faltam"} ${partes.join(" e ")}`;
+}
+
+/** O critério de um marco ou do VIP: "50 pontos", "120 pontos e 3 meses seguidos". */
+export function criterioLegivel(pontos: number, meses: number): string {
+  const p = `${numero(pontos)} ${plural(pontos, "ponto", "pontos")}`;
+  return meses > 0 ? `${p} e ${meses} ${plural(meses, "mês seguido", "meses seguidos")}` : p;
+}
+
+/**
  * Fuso da casa. O servidor roda em UTC; sem isso, à noite o Brasil já
  * estaria "amanhã" para o sistema e a cliente leria a data errada.
  */
@@ -152,7 +177,8 @@ export function cicloLegivel(cycleKey: string): string | null {
   const resto = corte < 0 ? "" : cycleKey.slice(corte + 1);
   const n = Number(resto);
   if (tipo === "birthday" && /^\d{4}$/.test(resto)) return `aniversário de ${resto}`;
-  if (tipo === "referral" && Number.isInteger(n) && n > 0) return `${n}ª rodada de indicações`;
+  // vale para os dois jeitos de contar (a cada indicação ou a cada rodada de N)
+  if (tipo === "referral" && Number.isInteger(n) && n > 0) return `${n}º benefício de indicação`;
   if (tipo === "card" && Number.isInteger(n) && n > 0) return `${n}º cartão`;
   if (tipo === "manual") return "concedido por você";
   // loyalty: a chave deriva do benefício, e o nome dele já distingue a linha

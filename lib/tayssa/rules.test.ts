@@ -14,6 +14,8 @@ import {
   horariosParaMarcar,
   isInactive,
   loyaltyProgress,
+  mesesSeguidos,
+  progressoVip,
   referralProgress,
   trechosOcupados,
   validadeDoAniversario,
@@ -22,9 +24,9 @@ import { normalizeBrPhone, formatBrPhone } from "./phone.ts";
 import { renderTemplate, whatsappUrl } from "./whatsapp.ts";
 
 const benefits = [
-  { id: "a", key: "loyalty_100", name: "Primeiro marco", description: null, threshold: 100, threshold_unit: "points" as const, active: true, type: "loyalty" as const },
-  { id: "b", key: "loyalty_250", name: "Cliente de casa", description: null, threshold: 250, threshold_unit: "points" as const, active: true, type: "loyalty" as const },
-  { id: "c", key: "referral_reward", name: "Indicação", description: null, threshold: 3, threshold_unit: "referrals" as const, active: true, type: "referral" as const },
+  { id: "a", key: "loyalty_100", name: "Primeiro marco", description: null, threshold: 100, threshold_unit: "points" as const, active: true, type: "loyalty" as const, config: {} },
+  { id: "b", key: "loyalty_250", name: "Cliente de casa", description: null, threshold: 250, threshold_unit: "points" as const, active: true, type: "loyalty" as const, config: {} },
+  { id: "c", key: "referral_reward", name: "Indicação", description: null, threshold: 3, threshold_unit: "referrals" as const, active: true, type: "referral" as const, config: {} },
 ];
 
 test("fidelidade: progresso entre marcos", () => {
@@ -42,6 +44,93 @@ test("fidelidade: zero pontos e todos os marcos", () => {
   assert.equal(done.next, null);
   assert.equal(done.progressToNext, 1);
   assert.equal(done.overall, 1);
+});
+
+// o programa da Tayssa (29/10/2026): mimo em 400 (só pontos), kit em 800 com 2 meses seguidos
+const programa = [
+  { id: "m", key: "loyalty_100", name: "Mimo surpresa", description: null, threshold: 400, threshold_unit: "points" as const, active: true, type: "loyalty" as const, config: {} },
+  { id: "k", key: "loyalty_250", name: "Kit de higienização", description: null, threshold: 800, threshold_unit: "points" as const, active: true, type: "loyalty" as const, config: { meses_seguidos: 2 } },
+  { id: "c", key: "card_complete", name: "Cartão completo", description: null, threshold: 8, threshold_unit: "services" as const, active: true, type: "loyalty" as const, config: { per_card: true } },
+];
+// pontos por atendimento: toda aplicação vale o mesmo, qualquer técnica
+const APLICACAO = 150;
+const MANUTENCAO = 95;
+
+test("fidelidade: o kit pede pontos E meses seguidos", () => {
+  // pontos de uma vez só: o mimo abre, o kit não
+  const deUmaVez = loyaltyProgress(900, programa, 1);
+  assert.equal(deUmaVez.milestones.length, 2); // o cartão tem ciclo próprio
+  assert.equal(deUmaVez.current?.key, "loyalty_100");
+  assert.equal(deUmaVez.next?.key, "loyalty_250");
+  assert.equal(deUmaVez.pointsToNext, 0);
+  assert.equal(deUmaVez.mesesToNext, 1);
+  // os pontos já bastam, mas o anel só fecha com o mês que falta
+  assert.equal(deUmaVez.progressToNext, 0.5);
+  // com a constância, o kit abre
+  const comConstancia = loyaltyProgress(900, programa, 2);
+  assert.equal(comConstancia.current?.key, "loyalty_250");
+  assert.equal(comConstancia.next, null);
+  // meses sem os pontos também não
+  const semPontos = loyaltyProgress(585, programa, 3);
+  assert.equal(semPontos.next?.key, "loyalty_250");
+  assert.equal(semPontos.pointsToNext, 215);
+  assert.equal(semPontos.mesesToNext, 0);
+});
+
+test("a simulação da Tayssa: só cílios chega ao VIP", () => {
+  // aplicação, manutenção, manutenção, três vezes
+  const visitas = [APLICACAO, MANUTENCAO, MANUTENCAO, APLICACAO, MANUTENCAO, MANUTENCAO, APLICACAO, MANUTENCAO, MANUTENCAO];
+  const total = (n: number) => visitas.slice(0, n).reduce((s, v) => s + v, 0);
+  assert.equal(total(4), 490); // o mimo (400) chega na 4ª visita
+  assert.equal(total(7), 830); // o kit (800) na 7ª, com a constância
+  assert.equal(total(9), 1020); // e o VIP (1.000) na 9ª
+  assert.equal(loyaltyProgress(total(3), programa, 2).current, null);
+  assert.equal(loyaltyProgress(total(4), programa, 2).current?.key, "loyalty_100");
+  assert.equal(loyaltyProgress(total(7), programa, 4).current?.key, "loyalty_250");
+  const vip = { pontos: 1000, meses: 3 };
+  assert.equal(progressoVip(total(8), 4, vip).cumpre, false);
+  assert.equal(progressoVip(total(9), 5, vip).cumpre, true);
+  // os mesmos 1.020 pontos em um mês só não fazem VIP
+  assert.equal(progressoVip(total(9), 1, vip).cumpre, false);
+});
+
+test("constância: meses seguidos com atendimento", () => {
+  const hoje = new Date(2026, 9, 29); // 29/10/2026
+  // agosto, setembro e outubro
+  assert.equal(mesesSeguidos(["2026-08-03", "2026-09-20", "2026-10-02", "2026-10-21"], hoje), 3);
+  // outubro ainda está aberto: sem visita nele, conta até setembro (não zera)
+  assert.equal(mesesSeguidos(["2026-08-03", "2026-09-20"], hoje), 2);
+  // um mês inteiro sem visita (setembro) recomeça a contagem
+  assert.equal(mesesSeguidos(["2026-07-10", "2026-08-03", "2026-10-02"], hoje), 1);
+  assert.equal(mesesSeguidos(["2026-07-10", "2026-08-03"], hoje), 0);
+  assert.equal(mesesSeguidos([], hoje), 0);
+  // a virada do ano não quebra a sequência
+  assert.equal(mesesSeguidos(["2026-11-30", "2026-12-15", "2027-01-08"], new Date(2027, 0, 20)), 3);
+  // muitas visitas no mesmo mês contam um mês só
+  assert.equal(mesesSeguidos(["2026-10-01", "2026-10-02", "2026-10-03", "2026-10-04"], hoje), 1);
+});
+
+test("VIP: meta de pontos e meses seguidos, os dois", () => {
+  const c = { pontos: 1000, meses: 3 };
+  const pronta = progressoVip(1020, 3, c);
+  assert.equal(pronta.cumpre, true);
+  assert.equal(pronta.fracao, 1);
+  // muitos pontos de uma vez não fazem ninguém VIP
+  const deUmaVez = progressoVip(1500, 1, c);
+  assert.equal(deUmaVez.cumpre, false);
+  assert.equal(deUmaVez.faltamMeses, 2);
+  assert.equal(deUmaVez.faltamPontos, 0);
+  assert.ok(Math.abs(deUmaVez.fracao - 1 / 3) < 1e-9);
+  // constância sem a meta de pontos também não
+  const semPontos = progressoVip(750, 4, c);
+  assert.equal(semPontos.cumpre, false);
+  assert.equal(semPontos.faltamPontos, 250);
+  assert.equal(semPontos.fracao, 0.75);
+});
+
+test("indicação: cada indicação confirmada vale um benefício", () => {
+  assert.deepEqual(referralProgress(0, 1), { approved: 0, threshold: 1, inCycle: 0, remaining: 1, cyclesEarned: 0 });
+  assert.deepEqual(referralProgress(2, 1), { approved: 2, threshold: 1, inCycle: 0, remaining: 1, cyclesEarned: 2 });
 });
 
 test("indicação: ciclos de 3", () => {

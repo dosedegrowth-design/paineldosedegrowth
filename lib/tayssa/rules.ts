@@ -18,29 +18,43 @@ export type Milestone = {
   title: string;
   description: string | null;
   threshold: number;
+  /** meses seguidos com atendimento que o marco também pede (0 = só pontos) */
+  meses: number;
   reached: boolean;
 };
 
 export type LoyaltyProgress = {
   points: number;
+  /** meses seguidos com atendimento, até hoje */
+  meses: number;
   milestones: Milestone[];
   /** Último marco alcançado. */
   current: Milestone | null;
   /** Próximo marco (null se todos alcançados). */
   next: Milestone | null;
-  /** 0..1 do trecho entre o marco atual e o próximo. */
+  /** 0..1 do trecho entre o marco atual e o próximo (o critério mais atrasado manda). */
   progressToNext: number;
   pointsToNext: number;
+  /** meses seguidos que ainda faltam para o próximo marco */
+  mesesToNext: number;
   /** 0..1 da jornada inteira (até o último marco). */
   overall: number;
 };
+
+/** Os meses seguidos que um marco de pontos também pede (`config.meses_seguidos`). */
+export function mesesDoMarco(b: Pick<BenefitRow, "config">): number {
+  const n = Number(b.config?.meses_seguidos);
+  return Number.isInteger(n) && n > 0 ? n : 0;
+}
 
 export function loyaltyProgress(
   points: number,
   loyaltyBenefits: Pick<
     BenefitRow,
-    "id" | "key" | "name" | "description" | "threshold" | "active" | "type" | "threshold_unit"
-  >[]
+    "id" | "key" | "name" | "description" | "threshold" | "active" | "type" | "threshold_unit" | "config"
+  >[],
+  /** meses seguidos com atendimento (`mesesSeguidos`); marco que pede constância só abre com eles */
+  meses = 0
 ): LoyaltyProgress {
   // só marcos em PONTOS entram na jornada; o cartão (unidade "services")
   // tem ciclo próprio
@@ -58,7 +72,8 @@ export function loyaltyProgress(
       title: b.name,
       description: b.description,
       threshold: b.threshold as number,
-      reached: points >= (b.threshold as number),
+      meses: mesesDoMarco(b),
+      reached: points >= (b.threshold as number) && meses >= mesesDoMarco(b),
     }))
     .sort((a, b) => a.threshold - b.threshold);
 
@@ -67,20 +82,93 @@ export function loyaltyProgress(
   const next = milestones.find((m) => !m.reached) ?? null;
   const floor = current?.threshold ?? 0;
   const span = next ? next.threshold - floor : 0;
+  // pontos completos não bastam quando o marco pede constância: o anel só
+  // fecha com os dois
   const progressToNext = next
-    ? Math.max(0, Math.min(1, (points - floor) / (span || 1)))
+    ? Math.min(
+        Math.max(0, Math.min(1, (points - floor) / (span || 1))),
+        next.meses ? Math.min(1, meses / next.meses) : 1
+      )
     : 1;
   const last = milestones[milestones.length - 1];
   const overall = last ? Math.min(1, points / last.threshold) : 0;
 
   return {
     points,
+    meses,
     milestones,
     current,
     next,
     progressToNext,
     pointsToNext: next ? Math.max(0, next.threshold - points) : 0,
+    mesesToNext: next ? Math.max(0, next.meses - meses) : 0,
     overall,
+  };
+}
+
+// ------------------------------------------------------------
+// Constância e o caminho até o VIP
+// ------------------------------------------------------------
+
+/**
+ * Quantos meses seguidos, até hoje, tiveram pelo menos um atendimento
+ * confirmado. O mês de agora ainda não acabou: sem visita nele, a conta
+ * começa no mês passado (não zera). Um mês inteiro sem visita recomeça a
+ * contagem do zero.
+ */
+export function mesesSeguidos(datas: string[], hoje: Date): number {
+  const comVisita = new Set(datas.map((d) => d.slice(0, 7)));
+  const chave = (ano: number, mes: number) => `${ano}-${String(mes + 1).padStart(2, "0")}`;
+  let ano = hoje.getFullYear();
+  let mes = hoje.getMonth();
+  const voltaUm = () => {
+    mes -= 1;
+    if (mes < 0) {
+      mes = 11;
+      ano -= 1;
+    }
+  };
+  if (!comVisita.has(chave(ano, mes))) voltaUm();
+  let n = 0;
+  while (comVisita.has(chave(ano, mes))) {
+    n++;
+    voltaUm();
+  }
+  return n;
+}
+
+export type CriteriosVip = { pontos: number; meses: number };
+
+export type ProgressoVip = {
+  pontos: number;
+  meses: number;
+  criterios: CriteriosVip;
+  faltamPontos: number;
+  faltamMeses: number;
+  /** cumpre os dois critérios: o painel avisa e a Tayssa confirma o VIP */
+  cumpre: boolean;
+  /** 0..1, o critério mais atrasado manda */
+  fracao: number;
+};
+
+/**
+ * O caminho até o VIP: uma meta de pontos E meses seguidos com
+ * atendimento. Pontos de uma vez só não fazem ninguém VIP; a constância,
+ * sim. Nunca muda o status sozinho: só diz se ela cumpre.
+ */
+export function progressoVip(pontos: number, meses: number, criterios: CriteriosVip): ProgressoVip {
+  const faltamPontos = Math.max(0, criterios.pontos - pontos);
+  const faltamMeses = Math.max(0, criterios.meses - meses);
+  const deP = criterios.pontos > 0 ? Math.min(1, pontos / criterios.pontos) : 1;
+  const deM = criterios.meses > 0 ? Math.min(1, meses / criterios.meses) : 1;
+  return {
+    pontos,
+    meses,
+    criterios,
+    faltamPontos,
+    faltamMeses,
+    cumpre: faltamPontos === 0 && faltamMeses === 0,
+    fracao: Math.min(deP, deM),
   };
 }
 

@@ -10,8 +10,8 @@ import type { AppointmentRow, AppointmentStatus, ClientBenefitRow, ClientBenefit
 
 const today = new Date(2026, 8, 16); // 16/set/2026
 const benefitsCatalog = [
-  { id: "a", key: "loyalty_100", name: "Primeiro marco", description: null, threshold: 100, threshold_unit: "points" as const, active: true, type: "loyalty" as const },
-  { id: "b", key: "loyalty_250", name: "Cliente de casa", description: null, threshold: 250, threshold_unit: "points" as const, active: true, type: "loyalty" as const },
+  { id: "a", key: "loyalty_100", name: "Primeiro marco", description: null, threshold: 100, threshold_unit: "points" as const, active: true, type: "loyalty" as const, config: {} },
+  { id: "b", key: "loyalty_250", name: "Cliente de casa", description: null, threshold: 250, threshold_unit: "points" as const, active: true, type: "loyalty" as const, config: {} },
 ];
 const svc = (id: string, date: string, status: "approved" | "pending" | "rejected", points = 25) =>
   ({ id, client_id: "me", service_id: null, service_name: "Manutenção", service_date: date, amount: null, points, status, notes: null, submitted_by: "admin" as const, submitted_at: date, reviewed_by: null, reviewed_at: null, review_note: null });

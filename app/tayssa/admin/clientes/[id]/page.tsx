@@ -4,7 +4,7 @@ import { getClientDetail } from "@/lib/tayssa/queries/admin";
 import { getActiveServices, getPublicBenefits } from "@/lib/tayssa/queries/catalog";
 import { getSettings } from "@/lib/tayssa/settings";
 import { toISODate, validadeDoAniversario } from "@/lib/tayssa/rules";
-import { cicloLegivel, currency, dateLong, dateShort, dateTime, isWithinHours, nowInBusinessTz } from "@/lib/tayssa/format";
+import { cicloLegivel, criterioLegivel, currency, dateLong, dateShort, dateTime, faltaLegivel, isWithinHours, nowInBusinessTz, numero, plural } from "@/lib/tayssa/format";
 import { formatBrPhone } from "@/lib/tayssa/phone";
 import { renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { ROUTES, publicUrl } from "@/lib/tayssa/config";
@@ -146,7 +146,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
 
       {/* ---------- quem é ela ---------- */}
       <div className="tya-kpis tya-kpis--tight">
-        <Stat n={d.summary.points} label="Pontos" />
+        <Stat n={numero(d.summary.points)} label="Pontos" />
         <Stat n={d.summary.approvedCount} label="Atendimentos" />
         <Stat n={d.summary.approvedReferrals} label="Indicações confirmadas" />
         {/* `benefitsAvailable` soma available + requested + approved; o
@@ -163,6 +163,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
         aside={
           <span style={{ display: "inline-flex", gap: 6, flexWrap: "wrap" }}>
             <Selo tom={VIP_TOM[vip]}>{VIP_STATUS_LABEL[vip]}</Selo>
+            {d.summary.prontaParaVip ? <Selo tom="tya-pill--gold">pronta para VIP</Selo> : null}
             <Selo tom={CONTA_TOM[user.status]}>{USER_STATUS_LABEL[user.status]}</Selo>
             {d.summary.inactive ? <Selo tom="tya-pill--warn">Sem atendimento recente</Selo> : null}
           </span>
@@ -239,9 +240,17 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                 </ActionButton>
               ) : null}
             </div>
-            <span className="tya-small">
-              Referência: {settings.rules.vip_min_services} atendimentos. Ela tem {d.summary.approvedCount}. A decisão é sua.
-            </span>
+            <p className="tya-small" style={{ margin: 0 }}>
+              Critério do VIP: {criterioLegivel(d.summary.vip.criterios.pontos, d.summary.vip.criterios.meses)}. Ela tem{" "}
+              {numero(d.summary.points)} {plural(d.summary.points, "ponto", "pontos")} e {d.summary.mesesSeguidos}{" "}
+              {plural(d.summary.mesesSeguidos, "mês seguido", "meses seguidos")}
+              {vip === "active"
+                ? "."
+                : d.summary.vip.cumpre
+                  ? ": cumpre os dois. Falta só a sua confirmação."
+                  : ` (${faltaLegivel(d.summary.vip.faltamPontos, d.summary.vip.faltamMeses)}).`}{" "}
+              A decisão é sua.
+            </p>
           </div>
 
           <div style={{ display: "grid", gap: 12, alignContent: "start" }}>
@@ -292,10 +301,15 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
         </div>
       </AdminBlock>
 
-      {/* ---------- pontos e rodada de indicações ---------- */}
+      {/* ---------- pontos, marcos e VIP ---------- */}
       <AdminBlock
-        title="Pontos e marcos"
-        aside={<span className="tya-small">{d.loyalty.points} pontos acumulados</span>}
+        title="Pontos, marcos e VIP"
+        aside={
+          <span className="tya-small">
+            {numero(d.loyalty.points)} {plural(d.loyalty.points, "ponto", "pontos")} · {d.loyalty.meses}{" "}
+            {plural(d.loyalty.meses, "mês seguido", "meses seguidos")}
+          </span>
+        }
       >
         {d.loyalty.milestones.length ? (
           <div style={{ display: "grid", gap: 16 }}>
@@ -305,7 +319,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
               </div>
               <p className="tya-small" style={{ marginTop: 8 }}>
                 {d.loyalty.next
-                  ? `Faltam ${d.loyalty.pointsToNext} ${d.loyalty.pointsToNext === 1 ? "ponto" : "pontos"} para “${d.loyalty.next.title}”.`
+                  ? `${faltaLegivel(d.loyalty.pointsToNext, d.loyalty.mesesToNext).replace(/^f/, "F")} para “${d.loyalty.next.title}”.`
                   : "Ela já passou por todos os marcos da jornada."}
               </p>
             </div>
@@ -314,14 +328,24 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                 <li key={m.benefitId} className="tya-row">
                   <span>
                     {m.title}
-                    <span className="tya-small"> · {m.threshold} pontos</span>
+                    <span className="tya-small"> · {criterioLegivel(m.threshold, m.meses)}</span>
                   </span>
                   <Selo tom={m.reached ? "tya-pill--ok" : "tya-pill--quiet"}>{m.reached ? "Alcançado" : "A caminho"}</Selo>
                 </li>
               ))}
+              <li className="tya-row">
+                <span>
+                  VIP
+                  <span className="tya-small"> · {criterioLegivel(d.summary.vip.criterios.pontos, d.summary.vip.criterios.meses)}</span>
+                </span>
+                <Selo tom={vip === "active" ? "tya-pill--gold" : d.summary.vip.cumpre ? "tya-pill--ok" : "tya-pill--quiet"}>
+                  {vip === "active" ? "VIP ativo" : d.summary.vip.cumpre ? "Cumpre: confirme" : "A caminho"}
+                </Selo>
+              </li>
             </ul>
             <p className="tya-small">
-              Marco alcançado não libera nada sozinho: o benefício nasce em validação e só você desbloqueia.
+              Marco alcançado não libera nada sozinho: o benefício nasce em validação e só você desbloqueia. O VIP também:
+              quando ela cumpre os dois critérios, aparece aqui e na visão geral, e você ativa em “Acesso e VIP”.
             </p>
           </div>
         ) : (
@@ -488,7 +512,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
         title="Indicações feitas por ela"
         aside={
           <span className="tya-small">
-            {d.referral.approved} confirmadas · {d.referral.inCycle}/{d.referral.threshold} na rodada
+            {d.referral.approved} {plural(d.referral.approved, "confirmada", "confirmadas")}
+            {d.referral.threshold === 1
+              ? " · cada uma vira um benefício"
+              : ` · ${d.referral.inCycle}/${d.referral.threshold} na rodada`}
           </span>
         }
       >

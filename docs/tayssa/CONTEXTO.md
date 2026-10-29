@@ -601,7 +601,8 @@ cliente de demonstração. Nada em produção é dado real de cliente da Tayssa.
 - **`business`** — `name: "Tayssa Lash"` · `tagline: "Private Beauty
   Experience"` · `specialty: "Cílios e embelezamento do olhar"` ·
   `whatsapp: "5511999827606"` · `instagram_url` · `instagram_handle: "@1.tayssa"`
-- **`rules`** — `vip_min_services: 4` · `inactivity_days: 30` ·
+- **`rules`** — `vip_pontos: 1000` · `vip_meses: 3` (critério do VIP: pontos
+  e meses seguidos com atendimento; a Tayssa confirma) · `inactivity_days: 30` ·
   `benefit_validity_days: 60`
 - **`loyalty`** — `card_size: 8` · `card_reward_title: "Cartão completo"` ·
   `card_reward_description`

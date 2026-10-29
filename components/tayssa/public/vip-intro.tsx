@@ -1,8 +1,10 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { ROUTES } from "@/lib/tayssa/config";
+import { ROUTES, type Settings } from "@/lib/tayssa/config";
 import type { BenefitRow, BenefitType } from "@/lib/tayssa/types";
+import { criterioLegivel, numero } from "@/lib/tayssa/format";
+import { mesesDoMarco } from "@/lib/tayssa/rules";
 import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { Magnetic } from "@/components/tayssa/ui/magnetic";
@@ -12,67 +14,77 @@ import { Jornada } from "@/components/tayssa/ui/jornada";
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 /**
- * Os três privilégios do clube, na voz da casa. Cada um diz, no próprio
- * texto, que quem confirma é a Tayssa — nada é liberado sozinho.
- *
- * Nenhuma linha publica meta. O site não diz "a partir de N": o número é
- * configurável em Configurações, o motor trata cada unidade de um jeito
- * (o cartão tem ciclo próprio e seu tamanho vem de `settings.loyalty
- * .card_size`, não do threshold; unidade nula conta como ponto) e ponto é
- * moeda do clube, não matéria do site — a mesma regra que
- * `components/tayssa/public/services.tsx` já segue. Toda tentativa de
- * derivar esse número aqui produziu afirmação errada. O que a ficha em
- * mono mostra é a `description` que a própria Tayssa escreveu no
- * catálogo; sem benefício ativo do tipo, entra `fichaPadrao`, que não
+ * As quatro formas de ganhar, na voz da casa: o texto diz como funciona, e
+ * a ficha em mono diz o que se ganha, nas palavras que a própria Tayssa
+ * escreveu no painel (catálogo de benefícios e cartão). Os números da
+ * ficha de pontos (marcos e meses seguidos) saem do mesmo catálogo que o
+ * motor usa; sem benefício ativo do tipo, entra `fichaPadrao`, que não
  * afirma quantidade nenhuma.
  */
-const PRIVILEGIOS: {
+type Forma = {
   n: string;
   icone: IconeNome;
-  tipo: BenefitType;
   nome: string;
   texto: string;
+  ficha: (benefits: BenefitRow[], settings: Settings) => string | null;
   fichaPadrao: string;
-}[] = [
+};
+
+/** O primeiro benefício ativo do tipo, na ordem que ela definiu. */
+function doCatalogo(benefits: BenefitRow[], tipo: BenefitType, filtro: (b: BenefitRow) => boolean = () => true) {
+  return [...benefits].sort((a, b) => a.sort_order - b.sort_order).filter((b) => b.type === tipo && b.active && filtro(b));
+}
+
+const marcoDePontos = (b: BenefitRow) => (b.threshold_unit ?? "points") === "points" && (b.threshold ?? 0) > 0;
+
+const FORMAS: Forma[] = [
   {
     n: "01",
-    icone: "coracao",
-    tipo: "referral",
-    nome: "Indicação",
-    texto:
-      "Você passa o nome de quem ainda não conhece o estúdio. A Tayssa atende essa pessoa e confirma a indicação. O benefício não cai sozinho na sua conta: quem libera é ela.",
-    fichaPadrao: "depois da confirmação dela",
+    icone: "cartao",
+    nome: "Cartão de visitas",
+    texto: "Cada visita confirmada pela Tayssa é um carimbo no seu cartão. Quando ele enche, vem o presente, e um cartão novo começa.",
+    ficha: (_b, settings) => settings.loyalty.card_reward_description?.trim() || null,
+    fichaPadrao: "a cada cartão completo",
   },
   {
     n: "02",
-    icone: "cartao",
-    tipo: "loyalty",
-    nome: "Fidelidade",
+    icone: "brilho",
+    nome: "Pontos",
     texto:
-      "Cada atendimento confirmado soma na sua jornada no estúdio. Chegar ao fim de uma etapa não abre nada sozinho: ela escolhe o que vem, confirma, e o cuidado entra no próximo encontro.",
+      "Cada atendimento confirmado soma pontos, e toda aplicação de cílios vale o mesmo, em qualquer técnica. O que conta é você voltar: os pontos abrem os marcos e o caminho até o VIP.",
+    ficha: (benefits) => {
+      const marcos = doCatalogo(benefits, "loyalty", marcoDePontos).sort((a, b) => (a.threshold ?? 0) - (b.threshold ?? 0));
+      return marcos.length
+        ? marcos.map((m) => `${m.name}: ${criterioLegivel(m.threshold ?? 0, mesesDoMarco(m))}`).join(" · ")
+        : null;
+    },
     fichaPadrao: "cada atendimento confirmado",
   },
   {
     n: "03",
     icone: "presente",
-    tipo: "birthday",
     nome: "Aniversário",
     texto:
-      "Uma vez por ano o estúdio para por você. O presente é combinado com você e encaixado na agenda: não é desconto automático nem cupom que cai sozinho.",
+      "Exclusivo para quem já é VIP. Uma vez por ano o estúdio para por você: o presente é combinado com você e encaixado na agenda, nunca um cupom que cai sozinho.",
+    ficha: (benefits) => doCatalogo(benefits, "birthday")[0]?.description?.trim() || null,
     fichaPadrao: "uma vez por ano, no seu aniversário",
   },
+  {
+    n: "04",
+    icone: "coracao",
+    nome: "Indicação",
+    texto:
+      "Você passa o nome de quem ainda não conhece o estúdio. A Tayssa atende essa pessoa e confirma a indicação. O benefício não cai sozinho na sua conta: quem libera é ela.",
+    ficha: (benefits) => {
+      const r = doCatalogo(benefits, "referral")[0];
+      const d = r?.description?.trim().replace(/\.$/, "");
+      if (!r || !d) return null;
+      const quando = (r.threshold ?? 1) <= 1 ? "A cada indicação confirmada" : `A cada ${r.threshold} indicações confirmadas`;
+      return `${quando}: ${d.charAt(0).toLowerCase()}${d.slice(1)}.`;
+    },
+    fichaPadrao: "depois da confirmação dela",
+  },
 ];
-
-/**
- * O que o benefício é, dito pela própria Tayssa no catálogo. Pega o
- * primeiro ativo do tipo na ordem que ela definiu e devolve a descrição
- * dela — texto que ela controla, nunca número derivado por nós.
- */
-function descricaoDoCatalogo(benefits: BenefitRow[], tipo: BenefitType): string | null {
-  const alvo = [...benefits].sort((a, b) => a.sort_order - b.sort_order).find((b) => b.type === tipo);
-  const d = alvo?.description?.trim();
-  return d ? d : null;
-}
 
 /**
  * A luz abaixa e vem o convite: o VIP é a seção vinho com ouro, entre o
@@ -84,15 +96,16 @@ function descricaoDoCatalogo(benefits: BenefitRow[], tipo: BenefitType): string 
  * A composição é um convite, não uma lista de programa: ficha de topo com
  * o rótulo dourado, o fio dourado que se risca da esquerda (único fio de
  * ouro do site público), a declaração grande com a palavra em itálico
- * serifado e, abaixo, os três privilégios como índice numerado em mono,
- * separados por régua fina. Fecha com o caminho real: pedir acesso
+ * serifado e, abaixo, as quatro formas de ganhar como índice numerado em
+ * mono, separadas por régua fina, e o caminho até o VIP em três paradas. Fecha com o caminho real: pedir acesso
  * (cadastro) e a entrada discreta de quem já é de casa.
  *
  * Nenhuma foto participa — e nenhuma faria falta: aqui a matéria é
  * tipografia, régua e ar.
  */
-export function VipIntro({ benefits }: { benefits: BenefitRow[] }) {
+export function VipIntro({ benefits, settings }: { benefits: BenefitRow[]; settings: Settings }) {
   const reduced = useReducedMotion();
+  const marcos = doCatalogo(benefits, "loyalty", marcoDePontos).sort((a, b) => (a.threshold ?? 0) - (b.threshold ?? 0));
 
   return (
     <section id="vip" className="ty-section tyvi ty-night" aria-label="Tayssa VIP">
@@ -133,36 +146,59 @@ export function VipIntro({ benefits }: { benefits: BenefitRow[] }) {
           </div>
         </div>
 
-        {/* o índice do convite: três privilégios, numerados em mono */}
+        {/* o índice do convite: as quatro formas de ganhar, numeradas em mono */}
         <Reveal className="tyvi__chapeu" y={14}>
-          <span className="ty-mono ty-mono--ink">O que vem com o acesso</span>
+          <span className="ty-mono ty-mono--ink">Como você ganha</span>
           <span className="ty-index">
-            <b>03</b> privilégios
+            <b>04</b> formas
           </span>
         </Reveal>
         <ul className="tyvi__lista">
-          {PRIVILEGIOS.map((p, i) => (
-            <Reveal key={p.n} as="li" delay={i * 0.07} amount={0.3}>
+          {FORMAS.map((f, i) => (
+            <Reveal key={f.n} as="li" delay={i * 0.07} amount={0.3}>
               <div className="tyvi__linha ty-ico-gatilho">
                 <span className="tyvi__icone">
-                  <Icone nome={p.icone} />
+                  <Icone nome={f.icone} />
                 </span>
-                <span className="ty-num tyvi__n">{p.n}</span>
-                <h3 className="tyvi__nome">{p.nome}</h3>
-                <p className="tyvi__texto">{p.texto}</p>
-                <span className="tyvi__ficha">{descricaoDoCatalogo(benefits, p.tipo) ?? p.fichaPadrao}</span>
+                <span className="ty-num tyvi__n">{f.n}</span>
+                <h3 className="tyvi__nome">{f.nome}</h3>
+                <p className="tyvi__texto">{f.texto}</p>
+                <span className="tyvi__ficha">{f.ficha(benefits, settings) ?? f.fichaPadrao}</span>
               </div>
             </Reveal>
           ))}
         </ul>
 
-        {/* a regra em três paradas, ligadas pela linha que se desenha */}
+        {/* o caminho até o VIP: o VIP é de quem volta, não de quem gasta de uma vez */}
+        <Reveal className="tyvi__chapeu tyvi__chapeu--caminho" y={14}>
+          <span className="ty-mono ty-mono--ink">O caminho até o VIP</span>
+          <span className="ty-index">
+            <b>03</b> etapas
+          </span>
+        </Reveal>
         <Jornada
           className="tyvi__jornada"
           paradas={[
-            { n: "01", nome: "Você pede", texto: "Você preenche o cadastro. É um pedido de acesso, não uma porta aberta.", icone: "mensagem" },
-            { n: "02", nome: "Ela confere", texto: "A Tayssa lê e confere cada pedido, um por um.", icone: "olho" },
-            { n: "03", nome: "Ela libera", texto: "Com o sim dela, o seu acesso abre. E cada benefício também passa por ela.", icone: "check" },
+            {
+              n: "01",
+              nome: "Você entra",
+              texto: "Pede acesso pelo cadastro e a Tayssa aprova. Desde a primeira visita, cada atendimento soma carimbos e pontos.",
+              icone: "mensagem",
+            },
+            {
+              n: "02",
+              nome: "Você volta",
+              texto: marcos.length
+                ? `${marcos.map((m) => `${m.name} com ${criterioLegivel(m.threshold ?? 0, mesesDoMarco(m))}`).join("; ")}.`
+                : "A cada volta, os pontos crescem e os marcos chegam.",
+              icone: "calendario",
+            },
+            {
+              n: "03",
+              nome: "Você é VIP",
+              texto: `Ao chegar a ${numero(settings.rules.vip_pontos)} pontos, com ${settings.rules.vip_meses} meses seguidos de atendimento, a Tayssa confirma o seu VIP. O aniversário entra junto.`,
+              icone: "check",
+            },
           ]}
         />
 
@@ -185,7 +221,7 @@ export function VipIntro({ benefits }: { benefits: BenefitRow[] }) {
                 </TransitionLink>
               </Magnetic>
               <TransitionLink href={ROUTES.login} className="tyvi__entrar">
-                Já sou VIP · Entrar
+                Já tenho acesso · Entrar
               </TransitionLink>
             </div>
             <p className="ty-mono tyvi__nota">a resposta vem dela, pelo WhatsApp</p>

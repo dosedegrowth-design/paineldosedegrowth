@@ -1,8 +1,11 @@
 import "server-only";
 import { vipDb } from "@/lib/tayssa/db";
 import { getSettings } from "@/lib/tayssa/settings";
+import { nowInBusinessTz } from "@/lib/tayssa/format";
 import {
   loyaltyCycleKey,
+  mesesDoMarco,
+  mesesSeguidos,
   referralCycleKey,
   referralProgress,
 } from "@/lib/tayssa/rules";
@@ -31,14 +34,16 @@ export async function getActiveBenefits(): Promise<BenefitRow[]> {
   return (data ?? []) as BenefitRow[];
 }
 
-export async function getApprovedPoints(clientId: string): Promise<number> {
+/** Pontos confirmados e as datas dos atendimentos (para os meses seguidos). */
+export async function getApprovedServiceStats(clientId: string): Promise<{ points: number; datas: string[] }> {
   const { data, error } = await vipDb()
     .from("client_services")
-    .select("points")
+    .select("points, service_date")
     .eq("client_id", clientId)
     .eq("status", "approved");
   if (error) throw new Error(error.message);
-  return ((data ?? []) as { points: number }[]).reduce((s, r) => s + (r.points ?? 0), 0);
+  const rows = (data ?? []) as { points: number; service_date: string }[];
+  return { points: rows.reduce((s, r) => s + (r.points ?? 0), 0), datas: rows.map((r) => r.service_date) };
 }
 
 export async function getApprovedReferralCount(clientId: string): Promise<number> {
@@ -74,17 +79,24 @@ async function insertEligibility(
   return (data?.length ?? 0) > 0;
 }
 
-/** Marcos de fidelidade (em pontos) alcançados que ainda não têm registro. */
+/**
+ * Marcos de fidelidade (em pontos) alcançados que ainda não têm registro.
+ * Marco que pede constância (o kit, perto do VIP) só abre com os meses
+ * seguidos de atendimento também. Roda a cada visita confirmada, que é o
+ * único jeito de os pontos e os meses subirem.
+ */
 export async function syncLoyaltyEligibility(clientId: string): Promise<number> {
-  const [points, benefits] = await Promise.all([
-    getApprovedPoints(clientId),
+  const [{ points, datas }, benefits] = await Promise.all([
+    getApprovedServiceStats(clientId),
     getActiveBenefits(),
   ]);
+  const meses = mesesSeguidos(datas, nowInBusinessTz());
   let created = 0;
   for (const b of benefits) {
     if (b.type !== "loyalty" || !b.threshold || b.threshold <= 0) continue;
     if ((b.threshold_unit ?? "points") !== "points") continue; // cartão tem ciclo próprio
     if (points < b.threshold) continue;
+    if (meses < mesesDoMarco(b)) continue;
     if (await insertEligibility(clientId, b, loyaltyCycleKey(b.key))) created++;
   }
   return created;

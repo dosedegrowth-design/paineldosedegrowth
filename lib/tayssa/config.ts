@@ -90,8 +90,10 @@ export type BusinessSettings = {
 };
 
 export type RulesSettings = {
-  /** Atendimentos aprovados sugeridos para a Tayssa liberar o VIP. */
-  vip_min_services: number;
+  /** Meta de pontos para o VIP (junto com os meses seguidos; a Tayssa confirma). */
+  vip_pontos: number;
+  /** Meses seguidos com pelo menos um atendimento confirmado para o VIP. */
+  vip_meses: number;
   /** Dias sem atendimento aprovado para marcar cliente como inativa. */
   inactivity_days: number;
   /** Validade padrão de um benefício liberado (dias). */
@@ -191,8 +193,10 @@ export const DEFAULT_SETTINGS: Settings = {
     instagram_url: "https://www.instagram.com/1.tayssa/",
     instagram_handle: "@1.tayssa",
   },
+  // o VIP é de quem volta com constância: pontos de uma vez só não bastam
   rules: {
-    vip_min_services: 4,
+    vip_pontos: 1000,
+    vip_meses: 3,
     inactivity_days: 30,
     benefit_validity_days: 60,
   },

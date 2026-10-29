@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 import { requireAdminPage } from "@/lib/tayssa/auth/guards";
 import { getSettings } from "@/lib/tayssa/settings";
 import { getAllBenefits, getAllServices, getBlackouts } from "@/lib/tayssa/queries/catalog";
-import { plural } from "@/lib/tayssa/format";
-import { horariosDoDia } from "@/lib/tayssa/rules";
+import { criterioLegivel, plural } from "@/lib/tayssa/format";
+import { horariosDoDia, mesesDoMarco } from "@/lib/tayssa/rules";
 import { AdminBlock, AdminHeader } from "@/components/tayssa/admin/shell";
 import {
   BenefitConfigForm,
@@ -43,7 +43,8 @@ const INDICE: { href: string; label: string }[] = [
   { href: "#cadastro", label: "Cadastro" },
   { href: "#mensagens", label: "Mensagens" },
   { href: "#numeros", label: "Números" },
-  { href: "#regras", label: "Regras" },
+  { href: "#programa", label: "Programa" },
+  { href: "#regras", label: "VIP e regras" },
   { href: "#negocio", label: "Negócio" },
 ];
 
@@ -98,6 +99,13 @@ export default async function SettingsAdminPage() {
   ]);
 
   const servicosAtivos = services.filter((s) => s.active).length;
+  // o programa como a cliente lê: marcos de pontos em ordem, o cartão, a indicação e o aniversário
+  const marcos = benefits
+    .filter((b) => b.active && b.type === "loyalty" && (b.threshold_unit ?? "points") === "points" && (b.threshold ?? 0) > 0)
+    .sort((a, b) => (a.threshold ?? 0) - (b.threshold ?? 0));
+  const indicacao = benefits.find((b) => b.active && b.type === "referral");
+  const aniversario = benefits.find((b) => b.active && b.type === "birthday");
+  const pontosServicos = services.filter((s) => s.active && s.slug !== "outro" && s.point_value > 0).map((s) => s.point_value);
   const beneficiosAtivos = benefits.filter((b) => b.active).length;
   const restricoesAtivas = blackouts.filter((b) => b.active).length;
   const dias = [...settings.booking.weekdays].sort((a, b) => a - b);
@@ -181,6 +189,53 @@ export default async function SettingsAdminPage() {
 
       {/* ---------------- fidelidade e benefícios ---------------- */}
       <Grupo>Fidelidade e benefícios</Grupo>
+
+      <Bloco
+        id="programa"
+        titulo="O programa, em quatro partes"
+        selo={<span className="tya-pill tya-pill--gold">como a cliente lê</span>}
+        efeito="O resumo do que a cliente vê em Benefícios, no espaço dela. Os números vêm dos blocos desta página: mude lá e muda aqui e para ela."
+      >
+        <ol className="tya-programa">
+          <li>
+            <p>
+              <b>Cartão de visitas.</b> Cada visita confirmada é um carimbo; a cada {settings.loyalty.card_size} carimbos,
+              “{settings.loyalty.card_reward_title}”. <a href="#cartao" className="tya-link">Cartão</a>
+            </p>
+          </li>
+          <li>
+            <p>
+              <b>Pontos e o caminho até o VIP.</b> Cada atendimento confirmado soma os pontos do serviço
+              {pontosServicos.length ? ` (de ${Math.min(...pontosServicos)} a ${Math.max(...pontosServicos)})` : ""}.{" "}
+              {marcos.map((m) => `${m.name}: ${criterioLegivel(m.threshold ?? 0, mesesDoMarco(m))}`).join(" · ")}
+              {marcos.length ? " · " : ""}VIP: {criterioLegivel(settings.rules.vip_pontos, settings.rules.vip_meses)}, com a
+              sua confirmação. <a href="#servicos" className="tya-link">Pontos</a> ·{" "}
+              <a href="#beneficios" className="tya-link">Marcos</a> · <a href="#regras" className="tya-link">VIP</a>
+            </p>
+          </li>
+          <li>
+            <p>
+              <b>Aniversário, só VIP.</b>{" "}
+              {settings.birthday.mes_inteiro ? "Vale o mês inteiro do aniversário" : "Vale nos dias em volta da data"}
+              {aniversario?.description ? `: ${aniversario.description}` : "."}{" "}
+              <a href="#aniversario" className="tya-link">Aniversário</a>
+            </p>
+          </li>
+          <li>
+            <p>
+              <b>Indicação.</b>{" "}
+              {indicacao
+                ? `${indicacao.threshold === 1 ? "A cada indicação confirmada" : `A cada ${indicacao.threshold} indicações confirmadas`}${indicacao.description ? `: ${indicacao.description}` : "."}`
+                : "Desligada."}{" "}
+              <a href="#beneficios" className="tya-link">Benefícios</a>
+            </p>
+          </li>
+        </ol>
+        <p className="tya-small" style={{ marginTop: 14 }}>
+          Nada é liberado sozinho: cada marco, cartão, aniversário e indicação nasce esperando você, e o VIP só entra
+          quando você ativa na ficha da cliente.
+        </p>
+      </Bloco>
 
       <div className="tya-dupla">
         <Bloco
@@ -293,8 +348,8 @@ export default async function SettingsAdminPage() {
       <div className="tya-dupla">
         <Bloco
           id="regras"
-          titulo="Regras gerais"
-          efeito="Os números que o painel usa para sugerir: quem já poderia ser VIP, quem sumiu faz tempo, quanto tempo um benefício dura por padrão."
+          titulo="VIP e regras gerais"
+          efeito="O critério do VIP (pontos e meses seguidos com atendimento), quem sumiu faz tempo e quanto tempo um benefício dura por padrão. Quem cumpre o critério aparece na visão geral para você confirmar."
         >
           <RulesForm value={settings.rules} />
         </Bloco>

@@ -22,7 +22,7 @@ import { BENEFIT_TYPE_LABEL } from "@/lib/tayssa/types";
 import { formatBrPhone } from "@/lib/tayssa/phone";
 import { dateShort } from "@/lib/tayssa/format";
 import { duracaoLegivel, horariosDaSemana, reais } from "@/lib/tayssa/agendar";
-import { horariosDoDia } from "@/lib/tayssa/rules";
+import { horariosDoDia, mesesDoMarco } from "@/lib/tayssa/rules";
 import { Area, Campo, Marcar, useFormPreservado } from "@/components/tayssa/admin/forms";
 import { ActionButton } from "@/components/tayssa/admin/controls";
 import { Icone } from "@/components/tayssa/admin/icons";
@@ -173,12 +173,20 @@ export function RulesForm({ value }: { value: Settings["rules"] }) {
     <form onSubmit={onSubmit} noValidate onReset={onReset} className="tya-stack">
       <div className="tya-grid">
         <Campo
-          label="Atendimentos sugeridos p/ VIP"
-          name="vip_min_services"
+          label="Pontos para o VIP"
+          name="vip_pontos"
           inputMode="numeric"
-          defaultValue={String(value.vip_min_services)}
-          error={erroDe(state, "vip_min_services")}
-          hint="Só referência: você decide quem entra."
+          defaultValue={String(value.vip_pontos)}
+          error={erroDe(state, "vip_pontos")}
+          hint="Junto com os meses seguidos. Quem cumpre os dois aparece para você confirmar."
+        />
+        <Campo
+          label="Meses seguidos para o VIP"
+          name="vip_meses"
+          inputMode="numeric"
+          defaultValue={String(value.vip_meses)}
+          error={erroDe(state, "vip_meses")}
+          hint="Meses do calendário com pelo menos um atendimento confirmado, sem pular nenhum."
         />
         <Campo
           label="Dias sem atendimento = inativa"
@@ -427,6 +435,8 @@ export function BenefitConfigForm({ benefit }: { benefit: BenefitRow }) {
         ? "atendimentos"
         : "pontos";
   const percent = typeof benefit.config?.percent === "number" ? String(benefit.config.percent) : "";
+  const marcoDePontos = benefit.type === "loyalty" && (benefit.threshold_unit ?? "points") === "points";
+  const meses = mesesDoMarco(benefit);
   const { onReset } = useFormPreservado();
   return (
     <form onSubmit={onSubmit} noValidate onReset={onReset} className="tya-sub">
@@ -450,11 +460,22 @@ export function BenefitConfigForm({ benefit }: { benefit: BenefitRow }) {
         />
         {benefit.type !== "birthday" ? (
           <Campo
-            label={`Limite (${unit})`}
+            label={benefit.type === "referral" ? "Indicações por benefício" : `Limite (${unit})`}
             name="threshold"
             inputMode="numeric"
             defaultValue={benefit.threshold != null ? String(benefit.threshold) : ""}
             error={erroDe(state, "threshold")}
+            hint={benefit.type === "referral" ? "1 = a cada indicação confirmada" : undefined}
+          />
+        ) : null}
+        {marcoDePontos ? (
+          <Campo
+            label="Meses seguidos (opcional)"
+            name="meses_seguidos"
+            inputMode="numeric"
+            defaultValue={meses ? String(meses) : ""}
+            error={erroDe(state, "meses_seguidos")}
+            hint="Além dos pontos. Vazio = só pontos."
           />
         ) : null}
         {benefit.type === "referral" ? (

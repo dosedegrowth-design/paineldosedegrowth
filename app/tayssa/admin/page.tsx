@@ -3,7 +3,7 @@ import { getAdminOverview } from "@/lib/tayssa/queries/admin";
 import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES } from "@/lib/tayssa/config";
 import { renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
-import { dateShort, dateTime, dayMonth, hhmm } from "@/lib/tayssa/format";
+import { dateShort, dateTime, dayMonth, hhmm, numero } from "@/lib/tayssa/format";
 import { APPOINTMENT_STATUS_LABEL } from "@/lib/tayssa/types";
 import { auditLabel } from "@/lib/tayssa/audit-labels";
 import { AdminBlock, AdminHeader, Empty, Stat } from "@/components/tayssa/admin/shell";
@@ -14,7 +14,7 @@ import { TyLinkButton } from "@/components/tayssa/ui/button";
 export default async function AdminHome() {
   const admin = await requireAdminPage();
   const [o, settings] = await Promise.all([getAdminOverview(), getSettings()]);
-  const needs = o.pendingSignups.length + o.appointmentsRequested + o.appointmentsToClose + o.pendingServices + o.referralsInProgress + o.benefitsToValidate + o.benefitsRequested;
+  const needs = o.pendingSignups.length + o.appointmentsRequested + o.appointmentsToClose + o.pendingServices + o.referralsInProgress + o.benefitsToValidate + o.benefitsRequested + o.readyForVip.length;
 
   return (
     <>
@@ -32,6 +32,7 @@ export default async function AdminHome() {
         <Stat n={o.referralsInProgress} label="Indicações em andamento" href={ROUTES.adminReferrals} alert={o.referralsInProgress > 0} />
         <Stat n={o.benefitsToValidate} label="Benefícios a validar" href={ROUTES.adminBenefits} alert={o.benefitsToValidate > 0} />
         <Stat n={o.benefitsRequested} label="Benefícios solicitados" href={ROUTES.adminBenefits} alert={o.benefitsRequested > 0} />
+        <Stat n={o.readyForVip.length} label="Prontas para VIP" href={ROUTES.adminClients} alert={o.readyForVip.length > 0} />
         <Stat n={o.birthdaysThisMonth} label="Aniversários no mês" href={ROUTES.adminBirthdays} />
         <Stat n={`${o.vipActive}/${o.totalClients}`} label="VIP / clientes" href={ROUTES.adminClients} />
       </div>
@@ -55,6 +56,28 @@ export default async function AdminHome() {
                 </li>
               ))}
             </ul>
+          </AdminBlock>
+        ) : null}
+        {o.readyForVip.length ? (
+          <AdminBlock title="Prontas para VIP" aside={<span className="ty-small">cumprem os dois critérios</span>}>
+            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+              {o.readyForVip.slice(0, 6).map((c) => (
+                <li key={c.user.id} style={{ display: "flex", justifyContent: "space-between", gap: 12, padding: "10px 0", borderTop: "1px solid var(--t-line)", alignItems: "center" }}>
+                  <div>
+                    <TransitionLink href={ROUTES.adminClient(c.user.id)} className="ty-link">{c.user.name}</TransitionLink>
+                    <span className="ty-small" style={{ display: "block" }}>
+                      {numero(c.points)} pontos · {c.mesesSeguidos} meses seguidos
+                    </span>
+                  </div>
+                  <TransitionLink href={ROUTES.adminClient(c.user.id)} className="ty-link ty-link--caps">
+                    Ativar VIP
+                  </TransitionLink>
+                </li>
+              ))}
+            </ul>
+            <p className="ty-small" style={{ marginTop: 10 }}>
+              Critério: {numero(settings.rules.vip_pontos)} pontos e {settings.rules.vip_meses} meses seguidos com atendimento. O VIP só entra quando você ativa.
+            </p>
           </AdminBlock>
         ) : null}
         <AdminBlock title="Agenda de hoje" aside={<TransitionLink href={ROUTES.adminAgenda} className="ty-link ty-link--caps">Ver agenda</TransitionLink>}>

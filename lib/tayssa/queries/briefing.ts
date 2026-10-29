@@ -3,6 +3,8 @@ import { createHash, timingSafeEqual } from "node:crypto";
 import { vipDb } from "@/lib/tayssa/db";
 import { getSettings } from "@/lib/tayssa/settings";
 import { horariosDaSemana } from "@/lib/tayssa/agendar";
+import { criterioLegivel } from "@/lib/tayssa/format";
+import { mesesDoMarco } from "@/lib/tayssa/rules";
 import type { ArquivoBriefing, Respostas, SecaoId, TipoArquivo } from "@/lib/tayssa/briefing";
 
 /**
@@ -38,6 +40,7 @@ type LinhaBeneficio = {
   type: "loyalty" | "referral" | "birthday" | "custom";
   threshold: number | null;
   threshold_unit: "points" | "referrals" | "services" | null;
+  config: Record<string, unknown>;
 };
 
 export async function getBriefing(): Promise<BriefingCompleto> {
@@ -52,7 +55,7 @@ export async function getBriefing(): Promise<BriefingCompleto> {
     db.from("services").select("name, description, preco").eq("active", true).order("sort_order"),
     db
       .from("benefits")
-      .select("key, name, description, type, threshold, threshold_unit")
+      .select("key, name, description, type, threshold, threshold_unit, config")
       .eq("active", true)
       .order("sort_order"),
   ]);
@@ -88,11 +91,13 @@ export async function getBriefing(): Promise<BriefingCompleto> {
       b.type === "birthday"
         ? `${birthday.mes_inteiro ? "Durante o mês do aniversário" : `Na semana do aniversário: de ${birthday.window_days_before} dias antes a ${birthday.window_days_after} depois`}${birthday.once_per_year ? ", uma vez por ano" : ""}.`
         : b.threshold_unit === "points"
-          ? `Ao juntar ${b.threshold} pontos.`
+          ? `Ao juntar ${criterioLegivel(b.threshold ?? 0, mesesDoMarco(b))}.`
           : b.threshold_unit === "services"
             ? `Ao completar o cartão de ${b.threshold} visitas confirmadas.`
             : b.threshold_unit === "referrals"
-              ? `A cada ${b.threshold} indicações confirmadas.`
+              ? (b.threshold ?? 1) <= 1
+                ? "A cada indicação confirmada."
+                : `A cada ${b.threshold} indicações confirmadas.`
               : "",
   }));
 

@@ -8,9 +8,12 @@ import {
   activeBlackout,
   birthdayInfo,
   loyaltyProgress,
+  mesesSeguidos,
+  progressoVip,
   referralProgress,
   type BirthdayInfo,
   type LoyaltyProgress,
+  type ProgressoVip,
   type ReferralProgress,
 } from "@/lib/tayssa/rules";
 import type { SessionUser } from "@/lib/tayssa/auth/session";
@@ -34,6 +37,10 @@ export type ClientOverview = {
   approvedCount: number;
   lastServiceDate: string | null;
   loyalty: LoyaltyProgress;
+  /** o caminho até o VIP: meta de pontos e meses seguidos com atendimento */
+  vip: ProgressoVip;
+  /** os marcos de pontos e o cartão como a Tayssa escreveu (para explicar o programa) */
+  catalogo: BenefitRow[];
   referral: ReferralProgress & { rewardTitle: string; rewardDescription: string | null };
   benefits: ClientBenefitView[];
   pendingServices: number;
@@ -78,12 +85,13 @@ export const getClientOverview = cache(async (user: SessionUser): Promise<Client
   const inProgress = refs.filter((r) => !["approved", "rejected"].includes(r.status)).length;
   const referralBenefit = benefitsCatalog.find((b) => b.type === "referral");
   const referral = {
-    ...referralProgress(approvedRefs, referralBenefit?.threshold ?? 3),
+    ...referralProgress(approvedRefs, referralBenefit?.threshold ?? 1),
     rewardTitle: referralBenefit?.name ?? "Benefício de indicação",
     rewardDescription: referralBenefit?.description ?? null,
   };
 
   const today = nowInBusinessTz();
+  const meses = mesesSeguidos(approved.map((s) => s.service_date), today);
   const birthday =
     user.profile?.birthday
       ? birthdayInfo(
@@ -107,7 +115,9 @@ export const getClientOverview = cache(async (user: SessionUser): Promise<Client
     points,
     approvedCount: approved.length,
     lastServiceDate: approved[0]?.service_date ?? null,
-    loyalty: loyaltyProgress(points, benefitsCatalog),
+    loyalty: loyaltyProgress(points, benefitsCatalog, meses),
+    vip: progressoVip(points, meses, { pontos: settings.rules.vip_pontos, meses: settings.rules.vip_meses }),
+    catalogo: benefitsCatalog,
     referral,
     benefits,
     pendingServices,

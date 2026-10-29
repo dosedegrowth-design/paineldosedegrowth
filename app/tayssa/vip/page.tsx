@@ -2,12 +2,13 @@ import Link from "next/link";
 import { requireClientPage } from "@/lib/tayssa/auth/guards";
 import { getVipHome } from "@/lib/tayssa/queries/vip";
 import { ROUTES } from "@/lib/tayssa/config";
-import { dayLabel, hhmm, isWithinHours, plural } from "@/lib/tayssa/format";
+import { dayLabel, faltaLegivel, hhmm, isWithinHours, numero, plural } from "@/lib/tayssa/format";
 import { APPOINTMENT_STATUS_LABEL } from "@/lib/tayssa/types";
 import { LoyaltyCard } from "@/components/tayssa/vip/loyalty-card";
 import { CountUp } from "@/components/tayssa/vip/count-up";
 import { ProgressRing } from "@/components/tayssa/vip/progress-ring";
 import { MilestoneMoment, type Moment } from "@/components/tayssa/vip/milestone-moment";
+import { CaminhoVip } from "@/components/tayssa/vip/programa";
 import { toCardStamps } from "@/lib/tayssa/queries/vip";
 import { Icone, type IconeNome } from "@/components/tayssa/ui/icones";
 import type { CSSProperties } from "react";
@@ -69,7 +70,7 @@ export default async function VipHome() {
           : "os seus presentes",
       icone: "presente",
     },
-    { href: ROUTES.vipJourney, titulo: "Minha jornada", dica: `${o.points} pontos`, icone: "brilho" },
+    { href: ROUTES.vipJourney, titulo: "Minha jornada", dica: `${numero(o.points)} pontos`, icone: "brilho" },
     { href: `${ROUTES.vipBenefits}#indicar`, titulo: "Indicar alguém", dica: "uma amiga sua", icone: "coracao" },
     { href: ROUTES.vipProfile, titulo: "Meu perfil", dica: "seus dados", icone: "pessoa" },
   ];
@@ -134,13 +135,19 @@ export default async function VipHome() {
               size={92}
               stroke={7}
               progress={o.loyalty.next ? o.loyalty.progressToNext : o.points > 0 ? 1 : 0}
-              label={`${o.points} pontos${o.loyalty.next ? `, faltam ${o.loyalty.pointsToNext} para ${o.loyalty.next.title}` : ""}`}
+              label={`${numero(o.points)} pontos${o.loyalty.next ? `, ${faltaLegivel(o.loyalty.pointsToNext, o.loyalty.mesesToNext)} para ${o.loyalty.next.title}` : ""}`}
             >
               <CountUp value={o.points} className="tyv-ring__n" />
             </ProgressRing>
             <span className="tyv-resumo__nome">Pontos</span>
             <span className="tyv-resumo__dica">
-              {o.loyalty.next ? `faltam ${o.loyalty.pointsToNext}` : o.points > 0 ? "todos os marcos" : "começa aqui"}
+              {o.loyalty.next
+                ? o.loyalty.pointsToNext > 0
+                  ? `${plural(o.loyalty.pointsToNext, "falta", "faltam")} ${numero(o.loyalty.pointsToNext)}`
+                  : `${plural(o.loyalty.mesesToNext, "falta", "faltam")} ${o.loyalty.mesesToNext} ${plural(o.loyalty.mesesToNext, "mês", "meses")}`
+                : o.points > 0
+                  ? "todos os marcos"
+                  : "começa aqui"}
             </span>
           </div>
           <div className="tyv-resumo__item">
@@ -173,11 +180,23 @@ export default async function VipHome() {
             </ProgressRing>
             <span className="tyv-resumo__nome">Ranking</span>
             <span className="tyv-resumo__dica">
-              {ranking.total <= 1 ? "a primeira" : ranking.toClimb > 0 ? `${ranking.toClimb} pts para subir` : "na frente"}
+              {ranking.total <= 1 ? "a primeira" : ranking.toClimb > 0 ? `${numero(ranking.toClimb)} pts para subir` : "na frente"}
             </span>
           </div>
         </div>
       </section>
+
+      {/* quem ainda não é VIP vê o caminho: as etapas e o que falta em cada uma */}
+      {!user.isVip ? (
+        <section className="tyv-section" aria-labelledby="caminho-titulo">
+          <div className="tyv-section-head">
+            <h2 className="tyv-h2" id="caminho-titulo">
+              Caminho até o VIP
+            </h2>
+          </div>
+          <CaminhoVip loyalty={o.loyalty} vip={o.vip} ehVip={false} compacto />
+        </section>
+      ) : null}
 
       {next ? (
         <section className="tyv-section">

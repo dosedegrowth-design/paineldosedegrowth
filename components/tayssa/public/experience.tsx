@@ -126,7 +126,7 @@ export function PublicExperience({
           />
           <Numeros numeros={settings.numeros} handle={links.handle} />
           <Testimonials conteudo={CONTEUDO} />
-          <VipIntro benefits={benefits} />
+          <VipIntro benefits={benefits} settings={settings} />
           <ReferralCta />
           <VisitInfo business={settings.business} booking={settings.booking} conteudo={CONTEUDO} />
           <Closing scheduleUrl={links.schedule} ambiente={colagem[2] ?? colagem[0]} />

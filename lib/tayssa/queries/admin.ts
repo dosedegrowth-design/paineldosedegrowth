@@ -12,11 +12,14 @@ import {
   isBirthdayInMonth,
   isInactive,
   loyaltyProgress,
+  mesesSeguidos,
+  progressoVip,
   referralProgress,
   timeToMinutes,
   toISODate,
   type BirthdayInfo,
   type LoyaltyProgress,
+  type ProgressoVip,
   type ReferralProgress,
 } from "@/lib/tayssa/rules";
 import type {
@@ -48,6 +51,12 @@ export type ClientSummary = {
   benefitsAvailable: number;
   benefitsPendingValidation: number;
   inactive: boolean;
+  /** meses seguidos com atendimento confirmado, até hoje */
+  mesesSeguidos: number;
+  /** o caminho até o VIP: meta de pontos e meses seguidos */
+  vip: ProgressoVip;
+  /** cumpre os critérios e ainda não é VIP: espera a confirmação da Tayssa */
+  prontaParaVip: boolean;
 };
 
 async function loadClientRows(): Promise<UserWithProfile[]> {
@@ -84,15 +93,21 @@ export const listClients = cache(async (): Promise<ClientSummary[]> => {
   // "hoje" no fuso do estúdio: no relógio do servidor (UTC) já é amanhã depois das 21h
   const today = nowInBusinessTz();
 
+  const criterios = { pontos: settings.rules.vip_pontos, meses: settings.rules.vip_meses };
+
   return users.map((u) => {
     const mine = services.filter((s) => s.client_id === u.id);
     const approved = mine.filter((s) => s.status === "approved");
     const last = approved.map((s) => s.service_date).sort().reverse()[0] ?? null;
     const myBenefits = benefits.filter((b) => b.client_id === u.id);
+    const profile = profileOf(u);
+    const points = approved.reduce((s, r) => s + r.points, 0);
+    const meses = mesesSeguidos(approved.map((s) => s.service_date), today);
+    const vip = progressoVip(points, meses, criterios);
     return {
       user: u,
-      profile: profileOf(u),
-      points: approved.reduce((s, r) => s + r.points, 0),
+      profile,
+      points,
       approvedCount: approved.length,
       lastServiceDate: last,
       pendingServices: mine.filter((s) => s.status === "pending").length,
@@ -104,6 +119,10 @@ export const listClients = cache(async (): Promise<ClientSummary[]> => {
       ).length,
       benefitsPendingValidation: myBenefits.filter((b) => b.status === "pending_validation").length,
       inactive: isInactive(last, settings.rules.inactivity_days, today),
+      mesesSeguidos: meses,
+      vip,
+      // suspensa por ela não volta a pedir: só quem nunca foi VIP (ou saiu) e está com a conta ativa
+      prontaParaVip: vip.cumpre && (profile?.vip_status ?? "none") === "none" && u.status === "active",
     };
   });
 });
@@ -295,6 +314,8 @@ export type AdminOverview = {
   birthdaysThisMonth: number;
   birthdaysThisWeek: ClientSummary[];
   inactiveClients: ClientSummary[];
+  /** cumprem os critérios do VIP e esperam a confirmação dela */
+  readyForVip: ClientSummary[];
   recentAudit: AuditRow[];
 };
 
@@ -341,6 +362,7 @@ export const getAdminOverview = cache(async (): Promise<AdminOverview> => {
       .filter((c) => c.inactive && c.user.status === "active")
       .sort((a, b) => (a.lastServiceDate ?? "").localeCompare(b.lastServiceDate ?? ""))
       .slice(0, 8),
+    readyForVip: clients.filter((c) => c.prontaParaVip).sort((a, b) => b.points - a.points),
     recentAudit: (auditRes.data ?? []) as AuditRow[],
   };
 });
@@ -407,8 +429,8 @@ export const getClientDetail = cache(async (id: string): Promise<ClientDetail | 
     referrals: (referralsRes.data ?? []) as ReferralRow[],
     benefits,
     audit: (auditRes.data ?? []) as AuditRow[],
-    loyalty: loyaltyProgress(summary.points, catalog),
-    referral: referralProgress(summary.approvedReferrals, referralBenefit?.threshold ?? 3),
+    loyalty: loyaltyProgress(summary.points, catalog, summary.mesesSeguidos),
+    referral: referralProgress(summary.approvedReferrals, referralBenefit?.threshold ?? 1),
     birthday,
     thisYearBirthday:
       benefits.find(

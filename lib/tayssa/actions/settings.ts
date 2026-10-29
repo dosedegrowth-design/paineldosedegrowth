@@ -62,7 +62,8 @@ export async function updateRulesSettingsAction(_p: ActionResult | null, fd: For
   return runAction("settings.rules", async () => {
     const admin = await assertAdmin();
     const input = rulesSettingsSchema.parse({
-      vip_min_services: str(fd, "vip_min_services"),
+      vip_pontos: str(fd, "vip_pontos"),
+      vip_meses: str(fd, "vip_meses"),
       inactivity_days: str(fd, "inactivity_days"),
       benefit_validity_days: str(fd, "benefit_validity_days"),
     });
@@ -291,8 +292,8 @@ export async function updateBenefitConfigAction(_p: ActionResult | null, fd: For
       active: bool(fd, "active"),
     });
     const db = vipDb();
-    const { data } = await db.from("benefits").select("type").eq("id", input.id).maybeSingle();
-    const b = data as { type: string } | null;
+    const { data } = await db.from("benefits").select("type, threshold_unit, config").eq("id", input.id).maybeSingle();
+    const b = data as { type: string; threshold_unit: string | null; config: Record<string, unknown> | null } | null;
     if (!b) throw new BusinessError("Benefício não encontrado.");
     if (b.type !== "birthday" && b.type !== "custom" && (!input.threshold || input.threshold <= 0)) {
       throw new BusinessError("Informe um limite maior que zero.", "threshold");
@@ -305,11 +306,24 @@ export async function updateBenefitConfigAction(_p: ActionResult | null, fd: For
       validity_days: input.validity_days,
       active: input.active,
     };
+    // o resto da configuração (o "por cartão" do cartão, por exemplo) continua
+    const config: Record<string, unknown> = { ...(b.config ?? {}) };
     if (b.type === "referral" && percent) {
       const n = Number(percent);
       if (!Number.isFinite(n) || n < 0 || n > 100) throw new BusinessError("Percentual inválido.", "percent");
-      patch.config = { percent: n };
+      config.percent = n;
     }
+    // marco de pontos que também pede constância (o kit, perto do VIP)
+    if (b.type === "loyalty" && (b.threshold_unit ?? "points") === "points") {
+      const meses = str(fd, "meses_seguidos");
+      if (meses) {
+        const n = Number(meses);
+        if (!Number.isInteger(n) || n < 0 || n > 12) throw new BusinessError("Use de 0 a 12 meses.", "meses_seguidos");
+        if (n > 0) config.meses_seguidos = n;
+        else delete config.meses_seguidos;
+      } else delete config.meses_seguidos;
+    }
+    patch.config = config;
     const { error } = await db.from("benefits").update(patch).eq("id", input.id);
     if (error) throw new Error(error.message);
     await logAudit({

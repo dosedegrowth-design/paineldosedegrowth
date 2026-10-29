@@ -63,18 +63,20 @@ function SeloInativa({ c }: { c: ClientSummary }) {
   );
 }
 
-type Filtro = "all" | "pending" | "vip" | "attention" | "inactive";
+type Filtro = "all" | "pending" | "vip" | "pronta" | "attention" | "inactive";
 
 export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
   const [q, setQ] = useState("");
   const pendingCount = clients.filter((c) => c.user.status === "pending").length;
   const attentionCount = clients.filter((c) => espera(c) > 0).length;
+  const prontaCount = clients.filter((c) => c.prontaParaVip).length;
   const [only, setOnly] = useState<Filtro>(pendingCount ? "pending" : "all");
   const list = useMemo(() => {
     return clients.filter((c) => {
       if (!bateBusca(q, [c.user.name, c.user.nickname, c.user.email, c.user.phone])) return false;
       if (only === "pending") return c.user.status === "pending";
       if (only === "vip") return c.profile?.vip_status === "active";
+      if (only === "pronta") return c.prontaParaVip;
       if (only === "attention") return espera(c) > 0;
       if (only === "inactive") return c.inactive;
       return true;
@@ -85,6 +87,7 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
     ["all", "Todas", null],
     ["pending", "Pedidos de acesso", pendingCount || null],
     ["vip", "VIP", null],
+    ["pronta", "Prontas para VIP", prontaCount || null],
     ["attention", "Com pendência", attentionCount || null],
     ["inactive", "Inativas", null],
   ];
@@ -165,6 +168,7 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
                         </td>
                         <td>
                           <SeloVip status={c.profile?.vip_status ?? "none"} />
+                          {c.prontaParaVip ? <span className="tya-pill tya-pill--gold" style={{ marginLeft: 6 }}>pronta p/ VIP</span> : null}
                         </td>
                         <td className="tya-num">{c.points}</td>
                         <td className="tya-num">
@@ -202,6 +206,7 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
                     <p className="tya-small" style={{ overflowWrap: "anywhere" }}>{c.user.email}</p>
                     <div style={{ display: "flex", gap: 6, flexWrap: "wrap", margin: "10px 0 14px" }}>
                       <SeloVip status={c.profile?.vip_status ?? "none"} />
+                      {c.prontaParaVip ? <span className="tya-pill tya-pill--gold">pronta p/ VIP</span> : null}
                       <SeloConta status={c.user.status} />
                       {p.length ? <span className="tya-pill tya-pill--brand">{p.join(" · ")}</span> : null}
                       <SeloInativa c={c} />

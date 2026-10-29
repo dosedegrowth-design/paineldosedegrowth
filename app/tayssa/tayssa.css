@@ -1629,6 +1629,10 @@ select.ty-field__input {
   margin-top: clamp(54px, 7.5vw, 112px);
   padding-bottom: 14px;
 }
+/* o caminho até o VIP tem chapéu próprio: a jornada encosta nele */
+.tyvi__chapeu--caminho + .tyvi__jornada {
+  margin-top: clamp(18px, 2.4vw, 32px);
+}
 .tyvi__lista {
   list-style: none;
   margin: 0;

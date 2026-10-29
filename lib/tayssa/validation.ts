@@ -290,7 +290,8 @@ export const businessSettingsSchema = z.object({
 });
 
 export const rulesSettingsSchema = z.object({
-  vip_min_services: z.coerce.number().int().min(0).max(100),
+  vip_pontos: z.coerce.number().int().min(0, "Use 0 ou mais").max(10000, "No máximo 10.000"),
+  vip_meses: z.coerce.number().int().min(1, "Pelo menos 1 mês").max(12, "No máximo 12 meses"),
   inactivity_days: z.coerce.number().int().min(1).max(365),
   benefit_validity_days: z.coerce.number().int().min(1).max(365),
 });

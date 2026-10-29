@@ -1,6 +1,6 @@
 import { requireClientPage } from "@/lib/tayssa/auth/guards";
 import { getVipHome } from "@/lib/tayssa/queries/vip";
-import { nowInBusinessTz, plural } from "@/lib/tayssa/format";
+import { nowInBusinessTz, numero, plural } from "@/lib/tayssa/format";
 import { buildTimeline } from "@/lib/tayssa/timeline";
 import { RankingList } from "@/components/tayssa/vip/ranking-list";
 import { Timeline } from "@/components/tayssa/vip/timeline";
@@ -18,7 +18,9 @@ export default async function VipJornada() {
     appointments: appointments.upcoming,
     birthday: o.birthday,
     loyalty: o.loyalty,
+    vip: { progresso: o.vip, jaVip: user.isVip },
     today: nowInBusinessTz(),
+    limits: { upcoming: 4 },
   });
 
   return (
@@ -28,7 +30,7 @@ export default async function VipJornada() {
       </h1>
       <p className="tyv-sub">
         {o.approvedCount
-          ? `${o.approvedCount} ${plural(o.approvedCount, "visita confirmada", "visitas confirmadas")} e ${o.points} pontos até aqui.`
+          ? `${o.approvedCount} ${plural(o.approvedCount, "visita confirmada", "visitas confirmadas")} e ${numero(o.points)} pontos até aqui.`
           : "Sua primeira visita confirmada abre a jornada."}
       </p>
 

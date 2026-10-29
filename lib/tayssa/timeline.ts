@@ -7,8 +7,8 @@
  * que a Tayssa deu no admin.
  */
 import { APPOINTMENT_STATUS_LABEL, type AppointmentRow, type ClientBenefitRow, type ClientServiceRow } from "./types.ts";
-import { appointmentEnded, toISODate, type BirthdayInfo, type LoyaltyProgress } from "./rules.ts";
-import { dateLong, dayLabel, hhmm, plural } from "./format.ts";
+import { appointmentEnded, toISODate, type BirthdayInfo, type LoyaltyProgress, type ProgressoVip } from "./rules.ts";
+import { dateLong, dayLabel, faltaLegivel, hhmm, numero, plural } from "./format.ts";
 
 export type TimelineKind =
   | "visit"
@@ -48,6 +48,8 @@ export type TimelineInput = {
   appointments: AppointmentRow[];
   birthday: BirthdayInfo | null;
   loyalty: LoyaltyProgress;
+  /** o caminho até o VIP; quem já é VIP não vê esta parada */
+  vip?: { progresso: ProgressoVip; jaVip: boolean };
   today: Date;
   /** limites por lista */
   limits?: { upcoming?: number; recent?: number };
@@ -61,6 +63,7 @@ export function buildTimeline({
   appointments,
   birthday,
   loyalty,
+  vip,
   today,
   limits = {},
 }: TimelineInput): Timeline {
@@ -103,9 +106,22 @@ export function buildTimeline({
       kind: "milestone",
       date: null,
       title: loyalty.next.title,
-      detail: `${loyalty.pointsToNext === 1 ? "falta" : "faltam"} ${loyalty.pointsToNext} ${plural(loyalty.pointsToNext, "ponto", "pontos")}`,
-      value: `${loyalty.next.threshold}`,
+      detail: faltaLegivel(loyalty.pointsToNext, loyalty.mesesToNext),
+      value: numero(loyalty.next.threshold),
       tone: "muted",
+    });
+  }
+
+  if (vip && !vip.jaVip) {
+    const p = vip.progresso;
+    upcoming.push({
+      id: "vip",
+      kind: "milestone",
+      date: null,
+      title: "VIP",
+      detail: p.cumpre ? "você cumpre os critérios: a Tayssa confirma" : faltaLegivel(p.faltamPontos, p.faltamMeses),
+      value: numero(p.criterios.pontos),
+      tone: p.cumpre ? "gold" : "muted",
     });
   }
 

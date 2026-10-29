@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { animate, useReducedMotion } from "framer-motion";
+import { numero } from "@/lib/tayssa/format";
 
 /**
  * Número que conta até o valor quando aparece. O HTML já vem com o
@@ -30,7 +31,7 @@ export function CountUp({
       duration,
       ease: [0.16, 1, 0.3, 1],
       onUpdate: (v) => {
-        el.textContent = String(Math.round(v));
+        el.textContent = numero(Math.round(v));
       },
     });
     return () => controls.stop();
@@ -38,7 +39,7 @@ export function CountUp({
 
   return (
     <span ref={ref} className={className}>
-      {value}
+      {numero(value)}
     </span>
   );
 }

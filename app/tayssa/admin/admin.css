@@ -2038,6 +2038,43 @@ a.tya-kpi {
   color: var(--tya-muted);
 }
 
+/* o programa em quatro partes (Configurações): numerado, uma parte por linha */
+.tya-programa {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+  counter-reset: parte;
+  max-width: 78ch;
+}
+.tya-programa li {
+  counter-increment: parte;
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  align-items: start;
+  gap: 10px;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+.tya-programa p {
+  margin: 0;
+  padding-top: 2px;
+}
+.tya-programa li::before {
+  content: counter(parte);
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--tya-gold);
+  background: var(--tya-gold-bg);
+  border: 1px solid var(--tya-gold-soft);
+}
+
 /* dois blocos lado a lado quando há largura; no estreito, um sob o outro.
    Trilha mínima zero de propósito: `minmax(380px, …)` estourava a borda. */
 .tya-dupla {

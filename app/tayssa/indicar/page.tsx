@@ -66,8 +66,8 @@ export default async function ReferPage() {
             <Reveal delay={0.3}>
               <p className="ty-body" style={{ marginTop: 26, maxWidth: 440, fontSize: 16 }}>
                 Você não precisa ser VIP para indicar. Quando a pessoa indicada faz o primeiro
-                atendimento e a Tayssa confirma, sua indicação entra na sua conta e o
-                benefício é liberado.
+                atendimento e a Tayssa confirma, sua indicação entra na sua conta
+                {(referral?.threshold ?? 1) <= 1 ? ", e cada indicação confirmada vale um benefício." : " e o benefício é liberado."}
               </p>
               {/* só a descrição que a Tayssa escreveu no catálogo — o site não
                   publica meta numérica (ela muda em Configurações) */}
