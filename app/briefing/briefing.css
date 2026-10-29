@@ -762,3 +762,75 @@ body:has(.ddgb) {
     transition: none;
   }
 }
+
+/* ============================================================
+   MARINA SALEME — o briefing que a Bia responde dizendo o que a marca
+   quer anunciar no mês seguinte. A cara é a do site dela: tinta quase
+   preta sobre papel claro, sem cor de acento, porque a cor vem toda das
+   estampas que ela sobe.
+   ============================================================ */
+.ddgb--marina {
+  --ddgb-papel: #f7f7f5;
+  --ddgb-cartao: #ffffff;
+  --ddgb-campo: #ffffff;
+  --ddgb-suave: #f3f3f0;
+  --ddgb-tinta: #1c1c1c;
+  --ddgb-tinta-2: #6f6f6b;
+  --ddgb-linha: #e3e3df;
+  --ddgb-linha-forte: #c9c9c4;
+  /* o acento dela é o próprio preto: progresso, foco e "pronto" */
+  --ddgb-laranja: #1c1c1c;
+  --ddgb-laranja-suave: #ebebe7;
+  --ddgb-raio: 14px;
+  font-family: "Instrument Sans", "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  letter-spacing: -0.005em;
+}
+body:has(.ddgb--marina) {
+  background: #f7f7f5;
+}
+/* no preto o número de uma parte feita precisa de tinta clara */
+.ddgb--marina .ddgb-parte[data-feita] .ddgb-parte__n {
+  color: #ffffff;
+}
+.ddgb--marina .ddgb-abre h1 {
+  letter-spacing: -0.02em;
+}
+
+/* ---------- os dois cards de mês ---------- */
+.ddgb-meses {
+  display: grid;
+  gap: 10px;
+  margin-top: 26px;
+}
+@media (min-width: 520px) {
+  .ddgb-meses {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.ddgb-mes {
+  display: grid;
+  gap: 4px;
+  padding: 16px;
+  text-align: left;
+  background: var(--ddgb-cartao);
+  border: 1.5px solid var(--ddgb-linha);
+  border-radius: var(--ddgb-raio);
+  min-height: 76px;
+  align-content: center;
+}
+.ddgb-mes--agora {
+  border-color: var(--ddgb-tinta);
+  box-shadow: 0 14px 30px -24px rgba(28, 28, 28, 0.5);
+}
+.ddgb-mes__titulo {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.ddgb-mes__conta {
+  font-size: 13.5px;
+  color: var(--ddgb-tinta-2);
+}
+.ddgb-mes--agora .ddgb-mes__conta {
+  color: var(--ddgb-tinta);
+}
