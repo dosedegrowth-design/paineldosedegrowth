@@ -15,8 +15,8 @@ export type ServicoCapa = {
   id: string;
   nome: string;
   capa: CapaServico | null;
-  /** quantas fotos passam no carrossel embaixo da capa */
-  noCarrossel: number;
+  /** quantas fotos e vídeos a galeria do serviço tem (com a capa) */
+  naGaleria: number;
   /** as fotos deste serviço (as que passam no carrossel dele) */
   daqui: OpcaoCapa[];
 };
@@ -75,11 +75,9 @@ export function CapasServicos({
                 <span className="tya-pill tya-pill--warn">sem foto</span>
               )}
               <span className="tya-small">
-                {s.noCarrossel
-                  ? `${s.noCarrossel} ${s.noCarrossel === 1 ? "foto passa" : "fotos passam"} embaixo da capa`
-                  : s.daqui.length
-                    ? "Com uma foto só, não há carrossel"
-                    : "Publique fotos com o nome deste serviço para o carrossel"}
+                {s.naGaleria
+                  ? `${s.naGaleria} ${s.naGaleria === 1 ? "item" : "itens"} na galeria do serviço`
+                  : "Publique fotos com o nome deste serviço para a galeria"}
               </span>
             </div>
             {pronto ? (

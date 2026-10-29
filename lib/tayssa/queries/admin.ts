@@ -17,6 +17,7 @@ import {
   referralProgress,
   timeToMinutes,
   toISODate,
+  vipPrimeiro,
   type BirthdayInfo,
   type LoyaltyProgress,
   type ProgressoVip,
@@ -133,6 +134,8 @@ export const listClients = cache(async (): Promise<ClientSummary[]> => {
 
 export type AppointmentWithClient = AppointmentRow & {
   client: Pick<UserRow, "id" | "name" | "nickname" | "phone"> | null;
+  /** a cliente é VIP: o pedido dela tem prioridade */
+  vip: boolean;
 };
 
 export type Agenda = {
@@ -161,18 +164,30 @@ export const getAgenda = cache(async (): Promise<Agenda> => {
   const today = toISODate(now);
   const { data, error } = await vipDb()
     .from("appointments")
-    .select("*, client:users!appointments_client_id_fkey(id, name, nickname, phone)")
+    .select("*, client:users!appointments_client_id_fkey(id, name, nickname, phone, client_profiles(vip_status))")
     .gte("scheduled_date", toISODate(shiftDays(now, -45)))
     .lte("scheduled_date", toISODate(shiftDays(now, 120)))
     .order("scheduled_date")
     .order("scheduled_time")
     .limit(500);
   if (error) throw new Error(error.message);
-  const all = (data ?? []) as AppointmentWithClient[];
+  type Perfil = Pick<ClientProfileRow, "vip_status">;
+  type Linha = AppointmentRow & {
+    client: (Pick<UserRow, "id" | "name" | "nickname" | "phone"> & { client_profiles: Perfil | Perfil[] | null }) | null;
+  };
+  const all: AppointmentWithClient[] = ((data ?? []) as Linha[]).map(({ client, ...a }) => {
+    const p = client?.client_profiles;
+    const perfil = Array.isArray(p) ? p[0] : p;
+    return {
+      ...a,
+      client: client ? { id: client.id, name: client.name, nickname: client.nickname, phone: client.phone } : null,
+      vip: perfil?.vip_status === "active",
+    };
+  });
   const open = (a: AppointmentWithClient) => a.status === "requested" || a.status === "confirmed";
   return {
     today,
-    requested: all.filter((a) => a.status === "requested" && a.scheduled_date >= today),
+    requested: vipPrimeiro(all.filter((a) => a.status === "requested" && a.scheduled_date >= today)),
     todayList: all.filter((a) => open(a) && a.scheduled_date === today),
     upcoming: all.filter((a) => a.status === "confirmed" && a.scheduled_date > today),
     toClose: all.filter((a) => open(a) && a.scheduled_date < today),

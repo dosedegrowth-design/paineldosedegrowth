@@ -7,12 +7,10 @@ import type { ServiceRow } from "@/lib/tayssa/types";
 import type { PhotoSlot } from "@/lib/tayssa/photos";
 import { FotoAmbiente } from "@/components/tayssa/ui/foto-ambiente";
 import { Rolo } from "@/components/tayssa/public/rolo";
-import { estiloFoco, roloAbaixoDaCapa, type CapaServico, type MidiaCatalogo } from "@/lib/tayssa/catalogo";
+import { estiloFoco, midiasDoServico, type CapaServico, type MidiaCatalogo } from "@/lib/tayssa/catalogo";
 import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
 import { useFinePointer } from "@/components/tayssa/ui/use-media";
 import { Magnetic } from "@/components/tayssa/ui/magnetic";
-import type { ServicoDetalhe } from "@/lib/tayssa/content";
-import { Pendente } from "@/components/tayssa/ui/estrutura";
 import { LinkAgendar } from "@/components/tayssa/public/agendar";
 import { duracaoLegivel, ehManutencao, reais, valorLegivel } from "@/lib/tayssa/agendar";
 
@@ -114,19 +112,16 @@ export function Services({
   scheduleUrl,
   capas = {},
   rolos = {},
-  detalhes = {},
   ambiente,
 }: {
   /** a capa de cada serviço: a escolhida em Mídia → Capas, ou a primeira foto dele */
   capas?: Record<string, CapaServico | null>;
-  /** as fotos de cada serviço: passam embaixo da capa */
+  /** as fotos e vídeos de cada serviço: a galeria embaixo das informações */
   rolos?: Record<string, MidiaCatalogo[]>;
   /** foto real que vira o fundo da seção, com pouca luz */
   ambiente?: PhotoSlot;
   services: ServiceRow[];
   scheduleUrl: string;
-  /** duração, valor e diferencial que a Tayssa informou (lib/tayssa/content.ts) */
-  detalhes?: Record<string, ServicoDetalhe>;
 }) {
   const list = (services.length ? services : FALLBACK).filter((s) => s.slug !== "outro");
   const fine = useFinePointer();
@@ -176,18 +171,19 @@ export function Services({
 
         <ul className="tysv__lista">
           {list.map((s, i) => {
-            const foto = capas[s.slug] ?? null;
             const n = String(i + 1).padStart(2, "0");
-            // embaixo da capa, as outras fotos do mesmo serviço (a capa não se repete)
-            const rolo = roloAbaixoDaCapa(rolos[s.slug] ?? [], foto);
-            // a manutenção do Fox eyes custa mais: a manutenção começa "a partir de"
-            const valor = valorLegivel(
-              s.preco != null ? Number(s.preco) : null,
-              ehManutencao(s.slug, s.name) ? list.map((v) => (v.preco_manutencao != null ? Number(v.preco_manutencao) : null)) : [],
-            );
-            const ficha = fichaDo(s, detalhes[s.slug]);
+            // a galeria do serviço: a capa primeiro, depois as outras fotos e vídeos dele
+            const galeria = midiasDoServico(rolos[s.slug] ?? [], capas[s.slug] ?? null, s.name);
+            const ficha = fichaDo(s, list);
             return (
-              <Reveal key={s.id} as="li" className="tysv__item" delay={Math.min(i, 4) * 0.05} amount={0.25}>
+              <Reveal
+                key={s.id}
+                as="li"
+                id={`servico-${s.slug}`}
+                className="tysv__item"
+                delay={Math.min(i, 4) * 0.05}
+                amount={0.25}
+              >
                 <LinkAgendar
                   className="tysv__linha"
                   href={linkDoServico(scheduleUrl, s.name)}
@@ -203,57 +199,38 @@ export function Services({
                     <i>{n}</i>
                     <i>{n}</i>
                   </span>
-                  <h3 className="tysv__nome">
-                    {nomeComEnfase(s.name)}
-                    {valor ? <span className="tysv__preco">{valor}</span> : null}
-                  </h3>
-                  {s.description || ficha.diferencial || ficha.linha.length ? (
+                  <h3 className="tysv__nome">{nomeComEnfase(s.name)}</h3>
+                  {/* o efeito numa frase e as informações práticas; o jeito dela
+                      de fazer já foi contado na apresentação das técnicas */}
+                  {s.description || ficha.length ? (
                     <div className="tysv__dizer">
                       {s.description ? <p className="ty-body ty-measure--tight">{s.description}</p> : null}
-                      {ficha.diferencial ? <p className="ty-body ty-measure--tight tysv__dif">{ficha.diferencial}</p> : null}
-                      {ficha.linha.length ? <p className="ty-mono tysv__ficha">{ficha.linha.join(" · ")}</p> : null}
+                      {ficha.length ? (
+                        <dl className="tysv__ficha">
+                          {ficha.map((f) => (
+                            <div key={f.rotulo}>
+                              <dt>{f.rotulo}</dt>
+                              <dd>{f.valor}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      ) : null}
                     </div>
                   ) : (
                     // mantém a prumada das colunas quando o serviço não tem
                     // texto (no celular não há coluna: a casca some)
                     <span className="tysv__vazio" aria-hidden />
                   )}
-                  {/* foto é bônus: no toque ela mora dentro da linha; no mouse,
-                      o CSS esconde esta e a foto passa a seguir o cursor */}
-                  {foto ? (
-                    <figure className="tysv__figura">
-                      <div className="ty-figure">
-                        <FotoCapa capa={foto} sizes="(max-width: 899px) 80vw, 300px" />
-                      </div>
-                      <figcaption className="tysv__legenda">
-                        <span>{s.name}</span>
-                        <span>@1.tayssa</span>
-                      </figcaption>
-                    </figure>
-                  ) : null}
-                  <span className="tysv__acao">
+                  <span className="tysv__acao ty-btn ty-btn--sm">
                     <span>Agendar</span>
                     <span className="ty-btn__arrow" aria-hidden />
                   </span>
                 </LinkAgendar>
-                {rolo.length ? (
-                  <div className="tysv__rolo">
-                    <Rolo itens={rolo} tamanho="mini" rotulo={`Fotos e vídeos: ${s.name}`} sentido={i % 2 ? -1 : 1} />
-                  </div>
-                ) : null}
+                <Galeria itens={galeria} nome={s.name} sentido={i % 2 ? -1 : 1} />
               </Reveal>
             );
           })}
         </ul>
-
-        {Object.keys(detalhes).length === 0 ? (
-          <div className="tysv__pendente">
-            <Pendente
-              titulo="Detalhes de cada serviço"
-              detalhe="Confirmar a lista real de serviços e, para cada um: descrição curta, diferencial, duração e preço (só se ela quiser divulgar — senão fica 'valor no WhatsApp'). Fotos ou vídeo por serviço."
-            />
-          </div>
-        ) : null}
 
         <Reveal className="tysv__pe" delay={0.08}>
           <p className="tysv__pe-linha">
@@ -297,15 +274,46 @@ export function Services({
 }
 
 /**
- * Ficha do serviço: o diferencial que ela escreveu e, em mono, o tempo e o
- * valor da manutenção (do catálogo: mudou no painel, muda aqui). Só o que
- * a Tayssa informou.
+ * As informações práticas de cada serviço, na ordem em que a cliente
+ * procura: valor da aplicação, tempo e manutenção (do catálogo: mudou no
+ * painel, muda aqui). Só o que a Tayssa cadastrou; vazio não aparece.
  */
-function fichaDo(s: ServiceRow, d?: ServicoDetalhe): { diferencial: string | null; linha: string[] } {
-  const linha = [
-    duracaoLegivel(s.duration_min) ?? d?.duracao,
-    s.preco_manutencao != null ? `manutenção ${reais(Number(s.preco_manutencao))}` : null,
-    d?.preco,
-  ].filter(Boolean) as string[];
-  return { diferencial: d?.diferencial ?? null, linha };
+function fichaDo(s: ServiceRow, todos: ServiceRow[]): { rotulo: string; valor: string }[] {
+  const valor = valorLegivel(
+    s.preco != null ? Number(s.preco) : null,
+    // a manutenção do Fox eyes custa mais: a manutenção começa "a partir de"
+    ehManutencao(s.slug, s.name) ? todos.map((v) => (v.preco_manutencao != null ? Number(v.preco_manutencao) : null)) : []
+  );
+  const tempo = duracaoLegivel(s.duration_min);
+  const manutencao = s.preco_manutencao != null ? reais(Number(s.preco_manutencao)) : null;
+  return [
+    valor ? { rotulo: manutencao ? "Aplicação" : "Valor", valor } : null,
+    tempo ? { rotulo: "Tempo", valor: tempo } : null,
+    manutencao ? { rotulo: "Manutenção", valor: manutencao } : null,
+  ].filter((f): f is { rotulo: string; valor: string } => Boolean(f));
+}
+
+/**
+ * A galeria do serviço, depois das informações: várias fotos do mesmo
+ * trabalho para ver os resultados, os detalhes e comparar os acabamentos.
+ * Tocar abre a foto grande, com as setas para ir e voltar.
+ */
+function Galeria({ itens, nome, sentido }: { itens: MidiaCatalogo[]; nome: string; sentido: 1 | -1 }) {
+  if (!itens.length) return null;
+  const fotos = itens.filter((m) => m.tipo === "image").length;
+  const videos = itens.length - fotos;
+  const conta = [
+    fotos ? `${fotos} ${fotos === 1 ? "foto" : "fotos"}` : null,
+    videos ? `${videos} ${videos === 1 ? "vídeo" : "vídeos"}` : null,
+  ]
+    .filter(Boolean)
+    .join(" e ");
+  return (
+    <div className="tysv__rolo">
+      <p className="ty-mono tysv__galeria">
+        {conta} de {nome} · toque para ver de perto
+      </p>
+      <Rolo itens={itens} tamanho="mini" rotulo={`Fotos de ${nome}`} sentido={sentido} />
+    </div>
+  );
 }

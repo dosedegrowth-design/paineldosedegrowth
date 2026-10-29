@@ -19,6 +19,7 @@ import {
   referralProgress,
   trechosOcupados,
   validadeDoAniversario,
+  vipPrimeiro,
 } from "./rules.ts";
 import { normalizeBrPhone, formatBrPhone } from "./phone.ts";
 import { renderTemplate, whatsappUrl } from "./whatsapp.ts";
@@ -277,4 +278,15 @@ test("agenda: serviço longo segura os horários seguintes", () => {
   const hoje = horariosParaMarcar("2026-10-31", sabado, [], new Date(2026, 9, 31, 10, 0), 4);
   assert.equal(hoje.find((s) => s.time === "13:00")?.available, false);
   assert.equal(hoje.find((s) => s.time === "14:00")?.available, true);
+});
+
+test("prioridade VIP: os pedidos de quem é VIP vêm primeiro, cada grupo do mais próximo ao mais distante", () => {
+  const p = (id: string, vip: boolean, data: string, hora: string) => ({ id, vip, scheduled_date: data, scheduled_time: hora });
+  const ordem = vipPrimeiro([
+    p("a", false, "2026-12-02", "09:00"),
+    p("b", true, "2026-12-10", "14:00"),
+    p("c", false, "2026-12-01", "10:00"),
+    p("d", true, "2026-12-03", "09:00"),
+  ]).map((x) => x.id);
+  assert.deepEqual(ordem, ["d", "b", "c", "a"]);
 });

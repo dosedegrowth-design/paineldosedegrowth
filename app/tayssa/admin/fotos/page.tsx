@@ -8,7 +8,7 @@ import { AdminBlock, AdminHeader, Stat } from "@/components/tayssa/admin/shell";
 import { PhotoUpload } from "@/components/tayssa/admin/photo-upload";
 import { PhotoLibrary } from "@/components/tayssa/admin/photo-library";
 import { CapasServicos, type OpcaoCapa, type ServicoCapa } from "@/components/tayssa/admin/capas";
-import { capasDosServicos, fotoDoTrabalho, montarCatalogo, roloAbaixoDaCapa, rolosDosServicos } from "@/lib/tayssa/catalogo";
+import { capasDosServicos, midiasDoServico, montarCatalogo, rolosDosServicos } from "@/lib/tayssa/catalogo";
 import type { CategoriaMidia } from "@/lib/tayssa/types";
 
 type Aba = "galeria" | "site" | "capas";
@@ -61,7 +61,7 @@ export default async function PhotosPage({ searchParams }: { searchParams: Promi
       id: s.id,
       nome: s.name,
       capa: capas[s.slug] ?? null,
-      noCarrossel: roloAbaixoDaCapa(rolo, capas[s.slug] ?? null).length,
+      naGaleria: midiasDoServico(rolo, capas[s.slug] ?? null, s.name).length,
       daqui: rolo.filter((m) => m.tipo === "image").map((m) => opcao(porId[m.id])),
     };
   });
@@ -88,21 +88,18 @@ export default async function PhotosPage({ searchParams }: { searchParams: Promi
   assigned.work.forEach((s) => put(s, "Colagem"));
   assigned.details.forEach((s) => put(s, "Colagem"));
   Object.values(assigned.byService).forEach((s) => put(s, "Colagem"));
-  // a capa de cada serviço (o selo leva o nome do serviço, não a slug) e a
-  // foto dele na seção "Trabalho" (a primeira depois da capa)
+  // a capa de cada serviço (o selo leva o nome do serviço, não a slug)
   for (const s of servicosNoSite) {
     const capa = capas[s.slug];
     if (capa) marcar(capa.id, `Capa: ${s.name}`);
-    const doTrabalho = fotoDoTrabalho(rolos[s.slug] ?? [], capa ?? null);
-    if (doTrabalho) marcar(doTrabalho.id, `Trabalho: ${s.name}`);
   }
   assigned.card.forEach((s) => put(s, "Frente do cartão"));
-  // todo item no ar passa nas fotos do serviço dele (carrossel de cima e
-  // lista de serviços) e no rolo do produto ("Cada técnica, de perto")
+  // todo item no ar entra na galeria do serviço dele (lista de serviços e
+  // carrossel de cima) e no rolo do produto ("Cada técnica, de perto")
   const nomeDoServico = new Map(servicosNoSite.map((s) => [s.slug, s.name]));
   for (const [slug, itens] of Object.entries(rolos)) {
     const nome = nomeDoServico.get(slug);
-    if (nome) for (const item of itens) marcar(item.id, `Carrossel: ${nome}`);
+    if (nome) for (const item of itens) marcar(item.id, `Galeria: ${nome}`);
   }
   for (const c of catalogo) {
     for (const prod of c.produtos) for (const item of prod.itens) marcar(item.id, `Rolo: ${c.label} › ${prod.nome}`);
@@ -150,9 +147,9 @@ export default async function PhotosPage({ searchParams }: { searchParams: Promi
       {aba === "capas" ? (
         <AdminBlock title="Capas dos serviços">
           <p className="tya-small" style={{ marginBottom: 16 }}>
-            Na lista de serviços do site, cada serviço aparece com a capa e, embaixo dela, o carrossel das outras fotos
-            dele. No carrossel do topo, as fotos passam dentro do cartão, começando pela capa. Sem capa escolhida, entra a
-            primeira foto do serviço. Serviço sem foto aparece sem foto: publique fotos com o nome dele na aba Galeria.
+            A capa é a primeira foto da galeria de cada serviço, na lista de serviços do site, e a primeira que passa
+            dentro do cartão do carrossel do topo. Sem capa escolhida, entra a primeira foto do serviço. Serviço sem foto
+            aparece sem foto: publique fotos com o nome dele na aba Galeria.
           </p>
           <CapasServicos servicos={servicosCapa} outras={outrasFotos} pronto={capaNoBanco} />
         </AdminBlock>

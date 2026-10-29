@@ -1,25 +1,23 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { topoNoDocumento, useProgressoRolagem } from "@/components/tayssa/ui/rolagem";
-import { estiloFoco, type FotoServico } from "@/lib/tayssa/catalogo";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 /**
- * Um serviço da seção. `frase` é a linha curta que vai no corpo grande (das
- * palavras da Tayssa; `*assim*` é a palavra em destaque, que vira itálico);
- * `texto` é a explicação, na coluna que corre. Sem texto no formulário dela
- * (volume egípcio e marrom), o serviço entra só com o nome e a foto.
+ * Um serviço da apresentação. `frase` é a diferença em poucas palavras, no
+ * corpo grande (das palavras da Tayssa; `*assim*` é a palavra em destaque,
+ * que vira itálico); `texto` é o jeito dela de fazer, na coluna que corre.
+ * Sem texto no formulário dela (volume egípcio e marrom), o serviço entra
+ * só com o nome.
  */
 export type ItemTrabalho = {
   slug: string;
   nome: string;
   frase: string | null;
   texto: string | null;
-  foto: FotoServico | null;
 };
 
 const dois = (n: number) => String(n).padStart(2, "0");
@@ -30,18 +28,18 @@ function comEnfase(frase: string): ReactNode[] {
 }
 
 /**
- * Trabalho: todos os serviços da casa como peça editorial (eram três
- * técnicas; a dona pediu todos, no computador e no celular, 29/10/2026).
+ * A apresentação das técnicas: todos os serviços da casa, para a cliente
+ * conhecer as opções e a diferença entre elas. Só apresenta: valor, tempo e
+ * fotos de cada técnica ficam na lista de serviços, e cada item leva até lá
+ * (pedido da Tayssa, 30/10/2026: a técnica não se explica duas vezes).
  *
  * No desktop a coluna da esquerda fica grudada: nome do serviço em corpo
  * grande, a frase com a palavra em itálico, o contador e o índice em mono
- * que acende no serviço ativo. A coluna da direita corre com a explicação
- * de cada um; quem cruza o meio da tela vira o ativo. No celular a mesma
+ * que acende no serviço ativo. A coluna da direita corre com o jeito dela de
+ * fazer cada um; quem cruza o meio da tela vira o ativo. No celular a mesma
  * matéria vira pilha, cada serviço com o seu nome grande — sem coluna
- * grudada, que no toque só atrapalha.
- *
- * A seção se sustenta em tipografia, régua e bloco chapado: sem foto ela
- * está completa. Com foto, ela entra chapada na coluna que corre.
+ * grudada, que no toque só atrapalha. Sem foto: as fotos moram na galeria
+ * de cada serviço, logo abaixo.
  */
 export function WorkSequence({ servicos }: { servicos: ItemTrabalho[] }) {
   const reduced = useReducedMotion();
@@ -169,7 +167,6 @@ export function WorkSequence({ servicos }: { servicos: ItemTrabalho[] }) {
           <div className="tyw__corre">
             <ol className="tyw__corrida" ref={corridaRef}>
               {servicos.map((t, i) => {
-                const foto = t.foto;
                 return (
                   <motion.li
                     key={t.slug}
@@ -205,23 +202,10 @@ export function WorkSequence({ servicos }: { servicos: ItemTrabalho[] }) {
 
                     {t.texto ? <p className="ty-body ty-measure tyw__texto">{t.texto}</p> : null}
 
-                    {/* foto é bônus: entra chapada, sem moldura, só se existir.
-                        É a foto do próprio serviço (nunca a de outro) */}
-                    {foto ? (
-                      <figure className="tyw__figura">
-                        <div className="ty-figure">
-                          <div className="ty-photo" style={{ aspectRatio: 4 / 5 }}>
-                            <Image
-                              src={foto.url}
-                              alt={foto.alt}
-                              fill
-                              sizes="(max-width: 899px) 100vw, 42vw"
-                              style={estiloFoco(foto.foco)}
-                            />
-                          </div>
-                        </div>
-                      </figure>
-                    ) : null}
+                    {/* valor, tempo e fotos da técnica: na lista de serviços, logo abaixo */}
+                    <a href={`#servico-${t.slug}`} className="ty-link ty-link--caps tyw__ver">
+                      Valor e fotos
+                    </a>
                   </motion.li>
                 );
               })}

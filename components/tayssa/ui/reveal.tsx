@@ -15,10 +15,13 @@ export function Reveal({
   once = true,
   amount = 0.12,
   as = "div",
+  id,
 }: {
   children: ReactNode;
   delay?: number;
   y?: number;
+  /** âncora (um link pode levar até este bloco) */
+  id?: string;
   className?: string;
   style?: CSSProperties;
   once?: boolean;
@@ -30,6 +33,7 @@ export function Reveal({
   return (
     <Tag
       data-reveal=""
+      id={id}
       className={className}
       style={style}
       initial={reduced ? false : { opacity: 0, y }}

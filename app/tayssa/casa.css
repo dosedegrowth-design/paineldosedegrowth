@@ -404,14 +404,45 @@
   border-bottom: 1px solid var(--t-line);
 }
 
-/* ---------- serviços: ficha de duração/valor ---------- */
+/* ---------- serviços: as informações práticas, lado a lado ----------
+   valor da aplicação, tempo e manutenção: rótulo pequeno em cima, número
+   grande embaixo, para a cliente achar sem ler parágrafo */
 .tysv__ficha {
-  margin-top: 10px;
-  color: var(--t-accent);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px clamp(22px, 2.6vw, 34px);
+  margin: 16px 0 0;
 }
-.tysv__dif {
-  margin-top: 8px;
+.tysv__ficha > div {
+  display: grid;
+  gap: 4px;
 }
-.tysv__pendente {
-  margin-top: clamp(24px, 3vw, 40px);
+.tysv__ficha dt {
+  font-family: var(--t-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--t-fg-2);
+}
+.tysv__ficha dd {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  color: var(--t-fg);
+}
+/* a galeria de cada serviço: o contador em cima e fotos maiores que o rolo
+   pequeno, para ver o acabamento e comparar */
+.tysv__galeria {
+  margin: 0;
+  padding-top: clamp(18px, 2vw, 26px);
+  color: var(--t-fg-2);
+}
+.tysv__rolo .ty-rolo--mini .ty-rolo__flutua {
+  width: clamp(150px, 40vw, 210px);
+}
+/* com uma foto só, ela fica parada no meio */
+.ty-rolo__trilho[data-unica] {
+  margin-inline: auto;
 }

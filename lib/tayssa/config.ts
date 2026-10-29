@@ -89,6 +89,13 @@ export type BusinessSettings = {
   instagram_handle: string;
 };
 
+/**
+ * O que o VIP dá além do presente de aniversário (regra da Tayssa,
+ * 29/10/2026), em minúscula para entrar no meio da frase. No painel, os
+ * pedidos de horário de quem é VIP vêm primeiro (`vipPrimeiro`).
+ */
+export const PRIORIDADE_VIP = "prioridade na agenda, principalmente em dezembro";
+
 export type RulesSettings = {
   /** Meta de pontos para o VIP (junto com os meses seguidos; a Tayssa confirma). */
   vip_pontos: number;

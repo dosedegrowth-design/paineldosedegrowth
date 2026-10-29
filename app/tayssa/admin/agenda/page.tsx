@@ -108,6 +108,7 @@ function Slot({
           ) : (
             <span className="tya-slot__name">Cliente</span>
           )}
+          {a.vip ? <span className="tya-pill tya-pill--gold">VIP</span> : null}
           <Selo status={a.status} />
         </div>
         <p className="tya-slot__meta">
@@ -234,7 +235,13 @@ export default async function AgendaAdminPage() {
       <AdminBlock
         id="pedidos"
         title="Pedidos de horário"
-        aside={agenda.requested.length ? <span className="tya-pill tya-pill--warn">{agenda.requested.length} aguardando</span> : null}
+        aside={
+          agenda.requested.length ? (
+            <span className="tya-pill tya-pill--warn">
+              {agenda.requested.length} aguardando{agenda.requested.some((a) => a.vip) ? " · VIP primeiro" : ""}
+            </span>
+          ) : null
+        }
       >
         {agenda.requested.length ? (
           <ul className="tya-list">

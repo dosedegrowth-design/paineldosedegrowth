@@ -1,3 +1,4 @@
+import { ROUTES } from "@/lib/tayssa/config";
 import type { ReactNode } from "react";
 import { requireAdminPage } from "@/lib/tayssa/auth/guards";
 import { getSettings } from "@/lib/tayssa/settings";
@@ -211,6 +212,13 @@ export default async function SettingsAdminPage() {
               {marcos.length ? " · " : ""}VIP: {criterioLegivel(settings.rules.vip_pontos, settings.rules.vip_meses)}, com a
               sua confirmação. <a href="#servicos" className="tya-link">Pontos</a> ·{" "}
               <a href="#beneficios" className="tya-link">Marcos</a> · <a href="#regras" className="tya-link">VIP</a>
+            </p>
+          </li>
+          <li>
+            <p>
+              <b>Prioridade na agenda, só VIP.</b> Os pedidos de horário de quem é VIP aparecem primeiro em Agenda,
+              com o selo VIP. Vale o ano todo e pesa mais em dezembro, quando a agenda enche.{" "}
+              <a href={`${ROUTES.adminAgenda}#pedidos`} className="tya-link">Agenda</a>
             </p>
           </li>
           <li>

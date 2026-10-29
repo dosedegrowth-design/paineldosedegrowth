@@ -16,16 +16,14 @@ export type ServicoDetalhe = {
   duracao?: string;
   /** só se ela quiser divulgar; senão fica "valor no WhatsApp" */
   preco?: string;
-  /** o que diferencia o atendimento dela neste serviço */
-  diferencial?: string;
   /** para quem é / quando indicar */
   indicacao?: string;
   /**
-   * a frase curta da seção "Trabalho", tirada das palavras dela;
-   * `*assim*` é a palavra em destaque
+   * apresentação das técnicas: a diferença em poucas palavras, das palavras
+   * dela; `*assim*` é a palavra em destaque
    */
   frase?: string;
-  /** a explicação na seção "Trabalho" (sem ela, vale o diferencial ou a descrição do serviço) */
+  /** apresentação das técnicas: o jeito dela de fazer (nunca repete a descrição da lista) */
   texto?: string;
 };
 
@@ -234,57 +232,56 @@ export const CONTEUDO: ConteudoSite = {
   ],
   instagram: [],
   // o que a Tayssa escreveu no formulário (28/10/2026), sem os erros do ditado
-  // `frase`: a linha curta da seção "Trabalho", das palavras dela no
-  // formulário ("Um olhar preenchido e elegante" → "Preenchido e elegante").
-  // Volume egípcio e marrom ficaram sem texto no formulário: entram só com o
-  // nome e a foto, nada inventado
+  // Cada técnica aparece em dois lugares, cada um com uma função (pedido da
+  // Tayssa, 30/10/2026: "menos repetição"):
+  // - apresentação ("Cada serviço, um olhar"): `frase` (a diferença, em
+  //   poucas palavras) e `texto` (o jeito dela de fazer), das palavras dela;
+  // - lista de serviços: a descrição curta do serviço (no banco), valor,
+  //   tempo e manutenção, e a galeria de fotos.
+  // `texto` nunca repete a descrição da lista. Volume egípcio e marrom ainda
+  // não têm texto no formulário: entram só com o nome, nada inventado.
   servicos: {
     "volume-brasileiro": {
       frase: "Definido e *expressivo*.",
     },
     "volume-ingles": {
       frase: "Preenchido e *elegante*.",
-      texto:
-        "Um olhar com definição na medida. A prioridade é preencher 100% dos seus fios; se você preferir um efeito mais leve, ela ajusta com você.",
+      texto: "A prioridade é preencher 100% dos seus fios; se você preferir um efeito mais leve, ela ajusta com você.",
     },
     "volume-fox-eyes": {
       frase: "Alongado e *marcante*.",
       texto:
-        "Os comprimentos são distribuídos para alongar o olhar e valorizar o canto externo dos olhos. O mapeamento segue o formato dos seus olhos e o efeito que você quer, sem perder a harmonia.",
-      diferencial:
         "Os comprimentos são distribuídos para alongar o olhar. O mapeamento segue o formato dos seus olhos e o efeito que você quer, sem perder a harmonia.",
     },
     "manutencao-cilios": {
       frase: "O cuidado que *mantém* o resultado.",
-      texto:
-        "Entre 15 e 20 dias, no ritmo do crescimento dos seus fios: sai o que cresceu, entra o que caiu, o desenho volta ao lugar. Se sobrar pouca extensão, o caminho é uma nova aplicação.",
     },
     "lash-lifting": {
       frase: "Curvatura e *destaque*, sem extensão.",
-      diferencial:
-        "Curva e modela os seus próprios fios para realçar o olhar. Antes, uma avaliação confere se o comprimento e a quantidade de cílios são adequados.",
+      texto:
+        "O resultado aproveita os seus próprios fios. Antes, uma avaliação confere se o comprimento e a quantidade dos seus cílios são adequados.",
     },
     "remocao-extensao": {
       frase: "Renovar o visual com *segurança*.",
-      diferencial: "Produtos próprios dissolvem a cola e soltam os fios, com cuidado para evitar puxões e poupar os seus cílios naturais.",
+      texto: "Produtos próprios dissolvem a cola e soltam os fios, com cuidado para evitar puxões e poupar os seus cílios naturais.",
     },
     "brow-lamination": {
       frase: "Alinhadas, definidas e *naturais*.",
-      diferencial:
+      texto:
         "Produtos específicos remodelam por um tempo a direção dos fios. O resultado se adapta ao formato do rosto e ao efeito desejado, respeitando cada sobrancelha.",
     },
     "design-sobrancelhas": {
       frase: "Para valorizar os seus *traços*.",
-      diferencial:
+      texto:
         "A remoção dos pelos é estratégica e o desenho é personalizado: formato do rosto, crescimento dos fios e o que você prefere, sem molde único.",
     },
     hidragloss: {
       frase: "Hidratação e *brilho*.",
-      diferencial: "Um protocolo de hidratação labial que inclui microagulhamento. O foco é a hidratação e o aspecto dos lábios, não o preenchimento.",
+      texto: "Um protocolo de hidratação labial que inclui microagulhamento.",
     },
     "lip-spa": {
       frase: "Um momento de *cuidado*.",
-      diferencial: "Etapas de preparação e hidratação, com atenção ao conforto e ao que os seus lábios precisam.",
+      texto: "Etapas de preparação e hidratação, com atenção ao conforto e ao que os seus lábios precisam.",
     },
   },
 };

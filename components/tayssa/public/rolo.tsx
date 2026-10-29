@@ -36,12 +36,14 @@ export function Rolo({
   // 46 fotos de cílios eram 92 cartões animados e o celular perdia quadros.
   // Tocar abre o visor com a fila inteira.
   const mostrados = itens.slice(0, AMOSTRA[tamanho]);
+  // uma mídia só fica parada: repetida, a mesma foto passaria oito vezes
+  const unica = mostrados.length === 1;
   // o laço precisa de largura: repete até ter cartões suficientes, e dobra
   // a fila inteira para a emenda nunca aparecer
-  const minimo = tamanho === "mini" ? 8 : 7;
+  const minimo = unica ? 1 : tamanho === "mini" ? 8 : 7;
   const base: MidiaCatalogo[] = [];
   while (base.length < minimo) base.push(...mostrados);
-  const fila = [...base, ...base];
+  const fila = unica ? base : [...base, ...base];
   const segundos = base.length * (tamanho === "mini" ? 3.2 : 4.6);
 
   return (
@@ -49,7 +51,8 @@ export function Rolo({
       <div
         className="ty-rolo__trilho"
         data-janela
-        data-parado={reduced ? "true" : "false"}
+        data-unica={unica || undefined}
+        data-parado={reduced || unica ? "true" : "false"}
         style={{ "--dur": `${segundos}s`, "--dir": sentido === 1 ? "normal" : "reverse" } as CSSProperties}
       >
         {fila.map((m, i) => {

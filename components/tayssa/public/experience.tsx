@@ -25,7 +25,7 @@ import { Testimonials } from "@/components/tayssa/public/testimonials";
 import { VisitInfo } from "@/components/tayssa/public/visit-info";
 import { Catalogo } from "@/components/tayssa/public/catalogo";
 import { SemQuebrar } from "@/components/tayssa/ui/sem-quebrar";
-import { fotoDoTrabalho, type CapaServico, type CategoriaCatalogo, type MidiaCatalogo } from "@/lib/tayssa/catalogo";
+import type { CapaServico, CategoriaCatalogo, MidiaCatalogo } from "@/lib/tayssa/catalogo";
 import { completarComFotos, type ItemPortfolio } from "@/lib/tayssa/portfolio";
 import { CONTEUDO, temAtendimento, temSobre } from "@/lib/tayssa/content";
 import type { VideoAvailability } from "@/lib/tayssa/media-server";
@@ -95,8 +95,8 @@ export function PublicExperience({
     ...(photos?.work ?? []).filter((f): f is NonNullable<typeof f> => Boolean(f)),
     ...Object.values(photos?.byService ?? {}),
   ].filter((f, i, todas) => todas.findIndex((g) => g.src === f.src) === i);
-  // a seção "Trabalho" com todos os serviços: a frase e o texto das palavras
-  // dela (content.ts), senão a descrição do serviço; a foto é do próprio serviço
+  // a apresentação das técnicas: a frase e o jeito dela de fazer (content.ts).
+  // Valor, tempo e fotos ficam na lista de serviços, sem se repetir aqui
   const trabalho: ItemTrabalho[] = services
     .filter((s) => s.slug !== "outro")
     .map((s) => {
@@ -105,8 +105,7 @@ export function PublicExperience({
         slug: s.slug,
         nome: s.name,
         frase: d?.frase ?? null,
-        texto: d?.texto ?? d?.diferencial ?? (s.description?.trim() || null),
-        foto: fotoDoTrabalho(rolos[s.slug] ?? [], capas[s.slug] ?? null),
+        texto: d?.texto ?? null,
       };
     });
   // o menu só aponta para seção que está na página
@@ -132,18 +131,20 @@ export function PublicExperience({
           </SemQuebrar>
           <WorkSequence servicos={trabalho} />
           <Film video={videos?.processo} />
-          <SemQuebrar onde="catalogo">
-            <Catalogo catalogo={catalogo} />
-          </SemQuebrar>
+          {/* a sequência que a Tayssa pediu (30/10/2026): a cliente entende o
+              efeito (apresentação, acima), vê as informações práticas e a
+              galeria de cada técnica (serviços) e depois explora tudo (catálogo) */}
           <SemQuebrar onde="lista de servicos">
             <Services
               services={services}
               scheduleUrl={links.schedule}
               capas={capas}
               rolos={rolos}
-              detalhes={CONTEUDO.servicos}
               ambiente={colagem[1] ?? colagem[0]}
             />
+          </SemQuebrar>
+          <SemQuebrar onde="catalogo">
+            <Catalogo catalogo={catalogo} />
           </SemQuebrar>
           <About business={settings.business} conteudo={CONTEUDO} portrait={photos?.portrait} instagramUrl={links.instagram} />
           <Studio conteudo={CONTEUDO} video={videos?.espaco} photo={photos?.studio} />

@@ -210,32 +210,6 @@ export function capasDosServicos(
 }
 
 /**
- * O carrossel que passa embaixo da capa: as outras fotos do serviço (a capa
- * não se repete logo abaixo dela). Com menos de duas além da capa, vão todas
- * juntas; com uma foto só (ou nenhuma), não há carrossel.
- */
-export function roloAbaixoDaCapa(rolo: MidiaCatalogo[], capa: CapaServico | null): MidiaCatalogo[] {
-  const resto = capa ? rolo.filter((m) => m.id !== capa.id) : rolo;
-  if (resto.length >= 2) return resto;
-  return rolo.length >= 2 ? rolo : [];
-}
-
-/** Uma foto pronta para mostrar: endereço, texto alternativo e enquadramento. */
-export type FotoServico = { id: string; url: string; alt: string; foco: { x: number; y: number; zoom: number } };
-
-/**
- * A foto de cada serviço na seção "Trabalho": a primeira foto do serviço
- * depois da capa (a capa já aparece grande na lista de serviços, logo
- * abaixo, e a mesma foto duas vezes seguidas cansa); com uma foto só, a
- * capa. Vídeo não entra; serviço sem foto fica sem foto.
- */
-export function fotoDoTrabalho(rolo: MidiaCatalogo[], capa: CapaServico | null): FotoServico | null {
-  const outra = rolo.find((m) => m.tipo === "image" && m.id !== capa?.id);
-  if (outra) return { id: outra.id, url: outra.url, alt: outra.alt, foco: outra.foco };
-  return capa ? { id: capa.id, url: capa.url, alt: capa.alt, foco: capa.foco } : null;
-}
-
-/**
  * Tudo do serviço com a capa na frente: é o que passa dentro do cartão do
  * carrossel de cima (só as fotos) e o que o visor abre ao tocar nele. A
  * capa vem com o enquadramento dela; se a Tayssa escolheu uma foto que não

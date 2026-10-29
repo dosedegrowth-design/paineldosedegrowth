@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ROUTES } from "@/lib/tayssa/config";
+import { PRIORIDADE_VIP, ROUTES } from "@/lib/tayssa/config";
 import { criterioLegivel, faltaLegivel, numero, plural } from "@/lib/tayssa/format";
 import type { LoyaltyProgress, ProgressoVip } from "@/lib/tayssa/rules";
 import type { ServiceRow } from "@/lib/tayssa/types";
@@ -39,7 +39,7 @@ export function passosDoCaminho(loyalty: LoyaltyProgress, vip: ProgressoVip, ehV
   const final = {
     chave: "vip",
     titulo: "VIP",
-    descricao: null,
+    descricao: `O presente de aniversário e ${PRIORIDADE_VIP}.`,
     criterio: criterioLegivel(vip.criterios.pontos, vip.criterios.meses),
     feito: ehVip,
     nota: ehVip

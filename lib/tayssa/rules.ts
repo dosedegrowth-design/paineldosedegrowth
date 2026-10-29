@@ -172,6 +172,16 @@ export function progressoVip(pontos: number, meses: number, criterios: Criterios
   };
 }
 
+/**
+ * Quem é VIP tem prioridade na agenda, principalmente em dezembro (regra
+ * da Tayssa, 29/10/2026). No painel, os pedidos de horário das VIPs vêm
+ * primeiro; dentro de cada grupo, do mais próximo ao mais distante.
+ */
+export function vipPrimeiro<T extends { vip: boolean; scheduled_date: string; scheduled_time: string }>(pedidos: T[]): T[] {
+  const quando = (p: T) => `${p.scheduled_date} ${p.scheduled_time}`;
+  return [...pedidos].sort((a, b) => Number(b.vip) - Number(a.vip) || quando(a).localeCompare(quando(b)));
+}
+
 // ------------------------------------------------------------
 // Indicação (ciclos de N indicações confirmadas)
 // ------------------------------------------------------------

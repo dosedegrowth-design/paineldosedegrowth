@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { ROUTES, type Settings } from "@/lib/tayssa/config";
+import { PRIORIDADE_VIP, ROUTES, type Settings } from "@/lib/tayssa/config";
 import type { BenefitRow, BenefitType } from "@/lib/tayssa/types";
 import { criterioLegivel, numero } from "@/lib/tayssa/format";
 import { mesesDoMarco } from "@/lib/tayssa/rules";
@@ -196,7 +196,7 @@ export function VipIntro({ benefits, settings }: { benefits: BenefitRow[]; setti
             {
               n: "03",
               nome: "Você é VIP",
-              texto: `Ao chegar a ${numero(settings.rules.vip_pontos)} pontos, com ${settings.rules.vip_meses} meses seguidos de atendimento, a Tayssa confirma o seu VIP. O aniversário entra junto.`,
+              texto: `Ao chegar a ${numero(settings.rules.vip_pontos)} pontos, com ${settings.rules.vip_meses} meses seguidos de atendimento, a Tayssa confirma o seu VIP. Entram o presente de aniversário e a ${PRIORIDADE_VIP}.`,
               icone: "check",
             },
           ]}

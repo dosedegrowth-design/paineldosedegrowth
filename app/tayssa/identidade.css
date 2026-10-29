@@ -2384,18 +2384,6 @@ html:has(.ty-scope) {
 }
 
 /* valores que a Tayssa cadastrou (só aparecem quando existem) */
-.ty-scope .tysv__preco {
-  display: block;
-  margin-top: 6px;
-  font-size: 0.5em;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  color: var(--t-rosa-texto, #9c3a59);
-  text-shadow: none;
-}
-.ty-scope .ty-night .tysv__preco {
-  color: #f7c1d1;
-}
 .ty-scope .tyct__preco {
   margin-left: 4px;
   font-size: 0.86em;
