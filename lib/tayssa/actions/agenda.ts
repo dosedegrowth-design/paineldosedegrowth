@@ -9,7 +9,7 @@ import { ROUTES } from "@/lib/tayssa/config";
 import { getSettings } from "@/lib/tayssa/settings";
 import { getAgendaPublica } from "@/lib/tayssa/queries/vip";
 import { isoDateField } from "@/lib/tayssa/validation";
-import { toISODate } from "@/lib/tayssa/rules";
+import { horariosDoDia, toISODate } from "@/lib/tayssa/rules";
 import { nowInBusinessTz } from "@/lib/tayssa/format";
 import { BusinessError, runAction } from "@/lib/tayssa/actions/_helpers";
 import type { ActionResult } from "@/lib/tayssa/types";
@@ -33,15 +33,16 @@ function revalidar() {
   revalidatePath(ROUTES.home);
 }
 
-/** Dia que ainda dá para mexer: hoje em diante, aberto na grade da casa. */
-async function validarDia(dia: string) {
+/** Dia que ainda dá para mexer: hoje em diante, aberto na grade da casa. Devolve a grade dele. */
+async function validarDia(dia: string): Promise<string[]> {
   const b = (await getSettings()).booking;
   if (dia < toISODate(nowInBusinessTz())) throw new BusinessError("Esse dia já passou.");
   const [a, m, d] = dia.split("-").map(Number);
-  if (!b.weekdays.includes(new Date(a, m - 1, d).getDay())) {
+  const semana = new Date(a, m - 1, d).getDay();
+  if (!b.weekdays.includes(semana)) {
     throw new BusinessError("Esse dia é folga na agenda. Para abrir, mude os dias em Configurações → Agenda.");
   }
-  return b;
+  return horariosDoDia(b, semana);
 }
 
 /**
@@ -52,8 +53,8 @@ export async function adminAlternarHorarioAction(input: { dia: string; hora: str
   return runAction("agenda.horario", async () => {
     const admin = await assertAdmin();
     const p = horarioSchema.parse(input);
-    const b = await validarDia(p.dia);
-    if (!b.slots.includes(p.hora)) throw new BusinessError("Esse horário não faz parte da grade da agenda.");
+    const grade = await validarDia(p.dia);
+    if (!grade.includes(p.hora)) throw new BusinessError("Esse horário não faz parte da grade da agenda.");
     const db = vipDb();
     const { error } = p.fechar
       ? await db.from("agenda_bloqueios").upsert({ dia: p.dia, hora: p.hora, created_by: admin.id }, { onConflict: "dia,hora" })
@@ -76,12 +77,12 @@ export async function adminAlternarDiaAction(input: { dia: string; fechar: boole
   return runAction("agenda.dia", async () => {
     const admin = await assertAdmin();
     const p = diaSchema.parse(input);
-    const b = await validarDia(p.dia);
+    const grade = await validarDia(p.dia);
     const db = vipDb();
     const { error } = p.fechar
       ? await db
           .from("agenda_bloqueios")
-          .upsert(b.slots.map((hora) => ({ dia: p.dia, hora, created_by: admin.id })), { onConflict: "dia,hora" })
+          .upsert(grade.map((hora) => ({ dia: p.dia, hora, created_by: admin.id })), { onConflict: "dia,hora" })
       : await db.from("agenda_bloqueios").delete().eq("dia", p.dia);
     if (error) throw new Error(error.message);
     await logAudit({

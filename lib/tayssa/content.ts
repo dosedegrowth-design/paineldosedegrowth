@@ -79,16 +79,56 @@ export type ConteudoSite = {
 
 export const CONTEUDO: ConteudoSite = {
   sobre: { bio: null, formacao: null, assinatura: null },
-  espaco: { descricao: null, endereco: null, mapaUrl: null },
-  atendimento: { horarios: null, comoAgendar: null, politica: null, pagamento: null },
+  // ela quer mostrar só o bairro
+  espaco: { descricao: null, endereco: "Pirituba, São Paulo", mapaUrl: null },
+  atendimento: {
+    // os horários saem da agenda (Configurações → Agenda): mudou lá, muda aqui
+    horarios: null,
+    // o sinal e a antecedência também vêm da agenda (visit-info.tsx)
+    comoAgendar: ["Escolha o serviço, o dia e o horário aqui no site. O pedido chega pronto no WhatsApp da Tayssa."],
+    politica: [
+      "10 minutos de tolerância para atraso.",
+      "Remarcando com 48 horas de antecedência ou mais, o sinal vale para a nova data.",
+      "Com menos de 48 horas, ou se você não vier, o sinal não é devolvido.",
+    ],
+    pagamento: ["Pix", "Cartão de crédito", "Cartão de débito", "Dinheiro"],
+  },
   depoimentos: [],
   instagram: [],
-  servicos: {},
+  // o que a Tayssa escreveu no formulário (28/10/2026), sem os erros do ditado
+  servicos: {
+    "volume-fox-eyes": {
+      diferencial:
+        "Os comprimentos são distribuídos para alongar o olhar. O mapeamento segue o formato dos seus olhos e o efeito que você quer, sem perder a harmonia.",
+    },
+    "lash-lifting": {
+      diferencial:
+        "Curva e modela os seus próprios fios para realçar o olhar. Antes, uma avaliação confere se o comprimento e a quantidade de cílios são adequados.",
+    },
+    "remocao-extensao": {
+      diferencial: "Produtos próprios dissolvem a cola e soltam os fios, com cuidado para evitar puxões e poupar os seus cílios naturais.",
+    },
+    "brow-lamination": {
+      diferencial:
+        "Produtos específicos remodelam por um tempo a direção dos fios. O resultado se adapta ao formato do rosto e ao efeito desejado, respeitando cada sobrancelha.",
+    },
+    "design-sobrancelhas": {
+      diferencial:
+        "A remoção dos pelos é estratégica e o desenho é personalizado: formato do rosto, crescimento dos fios e o que você prefere, sem molde único.",
+    },
+    hidragloss: {
+      diferencial: "Um protocolo de hidratação labial que inclui microagulhamento. O foco é a hidratação e o aspecto dos lábios, não o preenchimento.",
+    },
+    "lip-spa": {
+      diferencial: "Etapas de preparação e hidratação, com atenção ao conforto e ao que os seus lábios precisam.",
+    },
+  },
 };
 
 /** A seção tem algo real para mostrar no site publicado? */
 export const temSobre = (c: ConteudoSite) => Boolean(c.sobre.bio?.length);
-export const temEspaco = (c: ConteudoSite) => Boolean(c.espaco.descricao || c.espaco.endereco);
+/** o estúdio abre com a descrição dela (ou foto e vídeo do lugar); o bairro sozinho vai no Atendimento */
+export const temEspaco = (c: ConteudoSite) => Boolean(c.espaco.descricao);
 export const temAtendimento = (c: ConteudoSite) =>
   Boolean(c.atendimento.horarios?.length || c.atendimento.comoAgendar?.length || c.espaco.endereco);
 export const temDepoimentos = (c: ConteudoSite) => c.depoimentos.length > 0;

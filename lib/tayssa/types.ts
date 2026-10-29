@@ -68,6 +68,10 @@ export type ServiceRow = {
   sort_order: number;
   /** valor que a Tayssa quer mostrar (vazio = não mostra) */
   preco?: number | null;
+  /** minutos que ocupa na agenda (vazio = duração padrão da agenda) */
+  duration_min?: number | null;
+  /** valor da manutenção deste volume (vazio = sem manutenção própria) */
+  preco_manutencao?: number | null;
 };
 
 export type ClientServiceRow = {

@@ -2,6 +2,7 @@ import "server-only";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { vipDb } from "@/lib/tayssa/db";
 import { getSettings } from "@/lib/tayssa/settings";
+import { horariosDaSemana } from "@/lib/tayssa/agendar";
 import type { ArquivoBriefing, Respostas, SecaoId, TipoArquivo } from "@/lib/tayssa/briefing";
 
 /**
@@ -110,7 +111,9 @@ export async function getBriefing(): Promise<BriefingCompleto> {
     },
     atendimento: {
       dias: booking.weekdays,
-      horarios: booking.slots.join(", "),
+      horarios: horariosDaSemana(booking)
+        .map((g) => `${g.dias}: ${g.horas}`)
+        .join("; "),
       antecedencia: `${booking.lead_hours} horas`,
       sinal: booking.deposit_reais ? String(booking.deposit_reais) : "",
       pix: "",

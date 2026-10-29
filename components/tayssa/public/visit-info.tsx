@@ -1,9 +1,10 @@
 "use client";
 
-import type { BusinessSettings } from "@/lib/tayssa/config";
+import type { BookingSettings, BusinessSettings } from "@/lib/tayssa/config";
 import type { ConteudoSite } from "@/lib/tayssa/content";
 import { temAtendimento } from "@/lib/tayssa/content";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
+import { horariosDaSemana, reais } from "@/lib/tayssa/agendar";
 import { Reveal } from "@/components/tayssa/ui/reveal";
 import { Pendente, useEstrutura } from "@/components/tayssa/ui/estrutura";
 
@@ -17,14 +18,35 @@ function fone(digitos: string): string {
 /**
  * Atendimento — as informações práticas: horários, como agendar,
  * política, pagamento, onde e o contato. O contato (WhatsApp e
- * Instagram) é real e vem das configurações; o resto vem do manifesto
- * de conteúdo e só aparece quando ela informar. Sem nada além do
- * contato, a seção fica de fora (o rodapé já leva o contato).
+ * Instagram), os horários, o sinal e a antecedência são reais e vêm das
+ * configurações (mudou lá, muda aqui); o resto vem do manifesto de
+ * conteúdo e só aparece quando ela informar. Sem nada além do contato,
+ * a seção fica de fora (o rodapé já leva o contato).
  */
-export function VisitInfo({ business, conteudo }: { business: BusinessSettings; conteudo: ConteudoSite }) {
+export function VisitInfo({
+  business,
+  booking,
+  conteudo,
+}: {
+  business: BusinessSettings;
+  booking: BookingSettings;
+  conteudo: ConteudoSite;
+}) {
   const estrutura = useEstrutura();
   if (!temAtendimento(conteudo) && !estrutura) return null;
-  const { horarios, comoAgendar, politica, pagamento } = conteudo.atendimento;
+  const { politica, pagamento } = conteudo.atendimento;
+  const horarios = conteudo.atendimento.horarios ?? horariosDaSemana(booking);
+  // o que ela escreveu e, da agenda, o sinal e a antecedência
+  const comoAgendar = conteudo.atendimento.comoAgendar
+    ? [
+        ...conteudo.atendimento.comoAgendar,
+        // "R$" e o número nunca em linhas separadas
+        ...(booking.deposit_reais > 0
+          ? [`O horário fica garantido com o sinal de ${reais(booking.deposit_reais).replace(" ", "\u00a0")} no Pix.`]
+          : []),
+        ...(booking.lead_hours > 0 ? [`Marque com pelo menos ${booking.lead_hours} ${booking.lead_hours === 1 ? "hora" : "horas"} de antecedência.`] : []),
+      ]
+    : null;
 
   return (
     <section id="atendimento" className="ty-section tyat" aria-label="Atendimento">

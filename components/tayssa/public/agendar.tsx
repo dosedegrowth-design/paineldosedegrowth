@@ -17,31 +17,34 @@ import {
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { agendaPublicaAction } from "@/lib/tayssa/actions/agenda";
 import {
+  cabeNoHorario,
   diasAbertos,
+  duracaoLegivel,
   horaLegivel,
   mensagemAgendamento,
   partesDoDia,
   reais,
   diaLegivel,
+  valorLegivel,
   type DiaAgenda,
 } from "@/lib/tayssa/agendar";
 
 export type ServicoAgenda = {
   slug: string;
   nome: string;
-  /** cílios: pergunta o volume/técnica */
-  tecnicas: boolean;
-  /** manutenção pergunta "de qual volume", aplicação "qual volume" */
+  /** manutenção pergunta de qual volume é (e o valor vem dele) */
   manutencao: boolean;
   /** valor cadastrado pela Tayssa (vazio = não mostra) */
   preco?: number | null;
+  /** minutos que ocupa na agenda: só aparece o horário em que ele cabe inteiro */
+  duracao?: number | null;
 };
 
 export type AgendaSite = {
   telefone: string;
   servicos: ServicoAgenda[];
-  /** volumes e técnicas de cílios publicados no catálogo, com o valor se houver */
-  tecnicas: { nome: string; preco: number | null }[];
+  /** os volumes de cílios com o valor da manutenção de cada um */
+  volumes: { nome: string; manutencao: number | null }[];
   dias: DiaAgenda[];
   sinal: number;
 };
@@ -135,7 +138,6 @@ function FolhaAgendar({
   // alguém marcou (ou a Tayssa fechou) depois do carregamento já aparece riscado
   const [fresca, setFresca] = useState<DiaAgenda[] | null>(null);
   const dias = fresca ?? agenda.dias;
-  const temLivre = useMemo(() => new Set(diasAbertos(dias).map((d) => d.iso)), [dias]);
   const semServicos = agenda.servicos.length === 0;
 
   const [servico, setServico] = useState<string | null>(null);
@@ -144,14 +146,27 @@ function FolhaAgendar({
   const [hora, setHora] = useState<string | null>(null);
   const [nome, setNome] = useState("");
 
+  /** troca de serviço: o dia e a hora que não comportam o tempo dele saem */
+  const escolherServico = (slug: string) => {
+    setServico(slug);
+    setTecnica(null);
+    const novo = agenda.servicos.find((s) => s.slug === slug)?.duracao ?? null;
+    const d = dias.find((x) => x.iso === dia);
+    if (!d || !d.slots.some((s) => cabeNoHorario(s, novo))) {
+      setDia(null);
+      setHora(null);
+    } else if (!d.slots.some((s) => s.time === hora && cabeNoHorario(s, novo))) {
+      setHora(null);
+    }
+  };
+
   // pedido novo: marca o serviço do botão que abriu e lembra o nome de antes
   // (ajuste de estado no render, sem efeito — padrão do React)
   const [atendido, setAtendido] = useState(0);
   if (pedido.n !== atendido) {
     setAtendido(pedido.n);
     if (pedido.servico && agenda.servicos.some((s) => s.slug === pedido.servico)) {
-      setServico(pedido.servico);
-      setTecnica(null);
+      escolherServico(pedido.servico);
     }
     if (!nome) {
       try {
@@ -162,7 +177,10 @@ function FolhaAgendar({
   }
 
   const escolhido = agenda.servicos.find((s) => s.slug === servico) ?? null;
-  const perguntaTecnica = Boolean(escolhido?.tecnicas && agenda.tecnicas.length);
+  const perguntaTecnica = Boolean(escolhido?.manutencao && agenda.volumes.length);
+  // o serviço precisa caber inteiro: o volume de 3h não aparece às 10h se às 11h já tem alguém
+  const duracao = escolhido?.duracao ?? null;
+  const temLivre = new Set(diasAbertos(dias, duracao).map((d) => d.iso));
   const diaEscolhido = dias.find((d) => d.iso === dia) ?? null;
 
   // abre/fecha o <dialog> nativo (foco preso, Esc, fundo inerte de graça)
@@ -214,7 +232,8 @@ function FolhaAgendar({
   };
 
   // o horário escolhido pode ter sido tomado entre um carregamento e outro
-  const horaLivre = Boolean(diaEscolhido?.slots.some((s) => s.time === hora && s.available));
+  // (ou não ter tempo para o serviço que ela trocou depois)
+  const horaLivre = Boolean(diaEscolhido?.slots.some((s) => s.time === hora && cabeNoHorario(s, duracao)));
   const completo = Boolean(
     (escolhido || semServicos) && dia && horaLivre && nome.trim() && (!perguntaTecnica || tecnica),
   );
@@ -225,8 +244,9 @@ function FolhaAgendar({
         dia: dia!,
         hora: hora!,
         nome,
+        // manutenção: o valor é o da manutenção do volume escolhido (o Fox eyes custa mais)
         valor:
-          (!escolhido?.manutencao ? agenda.tecnicas.find((t) => t.nome === tecnica)?.preco : null) ??
+          (escolhido?.manutencao ? agenda.volumes.find((v) => v.nome === tecnica)?.manutencao : null) ??
           escolhido?.preco ??
           null,
         sinal: agenda.sinal,
@@ -287,46 +307,45 @@ function FolhaAgendar({
           <fieldset className="tyag__grupo">
             <legend className="tyag__rotulo">O que você vai fazer?</legend>
             <div className="tyag__chips">
-              {agenda.servicos.map((s) => (
-                <label key={s.slug} className="tyag__chip">
-                  <input
-                    type="radio"
-                    name={`${id}-servico`}
-                    value={s.slug}
-                    checked={servico === s.slug}
-                    onChange={() => {
-                      setServico(s.slug);
-                      setTecnica(null);
-                    }}
-                  />
-                  <span>
-                    {s.nome}
-                    {s.preco != null ? <small className="tyag__preco">{reais(s.preco)}</small> : null}
-                  </span>
-                </label>
-              ))}
+              {agenda.servicos.map((s) => {
+                const valor = valorLegivel(s.preco, s.manutencao ? agenda.volumes.map((v) => v.manutencao) : []);
+                const ficha = [valor, duracaoLegivel(s.duracao)].filter(Boolean).join(" · ");
+                return (
+                  <label key={s.slug} className="tyag__chip">
+                    <input
+                      type="radio"
+                      name={`${id}-servico`}
+                      value={s.slug}
+                      checked={servico === s.slug}
+                      onChange={() => escolherServico(s.slug)}
+                    />
+                    <span>
+                      {s.nome}
+                      {ficha ? <small className="tyag__preco">{ficha}</small> : null}
+                    </span>
+                  </label>
+                );
+              })}
             </div>
           </fieldset>
         )}
 
         {perguntaTecnica ? (
           <fieldset className="tyag__grupo tyag__grupo--entra">
-            <legend className="tyag__rotulo">
-              {escolhido?.manutencao ? "De qual volume é a manutenção?" : "Qual volume você quer?"}
-            </legend>
+            <legend className="tyag__rotulo">De qual volume é a manutenção?</legend>
             <div className="tyag__chips">
-              {[...agenda.tecnicas, { nome: NAO_SEI, preco: null }].map((t) => (
-                <label key={t.nome} className={["tyag__chip", t.nome === NAO_SEI ? "tyag__chip--leve" : ""].join(" ")}>
+              {[...agenda.volumes, { nome: NAO_SEI, manutencao: null }].map((v) => (
+                <label key={v.nome} className={["tyag__chip", v.nome === NAO_SEI ? "tyag__chip--leve" : ""].join(" ")}>
                   <input
                     type="radio"
                     name={`${id}-tecnica`}
-                    value={t.nome}
-                    checked={tecnica === t.nome}
-                    onChange={() => setTecnica(t.nome)}
+                    value={v.nome}
+                    checked={tecnica === v.nome}
+                    onChange={() => setTecnica(v.nome)}
                   />
                   <span>
-                    {t.nome === NAO_SEI ? "Ainda não sei" : t.nome}
-                    {t.preco != null ? <small className="tyag__preco">{reais(t.preco)}</small> : null}
+                    {v.nome === NAO_SEI ? "Ainda não sei" : v.nome}
+                    {v.manutencao != null ? <small className="tyag__preco">{reais(v.manutencao)}</small> : null}
                   </span>
                 </label>
               ))}
@@ -352,7 +371,7 @@ function FolhaAgendar({
                       disabled={lotado}
                       onChange={() => {
                         setDia(d.iso);
-                        setHora((h) => (h && d.slots.some((s) => s.time === h && s.available) ? h : null));
+                        setHora((h) => (h && d.slots.some((s) => s.time === h && cabeNoHorario(s, duracao)) ? h : null));
                       }}
                       aria-label={`${diaLegivel(d.iso)}${lotado ? ", sem horário livre" : ""}`}
                     />
@@ -375,24 +394,32 @@ function FolhaAgendar({
         <fieldset className="tyag__grupo" disabled={!diaEscolhido}>
           <legend className="tyag__rotulo">
             Qual horário?
-            {diaEscolhido ? <span className="tyag__rotulo-dica">{diaLegivel(diaEscolhido.iso)}</span> : null}
+            {diaEscolhido ? (
+              <span className="tyag__rotulo-dica">
+                {diaLegivel(diaEscolhido.iso)}
+                {escolhido && duracaoLegivel(duracao) ? ` · ${duracaoLegivel(duracao)} de atendimento` : ""}
+              </span>
+            ) : null}
           </legend>
           {diaEscolhido ? (
             <div className="tyag__horas">
-              {diaEscolhido.slots.map((s) => (
-                <label key={s.time} className="tyag__chip tyag__chip--hora" data-ocupado={!s.available || undefined}>
-                  <input
-                    type="radio"
-                    name={`${id}-hora`}
-                    value={s.time}
-                    disabled={!s.available}
-                    checked={hora === s.time}
-                    onChange={() => setHora(s.time)}
-                    aria-label={`${horaLegivel(s.time)}${s.available ? "" : ", ocupado"}`}
-                  />
-                  <span aria-hidden>{horaLegivel(s.time)}</span>
-                </label>
-              ))}
+              {diaEscolhido.slots.map((s) => {
+                const cabe = cabeNoHorario(s, duracao);
+                return (
+                  <label key={s.time} className="tyag__chip tyag__chip--hora" data-ocupado={!cabe || undefined}>
+                    <input
+                      type="radio"
+                      name={`${id}-hora`}
+                      value={s.time}
+                      disabled={!cabe}
+                      checked={hora === s.time}
+                      onChange={() => setHora(s.time)}
+                      aria-label={`${horaLegivel(s.time)}${cabe ? "" : s.available ? ", sem tempo para esse serviço" : ", ocupado"}`}
+                    />
+                    <span aria-hidden>{horaLegivel(s.time)}</span>
+                  </label>
+                );
+              })}
             </div>
           ) : (
             <p className="tyag__vazio">Escolha o dia para ver os horários livres.</p>

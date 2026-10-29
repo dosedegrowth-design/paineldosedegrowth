@@ -5,7 +5,14 @@ import { getSettings } from "@/lib/tayssa/settings";
 import { getActiveServices } from "@/lib/tayssa/queries/catalog";
 import { getCardState, type CardState } from "@/lib/tayssa/engine";
 import { getClientOverview, type ClientOverview } from "@/lib/tayssa/queries/client";
-import { appointmentEnded, bookableDays, slotIsBookable } from "@/lib/tayssa/rules";
+import {
+  appointmentEnded,
+  bookableDays,
+  horariosDoDia,
+  horariosParaMarcar,
+  trechosOcupados,
+  type HorarioParaMarcar,
+} from "@/lib/tayssa/rules";
 import { nowInBusinessTz } from "@/lib/tayssa/format";
 import type { SessionUser } from "@/lib/tayssa/auth/session";
 import type { AppointmentRow, CardStamp, LoyaltyStampRow, ServiceRow, UserRow } from "@/lib/tayssa/types";
@@ -59,7 +66,8 @@ export const getAppointments = cache(async (clientId: string): Promise<Appointme
 export type DayAvailability = {
   iso: string;
   weekday: number;
-  slots: { time: string; available: boolean }[];
+  /** cada início da grade do dia: livre? e quanto tempo segue livre depois dele */
+  slots: HorarioParaMarcar[];
 };
 
 /**
@@ -88,7 +96,7 @@ export const getAvailability = cache(async (): Promise<{ days: DayAvailability[]
   const [{ data, error }, services, fechados] = await Promise.all([
     vipDb()
       .from("appointments")
-      .select("scheduled_date, scheduled_time")
+      .select("scheduled_date, scheduled_time, duration_min")
       .gte("scheduled_date", days[0].iso)
       .lte("scheduled_date", days[days.length - 1].iso)
       .in("status", ["requested", "confirmed"]),
@@ -97,23 +105,25 @@ export const getAvailability = cache(async (): Promise<{ days: DayAvailability[]
   ]);
   if (error) throw new Error(error.message);
   // ocupado (por qualquer cliente) ou fechado pela Tayssa: para quem marca,
-  // os dois aparecem do mesmo jeito — riscado, sem dizer de quem é
-  const taken = new Set(
-    ((data ?? []) as { scheduled_date: string; scheduled_time: string }[]).map(
-      (r) => `${r.scheduled_date}T${r.scheduled_time.slice(0, 5)}`
-    )
-  );
-  for (const f of fechados) taken.add(f);
+  // os dois aparecem do mesmo jeito — riscado, sem dizer de quem é. Cada
+  // horário marcado segura o tempo do serviço dele (o volume de 3h às 9h
+  // ocupa também 10h e 11h)
+  const marcados = new Map<string, { scheduled_time: string; duration_min: number | null }[]>();
+  for (const r of (data ?? []) as { scheduled_date: string; scheduled_time: string; duration_min: number | null }[]) {
+    marcados.set(r.scheduled_date, [...(marcados.get(r.scheduled_date) ?? []), r]);
+  }
+  const fechadosNoDia = new Map<string, string[]>();
+  for (const f of fechados) {
+    const [dia, hora] = f.split("T");
+    fechadosNoDia.set(dia, [...(fechadosNoDia.get(dia) ?? []), hora]);
+  }
 
   return {
-    days: days.map((d) => ({
-      iso: d.iso,
-      weekday: d.weekday,
-      slots: b.slots.map((t) => ({
-        time: t,
-        available: !taken.has(`${d.iso}T${t}`) && slotIsBookable(d.iso, t, now, b.lead_hours),
-      })),
-    })),
+    days: days.map((d) => {
+      const grade = horariosDoDia(b, d.weekday);
+      const ocupado = trechosOcupados(grade, marcados.get(d.iso) ?? [], fechadosNoDia.get(d.iso) ?? [], b.default_duration_min);
+      return { iso: d.iso, weekday: d.weekday, slots: horariosParaMarcar(d.iso, grade, ocupado, now, b.lead_hours) };
+    }),
     services: services.filter((s) => s.slug !== "outro"),
   };
 });
@@ -136,7 +146,7 @@ export const getAgendaPublica = cache(async (): Promise<{ iso: string; slots: Da
   const now = nowInBusinessTz();
   return bookableDays(now, b).map((d) => ({
     iso: d.iso,
-    slots: b.slots.map((t) => ({ time: t, available: slotIsBookable(d.iso, t, now, b.lead_hours) })),
+    slots: horariosParaMarcar(d.iso, horariosDoDia(b, d.weekday), [], now, b.lead_hours),
   }));
 });
 

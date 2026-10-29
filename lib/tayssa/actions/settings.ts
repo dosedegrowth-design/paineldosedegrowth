@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { vipDb } from "@/lib/tayssa/db";
 import { assertAdmin } from "@/lib/tayssa/auth/guards";
 import { logAudit } from "@/lib/tayssa/audit";
@@ -18,6 +19,7 @@ import {
   signupSettingsSchema,
   whatsappTemplatesSchema,
 } from "@/lib/tayssa/validation";
+import { gradeDeHorarios } from "@/lib/tayssa/rules";
 import { BusinessError, bool, list, runAction, str } from "@/lib/tayssa/actions/_helpers";
 import type { ActionResult } from "@/lib/tayssa/types";
 
@@ -108,17 +110,42 @@ export async function updateWhatsappTemplatesAction(_p: ActionResult | null, fd:
   });
 }
 
-/** Agenda: dias, horários e regras de antecedência que a cliente enxerga ao marcar. */
+const NO_DIA = ["No domingo", "Na segunda", "Na terça", "Na quarta", "Na quinta", "Na sexta", "No sábado"];
+const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+/**
+ * Agenda: os dias abertos, o primeiro e o último horário de cada dia, o
+ * intervalo entre eles e as regras de antecedência. A grade de cada dia
+ * sai daí: segunda das 10h às 16h, de hora em hora → 10h, 11h … 16h.
+ */
 export async function updateBookingSettingsAction(_p: ActionResult | null, fd: FormData): Promise<ActionResult> {
   return runAction("settings.booking", async () => {
     const admin = await assertAdmin();
-    const slots = str(fd, "slots")
-      .split(/[\n,;]+/)
-      .map((l) => l.trim())
-      .filter(Boolean);
+    const weekdays = [...new Set(list(fd, "weekdays").map(Number))].filter((d) => Number.isInteger(d) && d >= 0 && d <= 6);
+    // o intervalo primeiro: sem ele não há grade para montar
+    const { intervalo_min } = z
+      .object({ intervalo_min: bookingSettingsSchema.shape.intervalo_min })
+      .parse({ intervalo_min: str(fd, "intervalo_min") });
+    const slots_por_dia: Record<string, string[]> = {};
+    for (const d of weekdays) {
+      const de = str(fd, `de_${d}`).trim();
+      const ate = str(fd, `ate_${d}`).trim();
+      if (!HHMM.test(de) || !HHMM.test(ate)) {
+        throw new BusinessError(`Escolha o primeiro e o último horário ${NO_DIA[d].toLowerCase()}.`, `horas_${d}`);
+      }
+      if (ate < de) throw new BusinessError(`${NO_DIA[d]}, o último horário está antes do primeiro.`, `horas_${d}`);
+      const grade = gradeDeHorarios(de, ate, intervalo_min);
+      if (grade.length > 24) {
+        throw new BusinessError(`${NO_DIA[d]} ficariam mais de 24 horários. Aumente o intervalo.`, `horas_${d}`);
+      }
+      slots_por_dia[String(d)] = grade;
+    }
     const input = bookingSettingsSchema.parse({
-      weekdays: list(fd, "weekdays"),
-      slots,
+      weekdays,
+      // a lista geral guarda todos os horários da semana (reserva de quem não tem lista própria)
+      slots: [...new Set(Object.values(slots_por_dia).flat())],
+      slots_por_dia,
+      intervalo_min,
       lead_hours: str(fd, "lead_hours"),
       horizon_days: str(fd, "horizon_days"),
       default_duration_min: str(fd, "default_duration_min"),
@@ -199,6 +226,8 @@ export async function upsertCatalogServiceAction(_p: ActionResult | null, fd: Fo
       description: str(fd, "description"),
       point_value: str(fd, "point_value"),
       preco: str(fd, "preco"),
+      duration_min: str(fd, "duration_min"),
+      preco_manutencao: str(fd, "preco_manutencao"),
       active: bool(fd, "active"),
       sort_order: str(fd, "sort_order") || undefined,
     });
@@ -211,6 +240,8 @@ export async function upsertCatalogServiceAction(_p: ActionResult | null, fd: Fo
           description: input.description,
           point_value: input.point_value,
           preco: input.preco,
+          duration_min: input.duration_min,
+          preco_manutencao: input.preco_manutencao,
           active: input.active,
           sort_order: input.sort_order ?? 0,
         })
@@ -225,6 +256,8 @@ export async function upsertCatalogServiceAction(_p: ActionResult | null, fd: Fo
         description: input.description,
         point_value: input.point_value,
         preco: input.preco,
+        duration_min: input.duration_min,
+        preco_manutencao: input.preco_manutencao,
         active: input.active,
         sort_order: input.sort_order ?? 50,
       });

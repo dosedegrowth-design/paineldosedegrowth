@@ -231,12 +231,33 @@ export const precoField = z
     return Math.round(n * 100) / 100;
   });
 
+/** "3h", "1h30", "1:30", "40 min" ou "90" (minutos) → minutos; vazio → null (vale a duração padrão) */
+export const duracaoField = z
+  .string()
+  .trim()
+  .transform((v, ctx) => {
+    const t = v.toLowerCase().replace(/\s+/g, "");
+    if (!t) return null;
+    let m: RegExpMatchArray | null;
+    let minutos: number | null = null;
+    if ((m = t.match(/^(\d{1,2})(?:h|hr|hora|horas)(?:(\d{1,2})(?:m|min|minutos)?)?$/))) minutos = Number(m[1]) * 60 + Number(m[2] ?? 0);
+    else if ((m = t.match(/^(\d{1,2}):([0-5]\d)$/))) minutos = Number(m[1]) * 60 + Number(m[2]);
+    else if ((m = t.match(/^(\d{1,3})(?:m|min|minutos)?$/))) minutos = Number(m[1]);
+    if (minutos === null || minutos < 10 || minutos > 600) {
+      ctx.addIssue({ code: "custom", message: "Tempo inválido. Escreva, por exemplo, 3h, 1h30 ou 40 min" });
+      return z.NEVER;
+    }
+    return minutos;
+  });
+
 export const catalogServiceSchema = z.object({
   id: z.string().uuid().optional(),
   name: trimmed(80),
   description: z.string().trim().max(300).optional().transform((v) => v || null),
   point_value: z.coerce.number().int().min(0).max(10000),
   preco: precoField,
+  duration_min: duracaoField,
+  preco_manutencao: precoField,
   active: z.boolean(),
   sort_order: z.coerce.number().int().min(0).max(999).optional(),
 });
@@ -306,6 +327,16 @@ const hhmmField = z.string().trim().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Horário
 export const bookingSettingsSchema = z.object({
   weekdays: z.array(z.coerce.number().int().min(0).max(6)).min(1, "Escolha pelo menos um dia").transform((v) => [...new Set(v)].sort()),
   slots: z.array(hhmmField).min(1, "Informe pelo menos um horário").max(24, "No máximo 24 horários").transform((v) => [...new Set(v)].sort()),
+  // "1" = segunda: cada dia com os seus horários de início
+  slots_por_dia: z.record(
+    z.string().regex(/^[0-6]$/),
+    z.array(hhmmField).max(24, "No máximo 24 horários por dia").transform((v) => [...new Set(v)].sort())
+  ),
+  intervalo_min: z.coerce
+    .number({ invalid_type_error: "Use um número de minutos" })
+    .int("Use um número inteiro de minutos")
+    .min(15, "O intervalo mínimo é de 15 minutos")
+    .max(240, "O intervalo máximo é de 240 minutos"),
   lead_hours: z.coerce.number().int().min(0).max(168),
   horizon_days: z.coerce.number().int().min(1).max(120),
   default_duration_min: z.coerce.number().int().min(15).max(480),

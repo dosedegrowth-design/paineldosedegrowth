@@ -1,16 +1,26 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { createAppointmentAction } from "@/lib/tayssa/actions/booking";
 import { dateLong, dayLabel, monthName, plural, weekdayShort } from "@/lib/tayssa/format";
 import { TyTextarea } from "@/components/tayssa/ui/field";
-import { reais } from "@/lib/tayssa/agendar";
+import { cabeNoHorario, duracaoLegivel } from "@/lib/tayssa/agendar";
 import { useTarefa } from "@/components/tayssa/ui/acao";
 
-export type BookingService = { id: string; name: string; description: string | null; point_value: number; preco?: number | null };
-export type BookingDay = { iso: string; slots: { time: string; available: boolean }[] };
+export type BookingService = {
+  id: string;
+  name: string;
+  description: string | null;
+  point_value: number;
+  /** "R$ 170" ou "a partir de R$ 120" (vazio = não mostra) */
+  precoLabel?: string | null;
+  /** minutos que o serviço ocupa na agenda */
+  duracao?: number | null;
+};
+/** `ate`: minutos livres depois do início (null = o resto do dia) */
+export type BookingDay = { iso: string; slots: { time: string; available: boolean; ate?: number | null }[] };
 
 const STEPS = ["Serviço", "Dia e horário", "Confirmar"];
 
@@ -46,8 +56,13 @@ export function BookingFlow({
 
   const service = services.find((s) => s.id === serviceId) ?? null;
   const day = days.find((d) => d.iso === date) ?? null;
+  // o serviço escolhido precisa caber inteiro: o volume de 3h não aparece às
+  // 10h se às 11h já tem alguém
+  const duracao = service?.duracao ?? null;
+  const cabe = (s: BookingDay["slots"][number]) => cabeNoHorario(s, duracao);
   // nada some: dia sem horário livre continua na fita, riscado e sem toque
-  const openDays = useMemo(() => new Set(days.filter((d) => d.slots.some((s) => s.available)).map((d) => d.iso)), [days]);
+  const openDays = new Set(days.filter((d) => d.slots.some(cabe)).map((d) => d.iso));
+  const livres = day ? day.slots.filter(cabe).length : 0;
 
   // a cada passo (e no "Pedido enviado") a tela volta ao topo do fluxo e o
   // foco vai para o título: no celular pequeno a confirmação ficava acima
@@ -141,7 +156,8 @@ export function BookingFlow({
     );
   }
 
-  if (!services.length || !openDays.size) {
+  // sem serviço escolhido ainda, a agenda está aberta se algum horário estiver livre
+  if (!services.length || !days.some((d) => d.slots.some((s) => s.available))) {
     return (
       <div className="tyv-panel">
         <p className="tyv-empty">
@@ -195,9 +211,13 @@ export function BookingFlow({
                   <span>
                     <span className="tyv-choice__t">
                       {s.name}
-                      {s.preco != null ? <span className="tyv-choice__preco">{reais(s.preco)}</span> : null}
+                      {s.precoLabel ? <span className="tyv-choice__preco">{s.precoLabel}</span> : null}
                     </span>
-                    {s.description ? <span className="tyv-choice__s">{s.description}</span> : null}
+                    {s.description || s.duracao ? (
+                      <span className="tyv-choice__s">
+                        {[duracaoLegivel(s.duracao), s.description].filter(Boolean).join(" · ")}
+                      </span>
+                    ) : null}
                   </span>
                   <span className="tyv-check" aria-hidden />
                 </button>
@@ -240,8 +260,8 @@ export function BookingFlow({
               {day ? (
                 <>
                   <p className="tyv-label" style={{ margin: "16px 0 10px" }}>
-                    {dayLabel(day.iso)} · {day.slots.filter((s) => s.available).length}{" "}
-                    {plural(day.slots.filter((s) => s.available).length, "horário livre", "horários livres")}
+                    {dayLabel(day.iso)} · {livres} {plural(livres, "horário livre", "horários livres")}
+                    {service && duracaoLegivel(duracao) ? ` para ${duracaoLegivel(duracao)}` : ""}
                   </p>
                   <div className="tyv-slots" role="group" aria-label="Escolha o horário">
                     {day.slots.map((s) => (
@@ -249,8 +269,8 @@ export function BookingFlow({
                         key={s.time}
                         type="button"
                         className="tyv-slot"
-                        disabled={!s.available}
-                        aria-label={`${s.time}${s.available ? "" : ", indisponível"}`}
+                        disabled={!cabe(s)}
+                        aria-label={`${s.time}${cabe(s) ? "" : ", indisponível"}`}
                         aria-pressed={time === s.time}
                         onClick={() =>
                           pick(() => {
@@ -287,6 +307,12 @@ export function BookingFlow({
                   <span className="tyv-label">Horário</span>
                   <span style={{ fontSize: 16 }}>{time}</span>
                 </div>
+                {duracaoLegivel(duracao) ? (
+                  <div className="tyv-row">
+                    <span className="tyv-label">Duração</span>
+                    <span style={{ fontSize: 16 }}>{duracaoLegivel(duracao)}</span>
+                  </div>
+                ) : null}
               </div>
               <div style={{ marginTop: 18 }}>
                 <TyTextarea

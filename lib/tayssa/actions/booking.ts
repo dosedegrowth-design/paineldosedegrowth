@@ -7,7 +7,17 @@ import { assertClient } from "@/lib/tayssa/auth/guards";
 import { logAudit } from "@/lib/tayssa/audit";
 import { ROUTES } from "@/lib/tayssa/config";
 import { getSettings } from "@/lib/tayssa/settings";
-import { appointmentEnded, appointmentStarted, bookableDays, slotIsBookable, toISODate } from "@/lib/tayssa/rules";
+import {
+  appointmentEnded,
+  appointmentStarted,
+  bookableDays,
+  horariosDoDia,
+  horariosParaMarcar,
+  slotIsBookable,
+  toISODate,
+  trechosOcupados,
+} from "@/lib/tayssa/rules";
+import { cabeNoHorario, duracaoLegivel } from "@/lib/tayssa/agendar";
 import { isoDateField } from "@/lib/tayssa/validation";
 import { horariosFechados } from "@/lib/tayssa/queries/vip";
 import { nowInBusinessTz } from "@/lib/tayssa/format";
@@ -30,9 +40,9 @@ export type BookingResult = {
 
 /**
  * Agendamento interno. Tudo validado contra a configuração da casa:
- * dia aberto, horário oferecido, antecedência, horário livre, limite
- * de horários em aberto por cliente. Nasce em "requested"; a Tayssa
- * confirma no painel dela.
+ * dia aberto, horário da grade daquele dia, antecedência, horário livre
+ * pelo tempo inteiro do serviço, limite de horários em aberto por
+ * cliente. Nasce em "requested"; a Tayssa confirma no painel dela.
  */
 export async function createAppointmentAction(input: {
   service_id: string;
@@ -52,11 +62,12 @@ export async function createAppointmentAction(input: {
     const service = s as ServiceRow | null;
     if (!service || !service.active) throw new BusinessError("Escolha um serviço válido.", "service_id");
 
-    const days = bookableDays(now, b);
-    if (!days.some((d) => d.iso === parsed.date)) {
+    const dia = bookableDays(now, b).find((d) => d.iso === parsed.date);
+    if (!dia) {
       throw new BusinessError("Esse dia não está aberto para agendamento.", "date");
     }
-    if (!b.slots.includes(parsed.time)) {
+    const grade = horariosDoDia(b, dia.weekday);
+    if (!grade.includes(parsed.time)) {
       throw new BusinessError("Esse horário não é oferecido.", "time");
     }
     if (!slotIsBookable(parsed.date, parsed.time, now, b.lead_hours)) {
@@ -83,18 +94,37 @@ export async function createAppointmentAction(input: {
       );
     }
 
-    const { data: taken } = await db
-      .from("appointments")
-      .select("id")
-      .eq("scheduled_date", parsed.date)
-      .eq("scheduled_time", `${parsed.time}:00`)
-      .in("status", ["requested", "confirmed"])
-      .limit(1);
-    if (taken && taken.length) {
-      throw new BusinessError("Esse horário acabou de ser reservado. Escolha outro.", "time");
+    // o serviço precisa caber inteiro: o volume de 3h às 10h não entra se às 11h já tem alguém
+    const duracao = service.duration_min ?? b.default_duration_min;
+    const [{ data: doDia, error: dErr }, fechados] = await Promise.all([
+      db
+        .from("appointments")
+        .select("scheduled_time, duration_min")
+        .eq("scheduled_date", parsed.date)
+        .in("status", ["requested", "confirmed"]),
+      horariosFechados(parsed.date, parsed.date),
+    ]);
+    if (dErr) throw new Error(dErr.message);
+    const ocupado = trechosOcupados(
+      grade,
+      (doDia ?? []) as { scheduled_time: string; duration_min: number | null }[],
+      [...fechados].map((f) => f.split("T")[1]),
+      b.default_duration_min
+    );
+    const slot = horariosParaMarcar(parsed.date, [parsed.time], ocupado, now, b.lead_hours)[0];
+    if (!slot.available) {
+      throw new BusinessError(
+        fechados.has(`${parsed.date}T${parsed.time}`)
+          ? "Esse horário não está disponível. Escolha outro."
+          : "Esse horário acabou de ser reservado. Escolha outro.",
+        "time"
+      );
     }
-    if ((await horariosFechados(parsed.date, parsed.date)).has(`${parsed.date}T${parsed.time}`)) {
-      throw new BusinessError("Esse horário não está disponível. Escolha outro.", "time");
+    if (!cabeNoHorario(slot, duracao)) {
+      throw new BusinessError(
+        `${service.name} leva ${duracaoLegivel(duracao)} e não cabe a partir desse horário. Escolha outro.`,
+        "time"
+      );
     }
 
     const { data: created, error } = await db
@@ -105,7 +135,7 @@ export async function createAppointmentAction(input: {
         service_name: service.name,
         scheduled_date: parsed.date,
         scheduled_time: `${parsed.time}:00`,
-        duration_min: b.default_duration_min,
+        duration_min: duracao,
         status: "requested",
         client_note: parsed.note,
       })

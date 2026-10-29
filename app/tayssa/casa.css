@@ -323,9 +323,10 @@
 .tyat__horas dd {
   margin: 0;
 }
+/* sem marcador visível, sem o recuo dele: alinha com o título e os horários */
 .tyat__lista {
   margin: 0;
-  padding: 0 0 0 1.1em;
+  padding: 0;
   display: grid;
   gap: 6px;
   font-size: 15.5px;

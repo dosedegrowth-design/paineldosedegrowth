@@ -5,7 +5,8 @@ import { getPhotoAvailability } from "@/lib/tayssa/photos-server";
 import { getVideoAvailability } from "@/lib/tayssa/media-server";
 import { getPhotoLibrary, getPrecosProdutos } from "@/lib/tayssa/queries/photos";
 import { assignPhotos } from "@/lib/tayssa/photos";
-import { categoriaDoServico, comPrecos, montarCatalogo } from "@/lib/tayssa/catalogo";
+import { comPrecos, montarCatalogo } from "@/lib/tayssa/catalogo";
+import { ehManutencao } from "@/lib/tayssa/agendar";
 import { getAgendaPublica } from "@/lib/tayssa/queries/vip";
 import { montarPortfolio } from "@/lib/tayssa/portfolio";
 import { CONTEUDO } from "@/lib/tayssa/content";
@@ -58,25 +59,22 @@ export default async function TayssaHome() {
     studio: existe(assigned.studio) ? assigned.studio : undefined,
   };
 
-  // a folha de agendar: serviços da casa, os volumes de cílios que ela
-  // publicou no catálogo, os dias e horários livres e o sinal da agenda
+  // a folha de agendar: os serviços da casa com valor e tempo, os volumes
+  // (a manutenção pergunta de qual é, e o valor vem dele), os dias e
+  // horários livres e o sinal da agenda
+  const ativos = services.filter((s) => s.slug !== "outro");
   const agenda: AgendaSite = {
     telefone: settings.business.whatsapp,
-    servicos: services
-      .filter((s) => s.slug !== "outro")
-      .map((s) => ({
-        slug: s.slug,
-        nome: s.name,
-        tecnicas: categoriaDoServico(s.slug, s.name) === "cilios",
-        manutencao: /manuten/i.test(`${s.slug} ${s.name}`),
-        preco: s.preco != null ? Number(s.preco) : null,
-      })),
-    // manutenção já é serviço: não entra como volume
-    tecnicas:
-      catalogo
-        .find((c) => c.slug === "cilios")
-        ?.produtos.filter((p) => !/manuten/i.test(p.nome))
-        .map((p) => ({ nome: p.nome, preco: p.preco ?? null })) ?? [],
+    servicos: ativos.map((s) => ({
+      slug: s.slug,
+      nome: s.name,
+      manutencao: ehManutencao(s.slug, s.name),
+      preco: s.preco != null ? Number(s.preco) : null,
+      duracao: s.duration_min ?? settings.booking.default_duration_min,
+    })),
+    volumes: ativos
+      .filter((s) => s.preco_manutencao != null)
+      .map((s) => ({ nome: s.name, manutencao: Number(s.preco_manutencao) })),
     dias,
     sinal: settings.booking.deposit_reais,
   };

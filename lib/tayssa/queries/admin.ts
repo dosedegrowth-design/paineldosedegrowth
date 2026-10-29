@@ -8,10 +8,12 @@ import { horariosFechados } from "@/lib/tayssa/queries/vip";
 import { expireStaleBenefits } from "@/lib/tayssa/engine";
 import {
   birthdayInfo,
+  horariosDoDia,
   isBirthdayInMonth,
   isInactive,
   loyaltyProgress,
   referralProgress,
+  timeToMinutes,
   toISODate,
   type BirthdayInfo,
   type LoyaltyProgress,
@@ -175,15 +177,23 @@ export type ConsultaNaGrade = {
 };
 /** livre/fechado: a Tayssa alterna · ocupado: tem pedido ou confirmado · folga: dia que não atende · passou: já foi */
 export type EstadoCelula = "livre" | "fechado" | "ocupado" | "folga" | "passou";
-export type CelulaAgenda = { hora: string; estado: EstadoCelula; consultas: ConsultaNaGrade[] };
+export type CelulaAgenda = {
+  hora: string;
+  estado: EstadoCelula;
+  /** quem começa neste horário */
+  consultas: ConsultaNaGrade[];
+  /** quem começou antes e ainda está na cadeira (o volume de 3h das 9h, às 10h e 11h) */
+  segue: ConsultaNaGrade | null;
+};
 export type DiaGrade = { iso: string; aberto: boolean; celulas: CelulaAgenda[] };
 export type GradeAgenda = { hoje: string; agoraHora: string; dias: DiaGrade[] };
 
 /**
  * Da semana atual (domingo) até o fim do horizonte de agendamento: cada
- * dia com todos os horários da grade (Configurações → Agenda) mais
+ * dia com os horários da grade dele (Configurações → Agenda) mais
  * qualquer horário fora dela que tenha cliente marcada. Nada some: o que
- * está ocupado, fechado ou já passou aparece com o seu estado.
+ * está ocupado, fechado ou já passou aparece com o seu estado, e o
+ * serviço longo ocupa as linhas seguintes até terminar.
  */
 export const getGradeAgenda = cache(async (): Promise<GradeAgenda> => {
   const settings = await getSettings();
@@ -199,7 +209,7 @@ export const getGradeAgenda = cache(async (): Promise<GradeAgenda> => {
   const [{ data, error }, fechados] = await Promise.all([
     vipDb()
       .from("appointments")
-      .select("id, scheduled_date, scheduled_time, service_name, status, client:users!appointments_client_id_fkey(id, name, nickname)")
+      .select("id, scheduled_date, scheduled_time, duration_min, service_name, status, client:users!appointments_client_id_fkey(id, name, nickname)")
       .gte("scheduled_date", de)
       .lte("scheduled_date", ate)
       .in("status", ["requested", "confirmed", "done"])
@@ -211,6 +221,7 @@ export const getGradeAgenda = cache(async (): Promise<GradeAgenda> => {
     id: string;
     scheduled_date: string;
     scheduled_time: string;
+    duration_min: number | null;
     service_name: string;
     status: AppointmentRow["status"];
     client: { id: string; name: string; nickname: string | null } | null;
@@ -222,36 +233,44 @@ export const getGradeAgenda = cache(async (): Promise<GradeAgenda> => {
     porDia.set(a.scheduled_date, l);
   }
 
+  const naGrade = (a: Linha): ConsultaNaGrade => ({
+    id: a.id,
+    clienteId: a.client?.id ?? null,
+    nome: a.client?.nickname || a.client?.name || "Cliente",
+    servico: a.service_name,
+    status: a.status,
+  });
+  const aberta = (a: Linha) => a.status === "requested" || a.status === "confirmed";
+
   const dias: DiaGrade[] = [];
   for (let d = new Date(inicio); toISODate(d) <= ate; d = shiftDays(d, 1)) {
     const iso = toISODate(d);
     const aberto = b.weekdays.includes(d.getDay());
+    const grade = aberto ? horariosDoDia(b, d.getDay()) : [];
     const marcadas = porDia.get(iso) ?? [];
-    const horas = [...new Set([...(aberto ? b.slots : []), ...marcadas.map((a) => a.scheduled_time.slice(0, 5))])].sort();
+    const horas = [...new Set([...grade, ...marcadas.map((a) => a.scheduled_time.slice(0, 5))])].sort();
     dias.push({
       iso,
       aberto,
       celulas: horas.map((hora) => {
-        const consultas = marcadas
-          .filter((a) => a.scheduled_time.slice(0, 5) === hora)
-          .map((a) => ({
-            id: a.id,
-            clienteId: a.client?.id ?? null,
-            nome: a.client?.nickname || a.client?.name || "Cliente",
-            servico: a.service_name,
-            status: a.status,
-          }));
+        const consultas = marcadas.filter((a) => a.scheduled_time.slice(0, 5) === hora).map(naGrade);
+        // quem começou antes e ainda não terminou segura este horário
+        const t = timeToMinutes(hora);
+        const antes = marcadas.find((a) => {
+          const ini = timeToMinutes(a.scheduled_time);
+          return ini < t && t < ini + (a.duration_min && a.duration_min > 0 ? a.duration_min : b.default_duration_min);
+        });
         const passou = iso < hoje || (iso === hoje && hora <= agoraHora);
         const estado: EstadoCelula = passou
           ? "passou"
-          : consultas.some((c) => c.status === "requested" || c.status === "confirmed")
+          : consultas.some((c) => c.status === "requested" || c.status === "confirmed") || (antes && aberta(antes))
             ? "ocupado"
-            : !aberto || !b.slots.includes(hora)
+            : !grade.includes(hora)
               ? "folga"
               : fechados.has(`${iso}T${hora}`)
                 ? "fechado"
                 : "livre";
-        return { hora, estado, consultas };
+        return { hora, estado, consultas, segue: !consultas.length && antes ? naGrade(antes) : null };
       }),
     });
   }

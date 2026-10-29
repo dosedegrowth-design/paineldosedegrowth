@@ -28,7 +28,7 @@ export const PHOTOS = {
   },
   // sem legenda e sem nome de técnica: estes três são recortes do mesmo
   // close que a Tayssa publicou, e nada no arquivo diz qual técnica está
-  // ali. Afirmar "fio a fio" aqui seria inventar o trabalho dela.
+  // ali. Afirmar "volume brasileiro" aqui seria inventar o trabalho dela.
   work01: {
     src: `${base}/work-01.jpg`,
     alt: "Cílios aplicados pela Tayssa, close do olhar",
@@ -44,9 +44,11 @@ export const PHOTOS = {
     alt: "Cílios aplicados pela Tayssa, detalhe das pontas",
     ratio: 4 / 5,
   },
+  // close de volume, sem dizer qual: entra na colagem como trabalho dela,
+  // nunca debaixo do nome de um volume específico
   serviceLash: {
     src: `${base}/service-lash.jpg`,
-    alt: "Aplicação de cílios",
+    alt: "Cílios aplicados pela Tayssa",
     ratio: 3 / 4,
   },
   serviceMaintenance: {
@@ -62,11 +64,6 @@ export const PHOTOS = {
   serviceLip: {
     src: `${base}/service-lip.jpg`,
     alt: "Lip spa",
-    ratio: 3 / 4,
-  },
-  serviceFacial: {
-    src: `${base}/service-facial.jpg`,
-    alt: "Limpeza de pele",
     ratio: 3 / 4,
   },
   detail01: { src: `${base}/detail-01.jpg`, alt: "Detalhe do trabalho", ratio: 4 / 5 },
@@ -140,21 +137,37 @@ export type PhotoAssignment = {
 
 /**
  * As três técnicas da sequência de trabalho, na ordem em que o site as
- * mostra, com as palavras que identificam cada uma no nome que a Tayssa
- * dá à foto (`lash_style`).
+ * mostra (Volume, Fox eyes, Manutenção), com as palavras que identificam
+ * cada uma no nome que a Tayssa dá à foto (`lash_style`) e as que a tiram
+ * dali (foto de Fox eyes também diz "volume", mas é da segunda).
  */
-const WORK_KEYWORDS: string[][] = [
-  ["fio a fio", "fio-a-fio", "fio", "clássico", "classico"],
-  ["volume", "russo", "brasileiro", "egípcio", "egipcio"],
-  ["manuten"],
+const WORK_KEYWORDS: { palavras: string[]; fora?: string[] }[] = [
+  { palavras: ["volume", "brasileiro", "inglês", "ingles", "egípcio", "egipcio", "marrom", "mega"], fora: ["fox", "manuten"] },
+  { palavras: ["fox"] },
+  { palavras: ["manuten"] },
 ];
+/** os rótulos dos três lugares, para o painel de mídia dizer onde a foto está */
+export const TECNICAS_TRABALHO = ["Volume", "Fox eyes", "Manutenção"] as const;
 
+/**
+ * A foto de cada serviço, pelo nome que a Tayssa dá a ela: cada serviço
+ * pega a primeira foto que casa. `aplicacao-cilios` saiu do site, mas
+ * segura a foto de cílios que vai para a colagem.
+ */
 const SERVICE_KEYWORDS: Record<string, string[]> = {
   "manutencao-cilios": ["manuten"],
-  "design-sobrancelhas": ["sobrancelh", "brow"],
-  "lip-spa": ["lip", "lábio", "labio"],
-  "limpeza-de-pele": ["limpeza", "pele", "skin"],
-  "aplicacao-cilios": ["volume", "fio", "cílio", "cilio", "lash"],
+  "volume-fox-eyes": ["fox"],
+  "volume-brasileiro": ["brasileiro"],
+  "volume-ingles": ["inglês", "ingles"],
+  "volume-egipcio": ["egípcio", "egipcio"],
+  "volume-marrom": ["marrom"],
+  "lash-lifting": ["lifting"],
+  "remocao-extensao": ["remoção", "remocao"],
+  "brow-lamination": ["lamination"],
+  "design-sobrancelhas": ["sobrancelh", "design"],
+  hidragloss: ["gloss"],
+  "lip-spa": ["lip spa", "spa dos lábios", "spa dos labios", "lábio", "labio"],
+  "aplicacao-cilios": ["volume", "cílio", "cilio", "lash"],
 };
 
 /** Fotos que não são de trabalho: só entram no lugar delas, por nome. */
@@ -167,7 +180,6 @@ const SERVICE_STATICS: Record<string, PhotoSlot> = {
   "manutencao-cilios": PHOTOS.serviceMaintenance,
   "design-sobrancelhas": PHOTOS.serviceBrow,
   "lip-spa": PHOTOS.serviceLip,
-  "limpeza-de-pele": PHOTOS.serviceFacial,
 };
 
 /**
@@ -183,15 +195,16 @@ export function assignPhotos(library: LibraryPhoto[]): PhotoAssignment {
   const hero = slots[0] ?? PHOTOS.hero;
   // A sequência de trabalho é por TÉCNICA, não por ordem de destaque.
   // Pegar a 2ª, 3ª e 4ª foto da fila fazia o site pôr uma foto de
-  // sobrancelha debaixo do título "Fio a fio". Então cada técnica recebe a
+  // sobrancelha debaixo do título de uma técnica. Então cada técnica recebe a
   // primeira foto cujo nome a declara; quem não tiver foto declarada fica
   // com o estático, que não afirma técnica nenhuma.
   const estaticos = [PHOTOS.work01, PHOTOS.work02, PHOTOS.work03];
   const usadas = new Set<string>();
-  const work = WORK_KEYWORDS.map((palavras, i) => {
-    const achou = ordered.find(
-      (p) => !usadas.has(p.id) && palavras.some((w) => p.lash_style.toLowerCase().includes(w))
-    );
+  const work = WORK_KEYWORDS.map(({ palavras, fora = [] }, i) => {
+    const achou = ordered.find((p) => {
+      const nome = p.lash_style.toLowerCase();
+      return !usadas.has(p.id) && palavras.some((w) => nome.includes(w)) && !fora.some((w) => nome.includes(w));
+    });
     if (achou) {
       usadas.add(achou.id);
       return slotFromPhoto(achou);

@@ -189,6 +189,17 @@ function Linha({
             </div>
           );
         }
+        // serviço longo que começou antes: a mesma cor, mais leve, até terminar
+        if (c.segue) {
+          return (
+            <div key={d.iso} className="tyag-grade__cel" data-estado={estado}>
+              <span className="tyag-grade__segue" data-status={c.segue.status} title={`${c.segue.nome} · ${c.segue.servico}`}>
+                <b>{c.segue.nome}</b>
+                <i>continua</i>
+              </span>
+            </div>
+          );
+        }
         if (estado === "livre" || estado === "fechado") {
           const fechado = estado === "fechado";
           return (

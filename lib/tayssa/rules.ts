@@ -319,3 +319,95 @@ export function slotIsBookable(
   const slot = new Date(d.getFullYear(), d.getMonth(), d.getDate(), h ?? 0, m ?? 0);
   return slot.getTime() - now.getTime() >= leadHours * 60 * 60 * 1000;
 }
+
+// ------------------------------------------------------------
+// Agenda por dia e por duração
+// ------------------------------------------------------------
+
+/** Os horários de início de um dia da semana: a lista do dia ou, sem ela, a geral. */
+export function horariosDoDia(
+  booking: { slots: string[]; slots_por_dia?: Record<string, string[]> | null },
+  weekday: number
+): string[] {
+  const doDia = booking.slots_por_dia?.[String(weekday)];
+  return doDia?.length ? doDia : booking.slots;
+}
+
+/** minutos desde a meia-noite -> "HH:MM" */
+export function minutesToTime(min: number): string {
+  return `${String(Math.floor(min / 60)).padStart(2, "0")}:${String(min % 60).padStart(2, "0")}`;
+}
+
+/**
+ * A grade de um dia a partir do primeiro e do último início:
+ * "10:00" a "16:00" de 60 em 60 -> 10h, 11h … 16h. O último é o último
+ * horário em que um atendimento começa (pode terminar depois dele).
+ */
+export function gradeDeHorarios(de: string, ate: string, passoMin: number): string[] {
+  const inicio = timeToMinutes(de);
+  const fim = timeToMinutes(ate);
+  if (!(passoMin > 0) || fim < inicio) return [];
+  const out: string[] = [];
+  for (let t = inicio; t <= fim && t < 24 * 60; t += passoMin) out.push(minutesToTime(t));
+  return out;
+}
+
+/** Um pedaço ocupado do dia, em minutos desde a meia-noite: [inicio, fim). */
+export type Trecho = { inicio: number; fim: number };
+
+/**
+ * O que já ocupa um dia: cada pedido ou confirmado do começo ao fim (um
+ * volume de 3h às 9h segura também 10h e 11h) e cada horário que a Tayssa
+ * fechou, até o horário seguinte da grade.
+ */
+export function trechosOcupados(
+  grade: string[],
+  marcados: { scheduled_time: string; duration_min?: number | null }[],
+  fechados: Iterable<string>,
+  duracaoPadrao: number
+): Trecho[] {
+  const out: Trecho[] = marcados.map((m) => {
+    const inicio = timeToMinutes(m.scheduled_time);
+    const minutos = Number.isFinite(m.duration_min) && (m.duration_min ?? 0) > 0 ? (m.duration_min as number) : duracaoPadrao;
+    return { inicio, fim: inicio + minutos };
+  });
+  const inicios = grade.map(timeToMinutes).sort((a, b) => a - b);
+  for (const f of fechados) {
+    const inicio = timeToMinutes(f);
+    out.push({ inicio, fim: inicios.find((g) => g > inicio) ?? inicio + 60 });
+  }
+  return out;
+}
+
+export type HorarioParaMarcar = {
+  time: string;
+  /** dá para começar ali: nada ocupando e com a antecedência mínima */
+  available: boolean;
+  /** minutos livres a partir dele até o próximo trecho ocupado (null = o resto do dia) */
+  ate: number | null;
+};
+
+/**
+ * Os horários de um dia para quem vai marcar: cada início diz se está
+ * livre e quanto tempo segue livre depois dele. O serviço só cabe onde o
+ * tempo dele alcança (`cabeNoHorario`, em lib/tayssa/agendar.ts).
+ */
+export function horariosParaMarcar(
+  dateISO: string,
+  grade: string[],
+  ocupado: Trecho[],
+  now: Date,
+  leadHours: number
+): HorarioParaMarcar[] {
+  return grade.map((time) => {
+    const t = timeToMinutes(time);
+    const preso = ocupado.some((o) => o.inicio <= t && t < o.fim);
+    let proximo: number | null = null;
+    for (const o of ocupado) if (o.inicio > t && (proximo === null || o.inicio < proximo)) proximo = o.inicio;
+    return {
+      time,
+      available: !preso && slotIsBookable(dateISO, time, now, leadHours),
+      ate: proximo === null ? null : proximo - t,
+    };
+  });
+}

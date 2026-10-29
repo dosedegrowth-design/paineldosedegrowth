@@ -20,8 +20,9 @@ import type { Settings } from "@/lib/tayssa/config";
 import type { ActionResult, BenefitRow, BenefitType, BlackoutRow, ServiceRow } from "@/lib/tayssa/types";
 import { BENEFIT_TYPE_LABEL } from "@/lib/tayssa/types";
 import { formatBrPhone } from "@/lib/tayssa/phone";
-import { dateShort, hhmm } from "@/lib/tayssa/format";
-import { reais } from "@/lib/tayssa/agendar";
+import { dateShort } from "@/lib/tayssa/format";
+import { duracaoLegivel, horariosDaSemana, reais } from "@/lib/tayssa/agendar";
+import { horariosDoDia } from "@/lib/tayssa/rules";
 import { Area, Campo, Marcar, useFormPreservado } from "@/components/tayssa/admin/forms";
 import { ActionButton } from "@/components/tayssa/admin/controls";
 import { Icone } from "@/components/tayssa/admin/icons";
@@ -327,6 +328,9 @@ export function CatalogServiceForm({ service }: { service?: ServiceRow }) {
             {service.preco != null ? (
               <span className="tya-pill tya-pill--brand tya-num">{reais(Number(service.preco))}</span>
             ) : null}
+            {service.duration_min ? (
+              <span className="tya-pill tya-pill--quiet tya-num">{duracaoLegivel(service.duration_min)}</span>
+            ) : null}
             <span className="tya-pill tya-pill--quiet tya-num">{service.point_value} pts</span>
             <span className={`tya-pill ${service.active ? "tya-pill--ok" : "tya-pill--quiet"}`}>
               {service.active ? "no site" : "fora do site"}
@@ -355,6 +359,22 @@ export function CatalogServiceForm({ service }: { service?: ServiceRow }) {
           defaultValue={service?.preco != null ? String(service.preco).replace(".", ",") : ""}
           error={erroDe(state, "preco")}
           hint="Vazio = o site não mostra valor."
+        />
+        <Campo
+          label="Tempo"
+          name="duration_min"
+          defaultValue={duracaoLegivel(service?.duration_min) ?? ""}
+          placeholder="3h, 1h30, 40 min"
+          error={erroDe(state, "duration_min")}
+          hint="Quanto ocupa na agenda. Vazio = duração padrão."
+        />
+        <Campo
+          label="Manutenção (R$)"
+          name="preco_manutencao"
+          inputMode="decimal"
+          defaultValue={service?.preco_manutencao != null ? String(service.preco_manutencao).replace(".", ",") : ""}
+          error={erroDe(state, "preco_manutencao")}
+          hint="Só nos volumes de cílios."
         />
         <Campo
           label="Pontos"
@@ -566,54 +586,86 @@ export function BlackoutList({ items }: { items: BlackoutRow[] }) {
 
 const WEEKDAY_LABELS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
+/** segunda primeiro, domingo no fim */
+const ORDEM_SEMANA = [1, 2, 3, 4, 5, 6, 0];
+
 /** Disponibilidade: o que a cliente enxerga ao marcar. Muda na hora. */
 export function BookingForm({ value }: { value: Settings["booking"] }) {
   const [state, onSubmit, pending] = useAcaoFormulario<ActionResult | null>(updateBookingSettingsAction, null);
   const { onReset } = useFormPreservado();
+  const semana = horariosDaSemana(value);
   return (
     <form onSubmit={onSubmit} noValidate onReset={onReset} className="tya-stack" style={{ gap: 22 }}>
       <div className="tya-set">
         <span className="tya-set__t">
-          <span className="tya-eyebrow">Dias abertos</span>
+          <span className="tya-eyebrow">Dias e horários</span>
         </span>
-        <div className="tya-marcas">
-          {WEEKDAY_LABELS.map((label, d) => (
-            <label key={d} className="tya-marca">
-              <input type="checkbox" name="weekdays" value={String(d)} defaultChecked={value.weekdays.includes(d)} />
-              <span>{label}</span>
-            </label>
-          ))}
-        </div>
+        {semana.length ? (
+          <p className="tya-pills">
+            {semana.map((g) => (
+              <span key={g.dias} className="tya-pill tya-pill--quiet">
+                {g.dias} · <span className="tya-num">{g.horas}</span>
+              </span>
+            ))}
+          </p>
+        ) : null}
+        <ul className="tya-dias">
+          {ORDEM_SEMANA.map((d) => {
+            const grade = horariosDoDia(value, d);
+            const erro = erroDe(state, `horas_${d}`);
+            return (
+              <li key={d} className="tya-dia">
+                <label className="tya-marca tya-dia__nome">
+                  <input type="checkbox" name="weekdays" value={String(d)} defaultChecked={value.weekdays.includes(d)} />
+                  <span>{WEEKDAY_LABELS[d]}</span>
+                </label>
+                <span className="tya-dia__horas">
+                  <span aria-hidden>das</span>
+                  <input
+                    type="time"
+                    className="tya-field tya-num"
+                    name={`de_${d}`}
+                    defaultValue={grade[0] ?? "09:00"}
+                    aria-label={`${WEEKDAY_LABELS[d]}, primeiro horário`}
+                    aria-invalid={erro ? true : undefined}
+                  />
+                  <span aria-hidden>às</span>
+                  <input
+                    type="time"
+                    className="tya-field tya-num"
+                    name={`ate_${d}`}
+                    defaultValue={grade[grade.length - 1] ?? "18:00"}
+                    aria-label={`${WEEKDAY_LABELS[d]}, último horário`}
+                    aria-invalid={erro ? true : undefined}
+                  />
+                </span>
+                {erro ? (
+                  <p className="tya-err" role="alert">
+                    {erro}
+                  </p>
+                ) : null}
+              </li>
+            );
+          })}
+        </ul>
         {erroDe(state, "weekdays") ? (
           <p className="tya-err" role="alert">
             {erroDe(state, "weekdays")}
           </p>
         ) : null}
-      </div>
-
-      <div className="tya-set">
-        <span className="tya-set__t">
-          <span className="tya-eyebrow">Horários</span>
-        </span>
-        {value.slots.length ? (
-          <p className="tya-pills">
-            {value.slots.map((s) => (
-              <span key={s} className="tya-pill tya-pill--quiet tya-num">
-                {hhmm(s)}
-              </span>
-            ))}
-          </p>
-        ) : (
-          <p className="tya-small">Sem horário nenhum, a cliente não consegue pedir data.</p>
-        )}
-        <Area
-          label="Horários oferecidos (um por linha, HH:MM)"
-          name="slots"
-          rows={7}
-          defaultValue={value.slots.join("\n")}
-          error={erroDe(state, "slots")}
-          hint="Cada horário vale para todos os dias abertos. Horário já ocupado some sozinho para as clientes."
-        />
+        <div className="tya-grid tya-grid--num">
+          <Campo
+            label="Intervalo entre horários (min)"
+            name="intervalo_min"
+            inputMode="numeric"
+            defaultValue={String(value.intervalo_min)}
+            error={erroDe(state, "intervalo_min")}
+          />
+        </div>
+        <p className="tya-small">
+          O último horário do dia é o último início: um volume de 3h que começa às 16h termina às 19h. Serviço longo
+          ocupa sozinho os horários seguintes, e o que está ocupado aparece riscado para a cliente.
+        </p>
       </div>
 
       <div className="tya-set">
@@ -643,6 +695,7 @@ export function BookingForm({ value }: { value: Settings["booking"] }) {
             inputMode="numeric"
             defaultValue={String(value.default_duration_min)}
             error={erroDe(state, "default_duration_min")}
+            hint="Vale para o serviço sem tempo próprio."
           />
           <Campo
             label="Horários em aberto por cliente"

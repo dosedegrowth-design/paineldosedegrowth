@@ -4,7 +4,7 @@
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { categoriaDoServico, itensDaCategoria, montarCatalogo, produtoParecido } from "./catalogo.ts";
+import { categoriaDoServico, itensDaCategoria, montarCatalogo, produtoParecido, rolosDosServicos } from "./catalogo.ts";
 
 const linha = (o: Partial<Parameters<typeof montarCatalogo>[0][number]> & { id: string }) => ({
   public_url: `https://x/${o.id}.jpg`,
@@ -82,4 +82,42 @@ test("enquadramento vai junto e tem padrão no centro", () => {
   const [c] = montarCatalogo([linha({ id: "a", focus_x: 30, focus_y: 70, zoom: 1.6 }), linha({ id: "b" })]);
   assert.deepEqual(c.produtos[0].itens[0].foco, { x: 30, y: 70, zoom: 1.6 });
   assert.deepEqual(c.produtos[0].itens[1].foco, { x: 50, y: 50, zoom: 1 });
+});
+
+test("cada serviço leva o rolo do seu produto, sem repetir a categoria inteira", () => {
+  const cat = montarCatalogo([
+    linha({ id: "a", lash_style: "Volume brasileiro" }),
+    linha({ id: "b", lash_style: "Fox eyes" }),
+    linha({ id: "c", lash_style: "Manutenção" }),
+    linha({ id: "d", lash_style: "Volume" }),
+    linha({ id: "e", lash_style: "Mega brasileiro" }),
+    linha({ id: "f", lash_style: "Brow Lamination", category: "sobrancelha" }),
+  ]);
+  const servicos = [
+    { slug: "volume-brasileiro", name: "Volume brasileiro" },
+    { slug: "volume-ingles", name: "Volume inglês" },
+    { slug: "volume-fox-eyes", name: "Volume Fox eyes" },
+    { slug: "manutencao-cilios", name: "Manutenção de cílios" },
+    { slug: "brow-lamination", name: "Brow Lamination" },
+    { slug: "design-sobrancelhas", name: "Design de sobrancelhas" },
+  ];
+  const rolos = rolosDosServicos(cat, servicos);
+  const ids = (slug: string) => (rolos[slug] ?? []).map((i) => i.id).sort().join(",");
+  // o seu, mais o que não é de um serviço só ("Volume", "Mega brasileiro")
+  assert.equal(ids("volume-brasileiro"), "a,d,e");
+  assert.equal(ids("volume-ingles"), "");
+  assert.equal(ids("volume-fox-eyes"), "b");
+  assert.equal(ids("manutencao-cilios"), "c");
+  assert.equal(ids("brow-lamination"), "f");
+  assert.equal(ids("design-sobrancelhas"), "");
+  // nenhuma foto aparece em dois serviços
+  const todos = Object.values(rolos).flat().map((i) => i.id);
+  assert.equal(new Set(todos).size, todos.length);
+});
+
+test("serviços novos caem na categoria certa", () => {
+  assert.equal(categoriaDoServico("remocao-extensao-x1", "Remoção da extensão"), "cilios");
+  assert.equal(categoriaDoServico("volume-fox-eyes-x1", "Volume Fox eyes"), "cilios");
+  assert.equal(categoriaDoServico("hidragloss-x1", "Hidragloss"), "labios");
+  assert.equal(categoriaDoServico("brow-x1", "Brow Lamination"), "sobrancelha");
 });

@@ -126,8 +126,15 @@ export type LoyaltySettings = {
 export type BookingSettings = {
   /** 0 = domingo … 6 = sábado */
   weekdays: number[];
-  /** horários "HH:MM" oferecidos em cada dia */
+  /** horários "HH:MM" de quem não tem lista própria em `slots_por_dia` */
   slots: string[];
+  /**
+   * Os horários de início de cada dia da semana ("1" = segunda): a segunda
+   * pode começar e terminar diferente do sábado. Dia sem lista usa `slots`.
+   */
+  slots_por_dia: Record<string, string[]>;
+  /** de quanto em quanto tempo sai um horário (o painel monta a grade com ele) */
+  intervalo_min: number;
   /** antecedência mínima para marcar */
   lead_hours: number;
   /** até quantos dias à frente a cliente enxerga */
@@ -170,6 +177,8 @@ export type Settings = {
   signup: SignupSettings;
   numeros: NumerosSettings;
 };
+
+const HORAS_TER_SEX = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"];
 
 export const DEFAULT_SETTINGS: Settings = {
   business: {
@@ -219,10 +228,20 @@ export const DEFAULT_SETTINGS: Settings = {
     card_reward_description:
       "Um presente escolhido pela Tayssa por completar as 8 visitas do seu cartão.",
   },
+  // os horários que a Tayssa passou: o último de cada dia é o último início
   booking: {
     weekdays: [1, 2, 3, 4, 5, 6],
-    slots: ["09:00", "10:30", "12:00", "13:30", "15:00", "16:30", "18:00"],
-    lead_hours: 12,
+    slots: HORAS_TER_SEX,
+    slots_por_dia: {
+      "1": ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"],
+      "2": HORAS_TER_SEX,
+      "3": HORAS_TER_SEX,
+      "4": HORAS_TER_SEX,
+      "5": HORAS_TER_SEX,
+      "6": ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00"],
+    },
+    intervalo_min: 60,
+    lead_hours: 4,
     horizon_days: 30,
     default_duration_min: 90,
     max_open_per_client: 2,

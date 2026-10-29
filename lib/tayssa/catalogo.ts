@@ -8,9 +8,23 @@ import type { CategoriaMidia, PhotoRow } from "@/lib/tayssa/types";
  * sem banco, sem React — para ser testado e usado dos dois lados.
  */
 export const CATEGORIAS: { slug: CategoriaMidia; label: string; servicos: string[] }[] = [
-  { slug: "cilios", label: "Cílios", servicos: ["aplicacao-cilios", "manutencao-cilios"] },
-  { slug: "sobrancelha", label: "Sobrancelha", servicos: ["design-sobrancelhas"] },
-  { slug: "labios", label: "Boca e lábios", servicos: ["lip-spa"] },
+  {
+    slug: "cilios",
+    label: "Cílios",
+    servicos: [
+      "volume-brasileiro",
+      "volume-ingles",
+      "volume-egipcio",
+      "volume-marrom",
+      "volume-fox-eyes",
+      "manutencao-cilios",
+      "lash-lifting",
+      "remocao-extensao",
+      "aplicacao-cilios",
+    ],
+  },
+  { slug: "sobrancelha", label: "Sobrancelha", servicos: ["brow-lamination", "design-sobrancelhas"] },
+  { slug: "labios", label: "Boca e lábios", servicos: ["hidragloss", "lip-spa"] },
   { slug: "pele", label: "Pele", servicos: ["limpeza-de-pele"] },
   { slug: "outro", label: "Outros", servicos: [] },
 ];
@@ -20,9 +34,9 @@ export function categoriaDoServico(slug: string, nome = ""): CategoriaMidia {
   const achou = CATEGORIAS.find((c) => c.servicos.includes(slug));
   if (achou) return achou.slug;
   const n = `${slug} ${nome}`.toLowerCase();
-  if (/c[ií]lio|lash|volume|fio/.test(n)) return "cilios";
+  if (/c[ií]lio|lash|volume|fio|fox|extens/.test(n)) return "cilios";
   if (/sobrancelh|brow/.test(n)) return "sobrancelha";
-  if (/l[aá]bio|lip|boca/.test(n)) return "labios";
+  if (/l[aá]bio|lip|boca|gloss/.test(n)) return "labios";
   if (/pele|facial|limpeza|skin/.test(n)) return "pele";
   return "outro";
 }
@@ -106,6 +120,34 @@ export function montarCatalogo(linhas: Linha[]): CategoriaCatalogo[] {
 /** Os itens de uma categoria, todos os produtos juntos (para os rolos curtos). */
 export function itensDaCategoria(catalogo: CategoriaCatalogo[], slug: CategoriaMidia): MidiaCatalogo[] {
   return catalogo.find((c) => c.slug === slug)?.produtos.flatMap((p) => p.itens) ?? [];
+}
+
+/**
+ * O rolo de cada serviço da lista do site: as fotos e vídeos do produto
+ * que tem o nome dele ("Volume brasileiro", ou "Fox eyes" para "Volume Fox
+ * eyes", ou "Manutenção" para "Manutenção de cílios"). Produto que não é de
+ * um serviço só ("Volume", "Mega brasileiro") vai para o primeiro serviço
+ * da categoria. Antes cada serviço levava a categoria inteira: com oito
+ * serviços de cílios, o mesmo rolo aparecia oito vezes.
+ */
+export function rolosDosServicos(
+  catalogo: CategoriaCatalogo[],
+  servicos: { slug: string; name: string }[]
+): Record<string, MidiaCatalogo[]> {
+  const out: Record<string, MidiaCatalogo[]> = {};
+  const semVolume = (k: string) => k.replace(/^volume\s+/, "");
+  for (const cat of catalogo) {
+    const daCategoria = servicos.filter((s) => categoriaDoServico(s.slug, s.name) === cat.slug);
+    if (!daCategoria.length) continue;
+    for (const p of cat.produtos) {
+      const kp = chave(p.nome);
+      const exatos = daCategoria.filter((s) => chave(s.name) === kp || semVolume(chave(s.name)) === kp);
+      const contem = daCategoria.filter((s) => chave(s.name).includes(kp) || kp.includes(chave(s.name)));
+      const dono = exatos.length === 1 ? exatos[0] : contem.length === 1 ? contem[0] : daCategoria[0];
+      out[dono.slug] = [...(out[dono.slug] ?? []), ...p.itens];
+    }
+  }
+  return out;
 }
 
 /** Distância de edição entre duas palavras (quantas letras trocar). */

@@ -2,6 +2,7 @@ import { requireClientPage } from "@/lib/tayssa/auth/guards";
 import { getAppointments, getAvailability } from "@/lib/tayssa/queries/vip";
 import { getSettings } from "@/lib/tayssa/settings";
 import { dateLong, hhmm, plural } from "@/lib/tayssa/format";
+import { ehManutencao, valorLegivel } from "@/lib/tayssa/agendar";
 import type { AppointmentRow } from "@/lib/tayssa/types";
 import { BookingFlow } from "@/components/tayssa/vip/booking-flow";
 import { AppointmentList } from "@/components/tayssa/vip/appointment-list";
@@ -39,7 +40,12 @@ export default async function BookPage() {
             name: s.name,
             description: s.description,
             point_value: s.point_value,
-            preco: s.preco != null ? Number(s.preco) : null,
+            // a manutenção do Fox eyes custa mais: a manutenção é "a partir de"
+            precoLabel: valorLegivel(
+              s.preco != null ? Number(s.preco) : null,
+              ehManutencao(s.slug, s.name) ? services.map((v) => (v.preco_manutencao != null ? Number(v.preco_manutencao) : null)) : [],
+            ),
+            duracao: s.duration_min ?? settings.booking.default_duration_min,
           }))}
           days={days.map((d) => ({ iso: d.iso, slots: d.slots }))}
           atLimit={full}

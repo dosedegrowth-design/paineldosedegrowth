@@ -128,7 +128,7 @@ export function PublicExperience({
           <Testimonials conteudo={CONTEUDO} />
           <VipIntro benefits={benefits} />
           <ReferralCta />
-          <VisitInfo business={settings.business} conteudo={CONTEUDO} />
+          <VisitInfo business={settings.business} booking={settings.booking} conteudo={CONTEUDO} />
           <Closing scheduleUrl={links.schedule} ambiente={colagem[2] ?? colagem[0]} />
         </main>
         <PublicFooter business={settings.business} />

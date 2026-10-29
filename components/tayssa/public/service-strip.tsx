@@ -6,14 +6,16 @@ import { Icone, type IconeNome } from "@/components/tayssa/ui/icones";
 import { linkDoServico } from "@/components/tayssa/public/services";
 import { LinkAgendar } from "@/components/tayssa/public/agendar";
 
-/** O gesto de cada cuidado; serviço novo cai na flor. */
-const ICONE: Record<string, IconeNome> = {
-  "aplicacao-cilios": "olho",
-  "manutencao-cilios": "calendario",
-  "design-sobrancelhas": "flor",
-  "lip-spa": "coracao",
-  "limpeza-de-pele": "brilho",
-};
+/** O gesto de cada cuidado, pelo nome (serviço novo acha o seu sozinho; o resto cai na flor). */
+function iconeDo(slug: string, nome: string): IconeNome {
+  const n = `${slug} ${nome}`.toLowerCase();
+  if (/manuten/.test(n)) return "calendario";
+  if (/remo[cç]/.test(n)) return "brilho";
+  if (/sobrancelh|brow/.test(n)) return "flor";
+  if (/l[aá]bio|lip|gloss|boca/.test(n)) return "coracao";
+  if (/volume|fox|lash|c[ií]lio|extens/.test(n)) return "olho";
+  return "flor";
+}
 /** As cores da casa, em rodízio: o carrossel é a paleta inteira. */
 const CORES = ["vinho", "magenta", "rosa", "ameixa", "bordo", "blush"] as const;
 
@@ -82,7 +84,7 @@ export function ServiceStrip({ services, scheduleUrl }: { services: ServiceRow[]
               aria-label={`Agendar ${s.name}`}
             >
               <span className="tyfx__selo">
-                <Icone nome={ICONE[s.slug] ?? "flor"} className="tyfx__icone" />
+                <Icone nome={iconeDo(s.slug, s.name)} className="tyfx__icone" />
               </span>
               <span className="tyfx__nome">{s.name}</span>
               <span className="tyfx__acao" aria-hidden>

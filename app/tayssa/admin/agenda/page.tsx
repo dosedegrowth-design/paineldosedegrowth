@@ -6,6 +6,7 @@ import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES } from "@/lib/tayssa/config";
 import { dateShort, dayLabel, dayMonth, hhmm, nowInBusinessTz, weekdayShort } from "@/lib/tayssa/format";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
+import { horariosDaSemana } from "@/lib/tayssa/agendar";
 import { APPOINTMENT_STATUS_LABEL, type AppointmentStatus } from "@/lib/tayssa/types";
 import type { AppointmentWithClient } from "@/lib/tayssa/queries/admin";
 import {
@@ -367,17 +368,20 @@ export default async function AgendaAdminPage() {
           <dt>Horários</dt>
           <dd>
             <div className="tya-pills">
-              {b.slots.map((s) => (
-                <span key={s} className="tya-pill tya-pill--quiet tya-num">
-                  {s}
+              {horariosDaSemana(b).map((g) => (
+                <span key={g.dias} className="tya-pill tya-pill--quiet">
+                  {g.dias} · <span className="tya-num">{g.horas}</span>
                 </span>
               ))}
             </div>
+            <p className="tya-small" style={{ marginTop: 8 }}>
+              De {b.intervalo_min} em {b.intervalo_min} minutos. O último horário de cada dia é o último início.
+            </p>
           </dd>
           <dt>Regras</dt>
           <dd className="tya-small">
-            antecedência mínima {b.lead_hours}h · até {b.horizon_days} dias à frente · {b.default_duration_min} min por
-            atendimento · até {b.max_open_per_client}{" "}
+            antecedência mínima {b.lead_hours}h · até {b.horizon_days} dias à frente · cada serviço ocupa o tempo dele
+            (sem tempo próprio, {b.default_duration_min} min) · até {b.max_open_per_client}{" "}
             {b.max_open_per_client === 1 ? "horário em aberto" : "horários em aberto"} por cliente
           </dd>
         </dl>

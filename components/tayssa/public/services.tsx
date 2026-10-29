@@ -7,24 +7,31 @@ import type { PhotoSlot } from "@/lib/tayssa/photos";
 import { RealPhoto } from "@/components/tayssa/ui/real-photo";
 import { FotoAmbiente } from "@/components/tayssa/ui/foto-ambiente";
 import { Rolo } from "@/components/tayssa/public/rolo";
-import { categoriaDoServico, itensDaCategoria, type CategoriaCatalogo } from "@/lib/tayssa/catalogo";
+import { rolosDosServicos, type CategoriaCatalogo } from "@/lib/tayssa/catalogo";
 import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
 import { useFinePointer } from "@/components/tayssa/ui/use-media";
 import { Magnetic } from "@/components/tayssa/ui/magnetic";
 import type { ServicoDetalhe } from "@/lib/tayssa/content";
 import { Pendente } from "@/components/tayssa/ui/estrutura";
 import { LinkAgendar } from "@/components/tayssa/public/agendar";
-import { reais } from "@/lib/tayssa/agendar";
+import { duracaoLegivel, ehManutencao, reais, valorLegivel } from "@/lib/tayssa/agendar";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 /** Mesmos nomes do banco: a lista só existe para a página nunca abrir vazia. */
 const FALLBACK: ServiceRow[] = [
-  { id: "1", slug: "aplicacao-cilios", name: "Aplicação de cílios", description: "Aplicação completa, fio a fio ou volume.", point_value: 0, active: true, sort_order: 1 },
-  { id: "2", slug: "manutencao-cilios", name: "Manutenção de cílios", description: "Manutenção periódica da aplicação.", point_value: 0, active: true, sort_order: 2 },
-  { id: "3", slug: "design-sobrancelhas", name: "Design de sobrancelhas", description: "Design e acabamento.", point_value: 0, active: true, sort_order: 3 },
-  { id: "4", slug: "lip-spa", name: "Lip spa", description: "Hidratação e cuidado dos lábios.", point_value: 0, active: true, sort_order: 4 },
-  { id: "5", slug: "limpeza-de-pele", name: "Limpeza de pele", description: "Facial e limpeza profunda.", point_value: 0, active: true, sort_order: 5 },
+  { id: "1", slug: "volume-brasileiro", name: "Volume brasileiro", description: null, point_value: 0, active: true, sort_order: 1 },
+  { id: "2", slug: "volume-ingles", name: "Volume inglês", description: null, point_value: 0, active: true, sort_order: 2 },
+  { id: "3", slug: "volume-egipcio", name: "Volume egípcio", description: null, point_value: 0, active: true, sort_order: 3 },
+  { id: "4", slug: "volume-marrom", name: "Volume marrom", description: null, point_value: 0, active: true, sort_order: 4 },
+  { id: "5", slug: "volume-fox-eyes", name: "Volume Fox eyes", description: null, point_value: 0, active: true, sort_order: 5 },
+  { id: "6", slug: "manutencao-cilios", name: "Manutenção de cílios", description: null, point_value: 0, active: true, sort_order: 6 },
+  { id: "7", slug: "lash-lifting", name: "Lash lifting", description: null, point_value: 0, active: true, sort_order: 7 },
+  { id: "8", slug: "remocao-extensao", name: "Remoção da extensão", description: null, point_value: 0, active: true, sort_order: 8 },
+  { id: "9", slug: "brow-lamination", name: "Brow Lamination", description: null, point_value: 0, active: true, sort_order: 9 },
+  { id: "10", slug: "design-sobrancelhas", name: "Design de sobrancelhas", description: null, point_value: 0, active: true, sort_order: 10 },
+  { id: "11", slug: "hidragloss", name: "Hidragloss", description: null, point_value: 0, active: true, sort_order: 11 },
+  { id: "12", slug: "lip-spa", name: "Lip spa", description: null, point_value: 0, active: true, sort_order: 12 },
 ];
 
 /** Palavras que só ligam: nunca são elas que carregam a emoção do nome. */
@@ -113,6 +120,8 @@ export function Services({
   detalhes?: Record<string, ServicoDetalhe>;
 }) {
   const list = (services.length ? services : FALLBACK).filter((s) => s.slug !== "outro");
+  // cada serviço com o rolo do seu produto (a categoria inteira não se repete em cada linha)
+  const rolos = rolosDosServicos(catalogo, list);
   const fine = useFinePointer();
   const reduced = useReducedMotion();
   const [ativo, setAtivo] = useState<number | null>(null);
@@ -152,8 +161,8 @@ export function Services({
           />
           <Reveal delay={0.14}>
             <p className="ty-body ty-measure--tight tysv__lead">
-              Valores e disponibilidade direto com ela, no WhatsApp. Sem tabela
-              genérica: cada olhar pede uma <em>conversa</em>.
+              O valor e o tempo de cada cuidado. O horário você escolhe aqui e
+              confirma com ela, numa <em>conversa</em> no WhatsApp.
             </p>
           </Reveal>
         </div>
@@ -162,7 +171,13 @@ export function Services({
           {list.map((s, i) => {
             const foto = photoBySlug?.[s.slug];
             const n = String(i + 1).padStart(2, "0");
-            const rolo = itensDaCategoria(catalogo, categoriaDoServico(s.slug, s.name));
+            const rolo = rolos[s.slug] ?? [];
+            // a manutenção do Fox eyes custa mais: a manutenção começa "a partir de"
+            const valor = valorLegivel(
+              s.preco != null ? Number(s.preco) : null,
+              ehManutencao(s.slug, s.name) ? list.map((v) => (v.preco_manutencao != null ? Number(v.preco_manutencao) : null)) : [],
+            );
+            const ficha = fichaDo(s, detalhes[s.slug]);
             return (
               <Reveal key={s.id} as="li" className="tysv__item" delay={Math.min(i, 4) * 0.05} amount={0.25}>
                 <LinkAgendar
@@ -182,12 +197,13 @@ export function Services({
                   </span>
                   <h3 className="tysv__nome">
                     {nomeComEnfase(s.name)}
-                    {s.preco != null ? <span className="tysv__preco">{reais(Number(s.preco))}</span> : null}
+                    {valor ? <span className="tysv__preco">{valor}</span> : null}
                   </h3>
-                  {s.description || detalhes[s.slug] ? (
+                  {s.description || ficha.diferencial || ficha.linha.length ? (
                     <div className="tysv__dizer">
                       {s.description ? <p className="ty-body ty-measure--tight">{s.description}</p> : null}
-                      <Ficha d={detalhes[s.slug]} />
+                      {ficha.diferencial ? <p className="ty-body ty-measure--tight tysv__dif">{ficha.diferencial}</p> : null}
+                      {ficha.linha.length ? <p className="ty-mono tysv__ficha">{ficha.linha.join(" · ")}</p> : null}
                     </div>
                   ) : (
                     // mantém a prumada das colunas quando o serviço não tem
@@ -239,7 +255,7 @@ export function Services({
 
         <Reveal className="tysv__pe" delay={0.08}>
           <p className="tysv__pe-linha">
-            Me conta o que você tem hoje e o que quer ver no espelho — o desenho
+            Me conta o que você tem hoje e o que quer ver no espelho. O desenho
             a gente escolhe <em>junto</em>.
           </p>
           <Magnetic>
@@ -278,14 +294,16 @@ export function Services({
   );
 }
 
-/** Ficha do serviço em mono: só o que a Tayssa informou. */
-function Ficha({ d }: { d?: ServicoDetalhe }) {
-  if (!d) return null;
-  const itens = [d.duracao, d.preco].filter(Boolean) as string[];
-  return (
-    <>
-      {d.diferencial ? <p className="ty-body ty-measure--tight tysv__dif">{d.diferencial}</p> : null}
-      {itens.length ? <p className="ty-mono tysv__ficha">{itens.join(" · ")}</p> : null}
-    </>
-  );
+/**
+ * Ficha do serviço: o diferencial que ela escreveu e, em mono, o tempo e o
+ * valor da manutenção (do catálogo: mudou no painel, muda aqui). Só o que
+ * a Tayssa informou.
+ */
+function fichaDo(s: ServiceRow, d?: ServicoDetalhe): { diferencial: string | null; linha: string[] } {
+  const linha = [
+    duracaoLegivel(s.duration_min) ?? d?.duracao,
+    s.preco_manutencao != null ? `manutenção ${reais(Number(s.preco_manutencao))}` : null,
+    d?.preco,
+  ].filter(Boolean) as string[];
+  return { diferencial: d?.diferencial ?? null, linha };
 }

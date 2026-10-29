@@ -3,6 +3,7 @@ import { requireAdminPage } from "@/lib/tayssa/auth/guards";
 import { getSettings } from "@/lib/tayssa/settings";
 import { getAllBenefits, getAllServices, getBlackouts } from "@/lib/tayssa/queries/catalog";
 import { plural } from "@/lib/tayssa/format";
+import { horariosDoDia } from "@/lib/tayssa/rules";
 import { AdminBlock, AdminHeader } from "@/components/tayssa/admin/shell";
 import {
   BenefitConfigForm,
@@ -130,7 +131,11 @@ export default async function SettingsAdminPage() {
       <div className="tya-kpis tya-kpis--tight tya-kpis--cfg tya-stagger" style={{ marginTop: 18 }}>
         <Atalho n={servicosAtivos} label="Serviços no site" href="#servicos" />
         <Atalho n={dias.length} label="Dias abertos" href="#agenda" />
-        <Atalho n={settings.booking.slots.length} label="Horários por dia" href="#agenda" />
+        <Atalho
+          n={dias.reduce((n, d) => n + horariosDoDia(settings.booking, d).length, 0)}
+          label="Horários na semana"
+          href="#agenda"
+        />
         <Atalho n={settings.loyalty.card_size} label="Visitas por cartão" href="#cartao" />
         <Atalho n={beneficiosAtivos} label="Benefícios no ar" href="#beneficios" />
         <Atalho n={restricoesAtivas} label="Restrições ativas" href="#restricoes" />

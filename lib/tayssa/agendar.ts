@@ -5,15 +5,18 @@
  * conversa. Puro (sem banco, sem React) para ser testado e usado no client.
  */
 
+import { horariosDoDia } from "./rules.ts";
+
 export type DiaAgenda = {
   iso: string;
-  slots: { time: string; available: boolean }[];
+  /** `ate`: minutos livres depois do início (null = o resto do dia) */
+  slots: { time: string; available: boolean; ate?: number | null }[];
 };
 
 export type PedidoAgenda = {
-  /** nome do serviço, como no catálogo ("Aplicação de cílios") */
+  /** nome do serviço, como no catálogo ("Manutenção de cílios") */
   servico: string;
-  /** volume ou técnica, quando ela escolheu ("Volume brasileiro") */
+  /** de qual volume é a manutenção ("Volume brasileiro"), quando ela escolheu */
   tecnica?: string | null;
   /** "AAAA-MM-DD" */
   dia: string;
@@ -63,14 +66,85 @@ export function reais(v: number): string {
   return dec === "00" ? `R$ ${milhar}` : `R$ ${milhar},${dec}`;
 }
 
-/** Só os dias com pelo menos um horário livre. */
-export function diasAbertos(dias: DiaAgenda[]): DiaAgenda[] {
-  return dias.filter((d) => d.slots.some((s) => s.available));
+/**
+ * O serviço de `duracaoMin` minutos cabe a partir deste horário? Livre no
+ * início e com tempo até o próximo horário ocupado: o volume de 3h não
+ * cabe às 10h se às 11h já tem alguém.
+ */
+export function cabeNoHorario(
+  slot: { available: boolean; ate?: number | null },
+  duracaoMin?: number | null,
+): boolean {
+  if (!slot.available) return false;
+  if (slot.ate == null || !duracaoMin || duracaoMin <= 0) return true;
+  return slot.ate >= duracaoMin;
+}
+
+/** Só os dias com pelo menos um horário em que o serviço cabe. */
+export function diasAbertos(dias: DiaAgenda[], duracaoMin?: number | null): DiaAgenda[] {
+  return dias.filter((d) => d.slots.some((s) => cabeNoHorario(s, duracaoMin)));
+}
+
+/** 180 → "3h"; 90 → "1h30"; 40 → "40 min" */
+export function duracaoLegivel(min: number | null | undefined): string | null {
+  if (!min || min <= 0) return null;
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  if (!h) return `${m} min`;
+  return m ? `${h}h${String(m).padStart(2, "0")}` : `${h}h`;
+}
+
+/**
+ * "R$ 120", ou "a partir de R$ 120" quando há variação mais cara (a
+ * manutenção do Fox eyes custa mais que a dos outros volumes).
+ */
+export function valorLegivel(preco: number | null | undefined, variacoes: (number | null | undefined)[] = []): string | null {
+  if (preco == null) return null;
+  const aPartir = variacoes.some((v) => v != null && v > preco);
+  return `${aPartir ? "a partir de " : ""}${reais(preco)}`;
+}
+
+/** Manutenção de cílios: pergunta de qual volume é (e o valor vem dele). */
+export function ehManutencao(slug: string, nome = ""): boolean {
+  return /manuten/i.test(`${slug} ${nome}`);
+}
+
+const NOMES_DIAS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+
+/**
+ * Os horários da semana como a cliente lê: dias seguidos com o mesmo
+ * começo e fim viram um grupo. { dias: "Terça a sexta", horas: "9h às 19h" }
+ */
+export function horariosDaSemana(booking: {
+  weekdays: number[];
+  slots: string[];
+  slots_por_dia?: Record<string, string[]> | null;
+}): { dias: string; horas: string }[] {
+  // segunda primeiro, domingo no fim
+  const ordem = [1, 2, 3, 4, 5, 6, 0].filter((d) => booking.weekdays.includes(d));
+  const grupos: { dias: number[]; horas: string }[] = [];
+  for (const d of ordem) {
+    const grade = [...horariosDoDia(booking, d)].sort();
+    if (!grade.length) continue;
+    const inicio = horaLegivel(grade[0]);
+    const fim = horaLegivel(grade[grade.length - 1]);
+    const horas = inicio === fim ? inicio : `${inicio} às ${fim}`;
+    const ultimo = grupos[grupos.length - 1];
+    const anterior = ultimo?.dias[ultimo.dias.length - 1];
+    if (ultimo && anterior !== undefined && (anterior + 1) % 7 === d && ultimo.horas === horas) ultimo.dias.push(d);
+    else grupos.push({ dias: [d], horas });
+  }
+  return grupos.map((g) => {
+    const primeiro = NOMES_DIAS[g.dias[0]];
+    const ultimo = NOMES_DIAS[g.dias[g.dias.length - 1]].toLowerCase();
+    const dias = g.dias.length === 1 ? primeiro : g.dias.length === 2 ? `${primeiro} e ${ultimo}` : `${primeiro} a ${ultimo}`;
+    return { dias, horas: g.horas };
+  });
 }
 
 /** A mensagem que chega no WhatsApp dela. */
 export function mensagemAgendamento(p: PedidoAgenda): string {
-  const servico = p.tecnica ? `${p.servico} — ${p.tecnica}` : p.servico;
+  const servico = p.tecnica ? `${p.servico} (${p.tecnica})` : p.servico;
   const nome = p.nome.trim();
   return [
     "Oi, Tayssa! Quero agendar pelo site.",

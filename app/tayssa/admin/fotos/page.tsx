@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getPrecosProdutos, listAllPhotos } from "@/lib/tayssa/queries/photos";
 import { ROUTES } from "@/lib/tayssa/config";
 import { getActiveServices } from "@/lib/tayssa/queries/catalog";
-import { assignPhotos, type PhotoSlot } from "@/lib/tayssa/photos";
+import { TECNICAS_TRABALHO, assignPhotos, type PhotoSlot } from "@/lib/tayssa/photos";
 import { AdminBlock, AdminHeader, Stat } from "@/components/tayssa/admin/shell";
 import { PhotoUpload } from "@/components/tayssa/admin/photo-upload";
 import { PhotoLibrary } from "@/components/tayssa/admin/photo-library";
@@ -51,9 +51,9 @@ export default async function PhotosPage({ searchParams }: { searchParams: Promi
   put(assigned.hero, "Herói do site");
   // a sequência de trabalho é escolhida por palavra-chave de técnica
   // (WORK_KEYWORDS em lib/tayssa/photos.ts), não por posição na fila
-  ["Fio a fio", "Volume", "Manutenção"].forEach((tecnica, i) => put(assigned.work[i], tecnica));
+  TECNICAS_TRABALHO.forEach((tecnica, i) => put(assigned.work[i], tecnica));
   assigned.details.forEach((s) => put(s, "Detalhes"));
-  // `assignPhotos()` casa as cinco slugs fixas de SERVICE_KEYWORDS, esteja o
+  // `assignPhotos()` casa as slugs fixas de SERVICE_KEYWORDS, esteja o
   // serviço ativo ou não; a página pública só desenha os serviços ativos.
   // Serviço desativado, então, não é lugar: a foto não ganha selo por ele. E
   // o selo leva o nome do catálogo — slug é endereço, não palavra de tela.

@@ -194,6 +194,10 @@
   .ty-scope .tyst__onde .ty-link {
     justify-self: center;
   }
+  /* atendimento: as listas curtas no meio, como os títulos */
+  .ty-scope .tyat__lista {
+    text-align: center;
+  }
 
   /* ---------- página de indicação: o cabeçalho no meio; as regras
      numeradas e o formulário seguem alinhados à esquerda, como todo

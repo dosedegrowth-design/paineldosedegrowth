@@ -11,22 +11,12 @@ const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 /**
  * As três técnicas da casa. `dizer` é a frase curta que vai no corpo
  * grande — a palavra em <em> é a que carrega a emoção e vira itálico
- * serifado. `texto` é a explicação, na coluna que corre.
+ * serifado. `texto` é a explicação, na coluna que corre. Os textos vêm do
+ * que a Tayssa escreveu no formulário (28/10/2026).
  */
 const TECNICAS: { n: string; nome: string; dizer: ReactNode; texto: string }[] = [
   {
     n: "01",
-    nome: "Fio a fio",
-    dizer: (
-      <>
-        Natural e leve, aplicado um a <em>um</em>.
-      </>
-    ),
-    texto:
-      "Uma extensão para cada cílio seu, na curvatura e no tamanho que o seu olho pede. Fecha a linha, define o contorno e continua parecendo seu: ninguém vê o fio, vê o olho.",
-  },
-  {
-    n: "02",
     nome: "Volume",
     dizer: (
       <>
@@ -34,7 +24,18 @@ const TECNICAS: { n: string; nome: string; dizer: ReactNode; texto: string }[] =
       </>
     ),
     texto:
-      "Leques leves, abertos fio por fio na hora da aplicação. Preenchem a falha e marcam a raiz sem pesar na pálpebra — o olhar fica mais cheio, nunca mais pesado.",
+      "Brasileiro, inglês, egípcio ou marrom: o volume preenche a linha e dá destaque ao olhar, com efeito definido e sem exagero. A prioridade é preencher 100% dos seus fios; se você preferir um efeito mais leve, ela ajusta com você.",
+  },
+  {
+    n: "02",
+    nome: "Fox eyes",
+    dizer: (
+      <>
+        Alongado e <em>marcante</em>.
+      </>
+    ),
+    texto:
+      "Os comprimentos são distribuídos para alongar o olhar e valorizar o canto externo dos olhos. O mapeamento segue o formato dos seus olhos e o efeito que você quer, sem perder a harmonia.",
   },
   {
     n: "03",
@@ -45,7 +46,7 @@ const TECNICAS: { n: string; nome: string; dizer: ReactNode; texto: string }[] =
       </>
     ),
     texto:
-      "Retoque no ritmo do seu ciclo: sai o que cresceu, entra o que caiu, o desenho volta ao lugar. É a parte que faz o resultado durar.",
+      "Entre 15 e 20 dias, no ritmo do crescimento dos seus fios: sai o que cresceu, entra o que caiu, o desenho volta ao lugar. Se sobrar pouca extensão, o caminho é uma nova aplicação.",
   },
 ];
 
@@ -127,7 +128,7 @@ export function WorkSequence({ photos }: { photos?: PhotoSlot[] }) {
         {/* ficha da seção */}
         <div className="tyw__topo">
           <span className="ty-mono ty-mono--ink">Trabalho</span>
-          <span className="ty-mono">01 — 03</span>
+          <span className="ty-mono">01 a 03</span>
         </div>
 
         <div className="tyw__cabeca">
