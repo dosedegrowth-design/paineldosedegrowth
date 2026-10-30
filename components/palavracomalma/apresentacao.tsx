@@ -1,8 +1,8 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowRight, Check, ChevronLeft, ChevronRight, Maximize2, Minimize2 } from "lucide-react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ArrowRight, Check, ChevronLeft, ChevronRight, Maximize2, Minimize2, X, ZoomIn } from "lucide-react";
 
 // Apresentação comercial do projeto Palavra com Alma: 6 slides, tela cheia.
 // Todos os prints vêm do preview publicado (painel.dosedegrowth.com/palavracomalma/site)
@@ -11,9 +11,14 @@ import { ArrowRight, Check, ChevronLeft, ChevronRight, Maximize2, Minimize2 } fr
 const F = "/palavracomalma/apresentacao";
 const TOTAL = 6;
 
+// Todo print é clicável: abre no meio da tela (ZoomTela). Os dados vão em data-* para a
+// apresentação montar a fila de prints do slide sem cada mockup precisar saber dela.
 function Navegador({ src, url, alt, className = "" }: { src: string; url: string; alt: string; className?: string }) {
   return (
-    <div className={`ap-nav ${className}`}>
+    <div className={`ap-nav ${className}`} data-zoom="nav" data-src={src} data-alt={alt} data-url={url}>
+      <span className="ap-ampliar" aria-hidden>
+        <ZoomIn />
+      </span>
       <div className="ap-nav-barra" aria-hidden>
         <i />
         <i />
@@ -27,7 +32,10 @@ function Navegador({ src, url, alt, className = "" }: { src: string; url: string
 
 function Celular({ src, alt, className = "" }: { src: string; alt: string; className?: string }) {
   return (
-    <div className={`ap-cel ${className}`}>
+    <div className={`ap-cel ${className}`} data-zoom="cel" data-src={src} data-alt={alt}>
+      <span className="ap-ampliar" aria-hidden>
+        <ZoomIn />
+      </span>
       <img src={src} alt={alt} width={800} height={1731} />
     </div>
   );
@@ -70,12 +78,156 @@ function Rodape({ n }: { n: number }) {
 
 const d = (n: number) => ({ ["--d" as string]: String(n) }) as React.CSSProperties;
 
+type ItemZoom = { tipo: "nav" | "cel"; src: string; alt: string; url: string; legenda: string; el: HTMLElement };
+type EstadoZoom = { itens: ItemZoom[]; i: number; troca: boolean; fechando: boolean };
+
+const VOO = { duration: 560, easing: "cubic-bezier(.2,.85,.25,1)" };
+const semMovimento = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/** Transform que leva o quadro (no meio da tela) de volta ao lugar e ao tamanho do print no slide. */
+function noLugar(quadro: HTMLElement, origem: HTMLElement) {
+  const t = quadro.getBoundingClientRect();
+  const o = origem.getBoundingClientRect();
+  return `translate(${o.left - t.left}px, ${o.top - t.top}px) scale(${o.width / t.width}, ${o.height / t.height})`;
+}
+
+/** O print aberto no meio da tela: sai do lugar dele no slide, cresce, e volta ao fechar. */
+function ZoomTela({
+  z,
+  onIr,
+  onFechar,
+  onFim,
+}: {
+  z: EstadoZoom;
+  onIr: (i: number) => void;
+  onFechar: () => void;
+  onFim: () => void;
+}) {
+  const quadro = useRef<HTMLDivElement>(null);
+  const fundo = useRef<HTMLDivElement>(null);
+  const item = z.itens[z.i];
+  const total = z.itens.length;
+
+  // o print some do slide enquanto está aberto no meio (parece que saiu de lá)
+  useEffect(() => {
+    const origem = item.el.classList;
+    origem.add("is-zoom-origem");
+    return () => origem.remove("is-zoom-origem");
+  }, [item]);
+
+  // abrir
+  useLayoutEffect(() => {
+    if (!quadro.current || semMovimento()) return;
+    quadro.current.animate([{ transform: noLugar(quadro.current, item.el) }, { transform: "none" }], VOO);
+    fundo.current?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 380, easing: "ease-out" });
+    // só na abertura; trocar de print usa a animação de CSS
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // fechar: volta para o lugar do print que está aberto agora
+  useEffect(() => {
+    if (!z.fechando) return;
+    if (!quadro.current || semMovimento()) return onFim();
+    const voo = quadro.current.animate([{ transform: "none" }, { transform: noLugar(quadro.current, item.el) }], {
+      ...VOO,
+      duration: 460,
+      fill: "forwards",
+    });
+    fundo.current?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 420, easing: "ease-in", fill: "forwards" });
+    voo.onfinish = onFim;
+  }, [z.fechando, item, onFim]);
+
+  return (
+    <div
+      className={`ap-zoom${z.fechando ? " is-fechando" : ""}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label={item.legenda}
+      onClick={onFechar}
+    >
+      <div className="ap-zoom-fundo" ref={fundo} />
+      <div key={z.i} ref={quadro} className={`ap-zoom-quadro is-${item.tipo}${z.troca ? " is-troca" : ""}`}>
+        {item.tipo === "nav" ? (
+          <div className="ap-nav">
+            <div className="ap-nav-barra" aria-hidden>
+              <i />
+              <i />
+              <i />
+              <span>{item.url}</span>
+            </div>
+            <img src={item.src} alt={item.alt} width={2000} height={1250} />
+          </div>
+        ) : (
+          <div className="ap-cel">
+            <img src={item.src} alt={item.alt} width={800} height={1731} />
+          </div>
+        )}
+      </div>
+      <div className="ap-zoom-info" onClick={(e) => e.stopPropagation()}>
+        {total > 1 && (
+          <button onClick={() => onIr(z.i - 1)} disabled={z.i === 0} aria-label="Print anterior">
+            <ChevronLeft size={18} />
+          </button>
+        )}
+        <span>{item.legenda}</span>
+        {total > 1 && (
+          <>
+            <small>
+              {z.i + 1} / {total}
+            </small>
+            <button onClick={() => onIr(z.i + 1)} disabled={z.i === total - 1} aria-label="Próximo print">
+              <ChevronRight size={18} />
+            </button>
+          </>
+        )}
+      </div>
+      <button className="ap-zoom-fechar" aria-label="Fechar">
+        <X size={20} />
+      </button>
+    </div>
+  );
+}
+
 export function Apresentacao() {
   const [atual, setAtual] = useState(0);
   const [cheia, setCheia] = useState(false);
   // o valor do slide 5 começa escondido numa carta virada; vira no clique ou no "avançar"
   const [revelado, setRevelado] = useState(false);
   const toque = useRef<{ x: number; y: number } | null>(null);
+  // print aberto no meio da tela
+  const [zoom, setZoom] = useState<EstadoZoom | null>(null);
+  const fecharZoom = useCallback(() => setZoom((z) => (z ? { ...z, fechando: true } : z)), []);
+  const fimZoom = useCallback(() => setZoom(null), []);
+  const irZoom = useCallback(
+    (i: number) => setZoom((z) => (z && !z.fechando && i >= 0 && i < z.itens.length ? { ...z, i, troca: true } : z)),
+    []
+  );
+  // com um print aberto, "avançar" e "voltar" andam pelos prints do slide; passando do último ou do primeiro, fecha
+  const passoZoom = useCallback(
+    (passo: 1 | -1) => {
+      if (!zoom || zoom.fechando) return;
+      const i = zoom.i + passo;
+      if (i < 0 || i >= zoom.itens.length) fecharZoom();
+      else irZoom(i);
+    },
+    [zoom, fecharZoom, irZoom]
+  );
+
+  const abrirZoom = useCallback((e: React.MouseEvent) => {
+    const el = (e.target as HTMLElement).closest<HTMLElement>("[data-zoom]");
+    const slide = el?.closest(".ap-slide");
+    if (!el || !slide) return;
+    const els = Array.from(slide.querySelectorAll<HTMLElement>("[data-zoom]"));
+    const itens = els.map((x) => ({
+      tipo: x.dataset.zoom === "cel" ? ("cel" as const) : ("nav" as const),
+      src: x.dataset.src ?? "",
+      alt: x.dataset.alt ?? "",
+      url: x.dataset.url ?? "",
+      legenda: x.closest("figure")?.querySelector("figcaption")?.textContent?.trim() || x.dataset.alt || "",
+      el: x,
+    }));
+    setZoom({ itens, i: els.indexOf(el), troca: false, fechando: false });
+  }, []);
 
   const ir = useCallback((n: number) => {
     const alvo = Math.max(0, Math.min(TOTAL - 1, n));
@@ -113,6 +265,17 @@ export function Apresentacao() {
     const tecla = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       const k = e.key;
+      if (zoom) {
+        if (k === "Escape") fecharZoom();
+        else if (["ArrowRight", "ArrowDown", "PageDown", " ", "Enter"].includes(k)) {
+          e.preventDefault();
+          passoZoom(1);
+        } else if (["ArrowLeft", "ArrowUp", "PageUp", "Backspace"].includes(k)) {
+          e.preventDefault();
+          passoZoom(-1);
+        } else if (k === "f" || k === "F") telaCheia();
+        return;
+      }
       if (["ArrowRight", "ArrowDown", "PageDown", " ", "Enter"].includes(k)) {
         e.preventDefault();
         avancar();
@@ -126,20 +289,24 @@ export function Apresentacao() {
     };
     window.addEventListener("keydown", tecla);
     return () => window.removeEventListener("keydown", tecla);
-  }, [atual, ir, avancar, telaCheia]);
+  }, [atual, ir, avancar, telaCheia, zoom, fecharZoom, passoZoom]);
 
   const cls = (n: number, extra: string) => `ap-slide ${extra}${n === atual ? " is-ativo" : ""}`;
 
   return (
     <div
       className="ap"
+      onClick={(e) => {
+        if (!zoom) abrirZoom(e);
+      }}
       onTouchStart={(e) => (toque.current = { x: e.touches[0].clientX, y: e.touches[0].clientY })}
       onTouchEnd={(e) => {
         if (!toque.current) return;
         const dx = e.changedTouches[0].clientX - toque.current.x;
         const dy = e.changedTouches[0].clientY - toque.current.y;
         if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-          if (dx < 0) avancar();
+          if (zoom) passoZoom(dx < 0 ? 1 : -1);
+          else if (dx < 0) avancar();
           else ir(atual - 1);
         }
         toque.current = null;
@@ -457,6 +624,8 @@ export function Apresentacao() {
           {cheia ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
         </button>
       </nav>
+
+      {zoom && <ZoomTela z={zoom} onIr={irZoom} onFechar={fecharZoom} onFim={fimZoom} />}
     </div>
   );
 }
