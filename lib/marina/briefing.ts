@@ -44,14 +44,25 @@ export const FRENTE_DICA: Record<Frente, string> = {
 /** A outra frente, para o botão de mover. */
 export const outraFrente = (f: Frente): Frente => (f === "ultimas" ? "novas" : "ultimas");
 
-/** Uma foto ou vídeo na tela de organizar, com a peça de onde ele veio. */
+/**
+ * Uma foto ou vídeo na tela de organizar.
+ *
+ * `peca` é o nome do produto DESTA foto, no padrão da marca (peça e estampa
+ * num nome só, como na loja: "CAMISA ANA PARAÍSO BLUE"). `grupo` é o anúncio
+ * onde a Bia cadastrou: nas estampas novas ela juntou várias peças no mesmo,
+ * agrupando por estampa, então um grupo tem fotos de produtos diferentes.
+ */
 export type ItemOrganizar = ArquivoAnuncio & {
   frente: Frente;
   fora: boolean;
   peca: string;
+  grupo: string;
   estampa: string;
+  produtoUrl: string | null;
   ordem: number;
 };
+
+export const LIMITE_PECA = 160;
 
 export function contarFrente(f: Frente, itens: ItemOrganizar[]): number {
   return itens.filter((i) => !i.fora && i.frente === f).length;

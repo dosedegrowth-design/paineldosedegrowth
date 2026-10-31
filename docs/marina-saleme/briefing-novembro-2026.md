@@ -154,3 +154,47 @@ order by f.fora, f.frente, a.ordem;
 ```
 
 Migration: `supabase/migrations/20261031000000_marina_briefing_frentes.sql`.
+
+## O nome do produto, por foto (31/out)
+
+Pedido da Bia por áudio: o padrão da marca é **peça e estampa num nome só**,
+como na loja ("CAMISA ANA PARAÍSO BLUE"). O formulário tinha dois campos
+separados, e nas estampas novas ela **cadastrou várias peças dentro do mesmo
+anúncio, agrupando por estampa**. Então o nome do produto passou a ser de
+cada **foto** (`briefing_arquivos.peca` + `produto_url`), não do anúncio.
+
+As 43 fotos foram casadas uma a uma com a foto do produto na Shopify: a
+maioria é literalmente o mesmo arquivo da loja, e as que não eram foram
+conferidas lado a lado. Confirma as três correções que ela mandou:
+
+| Arquivo | Era | É |
+|---|---|---|
+| `51874A7E-…jpg` | "Vestido Lele longo, Saia midi, Top Lele" | **SAIA ENVELOPE PARAÍSO VERMELHO** |
+| `MARINA-SALEME_ 9.png` | idem | **CAFTAN AMÉLIA PARAÍSO PRETO** (rascunho na loja, estoque 0) |
+| `MARINA_SALEME 13.png` | idem | **VESTIDO CLARICE PARAISO PRETO** |
+
+E o resto do grupo Paraíso: `31052023…18516/18613` = Vestido Lele Longo
+Paraíso Vermelho, `MARINA_SALEME 2.png` = Top Lele Paraíso Vermelho,
+`MARINA-SALEME_ 4.png` = **Saia Midi Paraíso Preto** (ela avisou: a saia midi
+é a preta). Tijolo: as duas fotos são a **Camisa T Tijolo**, não "Camisa Ana e
+Camisa T"; a Camisa Ana Tijolo (1 un.) não tem foto no briefing. Rei e Rainha:
+Panneau, Camisa Ana listra vermelha, Vestido Luiza, Caftan, Camisa T e Camisa
+Jota listra vermelha.
+
+Duas correções ao que ficou registrado antes:
+
+- A foto `tijolo-floricultura.png` **não está na frente errada**. É um look com
+  o Moletom Iguana (última peça) vestido com uma saia plissada Tijolo; a peça
+  à venda ali é o moletom. A saia plissada Tijolo não existe como produto na
+  loja (os Tijolo ativos são Camisa T, Camisa Ana e Vestido de Amarrar).
+- A foto repetida da Camisa Ana dentro da Saia Prega Damas **veio da própria
+  loja**: a página do produto Saia Prega Damas usa a foto da Camisa Ana como
+  imagem principal (`CAMISAANA_dcbb440a-….jpg`). Não foi engano da Bia no
+  formulário; é a loja que está assim.
+
+Na tela, cada cartão mostra o nome do produto, a estampa, "ver na loja" e,
+quando o nome difere do anúncio, "você cadastrou em: …" em âmbar. "Não é essa
+peça?" abre um campo para ela corrigir sem precisar mandar no WhatsApp; vazio
+volta a herdar o nome do anúncio.
+
+Migration: `supabase/migrations/20261031010000_marina_briefing_peca.sql`.

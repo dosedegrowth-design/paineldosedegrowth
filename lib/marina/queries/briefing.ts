@@ -95,7 +95,7 @@ export async function getOrganizarMarina(): Promise<OrganizarMarina> {
   const [arquivosR, anunciosR, configR] = await Promise.all([
     db
       .from("briefing_arquivos")
-      .select("id, anuncio_id, public_url, nome, mime, bytes, frente, fora")
+      .select("id, anuncio_id, public_url, nome, mime, bytes, frente, fora, peca, produto_url")
       .order("created_at"),
     db.from("briefing_anuncios").select("id, ordem, peca, estampa").order("ordem"),
     db.from("briefing_config").select("dados").eq("chave", "_organizado").maybeSingle(),
@@ -118,9 +118,16 @@ export async function getOrganizarMarina(): Promise<OrganizarMarina> {
       bytes: number | null;
       frente: string;
       fora: boolean;
+      peca: string | null;
+      produto_url: string | null;
     }[]
   ).map((f) => {
     const a = porAnuncio.get(f.anuncio_id);
+    // o rótulo que a Bia escreveu à mão vira coluna; sai do nome da peça.
+    // Um deles veio sem abrir parêntese ("… seção últimas peças)"), daí o `\(?`
+    const grupo = (a?.peca ?? "")
+      .replace(/\s*\(?\s*(?:se[çc][ãa]o\s*)?(?:[úu]ltimas\s+pe[çc]as|novas\s+estampas)\s*\)?\s*$/i, "")
+      .trim();
     return {
       id: f.id,
       anuncioId: f.anuncio_id,
@@ -130,11 +137,10 @@ export async function getOrganizarMarina(): Promise<OrganizarMarina> {
       bytes: f.bytes,
       frente: f.frente as Frente,
       fora: f.fora,
-      // o rótulo que a Bia escreveu à mão vira coluna; sai do nome da peça.
-      // Um deles veio sem abrir parêntese ("… seção últimas peças)"), daí o `\(?`
-      peca: (a?.peca ?? "")
-        .replace(/\s*\(?\s*(?:se[çc][ãa]o\s*)?(?:[úu]ltimas\s+pe[çc]as|novas\s+estampas)\s*\)?\s*$/i, "")
-        .trim(),
+      // o nome do produto é de cada foto; sem ele, vale o do anúncio
+      peca: f.peca?.trim() || grupo,
+      grupo,
+      produtoUrl: f.produto_url?.trim() || null,
       estampa: a?.estampa?.trim() ?? "",
       ordem: a?.ordem ?? 0,
     };

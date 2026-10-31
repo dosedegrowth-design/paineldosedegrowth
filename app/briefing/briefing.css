@@ -1005,3 +1005,68 @@ body:has(.ddgb--marina) {
 .ddgb-pagina--largo .ddgb-enviar {
   padding-inline: 26px;
 }
+
+/* nome do produto na foto: padrão da marca (peça e estampa num nome só) */
+.ddgb-post__de a,
+.ddgb-post__corrigir {
+  font: inherit;
+  color: var(--ddgb-tinta);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.ddgb-post__grupo,
+.ddgb-post__arquivo {
+  margin: 2px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--ddgb-tinta-2);
+  overflow-wrap: anywhere;
+}
+.ddgb-post__grupo {
+  color: #8a6a2f;
+}
+.ddgb-post__editar {
+  display: grid;
+  gap: 6px;
+}
+.ddgb-post__editar label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ddgb-tinta-2);
+}
+.ddgb-post__editar input {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 12px;
+  /* 16px para o iPhone não dar zoom ao focar */
+  font: inherit;
+  font-size: 16px;
+  color: var(--ddgb-tinta);
+  background: var(--ddgb-campo);
+  border: 1.5px solid var(--ddgb-linha-forte);
+  border-radius: 10px;
+}
+.ddgb-post__editar input:focus-visible {
+  outline: 2px solid var(--ddgb-tinta);
+  outline-offset: 1px;
+}
+.ddgb-post__editar-acoes {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ddgb-post__editar-acoes button:first-child {
+  min-height: 42px;
+  padding: 8px 18px;
+  font: inherit;
+  font-weight: 600;
+  color: #ffffff;
+  background: var(--ddgb-tinta);
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}

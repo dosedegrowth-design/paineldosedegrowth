@@ -6,11 +6,13 @@ import {
   guardarArquivoAction,
   moverArquivoAction,
   organizadoMarinaAction,
+  renomearArquivoAction,
 } from "@/lib/marina/actions/briefing";
 import {
   FRENTES,
   FRENTE_DICA,
   FRENTE_TITULO,
+  LIMITE_PECA,
   contarFrente,
   ehVideo,
   outraFrente,
@@ -46,6 +48,8 @@ export function MarinaOrganizar({
   const [itens, setItens] = useState<ItemOrganizar[]>(iniciais);
   const [ativa, setAtiva] = useState<Frente>(FRENTES[0]);
   const [gaveta, setGaveta] = useState(false);
+  const [editando, setEditando] = useState<string | null>(null);
+  const campo = useRef<HTMLInputElement | null>(null);
   const [estado, setEstado] = useState<Estado>("");
   const [recado, setRecado] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
@@ -106,6 +110,18 @@ export function MarinaOrganizar({
     );
   }
 
+  function renomear(item: ItemOrganizar, valor: string) {
+    const peca = valor.trim();
+    setEditando(null);
+    if (peca === item.peca) return;
+    void aplicar(
+      item.id,
+      { peca: peca || item.grupo },
+      () => renomearArquivoAction({ k: chave, id: item.id, peca }),
+      peca ? `Agora chama ${peca}.` : "Voltou a usar o nome do cadastro.",
+    );
+  }
+
   async function terminei() {
     setFechando(true);
     setErro(null);
@@ -137,10 +153,57 @@ export function MarinaOrganizar({
           {ehVideo(item.mime) ? <span className="ddgb-post__selo">vídeo</span> : null}
         </div>
         <div className="ddgb-post__texto">
-          <p className="ddgb-post__peca">{item.peca || "Sem nome"}</p>
-          <p className="ddgb-post__de">
-            {[item.estampa, item.nome].filter(Boolean).join(" · ")}
-          </p>
+          {editando === item.id ? (
+            <div className="ddgb-post__editar">
+              <label htmlFor={`peca-${item.id}`}>Nome do produto, como na loja</label>
+              <input
+                id={`peca-${item.id}`}
+                type="text"
+                autoComplete="off"
+                autoFocus
+                maxLength={LIMITE_PECA}
+                defaultValue={item.peca}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") renomear(item, e.currentTarget.value);
+                  if (e.key === "Escape") setEditando(null);
+                }}
+                ref={(el) => {
+                  campo.current = el;
+                }}
+              />
+              <div className="ddgb-post__editar-acoes">
+                <button type="button" onClick={() => renomear(item, campo.current?.value ?? "")}>
+                  Salvar
+                </button>
+                <button type="button" className="ddgb-link ddgb-link--quieto" onClick={() => setEditando(null)}>
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <p className="ddgb-post__peca">{item.peca || "Sem nome"}</p>
+              <p className="ddgb-post__de">
+                {item.estampa ? <span>{item.estampa}</span> : null}
+                {item.produtoUrl ? (
+                  <>
+                    {item.estampa ? " · " : null}
+                    <a href={item.produtoUrl} target="_blank" rel="noreferrer">
+                      ver na loja
+                    </a>
+                  </>
+                ) : null}
+                {" · "}
+                <button type="button" className="ddgb-post__corrigir" onClick={() => setEditando(item.id)}>
+                  não é essa peça?
+                </button>
+              </p>
+              {item.grupo && item.grupo !== item.peca ? (
+                <p className="ddgb-post__grupo">você cadastrou em: {item.grupo}</p>
+              ) : null}
+              <p className="ddgb-post__arquivo">{item.nome}</p>
+            </>
+          )}
         </div>
         <div className="ddgb-post__acoes">
           {item.fora ? (

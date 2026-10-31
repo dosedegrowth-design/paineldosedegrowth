@@ -7,6 +7,7 @@ import { chaveConfere } from "@/lib/marina/queries/briefing";
 import {
   FRENTES,
   LIMITES,
+  LIMITE_PECA,
   MESES,
   type Anuncio,
   type ArquivoAnuncio,
@@ -274,5 +275,31 @@ export async function organizadoMarinaAction(input: { k: string }): Promise<Resu
       .upsert({ chave: "_organizado", dados: { organizado_em: organizadoEm }, updated_at: organizadoEm });
     if (error) throw new Error(error.message);
     return { organizadoEm };
+  });
+}
+
+/**
+ * CORRIGIR O NOME DO PRODUTO desta foto. O padrão da marca é peça e estampa
+ * num nome só, como na loja. Nome vazio volta a herdar o nome do anúncio.
+ */
+export async function renomearArquivoAction(input: {
+  k: string;
+  id: string;
+  peca: string;
+}): Promise<Resultado<{ peca: string }>> {
+  return rodar("renomear", async () => {
+    await exigirChave(input.k);
+    const id = uuid.parse(input.id);
+    const peca = z
+      .string()
+      .max(LIMITE_PECA, `O nome passa de ${LIMITE_PECA} caracteres.`)
+      .parse(input.peca)
+      .trim();
+    const { error } = await marinaDb()
+      .from("briefing_arquivos")
+      .update({ peca: peca || null })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+    return { peca };
   });
 }
