@@ -146,6 +146,19 @@ export async function getOrganizarMarina(): Promise<OrganizarMarina> {
     };
   });
 
+  // "você cadastrou em …" só onde ela juntou produtos diferentes no mesmo
+  // anúncio (as estampas novas). Em anúncio de um produto só a linha seria
+  // ruído: apareceria em quase todo cartão por diferença de grafia.
+  const produtosPorAnuncio = new Map<string, Set<string>>();
+  for (const i of itens) {
+    const s = produtosPorAnuncio.get(i.anuncioId) ?? new Set<string>();
+    s.add(i.peca.toLowerCase());
+    produtosPorAnuncio.set(i.anuncioId, s);
+  }
+  for (const i of itens) {
+    if ((produtosPorAnuncio.get(i.anuncioId)?.size ?? 0) < 2) i.grupo = "";
+  }
+
   // agrupadas por peça, na ordem em que ela cadastrou
   itens.sort((x, y) => x.ordem - y.ordem);
 

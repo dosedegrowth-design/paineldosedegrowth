@@ -198,7 +198,7 @@ export function MarinaOrganizar({
                   não é essa peça?
                 </button>
               </p>
-              {item.grupo && item.grupo !== item.peca ? (
+              {item.grupo ? (
                 <p className="ddgb-post__grupo">você cadastrou em: {item.grupo}</p>
               ) : null}
               <p className="ddgb-post__arquivo">{item.nome}</p>
