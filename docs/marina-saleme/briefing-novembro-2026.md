@@ -4,7 +4,7 @@ Lido em 31/out/2026 direto do banco (`marina_saleme.briefing_anuncios` +
 `briefing_arquivos`). Formulário: `painel.dosedegrowth.com/briefing/marina?k=…`
 
 - **19 anúncios cadastrados**, todos em novembro.
-- **40 arquivos** (39 fotos + 1 vídeo), 300 MB no total.
+- **43 arquivos** (42 fotos + 1 vídeo), 300 MB no total.
 - Primeiro cadastro: 29/10 13:49 (horário de Brasília). Último: 30/10 19:06.
 - **"Enviar para a DDG" em 30/10 18:52.**
 
@@ -15,7 +15,7 @@ A Bia separou em duas frentes escrevendo o rótulo no campo da peça:
 
 ## Frente 1 — Últimas peças (coleção acumulada)
 
-16 produtos, 25 arquivos. Estoque conferido na Shopify em 31/out.
+16 produtos, 28 arquivos. Estoque conferido na Shopify em 31/out.
 
 | # | Produto | Estoque | Preço | Arquivos |
 |---|---|---|---|---|
@@ -119,3 +119,38 @@ São R$ 461 em 14 dias nos criativos velhos do Leque, que saiu de linha.
 - O que fazer com as duas campanhas velhas acima.
 - Quem escreve as 19 legendas.
 - Foto com modelo para Tijolo e Rei e Rainha.
+
+---
+
+## Tela de organizar (31/out)
+
+`painel.dosedegrowth.com/briefing/marina/organizar?k=<a mesma chave>`
+
+A Bia confere foto por foto em qual frente cada imagem está. Nasceu porque o
+rótulo da frente foi escrito à mão no nome da peça e saiu trocado em alguns
+casos: a foto da saia Tijolo (estampa nova) está cadastrada dentro do Moletom
+Iguana (última peça). Por isso a frente mora no **arquivo**, não no anúncio.
+
+- Duas colunas rolando como feed. No celular aparece uma por vez, as abas de
+  cima trocam; do tablet para cima as duas ficam lado a lado.
+- Cada cartão: a imagem inteira (sem corte), o nome da peça, a estampa e o
+  nome do arquivo, mais "Mover para a outra frente" e "Tirar".
+- **Tirar não apaga nada.** A imagem sai das duas listas e fica guardada
+  (`briefing_arquivos.fora`), com "Devolver" quando ela abre as tiradas.
+- "Terminei de organizar" grava `briefing_config._organizado`.
+- Salva a cada toque; se o banco recusar, a foto volta para onde estava e o
+  recado aparece na barra de cima.
+
+Já saiu do feed pela DDG: `1001865814.jpg`, print de celular do admin da
+Shopify (banner "FINAL 2.0 - banner Veneza" em rascunho), marcado `fora`.
+
+Ler o resultado:
+
+```sql
+select f.frente, f.fora, a.peca, f.nome, f.public_url
+from marina_saleme.briefing_arquivos f
+join marina_saleme.briefing_anuncios a on a.id = f.anuncio_id
+order by f.fora, f.frente, a.ordem;
+```
+
+Migration: `supabase/migrations/20261031000000_marina_briefing_frentes.sql`.

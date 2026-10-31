@@ -4,7 +4,16 @@ import { randomUUID } from "node:crypto";
 import { z, ZodError } from "zod";
 import { marinaDb } from "@/lib/marina/db";
 import { chaveConfere } from "@/lib/marina/queries/briefing";
-import { LIMITES, MESES, type Anuncio, type ArquivoAnuncio, type Mes, type Resultado } from "@/lib/marina/briefing";
+import {
+  FRENTES,
+  LIMITES,
+  MESES,
+  type Anuncio,
+  type ArquivoAnuncio,
+  type Frente,
+  type Mes,
+  type Resultado,
+} from "@/lib/marina/briefing";
 import {
   ACEITA_EXT,
   BUCKET,
@@ -214,5 +223,56 @@ export async function enviarBriefingMarinaAction(input: { k: string }): Promise<
       .upsert({ chave: "_envio", dados: { enviado_em: enviadoEm }, updated_at: enviadoEm });
     if (error) throw new Error(error.message);
     return { enviadoEm };
+  });
+}
+
+/** MOVER uma foto de uma frente para a outra (tela de organizar). */
+export async function moverArquivoAction(input: {
+  k: string;
+  id: string;
+  frente: Frente;
+}): Promise<Resultado> {
+  return rodar("mover", async () => {
+    await exigirChave(input.k);
+    const id = uuid.parse(input.id);
+    const frente = z.enum(FRENTES).parse(input.frente);
+    const { error } = await marinaDb()
+      .from("briefing_arquivos")
+      .update({ frente, fora: false })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+    return undefined;
+  });
+}
+
+/**
+ * TIRAR ou DEVOLVER uma foto. Tirar não apaga nada: a imagem sai das duas
+ * listas e fica na gaveta, de onde dá para devolver.
+ */
+export async function guardarArquivoAction(input: {
+  k: string;
+  id: string;
+  fora: boolean;
+}): Promise<Resultado> {
+  return rodar("guardar", async () => {
+    await exigirChave(input.k);
+    const id = uuid.parse(input.id);
+    const fora = z.boolean().parse(input.fora);
+    const { error } = await marinaDb().from("briefing_arquivos").update({ fora }).eq("id", id);
+    if (error) throw new Error(error.message);
+    return undefined;
+  });
+}
+
+/** TERMINEI DE ORGANIZAR: marca a hora para a DDG saber que pode montar. */
+export async function organizadoMarinaAction(input: { k: string }): Promise<Resultado<{ organizadoEm: string }>> {
+  return rodar("organizado", async () => {
+    await exigirChave(input.k);
+    const organizadoEm = new Date().toISOString();
+    const { error } = await marinaDb()
+      .from("briefing_config")
+      .upsert({ chave: "_organizado", dados: { organizado_em: organizadoEm }, updated_at: organizadoEm });
+    if (error) throw new Error(error.message);
+    return { organizadoEm };
   });
 }

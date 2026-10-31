@@ -23,6 +23,40 @@ export type ArquivoAnuncio = {
   bytes: number | null;
 };
 
+/**
+ * As duas frentes de novembro. Mora no ARQUIVO, não no anúncio: a Bia
+ * cadastrou foto de estampa nova dentro de anúncio de última peça, então
+ * quem tem frente é cada imagem.
+ */
+export const FRENTES = ["ultimas", "novas"] as const;
+export type Frente = (typeof FRENTES)[number];
+
+export const FRENTE_TITULO: Record<Frente, string> = {
+  ultimas: "Últimas peças",
+  novas: "Estampas novas",
+};
+
+export const FRENTE_DICA: Record<Frente, string> = {
+  ultimas: "O que já está na loja e precisa sair.",
+  novas: "Tijolo, Paraíso, Rei e Rainha.",
+};
+
+/** A outra frente, para o botão de mover. */
+export const outraFrente = (f: Frente): Frente => (f === "ultimas" ? "novas" : "ultimas");
+
+/** Uma foto ou vídeo na tela de organizar, com a peça de onde ele veio. */
+export type ItemOrganizar = ArquivoAnuncio & {
+  frente: Frente;
+  fora: boolean;
+  peca: string;
+  estampa: string;
+  ordem: number;
+};
+
+export function contarFrente(f: Frente, itens: ItemOrganizar[]): number {
+  return itens.filter((i) => !i.fora && i.frente === f).length;
+}
+
 export type Anuncio = {
   id: string;
   mes: Mes;

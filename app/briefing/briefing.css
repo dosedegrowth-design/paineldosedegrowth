@@ -831,3 +831,177 @@ body:has(.ddgb--marina) {
 .ddgb-mes--agora .ddgb-mes__conta {
   color: var(--ddgb-tinta);
 }
+
+/* =====================================================================
+   ORGANIZAR AS FOTOS (Marina) — as duas frentes, cada uma rolando como
+   um feed. No celular aparece uma de cada vez (as abas de cima trocam);
+   do tablet pra cima as duas ficam lado a lado.
+   ===================================================================== */
+.ddgb-frentes {
+  display: grid;
+  gap: 30px;
+  margin-top: 26px;
+}
+@media (min-width: 900px) {
+  .ddgb-frentes {
+    grid-template-columns: 1fr 1fr;
+    gap: 26px;
+    align-items: start;
+  }
+}
+/* no celular só a frente escolhida existe */
+@media (max-width: 899px) {
+  .ddgb-frente:not([data-ativa]) {
+    display: none;
+  }
+}
+.ddgb-frente__titulo {
+  display: none;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 14px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ddgb-tinta-2);
+}
+.ddgb-frente__titulo span {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+/* o rótulo da coluna só faz falta quando as duas aparecem juntas */
+@media (min-width: 900px) {
+  .ddgb-frente__titulo {
+    display: flex;
+    position: sticky;
+    /* abaixo da barra "Marina Saleme", que também é sticky */
+    top: 46px;
+    z-index: 2;
+    padding: 12px 0 10px;
+    background: linear-gradient(var(--ddgb-papel) 78%, transparent);
+  }
+}
+
+.ddgb-feed {
+  display: grid;
+  gap: 18px;
+}
+
+.ddgb-post {
+  display: grid;
+  gap: 0;
+  overflow: hidden;
+  background: var(--ddgb-cartao);
+  border: 1.5px solid var(--ddgb-linha);
+  border-radius: var(--ddgb-raio);
+}
+.ddgb-post__midia {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  background: var(--ddgb-suave);
+}
+/* inteira na caixa: ela precisa ver a foto toda pra julgar, sem corte */
+.ddgb-post__midia img,
+.ddgb-post__midia video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.ddgb-post__selo {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 3px 9px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  background: rgba(28, 28, 28, 0.82);
+  border-radius: 999px;
+}
+.ddgb-post__texto {
+  display: grid;
+  gap: 3px;
+  padding: 14px 16px 0;
+}
+.ddgb-post__peca {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ddgb-tinta);
+}
+.ddgb-post__de {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ddgb-tinta-2);
+  overflow-wrap: anywhere;
+}
+.ddgb-post__acoes {
+  display: flex;
+  gap: 8px;
+  padding: 14px 16px 16px;
+}
+.ddgb-post__mover,
+.ddgb-post__tirar {
+  min-height: 46px;
+  padding: 10px 14px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.ddgb-post__mover {
+  flex: 1;
+  color: var(--ddgb-tinta);
+  background: var(--ddgb-cartao);
+  border: 1.5px solid var(--ddgb-linha-forte);
+}
+.ddgb-post__mover:hover {
+  background: var(--ddgb-suave);
+  border-color: var(--ddgb-tinta);
+}
+.ddgb-post__tirar {
+  color: var(--ddgb-tinta-2);
+  background: transparent;
+  border: 1.5px solid transparent;
+}
+.ddgb-post__tirar:hover {
+  color: var(--ddgb-tinta);
+  background: var(--ddgb-suave);
+}
+
+.ddgb-gaveta {
+  display: grid;
+  gap: 14px;
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 1.5px solid var(--ddgb-linha);
+}
+@media (min-width: 900px) {
+  .ddgb-gaveta .ddgb-feed {
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+}
+
+/* a tela de organizar mostra duas colunas de foto: no computador ela
+   precisa de mais largura que o formulário de uma coluna só */
+@media (min-width: 900px) {
+  .ddgb-pagina--largo {
+    max-width: 1120px;
+  }
+  .ddgb-topo--largo .ddgb-topo__linha {
+    max-width: 1120px;
+  }
+}
+/* "Terminei de organizar" é mais comprido que "Enviar para a DDG" */
+.ddgb-pagina--largo .ddgb-enviar {
+  padding-inline: 26px;
+}
