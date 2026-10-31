@@ -198,3 +198,80 @@ peça?" abre um campo para ela corrigir sem precisar mandar no WhatsApp; vazio
 volta a herdar o nome do anúncio.
 
 Migration: `supabase/migrations/20261031010000_marina_briefing_peca.sql`.
+
+## A separação: ar hoje x produção (31/out)
+
+Critério: foto com modelo vestindo a peça, sem marca d'água, e estoque na
+loja. Still de produto não vira anúncio (regra da Marina, 20/out).
+
+### Vai pro ar hoje — 15 produtos, 24 fotos, 99 peças em estoque
+
+| # | Produto | Estoque | Preço | Fotos |
+|---|---|---|---|---|
+| 1 | MOLETOM IGUANA | 31 | R$ 502,50 | 1 |
+| 2 | SAIA STRIPES MOSTARDA | 14 | R$ 944 | 1 |
+| 3 | CALÇA GLÓRIA AZULEJO LARANJA | 12 | R$ 1.008 | 2 |
+| 4 | CAMISA ANA TRIBECA | 8 | R$ 952 | 2 |
+| 5 | VESTIDO TATA OURIÇO BRANCO | 5 | R$ 1.240 | 2 |
+| 6 | VESTIDO FIT BALÃOZINHO | 5 | R$ 1.650 | 2 |
+| 7 | CAMISA ANA COPACABANA | 5 | R$ 952 | 1 |
+| 8 | VESTIDO PRINCESA DAMAS | 4 | R$ 2.480 | 2 |
+| 9 | CAMISA ANA ZODÍACO | 3 | R$ 825 | 2 |
+| 10 | CALÇA JULIANA PIED DE POULE ROXO | 3 (só G) | R$ 760 | 1 |
+| 11 | CALÇA JULIANA PIED DE POULE VERDE | 3 | R$ 760 | 1 |
+| 12 | VESTIDO DE AMARRAR GEO | 2 | R$ 1.312,50 | 1 |
+| 13 | VESTIDO LELE LONGO PARAÍSO VERMELHO | 2 | R$ 2.980 | 2 |
+| 14 | CHEMISE MIRIAM ATENAS | **1** (só G) | R$ 895 | 2 |
+| 15 | VESTIDO ASA LONGO MIKONOS AMARELO | **1** (só G) | R$ 1.400 | 2 |
+
+O Vestido Lele Longo é a **única peça de estampa nova** com foto de modelo.
+A Camisa Ana Tribeca precisa do giro gravado no pixel (hoje o giro está só
+na etiqueta EXIF).
+
+### Vai pra produção — 12 produtos com estoque, sem foto de modelo
+
+| # | Produto | Estoque | Preço | Estampa |
+|---|---|---|---|---|
+| 1 | CAMISA ANA REI RAINHA LISTRA VERMELHA | 10 | R$ 1.150 | Rei e Rainha |
+| 2 | CAMISA T TIJOLO | 9 | R$ 1.575 | Tijolo |
+| 3 | CAMISA T REI RAINHA | 7 | R$ 1.190 | Rei e Rainha |
+| 4 | SAIA PREGA DAMAS | 5 | R$ 1.008 | Damas |
+| 5 | SAIA ENVELOPE PARAÍSO VERMELHO | 5 | R$ 1.920 | Paraíso |
+| 6 | CAFTAN REI RAINHA | 4 | R$ 2.500 | Rei e Rainha |
+| 7 | VESTIDO LUIZA REI RAINHA | 3 | R$ 1.850 | Rei e Rainha |
+| 8 | TOP LELE PARAÍSO VERMELHO | 3 | R$ 1.850 | Paraíso |
+| 9 | CAMISA JOTA REI RAINHA LISTRA VERMELHA | 3 | R$ 1.380 | Rei e Rainha |
+| 10 | VESTIDO CLARICE PARAÍSO PRETO | 2 | R$ 2.480 | Paraíso |
+| 11 | PANNEAU REI RAINHA | 1 | R$ 1.490 | Rei e Rainha |
+| 12 | SAIA MIDI PARAÍSO PRETO | 1 | R$ 1.920 | Paraíso |
+
+A Saia Prega Damas entra aqui porque **não tem foto dela**: um arquivo é a
+Camisa Ana repetida e o outro tem o selo Ai.
+
+### Não entram
+
+- **CAMISA ANA DAMAS** — estoque 0.
+- **CAFTAN AMÉLIA PARAÍSO PRETO** — rascunho na loja, estoque 0. Só
+  fotografar se for colocar à venda.
+- **Moletom Iguana:** dos 3 arquivos dele, só a foto da floricultura serve.
+  `Últimas peças.png` tem o selo **Ai** no canto e `modelo_movendo_saia.mp4`
+  tem **"CapCut Ai"** gravado no quadro.
+
+### Vale entrar na produção, fora do que a Bia listou
+
+O único conjunto que vende hoje é o das bolsas (ROAS 3,25 em 14 dias) e a
+coleção Rei e Rainha tem bastante acessório parado com estoque alto e sem
+foto de modelo:
+
+| Produto | Estoque | Preço |
+|---|---|---|
+| NECESSAIRE PEQUENA REI RAINHA | 48 | R$ 190 |
+| ALMOFADA REI RAINHA | 48 | R$ 480 |
+| SACOLÃO REI RAINHA MOSTARDA | 24 | R$ 680 |
+| SACOLÃO REI RAINHA VERMELHO | 22 | R$ 680 |
+| TOP REI RAINHA CINZA | 17 | R$ 260 |
+| MAIÔ SARDENHA REI RAINHA CINZA | 16 | R$ 650 |
+| CALCINHA BRIGITTE REI RAINHA CINZA | 15 | R$ 240 |
+| LENÇO REI RAINHA PRETO | 11 | R$ 660 |
+
+São dois sacolões novos na mesma linha dos que já estão no ar.
