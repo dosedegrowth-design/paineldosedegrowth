@@ -16,6 +16,7 @@ import {
   partesDoDia,
   reais,
   valorLegivel,
+  mesesDaAgenda,
 } from "./agendar.ts";
 
 test("hora no jeito de falar", () => {
@@ -131,4 +132,14 @@ test("horários da semana agrupados como a Tayssa fala", () => {
     { dias: "Terça e quarta", horas: "9h às 18h" },
     { dias: "Sexta", horas: "9h às 18h" },
   ]);
+});
+
+test("os meses da fita de dias, com o primeiro dia de cada um", () => {
+  const dias = ["2026-11-06", "2026-11-07", "2026-11-30", "2026-12-01", "2026-12-24", "2027-01-02"].map((iso) => ({ iso }));
+  assert.deepEqual(mesesDaAgenda(dias), [
+    { chave: "2026-11", nome: "Novembro", primeiro: "2026-11-06" },
+    { chave: "2026-12", nome: "Dezembro", primeiro: "2026-12-01" },
+    { chave: "2027-01", nome: "Janeiro", primeiro: "2027-01-02" },
+  ]);
+  assert.deepEqual(mesesDaAgenda([]), []);
 });

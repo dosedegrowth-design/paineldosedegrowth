@@ -59,6 +59,37 @@ export function partesDoDia(iso: string) {
   return { semana: DIAS_CURTOS[d.getDay()], numero: String(d.getDate()), mes: MESES_CURTOS[d.getMonth()] };
 }
 
+const MESES = [
+  "Janeiro",
+  "Fevereiro",
+  "Março",
+  "Abril",
+  "Maio",
+  "Junho",
+  "Julho",
+  "Agosto",
+  "Setembro",
+  "Outubro",
+  "Novembro",
+  "Dezembro",
+];
+
+/**
+ * Os meses que a fita de dias atravessa, na ordem, com o primeiro dia de
+ * cada um: com a agenda aberta até o fim do ano a fita passa de 50 dias, e
+ * o botão do mês leva direto a dezembro. { chave: "2026-12", nome:
+ * "Dezembro", primeiro: "2026-12-01" }
+ */
+export function mesesDaAgenda(dias: { iso: string }[]): { chave: string; nome: string; primeiro: string }[] {
+  const out: { chave: string; nome: string; primeiro: string }[] = [];
+  for (const d of dias) {
+    const chave = d.iso.slice(0, 7);
+    if (out.some((m) => m.chave === chave)) continue;
+    out.push({ chave, nome: MESES[Number(chave.slice(5, 7)) - 1] ?? chave, primeiro: d.iso });
+  }
+  return out;
+}
+
 /** "R$ 50", "R$ 1.200", "R$ 37,50" (sem centavos quando é redondo) */
 export function reais(v: number): string {
   const [int, dec] = v.toFixed(2).split(".");

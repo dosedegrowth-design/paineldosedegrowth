@@ -22,6 +22,7 @@ import {
   duracaoLegivel,
   horaLegivel,
   mensagemAgendamento,
+  mesesDaAgenda,
   partesDoDia,
   reais,
   diaLegivel,
@@ -182,6 +183,35 @@ function FolhaAgendar({
   const duracao = escolhido?.duracao ?? null;
   const temLivre = new Set(diasAbertos(dias, duracao).map((d) => d.iso));
   const diaEscolhido = dias.find((d) => d.iso === dia) ?? null;
+
+  // a fita de dias vai até o fim do ano (50 e tantos dias): o botão do mês
+  // leva direto a ele, e o mês que está à vista na fita fica aceso
+  const meses = mesesDaAgenda(dias);
+  const fitaRef = useRef<HTMLDivElement>(null);
+  const [mesVisto, setMesVisto] = useState<string | null>(null);
+  const quadroFita = useRef(0);
+  const irAoMes = (iso: string) => {
+    const fita = fitaRef.current;
+    const alvo = fita?.querySelector<HTMLElement>(`[data-iso="${iso}"]`);
+    if (!fita || !alvo) return;
+    const folga = parseFloat(getComputedStyle(fita).paddingLeft) || 0;
+    const dx = alvo.getBoundingClientRect().left - fita.getBoundingClientRect().left - folga;
+    fita.scrollTo({ left: fita.scrollLeft + dx, behavior: "smooth" });
+  };
+  const aoRolarFita = () => {
+    if (quadroFita.current) return;
+    quadroFita.current = requestAnimationFrame(() => {
+      quadroFita.current = 0;
+      const fita = fitaRef.current;
+      if (!fita) return;
+      const borda = fita.getBoundingClientRect().left + (parseFloat(getComputedStyle(fita).paddingLeft) || 0);
+      const primeiro = Array.from(fita.querySelectorAll<HTMLElement>("[data-iso]")).find(
+        (el) => el.getBoundingClientRect().right > borda + 8,
+      );
+      const chave = primeiro?.dataset.iso?.slice(0, 7) ?? null;
+      setMesVisto((m) => (m === chave ? m : chave));
+    });
+  };
 
   // abre/fecha o <dialog> nativo (foco preso, Esc, fundo inerte de graça)
   useEffect(() => {
@@ -355,14 +385,29 @@ function FolhaAgendar({
 
         <fieldset className="tyag__grupo">
           <legend className="tyag__rotulo">Qual dia?</legend>
+          {meses.length > 1 ? (
+            <div className="tyag__meses" role="group" aria-label="Ir para o mês">
+              {meses.map((m) => (
+                <button
+                  key={m.chave}
+                  type="button"
+                  className="tyag__mes"
+                  data-on={(mesVisto ?? meses[0].chave) === m.chave}
+                  onClick={() => irAoMes(m.primeiro)}
+                >
+                  {m.nome}
+                </button>
+              ))}
+            </div>
+          ) : null}
           {dias.length ? (
-            <div className="tyag__dias" role="presentation">
+            <div className="tyag__dias" role="presentation" ref={fitaRef} onScroll={aoRolarFita}>
               {dias.map((d) => {
                 const p = partesDoDia(d.iso);
                 // dia sem horário livre não some: fica riscado, como "lotado"
                 const lotado = !temLivre.has(d.iso);
                 return (
-                  <label key={d.iso} className="tyag__dia" data-lotado={lotado || undefined}>
+                  <label key={d.iso} className="tyag__dia" data-iso={d.iso} data-lotado={lotado || undefined}>
                     <input
                       type="radio"
                       name={`${id}-dia`}

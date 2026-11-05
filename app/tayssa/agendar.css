@@ -251,6 +251,58 @@ html.ty-sem-rolagem {
   }
 }
 
+/* ---------- meses: o atalho da fita (Novembro, Dezembro, Janeiro) ---------- */
+.tyag__meses {
+  display: flex;
+  gap: 6px;
+  margin: 0 0 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tyag__meses::-webkit-scrollbar {
+  display: none;
+}
+.tyag__mes {
+  position: relative;
+  flex: none;
+  height: 36px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--ag-vidro);
+  box-shadow: inset 0 0 0 1px var(--ag-fio);
+  color: var(--ag-leve);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background 0.22s ease,
+    color 0.22s ease,
+    transform 0.16s var(--ag-ease);
+}
+/* o alvo do dedo passa dos 44px sem crescer o desenho */
+.tyag__mes::after {
+  content: "";
+  position: absolute;
+  inset: -5px -2px;
+}
+.tyag__mes[data-on="true"] {
+  background: rgba(255, 255, 255, 0.94);
+  color: #4b0c20;
+  box-shadow: none;
+}
+.tyag__mes:active {
+  transform: scale(0.96);
+}
+.tyag__mes:focus-visible {
+  outline: 2px solid #f7c1d1;
+  outline-offset: 2px;
+}
+
 /* ---------- dias: fita que corre de lado ---------- */
 .tyag__dias {
   display: flex;
