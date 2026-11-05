@@ -37,6 +37,8 @@ export async function contaDaAgendaAction(): Promise<ActionResult<ContaNaAgenda 
 
 export async function criarContaAgendaAction(input: {
   nome: string;
+  /** como ela quer ser chamada (opcional): vira o `nickname` */
+  apelido?: string;
   whatsapp: string;
   senha: string;
   confirmar: string;
@@ -78,6 +80,7 @@ export async function criarContaAgendaAction(input: {
         role: "client",
         email: null,
         name: p.nome,
+        nickname: p.apelido,
         phone: p.whatsapp,
         password_hash,
         status: "active",
@@ -114,7 +117,7 @@ export async function criarContaAgendaAction(input: {
       meta: { ip },
     });
     revalidatePath(ROUTES.admin, "layout");
-    return { nome: primeiroNome({ name: p.nome }) };
+    return { nome: primeiroNome({ name: p.nome, nickname: p.apelido }) };
   });
 }
 

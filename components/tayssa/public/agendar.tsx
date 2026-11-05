@@ -186,6 +186,8 @@ function FolhaAgendar({
   const [conta, setConta] = useState<ContaNaAgenda | null>(null);
   const [modo, setModo] = useState<"criar" | "entrar">("criar");
   const [nome, setNome] = useState("");
+  // como ela quer ser chamada (Lucas, 05/11/2026): opcional, vira o nome que a Tayssa e o VIP usam
+  const [apelido, setApelido] = useState("");
   const [whats, setWhats] = useState("");
   const [senha, setSenha] = useState("");
   const [confirmar, setConfirmar] = useState("");
@@ -365,7 +367,7 @@ function FolhaAgendar({
       if (!quem) {
         const r =
           modo === "criar"
-            ? await criarContaAgendaAction({ nome, whatsapp: whats, senha, confirmar, lembrar })
+            ? await criarContaAgendaAction({ nome, apelido, whatsapp: whats, senha, confirmar, lembrar })
             : await entrarNaAgendaAction({ login, senha, lembrar });
         if (!r.ok) {
           setErro({ texto: r.error, campo: r.field });
@@ -757,7 +759,17 @@ function FolhaAgendar({
                       erro={erro?.campo === "nome" ? erro.texto : undefined}
                       autoComplete="name"
                       autoCapitalize="words"
-                      placeholder="Como a Tayssa te chama"
+                      placeholder="Nome e sobrenome"
+                    />
+                    <Campo
+                      id={`${id}-apelido`}
+                      rotulo="Como quer ser chamada"
+                      valor={apelido}
+                      mudar={setApelido}
+                      erro={erro?.campo === "apelido" ? erro.texto : undefined}
+                      autoComplete="nickname"
+                      autoCapitalize="words"
+                      placeholder="Opcional, como a Tayssa te chama"
                     />
                     <Campo
                       id={`${id}-whats`}

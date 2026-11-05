@@ -59,10 +59,19 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Informe sua senha").max(200),
 });
 
-/** A conta da agenda: nome, WhatsApp (o login) e a senha, digitada duas vezes. Sem e-mail. */
+/**
+ * A conta da agenda: nome, como ela quer ser chamada (opcional; vira o `nickname`,
+ * o nome que o VIP e a Tayssa usam), WhatsApp (o login) e a senha, digitada duas vezes. Sem e-mail.
+ */
 export const contaAgendaSchema = z
   .object({
     nome: z.string().trim().min(2, "Escreva seu nome").max(80, "Use no máximo 80 letras"),
+    apelido: z
+      .string()
+      .trim()
+      .max(40, "Use no máximo 40 letras")
+      .optional()
+      .transform((v) => v || null),
     whatsapp: phoneField,
     senha: passwordField,
     confirmar: z.string(),

@@ -5,6 +5,7 @@ import type { ClientSummary } from "@/lib/tayssa/queries/admin";
 import { ROUTES } from "@/lib/tayssa/config";
 import { dateShort } from "@/lib/tayssa/format";
 import { bateBusca } from "@/lib/tayssa/busca";
+import { formatBrPhone } from "@/lib/tayssa/phone";
 import { USER_STATUS_LABEL, VIP_STATUS_LABEL } from "@/lib/tayssa/types";
 import type { UserStatus, VipStatus } from "@/lib/tayssa/types";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
@@ -63,11 +64,16 @@ function SeloInativa({ c }: { c: ClientSummary }) {
   );
 }
 
-type Filtro = "all" | "pending" | "vip" | "pronta" | "attention" | "inactive";
+type Filtro = "all" | "pending" | "agenda" | "vip" | "pronta" | "attention" | "inactive";
+
+/** a cliente da agenda não tem e-mail: a linha de baixo mostra o WhatsApp */
+const contato = (c: ClientSummary) => c.user.email ?? (c.user.phone ? formatBrPhone(c.user.phone) : "");
 
 export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
   const [q, setQ] = useState("");
   const pendingCount = clients.filter((c) => c.user.status === "pending").length;
+  // cadastradas pela agenda e ainda fora do VIP: a Tayssa escolhe quem incluir (Lucas, 05/11/2026)
+  const agendaCount = clients.filter((c) => c.user.signup_source === "agenda" && c.profile?.vip_status !== "active").length;
   const attentionCount = clients.filter((c) => espera(c) > 0).length;
   const prontaCount = clients.filter((c) => c.prontaParaVip).length;
   const [only, setOnly] = useState<Filtro>(pendingCount ? "pending" : "all");
@@ -75,6 +81,7 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
     return clients.filter((c) => {
       if (!bateBusca(q, [c.user.name, c.user.nickname, c.user.email, c.user.phone])) return false;
       if (only === "pending") return c.user.status === "pending";
+      if (only === "agenda") return c.user.signup_source === "agenda";
       if (only === "vip") return c.profile?.vip_status === "active";
       if (only === "pronta") return c.prontaParaVip;
       if (only === "attention") return espera(c) > 0;
@@ -86,6 +93,7 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
   const filtros: [Filtro, string, number | null][] = [
     ["all", "Todas", null],
     ["pending", "Pedidos de acesso", pendingCount || null],
+    ["agenda", "Da agenda", agendaCount || null],
     ["vip", "VIP", null],
     ["pronta", "Prontas para VIP", prontaCount || null],
     ["attention", "Com pendência", attentionCount || null],
@@ -158,7 +166,7 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
                             {c.user.name}
                           </TransitionLink>
                           <span className="tya-small" style={{ display: "block" }}>
-                            {c.user.email}
+                            {contato(c)}
                           </span>
                           {c.user.status !== "active" ? (
                             <span style={{ display: "inline-flex", marginTop: 5 }}>
@@ -203,7 +211,7 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
                 <TransitionLink key={c.user.id} href={ROUTES.adminClient(c.user.id)} style={{ display: "block" }}>
                   <article className="tya-card tya-card--hover">
                     <strong style={{ fontSize: 15, fontWeight: 600 }}>{c.user.name}</strong>
-                    <p className="tya-small" style={{ overflowWrap: "anywhere" }}>{c.user.email}</p>
+                    <p className="tya-small" style={{ overflowWrap: "anywhere" }}>{contato(c)}</p>
                     <div style={{ display: "flex", gap: 6, flexWrap: "wrap", margin: "10px 0 14px" }}>
                       <SeloVip status={c.profile?.vip_status ?? "none"} />
                       {c.prontaParaVip ? <span className="tya-pill tya-pill--gold">pronta p/ VIP</span> : null}

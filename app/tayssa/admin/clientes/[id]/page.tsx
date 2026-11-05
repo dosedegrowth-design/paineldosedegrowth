@@ -6,7 +6,7 @@ import { getSettings } from "@/lib/tayssa/settings";
 import { toISODate, validadeDoAniversario } from "@/lib/tayssa/rules";
 import { cicloLegivel, criterioLegivel, currency, dateLong, dateShort, dateTime, faltaLegivel, isWithinHours, nowInBusinessTz, numero, plural } from "@/lib/tayssa/format";
 import { formatBrPhone } from "@/lib/tayssa/phone";
-import { renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
+import { MENSAGEM_VIP_INCLUIDA, renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { ROUTES, publicUrl } from "@/lib/tayssa/config";
 import { auditLabel } from "@/lib/tayssa/audit-labels";
 import type { ClientBenefitStatus, ReferralStatus, ServiceStatus, UserStatus, VipStatus } from "@/lib/tayssa/types";
@@ -170,6 +170,8 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
         }
       >
         <dl className="tya-defs">
+          <dt>Chamar de</dt>
+          <dd>{user.nickname?.trim() || user.name.split(" ")[0]}</dd>
           <dt>E-mail</dt>
           <dd>{user.email ?? "sem e-mail (entra pelo WhatsApp)"}</dd>
           <dt>WhatsApp</dt>
@@ -186,8 +188,16 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
           <dd>{profile?.birthday ? dateLong(profile.birthday) : "—"}</dd>
           <dt>Entrou</dt>
           <dd>
-            {user.signup_source === "self" ? "pelo site, com pedido de acesso" : "cadastrada por você"}
-            {user.requested_at ? ` · ${dateTime(user.requested_at)}` : ""}
+            {user.signup_source === "self"
+              ? "pelo site, com pedido de acesso"
+              : user.signup_source === "agenda"
+                ? "pela agenda do site (entra com o WhatsApp e a senha dela)"
+                : "cadastrada por você"}
+            {user.requested_at
+              ? ` · ${dateTime(user.requested_at)}`
+              : user.signup_source === "agenda"
+                ? ` · ${dateTime(user.created_at)}`
+                : ""}
           </dd>
           <dt>Sessões</dt>
           <dd>
@@ -226,8 +236,22 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               {vip !== "active" ? (
                 <ActionButton action={adminSetVipAction} args={{ id: user.id, vip: "active" as const }} variant="accent">
-                  Ativar VIP
+                  {vip === "suspended" ? "Reativar VIP" : "Incluir no VIP"}
                 </ActionButton>
+              ) : null}
+              {/* incluiu no VIP a cliente da agenda: avisa que ela entra com o mesmo WhatsApp e senha */}
+              {vip === "active" && user.signup_source === "agenda" && user.status === "active" && user.phone ? (
+                <a
+                  href={whatsappUrl(
+                    user.phone,
+                    renderTemplate(MENSAGEM_VIP_INCLUIDA, { name: first, url: publicUrl(ROUTES.login) }),
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="tya-btn tya-btn--sm tya-btn--primary"
+                >
+                  Avisar no WhatsApp
+                </a>
               ) : null}
               {vip === "active" ? (
                 <ActionButton action={adminSetVipAction} args={{ id: user.id, vip: "suspended" as const }}>
@@ -240,6 +264,13 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                 </ActionButton>
               ) : null}
             </div>
+            {user.signup_source === "agenda" ? (
+              <p className="tya-small" style={{ margin: 0 }}>
+                {vip === "active"
+                  ? `${first} já vê a área VIP com o mesmo WhatsApp e senha da agenda, e os pedidos dela vêm primeiro na sua agenda. Avise pelo botão.`
+                  : `${first} se cadastrou pela agenda. Ao incluir no VIP, ela entra com o mesmo WhatsApp e senha, passa a ver a área VIP e ganha prioridade na agenda.`}
+              </p>
+            ) : null}
             <p className="tya-small" style={{ margin: 0 }}>
               Critério do VIP: {criterioLegivel(d.summary.vip.criterios.pontos, d.summary.vip.criterios.meses)}. Ela tem{" "}
               {numero(d.summary.points)} {plural(d.summary.points, "ponto", "pontos")} e {d.summary.mesesSeguidos}{" "}

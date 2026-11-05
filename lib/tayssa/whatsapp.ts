@@ -25,6 +25,14 @@ export const MENSAGENS_DA_AGENDA = {
   linkVencido: "Oi, Tayssa, tudo bem? Meu link de acesso não abre mais. Pode me mandar outro?",
 } as const;
 
+/**
+ * A Tayssa incluiu no VIP uma cliente que se cadastrou pela agenda (Lucas,
+ * 05/11/2026): ela entra com o mesmo WhatsApp e a mesma senha de agendar e
+ * passa a ver a área VIP. O botão "Avisar no WhatsApp" da ficha manda isto.
+ */
+export const MENSAGEM_VIP_INCLUIDA =
+  "Oi, {name}! Aqui é a Tayssa. Agora você é VIP: tem prioridade na minha agenda e acesso à área VIP, com cartão de visitas, pontos e presentes. É só entrar com o mesmo WhatsApp e a mesma senha que você usa para agendar: {url}";
+
 export function whatsappUrl(phoneDigits: string, message?: string): string {
   const digits = phoneDigits.replace(/\D/g, "");
   const base = `https://wa.me/${digits}`;
