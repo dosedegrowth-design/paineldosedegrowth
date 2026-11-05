@@ -17,7 +17,7 @@ export default async function ProfilePage() {
     getSettings(),
   ]);
   // VIP fechado: o perfil é só dados, senha e sair (sem pontos, visitas e registro)
-  const vipAberto = settings.rules.vip_aberto;
+  const vipAberto = settings.rules.vip_aberto || user.isVip;
   const p = user.profile;
   const approved = history.filter((s) => s.status === "approved");
 

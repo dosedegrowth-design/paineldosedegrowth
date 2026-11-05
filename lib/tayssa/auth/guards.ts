@@ -33,10 +33,12 @@ export async function requireClientPage(): Promise<SessionUser> {
  * Cartão, pontos, benefícios e jornada: só com o VIP aberto (Configurações →
  * Programa VIP). Fechado (05/11/2026, o VIP ainda não abriu), a área da
  * cliente é só a agenda: quem chega nessas telas vai para os horários dela.
+ * Exceção: quem a Tayssa ativou como VIP na ficha vê a área VIP mesmo com o
+ * programa fechado (Lucas, 06/11/2026, para ver o VIP com uma conta de teste).
  */
 export async function requireProgramaVipPage(): Promise<SessionUser> {
   const [user, settings] = await Promise.all([requireClientPage(), getSettings()]);
-  if (!settings.rules.vip_aberto) redirect(ROUTES.vipBook);
+  if (!settings.rules.vip_aberto && !user.isVip) redirect(ROUTES.vipBook);
   return user;
 }
 

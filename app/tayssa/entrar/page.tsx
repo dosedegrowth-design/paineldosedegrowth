@@ -29,7 +29,7 @@ export default async function LoginPage({
     getPhotoAvailability(),
   ]);
   const vipAberto = settings.rules.vip_aberto;
-  if (user) redirect(user.role === "admin" ? ROUTES.admin : vipAberto ? ROUTES.vip : ROUTES.vipBook);
+  if (user) redirect(user.role === "admin" ? ROUTES.admin : vipAberto || user.isVip ? ROUTES.vip : ROUTES.vipBook);
   const next = params.next?.startsWith("/tayssa/") ? params.next : undefined;
   const linkExpirado = params.link === "expirado";
   // VIP fechado: o "Falar com a Tayssa" não pergunta do VIP

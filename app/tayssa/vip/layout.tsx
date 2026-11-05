@@ -4,6 +4,7 @@ import "./vip.css";
 import "./vip-vivo.css";
 import "./vip-perola.css";
 import { requireClientPage } from "@/lib/tayssa/auth/guards";
+import { getSessionUser } from "@/lib/tayssa/auth/session";
 import { getSettings } from "@/lib/tayssa/settings";
 import { MENSAGENS_DA_AGENDA, renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
 import Link from "next/link";
@@ -23,11 +24,11 @@ const serifa = localFont({
   adjustFontFallback: "Times New Roman",
 });
 
-/** Com o VIP fechado a aba diz "Meus horários": nada da conta fala em VIP. */
+/** Com o VIP fechado a aba diz "Meus horários": nada da conta fala em VIP (menos para quem a Tayssa ativou como VIP). */
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getSettings();
+  const [settings, user] = await Promise.all([getSettings(), getSessionUser()]);
   return {
-    title: settings.rules.vip_aberto ? "Meu VIP" : "Meus horários",
+    title: settings.rules.vip_aberto || user?.isVip ? "Meu VIP" : "Meus horários",
     robots: { index: false, follow: false },
   };
 }
@@ -54,7 +55,8 @@ export default async function VipLayout({ children }: { children: React.ReactNod
   const [user, settings] = await Promise.all([requireClientPage(), getSettings()]);
   // VIP fechado (Configurações → Programa VIP): a área é só a agenda dela, e
   // a mensagem do WhatsApp não diz "do VIP" (Lucas, 05/11/2026)
-  const soAgenda = !settings.rules.vip_aberto;
+  // quem a Tayssa ativou como VIP vê a área VIP mesmo com o programa fechado
+  const soAgenda = !settings.rules.vip_aberto && !user.isVip;
   const supportUrl = whatsappUrl(
     settings.business.whatsapp,
     renderTemplate(soAgenda ? MENSAGENS_DA_AGENDA.falarComNome : settings.whatsapp.vip_support, {

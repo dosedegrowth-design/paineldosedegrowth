@@ -30,10 +30,15 @@ function safeNext(next: string): string | null {
   return next.startsWith("/tayssa/") && !next.startsWith("//") ? next : null;
 }
 
-/** Para onde a cliente vai ao entrar: com o VIP fechado, direto aos horários dela (sem passar pelo início do VIP). */
-async function inicioDaCliente(): Promise<string> {
+/**
+ * Para onde a cliente vai ao entrar: com o VIP fechado, direto aos horários
+ * dela; quem a Tayssa ativou como VIP entra pelo início do VIP.
+ */
+async function inicioDaCliente(userId: string): Promise<string> {
   const { rules } = await getSettings();
-  return rules.vip_aberto ? ROUTES.vip : ROUTES.vipBook;
+  if (rules.vip_aberto) return ROUTES.vip;
+  const { data } = await vipDb().from("client_profiles").select("vip_status").eq("user_id", userId).maybeSingle();
+  return (data as { vip_status?: string } | null)?.vip_status === "active" ? ROUTES.vip : ROUTES.vipBook;
 }
 
 export async function loginAction(
@@ -65,7 +70,7 @@ export async function loginAction(
     });
 
     const next = safeNext(str(formData, "next"));
-    const home = user.role === "admin" ? ROUTES.admin : await inicioDaCliente();
+    const home = user.role === "admin" ? ROUTES.admin : await inicioDaCliente(user.id);
     const name = user.nickname?.trim() || user.name.trim().split(/\s+/)[0];
     return { redirectTo: next ?? home, name };
   });
@@ -107,7 +112,7 @@ export async function entrarPorLinkAction(formData: FormData): Promise<void> {
           entityType: "user",
           entityId: link.user_id,
         });
-        destino = link.role === "admin" ? ROUTES.admin : await inicioDaCliente();
+        destino = link.role === "admin" ? ROUTES.admin : await inicioDaCliente(link.user_id);
       }
     }
   } catch (e) {
@@ -199,7 +204,7 @@ export async function setPasswordAction(
       entityType: "user",
       entityId: row.user_id,
     });
-    return { redirectTo: row.user.role === "admin" ? ROUTES.admin : await inicioDaCliente() };
+    return { redirectTo: row.user.role === "admin" ? ROUTES.admin : await inicioDaCliente(row.user_id) };
   });
 }
 
