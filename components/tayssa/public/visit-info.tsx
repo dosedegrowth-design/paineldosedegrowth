@@ -34,7 +34,14 @@ export function VisitInfo({
 }) {
   const estrutura = useEstrutura();
   if (!temAtendimento(conteudo) && !estrutura) return null;
-  const { politica, pagamento } = conteudo.atendimento;
+  const { pagamento } = conteudo.atendimento;
+  // a tolerância de atraso sai da agenda (pedido do Lucas, 05/11/2026: 15 min, passando disso perde o sinal)
+  const politica = [
+    ...(booking.tolerancia_min > 0
+      ? [`${booking.tolerancia_min} minutos de tolerância para atraso. Passando disso, você perde o sinal.`]
+      : []),
+    ...(conteudo.atendimento.politica ?? []),
+  ];
   const horarios = conteudo.atendimento.horarios ?? horariosDaSemana(booking);
   // o que ela escreveu e, da agenda, o sinal e a antecedência
   const comoAgendar = conteudo.atendimento.comoAgendar
@@ -42,7 +49,9 @@ export function VisitInfo({
         ...conteudo.atendimento.comoAgendar,
         // "R$" e o número nunca em linhas separadas
         ...(booking.deposit_reais > 0
-          ? [`O horário fica garantido com o sinal de ${reais(booking.deposit_reais).replace(" ", "\u00a0")} no Pix.`]
+          ? [
+              `O horário fica guardado por ${booking.sinal_horas} horas e vale com o sinal de ${reais(booking.deposit_reais).replace(" ", "\u00a0")} no Pix: a Tayssa te chama no WhatsApp.`,
+            ]
           : []),
         ...(booking.lead_hours > 0 ? [`Marque com pelo menos ${booking.lead_hours} ${booking.lead_hours === 1 ? "hora" : "horas"} de antecedência.`] : []),
       ]

@@ -31,6 +31,7 @@ export default async function BookPage() {
     valor: settings.booking.deposit_reais,
     horas: settings.booking.sinal_horas,
     nome: user.displayName,
+    tolerancia: settings.booking.tolerancia_min,
   };
 
   return (
@@ -41,6 +42,7 @@ export default async function BookPage() {
       <p className="tyv-sub">
         Marque, acompanhe e desmarque por aqui. O horário fica guardado por {sinal.horas}h e vale depois do sinal no Pix: a
         Tayssa te chama no WhatsApp.
+        {sinal.tolerancia > 0 ? ` Tolerância de ${sinal.tolerancia} minutos de atraso: passando disso, você perde o sinal.` : ""}
       </p>
 
       {/* os horários dela primeiro: é o que ela veio ver; marcar outro vem logo abaixo */}

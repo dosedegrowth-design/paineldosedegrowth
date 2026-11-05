@@ -63,6 +63,8 @@ export type AgendaSite = {
   sinal: number;
   /** horas que o pedido segura o horário esperando o sinal */
   sinalHoras: number;
+  /** minutos de tolerância para atraso: passando disso, ela perde o sinal */
+  tolerancia: number;
 };
 
 type Ctx = { abrir: (servico?: string) => void };
@@ -400,6 +402,7 @@ function FolhaAgendar({
     <p>
       <b>Sinal de {reais(agenda.sinal)} no Pix</b> para confirmar. O horário fica guardado por {agenda.sinalHoras}h: a
       Tayssa te chama no WhatsApp para o sinal.
+      {agenda.tolerancia > 0 ? ` Tolerância de ${agenda.tolerancia} minutos de atraso: passando disso, você perde o sinal.` : ""}
     </p>
   );
 
@@ -814,6 +817,7 @@ function FolhaAgendar({
               Ele vale depois do sinal de {reais(agenda.sinal)} no Pix. A Tayssa te chama no WhatsApp em até{" "}
               {agenda.sinalHoras}h, ou você já pode pedir a chave agora. Sem o sinal nesse prazo, o horário volta para a
               agenda.
+              {agenda.tolerancia > 0 ? ` No dia, a tolerância é de ${agenda.tolerancia} minutos: passando disso, você perde o sinal.` : ""}
             </p>
             <a className="tyag__link tyag__link--centro" href={ROUTES.vipBook}>
               Ver meus horários

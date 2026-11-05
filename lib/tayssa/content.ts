@@ -153,9 +153,9 @@ export const CONTEUDO: ConteudoSite = {
     // os horários saem da agenda (Configurações → Agenda): mudou lá, muda aqui
     horarios: null,
     // o sinal e a antecedência também vêm da agenda (visit-info.tsx)
-    comoAgendar: ["Escolha o serviço, o dia e o horário aqui no site. O pedido chega pronto no WhatsApp da Tayssa."],
+    comoAgendar: ["Escolha o serviço, o dia e o horário aqui no site e marque com a sua conta (o seu WhatsApp e uma senha)."],
+    // a tolerância de atraso vem da agenda (Configurações → Agenda): visit-info.tsx põe em primeiro
     politica: [
-      "10 minutos de tolerância para atraso.",
       "Remarcando com 48 horas de antecedência ou mais, o sinal vale para a nova data.",
       "Com menos de 48 horas, ou se você não vier, o sinal não é devolvido.",
     ],

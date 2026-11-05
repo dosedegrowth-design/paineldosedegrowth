@@ -155,6 +155,7 @@ export async function updateBookingSettingsAction(_p: ActionResult | null, fd: F
       max_open_per_client: str(fd, "max_open_per_client"),
       deposit_reais: str(fd, "deposit_reais").replace(",", "."),
       sinal_horas: str(fd, "sinal_horas"),
+      tolerancia_min: str(fd, "tolerancia_min"),
     });
     await saveSetting("booking", input, admin.id);
     return undefined;

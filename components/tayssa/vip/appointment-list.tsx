@@ -10,7 +10,7 @@ import { whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { useTarefa } from "@/components/tayssa/ui/acao";
 
 /** O sinal: o pedido segura o horário `horas` esperando o Pix (a Tayssa confirma). */
-export type SinalDaAgenda = { telefone: string; valor: number; horas: number; nome: string };
+export type SinalDaAgenda = { telefone: string; valor: number; horas: number; nome: string; tolerancia: number };
 
 /** Horários em aberto: ver, e desmarcar sem precisar ligar para ninguém. */
 export function AppointmentList({ items, sinal }: { items: AppointmentRow[]; sinal?: SinalDaAgenda }) {

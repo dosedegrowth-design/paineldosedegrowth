@@ -367,6 +367,11 @@ export const bookingSettingsSchema = z.object({
     .int("Use horas inteiras")
     .min(1, "Pelo menos 1 hora")
     .max(168, "No máximo 168 horas (7 dias)"),
+  tolerancia_min: z.coerce
+    .number({ invalid_type_error: "Use um número de minutos" })
+    .int("Use minutos inteiros")
+    .min(0, "Use 0 ou mais")
+    .max(60, "No máximo 60 minutos"),
 });
 
 export const loyaltySettingsSchema = z.object({

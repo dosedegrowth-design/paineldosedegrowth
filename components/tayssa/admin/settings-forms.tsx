@@ -752,6 +752,14 @@ export function BookingForm({ value }: { value: Settings["booking"] }) {
             error={erroDe(state, "sinal_horas")}
             hint="O pedido segura o horário esse tempo. Sem você confirmar, ele cai e o horário volta."
           />
+          <Campo
+            label="Tolerância de atraso (min)"
+            name="tolerancia_min"
+            inputMode="numeric"
+            defaultValue={String(value.tolerancia_min)}
+            error={erroDe(state, "tolerancia_min")}
+            hint="Passando disso, ela perde o sinal. Aparece ao marcar e no site."
+          />
         </div>
       </div>
 

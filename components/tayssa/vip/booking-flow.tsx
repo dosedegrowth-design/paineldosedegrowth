@@ -133,6 +133,7 @@ export function BookingFlow({
             <p className="tyv-sub" style={{ fontSize: 13.5, marginTop: 14 }}>
               O horário fica guardado por {sinal.horas}h e vale depois do sinal de {reais(sinal.valor)} no Pix. A Tayssa te
               chama no WhatsApp, ou você já pode pedir a chave agora.
+              {sinal.tolerancia > 0 ? ` No dia, a tolerância é de ${sinal.tolerancia} minutos: passando disso, você perde o sinal.` : ""}
             </p>
             <a
               className="tyv-btn tyv-btn--accent"

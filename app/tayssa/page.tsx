@@ -84,6 +84,7 @@ export default async function TayssaHome() {
     dias,
     sinal: settings.booking.deposit_reais,
     sinalHoras: settings.booking.sinal_horas,
+    tolerancia: settings.booking.tolerancia_min,
   };
 
   const jsonLd = {
