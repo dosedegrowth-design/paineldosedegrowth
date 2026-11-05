@@ -10,7 +10,14 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/tayssa/vip", "/tayssa/admin", "/tayssa/entrar", "/briefing"],
+      disallow: [
+        "/tayssa/vip",
+        "/tayssa/meus-horarios",
+        "/tayssa/minha-conta",
+        "/tayssa/admin",
+        "/tayssa/entrar",
+        "/briefing",
+      ],
     },
     sitemap: "https://painel.dosedegrowth.com/tayssa/sitemap.xml",
   };

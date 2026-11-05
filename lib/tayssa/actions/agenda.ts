@@ -29,7 +29,8 @@ const diaSchema = z.object({ dia: isoDateField, fechar: z.boolean() });
 
 function revalidar() {
   revalidatePath(ROUTES.adminAgenda);
-  revalidatePath(ROUTES.vipBook);
+  // a página de verdade mora em /tayssa/vip/agendar (ROUTES.vipBook é o apelido)
+  revalidatePath(ROUTES.vip, "layout");
   revalidatePath(ROUTES.home);
 }
 

@@ -16,9 +16,11 @@ export const ROUTES = {
   restricted: "/tayssa/acesso",
   vip: "/tayssa/vip",
   vipCard: "/tayssa/vip/cartao",
-  vipBook: "/tayssa/vip/agendar",
+  // endereços da conta sem "vip" (Lucas, 05/11/2026): o middleware reescreve
+  // para app/tayssa/vip/agendar e app/tayssa/vip/perfil, e manda os antigos para cá
+  vipBook: "/tayssa/meus-horarios",
   vipBenefits: "/tayssa/vip/beneficios",
-  vipProfile: "/tayssa/vip/perfil",
+  vipProfile: "/tayssa/minha-conta",
   vipJourney: "/tayssa/vip/jornada",
   /** o "folder" do horário: o link que vai no WhatsApp (público, sem nome nem contato) */
   horario: (id: string) => `/tayssa/horario/${id}`,

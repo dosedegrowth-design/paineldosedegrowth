@@ -234,7 +234,8 @@ export async function changePasswordAction(
       entityType: "user",
       entityId: me.id,
     });
-    revalidatePath(ROUTES.vipProfile);
+    // a página de verdade mora em /tayssa/vip/perfil (ROUTES.vipProfile é o apelido)
+    revalidatePath(ROUTES.vip, "layout");
     return undefined;
   });
 }

@@ -6,6 +6,21 @@ type CookieSet = { name: string; value: string; options?: CookieOptions };
 const TAYSSA_SESSION_COOKIE = "tayssa_vip_session";
 
 /**
+ * Endereços da conta da cliente sem "vip" (Lucas, 05/11/2026: com o VIP
+ * fechado é só a área de agendamento). O apelido é reescrito para a página
+ * de verdade (app/tayssa/vip/...) e o endereço antigo leva ao apelido.
+ * Espelha ROUTES.vipBook / ROUTES.vipProfile em lib/tayssa/config.ts.
+ */
+const APELIDOS_DA_CONTA: Record<string, string> = {
+  "/tayssa/meus-horarios": "/tayssa/vip/agendar",
+  "/tayssa/minha-conta": "/tayssa/vip/perfil",
+};
+const ENDERECOS_ANTIGOS: Record<string, string> = Object.fromEntries(
+  Object.entries(APELIDOS_DA_CONTA).map(([apelido, interno]) => [interno, apelido])
+);
+const semBarraNoFim = (p: string) => (p.length > 1 ? p.replace(/\/$/, "") : p);
+
+/**
  * Primeira barreira da área privada da Tayssa: sem cookie de sessão, nem
  * chega a renderizar. A verificação de verdade (sessão válida, papel,
  * conta ativa) acontece no servidor, em lib/tayssa/auth/guards.ts.
@@ -18,7 +33,10 @@ function tayssaGuard(
   appPath: string,
   stripPrefix: boolean
 ): NextResponse | null {
-  const isPrivate = appPath.startsWith("/tayssa/vip") || appPath.startsWith("/tayssa/admin");
+  const isPrivate =
+    appPath.startsWith("/tayssa/vip") ||
+    appPath.startsWith("/tayssa/admin") ||
+    semBarraNoFim(appPath) in APELIDOS_DA_CONTA;
   if (!isPrivate) return null;
   if (request.cookies.get(TAYSSA_SESSION_COOKIE)?.value) return null;
   const url = request.nextUrl.clone();
@@ -71,9 +89,10 @@ export async function middleware(request: NextRequest) {
           : `/tayssa${pathname}`;
       const guard = tayssaGuard(request, appPath, !alreadyPrefixed);
       if (guard) return guard;
-      if (!alreadyPrefixed) {
+      const interno = APELIDOS_DA_CONTA[semBarraNoFim(appPath)] ?? appPath;
+      if (!alreadyPrefixed || interno !== appPath) {
         const url = request.nextUrl.clone();
-        url.pathname = appPath;
+        url.pathname = interno;
         return NextResponse.rewrite(url);
       }
     }
@@ -81,6 +100,18 @@ export async function middleware(request: NextRequest) {
   // Domínio do painel: mesma barreira, com o prefixo /tayssa na URL
   const guarded = tayssaGuard(request, pathname, false);
   if (guarded) return guarded;
+  // conta da cliente: o endereço sem "vip" mostra a página de verdade, e o antigo leva a ele
+  const caminho = semBarraNoFim(pathname);
+  if (caminho in APELIDOS_DA_CONTA) {
+    const url = request.nextUrl.clone();
+    url.pathname = APELIDOS_DA_CONTA[caminho];
+    return NextResponse.rewrite(url);
+  }
+  if (caminho in ENDERECOS_ANTIGOS) {
+    const url = request.nextUrl.clone();
+    url.pathname = ENDERECOS_ANTIGOS[caminho];
+    return NextResponse.redirect(url);
+  }
 
   // LP da Carolina Kühn: raiz mostra a LP tanto no subdomínio carol.*
   // quanto no domínio próprio dela (carol*/daybycarol* — ex.:

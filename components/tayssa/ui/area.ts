@@ -4,5 +4,6 @@
  * subdomínio tayssa.* a URL é limpa (/vip, /admin).
  */
 export function ehAreaPrivada(pathname: string | null): boolean {
-  return pathname ? /^(\/tayssa)?\/(vip|admin)(\/|$)/.test(pathname) : false;
+  // meus-horarios e minha-conta: os endereços da conta sem "vip" (apelidos de /vip/agendar e /vip/perfil)
+  return pathname ? /^(\/tayssa)?\/(vip|admin|meus-horarios|minha-conta)(\/|$)/.test(pathname) : false;
 }
