@@ -1078,16 +1078,63 @@ select.ty-field__input {
   background: var(--t-accent);
   transform-origin: left center;
 }
+/* o palco segura o serviço ativo: a capa ao lado do nome e da frase. Quem
+   sai e quem entra dividem a mesma célula da grade (um por cima do outro),
+   e o palco tem a altura do maior: nada pula na troca */
 .tyw__palco {
   position: relative;
+  display: grid;
   margin-top: clamp(18px, 2.2vw, 28px);
-  /* cabe o nome em duas linhas ("Design de sobrancelhas") com a frase em duas */
-  min-height: clamp(210px, 17vw, 256px);
 }
 .tyw__tecnica {
-  position: absolute;
-  inset: 0;
+  grid-area: 1 / 1;
+  display: grid;
+  grid-template-columns: minmax(0, 0.78fr) minmax(0, 1fr);
+  align-items: end;
+  gap: clamp(20px, 2.4vw, 36px);
   will-change: clip-path, transform;
+}
+.tyw__tecnica-texto .tyw__nome {
+  font-size: clamp(32px, 3.3vw, 52px);
+}
+/* a capa do serviço ativo (no celular a capa mora no alto de cada cartão) */
+.tyw__palco-foto {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  max-height: min(44vh, 400px);
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  border-radius: 26px;
+  background: linear-gradient(160deg, #6a1a3a, #2a0614);
+  color: #f7c1d1;
+  cursor: zoom-in;
+  box-shadow:
+    0 30px 60px -30px rgba(75, 12, 32, 0.45),
+    0 0 0 1px rgba(109, 21, 48, 0.08);
+}
+.tyw__palco-foto:disabled {
+  cursor: default;
+}
+.tyw__palco-foto img {
+  transition: scale 0.7s var(--t-ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .tyw__palco-foto:not(:disabled):hover img {
+    scale: 1.04;
+  }
+}
+.tyw__palco-foto .tyw__foto-icone {
+  width: 64px;
+  height: 64px;
+  stroke-width: 1.1;
+}
+/* a foto grande de cada cartão é do celular (celular.css) */
+.tyw__foto {
+  display: none;
 }
 .tyw__nome {
   display: block;
@@ -1220,10 +1267,16 @@ select.ty-field__input {
 .tyw__texto {
   margin-top: clamp(16px, 2vw, 24px);
 }
-/* cada técnica leva até a lista de serviços, onde estão valor, tempo e fotos */
+/* cada técnica agenda e leva até a lista de serviços (valor, tempo e fotos) */
+.tyw__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 26px;
+  margin-top: 20px;
+}
 .tyw__ver {
   display: inline-block;
-  margin-top: 14px;
 }
 
 /* ---------- fecho chapado ---------- */

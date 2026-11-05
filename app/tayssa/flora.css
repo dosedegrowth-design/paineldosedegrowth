@@ -51,9 +51,15 @@
   width: 100%;
   transform-origin: 50% 50%;
 }
-/* respiração lenta: a flor está viva, mas não chama atenção */
+/* respiração lenta: a flor está viva, mas não chama atenção. Anima a
+   caixa em volta da flor, não o <svg>: no <svg> o navegador refazia o
+   desenho da flor a cada quadro; na caixa é só a placa de vídeo girando */
+.tyf-respira {
+  display: block;
+  transform-origin: 50% 50%;
+}
 @media (prefers-reduced-motion: no-preference) {
-  .tyf-giro > .tyf {
+  .tyf-respira {
     animation: tyf-respira 11s ease-in-out infinite alternate;
   }
 }

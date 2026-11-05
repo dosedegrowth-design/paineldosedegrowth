@@ -10,10 +10,17 @@ import { Bloom } from "@/components/tayssa/flora/bloom";
  * A faixa que corre sozinha logo depois da abertura (como a da iWin):
  * os serviços da casa em sequência, com a flor girando entre eles. A
  * lista é duplicada para o laço não ter emenda; o mouse em cima pausa.
+ *
+ * A flor entre os nomes é imagem pronta (`public/tayssa/flor-faixa-*.svg`,
+ * o mesmo desenho da flor da casa): em SVG no HTML cada uma tinha ~80
+ * peças, e a faixa sozinha somava 5.800 elementos, mais da metade da
+ * página. Uma volta da lista basta para cobrir a tela; com poucos nomes,
+ * ela se repete até ter largura.
  */
 export function Faixa({ itens }: { itens: string[] }) {
   const lista = itens.length ? itens : ["Cílios", "VIP"];
-  const volta = [...lista, ...lista, ...lista];
+  const volta: string[] = [];
+  while (volta.length < 10) volta.push(...lista);
   return (
     <div className="ty-faixa" aria-hidden>
       <div className="ty-faixa__trilho" data-janela>
@@ -22,9 +29,7 @@ export function Faixa({ itens }: { itens: string[] }) {
             {volta.map((t, i) => (
               <span key={`${k}-${i}`} className="ty-faixa__item">
                 {t}
-                <span className="ty-faixa__flor" data-janela-item>
-                  <Bloom seed={(i % 7) + 2} tom={i % 2 ? "rosa" : "magenta"} />
-                </span>
+                <span className="ty-faixa__flor" data-tom={i % 2 ? "rosa" : "magenta"} data-janela-item />
               </span>
             ))}
           </div>
@@ -67,7 +72,11 @@ export function AgendarFlutua({ url }: { url: string }) {
       tabIndex={on ? undefined : -1}
     >
       <span className="ty-agendar-flutua__flor" aria-hidden>
-        <Bloom seed={5} tom="pétala" />
+        {/* a flor boia dentro do círculo: o movimento é da caixa (placa de
+            vídeo), não do <svg> — o botão fica sempre na tela */}
+        <span className="ty-agendar-flutua__boia">
+          <Bloom seed={5} tom="pétala" />
+        </span>
       </span>
       Agendar
     </LinkAgendar>

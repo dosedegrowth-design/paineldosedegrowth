@@ -41,6 +41,44 @@ function irAte(el: HTMLElement, imediato: boolean) {
     return;
   }
   el.scrollIntoView({ behavior: imediato ? "auto" : "smooth", block: "start" });
+  if (!imediato) acertarAoParar(el);
+}
+
+/**
+ * No celular cada seção só é desenhada perto da tela (`content-visibility`,
+ * `celular.css`): longe, ela ocupa a altura estimada. A rolagem suave mira
+ * com essas alturas e, quando as seções do caminho ganham a altura real, o
+ * alvo escorrega (o "VIP" do menu passava 800 px). Quando a rolagem para,
+ * confere onde o alvo ficou e acerta, até três vezes. Se a pessoa tocar na
+ * tela no meio, ela manda e a correção sai.
+ */
+function acertarAoParar(el: HTMLElement) {
+  let tentativas = 0;
+  let espera = 0;
+  const parar = () => {
+    window.clearTimeout(espera);
+    window.removeEventListener("scroll", aoRolar);
+    window.removeEventListener("touchstart", parar);
+  };
+  const conferir = () => {
+    const margem = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
+    const fora = Math.abs(el.getBoundingClientRect().top - margem) > 4;
+    if (fora && tentativas < 3) {
+      tentativas += 1;
+      el.scrollIntoView({ behavior: "instant", block: "start" });
+      espera = window.setTimeout(conferir, 160);
+    } else {
+      parar();
+    }
+  };
+  function aoRolar() {
+    window.clearTimeout(espera);
+    espera = window.setTimeout(conferir, 160);
+  }
+  window.addEventListener("scroll", aoRolar, { passive: true });
+  window.addEventListener("touchstart", parar, { passive: true });
+  // já estava lá (nenhuma rolagem): confere uma vez e encerra
+  espera = window.setTimeout(conferir, 700);
 }
 
 /**

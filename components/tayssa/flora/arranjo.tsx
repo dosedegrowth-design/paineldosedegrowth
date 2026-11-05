@@ -114,7 +114,10 @@ function PecaArranjo({
         {peca.kind === "folha" ? (
           <Leaf className="tyf-folha" style={{ opacity: abre ? 1 : 0 }} />
         ) : (
-          <Bloom kind={peca.kind} seed={peca.seed ?? 1} tom={peca.tom ?? "vinho"} open={abre} delay={peca.delay ?? 0} />
+          // a respiração mora na caixa em volta da flor (placa de vídeo), não no <svg>
+          <div className="tyf-respira">
+            <Bloom kind={peca.kind} seed={peca.seed ?? 1} tom={peca.tom ?? "vinho"} open={abre} delay={peca.delay ?? 0} />
+          </div>
         )}
       </div>
     </motion.div>

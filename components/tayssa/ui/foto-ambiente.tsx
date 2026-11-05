@@ -9,10 +9,11 @@ import { usePhotoAvailable } from "@/components/tayssa/ui/photo-availability";
 import { FundoVivo } from "@/components/tayssa/ui/fundo-vivo";
 
 /**
- * O fundo de uma seção vinho: uma foto real do trabalho, com pouca luz e
- * tingida de vinho, correndo devagar no scroll (parallax), e o fundo vivo
- * por cima. A foto vira atmosfera, não vitrine — por isso pode ser a de
- * hoje (recorte de vídeo) sem pesar. Sem foto, fica só o fundo vivo.
+ * O fundo de uma seção vinho: o retrato da Tayssa (o mesmo da abertura),
+ * com pouca luz e tingido de vinho, correndo devagar no scroll (parallax),
+ * e o fundo vivo por cima. A foto vira atmosfera, não vitrine; nunca a de
+ * uma cliente. O enquadramento do retrato (`posicao`) vale aqui também.
+ * Sem foto, fica só o fundo vivo.
  */
 export function FotoAmbiente({ photo, posicao = "50% 50%" }: { photo?: PhotoSlot; posicao?: string }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -27,7 +28,7 @@ export function FotoAmbiente({ photo, posicao = "50% 50%" }: { photo?: PhotoSlot
       <FundoVivo />
       {photo && disponivel ? (
         <motion.div className="ty-amb__foto" style={{ y, scale: escala }}>
-          <Image src={photo.src} alt="" fill sizes="100vw" style={{ objectFit: "cover", objectPosition: posicao }} />
+          <Image src={photo.src} alt="" fill sizes="100vw" style={{ objectFit: "cover", objectPosition: photo.posicao ?? posicao }} />
         </motion.div>
       ) : null}
       <span className="ty-amb__veu" />

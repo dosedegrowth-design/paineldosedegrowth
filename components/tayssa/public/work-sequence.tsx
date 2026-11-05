@@ -1,10 +1,16 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useInView, useReducedMotion } from "framer-motion";
 import { topoNoDocumento, useProgressoRolagem } from "@/components/tayssa/ui/rolagem";
 import { NavDeck, useDeck } from "@/components/tayssa/ui/deck";
 import { useCelular } from "@/components/tayssa/ui/use-media";
+import { Icone } from "@/components/tayssa/ui/icones";
+import { LinkAgendar } from "@/components/tayssa/public/agendar";
+import { Visor } from "@/components/tayssa/public/rolo";
+import { iconeDoServico } from "@/components/tayssa/public/services";
+import { estiloFoco, type CapaServico, type MidiaCatalogo } from "@/lib/tayssa/catalogo";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -20,6 +26,12 @@ export type ItemTrabalho = {
   nome: string;
   frase: string | null;
   texto: string | null;
+  /** a capa (Mídia → Capas, ou a primeira foto do serviço); sem foto, o ícone do cuidado */
+  capa: CapaServico | null;
+  /** as fotos e vídeos do serviço, a capa primeiro: tocar na foto abre a fila no visor */
+  midias: MidiaCatalogo[];
+  /** o link de agendar (WhatsApp) quando a folha não abre */
+  agendar: string;
 };
 
 const dois = (n: number) => String(n).padStart(2, "0");
@@ -30,19 +42,66 @@ function comEnfase(frase: string): ReactNode[] {
 }
 
 /**
- * A apresentação das técnicas: todos os serviços da casa, para a cliente
- * conhecer as opções e a diferença entre elas. Só apresenta: valor, tempo e
- * fotos de cada técnica ficam na lista de serviços, e cada item leva até lá
- * (pedido da Tayssa, 29/10/2026: a técnica não se explica duas vezes).
+ * A foto do serviço no cartão do celular: a capa grande, com o nome e a
+ * frase por cima (no pé, sobre o véu vinho), e quantas fotos tem. Tocar
+ * abre todas as fotos dele em tela cheia. Sem foto, o ícone do cuidado
+ * num campo vinho: o cartão continua do mesmo tamanho.
+ */
+function FotoDoCartao({ item, onAbrir }: { item: ItemTrabalho; onAbrir: () => void }) {
+  const fotos = item.midias.length;
+  const miolo = (
+    <>
+      <span className="tyw__foto-quadro" aria-hidden>
+        {item.capa ? (
+          <Image
+            src={item.capa.url}
+            alt=""
+            fill
+            sizes="(max-width: 899px) 86vw, 1px"
+            style={estiloFoco(item.capa.foco)}
+            draggable={false}
+          />
+        ) : (
+          <Icone nome={iconeDoServico(item.slug, item.nome)} className="tyw__foto-icone" />
+        )}
+      </span>
+      <span className="tyw__foto-veu" aria-hidden />
+      {fotos > 1 ? (
+        <span className="tyw__foto-conta" aria-hidden>
+          {fotos} fotos
+        </span>
+      ) : null}
+      {/* o nome grande e a frase: desenho (o h3 e a frase de verdade estão logo abaixo) */}
+      <span className="tyw__item-nome" aria-hidden>
+        <span className="tyw__nome">{item.nome}</span>
+        {item.frase ? <span className="tyw__dizer">{comEnfase(item.frase)}</span> : null}
+      </span>
+    </>
+  );
+  return fotos ? (
+    <button type="button" className="tyw__foto" onClick={onAbrir} aria-label={`Ver as fotos: ${item.nome}`}>
+      {miolo}
+    </button>
+  ) : (
+    <div className="tyw__foto">{miolo}</div>
+  );
+}
+
+/**
+ * Cada serviço, um olhar: todos os serviços da casa num bloco só, com a
+ * foto de cada um, a diferença em uma frase, o jeito dela de fazer e o
+ * "Agendar". Era duas seções (o carrossel colorido com quadradinhos de foto
+ * passando e esta apresentação sem foto) dizendo a mesma coisa; o Lucas
+ * pediu uma só (05/11/2026). Valor, tempo e a galeria inteira continuam na
+ * lista de serviços, logo abaixo ("Valor e fotos").
  *
- * No desktop a coluna da esquerda fica grudada: nome do serviço em corpo
- * grande, a frase com a palavra em itálico, o contador e o índice em mono
- * que acende no serviço ativo. A coluna da direita corre com o jeito dela de
- * fazer cada um; quem cruza o meio da tela vira o ativo. No celular cada
- * serviço vira um cartão e os cartões passam de lado com o dedo (eram cinco
- * telas de texto empilhado; pedido do Lucas, 29/10/2026: "muda a direção"),
- * com o contador e as setas embaixo. Sem foto: as fotos moram na galeria
- * de cada serviço, logo abaixo.
+ * No celular cada serviço é um cartão: a capa grande no alto, com o nome e a
+ * frase por cima; o texto e as ações embaixo. Os cartões passam de lado com
+ * o dedo, com o contador e as setas embaixo; tocar na foto abre as fotos do
+ * serviço em tela cheia. No desktop a coluna da esquerda fica grudada: a
+ * capa e o nome do serviço ativo, a frase, o contador e o índice; a coluna
+ * da direita corre com o jeito dela de fazer cada um, e quem cruza o meio
+ * da tela vira o ativo.
  */
 export function WorkSequence({ servicos }: { servicos: ItemTrabalho[] }) {
   const reduced = useReducedMotion();
@@ -55,6 +114,8 @@ export function WorkSequence({ servicos }: { servicos: ItemTrabalho[] }) {
   const celular = useCelular();
   const trilhoVisto = useInView(corridaRef, { once: true, amount: 0.15 });
   const deck = useDeck(corridaRef);
+  // as fotos de um serviço em tela cheia (tocar na foto)
+  const [visto, setVisto] = useState<{ slug: string; i: number } | null>(null);
 
   // ativa = a última técnica cujo topo já cruzou a linha do meio da tela.
   // Medir posição (em vez de observar entrada) mantém a coluna grudada
@@ -107,6 +168,8 @@ export function WorkSequence({ servicos }: { servicos: ItemTrabalho[] }) {
   const tempo = (s: number) => ({ duration: reduced ? 0 : s, ease: EASE });
   if (!total) return null;
   const atual = servicos[Math.min(ativo, total - 1)];
+  const abrir = (slug: string) => setVisto({ slug, i: 0 });
+  const fila = visto ? (servicos.find((s) => s.slug === visto.slug)?.midias ?? []) : [];
 
   return (
     <section id="trabalho" className="ty-section tyw" aria-labelledby="tyw-titulo">
@@ -151,8 +214,32 @@ export function WorkSequence({ servicos }: { servicos: ItemTrabalho[] }) {
                   exit={{ opacity: 0, y: "-7%", transition: tempo(0.34) }}
                   transition={tempo(0.72)}
                 >
-                  <span className="tyw__nome">{atual.nome}</span>
-                  {atual.frase ? <p className="tyw__dizer">{comEnfase(atual.frase)}</p> : null}
+                  {/* a capa do serviço ativo; o clique abre as fotos dele (no
+                      teclado, as fotos estão na galeria da lista de serviços) */}
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    className="tyw__palco-foto"
+                    disabled={!atual.midias.length}
+                    onClick={() => abrir(atual.slug)}
+                  >
+                    {atual.capa ? (
+                      <Image
+                        src={atual.capa.url}
+                        alt=""
+                        fill
+                        sizes="(min-width: 900px) 300px, 1px"
+                        style={estiloFoco(atual.capa.foco)}
+                        draggable={false}
+                      />
+                    ) : (
+                      <Icone nome={iconeDoServico(atual.slug, atual.nome)} className="tyw__foto-icone" />
+                    )}
+                  </button>
+                  <div className="tyw__tecnica-texto">
+                    <span className="tyw__nome">{atual.nome}</span>
+                    {atual.frase ? <p className="tyw__dizer">{comEnfase(atual.frase)}</p> : null}
+                  </div>
                 </motion.div>
               </AnimatePresence>
             </div>
@@ -185,20 +272,19 @@ export function WorkSequence({ servicos }: { servicos: ItemTrabalho[] }) {
                     animate={celular && trilhoVisto ? { opacity: 1, y: 0 } : undefined}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-8% 0px -8% 0px" }}
-                    transition={{ ...tempo(0.85), delay: celular && !reduced ? Math.min(i, 3) * 0.08 : 0 }}
+                    // no celular só os dois primeiros cartões (os que estão à
+                    // vista) entram com movimento; os outros já chegam prontos,
+                    // sem doze animações ao mesmo tempo no celular
+                    transition={celular && i > 1 ? { duration: 0 } : { ...tempo(0.85), delay: celular && !reduced ? i * 0.08 : 0 }}
                   >
+                    {/* celular: a capa grande com o nome e a frase por cima;
+                        no desktop a capa mora na coluna grudada e este bloco
+                        sai do fluxo */}
+                    <FotoDoCartao item={t} onAbrir={() => abrir(t.slug)} />
+
                     <div className="tyw__marca">
                       <span className="ty-mono">{dois(i + 1)}</span>
                       <h3 className="tyw__marca-nome">{t.nome}</h3>
-                    </div>
-
-                    {/* no celular o nome grande mora aqui; no desktop ele
-                        vive na coluna grudada e este bloco sai do fluxo.
-                        Nas duas larguras é desenho: o nome é eco do h3 e a
-                        frase tem a cópia abaixo, que é a que vai ser lida. */}
-                    <div className="tyw__item-nome" aria-hidden>
-                      <span className="tyw__nome">{t.nome}</span>
-                      {t.frase ? <p className="tyw__dizer">{comEnfase(t.frase)}</p> : null}
                     </div>
 
                     {/* a frase da técnica como conteúdo de verdade: as duas
@@ -211,10 +297,21 @@ export function WorkSequence({ servicos }: { servicos: ItemTrabalho[] }) {
 
                     {t.texto ? <p className="ty-body ty-measure tyw__texto">{t.texto}</p> : null}
 
-                    {/* valor, tempo e fotos da técnica: na lista de serviços, logo abaixo */}
-                    <a href={`#servico-${t.slug}`} className="ty-link ty-link--caps tyw__ver">
-                      Valor e fotos
-                    </a>
+                    <div className="tyw__acoes">
+                      <LinkAgendar
+                        className="ty-btn ty-btn--sm tyw__agendar"
+                        href={t.agendar}
+                        servico={t.slug}
+                        aria-label={`Agendar ${t.nome}`}
+                      >
+                        <span>Agendar</span>
+                        <span className="ty-btn__arrow" aria-hidden />
+                      </LinkAgendar>
+                      {/* valor, tempo e a galeria inteira: na lista de serviços, logo abaixo */}
+                      <a href={`#servico-${t.slug}`} className="ty-link ty-link--caps tyw__ver">
+                        Valor e fotos
+                      </a>
+                    </div>
                   </motion.li>
                 );
               })}
@@ -240,6 +337,11 @@ export function WorkSequence({ servicos }: { servicos: ItemTrabalho[] }) {
           </div>
         </div>
       </div>
+      <Visor
+        itens={fila}
+        aberto={visto ? visto.i : null}
+        onMudar={(i) => setVisto((v) => (v && i !== null ? { ...v, i } : null))}
+      />
     </section>
   );
 }

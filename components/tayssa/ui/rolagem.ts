@@ -66,7 +66,10 @@ function medir(i: Inscrito) {
 function atualizar(i: Inscrito, y: number) {
   const curso = i.fim - i.ini;
   const p = curso === 0 ? (y >= i.fim ? 1 : 0) : (y - i.ini) / curso;
-  i.mv.set(p < 0 ? 0 : p > 1 ? 1 : p);
+  const v = p < 0 ? 0 : p > 1 ? 1 : p;
+  // fora da tela o progresso fica parado em 0 ou 1: sem `set`, nada é
+  // redesenhado (o `set` do framer-motion pede render mesmo com o valor igual)
+  if (i.mv.get() !== v) i.mv.set(v);
 }
 
 function aoRolar() {

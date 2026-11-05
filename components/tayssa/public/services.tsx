@@ -9,7 +9,7 @@ import { FotoAmbiente } from "@/components/tayssa/ui/foto-ambiente";
 import { Rolo } from "@/components/tayssa/public/rolo";
 import { estiloFoco, midiasDoServico, type CapaServico, type MidiaCatalogo } from "@/lib/tayssa/catalogo";
 import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
-import { useFinePointer } from "@/components/tayssa/ui/use-media";
+import { useFinePointer, useMedia } from "@/components/tayssa/ui/use-media";
 import { Magnetic } from "@/components/tayssa/ui/magnetic";
 import { Icone, type IconeNome } from "@/components/tayssa/ui/icones";
 import { LinkAgendar } from "@/components/tayssa/public/agendar";
@@ -157,6 +157,10 @@ export function Services({
   const fine = useFinePointer();
   const reduced = useReducedMotion();
   const [ativo, setAtivo] = useState<number | null>(null);
+  // no computador tudo fica aberto; no celular a galeria de um serviço só
+  // existe depois que a cliente o abre (eram ~200 cartões de foto montados,
+  // escondidos, que o celular carregava e vigiava ao rolar)
+  const largo = useMedia("(min-width: 900px)");
   // cardápio do celular: quem está aberto (o primeiro começa aberto)
   const [abertos, setAbertos] = useState<ReadonlySet<string>>(() => new Set(list[0] ? [list[0].slug] : []));
   const alternar = (slug: string) =>
@@ -316,7 +320,7 @@ export function Services({
                         <span className="ty-btn__arrow" aria-hidden />
                       </span>
                     </LinkAgendar>
-                    <Galeria itens={galeria} nome={s.name} sentido={i % 2 ? -1 : 1} />
+                    {aberto || largo ? <Galeria itens={galeria} nome={s.name} sentido={i % 2 ? -1 : 1} /> : null}
                   </div>
                 </div>
               </Reveal>

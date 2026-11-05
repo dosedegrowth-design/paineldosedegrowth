@@ -9,8 +9,7 @@ import { IntroLoader } from "@/components/tayssa/public/intro-loader";
 import { PublicNav } from "@/components/tayssa/public/nav";
 import { Hero } from "@/components/tayssa/public/hero";
 import { WorkSequence, type ItemTrabalho } from "@/components/tayssa/public/work-sequence";
-import { Services } from "@/components/tayssa/public/services";
-import { ServiceStrip } from "@/components/tayssa/public/service-strip";
+import { linkDoServico, Services } from "@/components/tayssa/public/services";
 import { AgendarFlutua, Faixa } from "@/components/tayssa/public/faixa";
 import { Details } from "@/components/tayssa/public/details";
 import { Numeros } from "@/components/tayssa/public/numeros";
@@ -25,7 +24,7 @@ import { Testimonials } from "@/components/tayssa/public/testimonials";
 import { VisitInfo } from "@/components/tayssa/public/visit-info";
 import { Catalogo } from "@/components/tayssa/public/catalogo";
 import { SemQuebrar } from "@/components/tayssa/ui/sem-quebrar";
-import type { CapaServico, CategoriaCatalogo, MidiaCatalogo } from "@/lib/tayssa/catalogo";
+import { midiasDoServico, type CapaServico, type CategoriaCatalogo, type MidiaCatalogo } from "@/lib/tayssa/catalogo";
 import { completarComFotos, type ItemPortfolio } from "@/lib/tayssa/portfolio";
 import { CONTEUDO, temAtendimento, temSobre } from "@/lib/tayssa/content";
 import type { VideoAvailability } from "@/lib/tayssa/media-server";
@@ -38,9 +37,9 @@ export const useIntroReady = () => useContext(IntroCtx);
 
 /**
  * A experiência pública inteira. Uma só narrativa em scroll:
- * abertura (marca + flores + janela) → os serviços em cartões (com as
- * fotos de cada um passando dentro) → trabalho (pin) → o filme → cada
- * técnica de perto → serviços (capa + carrossel do serviço) → a
+ * abertura (marca + flores + janela) → cada serviço com a sua foto (cartões
+ * de lado no celular, coluna grudada no desktop) → o filme → serviços
+ * (valor, tempo e galeria de cada um) → cada técnica de perto → a
  * profissional → o estúdio → Instagram → depoimentos → a luz abaixa →
  * VIP → indicação → atendimento → fechamento.
  *
@@ -66,7 +65,7 @@ export function PublicExperience({
   catalogo?: CategoriaCatalogo[];
   /** a capa de cada serviço (escolhida em Mídia → Capas, ou a primeira foto dele) */
   capas?: Record<string, CapaServico | null>;
-  /** as fotos de cada serviço (passam no cartão de cima e embaixo da capa na lista) */
+  /** as fotos de cada serviço (o visor de cada cartão e a galeria da lista) */
   rolos?: Record<string, MidiaCatalogo[]>;
   /** o que a folha de agendar oferece: serviços, volumes, dias e horários livres */
   agenda: AgendaSite;
@@ -88,6 +87,9 @@ export function PublicExperience({
   };
 
   const estrutura = useEstrutura();
+  // o fundo das seções vinho (serviços e fechamento) é a Tayssa, o mesmo
+  // retrato da abertura; nunca uma cliente (pedido do Lucas, 05/11/2026)
+  const retrato = photos?.hero ?? photos?.portrait;
   // a colagem usa todas as fotos reais do trabalho que existem, sem repetir
   // (a da abertura é o retrato dela, que já volta em "A Tayssa")
   const colagem = [
@@ -95,17 +97,22 @@ export function PublicExperience({
     ...(photos?.work ?? []).filter((f): f is NonNullable<typeof f> => Boolean(f)),
     ...Object.values(photos?.byService ?? {}),
   ].filter((f, i, todas) => todas.findIndex((g) => g.src === f.src) === i);
-  // a apresentação das técnicas: a frase e o jeito dela de fazer (content.ts).
-  // Valor, tempo e fotos ficam na lista de serviços, sem se repetir aqui
+  // cada serviço com a sua foto: a capa, a frase e o jeito dela de fazer
+  // (content.ts) e o "Agendar". Valor, tempo e a galeria inteira ficam na
+  // lista de serviços, sem se repetir aqui
   const trabalho: ItemTrabalho[] = services
     .filter((s) => s.slug !== "outro")
     .map((s) => {
       const d = CONTEUDO.servicos[s.slug];
+      const capa = capas[s.slug] ?? null;
       return {
         slug: s.slug,
         nome: s.name,
         frase: d?.frase ?? null,
         texto: d?.texto ?? null,
+        capa,
+        midias: midiasDoServico(rolos[s.slug] ?? [], capa, s.name),
+        agendar: linkDoServico(links.schedule, s.name),
       };
     });
   // o menu só aponta para seção que está na página
@@ -126,10 +133,9 @@ export function PublicExperience({
           <Hero business={settings.business} scheduleUrl={links.schedule} photo={photos?.hero} video={videos?.hero} />
           <Faixa itens={services.filter((s) => s.slug !== "outro").map((s) => s.name)} />
           {/* as seções de foto e vídeo: se uma quebrar no celular, some sozinha e o erro vai para o log */}
-          <SemQuebrar onde="carrossel de servicos">
-            <ServiceStrip services={services} scheduleUrl={links.schedule} capas={capas} rolos={rolos} />
+          <SemQuebrar onde="cada servico">
+            <WorkSequence servicos={trabalho} />
           </SemQuebrar>
-          <WorkSequence servicos={trabalho} />
           <Film video={videos?.processo} />
           {/* a sequência que a Tayssa pediu (29/10/2026): a cliente entende o
               efeito (apresentação, acima), vê as informações práticas e a
@@ -140,7 +146,7 @@ export function PublicExperience({
               scheduleUrl={links.schedule}
               capas={capas}
               rolos={rolos}
-              ambiente={colagem[1] ?? colagem[0]}
+              ambiente={retrato}
             />
           </SemQuebrar>
           <SemQuebrar onde="catalogo">
@@ -161,7 +167,7 @@ export function PublicExperience({
           <VipIntro benefits={benefits} settings={settings} />
           <ReferralCta />
           <VisitInfo business={settings.business} booking={settings.booking} conteudo={CONTEUDO} />
-          <Closing scheduleUrl={links.schedule} ambiente={colagem[2] ?? colagem[0]} />
+          <Closing scheduleUrl={links.schedule} ambiente={retrato} />
         </main>
         <PublicFooter business={settings.business} />
         <AgendarFlutua url={links.schedule} />
