@@ -16,8 +16,7 @@ import {
   type PointerEvent,
   type ReactNode,
 } from "react";
-import { whatsappUrl } from "@/lib/tayssa/whatsapp";
-import { ROUTES, publicUrl } from "@/lib/tayssa/config";
+import { ROUTES } from "@/lib/tayssa/config";
 import { agendaPublicaAction } from "@/lib/tayssa/actions/agenda";
 import { createAppointmentAction } from "@/lib/tayssa/actions/booking";
 import {
@@ -28,14 +27,14 @@ import {
   type ContaNaAgenda,
 } from "@/lib/tayssa/actions/conta";
 import { useTarefa } from "@/components/tayssa/ui/acao";
-import { WhatsAppIcon } from "@/components/tayssa/ui/whatsapp";
 import { OlhoDaSenha } from "@/components/tayssa/ui/senha";
+import { PagarSinal } from "@/components/tayssa/ui/pagar-sinal";
+import type { PixDaAgenda } from "@/lib/tayssa/pix";
 import {
   cabeNoHorario,
   diasAbertos,
   duracaoLegivel,
   horaLegivel,
-  mensagemAgendamento,
   mesesDaAgenda,
   partesDoDia,
   reais,
@@ -67,6 +66,8 @@ export type AgendaSite = {
   sinalHoras: number;
   /** minutos de tolerância para atraso: passando disso, ela perde o sinal */
   tolerancia: number;
+  /** o Pix do sinal (copia e cola com o valor); sem chave no painel, ela pede no WhatsApp */
+  pix: PixDaAgenda | null;
 };
 
 type Ctx = { abrir: (servico?: string) => void };
@@ -244,7 +245,9 @@ function FolhaAgendar({
   const completo = Boolean(servicoPronto && escolhido && dia && horaLivre);
   // manutenção: o valor é o da manutenção do volume escolhido (o Fox eyes custa mais)
   const valor =
-    (escolhido?.manutencao ? agenda.volumes.find((v) => v.nome === tecnica)?.manutencao : null) ?? escolhido?.preco ?? null;
+    (escolhido?.manutencao ? agenda.volumes.find((v) => v.nome === tecnica)?.manutencao : null) ??
+    escolhido?.preco ??
+    null;
 
   // a fita de dias vai até o fim do ano (50 e tantos dias): o botão do mês
   // leva direto a ele, e o mês que está à vista na fita fica aceso
@@ -335,17 +338,22 @@ function FolhaAgendar({
     if (a.dy > 120 || velocidade > 0.6) onFechar();
   };
 
-  const falta = !escolhido && !semServicos
-    ? "Escolha o serviço"
-    : perguntaTecnica && !tecnica
-      ? "Escolha o volume"
-      : !dia
-        ? "Escolha o dia"
-        : !horaLivre
-          ? "Escolha o horário"
-          : "";
+  const falta =
+    !escolhido && !semServicos
+      ? "Escolha o serviço"
+      : perguntaTecnica && !tecnica
+        ? "Escolha o volume"
+        : !dia
+          ? "Escolha o dia"
+          : !horaLivre
+            ? "Escolha o horário"
+            : "";
 
-  const nomeDoServico = escolhido ? (tecnica && tecnica !== NAO_SEI ? `${escolhido.nome} · ${tecnica}` : escolhido.nome) : "";
+  const nomeDoServico = escolhido
+    ? tecnica && tecnica !== NAO_SEI
+      ? `${escolhido.nome} · ${tecnica}`
+      : escolhido.nome
+    : "";
 
   /** marca o horário: entra (ou cria a conta) se precisar e grava o pedido */
   const agendar = (e?: FormEvent) => {
@@ -367,11 +375,12 @@ function FolhaAgendar({
         setConta(quem);
         setSenha("");
       }
-      const nota = escolhido.manutencao && tecnica
-        ? tecnica === NAO_SEI
-          ? "Manutenção: ainda não sei o volume, quero ajuda para escolher."
-          : `Manutenção do ${tecnica}.`
-        : undefined;
+      const nota =
+        escolhido.manutencao && tecnica
+          ? tecnica === NAO_SEI
+            ? "Manutenção: ainda não sei o volume, quero ajuda para escolher."
+            : `Manutenção do ${tecnica}.`
+          : undefined;
       const b = await createAppointmentAction({ service_id: escolhido.id, date: dia, time: hora, note: nota });
       if (!b.ok) {
         buscarAgenda();
@@ -414,9 +423,13 @@ function FolhaAgendar({
 
   const sinalTexto = (
     <p>
-      <b>Sinal de {reais(agenda.sinal)} no Pix</b> para confirmar. O horário fica guardado por {agenda.sinalHoras}h: a
-      Tayssa te chama no WhatsApp para o sinal.
-      {agenda.tolerancia > 0 ? ` Tolerância de ${agenda.tolerancia} minutos de atraso: passando disso, você perde o sinal.` : ""}
+      <b>Sinal de {reais(agenda.sinal)} no Pix</b> para confirmar.{" "}
+      {agenda.pix
+        ? `Depois de agendar, você copia o código Pix, paga e anexa o comprovante aqui. O horário fica guardado por ${agenda.sinalHoras}h esperando o comprovante.`
+        : `O horário fica guardado por ${agenda.sinalHoras}h: a Tayssa te chama no WhatsApp para o sinal.`}
+      {agenda.tolerancia > 0
+        ? ` Tolerância de ${agenda.tolerancia} minutos de atraso: passando disso, você perde o sinal.`
+        : ""}
     </p>
   );
 
@@ -493,7 +506,12 @@ function FolhaAgendar({
                   <div className="tyag__escolhido">
                     <span>
                       <b>{escolhido.nome}</b>
-                      <small>{valorLegivel(escolhido.preco, agenda.volumes.map((v) => v.manutencao))}</small>
+                      <small>
+                        {valorLegivel(
+                          escolhido.preco,
+                          agenda.volumes.map((v) => v.manutencao),
+                        )}
+                      </small>
                     </span>
                     <button type="button" className="tyag__trocar" onClick={() => setVerTodos(true)}>
                       Trocar
@@ -543,7 +561,10 @@ function FolhaAgendar({
                 <legend className="tyag__rotulo">De qual volume é a manutenção?</legend>
                 <div className="tyag__chips">
                   {[...agenda.volumes, { nome: NAO_SEI, manutencao: null }].map((v) => (
-                    <label key={v.nome} className={["tyag__chip", v.nome === NAO_SEI ? "tyag__chip--leve" : ""].join(" ")}>
+                    <label
+                      key={v.nome}
+                      className={["tyag__chip", v.nome === NAO_SEI ? "tyag__chip--leve" : ""].join(" ")}
+                    >
                       <input
                         type="radio"
                         name={`${id}-tecnica`}
@@ -596,7 +617,9 @@ function FolhaAgendar({
                             onChange={() => {
                               setDia(d.iso);
                               setErro(null);
-                              setHora((h) => (h && d.slots.some((s) => s.time === h && cabeNoHorario(s, duracao)) ? h : null));
+                              setHora((h) =>
+                                h && d.slots.some((s) => s.time === h && cabeNoHorario(s, duracao)) ? h : null,
+                              );
                             }}
                             aria-label={`${diaLegivel(d.iso)}${lotado ? ", sem horário livre" : ""}`}
                           />
@@ -834,22 +857,39 @@ function FolhaAgendar({
                 <path d="M5 12.5l4.2 4.2L19 7" />
               </svg>
             </span>
-            <p className="tyag__pronto-titulo">
-              {feito.nome}, seu horário está guardado.
-            </p>
+            <p className="tyag__pronto-titulo">{feito.nome}, seu horário está guardado.</p>
             <div className="tyag__resumo">
-              <b>{feito.tecnica && feito.tecnica !== NAO_SEI ? `${feito.servico} · ${feito.tecnica}` : feito.servico}</b>
+              <b>
+                {feito.tecnica && feito.tecnica !== NAO_SEI ? `${feito.servico} · ${feito.tecnica}` : feito.servico}
+              </b>
               <span>
                 {diaLegivel(feito.dia)} às {horaLegivel(feito.hora)}
                 {feito.valor != null ? ` · ${reais(feito.valor)}` : ""}
               </span>
             </div>
             <p className="tyag__pronto-texto">
-              Ele vale depois do sinal de {reais(agenda.sinal)} no Pix. A Tayssa te chama no WhatsApp em até{" "}
-              {agenda.sinalHoras}h, ou você já pode pedir a chave agora. Sem o sinal nesse prazo, o horário volta para a
-              agenda.
-              {agenda.tolerancia > 0 ? ` No dia, a tolerância é de ${agenda.tolerancia} minutos: passando disso, você perde o sinal.` : ""}
+              Ele vale depois do sinal de {reais(agenda.sinal)} no Pix. Pague e anexe o comprovante: sem ele em{" "}
+              {agenda.sinalHoras}h, o horário volta para a agenda.
+              {agenda.tolerancia > 0
+                ? ` No dia, a tolerância é de ${agenda.tolerancia} minutos: passando disso, você perde o sinal.`
+                : ""}
             </p>
+            {/* o sinal em três passos: copiar o Pix, anexar o comprovante, avisar a Tayssa (modelo Reflexo do Santo) */}
+            <PagarSinal
+              tema="noite"
+              pedido={{
+                id: feito.id,
+                servico: feito.servico,
+                tecnica: feito.tecnica === NAO_SEI ? "ainda não sei qual, quero ajuda para escolher" : feito.tecnica,
+                dia: feito.dia,
+                hora: feito.hora,
+                valor: feito.valor,
+              }}
+              nome={feito.nome}
+              sinal={agenda.sinal}
+              telefone={agenda.telefone}
+              pix={agenda.pix}
+            />
             <a className="tyag__link tyag__link--centro" href={ROUTES.vipBook}>
               Ver meus horários
             </a>
@@ -857,57 +897,38 @@ function FolhaAgendar({
         ) : null}
       </div>
 
-      <div className="tyag__pe">
-        {passo === "escolha" ? (
-          <button
-            // chave própria: o botão de agendar do passo seguinte nasce outro elemento. Com o
-            // mesmo, ele virava "submit" no meio do toque e enviava o formulário vazio
-            key="continuar"
-            type="button"
-            className="tyag__enviar"
-            disabled={!completo}
-            onClick={(e) => {
-              e.preventDefault();
-              setErro(null);
-              setPasso("conta");
-            }}
-          >
-            {completo ? "Continuar" : falta}
-          </button>
-        ) : passo === "conta" ? (
-          <button key="agendar" type="submit" form={`${id}-form`} className="tyag__enviar" disabled={enviando}>
-            {enviando
-              ? "Agendando…"
-              : conta
-                ? "Agendar"
-                : modo === "criar"
-                  ? "Criar conta e agendar"
-                  : "Entrar e agendar"}
-          </button>
-        ) : feito ? (
-          <a
-            className="tyag__enviar"
-            href={whatsappUrl(
-              agenda.telefone,
-              mensagemAgendamento({
-                servico: feito.servico,
-                tecnica: feito.tecnica === NAO_SEI ? "ainda não sei qual, quero ajuda para escolher" : feito.tecnica,
-                dia: feito.dia,
-                hora: feito.hora,
-                nome: feito.nome,
-                valor: feito.valor,
-                sinal: agenda.sinal,
-                link: publicUrl(ROUTES.horario(feito.id)),
-              }),
-            )}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <IconeWhats />
-            Pagar o sinal agora
-          </a>
-        ) : null}
-      </div>
+      {/* no "Horário reservado" os passos do sinal moram no corpo: sem rodapé */}
+      {passo !== "pronto" ? (
+        <div className="tyag__pe">
+          {passo === "escolha" ? (
+            <button
+              // chave própria: o botão de agendar do passo seguinte nasce outro elemento. Com o
+              // mesmo, ele virava "submit" no meio do toque e enviava o formulário vazio
+              key="continuar"
+              type="button"
+              className="tyag__enviar"
+              disabled={!completo}
+              onClick={(e) => {
+                e.preventDefault();
+                setErro(null);
+                setPasso("conta");
+              }}
+            >
+              {completo ? "Continuar" : falta}
+            </button>
+          ) : passo === "conta" ? (
+            <button key="agendar" type="submit" form={`${id}-form`} className="tyag__enviar" disabled={enviando}>
+              {enviando
+                ? "Agendando…"
+                : conta
+                  ? "Agendar"
+                  : modo === "criar"
+                    ? "Criar conta e agendar"
+                    : "Entrar e agendar"}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
     </dialog>
   );
 }
@@ -938,7 +959,9 @@ function Campo({
       onChange={(e) => mudar(e.target.value)}
       aria-invalid={erro ? true : undefined}
       aria-describedby={erro ? `${id}-erro` : undefined}
-      {...(senha ? { type: ver ? "text" : "password", autoCapitalize: "none", autoCorrect: "off", spellCheck: false } : {})}
+      {...(senha
+        ? { type: ver ? "text" : "password", autoCapitalize: "none", autoCorrect: "off", spellCheck: false }
+        : {})}
       {...resto}
     />
   );
@@ -972,8 +995,4 @@ function Lembrar({ ligado, mudar }: { ligado: boolean; mudar: (v: boolean) => vo
       <span>Manter conectada neste celular</span>
     </label>
   );
-}
-
-function IconeWhats() {
-  return <WhatsAppIcon size={22} className="tyag__whats" />;
 }

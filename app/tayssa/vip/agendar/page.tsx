@@ -25,13 +25,15 @@ export default async function BookPage() {
   ]);
   const max = settings.booking.max_open_per_client;
   const full = appointments.upcoming.length >= max;
-  // o pedido segura o horário esperando o sinal; o botão leva ao WhatsApp dela
+  // o pedido segura o horário esperando o comprovante do Pix; com a chave no painel, o site mostra o copia e cola
+  const b = settings.booking;
   const sinal = {
     telefone: settings.business.whatsapp,
-    valor: settings.booking.deposit_reais,
-    horas: settings.booking.sinal_horas,
+    valor: b.deposit_reais,
+    horas: b.sinal_horas,
     nome: user.displayName,
-    tolerancia: settings.booking.tolerancia_min,
+    tolerancia: b.tolerancia_min,
+    pix: b.pix_chave ? { chave: b.pix_chave, nome: b.pix_nome, cidade: b.pix_cidade, banco: b.pix_banco } : null,
   };
 
   return (
@@ -40,8 +42,8 @@ export default async function BookPage() {
         {user.displayName}, <em>seus horários</em>.
       </h1>
       <p className="tyv-sub">
-        Marque, acompanhe e desmarque por aqui. O horário fica guardado por {sinal.horas}h e vale depois do sinal no Pix: a
-        Tayssa te chama no WhatsApp.
+        Marque, acompanhe e desmarque por aqui. O horário fica guardado por {sinal.horas}h e vale depois do sinal no Pix,
+        com o comprovante anexado.
         {sinal.tolerancia > 0 ? ` Tolerância de ${sinal.tolerancia} minutos de atraso: passando disso, você perde o sinal.` : ""}
       </p>
 

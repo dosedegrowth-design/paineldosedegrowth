@@ -85,6 +85,15 @@ export default async function TayssaHome() {
     sinal: settings.booking.deposit_reais,
     sinalHoras: settings.booking.sinal_horas,
     tolerancia: settings.booking.tolerancia_min,
+    // o Pix do sinal (Configurações → Agenda): sem chave, a cliente pede no WhatsApp
+    pix: settings.booking.pix_chave
+      ? {
+          chave: settings.booking.pix_chave,
+          nome: settings.booking.pix_nome,
+          cidade: settings.booking.pix_cidade,
+          banco: settings.booking.pix_banco,
+        }
+      : null,
   };
 
   const jsonLd = {

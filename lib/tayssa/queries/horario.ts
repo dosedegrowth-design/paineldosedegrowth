@@ -20,6 +20,8 @@ export type HorarioPublico = {
   hora: string;
   duracao: number | null;
   status: AppointmentStatus;
+  /** a cliente já anexou o comprovante do sinal */
+  comprovante: boolean;
   criadoEm: string;
   valor: number | null;
 };
@@ -32,7 +34,7 @@ export const getHorarioPublico = cache(async (id: string): Promise<HorarioPublic
     const db = vipDb();
     const { data, error } = await db
       .from("appointments")
-      .select("id, service_id, service_name, scheduled_date, scheduled_time, duration_min, status, created_at, client_note")
+      .select("id, service_id, service_name, scheduled_date, scheduled_time, duration_min, status, created_at, client_note, comprovante_em")
       .eq("id", id)
       .maybeSingle();
     if (error) throw new Error(error.message);
@@ -47,6 +49,7 @@ export const getHorarioPublico = cache(async (id: string): Promise<HorarioPublic
       status: AppointmentStatus;
       created_at: string;
       client_note: string | null;
+      comprovante_em: string | null;
     };
     // manutenção: o valor é o da manutenção do volume dela (a nota diz qual)
     const volume = a.client_note?.match(/^Manutenção do (.+)\.$/)?.[1] ?? null;
@@ -69,6 +72,7 @@ export const getHorarioPublico = cache(async (id: string): Promise<HorarioPublic
       hora: a.scheduled_time.slice(0, 5),
       duracao: a.duration_min,
       status: a.status,
+      comprovante: Boolean(a.comprovante_em),
       criadoEm: a.created_at,
       valor,
     };

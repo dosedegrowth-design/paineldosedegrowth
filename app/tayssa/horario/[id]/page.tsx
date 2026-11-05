@@ -35,7 +35,10 @@ export default async function HorarioPage({ params }: Props) {
   if (!h) notFound();
   const b = settings.booking;
   const fora = h.status === "cancelled" || h.status === "no_show";
-  const conversa = whatsappUrl(settings.business.whatsapp, `Oi, Tayssa! Sobre o meu horário de ${diaLegivel(h.dia)} às ${horaLegivel(h.hora)}: `);
+  const conversa = whatsappUrl(
+    settings.business.whatsapp,
+    `Oi, Tayssa! Sobre o meu horário de ${diaLegivel(h.dia)} às ${horaLegivel(h.hora)}: `,
+  );
 
   return (
     <Entrada aviso="Horário marcado pelo site da Tayssa Lash">
@@ -59,13 +62,15 @@ export default async function HorarioPage({ params }: Props) {
           </p>
           {h.valor != null ? <p className="tyhr__valor">{reais(h.valor)}</p> : null}
           <p className="tyhr__situacao" data-status={h.status}>
-            {h.status === "requested"
-              ? `Aguardando o sinal de ${reais(b.deposit_reais)} no Pix · guardado até ${prazoDoSinal(h.criadoEm, b.sinal_horas).legivel}`
-              : h.status === "confirmed"
-                ? "Confirmado pela Tayssa"
-                : h.status === "done"
-                  ? "Realizado"
-                  : "Fora da agenda"}
+            {h.status === "requested" && h.comprovante
+              ? `Comprovante do sinal enviado · a Tayssa confere o Pix e confirma`
+              : h.status === "requested"
+                ? `Aguardando o sinal de ${reais(b.deposit_reais)} no Pix · guardado até ${prazoDoSinal(h.criadoEm, b.sinal_horas).legivel}`
+                : h.status === "confirmed"
+                  ? "Confirmado pela Tayssa"
+                  : h.status === "done"
+                    ? "Realizado"
+                    : "Fora da agenda"}
           </p>
           {!fora && b.tolerancia_min > 0 ? (
             <p className="tyhr__nota">

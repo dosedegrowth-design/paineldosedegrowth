@@ -375,6 +375,11 @@ export const bookingSettingsSchema = z.object({
     .int("Use minutos inteiros")
     .min(0, "Use 0 ou mais")
     .max(60, "No máximo 60 minutos"),
+  // o Pix do sinal: vazio = a cliente pede a chave no WhatsApp
+  pix_chave: z.string().trim().max(77, "Chave Pix longa demais").default(""),
+  pix_nome: z.string().trim().max(60, "Use no máximo 60 letras").default(""),
+  pix_cidade: z.string().trim().max(40, "Use no máximo 40 letras").default(""),
+  pix_banco: z.string().trim().max(40, "Use no máximo 40 letras").default(""),
 });
 
 export const loyaltySettingsSchema = z.object({

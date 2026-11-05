@@ -87,6 +87,14 @@ test("com o link do horário, a mensagem termina nele (o WhatsApp mostra o folde
   assert.ok(semLink.endsWith("garantir o horário?"));
 });
 
+test("com o comprovante anexado, a mensagem avisa que o sinal foi pago (não pede a chave)", () => {
+  const m = mensagemAgendamento({ servico: "Volume inglês", dia: "2026-11-07", hora: "10:00", nome: "Ana", sinal: 50, comprovante: true, link: "https://x/tayssa/horario/1" });
+  assert.ok(m.startsWith("Oi, Tayssa, tudo bem? Fiz meu agendamento pelo site."));
+  assert.match(m, /Já paguei o sinal de R\$ 50 no Pix e anexei o comprovante no site\./);
+  assert.doesNotMatch(m, /chave Pix/);
+  assert.ok(m.endsWith("Meu horário: https://x/tayssa/horario/1"));
+});
+
 test("com valor cadastrado, a mensagem leva o valor", () => {
   const m = mensagemAgendamento({ servico: "Volume inglês", dia: "2026-10-23", hora: "14:00", nome: "Ana", valor: 220, sinal: 50 });
   assert.match(m, /Horário: 14h\nValor: R\$ 220\nNome: Ana/);

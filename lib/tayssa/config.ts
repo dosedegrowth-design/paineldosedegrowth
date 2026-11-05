@@ -45,6 +45,21 @@ export const LOGIN_MAX_ATTEMPTS = 8;
 export const LOGIN_WINDOW_MINUTES = 15;
 export const MIN_PASSWORD_LENGTH = 8;
 
+/**
+ * Comprovantes do sinal (Supabase Storage, bucket PRIVADO): documento
+ * financeiro, só o servidor lê. O painel abre por /tayssa/admin/comprovante/<id>.
+ */
+export const COMPROVANTE_BUCKET = "tayssa-comprovantes";
+export const COMPROVANTE_MAX_BYTES = 8 * 1024 * 1024;
+export const COMPROVANTE_TIPOS: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/heic": "heic",
+  "image/heif": "heif",
+  "application/pdf": "pdf",
+};
+
 /** Biblioteca de fotos (Supabase Storage, bucket público). */
 export const PHOTO_BUCKET = "tayssa-fotos";
 /** o original, sem compressão: a galeria guarda o arquivo como chegou */
@@ -173,6 +188,18 @@ export type BookingSettings = {
   sinal_horas: number;
   /** minutos de tolerância para atraso: passando disso, a cliente perde o sinal (Lucas, 05/11/2026: 10 min) */
   tolerancia_min: number;
+  /**
+   * O Pix do sinal (modelo Reflexo do Santo, 05/11/2026): com a chave
+   * cadastrada, o site mostra o "Pix copia e cola" com o valor do sinal e a
+   * cliente anexa o comprovante. Vazia, ela pede a chave no WhatsApp.
+   */
+  pix_chave: string;
+  /** em nome de quem a conta está (aparece para a cliente e vai no código) */
+  pix_nome: string;
+  /** cidade da conta (vai no código; não impede o pagamento) */
+  pix_cidade: string;
+  /** banco, só para a cliente conferir */
+  pix_banco: string;
 };
 
 export type SignupSettings = {
@@ -281,6 +308,10 @@ export const DEFAULT_SETTINGS: Settings = {
     deposit_reais: 50,
     sinal_horas: 24,
     tolerancia_min: 10,
+    pix_chave: "",
+    pix_nome: "",
+    pix_cidade: "São Paulo",
+    pix_banco: "",
   },
   signup: {
     open: true,

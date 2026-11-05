@@ -763,6 +763,45 @@ export function BookingForm({ value }: { value: Settings["booking"] }) {
         </div>
       </div>
 
+      {/* o Pix do sinal: com a chave, o site mostra o "copia e cola" e ela anexa o comprovante */}
+      <div className="tya-stack">
+        <span className="tya-eyebrow">Pix do sinal</span>
+        <p className="tya-small">
+          Com a chave cadastrada, a cliente copia o código Pix com o valor do sinal, paga no app do banco e anexa o
+          comprovante no site. Sem chave, ela pede a chave no seu WhatsApp.
+        </p>
+        <div className="tya-grid">
+          <Campo
+            label="Chave Pix"
+            name="pix_chave"
+            defaultValue={value.pix_chave}
+            error={erroDe(state, "pix_chave")}
+            hint="CNPJ, CPF, celular com DDD, e-mail ou chave aleatória."
+          />
+          <Campo
+            label="Em nome de"
+            name="pix_nome"
+            defaultValue={value.pix_nome}
+            error={erroDe(state, "pix_nome")}
+            hint="Como aparece no banco. A cliente vê antes de pagar."
+          />
+          <Campo
+            label="Banco"
+            name="pix_banco"
+            defaultValue={value.pix_banco}
+            error={erroDe(state, "pix_banco")}
+            hint="Só para ela conferir (ex.: Nubank)."
+          />
+          <Campo
+            label="Cidade da conta"
+            name="pix_cidade"
+            defaultValue={value.pix_cidade}
+            error={erroDe(state, "pix_cidade")}
+            hint="Vai dentro do código Pix."
+          />
+        </div>
+      </div>
+
       <Salvar state={state} pending={pending}>
         Salvar disponibilidade
       </Salvar>

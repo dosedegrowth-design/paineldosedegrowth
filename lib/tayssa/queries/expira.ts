@@ -6,9 +6,10 @@ import { getSettings } from "@/lib/tayssa/settings";
 let ultimaVez = 0;
 
 /**
- * O pedido só vale com o sinal (05/11/2026): a Tayssa pede o Pix no
- * WhatsApp e confirma quando ele cai. Pedido sem confirmação depois de
- * `booking.sinal_horas` (24h) cai sozinho e o horário volta para a agenda.
+ * O pedido só vale com o sinal (05/11/2026): a cliente paga pelo Pix copia e
+ * cola e anexa o comprovante; a Tayssa confere e confirma. Pedido SEM
+ * comprovante depois de `booking.sinal_horas` (24h) cai sozinho e o horário
+ * volta para a agenda; com comprovante, espera a Tayssa.
  *
  * Roda antes de quem lê a agenda (site, área da cliente, painel), no máximo
  * a cada 30 s por servidor. Em produção um job do banco (pg_cron
@@ -30,6 +31,8 @@ export async function expirarPedidosSemSinal(): Promise<void> {
         reviewed_at: new Date(agora).toISOString(),
       })
       .eq("status", "requested")
+      // quem anexou o comprovante já pagou: a Tayssa confere e confirma, o pedido não cai
+      .is("comprovante_em", null)
       .lt("created_at", limite)
       .select("id");
     if (error) throw new Error(error.message);

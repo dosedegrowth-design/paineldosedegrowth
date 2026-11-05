@@ -7,7 +7,8 @@ import { ROUTES, publicUrl } from "@/lib/tayssa/config";
 import { dateShort, dayLabel, dayMonth, hhmm, nowInBusinessTz, weekdayShort } from "@/lib/tayssa/format";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { horariosDaSemana, prazoDoSinal, reais } from "@/lib/tayssa/agendar";
-import { APPOINTMENT_STATUS_LABEL, type AppointmentStatus } from "@/lib/tayssa/types";
+import { situacaoDoPedido, type AppointmentStatus } from "@/lib/tayssa/types";
+import { pixDoPedido, type PixDaAgenda } from "@/lib/tayssa/pix";
 import type { AppointmentWithClient } from "@/lib/tayssa/queries/admin";
 import {
   adminCancelAppointmentAction,
@@ -42,8 +43,28 @@ function clientName(a: AppointmentWithClient): string {
   return a.client?.nickname?.trim() || a.client?.name || "Cliente";
 }
 
-function Selo({ status }: { status: AppointmentStatus }) {
-  return <span className={`tya-pill tya-pill--${TOM[status]}`}>{APPOINTMENT_STATUS_LABEL[status]}</span>;
+function Selo({ a }: { a: Pick<AppointmentWithClient, "status" | "comprovante_em"> }) {
+  // pedido com comprovante anexado: "Comprovante enviado", no tom de quem está pronto para conferir
+  const tom = a.status === "requested" && a.comprovante_em ? "ok" : TOM[a.status];
+  return <span className={`tya-pill tya-pill--${tom}`}>{situacaoDoPedido(a)}</span>;
+}
+
+/** "hoje às 14h32", "ontem às 9h05", "05/11 às 18h" (horário de Brasília) */
+function quandoAnexou(iso: string): string {
+  const fmt = (d: Date) =>
+    new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit" }).format(d);
+  const hora = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  })
+    .format(new Date(iso))
+    .replace(":", "h");
+  const dia = fmt(new Date(iso));
+  const hoje = fmt(new Date());
+  const ontem = fmt(new Date(Date.now() - 86_400_000));
+  return `${dia === hoje ? "hoje" : dia === ontem ? "ontem" : dia} às ${hora}`;
 }
 
 /** Vazio desenhado: ícone, uma frase curta e o porquê. */
@@ -90,12 +111,15 @@ function Slot({
 }: {
   a: AppointmentWithClient;
   tom?: "warn" | "brand" | "ok" | "quiet" | "bad";
-  /** pedido esperando o sinal: o prazo e a mensagem pronta pedindo o Pix */
-  sinal?: { horas: number; valor: number };
+  /** pedido esperando o sinal: o prazo, o comprovante e a mensagem pronta pedindo o Pix */
+  sinal?: { horas: number; valor: number; pix: PixDaAgenda | null };
   children?: ReactNode;
 }) {
   const first = clientName(a).split(/\s+/)[0];
   const esperandoSinal = a.status === "requested" && sinal;
+  const comComprovante = Boolean(esperandoSinal && a.comprovante_em);
+  // o código do Pix vai na mensagem (ela copia direto do WhatsApp) quando a chave está no painel
+  const codigoPix = esperandoSinal ? pixDoPedido(sinal.pix, sinal.valor, a.id) : null;
   return (
     <li className="tya-slot" data-tom={tom ?? TOM[a.status]}>
       <div className="tya-slot__when">
@@ -114,17 +138,30 @@ function Slot({
             <span className="tya-slot__name">Cliente</span>
           )}
           {a.vip ? <span className="tya-pill tya-pill--gold">VIP</span> : null}
-          <Selo status={a.status} />
+          <Selo a={a} />
         </div>
         <p className="tya-slot__meta">
           {a.service_name} · {a.duration_min} min · {weekdayShort(a.scheduled_date)}, {dateShort(a.scheduled_date)}
         </p>
         {a.client_note ? <p className="tya-quote">“{a.client_note}”</p> : null}
-        {esperandoSinal ? (
+        {esperandoSinal && comComprovante ? (
+          <p className="tya-slot__mine tya-slot__mine--ok">
+            <span className="tya-slot__tag">comprovante</span>
+            Anexado {quandoAnexou(a.comprovante_em!)} · confira o Pix de {reais(sinal.valor)} e confirme.{" "}
+            <a
+              href={`/tayssa/admin/comprovante/${a.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="tya-link"
+            >
+              Ver comprovante
+            </a>
+          </p>
+        ) : esperandoSinal ? (
           <p className="tya-slot__mine">
-            <span className="tya-slot__tag">sinal</span>
-            Aguardando {reais(sinal.valor)} no Pix · o pedido cai {prazoDoSinal(a.created_at, sinal.horas).legivel} se você
-            não confirmar
+            <span className="tya-slot__tag">sem comprovante</span>
+            Aguardando {reais(sinal.valor)} no Pix · sem o comprovante, o pedido cai{" "}
+            {prazoDoSinal(a.created_at, sinal.horas).legivel}
           </p>
         ) : null}
         {a.admin_note ? (
@@ -138,15 +175,17 @@ function Slot({
             href={whatsappUrl(
               a.client.phone,
               // o link do horário vai junto: no WhatsApp ele vira o cartão (folder) com os dados do pedido
-              esperandoSinal
-                ? `Oi, ${first}! Aqui é a Tayssa. Recebi seu pedido de ${a.service_name} para ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}.\n\nSeu horário: ${publicUrl(ROUTES.horario(a.id))}\n\nPara confirmar, o sinal é de ${reais(sinal.valor)} no Pix. A chave é: `
-                : `Oi, ${first}! Sobre seu horário de ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}: `
+              esperandoSinal && !comComprovante
+                ? codigoPix
+                  ? `Oi, ${first}! Aqui é a Tayssa. Recebi seu pedido de ${a.service_name} para ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}.\n\nSeu horário: ${publicUrl(ROUTES.horario(a.id))}\n\nPara confirmar, pague o sinal de ${reais(sinal.valor)} pelo Pix copia e cola abaixo e anexe o comprovante em Meus horários: ${publicUrl(ROUTES.vipBook)}\n\n${codigoPix}`
+                  : `Oi, ${first}! Aqui é a Tayssa. Recebi seu pedido de ${a.service_name} para ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}.\n\nSeu horário: ${publicUrl(ROUTES.horario(a.id))}\n\nPara confirmar, o sinal é de ${reais(sinal.valor)} no Pix. A chave é: `
+                : `Oi, ${first}! Sobre seu horário de ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}: `,
             )}
             target="_blank"
             rel="noopener noreferrer"
             className="tya-link tya-link--quiet tya-slot__wa"
           >
-            {esperandoSinal ? "Pedir o sinal no WhatsApp" : "WhatsApp"}
+            {esperandoSinal && !comComprovante ? "Pedir o sinal no WhatsApp" : "WhatsApp"}
           </a>
         ) : null}
       </div>
@@ -197,6 +236,13 @@ export default async function AgendaAdminPage() {
   await requireAdminPage();
   const [agenda, settings, grade] = await Promise.all([getAgenda(), getSettings(), getGradeAgenda()]);
   const b = settings.booking;
+  const sinalDoPainel = {
+    horas: b.sinal_horas,
+    valor: b.deposit_reais,
+    pix: b.pix_chave ? { chave: b.pix_chave, nome: b.pix_nome, cidade: b.pix_cidade, banco: b.pix_banco } : null,
+  };
+  const comComprovante = agenda.requested.filter((a) => a.comprovante_em).length;
+  const semComprovante = agenda.requested.length - comComprovante;
   const todayISO = agenda.today;
   const now = nowInBusinessTz();
   const alreadyHappened = (a: AppointmentWithClient) => {
@@ -222,7 +268,11 @@ export default async function AgendaAdminPage() {
             </>
           )
         }
-        lead={`A semana como no Google Agenda: toque num horário para abrir ou fechar. A cliente marca pelo site com a conta dela e o pedido segura o horário por ${b.sinal_horas}h esperando o sinal: peça o Pix no WhatsApp e confirme quando ele cair. Sem confirmação nesse prazo, o pedido cai sozinho e o horário volta para a agenda.`}
+        lead={
+          sinalDoPainel.pix
+            ? `A semana como no Google Agenda: toque num horário para abrir ou fechar. A cliente marca pelo site, paga o sinal pelo Pix copia e cola e anexa o comprovante: confira e confirme. Sem comprovante em ${b.sinal_horas}h, o pedido cai sozinho e o horário volta para a agenda.`
+            : `A semana como no Google Agenda: toque num horário para abrir ou fechar. A cliente marca pelo site com a conta dela e o pedido segura o horário por ${b.sinal_horas}h esperando o sinal: peça o Pix no WhatsApp e confirme quando ele cair. Sem comprovante nesse prazo, o pedido cai sozinho e o horário volta para a agenda.`
+        }
         actions={
           <TransitionLink href={`${ROUTES.adminSettings}#agenda`} className="tya-btn tya-btn--ghost">
             <Icone nome="config" />
@@ -255,8 +305,13 @@ export default async function AgendaAdminPage() {
         title="Pedidos de horário"
         aside={
           agenda.requested.length ? (
-            <span className="tya-pill tya-pill--warn">
-              {agenda.requested.length} aguardando{agenda.requested.some((a) => a.vip) ? " · VIP primeiro" : ""}
+            <span className="tya-slot__resumo">
+              {comComprovante ? (
+                <span className="tya-pill tya-pill--ok">{comComprovante} com comprovante para conferir</span>
+              ) : null}
+              {semComprovante ? (
+                <span className="tya-pill tya-pill--warn">{semComprovante} sem comprovante</span>
+              ) : null}
             </span>
           ) : null
         }
@@ -264,7 +319,7 @@ export default async function AgendaAdminPage() {
         {agenda.requested.length ? (
           <ul className="tya-list">
             {agenda.requested.map((a) => (
-              <Slot key={a.id} a={a} sinal={{ horas: b.sinal_horas, valor: b.deposit_reais }}>
+              <Slot key={a.id} a={a} sinal={sinalDoPainel}>
                 <NoteAction
                   action={adminConfirmAppointmentAction}
                   args={{ id: a.id }}
@@ -281,7 +336,7 @@ export default async function AgendaAdminPage() {
           </ul>
         ) : (
           <Vazio icone="agenda" titulo="Nenhum pedido aguardando">
-            Quando uma cliente marcar um horário pelo site, ele aparece aqui. Confirme quando o sinal cair.
+            Quando uma cliente marcar um horário pelo site, ele aparece aqui. Confira o comprovante do Pix e confirme.
           </Vazio>
         )}
       </AdminBlock>
@@ -298,7 +353,7 @@ export default async function AgendaAdminPage() {
         {agenda.todayList.length ? (
           <ul className="tya-list">
             {agenda.todayList.map((a) => (
-              <Slot key={a.id} a={a} sinal={{ horas: b.sinal_horas, valor: b.deposit_reais }}>
+              <Slot key={a.id} a={a} sinal={sinalDoPainel}>
                 {a.status === "requested" ? (
                   <NoteAction
                     action={adminConfirmAppointmentAction}
@@ -326,11 +381,7 @@ export default async function AgendaAdminPage() {
       </AdminBlock>
 
       {agenda.toClose.length ? (
-        <AdminBlock
-          id="fechar"
-          title="Para fechar"
-          aside={<span className="tya-pill tya-pill--bad">já passaram</span>}
-        >
+        <AdminBlock id="fechar" title="Para fechar" aside={<span className="tya-pill tya-pill--bad">já passaram</span>}>
           <ul className="tya-list">
             {agenda.toClose.map((a) => (
               <Slot key={a.id} a={a} tom="bad">
@@ -441,7 +492,7 @@ export default async function AgendaAdminPage() {
                     </td>
                     <td data-rotulo="Serviço">{a.service_name}</td>
                     <td data-rotulo="Estado">
-                      <Selo status={a.status} />
+                      <Selo a={a} />
                       {a.admin_note ? <span className="tya-small"> · {a.admin_note}</span> : null}
                     </td>
                   </tr>

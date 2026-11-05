@@ -187,9 +187,11 @@ export const getAgenda = cache(async (): Promise<Agenda> => {
     };
   });
   const open = (a: AppointmentWithClient) => a.status === "requested" || a.status === "confirmed";
+  // pedidos: quem já anexou o comprovante primeiro (é o que a Tayssa tem para conferir), depois VIP e a data
+  const pedidos = vipPrimeiro(all.filter((a) => a.status === "requested" && a.scheduled_date >= today));
   return {
     today,
-    requested: vipPrimeiro(all.filter((a) => a.status === "requested" && a.scheduled_date >= today)),
+    requested: [...pedidos.filter((a) => a.comprovante_em), ...pedidos.filter((a) => !a.comprovante_em)],
     todayList: all.filter((a) => open(a) && a.scheduled_date === today),
     upcoming: all.filter((a) => a.status === "confirmed" && a.scheduled_date > today),
     toClose: all.filter((a) => open(a) && a.scheduled_date < today),

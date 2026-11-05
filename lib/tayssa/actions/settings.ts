@@ -1,5 +1,6 @@
 "use server";
 
+import { chavePixValida } from "@/lib/tayssa/pix";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { vipDb } from "@/lib/tayssa/db";
@@ -156,7 +157,15 @@ export async function updateBookingSettingsAction(_p: ActionResult | null, fd: F
       deposit_reais: str(fd, "deposit_reais").replace(",", "."),
       sinal_horas: str(fd, "sinal_horas"),
       tolerancia_min: str(fd, "tolerancia_min"),
+      pix_chave: str(fd, "pix_chave"),
+      pix_nome: str(fd, "pix_nome"),
+      pix_cidade: str(fd, "pix_cidade"),
+      pix_banco: str(fd, "pix_banco"),
     });
+    // chave que o Pix não reconhece não vai para o site: melhor avisar aqui do que a cliente travar no banco
+    if (input.pix_chave && !chavePixValida(input.pix_chave)) {
+      throw new BusinessError("Essa chave Pix não parece válida. Use CNPJ, CPF, celular com DDD, e-mail ou a chave aleatória.", "pix_chave");
+    }
     await saveSetting("booking", input, admin.id);
     return undefined;
   });

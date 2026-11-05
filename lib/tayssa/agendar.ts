@@ -34,6 +34,8 @@ export type PedidoAgenda = {
    * WhatsApp mostra o cartão com a identidade da casa e os dados do pedido.
    */
   link?: string | null;
+  /** ela já pagou pelo Pix copia e cola e anexou o comprovante no site (a mensagem avisa, não pede a chave) */
+  comprovante?: boolean;
 };
 
 const DIAS = ["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"];
@@ -219,7 +221,7 @@ export function mensagemAgendamento(p: PedidoAgenda): string {
   const servico = p.tecnica ? `${p.servico} (${p.tecnica})` : p.servico;
   const nome = p.nome.trim();
   return [
-    "Oi, Tayssa, tudo bem? Marquei meu horário pelo site.",
+    p.comprovante ? "Oi, Tayssa, tudo bem? Fiz meu agendamento pelo site." : "Oi, Tayssa, tudo bem? Marquei meu horário pelo site.",
     "",
     `Serviço: ${servico}`,
     `Dia: ${diaLegivel(p.dia)}`,
@@ -227,7 +229,9 @@ export function mensagemAgendamento(p: PedidoAgenda): string {
     ...(p.valor != null ? [`Valor: ${reais(p.valor)}`] : []),
     ...(nome ? [`Nome: ${nome}`] : []),
     "",
-    `Me manda a chave Pix do sinal de ${reais(p.sinal)} para eu garantir o horário?`,
+    p.comprovante
+      ? `Já paguei o sinal de ${reais(p.sinal)} no Pix e anexei o comprovante no site.`
+      : `Me manda a chave Pix do sinal de ${reais(p.sinal)} para eu garantir o horário?`,
     ...(p.link ? ["", `Meu horário: ${p.link}`] : []),
   ].join("\n");
 }

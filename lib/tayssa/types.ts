@@ -240,7 +240,18 @@ export type AppointmentRow = {
   reviewed_at: string | null;
   created_at: string;
   updated_at: string;
+  /** comprovante do sinal no bucket privado (a cliente anexa depois do Pix) */
+  comprovante_path?: string | null;
+  comprovante_tipo?: string | null;
+  /** quando ela anexou: pedido com comprovante não cai sozinho no prazo do sinal */
+  comprovante_em?: string | null;
 };
+
+/** O que a cliente e a Tayssa leem do pedido: "Comprovante enviado" quando ela já anexou. */
+export function situacaoDoPedido(a: { status: AppointmentStatus; comprovante_em?: string | null }): string {
+  if (a.status === "requested" && a.comprovante_em) return "Comprovante enviado";
+  return APPOINTMENT_STATUS_LABEL[a.status];
+}
 
 export const APPOINTMENT_STATUS_LABEL: Record<AppointmentStatus, string> = {
   // o pedido só vale com o sinal no Pix: a Tayssa confirma quando ele cai

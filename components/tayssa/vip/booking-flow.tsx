@@ -6,10 +6,8 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { createAppointmentAction } from "@/lib/tayssa/actions/booking";
 import { dateLong, dayLabel, monthName, plural, weekdayShort } from "@/lib/tayssa/format";
 import { TyTextarea } from "@/components/tayssa/ui/field";
-import { cabeNoHorario, duracaoLegivel, mensagemAgendamento, reais } from "@/lib/tayssa/agendar";
-import { whatsappUrl } from "@/lib/tayssa/whatsapp";
-import { ROUTES, publicUrl } from "@/lib/tayssa/config";
-import { WhatsAppIcon } from "@/components/tayssa/ui/whatsapp";
+import { cabeNoHorario, duracaoLegivel, reais } from "@/lib/tayssa/agendar";
+import { PagarSinal } from "@/components/tayssa/ui/pagar-sinal";
 import type { SinalDaAgenda } from "@/components/tayssa/vip/appointment-list";
 import { useTarefa } from "@/components/tayssa/ui/acao";
 
@@ -83,7 +81,8 @@ export function BookingFlow({
       return;
     }
     const el = topo.current;
-    if (el && el.getBoundingClientRect().top < 72) el.scrollIntoView({ block: "start", behavior: reduced ? "auto" : "smooth" });
+    if (el && el.getBoundingClientRect().top < 72)
+      el.scrollIntoView({ block: "start", behavior: reduced ? "auto" : "smooth" });
     titulo.current?.focus({ preventScroll: true });
   }, [step, done, reduced]);
 
@@ -133,32 +132,24 @@ export function BookingFlow({
         {sinal ? (
           <>
             <p className="tyv-sub" style={{ fontSize: 13.5, marginTop: 14 }}>
-              O horário fica guardado por {sinal.horas}h e vale depois do sinal de {reais(sinal.valor)} no Pix. A Tayssa te
-              chama no WhatsApp, ou você já pode pedir a chave agora.
-              {sinal.tolerancia > 0 ? ` No dia, a tolerância é de ${sinal.tolerancia} minutos: passando disso, você perde o sinal.` : ""}
+              O horário fica guardado por {sinal.horas}h esperando o sinal de {reais(sinal.valor)} no Pix com o
+              comprovante.
+              {sinal.tolerancia > 0
+                ? ` No dia, a tolerância é de ${sinal.tolerancia} minutos: passando disso, você perde o sinal.`
+                : ""}
             </p>
-            <a
-              className="tyv-sinal__btn"
-              style={{ marginTop: 18 }}
-              href={whatsappUrl(
-                sinal.telefone,
-                mensagemAgendamento({
-                  servico: done.serviceName,
-                  dia: done.date,
-                  hora: done.time,
-                  nome: sinal.nome,
-                  sinal: sinal.valor,
-                  link: publicUrl(ROUTES.horario(done.id)),
-                }),
-              )}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span className="tyv-sinal__logo" aria-hidden>
-                <WhatsAppIcon size={17} />
-              </span>
-              Pagar o sinal no WhatsApp
-            </a>
+            {/* o sinal em três passos: copiar o Pix, anexar o comprovante, avisar a Tayssa */}
+            <div style={{ marginTop: 16 }}>
+              <PagarSinal
+                tema="perola"
+                pedido={{ id: done.id, servico: done.serviceName, dia: done.date, hora: done.time }}
+                nome={sinal.nome}
+                sinal={sinal.valor}
+                telefone={sinal.telefone}
+                pix={sinal.pix}
+                onAnexado={() => router.refresh()}
+              />
+            </div>
           </>
         ) : (
           <p className="tyv-sub" style={{ fontSize: 13.5, marginTop: 14 }}>
@@ -167,20 +158,20 @@ export function BookingFlow({
         )}
         <div className="tyv-stack" style={{ marginTop: 22 }}>
           {atLimit ? null : (
-          <button
-            type="button"
-            className="tyv-btn tyv-btn--ghost"
-            onClick={() => {
-              setDone(null);
-              setStep(0);
-              setServiceId(null);
-              setDate(null);
-              setTime(null);
-              setNote("");
-            }}
-          >
-            Marcar outro
-          </button>
+            <button
+              type="button"
+              className="tyv-btn tyv-btn--ghost"
+              onClick={() => {
+                setDone(null);
+                setStep(0);
+                setServiceId(null);
+                setDate(null);
+                setTime(null);
+                setNote("");
+              }}
+            >
+              Marcar outro
+            </button>
           )}
         </div>
       </motion.div>

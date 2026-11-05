@@ -1506,6 +1506,28 @@ a.tya-kpi {
   display: inline-block;
   margin-top: 9px;
 }
+/* pedido com comprovante anexado: a linha ganha a cor de "pronto para conferir" */
+.tya-slot__mine--ok {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--tya-ok, #2f8a5b) 10%, transparent);
+  color: var(--tya-ink, inherit);
+  line-height: 1.5;
+}
+.tya-slot__mine--ok .tya-slot__tag {
+  color: var(--tya-ok, #2f8a5b);
+}
+.tya-slot__mine--ok .tya-link {
+  font-weight: 600;
+  white-space: nowrap;
+}
+/* o resumo do bloco de pedidos: com e sem comprovante, lado a lado */
+.tya-slot__resumo {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
 .tya-slot__acts {
   display: flex;
   flex-wrap: wrap;
