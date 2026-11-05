@@ -239,7 +239,7 @@ export function BirthdayForm({ value }: { value: Settings["birthday"] }) {
       </div>
       <Marcar name="once_per_year" label="Uma vez por ano" defaultChecked={value.once_per_year} />
       <Area
-        label="Regras (uma por linha — a cliente vê)"
+        label="Regras (uma por linha, a cliente vê)"
         name="rules"
         rows={8}
         defaultValue={value.rules.join("\n")}

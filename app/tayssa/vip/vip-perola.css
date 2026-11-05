@@ -896,6 +896,30 @@ body:has(.tyv) {
 .tyv-forma__lista {
   margin-top: 4px;
 }
+/* as regras do aniversário, do jeito que a Tayssa escreveu em Configurações */
+.tyv-forma__regras {
+  display: grid;
+  gap: 7px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.tyv-forma__regras li {
+  position: relative;
+  padding-left: 17px;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+.tyv-forma__regras li::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 0.62em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--tyv-ouro-2);
+}
 
 /* quanto vale cada atendimento */
 .tyv-pontos {

@@ -33,6 +33,9 @@ export default async function BenefitsPage() {
   const phone = o.settings.business.whatsapp;
   const wa = o.settings.whatsapp;
 
+  // as regras do aniversário como a Tayssa escreveu (Configurações → Aniversário), na ordem dela
+  const regrasAniversario = o.settings.birthday.rules.map((r) => r.trim()).filter(Boolean);
+
   const active = o.benefits.filter((b) => ["available", "requested", "approved"].includes(b.status));
   const validating = o.benefits.filter((b) => b.status === "pending_validation");
   const past = o.benefits.filter((b) => ["redeemed", "expired", "rejected"].includes(b.status));
@@ -152,10 +155,19 @@ export default async function BenefitsPage() {
             titulo="Aniversário"
             selo="só VIP"
             regra={
-              <p>
-                {o.birthdayDescription ??
-                  `${o.birthday?.mesInteiro === false ? "Na semana do seu aniversário" : "No mês do seu aniversário"}, uma experiência escolhida pela Tayssa para você.`}
-              </p>
+              <>
+                <p>
+                  {o.birthdayDescription ??
+                    `${o.birthday?.mesInteiro === false ? "Na semana do seu aniversário" : "No mês do seu aniversário"}, uma experiência escolhida pela Tayssa para você.`}
+                </p>
+                {regrasAniversario.length ? (
+                  <ul className="tyv-forma__regras" aria-label="Regras do presente de aniversário">
+                    {regrasAniversario.map((r, i) => (
+                      <li key={i}>{r}</li>
+                    ))}
+                  </ul>
+                ) : null}
+              </>
             }
           >
             <p>
