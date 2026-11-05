@@ -13,6 +13,7 @@ import {
   horaLegivel,
   horariosDaSemana,
   mensagemAgendamento,
+  recadoDoCartao,
   partesDoDia,
   reais,
   valorLegivel,
@@ -93,6 +94,20 @@ test("com o comprovante anexado, a mensagem avisa que o sinal foi pago (não ped
   assert.match(m, /Já paguei o sinal de R\$ 50 no Pix e anexei o comprovante no site\./);
   assert.doesNotMatch(m, /chave Pix/);
   assert.ok(m.endsWith("Meu horário: https://x/tayssa/horario/1"));
+});
+
+test("o recado que vai com o cartão (foto) é curto: o cartão diz o resto", () => {
+  const r = recadoDoCartao({ nome: " Ana ", sinal: 50, comprovante: true });
+  assert.equal(
+    r,
+    "Oi, Tayssa, tudo bem? Aqui é Ana. Fiz meu agendamento pelo site, paguei o sinal de R$ 50 no Pix e anexei o comprovante.",
+  );
+  // uma linha, sem link: o horário vai na foto
+  assert.doesNotMatch(r, /\n|http/);
+  assert.equal(
+    recadoDoCartao({ nome: "", sinal: 50 }),
+    "Oi, Tayssa, tudo bem? Marquei meu horário pelo site. Me manda a chave Pix do sinal de R$ 50?",
+  );
 });
 
 test("com valor cadastrado, a mensagem leva o valor", () => {

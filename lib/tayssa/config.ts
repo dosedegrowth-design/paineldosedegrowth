@@ -24,6 +24,8 @@ export const ROUTES = {
   vipJourney: "/tayssa/vip/jornada",
   /** o "folder" do horário: o link que vai no WhatsApp (público, sem nome nem contato) */
   horario: (id: string) => `/tayssa/horario/${id}`,
+  /** o mesmo horário como foto em pé (1080×1350): vai no WhatsApp como imagem, não como link */
+  cartaoDoHorario: (id: string) => `/tayssa/horario/${id}/cartao`,
   admin: "/tayssa/admin",
   adminClients: "/tayssa/admin/clientes",
   adminClientNew: "/tayssa/admin/clientes/novo",

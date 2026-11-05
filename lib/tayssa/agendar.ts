@@ -235,3 +235,16 @@ export function mensagemAgendamento(p: PedidoAgenda): string {
     ...(p.link ? ["", `Meu horário: ${p.link}`] : []),
   ].join("\n");
 }
+
+/**
+ * O recado curto que vai com o cartão do horário como foto (Lucas,
+ * 05/11/2026: "que aí não fica um textão"). O cartão já diz o serviço, o
+ * dia, a hora, o valor e o sinal; o recado só cumprimenta e diz o que ela fez.
+ */
+export function recadoDoCartao(p: { nome: string; sinal: number; comprovante?: boolean }): string {
+  const nome = p.nome.trim();
+  const oi = nome ? `Oi, Tayssa, tudo bem? Aqui é ${nome}.` : "Oi, Tayssa, tudo bem?";
+  return p.comprovante
+    ? `${oi} Fiz meu agendamento pelo site, paguei o sinal de ${reais(p.sinal)} no Pix e anexei o comprovante.`
+    : `${oi} Marquei meu horário pelo site. Me manda a chave Pix do sinal de ${reais(p.sinal)}?`;
+}

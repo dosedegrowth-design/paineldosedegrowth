@@ -117,6 +117,12 @@
   text-underline-offset: 3px;
   touch-action: manipulation;
 }
+/* o mesmo link quando é <a> (abrir a conversa): precisa vencer o `.ty-scope a` */
+.ty-scope .tysn a.tysn__link {
+  color: var(--tysn-ouro);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 .tysn__codigo {
   width: 100%;
   padding: 10px 12px;
@@ -163,6 +169,38 @@
   color: var(--tysn-erro);
 }
 
+/* passo 3: a prévia do cartão que vai como foto na conversa, ao lado do texto */
+.tysn__cartao {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+.tysn__miniatura {
+  display: block;
+  width: 72px;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  border-radius: 10px;
+  box-shadow:
+    0 0 0 1px var(--tysn-fio),
+    0 10px 20px -12px rgba(40, 6, 16, 0.5);
+}
+img.tysn__miniatura {
+  animation: tysn-surge 280ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.tysn__miniatura--vazia {
+  background: linear-gradient(160deg, #5a1328 0%, #1f050d 100%);
+  opacity: 0.28;
+}
+/* Em aberto com o comprovante: o cartão de "já avisado", a prévia no lugar do número */
+.tysn__avisado {
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
 /* WhatsApp: logo oficial num círculo verde; o link precisa vencer o `.ty-scope a` */
 .ty-scope .tysn a.tysn__whats {
   display: inline-flex;
@@ -207,7 +245,8 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .tysn__passo--fim {
+  .tysn__passo--fim,
+  img.tysn__miniatura {
     animation: none;
   }
 }

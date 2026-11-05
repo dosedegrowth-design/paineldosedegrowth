@@ -101,6 +101,7 @@ export function AppointmentList({ items, sinal }: { items: AppointmentRow[]; sin
                     pix={sinal.pix}
                     comprovanteEm={a.comprovante_em ?? null}
                     onAnexado={() => router.refresh()}
+                    jaAvisada
                   />
                 </div>
               ) : null}
