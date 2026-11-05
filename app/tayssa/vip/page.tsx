@@ -46,7 +46,8 @@ export default async function VipHome() {
   const preenchidos = card.stamps.length;
   const atalhos: { href: string; titulo: string; dica: string; icone: IconeNome; destaque?: boolean }[] = [
     {
-      href: ROUTES.vipBook,
+      // com horário marcado, abre "Em aberto" (ela vê o dela); sem, já abre "Marcar"
+      href: `${ROUTES.vipBook}?aba=${next ? "aberto" : "marcar"}`,
       titulo: "Agendar",
       dica: next ? `${dayLabel(next.scheduled_date)}, ${hhmm(next.scheduled_time)}` : "escolha o seu dia",
       icone: "calendario",

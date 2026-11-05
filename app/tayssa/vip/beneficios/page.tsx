@@ -11,6 +11,7 @@ import { BenefitItem } from "@/components/tayssa/vip/benefit-item";
 import { beneficioNaTela } from "@/lib/tayssa/beneficio-na-tela";
 import { VipReferralForm } from "@/components/tayssa/vip/forms";
 import { CaminhoVip, FormaDeGanhar, TabelaDePontos } from "@/components/tayssa/vip/programa";
+import { AbrirPeloEndereco } from "@/components/tayssa/vip/abrir-pelo-endereco";
 
 /**
  * Tudo que a cliente pode ganhar, em uma tela: o que já é dela, o caminho
@@ -105,12 +106,13 @@ export default async function BenefitsPage() {
           <h2 className="tyv-h2" id="como-titulo">
             Como funciona
           </h2>
-          <span className="tyv-label">4 formas de ganhar</span>
+          <span className="tyv-label">toque para ver a regra</span>
         </div>
         <div className="tyv-stack">
           <FormaDeGanhar
-            n={1}
+            icone="cartao"
             titulo="Cartão de visitas"
+            resumo={`${carimbos} de ${card.size} ${plural(card.size, "visita", "visitas")}`}
             regra={
               <p>
                 Cada visita confirmada pela Tayssa é um carimbo no seu cartão. {o.settings.loyalty.card_reward_description}
@@ -131,8 +133,9 @@ export default async function BenefitsPage() {
           </FormaDeGanhar>
 
           <FormaDeGanhar
-            n={2}
+            icone="brilho"
             titulo="Pontos"
+            resumo={`${numero(o.points)} ${plural(o.points, "ponto", "pontos")}`}
             regra={
               <>
                 <p>Cada atendimento confirmado pela Tayssa soma pontos, conforme o serviço:</p>
@@ -151,9 +154,20 @@ export default async function BenefitsPage() {
           </FormaDeGanhar>
 
           <FormaDeGanhar
-            n={3}
+            icone="presente"
             titulo="Aniversário"
             selo="só VIP"
+            resumo={
+              !user.isVip
+                ? "faz parte do VIP"
+                : !o.birthday
+                  ? "conte a sua data para a Tayssa"
+                  : o.birthday.inWindow
+                    ? o.birthday.mesInteiro
+                      ? "é o seu mês"
+                      : "é a sua semana"
+                    : dateLong(o.birthday.nextDate)
+            }
             regra={
               <>
                 <p>
@@ -188,8 +202,13 @@ export default async function BenefitsPage() {
 
           <FormaDeGanhar
             id="indicar"
-            n={4}
+            icone="coracao"
             titulo="Indicação"
+            resumo={
+              o.referral.approved
+                ? `${o.referral.approved} ${plural(o.referral.approved, "confirmada", "confirmadas")}`
+                : "indique uma amiga"
+            }
             regra={
               <p>
                 {porIndicacao ? "A cada indicação confirmada" : `A cada ${o.referral.threshold} indicações confirmadas`}:{" "}
@@ -227,6 +246,7 @@ export default async function BenefitsPage() {
             ) : null}
           </FormaDeGanhar>
         </div>
+        <AbrirPeloEndereco />
         <p className="tyv-nota">
           Nenhum benefício sai sozinho: a Tayssa confere e confirma cada um. Quando ela libera, ele aparece no topo desta
           tela, em “Para usar”.

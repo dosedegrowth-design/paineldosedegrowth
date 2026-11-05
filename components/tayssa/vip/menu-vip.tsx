@@ -20,7 +20,7 @@ type Item = { href: string; label: string; icone: IconeBarraNome };
 const ITEMS: Item[] = [
   { href: ROUTES.vip, label: "Início", icone: "inicio" },
   { href: ROUTES.vipCard, label: "Meu cartão", icone: "cartao" },
-  { href: ROUTES.vipBook, label: "Agendar", icone: "agenda" },
+  { href: ROUTES.vipBook, label: "Meus agendamentos", icone: "agenda" },
   { href: ROUTES.vipBenefits, label: "Benefícios", icone: "presente" },
   { href: ROUTES.vipJourney, label: "Minha jornada", icone: "jornada" },
   { href: ROUTES.vipProfile, label: "Meu perfil", icone: "perfil" },
@@ -28,7 +28,7 @@ const ITEMS: Item[] = [
 
 /** VIP fechado: a área é só a agenda dela (e o perfil, para trocar a senha) */
 const SO_AGENDA: Item[] = [
-  { href: ROUTES.vipBook, label: "Meus horários", icone: "agenda" },
+  { href: ROUTES.vipBook, label: "Meus agendamentos", icone: "agenda" },
   { href: ROUTES.vipProfile, label: "Meu perfil", icone: "perfil" },
 ];
 

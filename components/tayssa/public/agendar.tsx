@@ -876,7 +876,7 @@ function FolhaAgendar({
             </p>
             {/* o sinal em três passos: copiar o Pix, anexar o comprovante, avisar a Tayssa (modelo Reflexo do Santo) */}
             <PagarSinal
-              tema="noite"
+              tema="perola"
               pedido={{
                 id: feito.id,
                 servico: feito.servico,

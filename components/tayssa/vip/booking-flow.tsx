@@ -25,6 +25,8 @@ export type BookingService = {
 export type BookingDay = { iso: string; slots: { time: string; available: boolean; ate?: number | null }[] };
 
 const STEPS = ["Serviço", "Dia e horário", "Confirmar"];
+/** a lista de serviços começa curta, como na folha do site */
+const VISIVEIS = 3;
 
 /**
  * Marcar horário sem sair daqui: serviço, dia, hora, confirmar.
@@ -58,9 +60,12 @@ export function BookingFlow({
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<{ id: string; date: string; time: string; serviceName: string } | null>(null);
   const [pending, start] = useTarefa();
+  // "Mais serviços": abre a lista inteira (o escolhido fora dos três primeiros também a abre)
+  const [todos, setTodos] = useState(false);
 
   const service = services.find((s) => s.id === serviceId) ?? null;
   const day = days.find((d) => d.iso === date) ?? null;
+  const listaToda = todos || (service ? services.indexOf(service) >= VISIVEIS : false);
   // o serviço escolhido precisa caber inteiro: o volume de 3h não aparece às
   // 10h se às 11h já tem alguém
   const duracao = service?.duracao ?? null;
@@ -224,12 +229,14 @@ export function BookingFlow({
           transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
         >
           {step === 0 ? (
-            <div className="tyv-stack">
-              {services.map((s) => (
+            // como a folha do site: três serviços e "Mais serviços"; cada linha só com nome, valor e
+            // tempo (a descrição longa fazia a lista virar formulário, 12 cartões de rolagem)
+            <div className="tyv-servicos">
+              {(listaToda ? services : services.slice(0, VISIVEIS)).map((s) => (
                 <button
                   key={s.id}
                   type="button"
-                  className="tyv-choice"
+                  className="tyv-servico"
                   aria-pressed={serviceId === s.id}
                   onClick={() =>
                     pick(() => {
@@ -238,20 +245,19 @@ export function BookingFlow({
                     })
                   }
                 >
-                  <span>
-                    <span className="tyv-choice__t">
-                      {s.name}
-                      {s.precoLabel ? <span className="tyv-choice__preco">{s.precoLabel}</span> : null}
-                    </span>
-                    {s.description || s.duracao ? (
-                      <span className="tyv-choice__s">
-                        {[duracaoLegivel(s.duracao), s.description].filter(Boolean).join(" · ")}
-                      </span>
-                    ) : null}
+                  <span className="tyv-servico__nome">{s.name}</span>
+                  <span className="tyv-servico__info">
+                    {[s.precoLabel, duracaoLegivel(s.duracao)].filter(Boolean).join(" · ")}
                   </span>
-                  <span className="tyv-check" aria-hidden />
+                  <span className="tyv-servico__seta" aria-hidden />
                 </button>
               ))}
+              {!listaToda && services.length > VISIVEIS ? (
+                <button type="button" className="tyv-servicos__mais" onClick={() => setTodos(true)}>
+                  Mais serviços
+                  <span className="tyv-servicos__n">{services.length - VISIVEIS}</span>
+                </button>
+              ) : null}
             </div>
           ) : null}
 

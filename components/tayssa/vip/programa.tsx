@@ -4,6 +4,7 @@ import { PRIORIDADE_VIP, ROUTES } from "@/lib/tayssa/config";
 import { criterioLegivel, faltaLegivel, numero, plural } from "@/lib/tayssa/format";
 import type { LoyaltyProgress, ProgressoVip } from "@/lib/tayssa/rules";
 import type { ServiceRow } from "@/lib/tayssa/types";
+import { Icone, type IconeNome } from "@/components/tayssa/ui/icones";
 
 /**
  * O programa da Tayssa explicado para a cliente, sem margem para leitura
@@ -173,33 +174,46 @@ export function TabelaDePontos({ servicos }: { servicos: Pick<ServiceRow, "slug"
   );
 }
 
-/** Uma das quatro formas de ganhar: número, nome, a regra e o que é dela agora. */
+/**
+ * Uma das quatro formas de ganhar, fechada numa linha: a moeda com o
+ * ícone, o nome e o resumo do que ela tem agora ("190 pontos"). Tocar abre
+ * a regra inteira e o que dá para fazer (nov/2026: a tela de benefícios
+ * tinha cinco telas de texto corrido). O número 01–04 saiu: as formas não
+ * são uma sequência.
+ */
 export function FormaDeGanhar({
-  n,
+  icone,
   titulo,
+  resumo,
   selo,
   regra,
   children,
   id,
 }: {
-  n: number;
+  icone: IconeNome;
   titulo: string;
+  /** o que ela tem agora nessa forma, na linha fechada */
+  resumo?: ReactNode;
   selo?: string;
   regra: ReactNode;
   children?: ReactNode;
   id?: string;
 }) {
   return (
-    <article className="tyv-panel tyv-forma" id={id}>
-      <div className="tyv-forma__topo">
-        <span className="tyv-forma__n" aria-hidden>
-          {String(n).padStart(2, "0")}
+    <details className="tyv-panel tyv-forma" id={id}>
+      <summary className="tyv-forma__topo">
+        <span className="tyv-forma__ico" aria-hidden>
+          <Icone nome={icone} />
         </span>
-        <h3 className="tyv-h2 tyv-forma__titulo">{titulo}</h3>
+        <span className="tyv-forma__cabeca">
+          <h3 className="tyv-h2 tyv-forma__titulo">{titulo}</h3>
+          {resumo ? <span className="tyv-forma__resumo">{resumo}</span> : null}
+        </span>
         {selo ? <span className="tyv-badge tyv-badge--quiet">{selo}</span> : null}
-      </div>
+        <span className="tyv-forma__seta" aria-hidden />
+      </summary>
       <div className="tyv-forma__regra">{regra}</div>
       {children ? <div className="tyv-forma__agora">{children}</div> : null}
-    </article>
+    </details>
   );
 }

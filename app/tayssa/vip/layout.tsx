@@ -24,11 +24,11 @@ const serifa = localFont({
   adjustFontFallback: "Times New Roman",
 });
 
-/** Com o VIP fechado a aba diz "Meus horários": nada da conta fala em VIP (menos para quem a Tayssa ativou como VIP). */
+/** Com o VIP fechado a aba diz "Meus agendamentos": nada da conta fala em VIP (menos para quem a Tayssa ativou como VIP). */
 export async function generateMetadata(): Promise<Metadata> {
   const [settings, user] = await Promise.all([getSettings(), getSessionUser()]);
   return {
-    title: settings.rules.vip_aberto || user?.isVip ? "Meu VIP" : "Meus horários",
+    title: settings.rules.vip_aberto || user?.isVip ? "Meu VIP" : "Meus agendamentos",
     robots: { index: false, follow: false },
   };
 }
@@ -68,7 +68,7 @@ export default async function VipLayout({ children }: { children: React.ReactNod
       {/* o VIP tem pele própria: bege dourado e ícones vinho (o site é vinho e noite) */}
       <FundoVivo tom="perola" className="tyv-fundo" />
       <header className="tyv-page tyv-top">
-        <Link href={soAgenda ? ROUTES.vipBook : ROUTES.vip} className="tyv-brand" aria-label={soAgenda ? "Meus horários" : "Início do seu espaço"}>
+        <Link href={soAgenda ? ROUTES.vipBook : ROUTES.vip} className="tyv-brand" aria-label={soAgenda ? "Meus agendamentos" : "Início do seu espaço"}>
           <TyBrand size="sm" />
           {user.isVip && !soAgenda ? <span className="tyv-vip-tag">VIP</span> : null}
         </Link>

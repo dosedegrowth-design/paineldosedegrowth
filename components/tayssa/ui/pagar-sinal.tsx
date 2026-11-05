@@ -66,7 +66,8 @@ async function copiarTexto(texto: string): Promise<boolean> {
  * 3. com o comprovante no pedido, aparece o botão de avisar a Tayssa no
  *    WhatsApp, com a mensagem pronta e o link do horário (o folder).
  * Sem chave Pix cadastrada no painel, o passo 1 vira "pedir a chave no
- * WhatsApp", como antes. `tema`: "noite" na folha do site, "perola" na conta.
+ * WhatsApp", como antes. `tema`: "perola" na conta e na folha do site (que
+ * segue a paleta do VIP); "noite" fica para fundo vinho escuro.
  */
 export function PagarSinal({
   pedido,

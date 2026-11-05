@@ -1,27 +1,31 @@
+import Link from "next/link";
 import { requireClientPage } from "@/lib/tayssa/auth/guards";
+import { ROUTES } from "@/lib/tayssa/config";
 import { getAppointments, getAvailability } from "@/lib/tayssa/queries/vip";
 import { getSettings } from "@/lib/tayssa/settings";
-import { dateLong, hhmm, plural } from "@/lib/tayssa/format";
+import { nowInBusinessTz, plural } from "@/lib/tayssa/format";
+import { appointmentEnded } from "@/lib/tayssa/rules";
 import { ehManutencao, valorLegivel } from "@/lib/tayssa/agendar";
-import type { AppointmentRow } from "@/lib/tayssa/types";
 import { BookingFlow } from "@/components/tayssa/vip/booking-flow";
 import { AppointmentList } from "@/components/tayssa/vip/appointment-list";
+import { AbasDaAgenda, type AbaDaAgenda } from "@/components/tayssa/vip/abas-agenda";
+import { ListaRealizados } from "@/components/tayssa/vip/realizados";
 
-/** No histórico, cada horário diz como terminou (pedido que ninguém confirmou não é "encerrado"). */
-function comoTerminou(a: AppointmentRow): string {
-  if (a.status === "done") return "Realizado";
-  if (a.status === "cancelled") return "Cancelado";
-  if (a.status === "no_show") return "Não compareceu";
-  if (a.status === "requested") return "Não confirmado";
-  return "Confirmado";
-}
+const ABAS: AbaDaAgenda[] = ["realizados", "aberto", "marcar"];
 
-export default async function BookPage() {
+/**
+ * Meus agendamentos (Lucas, 05/11/2026): o topo com o nome dela e, logo
+ * embaixo, três abas: Realizados (riscados, o que já foi feito), Em aberto
+ * (o que vem por aí, com o sinal) e Marcar. Sem horário marcado, abre em
+ * "Marcar"; com, em "Em aberto". `?aba=` abre direto numa delas.
+ */
+export default async function BookPage({ searchParams }: { searchParams: Promise<{ aba?: string }> }) {
   const user = await requireClientPage();
-  const [{ days, services }, appointments, settings] = await Promise.all([
+  const [{ days, services }, appointments, settings, params] = await Promise.all([
     getAvailability(),
     getAppointments(user.id),
     getSettings(),
+    searchParams,
   ]);
   const max = settings.booking.max_open_per_client;
   const full = appointments.upcoming.length >= max;
@@ -35,76 +39,71 @@ export default async function BookPage() {
     tolerancia: b.tolerancia_min,
     pix: b.pix_chave ? { chave: b.pix_chave, nome: b.pix_nome, cidade: b.pix_cidade, banco: b.pix_banco } : null,
   };
+  // realizado: o que a Tayssa fechou como feito, e o confirmado que já passou (ela ainda não fechou)
+  const agora = nowInBusinessTz();
+  const feitos = appointments.past.filter(
+    (a) => a.status === "done" || (a.status === "confirmed" && appointmentEnded(a, agora)),
+  );
+  const outros = appointments.past.filter((a) => !feitos.includes(a));
+  const pedida = ABAS.find((a) => a === params.aba);
+  const inicial: AbaDaAgenda = pedida ?? (appointments.upcoming.length ? "aberto" : "marcar");
 
   return (
     <>
       <h1 className="tyv-hello">
-        {user.displayName}, <em>seus horários</em>.
+        {user.displayName}, <em>seus agendamentos</em>.
       </h1>
       <p className="tyv-sub">
-        Marque, acompanhe e desmarque por aqui. O horário fica guardado por {sinal.horas}h e vale depois do sinal no Pix,
-        com o comprovante anexado.
+        O horário fica guardado por {sinal.horas}h e vale depois do sinal no Pix, com o comprovante anexado.
         {sinal.tolerancia > 0 ? ` Tolerância de ${sinal.tolerancia} minutos de atraso: passando disso, você perde o sinal.` : ""}
       </p>
 
-      {/* os horários dela primeiro: é o que ela veio ver; marcar outro vem logo abaixo */}
-      {appointments.upcoming.length ? (
-        <section className="tyv-section">
-          <div className="tyv-section-head">
-            <h2 className="tyv-h2">Meus horários</h2>
-            <span className="tyv-label">até {max} em aberto</span>
-          </div>
-          <div className="tyv-panel">
-            <AppointmentList items={appointments.upcoming} sinal={sinal} />
-          </div>
-        </section>
-      ) : null}
-
-      <section className="tyv-section">
-        <div className="tyv-section-head">
-          <h2 className="tyv-h2">{appointments.upcoming.length ? "Marcar outro horário" : "Marcar um horário"}</h2>
-        </div>
-        <BookingFlow
-          services={services.map((s) => ({
-            id: s.id,
-            name: s.name,
-            description: s.description,
-            point_value: s.point_value,
-            // a manutenção do Fox eyes custa mais: a manutenção é "a partir de"
-            precoLabel: valorLegivel(
-              s.preco != null ? Number(s.preco) : null,
-              ehManutencao(s.slug, s.name) ? services.map((v) => (v.preco_manutencao != null ? Number(v.preco_manutencao) : null)) : [],
-            ),
-            duracao: s.duration_min ?? settings.booking.default_duration_min,
-          }))}
-          days={days.map((d) => ({ iso: d.iso, slots: d.slots }))}
-          atLimit={full}
-          sinal={sinal}
-          limitMessage={`Você já tem ${appointments.upcoming.length} ${plural(appointments.upcoming.length, "horário marcado", "horários marcados")}. Desmarque um acima para escolher outro.`}
-        />
-      </section>
-
-      {appointments.past.length ? (
-        <section className="tyv-section">
-          <div className="tyv-section-head">
-            <h2 className="tyv-h2">Histórico</h2>
-          </div>
-          <div className="tyv-panel">
-            {appointments.past.slice(0, 5).map((a) => (
-              <div key={a.id} className="tyv-row">
-                <div>
-                  <p style={{ fontSize: 15 }}>{a.service_name}</p>
-                  <p className="tyv-sub" style={{ fontSize: 12.5 }}>
-                    {dateLong(a.scheduled_date)} · {hhmm(a.scheduled_time)}
-                    {a.status === "cancelled" && a.admin_note ? ` · ${a.admin_note}` : ""}
-                  </p>
-                </div>
-                <span className="tyv-badge tyv-badge--quiet">{comoTerminou(a)}</span>
+      <AbasDaAgenda
+        inicial={inicial}
+        contagem={{ realizados: feitos.length, aberto: appointments.upcoming.length }}
+        realizados={<ListaRealizados feitos={feitos} outros={outros} />}
+        aberto={
+          appointments.upcoming.length ? (
+            <>
+              <p className="tyv-abas__nota">
+                Até {max} em aberto. Para trocar de horário, desmarque e marque outro.
+              </p>
+              <div className="tyv-panel">
+                <AppointmentList items={appointments.upcoming} sinal={sinal} />
               </div>
-            ))}
-          </div>
-        </section>
-      ) : null}
+            </>
+          ) : (
+            <div className="tyv-panel tyv-abas__vazio">
+              <p className="tyv-empty">Você não tem horário marcado.</p>
+              <Link href={`${ROUTES.vipBook}?aba=marcar`} className="tyv-btn tyv-btn--accent">
+                Marcar um horário
+              </Link>
+            </div>
+          )
+        }
+        marcar={
+          <BookingFlow
+            services={services.map((s) => ({
+              id: s.id,
+              name: s.name,
+              description: s.description,
+              point_value: s.point_value,
+              // a manutenção do Fox eyes custa mais: a manutenção é "a partir de"
+              precoLabel: valorLegivel(
+                s.preco != null ? Number(s.preco) : null,
+                ehManutencao(s.slug, s.name)
+                  ? services.map((v) => (v.preco_manutencao != null ? Number(v.preco_manutencao) : null))
+                  : [],
+              ),
+              duracao: s.duration_min ?? settings.booking.default_duration_min,
+            }))}
+            days={days.map((d) => ({ iso: d.iso, slots: d.slots }))}
+            atLimit={full}
+            sinal={sinal}
+            limitMessage={`Você já tem ${appointments.upcoming.length} ${plural(appointments.upcoming.length, "horário marcado", "horários marcados")}. Desmarque um em "Em aberto" para escolher outro.`}
+          />
+        }
+      />
     </>
   );
 }

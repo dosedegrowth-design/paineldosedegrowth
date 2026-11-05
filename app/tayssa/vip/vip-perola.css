@@ -851,22 +851,98 @@ body:has(.tyv) {
   font-weight: 600;
 }
 
-/* as quatro formas de ganhar */
+/* as quatro formas de ganhar: uma linha fechada (o ícone no círculo vinho,
+   o nome, o que ela tem agora); tocar abre a regra inteira (nov/2026: a
+   tela de benefícios tinha cinco telas de texto corrido) */
+.tyv .tyv-forma {
+  padding: 0;
+}
 .tyv-forma__topo {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto 14px;
+  align-items: center;
+  gap: 12px;
+  min-height: 72px;
+  padding: 14px 16px;
+  list-style: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  border-radius: inherit;
 }
-.tyv-forma__n {
-  font-family: var(--tyv-serifa), Georgia, serif;
-  font-size: 15px;
-  color: var(--tyv-ouro-2);
+.tyv-forma__topo::-webkit-details-marker {
+  display: none;
 }
-.tyv-forma__titulo {
-  flex: 1;
+.tyv-forma__topo:active {
+  background: rgba(201, 161, 97, 0.1);
 }
-.tyv-forma__topo .tyv-badge {
-  align-self: center;
+.tyv-forma__ico {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: #f1d8a6;
+  background: radial-gradient(circle at 35% 28%, #8c2645 0%, #6a1430 55%, #4a0c20 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 214, 200, 0.22),
+    0 8px 16px -8px rgba(90, 15, 40, 0.7);
+}
+.tyv-forma__ico .tyi {
+  width: 24px;
+  height: 24px;
+  stroke-width: 1.6;
+}
+.tyv-forma__cabeca {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.tyv .tyv-forma__titulo {
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.2;
+}
+.tyv-forma__resumo {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #805b24;
+}
+.tyv-forma__seta {
+  justify-self: center;
+  width: 8px;
+  height: 8px;
+  border-right: 1.5px solid var(--tyv-tinta-3);
+  border-bottom: 1.5px solid var(--tyv-tinta-3);
+  rotate: 45deg;
+  translate: 0 -2px;
+  transition:
+    rotate 220ms cubic-bezier(0.23, 1, 0.32, 1),
+    translate 220ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.tyv-forma[open] .tyv-forma__seta {
+  rotate: 225deg;
+  translate: 0 2px;
+}
+.tyv-forma[open] > .tyv-forma__regra,
+.tyv-forma[open] > .tyv-forma__agora {
+  animation: tyv-aba-entra 240ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.tyv-forma > .tyv-forma__regra {
+  margin: 0;
+  padding: 0 18px;
+}
+.tyv-forma > .tyv-forma__agora {
+  margin: 14px 18px 0;
+}
+.tyv-forma[open] {
+  padding-bottom: 18px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .tyv-forma__topo:hover .tyv-forma__seta {
+    border-color: var(--tyv-vinho);
+  }
 }
 .tyv-forma__regra {
   margin-top: 10px;
@@ -1017,4 +1093,372 @@ body:has(.tyv) {
 .ty-scope svg.ty-whats {
   fill: currentColor;
   stroke: none;
+}
+
+/* ==========================================================
+   MEUS AGENDAMENTOS (nov/2026): o topo com o nome dela e, logo
+   embaixo, as abas Realizados · Em aberto · Marcar, na paleta de
+   sempre do VIP. A barra das abas gruda embaixo do topo; a marca
+   dourada desliza até a aba escolhida (transição: dá para trocar no
+   meio do caminho).
+   ========================================================== */
+.tyv-abas {
+  margin-top: 22px;
+}
+.tyv-abas__marco {
+  display: block;
+  height: 1px;
+  margin-bottom: -1px;
+}
+.tyv-abas__barra {
+  position: sticky;
+  top: calc(62px + env(safe-area-inset-top, 0px));
+  z-index: 6;
+  margin-inline: calc(var(--tyv-gutter) * -1);
+  padding: 8px var(--tyv-gutter) 14px;
+}
+/* a faixa que esconde a lista passando por baixo: só com a barra grudada */
+.tyv-abas__barra::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, #f3eadd 0%, #f3eadd 72%, rgba(243, 234, 221, 0) 100%);
+  opacity: 0;
+  transition: opacity 180ms ease;
+  pointer-events: none;
+}
+.tyv-abas__barra[data-grudada]::before {
+  opacity: 1;
+}
+@media (min-width: 640px) {
+  /* no computador a faixa não chega na borda da tela: some dos lados em vez de virar caixa */
+  .tyv-abas__barra::before {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 var(--tyv-gutter), #000 calc(100% - var(--tyv-gutter)), transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 var(--tyv-gutter), #000 calc(100% - var(--tyv-gutter)), transparent);
+  }
+}
+.tyv-abas__lista {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow:
+    inset 0 0 0 1px rgba(190, 150, 92, 0.4),
+    0 10px 24px -20px rgba(90, 40, 30, 0.4);
+}
+.tyv-abas__marca {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px) / 3);
+  border-radius: 999px;
+  background: var(--tyv-ouro-grad);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    0 6px 14px -8px rgba(168, 120, 47, 0.55);
+  transform: translateX(calc(var(--tyv-aba, 0) * 100%));
+  transition: transform 280ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.tyv-abas__aba {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: var(--tyv-tinta-2);
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  transition:
+    color 200ms ease,
+    transform 140ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.tyv-abas__aba:active {
+  transform: scale(0.96);
+}
+.tyv-abas__aba[aria-selected="true"] {
+  color: #4a0d1f;
+}
+.tyv-abas__n {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--tyv-vinho);
+  background: rgba(122, 29, 58, 0.08);
+}
+.tyv-abas__aba[aria-selected="true"] .tyv-abas__n {
+  color: #4a0d1f;
+  background: rgba(255, 255, 255, 0.55);
+}
+.tyv-abas__painel {
+  animation: tyv-aba-entra 240ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.tyv-abas__painel[hidden] {
+  display: none;
+}
+@keyframes tyv-aba-entra {
+  from {
+    opacity: 0.35;
+    transform: translateY(5px);
+  }
+}
+.tyv-abas__nota {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: var(--tyv-tinta-2);
+}
+.tyv-abas__vazio {
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+  padding: 26px 20px;
+  text-align: center;
+}
+.tyv-abas__vazio .tyv-btn {
+  width: auto;
+  min-width: 220px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .tyv-abas__aba:not([aria-selected="true"]):hover {
+    color: #4a0d1f;
+  }
+}
+
+/* Realizados: cada atendimento feito é um cartão riscado, como item
+   cumprido de uma lista, com a marca do "feito" no círculo vinho */
+.tyv-realizados {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tyv-realizado {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px 14px 14px;
+  border-radius: 20px;
+  background: #f8f1e7;
+  box-shadow:
+    inset 0 0 0 1px rgba(190, 150, 92, 0.4),
+    0 14px 30px -24px rgba(90, 40, 30, 0.4);
+}
+.tyv-realizado__marca {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 28%, #8c2645 0%, #6a1430 55%, #4a0c20 100%);
+  box-shadow: 0 6px 12px -7px rgba(90, 15, 40, 0.7);
+}
+.tyv-realizado__marca svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: #f1d8a6;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tyv-realizado__txt {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.tyv-realizado__nome {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--tyv-tinta-2);
+  text-decoration: line-through;
+  text-decoration-color: rgba(168, 120, 47, 0.8);
+  text-decoration-thickness: 1.5px;
+}
+.tyv-realizado__quando {
+  font-size: 13px;
+  color: var(--tyv-tinta-3);
+  font-variant-numeric: tabular-nums;
+}
+.tyv-realizado__selo {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #805b24;
+}
+@media (max-width: 380px) {
+  /* no celular estreito o risco e o check já dizem "feito": o selo apertava o nome em duas linhas */
+  .tyv-realizado {
+    grid-template-columns: 34px minmax(0, 1fr);
+  }
+  .tyv-realizado__selo {
+    display: none;
+  }
+}
+.tyv-realizados__outros {
+  margin-top: 28px;
+}
+.tyv-realizados__titulo {
+  margin: 0 0 10px;
+  font-family: var(--tyv-serifa), Georgia, serif;
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--tyv-tinta-2);
+}
+
+/* Marcar: a lista curta de serviços (três e "Mais serviços"). Nome em cima e valor embaixo,
+   como a linha do escolhido na folha do site: lado a lado, "Manutenção de cílios" quebrava
+   contra o "a partir de R$ 120 · 1h30" */
+.tyv-servicos {
+  display: grid;
+  gap: 8px;
+}
+.tyv-servico {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 14px;
+  grid-template-areas:
+    "nome seta"
+    "info seta";
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 2px;
+  min-height: 62px;
+  padding: 12px 16px 12px 18px;
+  border-radius: 18px;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    inset 0 0 0 1px rgba(190, 150, 92, 0.4),
+    0 10px 22px -20px rgba(90, 40, 30, 0.35);
+  touch-action: manipulation;
+  transition:
+    transform 140ms cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 160ms ease;
+}
+.tyv-servico:active {
+  transform: scale(0.98);
+}
+.tyv-servico[aria-pressed="true"] {
+  background: #fbf3e4;
+  box-shadow: inset 0 0 0 1.5px var(--tyv-ouro-2);
+}
+.tyv-servico__nome {
+  grid-area: nome;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--tyv-tinta);
+}
+.tyv-servico__info {
+  grid-area: info;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #805b24;
+  font-variant-numeric: tabular-nums;
+}
+.tyv-servico__seta {
+  grid-area: seta;
+  justify-self: center;
+  width: 8px;
+  height: 8px;
+  border-top: 1.5px solid var(--tyv-tinta-3);
+  border-right: 1.5px solid var(--tyv-tinta-3);
+  rotate: 45deg;
+}
+.tyv-servicos__mais {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 50px;
+  margin-top: 4px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--tyv-vinho);
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px rgba(122, 29, 58, 0.4);
+  touch-action: manipulation;
+  transition: transform 140ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.tyv-servicos__mais:active {
+  transform: scale(0.97);
+}
+.tyv-servicos__n {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--tyv-vinho);
+  background: rgba(122, 29, 58, 0.08);
+}
+@media (hover: hover) and (pointer: fine) {
+  .tyv-servico:hover {
+    box-shadow:
+      inset 0 0 0 1px rgba(168, 120, 47, 0.6),
+      0 10px 22px -20px rgba(90, 40, 30, 0.35);
+  }
+}
+
+/* o primeiro horário da lista não leva o fio de cima (o aviso escondido vinha antes dele) */
+.tyv .tyv-feito[hidden] + .tyv-row {
+  border-top: 0;
+}
+
+/* o que o navegador desenha também é da casa, e o toque responde na hora */
+.ty-scope.tyv ::selection {
+  background: rgba(201, 161, 97, 0.35);
+  color: var(--tyv-tinta);
+}
+.ty-scope.tyv {
+  caret-color: var(--tyv-vinho);
+  -webkit-tap-highlight-color: transparent;
+}
+.ty-scope.tyv :focus-visible {
+  outline: 2px solid var(--tyv-vinho);
+  outline-offset: 3px;
+}
+.tyv button,
+.tyv a,
+.tyv summary,
+.tyv [role="button"] {
+  touch-action: manipulation;
+}
+.tyv button {
+  -webkit-user-select: none;
+  user-select: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tyv-abas__marca,
+  .tyv-abas__painel,
+  .tyv-forma[open] > .tyv-forma__regra,
+  .tyv-forma[open] > .tyv-forma__agora {
+    transition: none;
+    animation: none;
+  }
 }
