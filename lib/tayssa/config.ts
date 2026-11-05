@@ -167,7 +167,7 @@ export type BookingSettings = {
    * o pedido cai sozinho e o horário volta para a agenda.
    */
   sinal_horas: number;
-  /** minutos de tolerância para atraso: passando disso, a cliente perde o sinal (Lucas, 05/11/2026) */
+  /** minutos de tolerância para atraso: passando disso, a cliente perde o sinal (Lucas, 05/11/2026: 10 min) */
   tolerancia_min: number;
 };
 
@@ -276,7 +276,7 @@ export const DEFAULT_SETTINGS: Settings = {
     max_open_per_client: 2,
     deposit_reais: 50,
     sinal_horas: 24,
-    tolerancia_min: 15,
+    tolerancia_min: 10,
   },
   signup: {
     open: true,
