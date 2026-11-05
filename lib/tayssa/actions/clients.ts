@@ -60,9 +60,13 @@ export async function adminCreateClientAction(
       notes: str(formData, "notes"),
       vip: bool(formData, "vip"),
     });
+    // o login dela é o WhatsApp ou o e-mail: sem nenhum dos dois, ela não entra
+    if (!input.email && !input.phone) throw new BusinessError("Informe o WhatsApp ou o e-mail: é por ele que ela entra.", "phone");
     const db = vipDb();
-    const { data: dupEmail } = await db.from("users").select("id").eq("email", input.email).maybeSingle();
-    if (dupEmail) throw new BusinessError("Já existe uma conta com esse e-mail.", "email");
+    if (input.email) {
+      const { data: dupEmail } = await db.from("users").select("id").eq("email", input.email).maybeSingle();
+      if (dupEmail) throw new BusinessError("Já existe uma conta com esse e-mail.", "email");
+    }
     if (input.phone) {
       const { data: dupPhone } = await db.from("users").select("id").eq("phone", input.phone).maybeSingle();
       if (dupPhone) throw new BusinessError("Já existe uma conta com esse telefone.", "phone");
@@ -133,8 +137,11 @@ export async function adminUpdateClientAction(
     const { data: current } = await db.from("users").select("*").eq("id", id).eq("role", "client").maybeSingle();
     if (!current) throw new BusinessError("Cliente não encontrada.");
 
-    const { data: dupEmail } = await db.from("users").select("id").eq("email", input.email).neq("id", id).maybeSingle();
-    if (dupEmail) throw new BusinessError("Já existe uma conta com esse e-mail.", "email");
+    if (!input.email && !input.phone) throw new BusinessError("Informe o WhatsApp ou o e-mail: é por ele que ela entra.", "phone");
+    if (input.email) {
+      const { data: dupEmail } = await db.from("users").select("id").eq("email", input.email).neq("id", id).maybeSingle();
+      if (dupEmail) throw new BusinessError("Já existe uma conta com esse e-mail.", "email");
+    }
     if (input.phone) {
       const { data: dupPhone } = await db.from("users").select("id").eq("phone", input.phone).neq("id", id).maybeSingle();
       if (dupPhone) throw new BusinessError("Já existe uma conta com esse telefone.", "phone");

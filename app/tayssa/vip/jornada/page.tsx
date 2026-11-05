@@ -1,4 +1,4 @@
-import { requireClientPage } from "@/lib/tayssa/auth/guards";
+import { requireProgramaVipPage } from "@/lib/tayssa/auth/guards";
 import { getVipHome } from "@/lib/tayssa/queries/vip";
 import { nowInBusinessTz, numero, plural } from "@/lib/tayssa/format";
 import { buildTimeline } from "@/lib/tayssa/timeline";
@@ -10,7 +10,7 @@ import { Timeline } from "@/components/tayssa/vip/timeline";
  * no ranking. Sai da home para a home ficar leve — um toque no ícone traz.
  */
 export default async function VipJornada() {
-  const user = await requireClientPage();
+  const user = await requireProgramaVipPage();
   const { overview: o, appointments, ranking } = await getVipHome(user);
   const timeline = buildTimeline({
     services: o.recentServices,

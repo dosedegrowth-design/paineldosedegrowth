@@ -57,7 +57,8 @@
     contain-intrinsic-size: auto 1150px;
   }
   .ty-scope main > #servicos {
-    contain-intrinsic-size: auto 2450px;
+    /* todos os serviços fechados (05/11/2026): 1.863px no iPhone */
+    contain-intrinsic-size: auto 1860px;
   }
   .ty-scope main > #catalogo {
     contain-intrinsic-size: auto 820px;

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { requireClientPage } from "@/lib/tayssa/auth/guards";
+import { requireProgramaVipPage } from "@/lib/tayssa/auth/guards";
 import { getVipHome } from "@/lib/tayssa/queries/vip";
 import { ROUTES } from "@/lib/tayssa/config";
 import { dayLabel, faltaLegivel, hhmm, isWithinHours, numero, plural } from "@/lib/tayssa/format";
@@ -19,7 +19,7 @@ import type { CSSProperties } from "react";
  * O detalhe mora nas telas de cada ícone; aqui fica o resumo em cores.
  */
 export default async function VipHome() {
-  const user = await requireClientPage();
+  const user = await requireProgramaVipPage();
   const { overview: o, card, appointments, ranking } = await getVipHome(user);
 
   const activeBenefits = o.benefits.filter((b) => ["available", "requested", "approved"].includes(b.status));

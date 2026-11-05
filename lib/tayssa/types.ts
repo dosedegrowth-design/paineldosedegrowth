@@ -28,7 +28,8 @@ export type ClientBenefitStatus =
 export type UserRow = {
   id: string;
   role: UserRole;
-  email: string;
+  /** opcional: a conta da agenda (site) entra pelo WhatsApp e não pede e-mail */
+  email: string | null;
   name: string;
   nickname: string | null;
   phone: string | null;
@@ -36,8 +37,8 @@ export type UserRow = {
   status: UserStatus;
   last_login_at: string | null;
   created_by: string | null;
-  /** 'self' = pediu acesso pelo site; 'admin' = a Tayssa cadastrou */
-  signup_source: "admin" | "self";
+  /** 'self' = pediu acesso ao VIP pelo site; 'admin' = a Tayssa cadastrou; 'agenda' = criou a conta para agendar */
+  signup_source: "admin" | "self" | "agenda";
   signup_message: string | null;
   requested_at: string | null;
   reviewed_at: string | null;
@@ -242,7 +243,8 @@ export type AppointmentRow = {
 };
 
 export const APPOINTMENT_STATUS_LABEL: Record<AppointmentStatus, string> = {
-  requested: "Aguardando confirmação",
+  // o pedido só vale com o sinal no Pix: a Tayssa confirma quando ele cai
+  requested: "Aguardando sinal",
   confirmed: "Confirmado",
   done: "Realizado",
   cancelled: "Cancelado",

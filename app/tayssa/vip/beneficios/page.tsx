@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { requireClientPage } from "@/lib/tayssa/auth/guards";
+import { requireProgramaVipPage } from "@/lib/tayssa/auth/guards";
 import { getClientOverview, getClientReferrals } from "@/lib/tayssa/queries/client";
 import { getActiveServices } from "@/lib/tayssa/queries/catalog";
 import { getCardState } from "@/lib/tayssa/engine";
@@ -18,7 +18,7 @@ import { CaminhoVip, FormaDeGanhar, TabelaDePontos } from "@/components/tayssa/v
  * indicação), cada uma com a regra inteira e onde ela está agora.
  */
 export default async function BenefitsPage() {
-  const user = await requireClientPage();
+  const user = await requireProgramaVipPage();
   const [o, referrals, servicos, card] = await Promise.all([
     getClientOverview(user),
     getClientReferrals(user.id),

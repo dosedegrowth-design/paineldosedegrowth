@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { isDbConfigured, logServerError, vipDb } from "@/lib/tayssa/db";
+import { expirarPedidosSemSinal } from "@/lib/tayssa/queries/expira";
 import { getSettings } from "@/lib/tayssa/settings";
 import { getActiveServices } from "@/lib/tayssa/queries/catalog";
 import { getCardState, type CardState } from "@/lib/tayssa/engine";
@@ -40,6 +41,8 @@ export type Appointments = {
 };
 
 export const getAppointments = cache(async (clientId: string): Promise<Appointments> => {
+  // pedido que passou do prazo do sinal sai de "em aberto" antes de listar
+  await expirarPedidosSemSinal();
   const { data, error } = await vipDb()
     .from("appointments")
     .select("*")
@@ -92,6 +95,8 @@ export const getAvailability = cache(async (): Promise<{ days: DayAvailability[]
   const now = nowInBusinessTz();
   const days = bookableDays(now, b);
   if (!days.length) return { days: [], services: [] };
+  // pedido sem sinal no prazo devolve o horário antes de montar a agenda
+  await expirarPedidosSemSinal();
 
   const [{ data, error }, services, fechados] = await Promise.all([
     vipDb()

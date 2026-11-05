@@ -197,7 +197,7 @@ export function ClientCreateForm() {
       <div className="tya-grid">
         <Campo label="Nome completo" name="name" required error={err?.field === "name" ? err.error : undefined} />
         <Campo label="Apelido" name="nickname" maxLength={60} hint="Como ela gosta de ser chamada." />
-        <Campo label="E-mail (login)" name="email" type="email" required error={err?.field === "email" ? err.error : undefined} />
+        <Campo label="E-mail (opcional)" name="email" type="email" error={err?.field === "email" ? err.error : undefined} />
         <Campo label="WhatsApp" name="phone" inputMode="tel" placeholder="(11) 9 9999-9999" error={err?.field === "phone" ? err.error : undefined} hint="Liga as indicações a ela." />
         <Campo label="Aniversário" name="birthday" type="date" error={err?.field === "birthday" ? err.error : undefined} />
       </div>
@@ -227,7 +227,7 @@ export function ClientEditForm({ user, profile }: { user: UserRow; profile: Clie
       <div className="tya-grid">
         <Campo label="Nome completo" name="name" defaultValue={user.name} required error={err?.field === "name" ? err.error : undefined} />
         <Campo label="Apelido" name="nickname" defaultValue={user.nickname ?? ""} maxLength={60} />
-        <Campo label="E-mail (login)" name="email" type="email" defaultValue={user.email} required error={err?.field === "email" ? err.error : undefined} />
+        <Campo label="E-mail (opcional)" name="email" type="email" defaultValue={user.email ?? ""} error={err?.field === "email" ? err.error : undefined} />
         <Campo label="WhatsApp" name="phone" inputMode="tel" defaultValue={formatBrPhone(user.phone)} error={err?.field === "phone" ? err.error : undefined} />
         <Campo label="Aniversário" name="birthday" type="date" defaultValue={profile?.birthday ?? ""} error={err?.field === "birthday" ? err.error : undefined} />
       </div>

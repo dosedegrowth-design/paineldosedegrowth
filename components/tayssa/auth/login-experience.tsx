@@ -24,18 +24,21 @@ export function LoginExperience({
   vipInfoUrl,
   next,
   linkExpirado = false,
+  vipAberto = true,
 }: {
   vipInfoUrl: string;
   next?: string;
   /** chegou por um link de acesso vencido, já usado ou inválido */
   linkExpirado?: boolean;
+  /** VIP fechado: a conta é só a agenda (o título e o "criar conta" mudam) */
+  vipAberto?: boolean;
 }) {
   const reduced = useReducedMotion();
   const [state, enviar, pending] = useAcaoFormulario<LoginResult | null>(
     loginAction as unknown as (prev: LoginResult | null, fd: FormData) => Promise<LoginResult>,
     null
   );
-  const [local, setLocal] = useState<{ email?: string; password?: string }>({});
+  const [local, setLocal] = useState<{ login?: string; password?: string }>({});
   const formRef = useRef<HTMLFormElement>(null);
   // senha errada não apaga o e-mail digitado
   const { onReset } = useFormPreservado();
@@ -55,17 +58,19 @@ export function LoginExperience({
 
   /** validação no cliente: erro imediato, sem ida ao servidor à toa */
   const check = (fd: FormData) => {
-    const email = String(fd.get("email") ?? "").trim();
+    const login = String(fd.get("login") ?? "").trim();
     const password = String(fd.get("password") ?? "");
-    const errors: { email?: string; password?: string } = {};
-    if (!email) errors.email = "Digite seu e-mail.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) errors.email = "Esse e-mail parece incompleto.";
+    const errors: { login?: string; password?: string } = {};
+    // WhatsApp ou e-mail: com "@" é e-mail; sem, o número com DDD
+    if (!login) errors.login = "Digite seu WhatsApp ou e-mail.";
+    else if (login.includes("@") && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(login)) errors.login = "Esse e-mail parece incompleto.";
+    else if (!login.includes("@") && login.replace(/\D/g, "").length < 10) errors.login = "Digite o WhatsApp com DDD.";
     if (!password) errors.password = "Digite sua senha.";
     return errors;
   };
 
   return (
-    <Entrada links={[{ href: ROUTES.signup, label: "Pedir acesso" }]}>
+    <Entrada links={vipAberto ? [{ href: ROUTES.signup, label: "Pedir acesso" }] : []}>
       <motion.div
         className="tyl__body"
         initial={{ opacity: 0, y: reduced ? 0 : 24 }}
@@ -73,15 +78,23 @@ export function LoginExperience({
         transition={{ duration: 0.7, ease: EASE, delay: 0.1 }}
       >
         <h1 className="tyl__title">
-          Entrar no <em>meu VIP</em>
+          {vipAberto ? (
+            <>
+              Entrar no <em>meu VIP</em>
+            </>
+          ) : (
+            <>
+              Entrar nos <em>meus horários</em>
+            </>
+          )}
         </h1>
-        <p className="tyl__sub">Use o e-mail e a senha do seu acesso.</p>
+        <p className="tyl__sub">Use o WhatsApp (ou o e-mail) e a senha da sua conta.</p>
 
         {linkExpirado ? (
           <div className="tyl__note" role="status">
             <span className="tyl__eyebrow">Link de acesso</span>
             <p style={{ fontSize: 14.5, lineHeight: 1.5 }}>
-              Esse link não vale mais — ele vence ou já foi usado. Entre com e-mail e senha, ou peça um novo link para a
+              Esse link não vale mais: ele vence ou já foi usado. Entre com o WhatsApp e a senha, ou peça um novo link para a
               Tayssa.
             </p>
             <a href={vipInfoUrl} target="_blank" rel="noopener noreferrer" className="tyl__link">
@@ -107,17 +120,16 @@ export function LoginExperience({
         >
           {next ? <input type="hidden" name="next" value={next} /> : null}
           <TyInput
-            label="E-mail"
-            name="email"
-            type="email"
-            inputMode="email"
-            autoComplete="email"
+            label="WhatsApp ou e-mail"
+            name="login"
+            type="text"
+            autoComplete="username"
             autoCapitalize="none"
             spellCheck={false}
             enterKeyHint="next"
             required
-            error={local.email}
-            onBlur={(e) => setLocal((p) => ({ ...p, email: e.target.value.trim() ? undefined : "Digite seu e-mail." }))}
+            error={local.login}
+            onBlur={(e) => setLocal((p) => ({ ...p, login: e.target.value.trim() ? undefined : "Digite seu WhatsApp ou e-mail." }))}
           />
           <TyInput
             label="Senha"
@@ -166,12 +178,21 @@ export function LoginExperience({
           </button>
         </form>
 
-        <div className="tyl__foot">
-          <p>Ainda não tem acesso? Peça o seu — a Tayssa revisa e libera pessoalmente.</p>
-          <TransitionLink href={ROUTES.signup} className="tyl__link">
-            Pedir acesso
-          </TransitionLink>
-        </div>
+        {vipAberto ? (
+          <div className="tyl__foot">
+            <p>Ainda não tem acesso? Peça o seu: a Tayssa revisa e libera pessoalmente.</p>
+            <TransitionLink href={ROUTES.signup} className="tyl__link">
+              Pedir acesso
+            </TransitionLink>
+          </div>
+        ) : (
+          <div className="tyl__foot">
+            <p>Ainda não tem conta? Ela nasce quando você marca o primeiro horário pelo site.</p>
+            <TransitionLink href={ROUTES.home} className="tyl__link">
+              Agendar pelo site
+            </TransitionLink>
+          </div>
+        )}
       </motion.div>
 
       <AnimatePresence>

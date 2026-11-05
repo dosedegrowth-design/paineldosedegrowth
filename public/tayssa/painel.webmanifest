@@ -1,0 +1,14 @@
+{
+  "name": "Painel Tayssa Lash",
+  "short_name": "Painel Tayssa",
+  "description": "Agenda, clientes e avisos de novos pedidos.",
+  "start_url": "/tayssa/admin/agenda",
+  "scope": "/tayssa/",
+  "display": "standalone",
+  "background_color": "#f6f1ea",
+  "theme_color": "#4b0c20",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "/tayssa/apple-icon", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+  ]
+}

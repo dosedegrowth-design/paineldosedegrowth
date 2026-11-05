@@ -98,7 +98,7 @@ export default async function ReferPage() {
           </Reveal>
         </div>
       </main>
-      <PublicFooter business={settings.business} />
+      <PublicFooter business={settings.business} vipAberto={settings.rules.vip_aberto} />
       <style>{`.ty-refpage-title { font-size: clamp(36px, 4.56vw, 60px); }`}</style>
     </>
   );

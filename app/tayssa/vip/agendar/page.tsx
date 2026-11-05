@@ -25,15 +25,41 @@ export default async function BookPage() {
   ]);
   const max = settings.booking.max_open_per_client;
   const full = appointments.upcoming.length >= max;
+  // o pedido segura o horário esperando o sinal; o botão leva ao WhatsApp dela
+  const sinal = {
+    telefone: settings.business.whatsapp,
+    valor: settings.booking.deposit_reais,
+    horas: settings.booking.sinal_horas,
+    nome: user.displayName,
+  };
 
   return (
     <>
       <h1 className="tyv-hello">
-        {user.displayName}, <em>seu horário</em>.
+        {user.displayName}, <em>seus horários</em>.
       </h1>
-      <p className="tyv-sub">Escolha o serviço, o dia e a hora. A Tayssa confirma em seguida.</p>
+      <p className="tyv-sub">
+        Marque, acompanhe e desmarque por aqui. O horário fica guardado por {sinal.horas}h e vale depois do sinal no Pix: a
+        Tayssa te chama no WhatsApp.
+      </p>
+
+      {/* os horários dela primeiro: é o que ela veio ver; marcar outro vem logo abaixo */}
+      {appointments.upcoming.length ? (
+        <section className="tyv-section">
+          <div className="tyv-section-head">
+            <h2 className="tyv-h2">Meus horários</h2>
+            <span className="tyv-label">até {max} em aberto</span>
+          </div>
+          <div className="tyv-panel">
+            <AppointmentList items={appointments.upcoming} sinal={sinal} />
+          </div>
+        </section>
+      ) : null}
 
       <section className="tyv-section">
+        <div className="tyv-section-head">
+          <h2 className="tyv-h2">{appointments.upcoming.length ? "Marcar outro horário" : "Marcar um horário"}</h2>
+        </div>
         <BookingFlow
           services={services.map((s) => ({
             id: s.id,
@@ -49,18 +75,9 @@ export default async function BookPage() {
           }))}
           days={days.map((d) => ({ iso: d.iso, slots: d.slots }))}
           atLimit={full}
-          limitMessage={`Você já tem ${appointments.upcoming.length} ${plural(appointments.upcoming.length, "horário marcado", "horários marcados")}. Desmarque um abaixo para escolher outro.`}
+          sinal={sinal}
+          limitMessage={`Você já tem ${appointments.upcoming.length} ${plural(appointments.upcoming.length, "horário marcado", "horários marcados")}. Desmarque um acima para escolher outro.`}
         />
-      </section>
-
-      <section className="tyv-section">
-        <div className="tyv-section-head">
-          <h2 className="tyv-h2">Meus horários</h2>
-          <span className="tyv-label">até {max} em aberto</span>
-        </div>
-        <div className="tyv-panel">
-          <AppointmentList items={appointments.upcoming} />
-        </div>
       </section>
 
       {appointments.past.length ? (

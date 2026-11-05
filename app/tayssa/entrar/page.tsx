@@ -36,6 +36,7 @@ export default async function LoginPage({
         vipInfoUrl={whatsappUrl(settings.business.whatsapp, settings.whatsapp.public_vip_info)}
         next={next}
         linkExpirado={params.link === "expirado"}
+        vipAberto={settings.rules.vip_aberto}
       />
     </PhotoAvailabilityProvider>
   );

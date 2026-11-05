@@ -6,7 +6,9 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { createAppointmentAction } from "@/lib/tayssa/actions/booking";
 import { dateLong, dayLabel, monthName, plural, weekdayShort } from "@/lib/tayssa/format";
 import { TyTextarea } from "@/components/tayssa/ui/field";
-import { cabeNoHorario, duracaoLegivel } from "@/lib/tayssa/agendar";
+import { cabeNoHorario, duracaoLegivel, mensagemAgendamento, reais } from "@/lib/tayssa/agendar";
+import { whatsappUrl } from "@/lib/tayssa/whatsapp";
+import type { SinalDaAgenda } from "@/components/tayssa/vip/appointment-list";
 import { useTarefa } from "@/components/tayssa/ui/acao";
 
 export type BookingService = {
@@ -35,6 +37,7 @@ export function BookingFlow({
   atLimit = false,
   limitMessage,
   onDone,
+  sinal,
 }: {
   services: BookingService[];
   days: BookingDay[];
@@ -42,6 +45,8 @@ export function BookingFlow({
   atLimit?: boolean;
   limitMessage?: string;
   onDone?: () => void;
+  /** o sinal no Pix: o pedido fica guardado esperando por ele */
+  sinal?: SinalDaAgenda;
 }) {
   const router = useRouter();
   const reduced = useReducedMotion();
@@ -123,9 +128,30 @@ export function BookingFlow({
           {done.serviceName}
           {dia === "hoje" || dia === "amanhã" ? ` · ${dateLong(done.date)}` : ""}
         </p>
-        <p className="tyv-sub" style={{ fontSize: 13.5, marginTop: 14 }}>
-          A Tayssa confirma o horário e você vê aqui como confirmado.
-        </p>
+        {sinal ? (
+          <>
+            <p className="tyv-sub" style={{ fontSize: 13.5, marginTop: 14 }}>
+              O horário fica guardado por {sinal.horas}h e vale depois do sinal de {reais(sinal.valor)} no Pix. A Tayssa te
+              chama no WhatsApp, ou você já pode pedir a chave agora.
+            </p>
+            <a
+              className="tyv-btn tyv-btn--accent"
+              style={{ marginTop: 18 }}
+              href={whatsappUrl(
+                sinal.telefone,
+                mensagemAgendamento({ servico: done.serviceName, dia: done.date, hora: done.time, nome: sinal.nome, sinal: sinal.valor }),
+              )}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Pagar o sinal agora
+            </a>
+          </>
+        ) : (
+          <p className="tyv-sub" style={{ fontSize: 13.5, marginTop: 14 }}>
+            A Tayssa confirma o horário e você vê aqui como confirmado.
+          </p>
+        )}
         <div className="tyv-stack" style={{ marginTop: 22 }}>
           {atLimit ? null : (
           <button

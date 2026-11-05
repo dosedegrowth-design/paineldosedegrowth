@@ -1,8 +1,10 @@
 /**
  * Agendar pelo site: a cliente escolhe serviço, técnica, dia e horário numa
- * folha, e o pedido segue pronto para o WhatsApp da Tayssa — com o pedido
- * do Pix do sinal. Nada é gravado no banco: quem fecha a agenda é ela, na
- * conversa. Puro (sem banco, sem React) para ser testado e usado no client.
+ * folha e marca com a conta dela (05/11/2026). O pedido segura o horário
+ * esperando o sinal no Pix; a Tayssa confirma quando ele cai. Depois de
+ * marcar, um botão leva ao WhatsApp dela com a mensagem pronta pedindo a
+ * chave do sinal. Puro (sem banco, sem React) para ser testado e usado no
+ * client.
  */
 
 import { horariosDoDia } from "./rules.ts";
@@ -173,12 +175,46 @@ export function horariosDaSemana(booking: {
   });
 }
 
-/** A mensagem que chega no WhatsApp dela. */
+const FUSO = "America/Sao_Paulo";
+
+/**
+ * Até quando o pedido segura o horário esperando o sinal: `horas` depois de
+ * criado, no horário de Brasília. { fim, legivel: "sexta, 06/11 às 15h" }
+ */
+export function prazoDoSinal(criadoEm: string, horas: number): { fim: Date; legivel: string } {
+  const fim = new Date(new Date(criadoEm).getTime() + horas * 3_600_000);
+  const p = Object.fromEntries(
+    new Intl.DateTimeFormat("pt-BR", {
+      timeZone: FUSO,
+      weekday: "long",
+      day: "2-digit",
+      month: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    })
+      .formatToParts(fim)
+      .map((x) => [x.type, x.value]),
+  ) as Record<string, string>;
+  const semana = (p.weekday ?? "").replace("-feira", "");
+  const hora = p.minute === "00" ? `${Number(p.hour)}h` : `${Number(p.hour)}h${p.minute}`;
+  return { fim, legivel: `${semana}, ${p.day}/${p.month} às ${hora}` };
+}
+
+/** O pedido ainda segura o horário? (sem confirmação, cai quando o prazo do sinal passa) */
+export function sinalNoPrazo(criadoEm: string, horas: number, agora: Date = new Date()): boolean {
+  return prazoDoSinal(criadoEm, horas).fim.getTime() > agora.getTime();
+}
+
+/**
+ * A mensagem que a cliente manda depois de marcar, pelo botão "Pagar o
+ * sinal agora": o horário já está na agenda da Tayssa, falta o Pix.
+ */
 export function mensagemAgendamento(p: PedidoAgenda): string {
   const servico = p.tecnica ? `${p.servico} (${p.tecnica})` : p.servico;
   const nome = p.nome.trim();
   return [
-    "Oi, Tayssa! Quero agendar pelo site.",
+    "Oi, Tayssa, tudo bem? Marquei meu horário pelo site.",
     "",
     `Serviço: ${servico}`,
     `Dia: ${diaLegivel(p.dia)}`,
@@ -186,6 +222,6 @@ export function mensagemAgendamento(p: PedidoAgenda): string {
     ...(p.valor != null ? [`Valor: ${reais(p.valor)}`] : []),
     ...(nome ? [`Nome: ${nome}`] : []),
     "",
-    `Pode me mandar a chave Pix do sinal de ${reais(p.sinal)} para eu garantir o horário?`,
+    `Me manda a chave Pix do sinal de ${reais(p.sinal)} para eu garantir o horário?`,
   ].join("\n");
 }

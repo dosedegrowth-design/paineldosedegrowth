@@ -9,7 +9,7 @@ import type { ClientProfileRow, UserRole, UserStatus } from "@/lib/tayssa/types"
 export type SessionUser = {
   id: string;
   role: UserRole;
-  email: string;
+  email: string | null;
   name: string;
   nickname: string | null;
   phone: string | null;
@@ -88,7 +88,7 @@ type SessionQueryRow = {
     | {
         id: string;
         role: UserRole;
-        email: string;
+        email: string | null;
         name: string;
         nickname: string | null;
         phone: string | null;

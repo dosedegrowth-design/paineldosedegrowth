@@ -171,7 +171,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
       >
         <dl className="tya-defs">
           <dt>E-mail</dt>
-          <dd>{user.email}</dd>
+          <dd>{user.email ?? "sem e-mail (entra pelo WhatsApp)"}</dd>
           <dt>WhatsApp</dt>
           <dd>
             {user.phone ? (

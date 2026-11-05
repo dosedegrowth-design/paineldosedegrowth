@@ -28,3 +28,18 @@ export function formatBrPhone(digits: string | null | undefined): string {
   if (rest.length === 8) return `(${ddd}) ${rest.slice(0, 4)}-${rest.slice(4)}`;
   return d;
 }
+
+/**
+ * O que a cliente digitou no campo de entrar: com "@" é e-mail (como está
+ * gravado, em minúsculas); sem, é o WhatsApp com DDD. O resto não é login.
+ */
+export function chaveDoLogin(bruto: string): { tipo: "email" | "whatsapp"; valor: string } | null {
+  const v = bruto.trim();
+  if (!v) return null;
+  if (v.includes("@")) {
+    const email = v.toLowerCase();
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) ? { tipo: "email", valor: email } : null;
+  }
+  const whatsapp = normalizeBrPhone(v);
+  return whatsapp ? { tipo: "whatsapp", valor: whatsapp } : null;
+}

@@ -97,6 +97,12 @@ export type BusinessSettings = {
 export const PRIORIDADE_VIP = "prioridade na agenda, principalmente em dezembro";
 
 export type RulesSettings = {
+  /**
+   * O programa VIP aberto para as clientes (cartão, pontos, benefícios,
+   * jornada). Fechado, a área da cliente é só a agenda: marcar, ver e
+   * desmarcar os horários (05/11/2026: o VIP ainda não abriu).
+   */
+  vip_aberto: boolean;
   /** Meta de pontos para o VIP (junto com os meses seguidos; a Tayssa confirma). */
   vip_pontos: number;
   /** Meses seguidos com pelo menos um atendimento confirmado para o VIP. */
@@ -155,6 +161,12 @@ export type BookingSettings = {
   max_open_per_client: number;
   /** sinal pedido no Pix para garantir o horário marcado pelo site, em reais */
   deposit_reais: number;
+  /**
+   * Horas que o pedido segura o horário esperando o sinal. A Tayssa pede o
+   * Pix no WhatsApp e confirma quando ele cai; sem confirmação nesse prazo,
+   * o pedido cai sozinho e o horário volta para a agenda.
+   */
+  sinal_horas: number;
 };
 
 export type SignupSettings = {
@@ -202,6 +214,7 @@ export const DEFAULT_SETTINGS: Settings = {
   },
   // o VIP é de quem volta com constância: pontos de uma vez só não bastam
   rules: {
+    vip_aberto: false,
     vip_pontos: 1000,
     vip_meses: 3,
     inactivity_days: 30,
@@ -260,6 +273,7 @@ export const DEFAULT_SETTINGS: Settings = {
     default_duration_min: 90,
     max_open_per_client: 2,
     deposit_reais: 50,
+    sinal_horas: 24,
   },
   signup: {
     open: true,

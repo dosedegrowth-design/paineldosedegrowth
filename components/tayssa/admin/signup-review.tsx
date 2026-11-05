@@ -25,7 +25,7 @@ export function SignupReviewPanel({
 }: {
   id: string;
   name: string;
-  email: string;
+  email: string | null;
   phone: string | null;
   message: string | null;
   requestedAt: string | null;
@@ -92,7 +92,7 @@ export function SignupReviewPanel({
           <dl className="tya-pedido__dados">
             <div>
               <dt>E-mail</dt>
-              <dd>{email}</dd>
+              <dd>{email ?? "sem e-mail"}</dd>
             </div>
             <div>
               <dt>WhatsApp</dt>

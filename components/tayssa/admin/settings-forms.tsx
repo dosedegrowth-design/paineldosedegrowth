@@ -171,6 +171,14 @@ export function RulesForm({ value }: { value: Settings["rules"] }) {
   const { onReset } = useFormPreservado();
   return (
     <form onSubmit={onSubmit} noValidate onReset={onReset} className="tya-stack">
+      <Marcar
+        name="vip_aberto"
+        label="VIP aberto para as clientes (cartão, pontos, benefícios e jornada)"
+        defaultChecked={value.vip_aberto}
+      />
+      <p className="tya-small" style={{ marginTop: -6 }}>
+        Fechado, a área da cliente mostra só a agenda: marcar, ver e desmarcar os horários dela.
+      </p>
       <div className="tya-grid">
         <Campo
           label="Pontos para o VIP"
@@ -734,7 +742,15 @@ export function BookingForm({ value }: { value: Settings["booking"] }) {
             inputMode="decimal"
             defaultValue={String(value.deposit_reais)}
             error={erroDe(state, "deposit_reais")}
-            hint="Vai na mensagem de quem agenda pelo site, pedindo a chave Pix."
+            hint="O horário só vale com o sinal. Aparece para ela ao marcar."
+          />
+          <Campo
+            label="Prazo do sinal (horas)"
+            name="sinal_horas"
+            inputMode="numeric"
+            defaultValue={String(value.sinal_horas)}
+            error={erroDe(state, "sinal_horas")}
+            hint="O pedido segura o horário esse tempo. Sem você confirmar, ele cai e o horário volta."
           />
         </div>
       </div>

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { z } from "zod";
 import { vipDb } from "@/lib/tayssa/db";
 import { assertClient } from "@/lib/tayssa/auth/guards";
@@ -17,9 +18,11 @@ import {
   toISODate,
   trechosOcupados,
 } from "@/lib/tayssa/rules";
-import { cabeNoHorario, duracaoLegivel } from "@/lib/tayssa/agendar";
+import { cabeNoHorario, diaLegivel, duracaoLegivel, horaLegivel } from "@/lib/tayssa/agendar";
+import { avisarTayssa } from "@/lib/tayssa/avisos";
 import { isoDateField } from "@/lib/tayssa/validation";
 import { horariosFechados } from "@/lib/tayssa/queries/vip";
+import { expirarPedidosSemSinal } from "@/lib/tayssa/queries/expira";
 import { nowInBusinessTz } from "@/lib/tayssa/format";
 import { BusinessError, runAction } from "@/lib/tayssa/actions/_helpers";
 import type { ActionResult, AppointmentRow, ServiceRow } from "@/lib/tayssa/types";
@@ -54,6 +57,8 @@ export async function createAppointmentAction(input: {
     const me = await assertClient();
     const parsed = createSchema.parse(input);
     const db = vipDb();
+    // o horário de um pedido que perdeu o prazo do sinal já está livre de novo
+    await expirarPedidosSemSinal();
     const settings = await getSettings();
     const b = settings.booking;
     const now = nowInBusinessTz();
@@ -156,6 +161,15 @@ export async function createAppointmentAction(input: {
       entityId: id,
       meta: { service: service.name, date: parsed.date, time: parsed.time },
     });
+    // o aviso no celular da Tayssa sai depois da resposta: ela confirma quando o sinal cair
+    after(() =>
+      avisarTayssa({
+        titulo: "Novo pedido de horário",
+        corpo: `${me.name} · ${service.name} · ${diaLegivel(parsed.date)} às ${horaLegivel(parsed.time)}`,
+        url: `${ROUTES.adminAgenda}#pedidos`,
+        tag: `pedido-${id}`,
+      }),
+    );
     revalidatePath(ROUTES.vip, "layout");
     revalidatePath(ROUTES.admin, "layout");
     return { id, serviceName: service.name, date: parsed.date, time: parsed.time };

@@ -47,26 +47,44 @@ type Caminho = {
  * botão que não leva a lugar nenhum, e nenhuma foto: a composição se
  * sustenta em tipografia, régua e ar.
  */
-export function Closing({ scheduleUrl, ambiente }: { scheduleUrl: string; ambiente?: PhotoSlot }) {
+export function Closing({
+  scheduleUrl,
+  ambiente,
+  vipAberto = true,
+}: {
+  scheduleUrl: string;
+  ambiente?: PhotoSlot;
+  vipAberto?: boolean;
+}) {
   const caminhos: Caminho[] = [
     {
       n: "01",
       nome: "Agendar horário",
-      dizer: "Escolha o serviço, o dia e o horário livres: a mensagem chega pronta no WhatsApp da Tayssa.",
+      dizer: "Escolha o serviço, o dia e o horário e marque aqui mesmo, com a sua conta.",
       ficha: "escolher o horário",
       href: scheduleUrl,
       agendar: true,
       icone: "mensagem",
     },
-    {
-      n: "02",
-      nome: "Pedir acesso ao VIP",
-      dizer: "O cadastro é um pedido de entrada: ela lê, confere e responde.",
-      ficha: "aprovação dela",
-      href: ROUTES.signup,
-      agendar: false,
-      icone: "flor",
-    },
+    vipAberto
+      ? {
+          n: "02",
+          nome: "Pedir acesso ao VIP",
+          dizer: "O cadastro é um pedido de entrada: ela lê, confere e responde.",
+          ficha: "aprovação dela",
+          href: ROUTES.signup,
+          agendar: false,
+          icone: "flor",
+        }
+      : {
+          n: "02",
+          nome: "Meus horários",
+          dizer: "Veja, acompanhe e desmarque os seus horários com a sua conta.",
+          ficha: "whatsapp e senha",
+          href: ROUTES.vipBook,
+          agendar: false,
+          icone: "flor",
+        },
     {
       n: "03",
       nome: "Indicar alguém",

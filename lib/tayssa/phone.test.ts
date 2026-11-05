@@ -4,7 +4,7 @@
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { normalizeBrPhone } from "./phone.ts";
+import { chaveDoLogin, normalizeBrPhone } from "./phone.ts";
 
 test("celular com e sem o 9 é a mesma linha", () => {
   assert.equal(normalizeBrPhone("(11) 98765-4321"), "5511987654321");
@@ -27,4 +27,13 @@ test("o que não é telefone volta null", () => {
   assert.equal(normalizeBrPhone(""), null);
   assert.equal(normalizeBrPhone("123"), null);
   assert.equal(normalizeBrPhone("abc"), null);
+});
+
+test("entrar: com @ é e-mail, sem é o WhatsApp", () => {
+  assert.deepEqual(chaveDoLogin(" Maria@Exemplo.com "), { tipo: "email", valor: "maria@exemplo.com" });
+  assert.deepEqual(chaveDoLogin("(11) 98765-4321"), { tipo: "whatsapp", valor: "5511987654321" });
+  assert.deepEqual(chaveDoLogin("11 8765 4321"), { tipo: "whatsapp", valor: "5511987654321" });
+  assert.equal(chaveDoLogin("maria@"), null);
+  assert.equal(chaveDoLogin("123"), null);
+  assert.equal(chaveDoLogin("   "), null);
 });

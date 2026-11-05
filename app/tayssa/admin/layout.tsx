@@ -9,6 +9,10 @@ import { AdminFrame } from "@/components/tayssa/admin/frame";
 export const metadata: Metadata = {
   title: "Painel",
   robots: { index: false, follow: false },
+  // o painel vira app na Tela de Início do iPhone: é a única forma de o
+  // iPhone receber os avisos de pedido novo (Web Push)
+  manifest: "/tayssa/painel.webmanifest",
+  appleWebApp: { capable: true, title: "Painel Tayssa", statusBarStyle: "default" },
 };
 
 /** Painel operacional: sempre por requisição, nunca cacheado. */

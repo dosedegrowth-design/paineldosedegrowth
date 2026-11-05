@@ -2,6 +2,7 @@ import "server-only";
 import { redirect } from "next/navigation";
 import { ROUTES } from "@/lib/tayssa/config";
 import { getSessionUser, type SessionUser } from "@/lib/tayssa/auth/session";
+import { getSettings } from "@/lib/tayssa/settings";
 
 /**
  * Guards de página (redirecionam) e de action (lançam AuthError).
@@ -25,6 +26,17 @@ export async function requireUser(): Promise<SessionUser> {
 export async function requireClientPage(): Promise<SessionUser> {
   const user = await requireUser();
   if (user.role !== "client") redirect(ROUTES.admin);
+  return user;
+}
+
+/**
+ * Cartão, pontos, benefícios e jornada: só com o VIP aberto (Configurações →
+ * Programa VIP). Fechado (05/11/2026, o VIP ainda não abriu), a área da
+ * cliente é só a agenda: quem chega nessas telas vai para os horários dela.
+ */
+export async function requireProgramaVipPage(): Promise<SessionUser> {
+  const [user, settings] = await Promise.all([requireClientPage(), getSettings()]);
+  if (!settings.rules.vip_aberto) redirect(ROUTES.vipBook);
   return user;
 }
 

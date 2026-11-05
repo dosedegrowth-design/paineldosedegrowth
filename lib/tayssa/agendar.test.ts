@@ -17,6 +17,8 @@ import {
   reais,
   valorLegivel,
   mesesDaAgenda,
+  prazoDoSinal,
+  sinalNoPrazo,
 } from "./agendar.ts";
 
 test("hora no jeito de falar", () => {
@@ -57,14 +59,14 @@ test("mensagem completa, pedindo o Pix do sinal", () => {
   assert.equal(
     m,
     [
-      "Oi, Tayssa! Quero agendar pelo site.",
+      "Oi, Tayssa, tudo bem? Marquei meu horário pelo site.",
       "",
       "Serviço: Manutenção de cílios (Volume brasileiro)",
       "Dia: sexta, 23/10",
       "Horário: 14h",
       "Nome: Ana",
       "",
-      "Pode me mandar a chave Pix do sinal de R$ 50 para eu garantir o horário?",
+      "Me manda a chave Pix do sinal de R$ 50 para eu garantir o horário?",
     ].join("\n"),
   );
 });
@@ -142,4 +144,15 @@ test("os meses da fita de dias, com o primeiro dia de cada um", () => {
     { chave: "2027-01", nome: "Janeiro", primeiro: "2027-01-02" },
   ]);
   assert.deepEqual(mesesDaAgenda([]), []);
+});
+
+test("o pedido segura o horário por 24h, no horário de Brasília", () => {
+  // 05/11 às 15h em Brasília (18h UTC) + 24h = sexta, 06/11 às 15h
+  assert.equal(prazoDoSinal("2026-11-05T18:00:00Z", 24).legivel, "sexta, 06/11 às 15h");
+  assert.equal(prazoDoSinal("2026-11-05T18:30:00Z", 24).legivel, "sexta, 06/11 às 15h30");
+  // perto da meia-noite: vira o dia certo em Brasília, não em UTC
+  assert.equal(prazoDoSinal("2026-11-06T02:00:00Z", 24).legivel, "sexta, 06/11 às 23h");
+  assert.equal(prazoDoSinal("2026-11-07T12:00:00Z", 2).legivel, "sábado, 07/11 às 11h");
+  assert.equal(sinalNoPrazo("2026-11-05T18:00:00Z", 24, new Date("2026-11-06T17:59:00Z")), true);
+  assert.equal(sinalNoPrazo("2026-11-05T18:00:00Z", 24, new Date("2026-11-06T18:00:00Z")), false);
 });

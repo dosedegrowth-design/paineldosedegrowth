@@ -5,10 +5,15 @@ import { useRouter } from "next/navigation";
 import { cancelAppointmentAction } from "@/lib/tayssa/actions/booking";
 import { dayLabel, dateLong, hhmm } from "@/lib/tayssa/format";
 import { APPOINTMENT_STATUS_LABEL, type AppointmentRow } from "@/lib/tayssa/types";
+import { mensagemAgendamento, prazoDoSinal, reais } from "@/lib/tayssa/agendar";
+import { whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { useTarefa } from "@/components/tayssa/ui/acao";
 
+/** O sinal: o pedido segura o horário `horas` esperando o Pix (a Tayssa confirma). */
+export type SinalDaAgenda = { telefone: string; valor: number; horas: number; nome: string };
+
 /** Horários em aberto: ver, e desmarcar sem precisar ligar para ninguém. */
-export function AppointmentList({ items }: { items: AppointmentRow[] }) {
+export function AppointmentList({ items, sinal }: { items: AppointmentRow[]; sinal?: SinalDaAgenda }) {
   const router = useRouter();
   const [confirming, setConfirming] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -58,6 +63,32 @@ export function AppointmentList({ items }: { items: AppointmentRow[] }) {
               <span className={`tyv-badge ${a.status === "confirmed" ? "" : "tyv-badge--quiet"}`} style={{ marginTop: 8 }}>
                 {APPOINTMENT_STATUS_LABEL[a.status]}
               </span>
+              {/* pedido: guardado até o prazo do sinal; o botão leva ao WhatsApp dela pedindo a chave */}
+              {a.status === "requested" && sinal ? (
+                <div className="tyv-sinal">
+                  <p className="tyv-sub" style={{ fontSize: 13 }}>
+                    Guardado até {prazoDoSinal(a.created_at, sinal.horas).legivel}. Vale depois do sinal de{" "}
+                    {reais(sinal.valor)} no Pix.
+                  </p>
+                  <a
+                    className="tyv-sinal__btn"
+                    href={whatsappUrl(
+                      sinal.telefone,
+                      mensagemAgendamento({
+                        servico: a.service_name,
+                        dia: a.scheduled_date,
+                        hora: a.scheduled_time.slice(0, 5),
+                        nome: sinal.nome,
+                        sinal: sinal.valor,
+                      }),
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Pagar o sinal agora
+                  </a>
+                </div>
+              ) : null}
               {a.admin_note ? (
                 <p className="tyv-sub" style={{ fontSize: 13, marginTop: 8 }}>
                   Tayssa: “{a.admin_note}”

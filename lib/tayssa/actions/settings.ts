@@ -62,6 +62,7 @@ export async function updateRulesSettingsAction(_p: ActionResult | null, fd: For
   return runAction("settings.rules", async () => {
     const admin = await assertAdmin();
     const input = rulesSettingsSchema.parse({
+      vip_aberto: bool(fd, "vip_aberto"),
       vip_pontos: str(fd, "vip_pontos"),
       vip_meses: str(fd, "vip_meses"),
       inactivity_days: str(fd, "inactivity_days"),
@@ -153,6 +154,7 @@ export async function updateBookingSettingsAction(_p: ActionResult | null, fd: F
       default_duration_min: str(fd, "default_duration_min"),
       max_open_per_client: str(fd, "max_open_per_client"),
       deposit_reais: str(fd, "deposit_reais").replace(",", "."),
+      sinal_horas: str(fd, "sinal_horas"),
     });
     await saveSetting("booking", input, admin.id);
     return undefined;

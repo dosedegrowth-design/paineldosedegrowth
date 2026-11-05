@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { nowInBusinessTz } from "@/lib/tayssa/format";
 import { vipDb } from "@/lib/tayssa/db";
+import { expirarPedidosSemSinal } from "@/lib/tayssa/queries/expira";
 import { getSettings } from "@/lib/tayssa/settings";
 import { getPublicBenefits } from "@/lib/tayssa/queries/catalog";
 import { horariosFechados } from "@/lib/tayssa/queries/vip";
@@ -160,6 +161,7 @@ function shiftDays(base: Date, n: number): Date {
 }
 
 export const getAgenda = cache(async (): Promise<Agenda> => {
+  await expirarPedidosSemSinal();
   const now = nowInBusinessTz();
   const today = toISODate(now);
   const { data, error } = await vipDb()

@@ -132,10 +132,11 @@ export function linkDoServico(base: string, nome: string): string {
  * No celular a lista vira cardápio (pedido do Lucas, 29/10/2026: eram oito
  * telas de rolagem): cada serviço é uma linha com a capa, o nome e o valor
  * com o tempo, e tocar abre a descrição, as informações, o "Agendar" e a
- * galeria grande. O primeiro já vem aberto, para mostrar o que tem dentro;
- * abrir um não fecha os outros (nada acima do dedo muda de lugar). O "Valor
- * e fotos" da apresentação abre o serviço dele. No computador nada muda:
- * todas abertas, a linha inteira agenda.
+ * galeria grande. Todos começam fechados (pedido do Lucas, 05/11/2026: ao
+ * abrir o site nada disso aparece; abre só no toque); abrir um não fecha os
+ * outros (nada acima do dedo muda de lugar). O "Valor e fotos" da
+ * apresentação abre o serviço dele. No computador nada muda: todas abertas,
+ * a linha inteira agenda.
  */
 export function Services({
   services,
@@ -161,8 +162,8 @@ export function Services({
   // existe depois que a cliente o abre (eram ~200 cartões de foto montados,
   // escondidos, que o celular carregava e vigiava ao rolar)
   const largo = useMedia("(min-width: 900px)");
-  // cardápio do celular: quem está aberto (o primeiro começa aberto)
-  const [abertos, setAbertos] = useState<ReadonlySet<string>>(() => new Set(list[0] ? [list[0].slug] : []));
+  // cardápio do celular: quem está aberto (todos começam fechados)
+  const [abertos, setAbertos] = useState<ReadonlySet<string>>(() => new Set());
   const alternar = (slug: string) =>
     setAbertos((a) => {
       const novo = new Set(a);

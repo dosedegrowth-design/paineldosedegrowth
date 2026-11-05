@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { logServerError, vipDb } from "@/lib/tayssa/db";
 import { lerLinkDeEntrada } from "@/lib/tayssa/auth/link";
 import { hashPassword, verifyPassword } from "@/lib/tayssa/auth/password";
+import { autenticar } from "@/lib/tayssa/auth/entrar";
 import {
   createSession,
   destroySession,
@@ -13,40 +14,19 @@ import {
   revokeAllSessions,
 } from "@/lib/tayssa/auth/session";
 import { logAudit } from "@/lib/tayssa/audit";
-import {
-  LOGIN_MAX_ATTEMPTS,
-  LOGIN_WINDOW_MINUTES,
-  ROUTES,
-} from "@/lib/tayssa/config";
+import { ROUTES } from "@/lib/tayssa/config";
 import {
   changePasswordSchema,
   loginSchema,
   setPasswordSchema,
 } from "@/lib/tayssa/validation";
 import { BusinessError, runAction, str } from "@/lib/tayssa/actions/_helpers";
-import type { ActionResult, UserRow } from "@/lib/tayssa/types";
+import type { ActionResult } from "@/lib/tayssa/types";
 import { assertClient } from "@/lib/tayssa/auth/guards";
-import { ipDaRequisicao, passouDoLimite } from "@/lib/tayssa/limite";
-
-const INVALID = "E-mail ou senha não conferem.";
+import { ipDaRequisicao } from "@/lib/tayssa/limite";
 
 function safeNext(next: string): string | null {
   return next.startsWith("/tayssa/") && !next.startsWith("//") ? next : null;
-}
-
-/** Tentativas erradas na janela: por e-mail (protege a conta) e por endereço de internet (protege todas). */
-async function tooManyAttempts(email: string, ip: string | null): Promise<boolean> {
-  const since = new Date(Date.now() - LOGIN_WINDOW_MINUTES * 60 * 1000).toISOString();
-  const [porEmail, porIp] = await Promise.all([
-    vipDb()
-      .from("audit_log")
-      .select("id", { count: "exact", head: true })
-      .eq("action", "login_failed")
-      .eq("meta->>email", email)
-      .gte("created_at", since),
-    passouDoLimite({ acoes: ["login_failed"], ip, maximo: LOGIN_MAX_ATTEMPTS * 4, minutos: LOGIN_WINDOW_MINUTES }),
-  ]);
-  return (porEmail.count ?? 0) >= LOGIN_MAX_ATTEMPTS || porIp;
 }
 
 export async function loginAction(
@@ -54,49 +34,13 @@ export async function loginAction(
   formData: FormData
 ): Promise<ActionResult<{ redirectTo: string; name: string }>> {
   const result = await runAction("auth.login", async () => {
+    // WhatsApp ou e-mail no mesmo campo ("email" ainda chega de telas antigas)
     const input = loginSchema.parse({
-      email: str(formData, "email"),
+      login: str(formData, "login") || str(formData, "email"),
       password: str(formData, "password"),
     });
-
     const ip = await ipDaRequisicao();
-    if (await tooManyAttempts(input.email, ip)) {
-      throw new BusinessError(
-        "Muitas tentativas. Aguarde alguns minutos e tente novamente."
-      );
-    }
-
-    // e-mail exato (o zod já deixa em minúsculas, como está gravado): com
-    // ilike, um "_" no endereço virava curinga e cada variação ganhava sua
-    // própria cota de tentativas
-    const { data, error: uErr } = await vipDb().from("users").select("*").eq("email", input.email).maybeSingle();
-    if (uErr) throw new Error(uErr.message);
-    const user = (data ?? null) as UserRow | null;
-
-    const valid = user ? await verifyPassword(input.password, user.password_hash) : false;
-    if (!user || !valid) {
-      await logAudit({
-        actorId: null,
-        actorRole: "public",
-        action: "login_failed",
-        entityType: "user",
-        entityId: user?.id ?? null,
-        meta: { email: input.email, ip },
-      });
-      throw new BusinessError(INVALID);
-    }
-    if (user.status !== "active") {
-      // a senha confere, mas a porta ainda não abre: cada motivo tem sua tela
-      const err = new BusinessError(
-        user.status === "pending"
-          ? "Seu pedido de acesso está com a Tayssa. Assim que ela aprovar, é só entrar."
-          : user.status === "rejected"
-            ? "Esse acesso não foi liberado. Fale com a Tayssa pelo WhatsApp."
-            : "Seu acesso está pausado no momento. Fale com a Tayssa para reativar."
-      );
-      err.code = user.status;
-      throw err;
-    }
+    const user = await autenticar(input.login, input.password, ip);
 
     await createSession(user.id);
     await vipDb()

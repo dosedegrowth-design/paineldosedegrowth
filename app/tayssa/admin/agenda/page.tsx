@@ -6,7 +6,7 @@ import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES } from "@/lib/tayssa/config";
 import { dateShort, dayLabel, dayMonth, hhmm, nowInBusinessTz, weekdayShort } from "@/lib/tayssa/format";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
-import { horariosDaSemana } from "@/lib/tayssa/agendar";
+import { horariosDaSemana, prazoDoSinal, reais } from "@/lib/tayssa/agendar";
 import { APPOINTMENT_STATUS_LABEL, type AppointmentStatus } from "@/lib/tayssa/types";
 import type { AppointmentWithClient } from "@/lib/tayssa/queries/admin";
 import {
@@ -19,6 +19,7 @@ import { AdminBlock, AdminHeader, Empty } from "@/components/tayssa/admin/shell"
 import { ActionButton, NoteAction } from "@/components/tayssa/admin/controls";
 import { Icone, type IconeNome } from "@/components/tayssa/admin/icons";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
+import { AvisosDePedido } from "@/components/tayssa/admin/avisos";
 
 const WEEKDAYS = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
 
@@ -84,13 +85,17 @@ function Atalho({ n, label, href, alerta }: { n: number; label: string; href?: s
 function Slot({
   a,
   tom,
+  sinal,
   children,
 }: {
   a: AppointmentWithClient;
   tom?: "warn" | "brand" | "ok" | "quiet" | "bad";
+  /** pedido esperando o sinal: o prazo e a mensagem pronta pedindo o Pix */
+  sinal?: { horas: number; valor: number };
   children?: ReactNode;
 }) {
   const first = clientName(a).split(/\s+/)[0];
+  const esperandoSinal = a.status === "requested" && sinal;
   return (
     <li className="tya-slot" data-tom={tom ?? TOM[a.status]}>
       <div className="tya-slot__when">
@@ -115,6 +120,13 @@ function Slot({
           {a.service_name} · {a.duration_min} min · {weekdayShort(a.scheduled_date)}, {dateShort(a.scheduled_date)}
         </p>
         {a.client_note ? <p className="tya-quote">“{a.client_note}”</p> : null}
+        {esperandoSinal ? (
+          <p className="tya-slot__mine">
+            <span className="tya-slot__tag">sinal</span>
+            Aguardando {reais(sinal.valor)} no Pix · o pedido cai {prazoDoSinal(a.created_at, sinal.horas).legivel} se você
+            não confirmar
+          </p>
+        ) : null}
         {a.admin_note ? (
           <p className="tya-slot__mine">
             <span className="tya-slot__tag">sua observação</span>
@@ -125,13 +137,15 @@ function Slot({
           <a
             href={whatsappUrl(
               a.client.phone,
-              `Oi, ${first}! Sobre seu horário de ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}: `
+              esperandoSinal
+                ? `Oi, ${first}! Aqui é a Tayssa. Recebi seu pedido de ${a.service_name} para ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}. Para confirmar o horário, o sinal é de ${reais(sinal.valor)} no Pix. A chave é: `
+                : `Oi, ${first}! Sobre seu horário de ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}: `
             )}
             target="_blank"
             rel="noopener noreferrer"
             className="tya-link tya-link--quiet tya-slot__wa"
           >
-            WhatsApp
+            {esperandoSinal ? "Pedir o sinal no WhatsApp" : "WhatsApp"}
           </a>
         ) : null}
       </div>
@@ -207,7 +221,7 @@ export default async function AgendaAdminPage() {
             </>
           )
         }
-        lead="A semana como no Google Agenda: toque num horário para abrir ou fechar. A cliente pede o horário pelo app; ele só vale depois que você confirma. Ao marcar como realizado, a visita entra confirmada, com pontos e carimbo."
+        lead={`A semana como no Google Agenda: toque num horário para abrir ou fechar. A cliente marca pelo site com a conta dela e o pedido segura o horário por ${b.sinal_horas}h esperando o sinal: peça o Pix no WhatsApp e confirme quando ele cair. Sem confirmação nesse prazo, o pedido cai sozinho e o horário volta para a agenda.`}
         actions={
           <TransitionLink href={`${ROUTES.adminSettings}#agenda`} className="tya-btn tya-btn--ghost">
             <Icone nome="config" />
@@ -228,6 +242,9 @@ export default async function AgendaAdminPage() {
         <Atalho n={agenda.upcoming.length} label="Próximos" href="#proximos" />
       </div>
 
+      {/* a notificação no celular dela a cada horário marcado pelo site */}
+      <AvisosDePedido />
+
       <AdminBlock id="semana" title="Semana">
         <AgendaGrade grade={grade} />
       </AdminBlock>
@@ -246,7 +263,7 @@ export default async function AgendaAdminPage() {
         {agenda.requested.length ? (
           <ul className="tya-list">
             {agenda.requested.map((a) => (
-              <Slot key={a.id} a={a}>
+              <Slot key={a.id} a={a} sinal={{ horas: b.sinal_horas, valor: b.deposit_reais }}>
                 <NoteAction
                   action={adminConfirmAppointmentAction}
                   args={{ id: a.id }}
@@ -263,7 +280,7 @@ export default async function AgendaAdminPage() {
           </ul>
         ) : (
           <Vazio icone="agenda" titulo="Nenhum pedido aguardando">
-            Quando uma cliente pedir um horário pelo app, ele aparece aqui para você confirmar ou recusar.
+            Quando uma cliente marcar um horário pelo site, ele aparece aqui. Confirme quando o sinal cair.
           </Vazio>
         )}
       </AdminBlock>
@@ -280,7 +297,7 @@ export default async function AgendaAdminPage() {
         {agenda.todayList.length ? (
           <ul className="tya-list">
             {agenda.todayList.map((a) => (
-              <Slot key={a.id} a={a}>
+              <Slot key={a.id} a={a} sinal={{ horas: b.sinal_horas, valor: b.deposit_reais }}>
                 {a.status === "requested" ? (
                   <NoteAction
                     action={adminConfirmAppointmentAction}

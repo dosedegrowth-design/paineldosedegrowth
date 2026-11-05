@@ -71,6 +71,7 @@ export default async function TayssaHome() {
   const agenda: AgendaSite = {
     telefone: settings.business.whatsapp,
     servicos: ativos.map((s) => ({
+      id: s.id,
       slug: s.slug,
       nome: s.name,
       manutencao: ehManutencao(s.slug, s.name),
@@ -82,6 +83,7 @@ export default async function TayssaHome() {
       .map((s) => ({ nome: s.name, manutencao: Number(s.preco_manutencao) })),
     dias,
     sinal: settings.booking.deposit_reais,
+    sinalHoras: settings.booking.sinal_horas,
   };
 
   const jsonLd = {

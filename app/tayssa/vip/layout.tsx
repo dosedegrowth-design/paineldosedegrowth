@@ -47,6 +47,8 @@ export const dynamic = "force-dynamic";
  */
 export default async function VipLayout({ children }: { children: React.ReactNode }) {
   const [user, settings] = await Promise.all([requireClientPage(), getSettings()]);
+  // VIP fechado (Configurações → Programa VIP): a área é só a agenda dela
+  const soAgenda = !settings.rules.vip_aberto;
   const supportUrl = whatsappUrl(
     settings.business.whatsapp,
     renderTemplate(settings.whatsapp.vip_support, { name: user.displayName })
@@ -56,7 +58,7 @@ export default async function VipLayout({ children }: { children: React.ReactNod
       {/* o VIP tem pele própria: bege dourado e ícones vinho (o site é vinho e noite) */}
       <FundoVivo tom="perola" className="tyv-fundo" />
       <header className="tyv-page tyv-top">
-        <Link href={ROUTES.vip} className="tyv-brand" aria-label="Início do seu espaço">
+        <Link href={soAgenda ? ROUTES.vipBook : ROUTES.vip} className="tyv-brand" aria-label={soAgenda ? "Meus horários" : "Início do seu espaço"}>
           <TyBrand size="sm" />
           {user.isVip ? <span className="tyv-vip-tag">VIP</span> : null}
         </Link>
@@ -73,7 +75,7 @@ export default async function VipLayout({ children }: { children: React.ReactNod
               <path d="M9 9.6c.3 1.6 2.2 3.7 3.9 4.2" />
             </svg>
           </a>
-          <MenuVip />
+          <MenuVip soAgenda={soAgenda} />
         </span>
       </header>
       <main className="tyv-page">

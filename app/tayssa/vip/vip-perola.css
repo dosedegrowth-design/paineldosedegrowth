@@ -969,3 +969,29 @@ body:has(.tyv) {
   line-height: 1.5;
   color: var(--tyv-tinta-2);
 }
+
+/* o pedido esperando o sinal: até quando fica guardado e o atalho para o Pix */
+.tyv-sinal {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  margin-top: 10px;
+}
+.tyv .tyv-sinal__btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: #5a1328;
+  color: #f6dfb0;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  box-shadow: inset 0 0 0 1px rgba(232, 191, 134, 0.45);
+  transition: transform 0.16s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.tyv .tyv-sinal__btn:active {
+  transform: scale(0.97);
+}

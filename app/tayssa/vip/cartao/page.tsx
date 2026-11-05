@@ -1,4 +1,4 @@
-import { requireClientPage } from "@/lib/tayssa/auth/guards";
+import { requireProgramaVipPage } from "@/lib/tayssa/auth/guards";
 import { getCardState } from "@/lib/tayssa/engine";
 import { getSettings } from "@/lib/tayssa/settings";
 import { toCardStamps } from "@/lib/tayssa/queries/vip";
@@ -7,7 +7,7 @@ import { BENEFIT_STATUS_LABEL } from "@/lib/tayssa/types";
 import { LoyaltyCard } from "@/components/tayssa/vip/loyalty-card";
 
 export default async function CardPage() {
-  const user = await requireClientPage();
+  const user = await requireProgramaVipPage();
   const [card, settings] = await Promise.all([getCardState(user.id), getSettings()]);
   const stamps = toCardStamps(card.stamps);
   const revealed = stamps.filter((s) => s.revealed).sort((a, b) => b.position - a.position);

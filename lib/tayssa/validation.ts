@@ -34,6 +34,14 @@ export const optionalPhoneField = z
   });
 
 export const emailField = z.string().trim().toLowerCase().email("E-mail inválido").max(200);
+/** e-mail que pode vir vazio: a conta da agenda entra pelo WhatsApp */
+export const optionalEmailField = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .optional()
+  .transform((v) => v || null)
+  .pipe(emailField.nullable());
 
 export const passwordField = z
   .string()
@@ -45,9 +53,17 @@ export const isoDateField = z
   .regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida")
   .refine((v) => !Number.isNaN(new Date(`${v}T00:00:00`).getTime()), "Data inválida");
 
+/** WhatsApp ou e-mail: com "@" é e-mail; sem, é o número com DDD */
 export const loginSchema = z.object({
-  email: emailField,
+  login: z.string().trim().min(3, "Escreva seu WhatsApp ou e-mail").max(200),
   password: z.string().min(1, "Informe sua senha").max(200),
+});
+
+/** A conta da agenda: nome, WhatsApp (o login) e senha. Sem e-mail. */
+export const contaAgendaSchema = z.object({
+  nome: z.string().trim().min(2, "Escreva seu nome").max(80, "Use no máximo 80 letras"),
+  whatsapp: phoneField,
+  senha: passwordField,
 });
 
 export const setPasswordSchema = z
@@ -150,7 +166,8 @@ export const photoMetaSchema = z.object({
 
 export const adminClientSchema = z.object({
   name: trimmed(120),
-  email: emailField,
+  // opcional: quem tem WhatsApp entra por ele (a conta da agenda nem tem e-mail)
+  email: optionalEmailField,
   nickname: z.string().trim().max(60).optional().transform((v) => v || null),
   phone: optionalPhoneField,
   birthday: z
@@ -290,6 +307,7 @@ export const businessSettingsSchema = z.object({
 });
 
 export const rulesSettingsSchema = z.object({
+  vip_aberto: z.boolean(),
   vip_pontos: z.coerce.number().int().min(0, "Use 0 ou mais").max(10000, "No máximo 10.000"),
   vip_meses: z.coerce.number().int().min(1, "Pelo menos 1 mês").max(12, "No máximo 12 meses"),
   inactivity_days: z.coerce.number().int().min(1).max(365),
@@ -344,6 +362,11 @@ export const bookingSettingsSchema = z.object({
   default_duration_min: z.coerce.number().int().min(15).max(480),
   max_open_per_client: z.coerce.number().int().min(1).max(10),
   deposit_reais: z.coerce.number().min(0, "O sinal não pode ser negativo").max(2000),
+  sinal_horas: z.coerce
+    .number({ invalid_type_error: "Use um número de horas" })
+    .int("Use horas inteiras")
+    .min(1, "Pelo menos 1 hora")
+    .max(168, "No máximo 168 horas (7 dias)"),
 });
 
 export const loyaltySettingsSchema = z.object({

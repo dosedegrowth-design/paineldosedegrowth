@@ -47,6 +47,9 @@ export const useIntroReady = () => useContext(IntroCtx);
  * biografia, estúdio, depoimentos, horários) só entram quando ele
  * existe; com `?estrutura=1` aparecem com o espaço reservado marcado.
  */
+/** serviços que ficam fora de "Cada serviço, um olhar" (continuam na lista e na agenda) */
+const FORA_DA_APRESENTACAO = new Set(["outro", "manutencao-cilios", "remocao-extensao"]);
+
 export function PublicExperience({
   settings,
   services,
@@ -101,7 +104,9 @@ export function PublicExperience({
   // (content.ts) e o "Agendar". Valor, tempo e a galeria inteira ficam na
   // lista de serviços, sem se repetir aqui
   const trabalho: ItemTrabalho[] = services
-    .filter((s) => s.slug !== "outro")
+    // manutenção e remoção não são técnica para apresentar (pedido do Lucas,
+    // 05/11/2026): seguem na lista de serviços e na agenda, só saem daqui
+    .filter((s) => !FORA_DA_APRESENTACAO.has(s.slug))
     .map((s) => {
       const d = CONTEUDO.servicos[s.slug];
       const capa = capas[s.slug] ?? null;
@@ -128,9 +133,15 @@ export function PublicExperience({
     <IntroCtx.Provider value={ready}>
       <AgendarProvider agenda={agenda}>
         <IntroLoader onDone={() => setReady(true)} />
-        <PublicNav scheduleUrl={links.schedule} sections={secoes} />
+        <PublicNav scheduleUrl={links.schedule} sections={secoes} vipAberto={settings.rules.vip_aberto} />
         <main>
-          <Hero business={settings.business} scheduleUrl={links.schedule} photo={photos?.hero} video={videos?.hero} />
+          <Hero
+            business={settings.business}
+            scheduleUrl={links.schedule}
+            photo={photos?.hero}
+            video={videos?.hero}
+            vipAberto={settings.rules.vip_aberto}
+          />
           <Faixa itens={services.filter((s) => s.slug !== "outro").map((s) => s.name)} />
           {/* as seções de foto e vídeo: se uma quebrar no celular, some sozinha e o erro vai para o log */}
           <SemQuebrar onde="cada servico">
@@ -167,9 +178,9 @@ export function PublicExperience({
           <VipIntro benefits={benefits} settings={settings} />
           <ReferralCta />
           <VisitInfo business={settings.business} booking={settings.booking} conteudo={CONTEUDO} />
-          <Closing scheduleUrl={links.schedule} ambiente={retrato} />
+          <Closing scheduleUrl={links.schedule} ambiente={retrato} vipAberto={settings.rules.vip_aberto} />
         </main>
-        <PublicFooter business={settings.business} />
+        <PublicFooter business={settings.business} vipAberto={settings.rules.vip_aberto} />
         <AgendarFlutua url={links.schedule} />
       </AgendarProvider>
     </IntroCtx.Provider>

@@ -2377,3 +2377,53 @@ a.tya-kpi {
     color: var(--tya-muted-2);
   }
 }
+
+/* avisos de novos pedidos (notificação no celular da Tayssa) */
+.tya-avisos {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 14px;
+  align-items: start;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+}
+.tya-avisos__icone {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(75, 12, 32, 0.08);
+}
+.tya-avisos[data-estado="ligado"] .tya-avisos__icone {
+  background: rgba(46, 125, 80, 0.12);
+}
+.tya-avisos__icone svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tya-avisos__texto b {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.tya-avisos__nota {
+  margin-top: 6px;
+  font-weight: 600;
+}
+.tya-avisos__acoes {
+  grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.tya-avisos__acoes:empty {
+  display: none;
+}

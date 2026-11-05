@@ -26,9 +26,16 @@ const ITEMS: Item[] = [
   { href: ROUTES.vipProfile, label: "Meu perfil", icone: "perfil" },
 ];
 
+/** VIP fechado: a área é só a agenda dela (e o perfil, para trocar a senha) */
+const SO_AGENDA: Item[] = [
+  { href: ROUTES.vipBook, label: "Meus horários", icone: "agenda" },
+  { href: ROUTES.vipProfile, label: "Meu perfil", icone: "perfil" },
+];
+
 const EASE: [number, number, number, number] = [0.23, 1, 0.32, 1];
 
-export function MenuVip() {
+export function MenuVip({ soAgenda = false }: { soAgenda?: boolean }) {
+  const itens = soAgenda ? SO_AGENDA : ITEMS;
   const pathname = usePathname();
   const reduced = useReducedMotion();
   const [aberto, setAberto] = useState(false);
@@ -120,7 +127,7 @@ export function MenuVip() {
                       }
                     }}
                   >
-                    {ITEMS.map((item) => {
+                    {itens.map((item) => {
                       const atual = item.href === ROUTES.vip ? pathname === item.href : pathname.startsWith(item.href);
                       return (
                         <Link
