@@ -497,12 +497,8 @@ html.ty-sem-rolagem {
 .tyag__whats {
   width: 22px;
   height: 22px;
-}
-.tyag__whats path:first-child {
-  fill: #25d366;
-}
-.tyag__whats path:last-child {
-  fill: #fff;
+  /* a logo oficial no verde da marca */
+  color: #25d366;
 }
 
 /* ---------- computador: no centro ---------- */
@@ -947,4 +943,15 @@ html.ty-sem-rolagem {
   .tyag__check {
     animation: none;
   }
+}
+
+/* senha com o olhinho e o "manter conectada", no vinho da folha */
+.tyag .tyag__olho {
+  color: #fff;
+}
+.tyag__lembrar {
+  color: var(--ag-leve);
+}
+.tyag__lembrar input {
+  accent-color: #f7c1d1;
 }

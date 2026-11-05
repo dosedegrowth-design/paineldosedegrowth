@@ -8,6 +8,8 @@ import { dateLong, dayLabel, monthName, plural, weekdayShort } from "@/lib/tayss
 import { TyTextarea } from "@/components/tayssa/ui/field";
 import { cabeNoHorario, duracaoLegivel, mensagemAgendamento, reais } from "@/lib/tayssa/agendar";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
+import { ROUTES, publicUrl } from "@/lib/tayssa/config";
+import { WhatsAppIcon } from "@/components/tayssa/ui/whatsapp";
 import type { SinalDaAgenda } from "@/components/tayssa/vip/appointment-list";
 import { useTarefa } from "@/components/tayssa/ui/acao";
 
@@ -56,7 +58,7 @@ export function BookingFlow({
   const [time, setTime] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState<{ date: string; time: string; serviceName: string } | null>(null);
+  const [done, setDone] = useState<{ id: string; date: string; time: string; serviceName: string } | null>(null);
   const [pending, start] = useTarefa();
 
   const service = services.find((s) => s.id === serviceId) ?? null;
@@ -99,7 +101,7 @@ export function BookingFlow({
         setError(r.error);
         return;
       }
-      setDone({ date: r.data.date, time: r.data.time, serviceName: r.data.serviceName });
+      setDone({ id: r.data.id, date: r.data.date, time: r.data.time, serviceName: r.data.serviceName });
       // A action já revalida a rota, mas em parte das vezes (medido: ~1 em 3)
       // a tela aplicava a árvore antiga e "Meus horários" ficava sem o pedido
       // novo até recarregar. O refresh vai DEPOIS que a transição da action
@@ -136,16 +138,26 @@ export function BookingFlow({
               {sinal.tolerancia > 0 ? ` No dia, a tolerância é de ${sinal.tolerancia} minutos: passando disso, você perde o sinal.` : ""}
             </p>
             <a
-              className="tyv-btn tyv-btn--accent"
+              className="tyv-sinal__btn"
               style={{ marginTop: 18 }}
               href={whatsappUrl(
                 sinal.telefone,
-                mensagemAgendamento({ servico: done.serviceName, dia: done.date, hora: done.time, nome: sinal.nome, sinal: sinal.valor }),
+                mensagemAgendamento({
+                  servico: done.serviceName,
+                  dia: done.date,
+                  hora: done.time,
+                  nome: sinal.nome,
+                  sinal: sinal.valor,
+                  link: publicUrl(ROUTES.horario(done.id)),
+                }),
               )}
               target="_blank"
               rel="noopener noreferrer"
             >
-              Pagar o sinal agora
+              <span className="tyv-sinal__logo" aria-hidden>
+                <WhatsAppIcon size={17} />
+              </span>
+              Pagar o sinal no WhatsApp
             </a>
           </>
         ) : (

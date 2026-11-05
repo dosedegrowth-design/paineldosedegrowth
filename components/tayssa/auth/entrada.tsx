@@ -13,23 +13,26 @@ import { MarcaViva } from "@/components/tayssa/ui/marca-viva";
 export function Entrada({
   children,
   links,
+  aviso = "Área privada da Tayssa Lash",
 }: {
   children: ReactNode;
   /** caminhos do rodapé, além de "Site" */
   links?: { href: string; label: string; externo?: boolean }[];
+  /** a frase do rodapé (o folder do horário é público: não diz "área privada") */
+  aviso?: string;
 }) {
   return (
     <div className="tyl ty-scope" data-theme="night">
       <FundoVivo />
       <div className="tyl__page">
         <main className="tyl__centro">
-          <TransitionLink href={ROUTES.home} className="tyl__marca tyl-surge" aria-label="Tayssa Lash — voltar ao site">
+          <TransitionLink href={ROUTES.home} className="tyl__marca tyl-surge" aria-label="Tayssa Lash, voltar ao site">
             <MarcaViva />
           </TransitionLink>
           {children}
         </main>
         <footer className="tyl__rodape tyl-surge" style={{ "--d": "0.7s" } as CSSProperties}>
-          <p>Área privada da Tayssa Lash</p>
+          <p>{aviso}</p>
           <nav aria-label="Caminhos">
             <TransitionLink href={ROUTES.home} className="tyl__rodape-link">
               Site

@@ -20,13 +20,20 @@ import {
   loginSchema,
   setPasswordSchema,
 } from "@/lib/tayssa/validation";
-import { BusinessError, runAction, str } from "@/lib/tayssa/actions/_helpers";
+import { BusinessError, bool, runAction, str } from "@/lib/tayssa/actions/_helpers";
 import type { ActionResult } from "@/lib/tayssa/types";
 import { assertClient } from "@/lib/tayssa/auth/guards";
 import { ipDaRequisicao } from "@/lib/tayssa/limite";
+import { getSettings } from "@/lib/tayssa/settings";
 
 function safeNext(next: string): string | null {
   return next.startsWith("/tayssa/") && !next.startsWith("//") ? next : null;
+}
+
+/** Para onde a cliente vai ao entrar: com o VIP fechado, direto aos horários dela (sem passar pelo início do VIP). */
+async function inicioDaCliente(): Promise<string> {
+  const { rules } = await getSettings();
+  return rules.vip_aberto ? ROUTES.vip : ROUTES.vipBook;
 }
 
 export async function loginAction(
@@ -41,8 +48,10 @@ export async function loginAction(
     });
     const ip = await ipDaRequisicao();
     const user = await autenticar(input.login, input.password, ip);
+    // "Manter conectada neste celular": só desliga quando a tela manda o campo desmarcado
+    const lembrar = str(formData, "lembrar_campo") ? bool(formData, "lembrar") : true;
 
-    await createSession(user.id);
+    await createSession(user.id, { lembrar });
     await vipDb()
       .from("users")
       .update({ last_login_at: new Date().toISOString() })
@@ -56,7 +65,7 @@ export async function loginAction(
     });
 
     const next = safeNext(str(formData, "next"));
-    const home = user.role === "admin" ? ROUTES.admin : ROUTES.vip;
+    const home = user.role === "admin" ? ROUTES.admin : await inicioDaCliente();
     const name = user.nickname?.trim() || user.name.trim().split(/\s+/)[0];
     return { redirectTo: next ?? home, name };
   });
@@ -98,7 +107,7 @@ export async function entrarPorLinkAction(formData: FormData): Promise<void> {
           entityType: "user",
           entityId: link.user_id,
         });
-        destino = link.role === "admin" ? ROUTES.admin : ROUTES.vip;
+        destino = link.role === "admin" ? ROUTES.admin : await inicioDaCliente();
       }
     }
   } catch (e) {
@@ -190,7 +199,7 @@ export async function setPasswordAction(
       entityType: "user",
       entityId: row.user_id,
     });
-    return { redirectTo: row.user.role === "admin" ? ROUTES.admin : ROUTES.vip };
+    return { redirectTo: row.user.role === "admin" ? ROUTES.admin : await inicioDaCliente() };
   });
 }
 

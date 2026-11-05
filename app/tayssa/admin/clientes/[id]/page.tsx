@@ -296,7 +296,13 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
 
           <div style={{ display: "grid", gap: 12, alignContent: "start" }}>
             <span className="tya-eyebrow">Link de acesso</span>
-            <AccessLinkPanel userId={user.id} name={user.name} phone={user.phone} hasPassword={d.hasPassword} />
+            <AccessLinkPanel
+              userId={user.id}
+              name={user.name}
+              phone={user.phone}
+              hasPassword={d.hasPassword}
+              vipAberto={settings.rules.vip_aberto}
+            />
           </div>
         </div>
       </AdminBlock>

@@ -3,7 +3,7 @@ import { requireAdminPage } from "@/lib/tayssa/auth/guards";
 import { getAgenda, getGradeAgenda } from "@/lib/tayssa/queries/admin";
 import { AgendaGrade } from "@/components/tayssa/admin/agenda-grade";
 import { getSettings } from "@/lib/tayssa/settings";
-import { ROUTES } from "@/lib/tayssa/config";
+import { ROUTES, publicUrl } from "@/lib/tayssa/config";
 import { dateShort, dayLabel, dayMonth, hhmm, nowInBusinessTz, weekdayShort } from "@/lib/tayssa/format";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { horariosDaSemana, prazoDoSinal, reais } from "@/lib/tayssa/agendar";
@@ -137,8 +137,9 @@ function Slot({
           <a
             href={whatsappUrl(
               a.client.phone,
+              // o link do horário vai junto: no WhatsApp ele vira o cartão (folder) com os dados do pedido
               esperandoSinal
-                ? `Oi, ${first}! Aqui é a Tayssa. Recebi seu pedido de ${a.service_name} para ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}. Para confirmar o horário, o sinal é de ${reais(sinal.valor)} no Pix. A chave é: `
+                ? `Oi, ${first}! Aqui é a Tayssa. Recebi seu pedido de ${a.service_name} para ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}.\n\nSeu horário: ${publicUrl(ROUTES.horario(a.id))}\n\nPara confirmar, o sinal é de ${reais(sinal.valor)} no Pix. A chave é: `
                 : `Oi, ${first}! Sobre seu horário de ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}: `
             )}
             target="_blank"

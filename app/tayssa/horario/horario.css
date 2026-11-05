@@ -1,0 +1,66 @@
+/* O horário que vai no "folder" do WhatsApp: o cartão com os dados */
+.tyhr {
+  display: grid;
+  gap: 6px;
+  margin-top: 22px;
+  padding: 22px 22px 20px;
+  border-radius: 24px;
+  background: rgba(18, 2, 8, 0.42);
+  box-shadow: inset 0 0 0 1px rgba(232, 191, 134, 0.3);
+  color: #fff;
+}
+.tyhr__servico {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.tyhr__quando {
+  margin: 0;
+  font-size: 17px;
+  color: #fbefd9;
+  font-variant-numeric: tabular-nums;
+}
+.tyhr__valor {
+  margin: 0;
+  font-size: 15px;
+  color: #f6d9ae;
+  font-weight: 600;
+}
+.tyhr__situacao {
+  margin: 10px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 214, 228, 0.14);
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: rgba(251, 227, 235, 0.86);
+}
+.tyhr__nota {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: rgba(251, 227, 235, 0.62);
+}
+.tyhr__acoes {
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+  margin-top: 22px;
+}
+.ty-scope a.tyhr__whats {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 52px;
+  border-radius: 999px;
+  background: #fff;
+  color: #4b0c20;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.tyhr__whats .ty-whats {
+  color: #25d366;
+}

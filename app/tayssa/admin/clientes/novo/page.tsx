@@ -3,9 +3,10 @@ import { PASSWORD_TOKEN_DAYS, ROUTES } from "@/lib/tayssa/config";
 import { AdminHeader } from "@/components/tayssa/admin/shell";
 import { ClientCreateForm } from "@/components/tayssa/admin/forms";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
+import { getSettings } from "@/lib/tayssa/settings";
 
 export default async function NewClientPage() {
-  await requireAdminPage();
+  const [, settings] = await Promise.all([requireAdminPage(), getSettings()]);
   return (
     <>
       <AdminHeader
@@ -28,7 +29,7 @@ export default async function NewClientPage() {
           <div className="tya-head">
             <h2>Dados da cliente</h2>
           </div>
-          <ClientCreateForm />
+          <ClientCreateForm vipAberto={settings.rules.vip_aberto} />
         </section>
 
         <aside className="tya-card tya-up">

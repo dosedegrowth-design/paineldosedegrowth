@@ -39,6 +39,9 @@ export async function criarContaAgendaAction(input: {
   nome: string;
   whatsapp: string;
   senha: string;
+  confirmar: string;
+  /** "Manter conectada neste celular" (padrão ligado) */
+  lembrar?: boolean;
 }): Promise<ActionResult<ContaNaAgenda>> {
   return runAction("conta.criar", async () => {
     const p = contaAgendaSchema.parse(input);
@@ -101,7 +104,7 @@ export async function criarContaAgendaAction(input: {
       throw new Error(pErr.message);
     }
 
-    await createSession(id);
+    await createSession(id, { lembrar: input.lembrar !== false });
     await logAudit({
       actorId: id,
       actorRole: "client",
@@ -115,7 +118,11 @@ export async function criarContaAgendaAction(input: {
   });
 }
 
-export async function entrarNaAgendaAction(input: { login: string; senha: string }): Promise<ActionResult<ContaNaAgenda>> {
+export async function entrarNaAgendaAction(input: {
+  login: string;
+  senha: string;
+  lembrar?: boolean;
+}): Promise<ActionResult<ContaNaAgenda>> {
   return runAction("conta.entrar", async () => {
     const p = loginSchema.parse({ login: input.login, password: input.senha });
     const ip = await ipDaRequisicao();
@@ -123,7 +130,7 @@ export async function entrarNaAgendaAction(input: { login: string; senha: string
     if (user.role !== "client") {
       throw new BusinessError("Essa é a conta do painel. Para agendar, entre com uma conta de cliente.");
     }
-    await createSession(user.id);
+    await createSession(user.id, { lembrar: input.lembrar !== false });
     await vipDb().from("users").update({ last_login_at: new Date().toISOString() }).eq("id", user.id);
     await logAudit({ actorId: user.id, actorRole: "client", action: "login", entityType: "user", entityId: user.id, meta: { onde: "agenda" } });
     return { nome: primeiroNome(user) };

@@ -6,6 +6,7 @@ import { loginAction } from "@/lib/tayssa/actions/auth";
 import { ROUTES } from "@/lib/tayssa/config";
 import type { ActionResult } from "@/lib/tayssa/types";
 import { TyInput } from "@/components/tayssa/ui/field";
+import { TySenha } from "@/components/tayssa/ui/senha";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { Entrada } from "@/components/tayssa/auth/entrada";
 import { useFormPreservado } from "@/components/tayssa/ui/form-preservado";
@@ -131,16 +132,21 @@ export function LoginExperience({
             error={local.login}
             onBlur={(e) => setLocal((p) => ({ ...p, login: e.target.value.trim() ? undefined : "Digite seu WhatsApp ou e-mail." }))}
           />
-          <TyInput
+          <TySenha
             label="Senha"
             name="password"
-            type="password"
             autoComplete="current-password"
             enterKeyHint="go"
             required
             error={local.password}
             onBlur={(e) => setLocal((p) => ({ ...p, password: e.target.value ? undefined : "Digite sua senha." }))}
           />
+          {/* "deixar salvo" (Lucas, 05/11/2026): marcado, ela fica conectada neste celular */}
+          <input type="hidden" name="lembrar_campo" value="1" />
+          <label className="ty-lembrar">
+            <input type="checkbox" name="lembrar" value="on" defaultChecked />
+            <span>Manter conectada neste celular</span>
+          </label>
 
           <AnimatePresence>
             {serverError && (serverError.code === "pending" || serverError.code === "rejected") ? (

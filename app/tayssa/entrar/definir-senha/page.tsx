@@ -4,7 +4,7 @@ import { vipDb, isDbConfigured, logServerError } from "@/lib/tayssa/db";
 import { hashToken } from "@/lib/tayssa/auth/session";
 import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES } from "@/lib/tayssa/config";
-import { whatsappUrl } from "@/lib/tayssa/whatsapp";
+import { MENSAGENS_DA_AGENDA, whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { SetPasswordForm } from "@/components/tayssa/auth/set-password-form";
 import { Entrada } from "@/components/tayssa/auth/entrada";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
@@ -63,7 +63,13 @@ export default async function SetPasswordPage({
 }) {
   const [{ token }, settings] = await Promise.all([searchParams, getSettings()]);
   const state = await checkToken(token);
-  const supportUrl = whatsappUrl(settings.business.whatsapp, settings.whatsapp.public_vip_info);
+  // VIP fechado: a conta é só a agenda, e nenhuma frase fala em VIP
+  const vipAberto = settings.rules.vip_aberto;
+  const supportUrl = whatsappUrl(
+    settings.business.whatsapp,
+    vipAberto ? settings.whatsapp.public_vip_info : MENSAGENS_DA_AGENDA.linkVencido
+  );
+  const primeiroAcesso = vipAberto ? "É o seu primeiro acesso ao VIP." : "É o seu primeiro acesso.";
 
   return (
     <Entrada links={[{ href: ROUTES.login, label: "Entrar" }]}>
@@ -73,7 +79,7 @@ export default async function SetPasswordPage({
             <h1 className="tyl__title">
               Olá, {state.name}. <em>Escolha sua senha</em>
             </h1>
-            <p className="tyl__sub">{state.purpose === "setup" ? "É o seu primeiro acesso ao VIP." : "Uma senha nova para o seu acesso."}</p>
+            <p className="tyl__sub">{state.purpose === "setup" ? primeiroAcesso : "Uma senha nova para o seu acesso."}</p>
             <SetPasswordForm token={token!} />
           </>
         ) : (

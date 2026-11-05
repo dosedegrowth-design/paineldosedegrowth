@@ -6,6 +6,7 @@ import { signupAction, type SignupResult } from "@/lib/tayssa/actions/signup";
 import { ROUTES, MIN_PASSWORD_LENGTH } from "@/lib/tayssa/config";
 import type { ActionResult } from "@/lib/tayssa/types";
 import { TyInput, TyTextarea } from "@/components/tayssa/ui/field";
+import { TySenha } from "@/components/tayssa/ui/senha";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { Entrada } from "@/components/tayssa/auth/entrada";
 import { useFormPreservado } from "@/components/tayssa/ui/form-preservado";
@@ -232,8 +233,8 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
             enterKeyHint="next"
             error={local.email}
           />
-          <TyInput label="Senha" name="password" type="password" autoComplete="new-password" error={local.password} hint={`Pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`} />
-          <TyInput label="Repetir a senha" name="confirm" type="password" autoComplete="new-password" enterKeyHint="next" error={local.confirm} />
+          <TySenha label="Senha" name="password" autoComplete="new-password" error={local.password} hint={`Pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`} />
+          <TySenha label="Repetir a senha" name="confirm" autoComplete="new-password" enterKeyHint="next" error={local.confirm} />
         </div>
         <div className="tyl__row" hidden={step !== 2}>
           <TyTextarea

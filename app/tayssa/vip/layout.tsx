@@ -5,13 +5,14 @@ import "./vip-vivo.css";
 import "./vip-perola.css";
 import { requireClientPage } from "@/lib/tayssa/auth/guards";
 import { getSettings } from "@/lib/tayssa/settings";
-import { renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
+import { MENSAGENS_DA_AGENDA, renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
 import Link from "next/link";
 import { MenuVip } from "@/components/tayssa/vip/menu-vip";
 import { ROUTES } from "@/lib/tayssa/config";
 import { PageEnter } from "@/components/tayssa/vip/page-enter";
 import { TyBrand } from "@/components/tayssa/ui/brand";
 import { FundoVivo } from "@/components/tayssa/ui/fundo-vivo";
+import { WhatsAppIcon } from "@/components/tayssa/ui/whatsapp";
 
 /** a serifa do VIP (saudação, títulos do painel, marca do topo): só aqui, o site não carrega */
 const serifa = localFont({
@@ -22,10 +23,14 @@ const serifa = localFont({
   adjustFontFallback: "Times New Roman",
 });
 
-export const metadata: Metadata = {
-  title: "Meu VIP",
-  robots: { index: false, follow: false },
-};
+/** Com o VIP fechado a aba diz "Meus horários": nada da conta fala em VIP. */
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSettings();
+  return {
+    title: settings.rules.vip_aberto ? "Meu VIP" : "Meus horários",
+    robots: { index: false, follow: false },
+  };
+}
 
 /**
  * A barra do navegador na cor do topo do VIP (bege, não o rosado do site),
@@ -47,11 +52,14 @@ export const dynamic = "force-dynamic";
  */
 export default async function VipLayout({ children }: { children: React.ReactNode }) {
   const [user, settings] = await Promise.all([requireClientPage(), getSettings()]);
-  // VIP fechado (Configurações → Programa VIP): a área é só a agenda dela
+  // VIP fechado (Configurações → Programa VIP): a área é só a agenda dela, e
+  // a mensagem do WhatsApp não diz "do VIP" (Lucas, 05/11/2026)
   const soAgenda = !settings.rules.vip_aberto;
   const supportUrl = whatsappUrl(
     settings.business.whatsapp,
-    renderTemplate(settings.whatsapp.vip_support, { name: user.displayName })
+    renderTemplate(soAgenda ? MENSAGENS_DA_AGENDA.falarComNome : settings.whatsapp.vip_support, {
+      name: user.displayName,
+    })
   );
   return (
     <div className={`ty-scope tyv ${serifa.variable}`}>
@@ -60,7 +68,7 @@ export default async function VipLayout({ children }: { children: React.ReactNod
       <header className="tyv-page tyv-top">
         <Link href={soAgenda ? ROUTES.vipBook : ROUTES.vip} className="tyv-brand" aria-label={soAgenda ? "Meus horários" : "Início do seu espaço"}>
           <TyBrand size="sm" />
-          {user.isVip ? <span className="tyv-vip-tag">VIP</span> : null}
+          {user.isVip && !soAgenda ? <span className="tyv-vip-tag">VIP</span> : null}
         </Link>
         <span className="tyv-top__acoes">
           <a
@@ -70,10 +78,7 @@ export default async function VipLayout({ children }: { children: React.ReactNod
             className="tyv-icon-btn"
             aria-label="Falar com a Tayssa no WhatsApp"
           >
-            <svg viewBox="0 0 24 24" aria-hidden>
-              <path d="M20 11.5a7.5 7.5 0 0 1-11 6.6L4.5 19.5l1.4-4.3A7.5 7.5 0 1 1 20 11.5z" />
-              <path d="M9 9.6c.3 1.6 2.2 3.7 3.9 4.2" />
-            </svg>
+            <WhatsAppIcon size={20} />
           </a>
           <MenuVip soAgenda={soAgenda} />
         </span>

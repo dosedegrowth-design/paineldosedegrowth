@@ -7,7 +7,9 @@ import { dayLabel, dateLong, hhmm } from "@/lib/tayssa/format";
 import { APPOINTMENT_STATUS_LABEL, type AppointmentRow } from "@/lib/tayssa/types";
 import { mensagemAgendamento, prazoDoSinal, reais } from "@/lib/tayssa/agendar";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
+import { ROUTES, publicUrl } from "@/lib/tayssa/config";
 import { useTarefa } from "@/components/tayssa/ui/acao";
+import { WhatsAppIcon } from "@/components/tayssa/ui/whatsapp";
 
 /** O sinal: o pedido segura o horário `horas` esperando o Pix (a Tayssa confirma). */
 export type SinalDaAgenda = { telefone: string; valor: number; horas: number; nome: string; tolerancia: number };
@@ -80,12 +82,16 @@ export function AppointmentList({ items, sinal }: { items: AppointmentRow[]; sin
                         hora: a.scheduled_time.slice(0, 5),
                         nome: sinal.nome,
                         sinal: sinal.valor,
+                        link: publicUrl(ROUTES.horario(a.id)),
                       }),
                     )}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Pagar o sinal agora
+                    <span className="tyv-sinal__logo" aria-hidden>
+                      <WhatsAppIcon size={17} />
+                    </span>
+                    Pagar o sinal no WhatsApp
                   </a>
                 </div>
               ) : null}

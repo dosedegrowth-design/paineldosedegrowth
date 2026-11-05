@@ -29,6 +29,11 @@ export type PedidoAgenda = {
   valor?: number | null;
   /** valor do sinal, em reais */
   sinal: number;
+  /**
+   * O link do "folder" do horário (/tayssa/horario/<id>): na conversa, o
+   * WhatsApp mostra o cartão com a identidade da casa e os dados do pedido.
+   */
+  link?: string | null;
 };
 
 const DIAS = ["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"];
@@ -223,5 +228,6 @@ export function mensagemAgendamento(p: PedidoAgenda): string {
     ...(nome ? [`Nome: ${nome}`] : []),
     "",
     `Me manda a chave Pix do sinal de ${reais(p.sinal)} para eu garantir o horário?`,
+    ...(p.link ? ["", `Meu horário: ${p.link}`] : []),
   ].join("\n");
 }

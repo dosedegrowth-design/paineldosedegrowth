@@ -17,7 +17,7 @@ import {
   type ReactNode,
 } from "react";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
-import { ROUTES } from "@/lib/tayssa/config";
+import { ROUTES, publicUrl } from "@/lib/tayssa/config";
 import { agendaPublicaAction } from "@/lib/tayssa/actions/agenda";
 import { createAppointmentAction } from "@/lib/tayssa/actions/booking";
 import {
@@ -28,6 +28,8 @@ import {
   type ContaNaAgenda,
 } from "@/lib/tayssa/actions/conta";
 import { useTarefa } from "@/components/tayssa/ui/acao";
+import { WhatsAppIcon } from "@/components/tayssa/ui/whatsapp";
+import { OlhoDaSenha } from "@/components/tayssa/ui/senha";
 import {
   cabeNoHorario,
   diasAbertos,
@@ -140,7 +142,16 @@ export function LinkAgendar({
 }
 
 type Passo = "escolha" | "conta" | "pronto";
-type Feito = { servico: string; tecnica: string | null; dia: string; hora: string; valor: number | null; nome: string };
+type Feito = {
+  /** id do pedido: o link do folder (/tayssa/horario/<id>) vai na mensagem */
+  id: string;
+  servico: string;
+  tecnica: string | null;
+  dia: string;
+  hora: string;
+  valor: number | null;
+  nome: string;
+};
 
 function FolhaAgendar({
   agenda,
@@ -176,6 +187,9 @@ function FolhaAgendar({
   const [nome, setNome] = useState("");
   const [whats, setWhats] = useState("");
   const [senha, setSenha] = useState("");
+  const [confirmar, setConfirmar] = useState("");
+  // "Manter conectada neste celular" (Lucas, 05/11/2026): já vem marcado
+  const [lembrar, setLembrar] = useState(true);
   const [login, setLogin] = useState("");
   const [erro, setErro] = useState<{ texto: string; campo?: string } | null>(null);
   const [feito, setFeito] = useState<Feito | null>(null);
@@ -343,8 +357,8 @@ function FolhaAgendar({
       if (!quem) {
         const r =
           modo === "criar"
-            ? await criarContaAgendaAction({ nome, whatsapp: whats, senha })
-            : await entrarNaAgendaAction({ login, senha });
+            ? await criarContaAgendaAction({ nome, whatsapp: whats, senha, confirmar, lembrar })
+            : await entrarNaAgendaAction({ login, senha, lembrar });
         if (!r.ok) {
           setErro({ texto: r.error, campo: r.field });
           return;
@@ -370,7 +384,7 @@ function FolhaAgendar({
         setErro({ texto: b.error, campo: b.field });
         return;
       }
-      setFeito({ servico: escolhido.nome, tecnica, dia, hora, valor, nome: quem.nome });
+      setFeito({ id: b.data.id, servico: escolhido.nome, tecnica, dia, hora, valor, nome: quem.nome });
       setPasso("pronto");
       buscarAgenda();
     });
@@ -739,10 +753,26 @@ function FolhaAgendar({
                       valor={senha}
                       mudar={setSenha}
                       erro={erro?.campo === "senha" ? erro.texto : undefined}
-                      type="password"
+                      senha
                       autoComplete="new-password"
                       placeholder="Pelo menos 8 letras ou números"
                     />
+                    <Campo
+                      id={`${id}-confirmar`}
+                      rotulo="Repita a senha"
+                      valor={confirmar}
+                      mudar={setConfirmar}
+                      erro={
+                        erro?.campo === "confirmar"
+                          ? erro.texto
+                          : confirmar && senha && confirmar.length >= senha.length && confirmar !== senha
+                            ? "As senhas não são iguais"
+                            : undefined
+                      }
+                      senha
+                      autoComplete="new-password"
+                    />
+                    <Lembrar ligado={lembrar} mudar={setLembrar} />
                   </div>
                 ) : (
                   <div className="tyag__campos">
@@ -762,15 +792,16 @@ function FolhaAgendar({
                       valor={senha}
                       mudar={setSenha}
                       erro={erro?.campo === "password" ? erro.texto : undefined}
-                      type="password"
+                      senha
                       autoComplete="current-password"
                     />
+                    <Lembrar ligado={lembrar} mudar={setLembrar} />
                   </div>
                 )}
               </div>
             )}
 
-            {erro && !["nome", "whatsapp", "senha", "login", "password"].includes(erro.campo ?? "") ? (
+            {erro && !["nome", "whatsapp", "senha", "confirmar", "login", "password"].includes(erro.campo ?? "") ? (
               <p className="tyag__erro" role="alert">
                 {erro.texto}
                 {/^Você já tem/.test(erro.texto) ? (
@@ -866,6 +897,7 @@ function FolhaAgendar({
                 nome: feito.nome,
                 valor: feito.valor,
                 sinal: agenda.sinal,
+                link: publicUrl(ROUTES.horario(feito.id)),
               }),
             )}
             target="_blank"
@@ -886,6 +918,7 @@ function Campo({
   valor,
   mudar,
   erro,
+  senha = false,
   ...resto
 }: {
   id: string;
@@ -893,21 +926,35 @@ function Campo({
   valor: string;
   mudar: (v: string) => void;
   erro?: string;
+  /** campo de senha: com o olhinho para ver o que digitou */
+  senha?: boolean;
 } & Omit<InputHTMLAttributes<HTMLInputElement>, "id" | "value" | "onChange">) {
+  const [ver, setVer] = useState(false);
+  const campo = (
+    <input
+      id={id}
+      className="tyag__campo"
+      value={valor}
+      onChange={(e) => mudar(e.target.value)}
+      aria-invalid={erro ? true : undefined}
+      aria-describedby={erro ? `${id}-erro` : undefined}
+      {...(senha ? { type: ver ? "text" : "password", autoCapitalize: "none", autoCorrect: "off", spellCheck: false } : {})}
+      {...resto}
+    />
+  );
   return (
     <div className="tyag__campo-grupo">
       <label className="tyag__rotulo" htmlFor={id}>
         {rotulo}
       </label>
-      <input
-        id={id}
-        className="tyag__campo"
-        value={valor}
-        onChange={(e) => mudar(e.target.value)}
-        aria-invalid={erro ? true : undefined}
-        aria-describedby={erro ? `${id}-erro` : undefined}
-        {...resto}
-      />
+      {senha ? (
+        <div className="ty-senha">
+          {campo}
+          <OlhoDaSenha ver={ver} alternar={() => setVer((v) => !v)} className="tyag__olho" />
+        </div>
+      ) : (
+        campo
+      )}
       {erro ? (
         <p className="tyag__erro tyag__erro--campo" id={`${id}-erro`} role="alert">
           {erro}
@@ -917,11 +964,16 @@ function Campo({
   );
 }
 
-function IconeWhats() {
+/** "Manter conectada neste celular": desmarcado, a conta sai quando o navegador fecha */
+function Lembrar({ ligado, mudar }: { ligado: boolean; mudar: (v: boolean) => void }) {
   return (
-    <svg className="tyag__whats" viewBox="0 0 24 24" aria-hidden>
-      <path d="M12 3.2a8.8 8.8 0 0 0-7.6 13.2L3.2 20.8l4.5-1.2A8.8 8.8 0 1 0 12 3.2z" />
-      <path d="M9.1 8.2c.2-.4.5-.4.7-.4h.5c.2 0 .4 0 .5.4l.7 1.7c.1.2 0 .4-.1.6l-.5.6c-.1.1-.2.3 0 .5.5.9 1.4 1.8 2.4 2.3.2.1.4.1.5 0l.6-.7c.2-.2.4-.2.6-.1l1.6.8c.3.1.3.3.3.5 0 .5-.2 1.2-.8 1.5-.6.4-1.5.5-2.8-.1a9.4 9.4 0 0 1-4.3-4.1c-.6-1.2-.4-2.3-.3-2.6z" />
-    </svg>
+    <label className="ty-lembrar tyag__lembrar">
+      <input type="checkbox" checked={ligado} onChange={(e) => mudar(e.target.checked)} />
+      <span>Manter conectada neste celular</span>
+    </label>
   );
+}
+
+function IconeWhats() {
+  return <WhatsAppIcon size={22} className="tyag__whats" />;
 }

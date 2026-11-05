@@ -29,20 +29,27 @@ export function newToken(): string {
   return randomBytes(32).toString("base64url");
 }
 
-function cookieOptions(expires: Date) {
+/** sem `expires`, o cookie é da sessão do navegador: some quando ela fecha */
+function cookieOptions(expires?: Date) {
   return {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax" as const,
     path: "/",
-    expires,
+    ...(expires ? { expires } : {}),
   };
 }
 
-/** Só pode ser chamado em server action / route handler (seta cookie). */
-export async function createSession(userId: string): Promise<void> {
+/**
+ * Só pode ser chamado em server action / route handler (seta cookie).
+ * `lembrar` (padrão): fica conectada neste aparelho por SESSION_DAYS dias.
+ * Desmarcado ("Manter conectada" desligado): a sessão vale até o navegador
+ * fechar, e no máximo 12 horas.
+ */
+export async function createSession(userId: string, opcoes?: { lembrar?: boolean }): Promise<void> {
+  const lembrar = opcoes?.lembrar !== false;
   const token = newToken();
-  const expires = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000);
+  const expires = new Date(Date.now() + (lembrar ? SESSION_DAYS * 24 : 12) * 60 * 60 * 1000);
   const h = await headers();
   const { error } = await vipDb().from("sessions").insert({
     user_id: userId,
@@ -52,7 +59,7 @@ export async function createSession(userId: string): Promise<void> {
     expires_at: expires.toISOString(),
   });
   if (error) throw new Error(error.message);
-  (await cookies()).set(SESSION_COOKIE, token, cookieOptions(expires));
+  (await cookies()).set(SESSION_COOKIE, token, cookieOptions(lembrar ? expires : undefined));
 }
 
 export async function destroySession(): Promise<void> {

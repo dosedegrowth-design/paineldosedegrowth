@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { setPasswordAction } from "@/lib/tayssa/actions/auth";
 import { MIN_PASSWORD_LENGTH } from "@/lib/tayssa/config";
 import type { ActionResult } from "@/lib/tayssa/types";
-import { TyInput } from "@/components/tayssa/ui/field";
+import { TySenha } from "@/components/tayssa/ui/senha";
 import { useFormPreservado } from "@/components/tayssa/ui/form-preservado";
 import { useAcaoFormulario } from "@/components/tayssa/ui/acao";
 
@@ -32,20 +32,18 @@ export function SetPasswordForm({ token }: { token: string }) {
       className="tyl__form"
     >
       <input type="hidden" name="token" value={token} />
-      <TyInput
+      <TySenha
         label="Nova senha"
         name="password"
-        type="password"
         autoComplete="new-password"
         required
         minLength={MIN_PASSWORD_LENGTH}
         error={err?.field === "password" ? err.error : undefined}
         hint={`Pelo menos ${MIN_PASSWORD_LENGTH} caracteres. Só você conhece.`}
       />
-      <TyInput
+      <TySenha
         label="Repetir senha"
         name="confirm"
-        type="password"
         autoComplete="new-password"
         required
         error={err?.field === "confirm" ? err.error : undefined}

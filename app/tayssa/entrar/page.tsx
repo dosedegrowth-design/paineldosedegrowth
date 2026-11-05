@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/tayssa/auth/session";
 import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES } from "@/lib/tayssa/config";
-import { whatsappUrl } from "@/lib/tayssa/whatsapp";
+import { MENSAGENS_DA_AGENDA, whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { getPhotoAvailability } from "@/lib/tayssa/photos-server";
 import { LoginExperience } from "@/components/tayssa/auth/login-experience";
 import { PhotoAvailabilityProvider } from "@/components/tayssa/ui/photo-availability";
@@ -28,15 +28,23 @@ export default async function LoginPage({
     searchParams,
     getPhotoAvailability(),
   ]);
-  if (user) redirect(user.role === "admin" ? ROUTES.admin : ROUTES.vip);
+  const vipAberto = settings.rules.vip_aberto;
+  if (user) redirect(user.role === "admin" ? ROUTES.admin : vipAberto ? ROUTES.vip : ROUTES.vipBook);
   const next = params.next?.startsWith("/tayssa/") ? params.next : undefined;
+  const linkExpirado = params.link === "expirado";
+  // VIP fechado: o "Falar com a Tayssa" não pergunta do VIP
+  const mensagem = vipAberto
+    ? settings.whatsapp.public_vip_info
+    : linkExpirado
+      ? MENSAGENS_DA_AGENDA.linkVencido
+      : MENSAGENS_DA_AGENDA.falar;
   return (
     <PhotoAvailabilityProvider value={photos}>
       <LoginExperience
-        vipInfoUrl={whatsappUrl(settings.business.whatsapp, settings.whatsapp.public_vip_info)}
+        vipInfoUrl={whatsappUrl(settings.business.whatsapp, mensagem)}
         next={next}
-        linkExpirado={params.link === "expirado"}
-        vipAberto={settings.rules.vip_aberto}
+        linkExpirado={linkExpirado}
+        vipAberto={vipAberto}
       />
     </PhotoAvailabilityProvider>
   );

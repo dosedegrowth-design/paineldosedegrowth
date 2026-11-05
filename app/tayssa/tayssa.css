@@ -2280,3 +2280,73 @@ a.typ__link::before {
   text-transform: uppercase;
   color: var(--t-fg-2);
 }
+
+/* ---------- senha com o olhinho (05/11/2026) ---------- */
+.ty-senha {
+  position: relative;
+}
+.ty-senha > input {
+  width: 100%;
+  padding-right: 52px;
+}
+.ty-senha__olho {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-top: -22px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  opacity: 0.62;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    opacity 0.2s ease,
+    transform 0.16s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.ty-senha__olho[aria-pressed="true"] {
+  opacity: 0.95;
+}
+.ty-senha__olho:active {
+  transform: scale(0.92);
+}
+.ty-senha__olho:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: -4px;
+}
+.ty-senha__olho svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- "Manter conectada neste celular" ---------- */
+.ty-lembrar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: 14.5px;
+  line-height: 1.35;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.ty-lembrar input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: #7a1d3a;
+  cursor: pointer;
+}

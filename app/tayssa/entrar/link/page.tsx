@@ -5,6 +5,7 @@ import { isDbConfigured, logServerError } from "@/lib/tayssa/db";
 import { lerLinkDeEntrada, type LinkDeEntrada } from "@/lib/tayssa/auth/link";
 import { entrarPorLinkAction } from "@/lib/tayssa/actions/auth";
 import { ROUTES } from "@/lib/tayssa/config";
+import { getSettings } from "@/lib/tayssa/settings";
 import { Entrada } from "@/components/tayssa/auth/entrada";
 
 export const dynamic = "force-dynamic";
@@ -30,12 +31,15 @@ export default async function EntrarPorLink({ searchParams }: { searchParams: Pr
     }
   }
   if (!link) redirect(`${ROUTES.login}?link=expirado`);
+  // com o VIP fechado a conta da cliente é só a agenda: nada de "Seu VIP"
+  const { rules } = await getSettings();
+  const pronto = link.role === "admin" ? "Seu painel está pronto." : rules.vip_aberto ? "Seu VIP está pronto." : "Sua conta está pronta.";
 
   return (
     <Entrada>
       <div className="tyl__body tyl-surge" style={{ "--d": "0.4s" } as CSSProperties}>
         <h1 className="tyl__title">
-          Olá, {link.nome}. <em>{link.role === "admin" ? "Seu painel" : "Seu VIP"} está pronto.</em>
+          Olá, {link.nome}. <em>{pronto}</em>
         </h1>
         <p className="tyl__sub">Toque para entrar. Este link é só seu.</p>
         <form action={entrarPorLinkAction}>

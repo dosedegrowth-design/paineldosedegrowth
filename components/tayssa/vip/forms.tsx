@@ -8,6 +8,7 @@ import { MIN_PASSWORD_LENGTH } from "@/lib/tayssa/config";
 import { formatBrPhone } from "@/lib/tayssa/phone";
 import type { ActionResult, ServiceRow } from "@/lib/tayssa/types";
 import { TyInput, TySelect, TyTextarea } from "@/components/tayssa/ui/field";
+import { TySenha } from "@/components/tayssa/ui/senha";
 import { TyButton } from "@/components/tayssa/ui/button";
 import { useFormPreservado } from "@/components/tayssa/ui/form-preservado";
 import { useAcaoFormulario } from "@/components/tayssa/ui/acao";
@@ -120,9 +121,9 @@ export function ChangePasswordForm() {
   const { ref, onReset } = useFormPreservado(state);
   return (
     <form ref={ref} onReset={onReset} onSubmit={onSubmit} noValidate style={{ display: "grid", gap: 22 }}>
-      <TyInput label="Senha atual" name="current" type="password" autoComplete="current-password" required error={err?.field === "current" ? err.error : undefined} />
-      <TyInput label="Nova senha" name="password" type="password" autoComplete="new-password" required minLength={MIN_PASSWORD_LENGTH} error={err?.field === "password" ? err.error : undefined} />
-      <TyInput label="Repetir nova senha" name="confirm" type="password" autoComplete="new-password" required error={err?.field === "confirm" ? err.error : undefined} />
+      <TySenha label="Senha atual" name="current" autoComplete="current-password" required error={err?.field === "current" ? err.error : undefined} />
+      <TySenha label="Nova senha" name="password" autoComplete="new-password" required minLength={MIN_PASSWORD_LENGTH} error={err?.field === "password" ? err.error : undefined} />
+      <TySenha label="Repetir nova senha" name="confirm" autoComplete="new-password" required error={err?.field === "confirm" ? err.error : undefined} />
       {err && !err.field ? <div className="ty-form-error" role="alert">{err.error}</div> : null}
       {state?.ok ? <div className="ty-form-ok" role="status">Senha alterada.</div> : null}
       <div>

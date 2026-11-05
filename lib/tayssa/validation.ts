@@ -59,12 +59,15 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Informe sua senha").max(200),
 });
 
-/** A conta da agenda: nome, WhatsApp (o login) e senha. Sem e-mail. */
-export const contaAgendaSchema = z.object({
-  nome: z.string().trim().min(2, "Escreva seu nome").max(80, "Use no máximo 80 letras"),
-  whatsapp: phoneField,
-  senha: passwordField,
-});
+/** A conta da agenda: nome, WhatsApp (o login) e a senha, digitada duas vezes. Sem e-mail. */
+export const contaAgendaSchema = z
+  .object({
+    nome: z.string().trim().min(2, "Escreva seu nome").max(80, "Use no máximo 80 letras"),
+    whatsapp: phoneField,
+    senha: passwordField,
+    confirmar: z.string(),
+  })
+  .refine((v) => v.senha === v.confirmar, { message: "As senhas não são iguais", path: ["confirmar"] });
 
 export const setPasswordSchema = z
   .object({

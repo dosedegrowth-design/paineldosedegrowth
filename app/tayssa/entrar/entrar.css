@@ -477,3 +477,15 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* olhinho e "manter conectada" na tela de entrar (fundo vinho) */
+.tyl .ty-senha__olho {
+  color: #fff;
+}
+.tyl .ty-lembrar {
+  margin-top: 2px;
+  color: rgba(251, 227, 235, 0.78);
+}
+.tyl .ty-lembrar input {
+  accent-color: #f7c1d1;
+}

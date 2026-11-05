@@ -145,14 +145,20 @@ export function Marcar({
 }
 
 
-/** Mensagem pronta para enviar o link de acesso pelo WhatsApp. */
-function inviteMessage(name: string, url: string) {
-  return `Oi, ${name}! Seu acesso ao meu espaço VIP está pronto. Entre por aqui e escolha sua senha: ${url}`;
+/**
+ * Mensagem pronta para enviar o link de acesso pelo WhatsApp. Com o VIP
+ * fechado a conta é só para marcar horário: a mensagem não fala em VIP.
+ */
+function inviteMessage(name: string, url: string, { vipAberto, novaSenha = false }: { vipAberto: boolean; novaSenha?: boolean }) {
+  if (novaSenha) return `Oi, ${name}! Aqui está o link para você escolher uma senha nova: ${url}`;
+  return vipAberto
+    ? `Oi, ${name}! Seu acesso ao meu espaço VIP está pronto. Entre por aqui e escolha sua senha: ${url}`
+    : `Oi, ${name}! Sua conta para marcar horário comigo está pronta. Entre por aqui e escolha sua senha: ${url}`;
 }
 
 type CreatedClient = { id: string; accessUrl: string; phone: string | null; firstName: string };
 
-export function ClientCreateForm() {
+export function ClientCreateForm({ vipAberto = true }: { vipAberto?: boolean }) {
   const [state, onSubmit, pending] = useAcaoFormulario<ActionResult<CreatedClient> | null>(
     adminCreateClientAction,
     null
@@ -173,7 +179,7 @@ export function ClientCreateForm() {
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           {state.data.phone ? (
             <a
-              href={whatsappUrl(state.data.phone, inviteMessage(state.data.firstName, state.data.accessUrl))}
+              href={whatsappUrl(state.data.phone, inviteMessage(state.data.firstName, state.data.accessUrl, { vipAberto }))}
               target="_blank"
               rel="noopener noreferrer"
               className="tya-btn tya-btn--sm tya-btn--primary"
@@ -247,7 +253,19 @@ export function ClientEditForm({ user, profile }: { user: UserRow; profile: Clie
   );
 }
 
-export function AccessLinkPanel({ userId, name, phone, hasPassword }: { userId: string; name: string; phone: string | null; hasPassword: boolean }) {
+export function AccessLinkPanel({
+  userId,
+  name,
+  phone,
+  hasPassword,
+  vipAberto = true,
+}: {
+  userId: string;
+  name: string;
+  phone: string | null;
+  hasPassword: boolean;
+  vipAberto?: boolean;
+}) {
   const [pending, start] = useTarefa();
   const [link, setLink] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -261,7 +279,7 @@ export function AccessLinkPanel({ userId, name, phone, hasPassword }: { userId: 
           <CopyField value={link} label={hasPassword ? "Link para redefinir senha" : "Link de primeiro acesso"} />
           {phone ? (
             <a
-              href={whatsappUrl(phone, inviteMessage(name.split(" ")[0], link))}
+              href={whatsappUrl(phone, inviteMessage(name.split(" ")[0], link, { vipAberto, novaSenha: hasPassword }))}
               target="_blank"
               rel="noopener noreferrer"
               className="tya-btn tya-btn--sm tya-btn--primary"

@@ -20,6 +20,8 @@ export const ROUTES = {
   vipBenefits: "/tayssa/vip/beneficios",
   vipProfile: "/tayssa/vip/perfil",
   vipJourney: "/tayssa/vip/jornada",
+  /** o "folder" do horário: o link que vai no WhatsApp (público, sem nome nem contato) */
+  horario: (id: string) => `/tayssa/horario/${id}`,
   admin: "/tayssa/admin",
   adminClients: "/tayssa/admin/clientes",
   adminClientNew: "/tayssa/admin/clientes/novo",

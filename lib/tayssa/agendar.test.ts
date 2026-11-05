@@ -78,6 +78,15 @@ test("manutenção sem técnica e sem nome ainda", () => {
   assert.match(m, /Horário: 10h30/);
 });
 
+test("com o link do horário, a mensagem termina nele (o WhatsApp mostra o folder)", () => {
+  const link = "https://painel.dosedegrowth.com/tayssa/horario/0b0e5c1e-1111-4222-8333-944445555666";
+  const m = mensagemAgendamento({ servico: "Volume inglês", dia: "2026-11-07", hora: "10:00", nome: "Ana", sinal: 50, link });
+  assert.ok(m.endsWith(`garantir o horário?\n\nMeu horário: ${link}`));
+  // sem link, nada de linha vazia sobrando
+  const semLink = mensagemAgendamento({ servico: "Volume inglês", dia: "2026-11-07", hora: "10:00", nome: "Ana", sinal: 50, link: null });
+  assert.ok(semLink.endsWith("garantir o horário?"));
+});
+
 test("com valor cadastrado, a mensagem leva o valor", () => {
   const m = mensagemAgendamento({ servico: "Volume inglês", dia: "2026-10-23", hora: "14:00", nome: "Ana", valor: 220, sinal: 50 });
   assert.match(m, /Horário: 14h\nValor: R\$ 220\nNome: Ana/);
