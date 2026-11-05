@@ -72,33 +72,32 @@ Verificado buscando a página de verdade em 15/out:
 
 ### 3.1 Contas no banco (schema `vip`, tabela `users`)
 
-Existem **exatamente duas** contas:
+Desde 05/11/2026 existe **uma** conta, a da Tayssa. O painel foi zerado a
+pedido do Lucas antes de abrir a agenda do fim do ano: as duas clientes de
+teste (`demo@tayssa.vip` e "Teste Claude"), com pedidos, visitas, carimbos,
+benefícios e sessões, os bloqueios de teste da agenda e todo o
+`vip.audit_log` foram apagados. Fotos, serviços, configurações, regras do
+programa e o formulário dela ficaram.
 
 | id | role | email | nome | status | tem senha? |
 |---|---|---|---|---|---|
-| `0ddf9fbc-c0f8-43aa-91d8-aacf8930565b` | `admin` | `admin@tayssa.vip` | Tayssa | active | **NÃO** |
-| `79529e4d-e690-4729-b3cc-78b758278f37` | `client` | `demo@tayssa.vip` | Cliente Demonstração (apelido "Demo") | active | **NÃO** |
+| `0ddf9fbc-c0f8-43aa-91d8-aacf8930565b` | `admin` | `admin@tayssa.vip` | Tayssa | active | sim |
 
-> ⚠️ **Nenhuma das duas tem senha definida** (`password_hash` é null).
-> **Para estas duas contas, login por e-mail + senha não funciona** — a
-> porta é link de acesso (§3.3). Isso é um fato sobre *estas* contas, não
-> sobre o produto: cliente que se cadastrar por `/cadastro` escolhe a
-> senha no próprio cadastro e entra normalmente (§12).
->
-> ⚠️ O `CLAUDE.md` do repositório diz que a cliente demo é
-> `cliente01@demo.tayssa` — **está errado**, o banco diz `demo@tayssa.vip`.
-> Corrigir o CLAUDE.md é pendência.
+> Não há mais cliente de demonstração (o link `demo` dela parou de
+> funcionar junto). Para mostrar o VIP, crie uma cliente no painel
+> (`/tayssa/admin/clientes/novo`) e mande o link de primeiro acesso; ela vai
+> aparecer na lista de clientes da Tayssa, então apague depois. Cliente que
+> se cadastra por `/cadastro` escolhe a senha no próprio cadastro (§12).
 
 ### 3.2 Links de acesso válidos agora
 
-`vip.password_tokens` tem 9 linhas. Os que ainda valem:
+Em 05/11/2026 `vip.password_tokens` tem 6 linhas, todas da Tayssa (as da
+cliente de demonstração saíram com ela). As que ainda valem:
 
 | purpose | conta | vence em | reusável? |
 |---|---|---|---|
-| `demo` | `admin@tayssa.vip` | 31/dez/2026 23:59 | sim, ilimitado |
-| `demo` | `demo@tayssa.vip` | 31/dez/2026 23:59 | sim, ilimitado |
+| `demo` | `admin@tayssa.vip` | 31/dez/2026 (duas) | sim, ilimitado |
 | `demo` | `admin@tayssa.vip` | 14/dez/2026 | sim, ilimitado |
-| `demo` | ambas | 16/out/2026 | sim, até vencer |
 
 O **token em claro não existe em lugar nenhum** — o banco guarda só
 `sha256(token)`. Quem tem o link, tem; quem não tem, gera outro (§3.4).
