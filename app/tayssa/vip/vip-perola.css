@@ -1225,6 +1225,17 @@ body:has(.tyv) {
   font-size: 13px;
   color: var(--tyv-tinta-2);
 }
+/* prioridade VIP (09/11/2026): o aviso do fim de ano em cima do "Marcar" */
+.tyv-abas__nota--vip {
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: #4a0d1f;
+  background: #f8f1e7;
+  box-shadow: inset 0 0 0 1px rgba(190, 150, 92, 0.42);
+}
 .tyv-abas__vazio {
   display: grid;
   gap: 14px;

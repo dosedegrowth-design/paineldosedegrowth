@@ -99,6 +99,64 @@ export function mesesDaAgenda(dias: { iso: string }[]): { chave: string; nome: s
   return out;
 }
 
+// ------------------------------------------------------------
+// Prioridade VIP (Lucas e Tayssa, 09/11/2026): a agenda de fim de ano abre
+// primeiro para as VIPs; as demais veem o aviso de quando abre
+// ------------------------------------------------------------
+
+export type PrioridadeVip = { ativa: boolean; desde: string; abre_em: string };
+
+/** "AAAA-MM-DDTHH:MM" no relógio da casa, na mesma convenção de `nowInBusinessTz()` */
+function momentoDaCasa(s: string): Date | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(s);
+  return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), Number(m[4]), Number(m[5])) : null;
+}
+
+/** A prioridade está valendo agora? Ligada, com o dia de início, e antes da hora de abrir (sem hora: até a Tayssa marcar). */
+export function prioridadeVipValendo(p: PrioridadeVip | null | undefined, agora: Date): boolean {
+  if (!p?.ativa || !/^\d{4}-\d{2}-\d{2}$/.test(p.desde)) return false;
+  const abre = p.abre_em ? momentoDaCasa(p.abre_em) : null;
+  return !abre || agora.getTime() < abre.getTime();
+}
+
+/** O dia ("AAAA-MM-DD") está guardado só para VIP agora? */
+export function diaSoVip(iso: string, p: PrioridadeVip | null | undefined, agora: Date): boolean {
+  return prioridadeVipValendo(p, agora) && iso >= (p as PrioridadeVip).desde;
+}
+
+/** "Dezembro" quando começa no dia 1º; "As datas a partir de 15/12" quando não */
+function oQueEstaGuardado(desde: string): { nome: string; plural: boolean } {
+  if (desde.endsWith("-01")) return { nome: MESES[Number(desde.slice(5, 7)) - 1] ?? desde, plural: false };
+  return { nome: `As datas a partir de ${desde.slice(8, 10)}/${desde.slice(5, 7)}`, plural: true };
+}
+
+/** "na segunda, 16/11, às 9h" ("no sábado", "no domingo") */
+function naHora(abre_em: string): string {
+  const dia = diaLegivel(abre_em.slice(0, 10));
+  const artigo = dia.startsWith("sábado") || dia.startsWith("domingo") ? "no" : "na";
+  return `${artigo} ${dia}, às ${horaLegivel(abre_em.slice(11, 16))}`;
+}
+
+/**
+ * O aviso da prioridade para quem marca. VIP: o que já está aberto para ela.
+ * Demais: quando abre para todas (sem dia marcado: "em breve"). Fora da janela, nada.
+ */
+export function avisoDaReservaVip(
+  p: PrioridadeVip | null | undefined,
+  agora: Date,
+  quem: "vip" | "cliente" | "anonima",
+): string | null {
+  if (!p || !prioridadeVipValendo(p, agora)) return null;
+  const g = oQueEstaGuardado(p.desde);
+  if (quem === "vip") {
+    return g.plural
+      ? `Você é VIP: ${g.nome.charAt(0).toLowerCase()}${g.nome.slice(1)} já estão abertas para você, antes de todo mundo.`
+      : `Você é VIP: ${g.nome.toLowerCase()} já está aberto para você, antes de todo mundo.`;
+  }
+  const quando = p.abre_em && momentoDaCasa(p.abre_em) ? naHora(p.abre_em) : "em breve";
+  return `${g.nome} ${g.plural ? "abrem" : "abre"} primeiro para as clientes VIP. Para as demais, ${g.plural ? "abrem" : "abre"} ${quando}.`;
+}
+
 /** "R$ 50", "R$ 1.200", "R$ 37,50" (sem centavos quando é redondo) */
 export function reais(v: number): string {
   const [int, dec] = v.toFixed(2).split(".");

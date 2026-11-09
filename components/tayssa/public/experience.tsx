@@ -133,14 +133,13 @@ export function PublicExperience({
     <IntroCtx.Provider value={ready}>
       <AgendarProvider agenda={agenda}>
         <IntroLoader onDone={() => setReady(true)} />
-        <PublicNav scheduleUrl={links.schedule} sections={secoes} vipAberto={settings.rules.vip_aberto} />
+        <PublicNav scheduleUrl={links.schedule} sections={secoes} />
         <main>
           <Hero
             business={settings.business}
             scheduleUrl={links.schedule}
             photo={photos?.hero}
             video={videos?.hero}
-            vipAberto={settings.rules.vip_aberto}
           />
           <Faixa itens={services.filter((s) => s.slug !== "outro").map((s) => s.name)} />
           {/* as seções de foto e vídeo: se uma quebrar no celular, some sozinha e o erro vai para o log */}
@@ -178,9 +177,9 @@ export function PublicExperience({
           <VipIntro benefits={benefits} settings={settings} />
           <ReferralCta />
           <VisitInfo business={settings.business} booking={settings.booking} conteudo={CONTEUDO} />
-          <Closing scheduleUrl={links.schedule} ambiente={retrato} vipAberto={settings.rules.vip_aberto} />
+          <Closing scheduleUrl={links.schedule} ambiente={retrato} />
         </main>
-        <PublicFooter business={settings.business} vipAberto={settings.rules.vip_aberto} />
+        <PublicFooter business={settings.business} />
         <AgendarFlutua url={links.schedule} />
       </AgendarProvider>
     </IntroCtx.Provider>

@@ -161,7 +161,16 @@ export async function updateBookingSettingsAction(_p: ActionResult | null, fd: F
       pix_nome: str(fd, "pix_nome"),
       pix_cidade: str(fd, "pix_cidade"),
       pix_banco: str(fd, "pix_banco"),
+      prioridade_vip: {
+        ativa: fd.get("pv_ativa") === "on",
+        desde: str(fd, "pv_desde").trim(),
+        // o campo de dia e hora pode vir com segundos: guarda até os minutos
+        abre_em: str(fd, "pv_abre_em").trim().slice(0, 16),
+      },
     });
+    if (input.prioridade_vip.ativa && !input.prioridade_vip.desde) {
+      throw new BusinessError("Com a prioridade VIP ligada, escolha a partir de que dia a agenda fica só para as VIPs.", "pv_desde");
+    }
     // chave que o Pix não reconhece não vai para o site: melhor avisar aqui do que a cliente travar no banco
     if (input.pix_chave && !chavePixValida(input.pix_chave)) {
       throw new BusinessError("Essa chave Pix não parece válida. Use CNPJ, CPF, celular com DDD, e-mail ou a chave aleatória.", "pix_chave");

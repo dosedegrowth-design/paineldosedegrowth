@@ -108,8 +108,6 @@ const FORMAS: Forma[] = [
  */
 export function VipIntro({ benefits, settings }: { benefits: BenefitRow[]; settings: Settings }) {
   const reduced = useReducedMotion();
-  // VIP fechado: a seção apresenta o programa, mas o convite é para a agenda
-  const vipAberto = settings.rules.vip_aberto;
   const marcos = doCatalogo(benefits, "loyalty", marcoDePontos).sort((a, b) => (a.threshold ?? 0) - (b.threshold ?? 0));
   // celular: as quatro formas viram cartões de lado, e entram juntas quando a
   // lista aparece (a escondida à direita não chega apagada quando o dedo a traz)
@@ -221,41 +219,24 @@ export function VipIntro({ benefits, settings }: { benefits: BenefitRow[]; setti
             <h3 className="ty-h tyvi__porta-h">Como se entra</h3>
           </Reveal>
           <Reveal delay={0.1}>
-            {vipAberto ? (
-              <>
-                <p className="ty-body ty-measure">
-                  O cadastro é um pedido de acesso, não uma porta aberta: a Tayssa lê, confere e
-                  responde. E nenhum benefício cai sozinho na sua conta: cada um passa pela
-                  confirmação dela.
-                </p>
-                <div className="tyvi__acoes">
-                  <Magnetic>
-                    <TransitionLink href={ROUTES.signup} className="ty-btn ty-btn--solid">
-                      <span>Pedir acesso</span>
-                      <span className="ty-btn__arrow" aria-hidden />
-                    </TransitionLink>
-                  </Magnetic>
-                  <TransitionLink href={ROUTES.login} className="tyvi__entrar">
-                    Já tenho acesso · Entrar
-                  </TransitionLink>
-                </div>
-                <p className="ty-mono tyvi__nota">a resposta vem dela, pelo WhatsApp</p>
-              </>
-            ) : (
-              <>
-                <p className="ty-body ty-measure">
-                  O VIP abre em breve. Por enquanto, a sua conta é a da agenda: você marca, acompanha e
-                  desmarca os seus horários por ela. Nenhum benefício cai sozinho: cada um passa pela
-                  confirmação da Tayssa.
-                </p>
-                <div className="tyvi__acoes">
-                  <TransitionLink href={ROUTES.vipBook} className="tyvi__entrar">
-                    Já tenho conta · Meus horários
-                  </TransitionLink>
-                </div>
-                <p className="ty-mono tyvi__nota">o vip abre em breve</p>
-              </>
-            )}
+            {/* VIP por convite (Lucas e Tayssa, 09/11/2026): sem pedido de acesso no site */}
+            <p className="ty-body ty-measure">
+              O VIP é por convite da Tayssa. Toda cliente marca pelo site com a sua conta; quem ela
+              convida passa a ver a Área VIP com o mesmo WhatsApp e a mesma senha, e tem prioridade na
+              agenda. Nenhum benefício cai sozinho: cada um passa pela confirmação dela.
+            </p>
+            <div className="tyvi__acoes">
+              <Magnetic>
+                <TransitionLink href={ROUTES.vip} className="ty-btn ty-btn--solid">
+                  <span>Área VIP</span>
+                  <span className="ty-btn__arrow" aria-hidden />
+                </TransitionLink>
+              </Magnetic>
+              <TransitionLink href={ROUTES.vipBook} className="tyvi__entrar">
+                Ainda não é VIP · Meus horários
+              </TransitionLink>
+            </div>
+            <p className="ty-mono tyvi__nota">o convite vem dela, pelo WhatsApp</p>
           </Reveal>
         </div>
       </div>

@@ -15,7 +15,8 @@ import {
   type HorarioParaMarcar,
 } from "@/lib/tayssa/rules";
 import { nowInBusinessTz } from "@/lib/tayssa/format";
-import type { SessionUser } from "@/lib/tayssa/auth/session";
+import { avisoDaReservaVip, diaSoVip } from "@/lib/tayssa/agendar";
+import { getSessionUser, type SessionUser } from "@/lib/tayssa/auth/session";
 import type { AppointmentRow, CardStamp, LoyaltyStampRow, ServiceRow, UserRow } from "@/lib/tayssa/types";
 
 /** Linha do banco -> o que a interface do cartão precisa (nada além). */
@@ -89,12 +90,31 @@ export async function horariosFechados(de: string, ate: string): Promise<Set<str
   }
 }
 
-export const getAvailability = cache(async (): Promise<{ days: DayAvailability[]; services: ServiceRow[] }> => {
+/** quem está marcando: a VIP vê o fim de ano guardado para ela; as demais, o aviso de quando abre */
+export type QuemMarca = "vip" | "cliente" | "anonima";
+
+/** Os dias abertos para quem marca, e o aviso da prioridade VIP (quando ela está valendo). */
+function diasParaQuem(
+  b: Awaited<ReturnType<typeof getSettings>>["booking"],
+  now: Date,
+  quem: QuemMarca,
+): { dias: ReturnType<typeof bookableDays>; aviso: string | null } {
+  const todos = bookableDays(now, b);
+  const guardados = todos.some((d) => diaSoVip(d.iso, b.prioridade_vip, now));
+  return {
+    dias: quem === "vip" ? todos : todos.filter((d) => !diaSoVip(d.iso, b.prioridade_vip, now)),
+    aviso: guardados ? avisoDaReservaVip(b.prioridade_vip, now, quem) : null,
+  };
+}
+
+export const getAvailability = cache(async (
+  quem: QuemMarca = "anonima",
+): Promise<{ days: DayAvailability[]; services: ServiceRow[]; aviso: string | null }> => {
   const settings = await getSettings();
   const b = settings.booking;
   const now = nowInBusinessTz();
-  const days = bookableDays(now, b);
-  if (!days.length) return { days: [], services: [] };
+  const { dias: days, aviso } = diasParaQuem(b, now, quem);
+  if (!days.length) return { days: [], services: [], aviso };
   // pedido sem sinal no prazo devolve o horário antes de montar a agenda
   await expirarPedidosSemSinal();
 
@@ -130,29 +150,45 @@ export const getAvailability = cache(async (): Promise<{ days: DayAvailability[]
       return { iso: d.iso, weekday: d.weekday, slots: horariosParaMarcar(d.iso, grade, ocupado, now, b.lead_hours) };
     }),
     services: services.filter((s) => s.slug !== "outro"),
+    aviso,
   };
 });
+
+export type AgendaPublica = {
+  dias: { iso: string; slots: DayAvailability["slots"] }[];
+  /** o aviso da prioridade VIP para quem está vendo (null fora da janela) */
+  aviso: string | null;
+  quem: QuemMarca;
+};
 
 /**
  * A agenda do site público: só dia e horário livre — nada de quem marcou.
  * Sem banco (ou com erro nele), cai nas regras da casa sem os horários já
  * tomados: o pedido vai para o WhatsApp e quem confirma é a Tayssa.
  */
-export const getAgendaPublica = cache(async (): Promise<{ iso: string; slots: DayAvailability["slots"] }[]> => {
+export const getAgendaPublica = cache(async (): Promise<AgendaPublica> => {
+  // quem está com a conta aberta neste aparelho: a VIP vê o fim de ano guardado para ela
+  const user = isDbConfigured() ? await getSessionUser().catch(() => null) : null;
+  const quem: QuemMarca = user?.role === "client" ? (user.isVip ? "vip" : "cliente") : "anonima";
   if (isDbConfigured()) {
     try {
-      const { days } = await getAvailability();
-      return days.map((d) => ({ iso: d.iso, slots: d.slots }));
+      const { days, aviso } = await getAvailability(quem);
+      return { dias: days.map((d) => ({ iso: d.iso, slots: d.slots })), aviso, quem };
     } catch (e) {
       logServerError("agenda.publica", e);
     }
   }
   const b = (await getSettings()).booking;
   const now = nowInBusinessTz();
-  return bookableDays(now, b).map((d) => ({
-    iso: d.iso,
-    slots: horariosParaMarcar(d.iso, horariosDoDia(b, d.weekday), [], now, b.lead_hours),
-  }));
+  const { dias, aviso } = diasParaQuem(b, now, quem);
+  return {
+    dias: dias.map((d) => ({
+      iso: d.iso,
+      slots: horariosParaMarcar(d.iso, horariosDoDia(b, d.weekday), [], now, b.lead_hours),
+    })),
+    aviso,
+    quem,
+  };
 });
 
 // ------------------------------------------------------------

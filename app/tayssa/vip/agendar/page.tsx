@@ -21,8 +21,9 @@ const ABAS: AbaDaAgenda[] = ["realizados", "aberto", "marcar"];
  */
 export default async function BookPage({ searchParams }: { searchParams: Promise<{ aba?: string }> }) {
   const user = await requireClientPage();
-  const [{ days, services }, appointments, settings, params] = await Promise.all([
-    getAvailability(),
+  // prioridade VIP: a VIP vê o fim de ano guardado para ela; as demais, o aviso de quando abre
+  const [{ days, services, aviso }, appointments, settings, params] = await Promise.all([
+    getAvailability(user.isVip ? "vip" : "cliente"),
     getAppointments(user.id),
     getSettings(),
     searchParams,
@@ -82,6 +83,8 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
           )
         }
         marcar={
+          <>
+          {aviso ? <p className="tyv-abas__nota tyv-abas__nota--vip">{aviso}</p> : null}
           <BookingFlow
             services={services.map((s) => ({
               id: s.id,
@@ -102,6 +105,7 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
             sinal={sinal}
             limitMessage={`Você já tem ${appointments.upcoming.length} ${plural(appointments.upcoming.length, "horário marcado", "horários marcados")}. Desmarque um em "Em aberto" para escolher outro.`}
           />
+          </>
         }
       />
     </>

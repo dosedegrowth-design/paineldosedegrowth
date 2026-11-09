@@ -389,6 +389,14 @@ export const bookingSettingsSchema = z.object({
   pix_nome: z.string().trim().max(60, "Use no máximo 60 letras").default(""),
   pix_cidade: z.string().trim().max(40, "Use no máximo 40 letras").default(""),
   pix_banco: z.string().trim().max(40, "Use no máximo 40 letras").default(""),
+  // prioridade VIP: os dias a partir de `desde` só para VIP até `abre_em` (vazio = até a Tayssa abrir)
+  prioridade_vip: z
+    .object({
+      ativa: z.boolean(),
+      desde: z.string().trim().regex(/^(\d{4}-\d{2}-\d{2})?$/, "Escolha o dia"),
+      abre_em: z.string().trim().regex(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})?$/, "Escolha o dia e a hora"),
+    })
+    .default({ ativa: false, desde: "", abre_em: "" }),
 });
 
 export const loyaltySettingsSchema = z.object({

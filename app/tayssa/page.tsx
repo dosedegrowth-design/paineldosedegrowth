@@ -27,7 +27,7 @@ export const metadata: Metadata = {
  * a página nunca quebra por causa do Supabase.
  */
 export default async function TayssaHome() {
-  const [settings, services, benefits, photos, library, videos, dias, precos] = await Promise.all([
+  const [settings, services, benefits, photos, library, videos, agendaPublica, precos] = await Promise.all([
     getSettings(),
     getActiveServices(),
     getPublicBenefits(),
@@ -81,7 +81,10 @@ export default async function TayssaHome() {
     volumes: ativos
       .filter((s) => s.preco_manutencao != null)
       .map((s) => ({ nome: s.name, manutencao: Number(s.preco_manutencao) })),
-    dias,
+    dias: agendaPublica.dias,
+    // prioridade VIP: o aviso de quando o fim de ano abre (ou, para a VIP, que já está aberto)
+    aviso: agendaPublica.aviso,
+    quem: agendaPublica.quem,
     sinal: settings.booking.deposit_reais,
     sinalHoras: settings.booking.sinal_horas,
     tolerancia: settings.booking.tolerancia_min,

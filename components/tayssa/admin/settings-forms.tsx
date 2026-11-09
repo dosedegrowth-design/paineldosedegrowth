@@ -763,6 +763,40 @@ export function BookingForm({ value }: { value: Settings["booking"] }) {
         </div>
       </div>
 
+      {/* prioridade VIP (09/11/2026): as datas novas abrem primeiro para quem é VIP */}
+      <div className="tya-stack">
+        <span className="tya-eyebrow">Prioridade VIP</span>
+        <p className="tya-small">
+          Ligada, as datas a partir do dia escolhido ficam só para as clientes VIP. As demais veem o aviso de quando
+          abre. Na hora marcada a agenda abre sozinha para todas; sem hora marcada, fica só VIP até você marcar ou
+          desligar.
+        </p>
+        <div className="tya-marcas">
+          <label className="tya-marca">
+            <input type="checkbox" name="pv_ativa" defaultChecked={value.prioridade_vip?.ativa ?? false} />
+            <span>Abrir primeiro para as VIPs</span>
+          </label>
+        </div>
+        <div className="tya-grid">
+          <Campo
+            label="Só VIP a partir de"
+            name="pv_desde"
+            type="date"
+            defaultValue={value.prioridade_vip?.desde ?? ""}
+            error={erroDe(state, "pv_desde")}
+            hint="Ex.: 01/12 guarda dezembro inteiro para as VIPs."
+          />
+          <Campo
+            label="Abre para todas em"
+            name="pv_abre_em"
+            type="datetime-local"
+            defaultValue={value.prioridade_vip?.abre_em ?? ""}
+            error={erroDe(state, "pv_abre_em")}
+            hint="Dia e hora de Brasília. Vazio: só VIP até você marcar."
+          />
+        </div>
+      </div>
+
       {/* o Pix do sinal: com a chave, o site mostra o "copia e cola" e ela anexa o comprovante */}
       <div className="tya-stack">
         <span className="tya-eyebrow">Pix do sinal</span>

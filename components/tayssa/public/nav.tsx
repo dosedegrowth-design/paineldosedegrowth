@@ -53,12 +53,9 @@ function FlorDoMenu() {
 export function PublicNav({
   scheduleUrl,
   sections = SECTIONS,
-  vipAberto = true,
 }: {
   scheduleUrl: string;
   sections?: Secao[];
-  /** VIP fechado: a conta é só a agenda ("Meus horários" no lugar de "Entrar no VIP") */
-  vipAberto?: boolean;
 }) {
   const scrollY = useRolagemY();
   const [hidden, setHidden] = useState(false);
@@ -120,8 +117,8 @@ export function PublicNav({
         </nav>
 
         <div className="ty-nav__acoes">
-          <TransitionLink href={vipAberto ? ROUTES.login : ROUTES.vipBook} className="ty-btn ty-btn--xs">
-            {vipAberto ? "Entrar" : "Meus horários"}
+          <TransitionLink href={ROUTES.vipBook} className="ty-btn ty-btn--xs">
+            Meus horários
           </TransitionLink>
           <LinkAgendar href={scheduleUrl} className="ty-btn ty-btn--xs ty-btn--solid">
             Agendar
@@ -202,20 +199,13 @@ export function PublicNav({
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.5, duration: 0.6, ease: EASE_MENU }}
               >
-                {vipAberto ? (
-                  <>
-                    <TransitionLink href={ROUTES.signup} className="ty-menu__pilula" onClick={() => setOpen(false)}>
-                      Pedir acesso
-                    </TransitionLink>
-                    <TransitionLink href={ROUTES.login} className="ty-menu__pilula" onClick={() => setOpen(false)}>
-                      Entrar no VIP
-                    </TransitionLink>
-                  </>
-                ) : (
-                  <TransitionLink href={ROUTES.vipBook} className="ty-menu__pilula" onClick={() => setOpen(false)}>
-                    Meus horários
-                  </TransitionLink>
-                )}
+                {/* sem "Pedir acesso" (09/11/2026): o VIP é por convite da Tayssa */}
+                <TransitionLink href={ROUTES.vipBook} className="ty-menu__pilula" onClick={() => setOpen(false)}>
+                  Meus horários
+                </TransitionLink>
+                <TransitionLink href={ROUTES.vip} className="ty-menu__pilula" onClick={() => setOpen(false)}>
+                  Área VIP
+                </TransitionLink>
               </motion.div>
               <motion.div
                 initial={{ y: 16, opacity: 0 }}

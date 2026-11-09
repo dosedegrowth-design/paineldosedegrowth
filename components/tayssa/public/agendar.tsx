@@ -61,6 +61,10 @@ export type AgendaSite = {
   /** os volumes de cílios com o valor da manutenção de cada um */
   volumes: { nome: string; manutencao: number | null }[];
   dias: DiaAgenda[];
+  /** prioridade VIP: quando o fim de ano abre para todas (para a VIP, que já está aberto); null fora da janela */
+  aviso?: string | null;
+  /** quem está vendo: sem conta neste aparelho, o aviso leva ao "Entrar" */
+  quem?: "vip" | "cliente" | "anonima";
   sinal: number;
   /** horas que o pedido segura o horário esperando o sinal */
   sinalHoras: number;
@@ -170,8 +174,10 @@ function FolhaAgendar({
   const id = useId();
   // a agenda vem da página e é buscada de novo a cada abertura: o que
   // alguém marcou (ou a Tayssa fechou) depois do carregamento já aparece riscado
-  const [fresca, setFresca] = useState<DiaAgenda[] | null>(null);
-  const dias = fresca ?? agenda.dias;
+  const [fresca, setFresca] = useState<{ dias: DiaAgenda[]; aviso: string | null; quem: AgendaSite["quem"] } | null>(null);
+  const dias = fresca?.dias ?? agenda.dias;
+  const avisoVip = fresca ? fresca.aviso : (agenda.aviso ?? null);
+  const quemVe = fresca?.quem ?? agenda.quem ?? "anonima";
   const semServicos = agenda.servicos.length === 0;
 
   const [passo, setPasso] = useState<Passo>("escolha");
@@ -587,6 +593,20 @@ function FolhaAgendar({
             {servicoPronto && !verTodos ? (
               <fieldset className="tyag__grupo tyag__grupo--entra">
                 <legend className="tyag__rotulo">Qual dia?</legend>
+                {/* prioridade VIP: o fim de ano abre primeiro para as VIPs (09/11/2026) */}
+                {avisoVip ? (
+                  <p className="tyag__aviso" data-vip={quemVe === "vip" || undefined}>
+                    {avisoVip}
+                    {quemVe === "anonima" ? (
+                      <>
+                        {" "}
+                        <a className="tyag__aviso-link" href={ROUTES.login}>
+                          É VIP? Entrar
+                        </a>
+                      </>
+                    ) : null}
+                  </p>
+                ) : null}
                 {meses.length > 1 ? (
                   <div className="tyag__meses" role="group" aria-label="Ir para o mês">
                     {meses.map((m) => (

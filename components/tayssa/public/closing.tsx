@@ -50,11 +50,9 @@ type Caminho = {
 export function Closing({
   scheduleUrl,
   ambiente,
-  vipAberto = true,
 }: {
   scheduleUrl: string;
   ambiente?: PhotoSlot;
-  vipAberto?: boolean;
 }) {
   const caminhos: Caminho[] = [
     {
@@ -66,25 +64,16 @@ export function Closing({
       agendar: true,
       icone: "mensagem",
     },
-    vipAberto
-      ? {
-          n: "02",
-          nome: "Pedir acesso ao VIP",
-          dizer: "O cadastro é um pedido de entrada: ela lê, confere e responde.",
-          ficha: "aprovação dela",
-          href: ROUTES.signup,
-          agendar: false,
-          icone: "flor",
-        }
-      : {
-          n: "02",
-          nome: "Meus horários",
-          dizer: "Veja, acompanhe e desmarque os seus horários com a sua conta.",
-          ficha: "whatsapp e senha",
-          href: ROUTES.vipBook,
-          agendar: false,
-          icone: "flor",
-        },
+    // sem "Pedir acesso ao VIP" (09/11/2026): o VIP é por convite da Tayssa
+    {
+      n: "02",
+      nome: "Meus horários",
+      dizer: "Veja, acompanhe e desmarque os seus horários com a sua conta.",
+      ficha: "whatsapp e senha",
+      href: ROUTES.vipBook,
+      agendar: false,
+      icone: "flor",
+    },
     {
       n: "03",
       nome: "Indicar alguém",

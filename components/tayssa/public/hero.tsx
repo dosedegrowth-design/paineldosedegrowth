@@ -71,12 +71,9 @@ export function Hero({
   scheduleUrl,
   photo,
   video,
-  vipAberto = true,
 }: {
   business: BusinessSettings;
   scheduleUrl: string;
-  /** VIP fechado: o segundo botão leva aos horários dela, não ao pedido de acesso */
-  vipAberto?: boolean;
   /** foto de destaque da biblioteca; sem ela, a janela mostra a flor */
   photo?: PhotoSlot;
   /** quais arquivos do vídeo de abertura existem */
@@ -214,8 +211,9 @@ export function Hero({
             Agendar horário
             <span className="tyh__seta" aria-hidden />
           </LinkAgendar>
-          <TransitionLink href={vipAberto ? ROUTES.signup : ROUTES.vipBook} className="tyh__btn tyh__btn--vidro">
-            {vipAberto ? "Pedir acesso ao VIP" : "Meus horários"}
+          {/* o segundo botão leva aos horários dela: o VIP é por convite, sem pedido de acesso (09/11/2026) */}
+          <TransitionLink href={ROUTES.vipBook} className="tyh__btn tyh__btn--vidro">
+            Meus horários
           </TransitionLink>
         </motion.div>
       </motion.div>

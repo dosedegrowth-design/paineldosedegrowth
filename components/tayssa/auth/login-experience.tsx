@@ -25,14 +25,11 @@ export function LoginExperience({
   vipInfoUrl,
   next,
   linkExpirado = false,
-  vipAberto = true,
 }: {
   vipInfoUrl: string;
   next?: string;
   /** chegou por um link de acesso vencido, já usado ou inválido */
   linkExpirado?: boolean;
-  /** VIP fechado: a conta é só a agenda (o título e o "criar conta" mudam) */
-  vipAberto?: boolean;
 }) {
   const reduced = useReducedMotion();
   const [state, enviar, pending] = useAcaoFormulario<LoginResult | null>(
@@ -71,25 +68,20 @@ export function LoginExperience({
   };
 
   return (
-    <Entrada links={vipAberto ? [{ href: ROUTES.signup, label: "Pedir acesso" }] : []}>
+    <Entrada links={[]}>
       <motion.div
         className="tyl__body"
         initial={{ opacity: 0, y: reduced ? 0 : 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: EASE, delay: 0.1 }}
       >
+        {/* uma entrada para todas (09/11/2026): quem é VIP cai na Área VIP, as demais nos horários */}
         <h1 className="tyl__title">
-          {vipAberto ? (
-            <>
-              Entrar no <em>meu VIP</em>
-            </>
-          ) : (
-            <>
-              Entrar nos <em>meus horários</em>
-            </>
-          )}
+          Entrar na <em>sua conta</em>
         </h1>
-        <p className="tyl__sub">Use o WhatsApp (ou o e-mail) e a senha da sua conta.</p>
+        <p className="tyl__sub">
+          Use o WhatsApp (ou o e-mail) e a senha da sua conta. Quem é VIP entra direto na Área VIP.
+        </p>
 
         {linkExpirado ? (
           <div className="tyl__note" role="status">
@@ -184,21 +176,13 @@ export function LoginExperience({
           </button>
         </form>
 
-        {vipAberto ? (
-          <div className="tyl__foot">
-            <p>Ainda não tem acesso? Peça o seu: a Tayssa revisa e libera pessoalmente.</p>
-            <TransitionLink href={ROUTES.signup} className="tyl__link">
-              Pedir acesso
-            </TransitionLink>
-          </div>
-        ) : (
-          <div className="tyl__foot">
-            <p>Ainda não tem conta? Ela nasce quando você marca o primeiro horário pelo site.</p>
-            <TransitionLink href={ROUTES.home} className="tyl__link">
-              Agendar pelo site
-            </TransitionLink>
-          </div>
-        )}
+        {/* sem pedido de acesso (09/11/2026): a conta nasce no primeiro agendamento; o VIP é por convite */}
+        <div className="tyl__foot">
+          <p>Ainda não tem conta? Ela nasce quando você marca o primeiro horário pelo site.</p>
+          <TransitionLink href={ROUTES.home} className="tyl__link">
+            Agendar pelo site
+          </TransitionLink>
+        </div>
       </motion.div>
 
       <AnimatePresence>

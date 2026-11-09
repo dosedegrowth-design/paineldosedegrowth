@@ -14,6 +14,8 @@ import {
   horariosDaSemana,
   mensagemAgendamento,
   recadoDoCartao,
+  diaSoVip,
+  avisoDaReservaVip,
   partesDoDia,
   reais,
   valorLegivel,
@@ -107,6 +109,36 @@ test("o recado que vai com o cartão (foto) é curto: o cartão diz o resto", ()
   assert.equal(
     recadoDoCartao({ nome: "", sinal: 50 }),
     "Oi, Tayssa, tudo bem? Marquei meu horário pelo site. Me manda a chave Pix do sinal de R$ 50?",
+  );
+});
+
+test("prioridade VIP: dezembro só para VIP até a Tayssa abrir para todas", () => {
+  const p = { ativa: true, desde: "2026-12-01", abre_em: "" };
+  const agora = new Date(2026, 10, 9, 10, 0); // segunda, 09/11, 10h
+  assert.equal(diaSoVip("2026-11-30", p, agora), false);
+  assert.equal(diaSoVip("2026-12-01", p, agora), true);
+  assert.equal(diaSoVip("2027-01-04", p, agora), true);
+  assert.equal(avisoDaReservaVip(p, agora, "vip"), "Você é VIP: dezembro já está aberto para você, antes de todo mundo.");
+  assert.equal(
+    avisoDaReservaVip(p, agora, "cliente"),
+    "Dezembro abre primeiro para as clientes VIP. Para as demais, abre em breve.",
+  );
+  // com o dia marcado, abre sozinho na hora
+  const marcado = { ...p, abre_em: "2026-11-16T09:00" };
+  assert.equal(
+    avisoDaReservaVip(marcado, agora, "anonima"),
+    "Dezembro abre primeiro para as clientes VIP. Para as demais, abre na segunda, 16/11, às 9h.",
+  );
+  assert.equal(diaSoVip("2026-12-05", marcado, new Date(2026, 10, 16, 8, 59)), true);
+  assert.equal(diaSoVip("2026-12-05", marcado, new Date(2026, 10, 16, 9, 0)), false);
+  assert.equal(avisoDaReservaVip(marcado, new Date(2026, 10, 16, 9, 0), "cliente"), null);
+  // desligada ou sem o dia de início: nada fica guardado
+  assert.equal(diaSoVip("2026-12-05", { ...p, ativa: false }, agora), false);
+  assert.equal(diaSoVip("2026-12-05", { ...p, desde: "" }, agora), false);
+  // começando no meio do mês
+  assert.equal(
+    avisoDaReservaVip({ ...p, desde: "2026-12-15" }, agora, "cliente"),
+    "As datas a partir de 15/12 abrem primeiro para as clientes VIP. Para as demais, abrem em breve.",
   );
 });
 

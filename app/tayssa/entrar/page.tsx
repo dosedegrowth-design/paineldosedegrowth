@@ -44,7 +44,6 @@ export default async function LoginPage({
         vipInfoUrl={whatsappUrl(settings.business.whatsapp, mensagem)}
         next={next}
         linkExpirado={linkExpirado}
-        vipAberto={vipAberto}
       />
     </PhotoAvailabilityProvider>
   );

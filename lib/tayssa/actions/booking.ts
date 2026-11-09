@@ -18,7 +18,7 @@ import {
   toISODate,
   trechosOcupados,
 } from "@/lib/tayssa/rules";
-import { cabeNoHorario, diaLegivel, duracaoLegivel, horaLegivel } from "@/lib/tayssa/agendar";
+import { avisoDaReservaVip, cabeNoHorario, diaLegivel, diaSoVip, duracaoLegivel, horaLegivel } from "@/lib/tayssa/agendar";
 import { avisarTayssa } from "@/lib/tayssa/avisos";
 import { isoDateField } from "@/lib/tayssa/validation";
 import { horariosFechados } from "@/lib/tayssa/queries/vip";
@@ -70,6 +70,10 @@ export async function createAppointmentAction(input: {
     const dia = bookableDays(now, b).find((d) => d.iso === parsed.date);
     if (!dia) {
       throw new BusinessError("Esse dia não está aberto para agendamento.", "date");
+    }
+    // prioridade VIP: o fim de ano guardado só para quem é VIP (o site já esconde; aqui é a garantia)
+    if (!me.isVip && diaSoVip(parsed.date, b.prioridade_vip, now)) {
+      throw new BusinessError(avisoDaReservaVip(b.prioridade_vip, now, "cliente") ?? "Essa data ainda não abriu.", "date");
     }
     const grade = horariosDoDia(b, dia.weekday);
     if (!grade.includes(parsed.time)) {

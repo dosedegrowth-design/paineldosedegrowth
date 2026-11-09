@@ -202,6 +202,13 @@ export type BookingSettings = {
   pix_cidade: string;
   /** banco, só para a cliente conferir */
   pix_banco: string;
+  /**
+   * Prioridade VIP (Lucas e Tayssa, 09/11/2026: "a agenda de fim de ano abre primeiro para as
+   * VIPs"): ligada, os dias a partir de `desde` ("AAAA-MM-DD") ficam só para VIP até `abre_em`
+   * ("AAAA-MM-DDTHH:MM", horário de Brasília); vazio = só VIP até a Tayssa marcar o dia de abrir
+   * para todas. Quem não é VIP vê o aviso de quando abre. Regra em `diaSoVip()` (lib/tayssa/agendar.ts).
+   */
+  prioridade_vip: { ativa: boolean; desde: string; abre_em: string };
 };
 
 export type SignupSettings = {
@@ -314,6 +321,7 @@ export const DEFAULT_SETTINGS: Settings = {
     pix_nome: "",
     pix_cidade: "São Paulo",
     pix_banco: "",
+    prioridade_vip: { ativa: false, desde: "", abre_em: "" },
   },
   signup: {
     open: true,
