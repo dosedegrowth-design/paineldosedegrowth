@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./vip.css";
 import "./vip-vivo.css";
 import "./vip-perola.css";
+import "./vip-site.css";
 import { requireClientPage } from "@/lib/tayssa/auth/guards";
 import { getSessionUser } from "@/lib/tayssa/auth/session";
 import { getSettings } from "@/lib/tayssa/settings";

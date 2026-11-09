@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { TomDoSite } from "@/components/tayssa/vip/tom-do-site";
 import { requireClientPage } from "@/lib/tayssa/auth/guards";
 import { ROUTES } from "@/lib/tayssa/config";
 import { getAppointments, getAvailability } from "@/lib/tayssa/queries/vip";
@@ -51,6 +52,8 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
 
   return (
     <>
+      {/* a agenda e a conta ficam na paleta do site (vip-site.css), sem o dourado do VIP */}
+      <TomDoSite />
       <h1 className="tyv-hello">
         {user.displayName}, <em>seus agendamentos</em>.
       </h1>

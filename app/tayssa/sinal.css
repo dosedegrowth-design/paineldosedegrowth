@@ -1,5 +1,7 @@
 /* O sinal em três passos (Pix copia e cola → comprovante → WhatsApp).
-   Dois tons: "noite" na folha de agendar do site, "perola" na conta. */
+   Dois tons: "noite" na folha de agendar do site e em "Meus agendamentos"
+   (desde 09/11/2026 a agenda da conta fica na paleta do site; lá os detalhes
+   saem em rosé, ver vip-site.css), "perola" para o VIP. */
 .tysn {
   --tysn-texto: #fff;
   --tysn-suave: rgba(251, 227, 235, 0.74);

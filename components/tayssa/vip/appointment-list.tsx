@@ -87,7 +87,7 @@ export function AppointmentList({ items, sinal }: { items: AppointmentRow[]; sin
                     </p>
                   )}
                   <PagarSinal
-                    tema="perola"
+                    tema="noite"
                     pedido={{
                       id: a.id,
                       servico: a.service_name,

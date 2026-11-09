@@ -146,7 +146,7 @@ export function BookingFlow({
             {/* o sinal em três passos: copiar o Pix, anexar o comprovante, avisar a Tayssa */}
             <div style={{ marginTop: 16 }}>
               <PagarSinal
-                tema="perola"
+                tema="noite"
                 pedido={{ id: done.id, servico: done.serviceName, dia: done.date, hora: done.time }}
                 nome={sinal.nome}
                 sinal={sinal.valor}

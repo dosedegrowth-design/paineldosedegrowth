@@ -70,8 +70,9 @@ async function copiarTexto(texto: string): Promise<boolean> {
  *    (computador), o botão abre a conversa com o recado e o link do horário,
  *    que o WhatsApp mostra como o folder.
  * Sem chave Pix cadastrada no painel, o passo 1 vira "pedir a chave no
- * WhatsApp", como antes. `tema`: "noite" na folha de agendar do site (vinho
- * escuro, a paleta dela), "perola" na conta.
+ * WhatsApp", como antes. `tema`: "noite" na folha de agendar do site e em
+ * "Meus agendamentos" (vinho escuro, a paleta do site; 09/11/2026), "perola"
+ * fica para o VIP.
  */
 export function PagarSinal({
   pedido,

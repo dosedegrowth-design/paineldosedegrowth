@@ -1,0 +1,350 @@
+/* ============================================================
+   A AGENDA DA CLIENTE NA PALETA DO SITE (09/11/2026)
+   Pedido do Lucas: "essa parte dourada não pode existir, ela tem que
+   ser na paleta inicial". "Meus agendamentos" e "Minha conta" ficam no
+   vinho escuro do site, o mesmo da folha de agendar e da tela de
+   entrar, para todas as clientes. As telas só da VIP (início, cartão,
+   benefícios, jornada) seguem na pele pérola (vip-perola.css).
+   Só cor: nada de estrutura. Vale onde a página traz o marcador
+   `.tyv-tom-site` (app/tayssa/vip/agendar e app/tayssa/vip/perfil).
+   ============================================================ */
+
+.ty-scope.tyv:has(.tyv-tom-site) {
+  --tyv-perola: #24060f;
+  --tyv-perola-2: #3d0b20;
+  --tyv-tinta: #f8ecef;
+  --tyv-tinta-2: rgba(248, 236, 239, 0.68);
+  --tyv-tinta-3: rgba(248, 236, 239, 0.44);
+  --tyv-vinho: #f4a6c0;
+  --tyv-ouro: #f7c1d1;
+  --tyv-ouro-2: #f2a7c0;
+  --tyv-ouro-luz: rgba(247, 193, 209, 0.16);
+  --tyv-ouro-grad: linear-gradient(180deg, #ffffff 0%, #fbe1e9 100%);
+  --tyv-marfim: var(--tyv-tinta);
+  --tyv-rosa: #f7c1d1;
+  --t-fg: #f8ecef;
+  --t-fg-2: rgba(248, 236, 239, 0.64);
+  --t-line: rgba(248, 236, 239, 0.12);
+  --t-line-strong: rgba(248, 236, 239, 0.3);
+  --t-bg: #24060f;
+  --t-accent: #f7c1d1;
+  --t-accent-fg: #1a0810;
+  --tyv-vidro: rgba(255, 255, 255, 0.065);
+  --tyv-borda: rgba(255, 214, 228, 0.16);
+  --tyv-sombra: 0 1px 2px rgba(0, 0, 0, 0.2), 0 18px 40px -26px rgba(0, 0, 0, 0.7);
+  --tyv-surface: rgba(255, 236, 242, 0.06);
+  --tyv-surface-2: rgba(255, 236, 242, 0.1);
+  color: var(--tyv-tinta);
+  background: #24060f;
+  color-scheme: dark;
+  caret-color: #f7c1d1;
+}
+body:has(.tyv-tom-site) {
+  background: #12040a;
+}
+
+/* ---------- o fundo: o vinho da folha de agendar, luz rosé (sem ouro) ---------- */
+.ty-scope.tyv:has(.tyv-tom-site) .ty-vivo[data-tom="perola"] {
+  background:
+    radial-gradient(120% 50% at 50% 0%, rgba(232, 92, 140, 0.2), transparent 62%),
+    radial-gradient(90% 70% at 100% 100%, #3d0a1f 0%, transparent 65%),
+    linear-gradient(180deg, #3d0b20 0%, #24060f 55%, #12040a 100%);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .ty-vivo[data-tom="perola"] .ty-vivo__luz--1 {
+  background: radial-gradient(closest-side, rgba(232, 92, 140, 0.34), rgba(190, 40, 90, 0.12) 55%, transparent);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .ty-vivo[data-tom="perola"] .ty-vivo__luz--2 {
+  background: radial-gradient(closest-side, rgba(247, 170, 196, 0.22), rgba(150, 30, 70, 0.1) 55%, transparent);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .ty-vivo[data-tom="perola"] .ty-vivo__luz--ouro {
+  background: radial-gradient(closest-side, rgba(247, 170, 196, 0.14), rgba(190, 40, 90, 0.05) 55%, transparent);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .ty-vivo[data-tom="perola"] .ty-vivo__varre {
+  background: linear-gradient(100deg, transparent 40%, rgba(255, 214, 228, 0.05) 50%, transparent 60%);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .ty-vivo[data-tom="perola"] .ty-vivo__borda {
+  background: radial-gradient(130% 95% at 50% 42%, transparent 52%, rgba(58, 14, 42, 0.5) 78%, rgba(26, 4, 16, 0.9) 100%);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .ty-vivo[data-tom="perola"] .ty-vivo__borda::before {
+  background: linear-gradient(90deg, transparent, rgba(247, 193, 209, 0.32), transparent);
+}
+
+/* ---------- topo ---------- */
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-top::before {
+  background: rgba(36, 6, 15, 0.94);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-top::after {
+  background: linear-gradient(180deg, rgba(36, 6, 15, 0.9), rgba(36, 6, 15, 0));
+}
+.ty-scope.tyv:has(.tyv-tom-site) .ty-brand__name {
+  color: #f8ecef;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .ty-brand__name em {
+  color: #f4a6c0;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-vip-tag {
+  color: #fbe3ec;
+  background: linear-gradient(180deg, #7a1d3a 0%, #561028 100%);
+  border-color: rgba(247, 193, 209, 0.55);
+  box-shadow: 0 6px 14px -8px rgba(0, 0, 0, 0.7);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-icon-btn,
+.ty-scope.tyv:has(.tyv-tom-site) a.tyv-icon-btn,
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-menu__botao {
+  color: #f8ecef;
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 214, 228, 0.32);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-menu__botao[data-aberto] {
+  background: rgba(255, 214, 228, 0.12);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ty-scope.tyv:has(.tyv-tom-site) .tyv-menu__botao:hover,
+  .ty-scope.tyv:has(.tyv-tom-site) .tyv-icon-btn:hover {
+    background: rgba(255, 214, 228, 0.08);
+  }
+}
+
+/* ---------- letra: branco rosado, o destaque em rosé ---------- */
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-hello {
+  color: #f8ecef;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-hello em {
+  color: #f4a6c0;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-label {
+  color: #f2a7c0;
+}
+/* os títulos de seção ("Serviço", "Meus dados", "Senha") */
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-h2 {
+  color: #f8ecef;
+}
+
+/* ---------- blocos: vidro do site ---------- */
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-panel,
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-moment {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 214, 228, 0.16);
+  box-shadow: 0 18px 40px -30px rgba(0, 0, 0, 0.7);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-btn--accent {
+  color: #4b0c20;
+  background: linear-gradient(180deg, #ffffff 0%, #fbe1e9 100%);
+  border: 0;
+  box-shadow: 0 14px 30px -16px rgba(247, 150, 182, 0.6);
+}
+.ty-scope.tyv:has(.tyv-tom-site) a.tyv-link,
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-link {
+  color: #f4a6c0;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-badge {
+  color: #4b0c20;
+  background: #f7c1d1;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-badge--quiet {
+  color: var(--tyv-tinta-2);
+  background: rgba(255, 236, 242, 0.1);
+}
+
+/* ---------- menu dos três pontinhos ---------- */
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-menu__veu {
+  background: rgba(10, 2, 6, 0.5);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-menu {
+  background: rgba(46, 9, 24, 0.97);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 214, 228, 0.14),
+    0 30px 60px -24px rgba(0, 0, 0, 0.75);
+}
+.ty-scope.tyv:has(.tyv-tom-site) a.tyv-menu__item {
+  color: #f8ecef;
+}
+.ty-scope.tyv:has(.tyv-tom-site) a.tyv-menu__item:active,
+.ty-scope.tyv:has(.tyv-tom-site) a.tyv-menu__item[aria-current="page"] {
+  color: #f8ecef;
+  background: rgba(255, 214, 228, 0.1);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-menu__ico {
+  color: #fbe3ec;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-menu__item[aria-current="page"] .tyv-menu__ico {
+  color: #4b0c20;
+  background: linear-gradient(180deg, #ffffff 0%, #fbe1e9 100%);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ty-scope.tyv:has(.tyv-tom-site) a.tyv-menu__item:hover {
+    color: #f8ecef;
+    background: rgba(255, 214, 228, 0.08);
+  }
+}
+
+/* ---------- escolher dia e horário: vidro; a escolhida acende em branco ---------- */
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-choice:not([aria-pressed="true"]),
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-day:not([aria-pressed="true"]),
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-slot:not([aria-pressed="true"]) {
+  background-color: rgba(255, 255, 255, 0.065);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-choice[aria-pressed="true"] {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: #f8ecef;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-day__m {
+  color: #f2a7c0;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-day[aria-pressed="true"] .tyv-day__m {
+  color: inherit;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-confirma {
+  background: rgba(255, 214, 228, 0.06);
+  border-color: rgba(255, 214, 228, 0.18);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-feito {
+  color: #f8ecef;
+  background: rgba(247, 193, 209, 0.12);
+  border-color: rgba(247, 193, 209, 0.3);
+}
+
+/* ---------- formulários (Minha conta) ---------- */
+.ty-scope.tyv:has(.tyv-tom-site) .ty-form-error {
+  color: #ffc2d4;
+  border-color: rgba(255, 179, 200, 0.4);
+  background: rgba(255, 179, 200, 0.08);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .ty-field__error {
+  color: #ffc2d4;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .ty-btn {
+  --btn-hover-bg: rgba(255, 214, 228, 0.08);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .ty-btn--solid {
+  --btn-fg: #4b0c20;
+  --btn-bg: #fbe1e9;
+  --btn-hover-bg: #ffffff;
+  --btn-hover-fg: #4b0c20;
+  border-color: transparent;
+  box-shadow: 0 14px 30px -16px rgba(247, 150, 182, 0.55);
+}
+
+/* ---------- as abas: trilho de vidro, a marca em branco rosado ---------- */
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-abas__barra::before {
+  background: linear-gradient(180deg, rgba(36, 6, 15, 0.96) 0%, rgba(36, 6, 15, 0.96) 72%, rgba(36, 6, 15, 0) 100%);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-abas__lista {
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(255, 214, 228, 0.16);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-abas__marca {
+  background: linear-gradient(180deg, #ffffff 0%, #fbe1e9 100%);
+  box-shadow: 0 6px 14px -8px rgba(247, 150, 182, 0.6);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-abas__aba {
+  color: rgba(248, 236, 239, 0.72);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-abas__aba[aria-selected="true"] {
+  color: #4b0c20;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-abas__n {
+  color: #f7c1d1;
+  background: rgba(247, 193, 209, 0.14);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-abas__aba[aria-selected="true"] .tyv-abas__n {
+  color: #4b0c20;
+  background: rgba(75, 12, 32, 0.1);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-abas__nota--vip {
+  color: #fbe3ec;
+  background: rgba(247, 193, 209, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(247, 193, 209, 0.28);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ty-scope.tyv:has(.tyv-tom-site) .tyv-abas__aba:not([aria-selected="true"]):hover {
+    color: #ffffff;
+  }
+}
+
+/* ---------- Realizados ---------- */
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-realizado {
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(255, 214, 228, 0.14);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-realizado__marca svg {
+  stroke: #f7c1d1;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-realizado__nome {
+  color: rgba(248, 236, 239, 0.72);
+  text-decoration-color: rgba(247, 193, 209, 0.8);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-realizado__selo {
+  color: #f2a7c0;
+}
+
+/* ---------- Marcar: a lista curta de serviços ---------- */
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-servico {
+  background: rgba(255, 255, 255, 0.065);
+  box-shadow: inset 0 0 0 1px rgba(255, 214, 228, 0.16);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-servico[aria-pressed="true"] {
+  background: #ffffff;
+  box-shadow: none;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-servico[aria-pressed="true"] .tyv-servico__nome {
+  color: #4b0c20;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-servico__info {
+  color: rgba(255, 225, 234, 0.7);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-servico[aria-pressed="true"] .tyv-servico__info {
+  color: rgba(75, 12, 32, 0.7);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-servico[aria-pressed="true"] .tyv-servico__seta {
+  border-color: rgba(75, 12, 32, 0.5);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-servicos__mais {
+  color: #f7c1d1;
+  box-shadow: inset 0 0 0 1.5px rgba(247, 193, 209, 0.4);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-servicos__n {
+  color: #f7c1d1;
+  background: rgba(247, 193, 209, 0.14);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ty-scope.tyv:has(.tyv-tom-site) .tyv-servico:hover {
+    box-shadow: inset 0 0 0 1px rgba(255, 214, 228, 0.34);
+  }
+}
+
+/* ---------- o pé: onda vinho com fio rosé ---------- */
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-pe::after {
+  background: #3d0b20;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-pe__fio {
+  color: #f4a6c0;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-pe__fio::before {
+  background: linear-gradient(90deg, transparent, rgba(247, 193, 209, 0.45));
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-pe__fio::after {
+  background: linear-gradient(90deg, rgba(247, 193, 209, 0.45), transparent);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-pe__vinho {
+  fill: #3d0b20;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-pe__ouro {
+  stroke: rgba(247, 193, 209, 0.6);
+}
+
+/* ---------- o que o navegador desenha ---------- */
+.ty-scope.tyv:has(.tyv-tom-site) ::selection {
+  background: rgba(247, 193, 209, 0.35);
+  color: #ffffff;
+}
+.ty-scope.tyv:has(.tyv-tom-site) :focus-visible {
+  outline-color: #f7c1d1;
+}
+
+/* ---------- o sinal (Pix, comprovante, WhatsApp): o tom da folha, detalhes em rosé ---------- */
+.ty-scope.tyv:has(.tyv-tom-site) .tysn {
+  --tysn-fio: rgba(247, 193, 209, 0.3);
+  --tysn-ouro: #f4a6c0;
+  --tysn-btn: #fbe1e9;
+}

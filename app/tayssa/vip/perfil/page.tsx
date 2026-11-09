@@ -1,4 +1,5 @@
 import { requireClientPage } from "@/lib/tayssa/auth/guards";
+import { TomDoSite } from "@/components/tayssa/vip/tom-do-site";
 import { getClientServiceHistory } from "@/lib/tayssa/queries/client";
 import { getActiveServices } from "@/lib/tayssa/queries/catalog";
 import { logoutAction } from "@/lib/tayssa/actions/auth";
@@ -23,6 +24,8 @@ export default async function ProfilePage() {
 
   return (
     <>
+      {/* a agenda e a conta ficam na paleta do site (vip-site.css), sem o dourado do VIP */}
+      <TomDoSite />
       <h1 className="tyv-hello">{user.displayName}</h1>
       <p className="tyv-sub">
         {vipAberto ? `${p ? VIP_STATUS_LABEL[p.vip_status] : "Cliente"} · ` : ""}
