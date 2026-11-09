@@ -70,11 +70,12 @@ body:has(.tyv-tom-site) {
 }
 
 /* ---------- topo ---------- */
+/* topo sólido, na cor da barra do navegador: nada do que rola aparece por trás */
 .ty-scope.tyv:has(.tyv-tom-site) .tyv-top::before {
-  background: rgba(36, 6, 15, 0.94);
+  background: #2a0714;
 }
 .ty-scope.tyv:has(.tyv-tom-site) .tyv-top::after {
-  background: linear-gradient(180deg, rgba(36, 6, 15, 0.9), rgba(36, 6, 15, 0));
+  background: linear-gradient(180deg, #2a0714, rgba(42, 7, 20, 0));
 }
 .ty-scope.tyv:has(.tyv-tom-site) .ty-brand__name {
   color: #f8ecef;
@@ -227,7 +228,7 @@ body:has(.tyv-tom-site) {
 
 /* ---------- as abas: trilho de vidro, a marca em branco rosado ---------- */
 .ty-scope.tyv:has(.tyv-tom-site) .tyv-abas__barra::before {
-  background: linear-gradient(180deg, rgba(36, 6, 15, 0.96) 0%, rgba(36, 6, 15, 0.96) 72%, rgba(36, 6, 15, 0) 100%);
+  background: linear-gradient(180deg, #2a0714 0%, #2a0714 72%, rgba(42, 7, 20, 0) 100%);
 }
 .ty-scope.tyv:has(.tyv-tom-site) .tyv-abas__lista {
   background: rgba(255, 255, 255, 0.06);
@@ -347,4 +348,44 @@ body:has(.tyv-tom-site) {
   --tysn-fio: rgba(247, 193, 209, 0.3);
   --tysn-ouro: #f4a6c0;
   --tysn-btn: #fbe1e9;
+}
+
+/* ---------- os passos do sinal centrados: o número em cima, no meio (Lucas, 09/11/2026) ---------- */
+.ty-scope.tyv:has(.tyv-tom-site) .tysn__passo:not(.tysn__avisado) {
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  gap: 12px;
+  padding: 20px 18px;
+  text-align: center;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tysn__passo:not(.tysn__avisado) .tysn__num {
+  width: 34px;
+  height: 34px;
+  font-size: 15px;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tysn__passo:not(.tysn__avisado) .tysn__corpo {
+  justify-items: center;
+  width: 100%;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tysn__passo:not(.tysn__avisado) .tysn__titulo {
+  margin-top: 0;
+  text-wrap: balance;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tysn__passo:not(.tysn__avisado) .tysn__texto {
+  text-wrap: pretty;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tysn__passo:not(.tysn__avisado) .tysn__btn {
+  width: 100%;
+}
+/* o código do Pix e a prévia do cartão continuam lidos da esquerda */
+.ty-scope.tyv:has(.tyv-tom-site) .tysn__codigo,
+.ty-scope.tyv:has(.tyv-tom-site) .tysn__cartao {
+  width: 100%;
+  text-align: left;
+}
+/* o passo do comprovante com cara de campo de enviar arquivo: borda tracejada */
+.ty-scope.tyv:has(.tyv-tom-site) .tysn > .tysn__passo:nth-child(2):not([data-feito]) {
+  background: rgba(255, 236, 242, 0.035);
+  box-shadow: none;
+  border: 1.5px dashed rgba(247, 193, 209, 0.5);
 }
