@@ -9,11 +9,14 @@
 import { origemDaTayssa, semPrefixo } from "./dominio.ts";
 
 /**
- * Endereço público do site (links do WhatsApp, metadados, avisos). Sem a
- * variável, o site mora no painel: painel.dosedegrowth.com/tayssa.
+ * Endereço público do site (links do WhatsApp, metadados, avisos). Desde
+ * 09/11/2026 o site mora no domínio dela, tayssafarias.com.br (o
+ * painel.dosedegrowth.com/tayssa leva para lá). A variável troca o endereço:
+ * no teste local ela aponta para o localhost (.env.local), e o site volta a
+ * morar em /tayssa.
  */
 export const PUBLIC_ORIGIN =
-  process.env.NEXT_PUBLIC_TAYSSA_ORIGIN || "https://painel.dosedegrowth.com";
+  process.env.NEXT_PUBLIC_TAYSSA_ORIGIN || "https://tayssafarias.com.br";
 
 /**
  * O site mora na raiz de um domínio da Tayssa (tayssafarias.com.br): os

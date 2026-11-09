@@ -7,13 +7,13 @@ type CookieSet = { name: string; value: string; options?: CookieOptions };
 const TAYSSA_SESSION_COOKIE = "tayssa_vip_session";
 
 /**
- * Domínio da Tayssa (09/11/2026): com a origem pública no domínio dela
- * (NEXT_PUBLIC_TAYSSA_ORIGIN = https://tayssafarias.com.br), o site mora na
- * raiz de lá e o /tayssa do painel leva para o mesmo endereço no domínio
- * dela. Sem a variável, nada muda: o site segue em painel.../tayssa.
+ * Domínio da Tayssa (09/11/2026): a origem pública é o domínio dela
+ * (padrão https://tayssafarias.com.br; NEXT_PUBLIC_TAYSSA_ORIGIN troca, ex.:
+ * localhost no teste), o site mora na raiz de lá e o /tayssa do painel leva
+ * para o mesmo endereço no domínio dela.
  * Espelha SITE_NA_RAIZ em lib/tayssa/config.ts.
  */
-const ORIGEM_DA_TAYSSA = process.env.NEXT_PUBLIC_TAYSSA_ORIGIN || "https://painel.dosedegrowth.com";
+const ORIGEM_DA_TAYSSA = process.env.NEXT_PUBLIC_TAYSSA_ORIGIN || "https://tayssafarias.com.br";
 const SITE_NA_RAIZ = origemDaTayssa(ORIGEM_DA_TAYSSA);
 
 /** a pessoa abrindo a página no navegador (não a busca do roteador, uma ação ou um arquivo) */
