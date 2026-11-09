@@ -1,6 +1,7 @@
 import "server-only";
 import webpush from "web-push";
 import { vipDb, logServerError } from "@/lib/tayssa/db";
+import { ROUTES, publicUrl } from "@/lib/tayssa/config";
 
 /**
  * Avisos no celular da Tayssa (05/11/2026): quando uma cliente marca um
@@ -14,7 +15,7 @@ type Chaves = { publicKey: string; privateKey: string };
 let guardadas: Chaves | null = null;
 
 /** quem manda os avisos: o próprio site (vai no cabeçalho do envio) */
-const REMETENTE = `${process.env.NEXT_PUBLIC_TAYSSA_ORIGIN || "https://painel.dosedegrowth.com"}/tayssa`;
+const REMETENTE = publicUrl(ROUTES.home);
 
 export async function chavesDosAvisos(): Promise<Chaves> {
   if (guardadas) return guardadas;
@@ -53,7 +54,9 @@ export async function avisarTayssa(aviso: Aviso, soDoUsuario?: string): Promise<
     if (!aparelhos.length) return 0;
     const chaves = await chavesDosAvisos();
     webpush.setVapidDetails(REMETENTE, chaves.publicKey, chaves.privateKey);
-    const corpo = JSON.stringify(aviso);
+    // link absoluto: um aparelho ligado no endereço antigo (painel.../tayssa)
+    // abre o painel no endereço de hoje, não um caminho solto no domínio errado
+    const corpo = JSON.stringify({ ...aviso, url: publicUrl(aviso.url) });
     const enviados = await Promise.all(
       aparelhos.map(async (a) => {
         try {

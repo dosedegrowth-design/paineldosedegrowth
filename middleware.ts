@@ -1,9 +1,33 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { ehHostDaTayssa, origemDaTayssa, semPrefixo } from "@/lib/tayssa/dominio";
 
 type CookieSet = { name: string; value: string; options?: CookieOptions };
 
 const TAYSSA_SESSION_COOKIE = "tayssa_vip_session";
+
+/**
+ * Domínio da Tayssa (09/11/2026): com a origem pública no domínio dela
+ * (NEXT_PUBLIC_TAYSSA_ORIGIN = https://tayssafarias.com.br), o site mora na
+ * raiz de lá e o /tayssa do painel leva para o mesmo endereço no domínio
+ * dela. Sem a variável, nada muda: o site segue em painel.../tayssa.
+ * Espelha SITE_NA_RAIZ em lib/tayssa/config.ts.
+ */
+const ORIGEM_DA_TAYSSA = process.env.NEXT_PUBLIC_TAYSSA_ORIGIN || "https://painel.dosedegrowth.com";
+const SITE_NA_RAIZ = origemDaTayssa(ORIGEM_DA_TAYSSA);
+
+/** a pessoa abrindo a página no navegador (não a busca do roteador, uma ação ou um arquivo) */
+function ehAberturaDePagina(request: NextRequest): boolean {
+  if (request.method !== "GET" && request.method !== "HEAD") return false;
+  const h = request.headers;
+  if (h.has("rsc") || h.has("next-action") || h.has("next-router-prefetch")) return false;
+  const destino = h.get("sec-fetch-dest");
+  if (destino) return destino === "document";
+  return (h.get("accept") ?? "").includes("text/html");
+}
+
+/** arquivo (o último pedaço tem extensão: service worker, manifesto, vídeo): nunca muda de endereço */
+const ehArquivo = (p: string) => /\.[a-z0-9]+$/i.test(p.slice(p.lastIndexOf("/") + 1));
 
 /**
  * Endereços da conta da cliente sem "vip" (Lucas, 05/11/2026: com o VIP
@@ -51,51 +75,70 @@ function tayssaGuard(
  * descomentar a verificação de sessão.
  */
 export async function middleware(request: NextRequest) {
-  // Subdomínio da Tayssa (tayssa.dosedegrowth.com): todo caminho vira
-  // /tayssa/<caminho> — a experiência inteira (pública, VIP e admin) vive
-  // em app/tayssa. Links internos continuam com o prefixo /tayssa, que
-  // também funciona no subdomínio.
-  const host = request.headers.get("host") ?? "";
+  // Domínio da Tayssa (tayssafarias.com.br; o antigo tayssa.* também): todo
+  // caminho vira /tayssa/<caminho> — a experiência inteira (pública, VIP e
+  // admin) vive em app/tayssa. Com SITE_NA_RAIZ os links já saem sem o
+  // prefixo; sem ele, os links internos levam /tayssa, que também funciona lá.
+  // o host de quem pediu: numa ação que termina em redirect, o Next busca a
+  // página de destino por dentro (outro pedido, com o host original só no
+  // x-forwarded-host); sem isso o /admin do domínio dela caía no painel da DDG
+  const host = (request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? "").split(",")[0].trim();
   const { pathname } = request.nextUrl;
   // Preview do Vercel (link *.vercel.app de cada push) não tem banco: lá o
   // login falha sempre e a pessoa fica presa na tela de entrar. Quem abrir o
   // Tayssa por esse link vai para o site de verdade, no mesmo caminho.
+  const comPrefixo = pathname === "/tayssa" || pathname.startsWith("/tayssa/");
   if (
     process.env.VERCEL_ENV === "preview" &&
     !(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) &&
-    (pathname === "/tayssa" || pathname.startsWith("/tayssa/"))
+    comPrefixo
   ) {
     const destino = new URL(
-      pathname + request.nextUrl.search,
-      process.env.NEXT_PUBLIC_TAYSSA_ORIGIN || "https://painel.dosedegrowth.com"
+      (SITE_NA_RAIZ ? semPrefixo(pathname) : pathname) + request.nextUrl.search,
+      ORIGEM_DA_TAYSSA
     );
     return NextResponse.redirect(destino);
   }
-  if (host.startsWith("tayssa.")) {
+  if (ehHostDaTayssa(host)) {
     if (pathname === "/favicon.ico") {
       const url = request.nextUrl.clone();
       url.pathname = "/tayssa/favicon.svg";
       return NextResponse.rewrite(url);
     }
-    // No subdomínio a URL é limpa (/vip), mas quem já chegar com /tayssa/vip
-    // também funciona — os dois caminhos levam ao mesmo lugar.
-    const alreadyPrefixed = pathname === "/tayssa" || pathname.startsWith("/tayssa/");
+    // No domínio dela a URL é limpa (/vip), mas quem já chegar com /tayssa/vip
+    // também chega — os dois caminhos levam ao mesmo lugar.
     const internal = pathname.startsWith("/_next") || pathname.startsWith("/api");
     if (!internal) {
-      const appPath = alreadyPrefixed
-        ? pathname
-        : pathname === "/"
-          ? "/tayssa"
-          : `/tayssa${pathname}`;
-      const guard = tayssaGuard(request, appPath, !alreadyPrefixed);
+      const appPath = comPrefixo ? pathname : pathname === "/" ? "/tayssa" : `/tayssa${pathname}`;
+      // a URL que a pessoa vê: sem o /tayssa (com o site na raiz, sempre)
+      const limpa = SITE_NA_RAIZ || !comPrefixo;
+      const pagina = ehAberturaDePagina(request) && !ehArquivo(pathname);
+      // endereço antigo da conta (/vip/agendar) ou, com o site na raiz, um
+      // endereço com /tayssa: a página abre no endereço certo
+      const antigo = ENDERECOS_ANTIGOS[semBarraNoFim(appPath)];
+      if (pagina && (antigo || (SITE_NA_RAIZ && comPrefixo && !pathname.startsWith("/tayssa/api/")))) {
+        const url = request.nextUrl.clone();
+        const certo = antigo ?? appPath;
+        url.pathname = limpa ? semPrefixo(certo) : certo;
+        return NextResponse.redirect(url);
+      }
+      const guard = tayssaGuard(request, appPath, limpa);
       if (guard) return guard;
       const interno = APELIDOS_DA_CONTA[semBarraNoFim(appPath)] ?? appPath;
-      if (!alreadyPrefixed || interno !== appPath) {
+      if (interno !== pathname) {
         const url = request.nextUrl.clone();
         url.pathname = interno;
         return NextResponse.rewrite(url);
       }
+      return NextResponse.next();
     }
+  }
+  // Com o site no domínio dela, o /tayssa do painel leva ao mesmo endereço lá
+  // (links antigos do WhatsApp, favoritos). Arquivo fica: o service worker
+  // dos avisos já instalado continua se atualizando daqui.
+  if (SITE_NA_RAIZ && comPrefixo && !ehArquivo(pathname) && !pathname.startsWith("/tayssa/api/")) {
+    const certo = ENDERECOS_ANTIGOS[semBarraNoFim(pathname)] ?? pathname;
+    return NextResponse.redirect(new URL(semPrefixo(certo) + request.nextUrl.search, ORIGEM_DA_TAYSSA));
   }
   // Domínio do painel: mesma barreira, com o prefixo /tayssa na URL
   const guarded = tayssaGuard(request, pathname, false);

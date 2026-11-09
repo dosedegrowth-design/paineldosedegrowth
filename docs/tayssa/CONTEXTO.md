@@ -44,7 +44,7 @@ a principal fonte de ruído para quem chega agora. **Ver seção 18.**
 | Branch de verdade | `main` |
 | Branch desta sessão | `claude/amazing-lovelace-tlgo5c` (já mesclado na `main`) |
 | **Produção (ao vivo)** | **`https://painel.dosedegrowth.com/tayssa`** |
-| Subdomínio previsto | `https://tayssa.dosedegrowth.com` — **ainda não aponta** (ver §15) |
+| Domínio dela | `https://tayssafarias.com.br` (09/11/2026; o site passa para lá com `NEXT_PUBLIC_TAYSSA_ORIGIN`, ver "Domínio" no CLAUDE.md) |
 | Projeto Vercel | `dose-de-growths-projects/paineldosedegrowth` |
 | Supabase | projeto `hkjukobqpjezhpxzplpj` (sa-east-1), schema **`vip`** |
 | Storage | bucket **`tayssa-fotos`** (público) |
@@ -162,7 +162,7 @@ repo.** Onde cada coisa vive:
 | `NEXT_PUBLIC_SUPABASE_URL` | Vercel env (production) | `https://hkjukobqpjezhpxzplpj.supabase.co` |
 | `SUPABASE_SERVICE_ROLE_KEY` | Vercel env (production) | **é a chave que o Tayssa usa**; bypassa RLS |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Vercel env (production) | — |
-| `NEXT_PUBLIC_TAYSSA_ORIGIN` | opcional | default `https://tayssa.dosedegrowth.com` |
+| `NEXT_PUBLIC_TAYSSA_ORIGIN` | opcional | default `https://painel.dosedegrowth.com` (links em `/tayssa/...`); `https://tayssafarias.com.br` põe o site na raiz do domínio dela |
 
 O Tayssa usa **apenas** essas envs do Supabase. Todas as outras do repo
 (`META_APP_ID`, `GOOGLE_ADS_*`, `SHOPIFY_*`, `ANTHROPIC_API_KEY`,

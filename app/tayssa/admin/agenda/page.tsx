@@ -149,7 +149,7 @@ function Slot({
             <span className="tya-slot__tag">comprovante</span>
             Anexado {quandoAnexou(a.comprovante_em!)} · confira o Pix de {reais(sinal.valor)} e confirme.{" "}
             <a
-              href={`/tayssa/admin/comprovante/${a.id}`}
+              href={ROUTES.adminComprovante(a.id)}
               target="_blank"
               rel="noopener noreferrer"
               className="tya-link"

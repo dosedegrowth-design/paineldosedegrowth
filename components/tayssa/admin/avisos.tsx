@@ -8,6 +8,7 @@ import {
   testarAvisoAction,
 } from "@/lib/tayssa/actions/avisos";
 import { useTarefa } from "@/components/tayssa/ui/acao";
+import { ROUTES, SITE_NA_RAIZ } from "@/lib/tayssa/config";
 
 /**
  * "Avisos de novos pedidos" (05/11/2026): a Tayssa liga uma vez em cada
@@ -19,8 +20,10 @@ import { useTarefa } from "@/components/tayssa/ui/acao";
 
 type Estado = "carregando" | "sem-suporte" | "iphone" | "bloqueado" | "desligado" | "ligado";
 
-const ESCOPO = "/tayssa/admin/";
-const ARQUIVO = "/tayssa/avisos-sw.js";
+// no domínio dela o painel mora em /admin: o arquivo vem da raiz (o
+// middleware entrega public/tayssa/avisos-sw.js) para poder cuidar de /admin/
+const ESCOPO = `${ROUTES.admin}/`;
+const ARQUIVO = SITE_NA_RAIZ ? "/avisos-sw.js" : "/tayssa/avisos-sw.js";
 
 function chaveEmBytes(base64: string): Uint8Array<ArrayBuffer> {
   const pad = "=".repeat((4 - (base64.length % 4)) % 4);

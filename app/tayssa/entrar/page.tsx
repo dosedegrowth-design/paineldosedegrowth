@@ -3,7 +3,7 @@ import "./entrar.css";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/tayssa/auth/session";
 import { getSettings } from "@/lib/tayssa/settings";
-import { ROUTES } from "@/lib/tayssa/config";
+import { ROUTES, caminhoDeVolta } from "@/lib/tayssa/config";
 import { MENSAGENS_DA_AGENDA, whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { getPhotoAvailability } from "@/lib/tayssa/photos-server";
 import { LoginExperience } from "@/components/tayssa/auth/login-experience";
@@ -30,7 +30,7 @@ export default async function LoginPage({
   ]);
   const vipAberto = settings.rules.vip_aberto;
   if (user) redirect(user.role === "admin" ? ROUTES.admin : vipAberto || user.isVip ? ROUTES.vip : ROUTES.vipBook);
-  const next = params.next?.startsWith("/tayssa/") ? params.next : undefined;
+  const next = caminhoDeVolta(params.next) ?? undefined;
   const linkExpirado = params.link === "expirado";
   // VIP fechado: o "Falar com a Tayssa" não pergunta do VIP
   const mensagem = vipAberto

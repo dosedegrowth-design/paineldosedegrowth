@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { SITE_NA_RAIZ } from "@/lib/tayssa/config";
 
 /**
  * robots.txt do domínio inteiro (painel e páginas públicas). Libera tudo e
@@ -19,6 +20,7 @@ export default function robots(): MetadataRoute.Robots {
         "/briefing",
       ],
     },
-    sitemap: "https://painel.dosedegrowth.com/tayssa/sitemap.xml",
+    // com o site da Tayssa no domínio dela, o mapa dela é anunciado lá
+    sitemap: SITE_NA_RAIZ ? undefined : "https://painel.dosedegrowth.com/tayssa/sitemap.xml",
   };
 }

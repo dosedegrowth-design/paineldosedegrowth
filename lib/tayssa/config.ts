@@ -6,38 +6,67 @@
  * banco não responder), as rotas e as constantes técnicas.
  */
 
+import { origemDaTayssa, semPrefixo } from "./dominio.ts";
+
+/**
+ * Endereço público do site (links do WhatsApp, metadados, avisos). Sem a
+ * variável, o site mora no painel: painel.dosedegrowth.com/tayssa.
+ */
+export const PUBLIC_ORIGIN =
+  process.env.NEXT_PUBLIC_TAYSSA_ORIGIN || "https://painel.dosedegrowth.com";
+
+/**
+ * O site mora na raiz de um domínio da Tayssa (tayssafarias.com.br): os
+ * endereços saem sem o `/tayssa` (o middleware reescreve para app/tayssa) e
+ * o painel.dosedegrowth.com/tayssa passa a levar para lá. Decidido no build
+ * pela origem pública, igual no servidor e no navegador.
+ */
+export const SITE_NA_RAIZ = origemDaTayssa(PUBLIC_ORIGIN);
+const B = SITE_NA_RAIZ ? "" : "/tayssa";
+
 export const ROUTES = {
-  home: "/tayssa",
-  refer: "/tayssa/indicar",
-  login: "/tayssa/entrar",
-  signup: "/tayssa/cadastro",
-  pending: "/tayssa/aguardando",
-  setPassword: "/tayssa/entrar/definir-senha",
-  restricted: "/tayssa/acesso",
-  vip: "/tayssa/vip",
-  vipCard: "/tayssa/vip/cartao",
+  home: B || "/",
+  refer: `${B}/indicar`,
+  login: `${B}/entrar`,
+  signup: `${B}/cadastro`,
+  pending: `${B}/aguardando`,
+  setPassword: `${B}/entrar/definir-senha`,
+  restricted: `${B}/acesso`,
+  vip: `${B}/vip`,
+  vipCard: `${B}/vip/cartao`,
   // endereços da conta sem "vip" (Lucas, 05/11/2026): o middleware reescreve
   // para app/tayssa/vip/agendar e app/tayssa/vip/perfil, e manda os antigos para cá
-  vipBook: "/tayssa/meus-horarios",
-  vipBenefits: "/tayssa/vip/beneficios",
-  vipProfile: "/tayssa/minha-conta",
-  vipJourney: "/tayssa/vip/jornada",
+  vipBook: `${B}/meus-horarios`,
+  vipBenefits: `${B}/vip/beneficios`,
+  vipProfile: `${B}/minha-conta`,
+  vipJourney: `${B}/vip/jornada`,
   /** o "folder" do horário: o link que vai no WhatsApp (público, sem nome nem contato) */
-  horario: (id: string) => `/tayssa/horario/${id}`,
+  horario: (id: string) => `${B}/horario/${id}`,
   /** o mesmo horário como foto em pé (1080×1350): vai no WhatsApp como imagem, não como link */
-  cartaoDoHorario: (id: string) => `/tayssa/horario/${id}/cartao`,
-  admin: "/tayssa/admin",
-  adminClients: "/tayssa/admin/clientes",
-  adminClientNew: "/tayssa/admin/clientes/novo",
-  adminClient: (id: string) => `/tayssa/admin/clientes/${id}`,
-  adminServices: "/tayssa/admin/atendimentos",
-  adminReferrals: "/tayssa/admin/indicacoes",
-  adminBenefits: "/tayssa/admin/beneficios",
-  adminBirthdays: "/tayssa/admin/aniversarios",
-  adminSettings: "/tayssa/admin/configuracoes",
-  adminPhotos: "/tayssa/admin/fotos",
-  adminAgenda: "/tayssa/admin/agenda",
+  cartaoDoHorario: (id: string) => `${B}/horario/${id}/cartao`,
+  admin: `${B}/admin`,
+  adminClients: `${B}/admin/clientes`,
+  adminClientNew: `${B}/admin/clientes/novo`,
+  adminClient: (id: string) => `${B}/admin/clientes/${id}`,
+  adminServices: `${B}/admin/atendimentos`,
+  adminReferrals: `${B}/admin/indicacoes`,
+  adminBenefits: `${B}/admin/beneficios`,
+  adminBirthdays: `${B}/admin/aniversarios`,
+  adminSettings: `${B}/admin/configuracoes`,
+  adminPhotos: `${B}/admin/fotos`,
+  adminAgenda: `${B}/admin/agenda`,
+  /** o comprovante do sinal (só a Tayssa logada abre) */
+  adminComprovante: (id: string) => `${B}/admin/comprovante/${id}`,
 } as const;
+
+/**
+ * Para onde voltar depois de entrar: só um caminho deste site (nunca
+ * `//outro-site` nem `/\outro-site`), e no painel só o que é do Tayssa.
+ */
+export function caminhoDeVolta(next: string | null | undefined): string | null {
+  if (!next || !next.startsWith("/") || next.startsWith("//") || next.startsWith("/\\")) return null;
+  return SITE_NA_RAIZ || next.startsWith("/tayssa/") ? next : null;
+}
 
 /** Nome do cookie de sessão (próprio, não usa Supabase Auth). */
 export const SESSION_COOKIE = "tayssa_vip_session";
@@ -80,21 +109,14 @@ export const VIDEO_TYPES: Record<string, string> = {
   "video/quicktime": "mov",
 };
 
-/** URL pública canônica (subdomínio). Caminhos internos continuam /tayssa/... */
-/** Por enquanto o Tayssa mora no domínio do painel: painel.dosedegrowth.com/tayssa. */
-export const PUBLIC_ORIGIN =
-  process.env.NEXT_PUBLIC_TAYSSA_ORIGIN ?? "https://painel.dosedegrowth.com";
-
 /**
  * URL absoluta de uma rota interna. No domínio do painel o caminho fica como
- * está (`/tayssa/...`); se um dia voltar para o subdomínio `tayssa.*`, o
- * middleware reescreve `/x` -> `/tayssa/x` e o prefixo sai do link.
+ * está (`/tayssa/...`); no domínio da Tayssa o site mora na raiz, e um
+ * caminho antigo com `/tayssa` perde o prefixo.
  */
 export function publicUrl(path: string): string {
   const origin = PUBLIC_ORIGIN.replace(/\/$/, "");
-  const host = origin.replace(/^https?:\/\//, "");
-  const p = host.startsWith("tayssa.") ? path.replace(/^\/tayssa(?=\/|$)/, "") || "/" : path;
-  return `${origin}${p}`;
+  return `${origin}${SITE_NA_RAIZ ? semPrefixo(path) : path}`;
 }
 
 // ------------------------------------------------------------

@@ -30,9 +30,14 @@ self.addEventListener("notificationclick", (e) => {
   const alvo = new URL((e.notification.data && e.notification.data.url) || "/tayssa/admin/agenda", self.location.origin).href;
   e.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((janelas) => {
+      // uma janela do painel já aberta (dentro do escopo deste arquivo): vem
+      // para a frente e vai para a agenda; se não der, abre uma nova
       for (const j of janelas) {
-        if (j.url.startsWith(self.location.origin + "/tayssa/admin") && "focus" in j) {
-          return j.focus().then((f) => (f && "navigate" in f ? f.navigate(alvo) : f));
+        if (j.url.startsWith(self.registration.scope) && "focus" in j) {
+          return j
+            .focus()
+            .then((f) => (f && "navigate" in f ? f.navigate(alvo) : f))
+            .catch(() => self.clients.openWindow(alvo));
         }
       }
       return self.clients.openWindow(alvo);

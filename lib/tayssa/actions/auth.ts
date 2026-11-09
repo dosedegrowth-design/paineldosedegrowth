@@ -14,7 +14,7 @@ import {
   revokeAllSessions,
 } from "@/lib/tayssa/auth/session";
 import { logAudit } from "@/lib/tayssa/audit";
-import { ROUTES } from "@/lib/tayssa/config";
+import { ROUTES, caminhoDeVolta } from "@/lib/tayssa/config";
 import {
   changePasswordSchema,
   loginSchema,
@@ -25,10 +25,6 @@ import type { ActionResult } from "@/lib/tayssa/types";
 import { assertClient } from "@/lib/tayssa/auth/guards";
 import { ipDaRequisicao } from "@/lib/tayssa/limite";
 import { getSettings } from "@/lib/tayssa/settings";
-
-function safeNext(next: string): string | null {
-  return next.startsWith("/tayssa/") && !next.startsWith("//") ? next : null;
-}
 
 /**
  * Para onde a cliente vai ao entrar: com o VIP fechado, direto aos horários
@@ -69,7 +65,7 @@ export async function loginAction(
       entityId: user.id,
     });
 
-    const next = safeNext(str(formData, "next"));
+    const next = caminhoDeVolta(str(formData, "next"));
     const home = user.role === "admin" ? ROUTES.admin : await inicioDaCliente(user.id);
     const name = user.nickname?.trim() || user.name.trim().split(/\s+/)[0];
     return { redirectTo: next ?? home, name };

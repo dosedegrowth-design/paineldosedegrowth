@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./admin.css";
 import "./iwin.css";
 import { requireAdminPage } from "@/lib/tayssa/auth/guards";
+import { SITE_NA_RAIZ } from "@/lib/tayssa/config";
 import { vipDb } from "@/lib/tayssa/db";
 import type { Atencao } from "@/components/tayssa/admin/sidebar";
 import { AdminFrame } from "@/components/tayssa/admin/frame";
@@ -11,7 +12,8 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
   // o painel vira app na Tela de Início do iPhone: é a única forma de o
   // iPhone receber os avisos de pedido novo (Web Push)
-  manifest: "/tayssa/painel.webmanifest",
+  // no domínio dela o painel mora em /admin: o app instalado começa lá
+  manifest: SITE_NA_RAIZ ? "/tayssa/painel-dominio.webmanifest" : "/tayssa/painel.webmanifest",
   appleWebApp: { capable: true, title: "Painel Tayssa", statusBarStyle: "default" },
 };
 
