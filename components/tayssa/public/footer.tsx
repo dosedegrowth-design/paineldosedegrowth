@@ -123,7 +123,7 @@ export function PublicFooter({ business }: { business: BusinessSettings }) {
             </a>
           </Reveal>
 
-          {/* a conta: os horários de todas e a Área VIP de quem a Tayssa convidou (sem "Pedir acesso", 09/11/2026) */}
+          {/* a conta: os horários, a Área VIP e o cadastro VIP, aberto a todas desde 09/11/2026 */}
           <Reveal className="typ__coluna typ__coluna--vip" delay={0.18} y={16}>
             <span className="ty-mono typ__titulo">Sua conta</span>
             <TransitionLink href={ROUTES.vipBook} className="ty-link typ__link">
@@ -131,6 +131,9 @@ export function PublicFooter({ business }: { business: BusinessSettings }) {
             </TransitionLink>
             <TransitionLink href={ROUTES.vip} className="ty-link typ__link">
               Área VIP
+            </TransitionLink>
+            <TransitionLink href={ROUTES.signup} className="ty-link typ__link">
+              Cadastro VIP
             </TransitionLink>
             <TransitionLink href={ROUTES.refer} className="ty-link typ__link">
               Indicar alguém

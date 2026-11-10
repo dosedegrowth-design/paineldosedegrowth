@@ -53,8 +53,11 @@
     content-visibility: auto;
     contain-intrinsic-size: auto 1200px;
   }
+  /* 10/11/2026: as alturas são a média do que se mede de 360 a 412 de largura
+     (Android incluso); medidas só no iPhone, a página pulava no Android
+     quando a seção aparecia */
   .ty-scope main > #trabalho {
-    contain-intrinsic-size: auto 1150px;
+    contain-intrinsic-size: auto 1250px;
   }
   .ty-scope main > #servicos {
     /* todos os serviços fechados (05/11/2026): 1.863px no iPhone */
@@ -77,16 +80,18 @@
     contain-intrinsic-size: auto 1340px;
   }
   .ty-scope main > #vip {
-    contain-intrinsic-size: auto 2540px;
+    contain-intrinsic-size: auto 2640px;
   }
   .ty-scope main > #indicar {
     contain-intrinsic-size: auto 1970px;
   }
   .ty-scope main > #atendimento {
-    contain-intrinsic-size: auto 1270px;
+    contain-intrinsic-size: auto 1320px;
   }
-  .ty-scope main > .tycl {
-    contain-intrinsic-size: auto 1000px;
+  /* "section." dá à regra o mesmo peso da geral (main > section:not(.tyh)),
+     que antes vencia com 1200px */
+  .ty-scope main > section.tycl {
+    contain-intrinsic-size: auto 970px;
   }
   .ty-scope main + .typ {
     contain-intrinsic-size: auto 720px;

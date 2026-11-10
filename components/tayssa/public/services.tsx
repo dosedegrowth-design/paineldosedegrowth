@@ -227,8 +227,8 @@ export function Services({
           />
           <Reveal delay={0.14}>
             <p className="ty-body ty-measure--tight tysv__lead">
-              O valor e o tempo de cada cuidado. O horário você escolhe aqui e
-              confirma com ela, numa <em>conversa</em> no WhatsApp.
+              O valor e o tempo de cada cuidado. O horário você escolhe e
+              marca <em>aqui mesmo</em>, com a sua conta.
             </p>
           </Reveal>
         </div>

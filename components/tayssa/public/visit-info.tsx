@@ -50,7 +50,10 @@ export function VisitInfo({
         // "R$" e o número nunca em linhas separadas
         ...(booking.deposit_reais > 0
           ? [
-              `O horário fica guardado por ${booking.sinal_horas} horas e vale com o sinal de ${reais(booking.deposit_reais).replace(" ", "\u00a0")} no Pix: a Tayssa te chama no WhatsApp.`,
+              // com a chave Pix no painel a cliente paga e anexa o comprovante no site (05/11/2026)
+              booking.pix_chave
+                ? `O horário fica guardado por ${booking.sinal_horas} horas: depois de marcar, você paga o sinal de ${reais(booking.deposit_reais).replace(" ", "\u00a0")} no Pix copia e cola e anexa o comprovante aqui no site.`
+                : `O horário fica guardado por ${booking.sinal_horas} horas e vale com o sinal de ${reais(booking.deposit_reais).replace(" ", "\u00a0")} no Pix: a Tayssa te chama no WhatsApp.`,
             ]
           : []),
         ...(booking.lead_hours > 0 ? [`Marque com pelo menos ${booking.lead_hours} ${booking.lead_hours === 1 ? "hora" : "horas"} de antecedência.`] : []),
