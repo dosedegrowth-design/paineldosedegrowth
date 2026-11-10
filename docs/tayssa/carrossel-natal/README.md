@@ -6,6 +6,7 @@ Post do @1.tayssa anunciando o tayssafarias.com.br. 11 lâminas em 1080 x 1350 (
 - `fundos/`: o fundo limpo de cada lâmina, sem texto nem foto.
 - `legenda.txt`: a legenda do post.
 - `visao-geral.jpg`: as 11 lado a lado.
+- `capa-alternativa-chegou.jpg`: a mesma capa com CHEGOU no lugar de AGENDA. A palavra da capa sai de `CAPA="CH|EGOU" node build.mjs 1` (antes da barra fica cheio, depois fica vazado; sem a variável, AGENDA). O NATAL da primeira versão saiu a pedido do Lucas.
 - `gerador/`: o que monta as lâminas (HTML + Playwright). Para refazer: `cd gerador && NODE_PATH=$(npm root -g) node build.mjs && python3 reduz.py .` (ou `node build.mjs 3,9` para só algumas). Renderiza em 2x e o `reduz.py` leva para 1080 x 1350, o que deixa o texto mais nítido. Sai em `gerador/out/`.
 
 ## Como foi feito
