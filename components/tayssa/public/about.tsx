@@ -85,14 +85,21 @@ export function About({
                 o resto vem num toque (Lucas, 09/11/2026: "diminuir aquele
                 texto"). Nenhuma palavra saiu: o resto continua aqui, nas
                 partes com título de 29/10/2026 */}
-            {bio?.length ? <Bio bio={bio} /> : (
+            {bio?.length ? <Bio bio={bio} formacao={formacao} /> : (
               <Pendente
                 titulo="Biografia profissional"
                 detalhe="2 a 4 parágrafos curtos, na voz dela: como começou, o que a guia no atendimento, o que a cliente pode esperar. Nada de número que ela não confirme."
               />
             )}
 
-            {formacao?.length ? (
+            {/* a formação mora dentro de "Continuar a minha história" (10/11/2026);
+                fora dela só fica o aviso de conteúdo pendente, no modo estrutura */}
+            {!formacao?.length ? (
+              <Pendente
+                titulo="Formação e cursos (opcional)"
+                detalhe="Só os que ela quiser mostrar, com o nome real da instituição e o ano."
+              />
+            ) : !bio?.length ? (
               <Reveal className="tyab__formacao">
                 <span className="ty-mono ty-mono--ink">Formação · cursos presenciais</span>
                 <ul>
@@ -101,12 +108,7 @@ export function About({
                   ))}
                 </ul>
               </Reveal>
-            ) : (
-              <Pendente
-                titulo="Formação e cursos (opcional)"
-                detalhe="Só os que ela quiser mostrar, com o nome real da instituição e o ano."
-              />
-            )}
+            ) : null}
 
             {assinatura ? (
               <Reveal>
@@ -130,15 +132,16 @@ export function About({
 
 /**
  * A história dela: à vista, o começo (o rótulo "Como começou" e o primeiro
- * parágrafo); "Continuar a minha história" abre o resto ali mesmo, sem
+ * parágrafo); "Continuar a minha história" abre o resto, com os cursos no
+ * fim (10/11/2026), ali mesmo, sem
  * pular a página (a caixa cresce de 0fr para 1fr). Fechado, o resto fica
  * `inert`: nem o Tab nem o leitor de tela entram no que não aparece.
  */
-function Bio({ bio }: { bio: NonNullable<ConteudoSite["sobre"]["bio"]> }) {
+function Bio({ bio, formacao }: { bio: NonNullable<ConteudoSite["sobre"]["bio"]>; formacao: string[] | null }) {
   const [inteira, setInteira] = useState(false);
   const [primeiro, ...outros] = bio;
   const [abertura, ...continua] = primeiro.paragrafos;
-  const temResto = continua.length > 0 || outros.length > 0 || Boolean(primeiro.frase);
+  const temResto = continua.length > 0 || outros.length > 0 || Boolean(primeiro.frase) || Boolean(formacao?.length);
 
   const parte = (trecho: (typeof bio)[number], n: number, paragrafos: string[], comRotulo: boolean) => (
     <div key={trecho.rotulo} className="tyab__parte">
@@ -171,6 +174,17 @@ function Bio({ bio }: { bio: NonNullable<ConteudoSite["sobre"]["bio"]> }) {
               <div className="tyab__resto-dentro">
                 {continua.length || primeiro.frase ? parte(primeiro, 1, continua, false) : null}
                 {outros.map((t, i) => parte(t, i + 2, t.paragrafos, true))}
+                {/* os cursos fecham a história: aparecem junto com ela (10/11/2026) */}
+                {formacao?.length ? (
+                  <div className="tyab__formacao">
+                    <span className="ty-mono ty-mono--ink">Formação · cursos presenciais</span>
+                    <ul>
+                      {formacao.map((f) => (
+                        <li key={f}>{f}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
               </div>
             </div>
             {!inteira ? (
