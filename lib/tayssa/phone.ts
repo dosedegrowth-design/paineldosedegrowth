@@ -18,6 +18,25 @@ export function normalizeBrPhone(input: string): string | null {
   return `55${nacional}`;
 }
 
+/**
+ * A máscara do campo de WhatsApp enquanto a cliente digita (10/11/2026):
+ * "(11) 9876-5432" com 10 dígitos e "(11) 98765-4321" com 11. Colou com o
+ * +55 na frente? O 55 sai. Nunca passa de 11 dígitos. Apagar não trava: o
+ * que sobra de pontuação some junto com o dígito.
+ */
+export function mascaraTelefone(texto: string): string {
+  let d = texto.replace(/\D/g, "");
+  if (d.length > 11 && d.startsWith("55")) d = d.slice(2);
+  d = d.slice(0, 11);
+  if (!d) return "";
+  if (d.length <= 2) return `(${d}`;
+  const ddd = d.slice(0, 2);
+  const resto = d.slice(2);
+  if (resto.length <= 4) return `(${ddd}) ${resto}`;
+  if (d.length <= 10) return `(${ddd}) ${resto.slice(0, 4)}-${resto.slice(4)}`;
+  return `(${ddd}) ${resto.slice(0, 5)}-${resto.slice(5)}`;
+}
+
 export function formatBrPhone(digits: string | null | undefined): string {
   if (!digits) return "";
   const d = digits.replace(/\D/g, "");

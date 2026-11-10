@@ -10,6 +10,7 @@ import { TySenha } from "@/components/tayssa/ui/senha";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { WhatsAppIcon } from "@/components/tayssa/ui/whatsapp";
 import { MENSAGEM_CADASTRO_FEITO, renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
+import { mascaraTelefone } from "@/lib/tayssa/phone";
 import { Entrada } from "@/components/tayssa/auth/entrada";
 import { useFormPreservado } from "@/components/tayssa/ui/form-preservado";
 import { useAcaoFormulario } from "@/components/tayssa/ui/acao";
@@ -238,12 +239,17 @@ export function SignupExperience({
           <TyInput
             label="Seu WhatsApp"
             name="phone"
+            type="tel"
             inputMode="tel"
-            autoComplete="tel"
-            placeholder="(11) 9 9999-9999"
+            autoComplete="tel-national"
+            placeholder="(11) 99999-9999"
             enterKeyHint="next"
             error={local.phone}
             hint="É com ele que você entra na sua conta."
+            // a máscara vai se formando enquanto ela digita: (11) 98765-4321
+            onChange={(e) => {
+              e.currentTarget.value = mascaraTelefone(e.currentTarget.value);
+            }}
           />
         </div>
         <div className="tyl__row" hidden={step !== 1}>

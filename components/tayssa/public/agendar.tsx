@@ -17,6 +17,7 @@ import {
   type ReactNode,
 } from "react";
 import { ROUTES } from "@/lib/tayssa/config";
+import { mascaraTelefone } from "@/lib/tayssa/phone";
 import { agendaPublicaAction } from "@/lib/tayssa/actions/agenda";
 import { createAppointmentAction } from "@/lib/tayssa/actions/booking";
 import {
@@ -795,7 +796,8 @@ function FolhaAgendar({
                       id={`${id}-whats`}
                       rotulo="Seu WhatsApp"
                       valor={whats}
-                      mudar={setWhats}
+                      // a máscara vai se formando enquanto ela digita: (11) 98765-4321
+                      mudar={(v) => setWhats(mascaraTelefone(v))}
                       erro={erro?.campo === "whatsapp" ? erro.texto : undefined}
                       type="tel"
                       inputMode="tel"
