@@ -125,17 +125,21 @@ const SLIDES = [
 function page(s) {
   let body;
   if (s.kind === 'capa' || s.kind === 'fechamento') {
-    const capa = s.kind === 'capa';
-    const word = capa ? 'NATAL' : 'AGENDE';
-    const foto = capa ? 'fotos/tayssa-capa-hd.webp' : 'fotos/tayssa-fechamento.webp';
-    const l1 = capa ? 'O SEU HORÁRIO AGORA É NO SITE' : 'SEU NATAL COMEÇA NO OLHAR';
-    const l2 = capa ? '<b>TAYSSAFARIAS.COM.BR</b>' : '<b>TAYSSAFARIAS.COM.BR</b><i>·</i>LINK NA BIO';
-    body = `<div class="fg ${s.kind}">
-      <div class="capa__marca">${marca}</div>
-      <div class="palavra cheia" data-fit="1010">${word}</div>
-      <img class="foto" src="${foto}">
-      <div class="palavra vazada" data-fit="1010">${word}</div>
-      <div class="faixa"><span class="faixa__l1">${l1}</span><span class="faixa__l2">${l2}</span></div>
+    const c = s.kind === 'capa'
+      ? { foto: 'fotos/capa-final.webp', fw: 2755, fh: 2591, k: 0.56, l: 108, t: 22, a: 'NA', b: 'TAL', aCheio: true, top: 250,
+          sub: 'O SEU HORÁRIO AGORA É NO SITE · TAYSSAFARIAS.COM.BR', marca: 'esq' }
+      : { foto: 'fotos/fech-final.webp', fw: 2740, fh: 3479, k: 0.6, l: -400, t: 60, a: 'AGE', b: 'NDE', aCheio: false, top: 250,
+          sub: 'SEU NATAL COMEÇA NO OLHAR · TAYSSAFARIAS.COM.BR · LINK NA BIO', marca: 'dir' };
+    const W = Math.round(c.fw * c.k), H = Math.round(c.fh * c.k);
+    const mk = c.foto.replace(/-final\.\w+$/, '-mask.png');
+    const mask = `-webkit-mask-image:url(${mk});mask-image:url(${mk});-webkit-mask-size:${W}px ${H}px;mask-size:${W}px ${H}px;-webkit-mask-position:${c.l}px ${c.t}px;mask-position:${c.l}px ${c.t}px;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat`;
+    const subHtml = (cls) => `<div class="sub2 ${cls}" style="top:var(--subtop)">${c.sub}</div>`;
+    body = `<div class="fg capa2 ${s.kind}">
+      <div class="capa2__marca capa2__marca--${c.marca}">${marca}</div>
+      ${subHtml('sub2--fundo')}
+      <img class="foto2" src="${c.foto}" style="left:${c.l}px;top:${c.t}px;width:${W}px;height:${H}px">
+      <div class="capa2__mascara" style="${mask}">${subHtml('sub2--frente')}</div>
+      <div class="titulo2" data-fit="900" style="top:${c.top}px"><span class="${c.aCheio ? 'cheio' : 'contorno'}">${c.a}</span><span class="${c.aCheio ? 'contorno' : 'cheio'}">${c.b}</span></div>
     </div>`;
   } else {
     body = `<div class="fg interna${s.dark ? ' interna--noite' : ''}">${topo(s.n, s.dark)}<main>${s.html}</main>${pe(s.dark)}</div>`;
@@ -151,19 +155,30 @@ function page(s) {
         const target = +el.dataset.fit; let fs = 200; el.style.fontSize = fs + 'px';
         fs = fs * target / el.getBoundingClientRect().width; el.style.fontSize = fs + 'px';
       });
+      const t2 = document.querySelector('.titulo2');
+      if (t2) { const r = t2.getBoundingClientRect(); document.querySelectorAll('.sub2').forEach(el => { el.style.fontSize = '40px'; const w = el.getBoundingClientRect().width; el.style.fontSize = (40 * r.width / w) + 'px'; el.style.left = r.left + 'px'; el.style.top = (r.bottom + 16) + 'px'; }); }
       document.body.dataset.ready = '1';
     });
   </script></body></html>`;
 }
 
+import http from 'http';
+const TIPOS = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.woff2': 'font/woff2', '.js': 'text/javascript' };
+const srv = http.createServer((req, res) => {
+  const f = path.join(DIR, decodeURIComponent(new URL(req.url, 'http://x').pathname));
+  if (!f.startsWith(DIR) || !fs.existsSync(f)) { res.writeHead(404); return res.end(); }
+  res.writeHead(200, { 'Content-Type': TIPOS[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(res);
+});
+await new Promise(r => srv.listen(0, '127.0.0.1', r));
+const BASE = `http://127.0.0.1:${srv.address().port}/`;
 const browser = await chromium.launch();
-const ctx = await browser.newContext({ viewport: { width: 1080, height: 1350 }, deviceScaleFactor: 1 });
+const ctx = await browser.newContext({ viewport: { width: 1080, height: 1350 }, deviceScaleFactor: 2 });
 const p = await ctx.newPage();
 for (const s of SLIDES) {
   if (only && !only.includes(s.n)) continue;
   const file = path.join(DIR, `_l${s.n}.html`);
   fs.writeFileSync(file, page(s));
-  await p.goto('file://' + file);
+  await p.goto(BASE + path.basename(file));
   await p.waitForSelector('body[data-ready="1"]');
   await p.waitForTimeout(150);
   const nn = String(s.n).padStart(2, '0');
@@ -173,3 +188,4 @@ for (const s of SLIDES) {
   console.log('ok', nn);
 }
 await browser.close();
+srv.close();

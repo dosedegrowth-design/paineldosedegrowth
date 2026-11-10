@@ -209,3 +209,24 @@ main { justify-content: flex-start; padding: 0; }
 .interna:has(.nota):has(.wa) .conteudo, .interna:has(.cupom) .conteudo { padding-bottom: 0; }
 .interna:has(.cupom) .cabeca h1 { font-size: 128px; }
 .interna:has(.cupom) .cabeca { min-height: 420px; }
+.capa .foto { height: 830px; width: auto; left: 250px; top: 372px; -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 110px); mask-image: linear-gradient(90deg, transparent 0, #000 110px); }
+
+/* ---- capa e fechamento no desenho da referência ---- */
+.capa2 .foto2 { position: absolute; z-index: 2; }
+.capa2__mascara { position: absolute; inset: 0; z-index: 3; }
+.titulo2 { position: absolute; left: 90px; z-index: 4; white-space: nowrap; font-family: var(--anton); line-height: .8; letter-spacing: .005em; }
+.titulo2 .cheio { color: var(--bordo); }
+.titulo2 .contorno { color: transparent; -webkit-text-stroke: 3px var(--bordo); }
+.sub2 { position: absolute; z-index: 1; font: 400 36px/1 var(--anton); letter-spacing: .02em; white-space: nowrap; text-align: justify; text-align-last: justify; }
+.sub2--fundo { color: var(--vinho); }
+.sub2--frente { color: #fff; -webkit-text-stroke: 1.4px var(--vinho); paint-order: stroke fill; }
+.fechamento .sub2 { font-size: 30px; }
+.capa2__marca { position: absolute; top: 56px; z-index: 5; }
+.capa2__marca--esq { left: 56px; } .capa2__marca--dir { right: 56px; }
+
+.sub2 { text-align: left; text-align-last: auto; letter-spacing: .035em; }
+.sub2--fundo { -webkit-text-stroke: 7px #fbf0f3; paint-order: stroke fill; text-shadow: 0 0 14px rgba(251,240,243,.9); }
+
+.sub2 { -webkit-font-smoothing: antialiased; }
+.sub2--fundo { -webkit-text-stroke: 6px #fbf0f3; text-shadow: none; }
+.sub2--frente { -webkit-text-stroke: 2.2px var(--vinho); }
