@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import type { BusinessSettings } from "@/lib/tayssa/config";
 import type { ConteudoSite } from "@/lib/tayssa/content";
 import { temSobre } from "@/lib/tayssa/content";
@@ -81,26 +81,11 @@ export function About({
               lines={[primeiro + ",", <em key="perto">de perto.</em>]}
             />
 
-            {/* a história em partes curtas, cada uma com o seu título: em
-                bloco único era um textão (Lucas, 29/10/2026) */}
-            {bio?.length ? (
-              <div className="tyab__bio">
-                {bio.map((trecho, i) => (
-                  <Reveal key={trecho.rotulo} className="tyab__parte" delay={Math.min(i, 2) * 0.06}>
-                    <span className="ty-mono tyab__rotulo">
-                      <b>{String(i + 1).padStart(2, "0")}</b>
-                      {trecho.rotulo}
-                    </span>
-                    {trecho.paragrafos.map((p, j) => (
-                      <p key={j} className={i === 0 && j === 0 ? "ty-lead" : "ty-body"}>
-                        {comDestaques(p)}
-                      </p>
-                    ))}
-                    {trecho.frase ? <blockquote className="tyab__frase">{trecho.frase}</blockquote> : null}
-                  </Reveal>
-                ))}
-              </div>
-            ) : (
+            {/* a história abre com o primeiro parágrafo (até o primeiro curso) e
+                o resto vem num toque (Lucas, 09/11/2026: "diminuir aquele
+                texto"). Nenhuma palavra saiu: o resto continua aqui, nas
+                partes com título de 29/10/2026 */}
+            {bio?.length ? <Bio bio={bio} /> : (
               <Pendente
                 titulo="Biografia profissional"
                 detalhe="2 a 4 parágrafos curtos, na voz dela: como começou, o que a guia no atendimento, o que a cliente pode esperar. Nada de número que ela não confirme."
@@ -140,5 +125,73 @@ export function About({
         </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * A história dela: à vista, o começo (o rótulo "Como começou" e o primeiro
+ * parágrafo); "Continuar a minha história" abre o resto ali mesmo, sem
+ * pular a página (a caixa cresce de 0fr para 1fr). Fechado, o resto fica
+ * `inert`: nem o Tab nem o leitor de tela entram no que não aparece.
+ */
+function Bio({ bio }: { bio: NonNullable<ConteudoSite["sobre"]["bio"]> }) {
+  const [inteira, setInteira] = useState(false);
+  const [primeiro, ...outros] = bio;
+  const [abertura, ...continua] = primeiro.paragrafos;
+  const temResto = continua.length > 0 || outros.length > 0 || Boolean(primeiro.frase);
+
+  const parte = (trecho: (typeof bio)[number], n: number, paragrafos: string[], comRotulo: boolean) => (
+    <div key={trecho.rotulo} className="tyab__parte">
+      {comRotulo ? (
+        <span className="ty-mono tyab__rotulo">
+          <b>{String(n).padStart(2, "0")}</b>
+          {trecho.rotulo}
+        </span>
+      ) : null}
+      {paragrafos.map((p, j) => (
+        <p key={j} className="ty-body">
+          {comDestaques(p)}
+        </p>
+      ))}
+      {trecho.frase ? <blockquote className="tyab__frase">{trecho.frase}</blockquote> : null}
+    </div>
+  );
+
+  return (
+    <div className="tyab__bio">
+      <Reveal className="tyab__parte">
+        <span className="ty-mono tyab__rotulo">
+          <b>01</b>
+          {primeiro.rotulo}
+        </span>
+        <p className="ty-lead">{comDestaques(abertura)}</p>
+        {temResto ? (
+          <>
+            <div id="tyab-resto" className="tyab__resto" data-aberto={inteira} inert={!inteira}>
+              <div className="tyab__resto-dentro">
+                {continua.length || primeiro.frase ? parte(primeiro, 1, continua, false) : null}
+                {outros.map((t, i) => parte(t, i + 2, t.paragrafos, true))}
+              </div>
+            </div>
+            {!inteira ? (
+              <div className="tyab__mais">
+                <button
+                  type="button"
+                  className="ty-link ty-link--caps tyab__continuar"
+                  aria-expanded={inteira}
+                  aria-controls="tyab-resto"
+                  onClick={() => setInteira(true)}
+                >
+                  Continuar a minha história
+                  <svg viewBox="0 0 24 24" aria-hidden>
+                    <path d="M6 9.5l6 6 6-6" />
+                  </svg>
+                </button>
+              </div>
+            ) : null}
+          </>
+        ) : null}
+      </Reveal>
+    </div>
   );
 }

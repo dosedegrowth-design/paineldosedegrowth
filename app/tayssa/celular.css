@@ -64,7 +64,8 @@
     contain-intrinsic-size: auto 820px;
   }
   .ty-scope main > #sobre {
-    contain-intrinsic-size: auto 2500px;
+    /* 09/11/2026: a história abre só com o primeiro parágrafo */
+    contain-intrinsic-size: auto 1400px;
   }
   .ty-scope main > #instagram {
     contain-intrinsic-size: auto 1630px;

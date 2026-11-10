@@ -212,6 +212,60 @@
   color: var(--t-fg);
   text-wrap: pretty;
 }
+/* o resto da história abre ali mesmo (0fr → 1fr): nada pula, a página só
+   cresce para baixo. Fechada, a caixa não ocupa nada */
+.tyab__resto {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 520ms cubic-bezier(0.23, 1, 0.32, 1),
+    opacity 420ms ease;
+}
+.tyab__resto[data-aberto="true"] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.tyab__resto-dentro {
+  min-height: 0;
+  overflow: hidden;
+  display: grid;
+  gap: clamp(26px, 3vw, 36px);
+}
+/* fechada, a caixa vazia não soma o espaço entre as linhas da parte */
+.tyab__resto[data-aberto="false"] {
+  margin-top: -12px;
+}
+.tyab__mais {
+  margin-top: 4px;
+}
+.ty-scope .tyab__continuar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  color: var(--t-accent);
+}
+.tyab__continuar svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+@media (hover: hover) and (pointer: fine) {
+  .tyab__continuar:hover svg {
+    transform: translateY(2px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tyab__resto {
+    transition: none;
+  }
+}
 /* os cursos em etiquetas, lado a lado: lista com régua era mais um bloco alto */
 .tyab__formacao ul {
   display: flex;
