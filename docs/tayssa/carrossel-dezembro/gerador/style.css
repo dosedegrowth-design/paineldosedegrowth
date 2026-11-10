@@ -134,3 +134,5 @@ body { font-family: var(--sans); color: var(--tinta); -webkit-font-smoothing: an
 .grande { font-variation-settings: 'opsz' 6 !important; font-weight: 900; }
 .grande--cheio { -webkit-text-stroke: 3px var(--bordo); paint-order: stroke fill;
   filter: drop-shadow(0 0 2px rgba(255,250,242,.95)) drop-shadow(0 0 10px rgba(255,250,242,.9)) drop-shadow(0 0 22px rgba(255,250,242,.75)); }
+
+.deslize { right: auto; left: 70px; bottom: 60px; }

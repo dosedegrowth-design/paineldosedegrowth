@@ -31,7 +31,7 @@ Base marfim e champagne, bordô nos títulos e detalhes, dourado nos fios e clip
 - **Fundos:** gerados pela IA do Canva (arte rascunho "Fundo de Natal em aquarela", design `DAHainzdQbk`, páginas 9 a 11).
 - **Papéis, fita, clipe, lacre, envelope e calendário:** desenhados em código, para as datas e os textos saírem certos.
 - **Fontes:** Bodoni Moda com ajuste óptico de texto (`opsz` 11, para os traços finos não sumirem no celular) e Inter.
-- **Foto:** a selfie do sorriso, a mesma da capa do carrossel de Natal (ampliada com Real-ESRGAN).
+- **Foto:** a selfie do sorriso, da foto original (só ampliada 2x, sem IA), maior e mais para cima, com o alto do cabelo passando atrás da faixa "DE DEZEMBRO" (pedido do Lucas).
 
 ## Pendências no site
 

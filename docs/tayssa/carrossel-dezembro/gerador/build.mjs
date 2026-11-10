@@ -13,7 +13,7 @@ fs.mkdirSync(path.join(OUT, 'fundos'), { recursive: true });
 const pecas = fs.readFileSync(path.join(DIR, 'pecas.js'), 'utf8');
 const only = process.argv[2] ? process.argv[2].split(',').map(Number) : null;
 const EXT = fs.existsSync(path.join(DIR, 'canva/capa.jpg')) ? 'jpg' : 'png';
-const FEXT = fs.existsSync(path.join(DIR, 'fotos/capa-final.webp')) ? 'webp' : 'png';
+const FEXT = fs.existsSync(path.join(DIR, 'fotos/capa-original.webp')) ? 'webp' : 'png';
 
 // ---------- peças ----------
 const papel = (cls, conteudo, { x, y, w, h = 'auto', rot = 0, rasgo = 'trbl', seed = 1, amp = 7, z = 3, estilo = '' } = {}) =>
@@ -43,8 +43,8 @@ const faixa = (texto, o) => papel('faixa', `<span>${texto}</span>`, { rasgo: 'tb
 
 // ---------- lâminas ----------
 function capa() {
-  const k = 0.38, fw = 2755, fh = 2591, W = Math.round(fw * k), H = Math.round(fh * k), l = 500 - Math.round(1080 * k), t = 880 - Math.round(800 * k);
-  const foto = `fotos/capa-final.${FEXT}`, mk = 'fotos/capa-mask.png';
+  const k = 0.98, fw = 1376, fh = 1296, W = Math.round(fw * k), H = Math.round(fh * k), l = 470 - Math.round(540 * k), t = 770 - Math.round(400 * k);
+  const foto = `fotos/capa-original.${FEXT === 'webp' ? 'webp' : 'png'}`, mk = 'fotos/capa-original-mask.png';
   const mask = `-webkit-mask-image:url(${mk});mask-image:url(${mk});-webkit-mask-size:${W}px ${H}px;mask-size:${W}px ${H}px;-webkit-mask-position:${l}px ${t}px;mask-position:${l}px ${t}px;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat`;
   return `
     <div class="grande grande--cheio" data-fit="960" style="top:96px">AGENDA</div>
@@ -56,9 +56,8 @@ function capa() {
     ${fita({ x: 830, y: 684, w: 120, rot: -4, seed: 8 })}
     ${coracao({ x: 940, y: 1040, s: 50, rot: 12 })}
     ${estrela({ x: 80, y: 640, s: 44, rot: -10 })}${estrela({ x: 980, y: 580, s: 38, rot: 14 })}
-    ${papel('etiqueta', marca(), { x: 70, y: 1210, w: 330, rot: -1.5, seed: 31, z: 7, rasgo: 'lr', amp: 5 })}
-    ${clipe({ x: 52, y: 1180, rot: -14, s: 0.9 })}
-    <div class="deslize">deslize <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>`;
+    ${papel('etiqueta', marca(), { x: 700, y: 1220, w: 330, rot: -1.5, seed: 31, z: 7, rasgo: 'lr', amp: 5 })}
+    ${clipe({ x: 684, y: 1192, rot: -14, s: 0.9 })}`;
 }
 
 const data = (dia, mes, semana, texto, o) => papel('bilhete-data', `
