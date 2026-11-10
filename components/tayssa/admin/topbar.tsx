@@ -95,7 +95,7 @@ export function AdminTopbar({ nome, onAbrirMenu }: { nome: string; onAbrirMenu?:
             </span>
             <span className="tya-who__t">
               <b>{nome}</b>
-              <span>Tayssa Lash</span>
+              <span>Tayssa Farias</span>
             </span>
           </div>
         </div>

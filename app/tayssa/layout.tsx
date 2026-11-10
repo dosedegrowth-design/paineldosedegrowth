@@ -35,16 +35,16 @@ const inter = localFont({
   adjustFontFallback: "Arial",
 });
 
-const TITLE = "Tayssa Lash — Private Beauty Experience";
+const TITLE = "Tayssa Farias · Cílios e embelezamento do olhar";
 const DESCRIPTION =
   "Cílios e embelezamento do olhar, com uma experiência privada para clientes selecionadas: fidelidade, indicação e aniversário.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(PUBLIC_ORIGIN),
   // absolute: o título da Tayssa não herda o "· Tráfego DDG" do painel
-  title: { absolute: TITLE, template: "%s · Tayssa Lash" },
+  title: { absolute: TITLE, template: "%s · Tayssa Farias" },
   description: DESCRIPTION,
-  applicationName: "Tayssa Lash",
+  applicationName: "Tayssa Farias",
   // com `icons` declarado, o apple-icon.tsx não entra sozinho no <head>
   icons: { icon: "/tayssa/favicon.svg", apple: "/tayssa/apple-icon" },
   openGraph: {
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     type: "website",
     locale: "pt_BR",
-    siteName: "Tayssa Lash",
+    siteName: "Tayssa Farias",
   },
   // a imagem vem de opengraph-image.tsx; no X/Twitter, cartão grande
   twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION },

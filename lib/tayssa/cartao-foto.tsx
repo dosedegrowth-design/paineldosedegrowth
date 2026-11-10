@@ -89,7 +89,7 @@ function Foto({ h, sinal, horas, tolerancia }: { h: HorarioPublico; sinal: numbe
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "baseline", fontSize: 54, letterSpacing: -1.5 }}>
           <span style={{ fontWeight: 700 }}>Tayssa</span>
-          <span style={{ marginLeft: 14, color: OURO }}>Lash</span>
+          <span style={{ marginLeft: 14, color: OURO }}>Farias</span>
         </div>
         <div
           style={{

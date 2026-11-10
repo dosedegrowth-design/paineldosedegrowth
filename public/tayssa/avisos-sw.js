@@ -15,7 +15,7 @@ self.addEventListener("push", (e) => {
     d = { corpo: e.data ? e.data.text() : "" };
   }
   e.waitUntil(
-    self.registration.showNotification(d.titulo || "Tayssa Lash", {
+    self.registration.showNotification(d.titulo || "Tayssa Farias", {
       body: d.corpo || "",
       icon: "/tayssa/apple-icon",
       tag: d.tag,

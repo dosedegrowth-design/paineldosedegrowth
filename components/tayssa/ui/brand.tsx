@@ -3,13 +3,13 @@ import { Bloom } from "@/components/tayssa/flora/bloom";
 /**
  * A marca: a flor da parede do estúdio flutuando ao lado do nome. Uma peça
  * só, usada em todas as telas — público, entrada, app da cliente e rodapé.
- * A cor do nome vem de quem usa (currentColor); "Lash" leva o rosé da casa.
+ * A cor do nome vem de quem usa (currentColor); "Farias" leva o rosé da casa.
  */
 export function TyBrand({
   size = "md",
   className,
   name = "Tayssa",
-  suffix = "Lash",
+  suffix = "Farias",
 }: {
   size?: "md" | "sm";
   className?: string;
@@ -24,7 +24,7 @@ export function TyBrand({
         <Bloom seed={5} tom="magenta" />
       </span>
       <span className="ty-brand__name">
-        {/* espaço no mesmo texto do nome (sozinho, o Chrome lia "TayssaLash") */}
+        {/* espaço no mesmo texto do nome (sozinho, o Chrome lia "TayssaFarias") */}
         {`${name} `}
         <em>{suffix}</em>
       </span>

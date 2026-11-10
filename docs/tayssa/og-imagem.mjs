@@ -5,7 +5,7 @@
 //   node docs/tayssa/og-imagem.mjs /tmp/og.png
 //   (converter para JPEG qualidade ~86 e salvar em app/tayssa/opengraph-image.jpg)
 // "InterBold" é uma família própria de propósito: com a mesma família em
-// peso 700 o Satori mede a palavra com a fonte fina e "Tayssa" invade "Lash".
+// peso 700 o Satori mede a palavra com a fonte fina e "Tayssa" invade "Farias".
 import { createRequire } from "module";
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -22,9 +22,9 @@ const [foto, regular, negrito] = await Promise.all([
 const el = h("div", { style: { width: "100%", height: "100%", display: "flex", background: "linear-gradient(135deg, #6c1529 0%, #4a0d1f 55%, #2c0712 100%)", color: "#fbf0f3", fontFamily: "Inter" } },
   h("div", { style: { flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 72px" } },
     h("div", { style: { fontSize: 22, letterSpacing: 6, color: "#e6c993", textTransform: "uppercase" } }, "Private Beauty Experience"),
-    h("div", { style: { display: "flex", alignItems: "baseline", marginTop: 18, gap: 26 } },
-      h("span", { style: { fontFamily: "InterBold", fontSize: 104, flexShrink: 0, fontWeight: 700, letterSpacing: -2, lineHeight: 1 } }, "Tayssa"),
-      h("span", { style: { fontSize: 104, flexShrink: 0, fontWeight: 400, letterSpacing: -2, lineHeight: 1, color: "#e6c993" } }, "Lash")),
+    h("div", { style: { display: "flex", alignItems: "baseline", marginTop: 18, gap: 22 } },
+      h("span", { style: { fontFamily: "InterBold", fontSize: 90, flexShrink: 0, fontWeight: 700, letterSpacing: -2, lineHeight: 1 } }, "Tayssa"),
+      h("span", { style: { fontSize: 90, flexShrink: 0, fontWeight: 400, letterSpacing: -2, lineHeight: 1, color: "#e6c993" } }, "Farias")),
     h("div", { style: { fontSize: 34, marginTop: 28, color: "rgba(251, 240, 243, 0.82)", lineHeight: 1.3 } }, "Cílios e embelezamento do olhar"),
     h("div", { style: { display: "flex", marginTop: 40, width: 120, height: 2, background: "#e6c993" } })),
   h("img", { src: `data:image/jpeg;base64,${foto.toString("base64")}`, width: 420, height: 630, style: { width: 420, height: 630, objectFit: "cover" } })

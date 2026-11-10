@@ -1233,8 +1233,8 @@ body:has(.ty-scope[data-theme="night"]) {
   flex-wrap: nowrap;
   justify-content: center;
   column-gap: 0.22em;
-  /* "Tayssa Lash" inteiro numa linha, com margem dos dois lados */
-  font-size: min(calc((100vw - var(--t-gutter) * 2) / 6.4), 168px);
+  /* "Tayssa Farias" inteiro numa linha, com margem dos dois lados */
+  font-size: min(calc((100vw - var(--t-gutter) * 2) / 7.4), 160px);
   font-weight: 600;
   letter-spacing: -0.05em;
   line-height: 1;
@@ -2018,7 +2018,7 @@ body:has(.ty-scope[data-theme="night"]) {
 }
 
 /* ---------- rodada de confirmação (Impeccable): contraste e ritmo ---------- */
-/* "Lash" da marca: rosé escuro no branco, rosé claro no escuro */
+/* "Farias" da marca: rosé escuro no branco, rosé claro no escuro */
 .ty-scope .ty-brand__name em {
   color: var(--t-rosa-texto);
 }

@@ -109,14 +109,14 @@ export function AdminSidebar({
         <span className="tya-vivo__luz tya-vivo__luz--2" />
         <span className="tya-vivo__grade" />
       </div>
-      <TransitionLink href={ROUTES.admin} className="tya-side__brand" aria-label="Tayssa Lash — painel" onClick={onFechar}>
+      <TransitionLink href={ROUTES.admin} className="tya-side__brand" aria-label="Tayssa Farias, painel" onClick={onFechar}>
         <span className="tya-side__mark" aria-hidden>
           T
         </span>
         {!min ? (
           <span className="tya-side__name">
             <b>
-              Tayssa <em>Lash</em>
+              Tayssa <em>Farias</em>
             </b>
             <span>Painel</span>
           </span>

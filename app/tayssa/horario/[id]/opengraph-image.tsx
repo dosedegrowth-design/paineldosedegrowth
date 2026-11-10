@@ -9,7 +9,7 @@ import { diaLegivel, horaLegivel, prazoDoSinal, reais } from "@/lib/tayssa/agend
  * dourado da casa, serviço, dia, hora, valor e o sinal. Sem nome nem
  * contato de ninguém: o link abre sem login.
  */
-export const alt = "Seu horário com a Tayssa Lash";
+export const alt = "Seu horário com a Tayssa Farias";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -54,7 +54,7 @@ export default async function Imagem({ params }: { params: Promise<{ id: string 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "baseline", fontSize: 44, letterSpacing: -1 }}>
           <span style={{ fontWeight: 700 }}>Tayssa</span>
-          <span style={{ marginLeft: 12, fontWeight: 400, color: "#e8bf86" }}>Lash</span>
+          <span style={{ marginLeft: 12, fontWeight: 400, color: "#e8bf86" }}>Farias</span>
         </div>
         {h ? (
           <div

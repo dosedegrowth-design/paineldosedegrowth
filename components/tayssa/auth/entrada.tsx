@@ -13,7 +13,7 @@ import { MarcaViva } from "@/components/tayssa/ui/marca-viva";
 export function Entrada({
   children,
   links,
-  aviso = "Área privada da Tayssa Lash",
+  aviso = "Área privada da Tayssa Farias",
 }: {
   children: ReactNode;
   /** caminhos do rodapé, além de "Site" */
@@ -26,7 +26,7 @@ export function Entrada({
       <FundoVivo />
       <div className="tyl__page">
         <main className="tyl__centro">
-          <TransitionLink href={ROUTES.home} className="tyl__marca tyl-surge" aria-label="Tayssa Lash, voltar ao site">
+          <TransitionLink href={ROUTES.home} className="tyl__marca tyl-surge" aria-label="Tayssa Farias, voltar ao site">
             <MarcaViva />
           </TransitionLink>
           {children}

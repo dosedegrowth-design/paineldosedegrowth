@@ -272,7 +272,7 @@ export function LoyaltyCard({
                     <span className="tyc3__flor" aria-hidden>
                       {LotusOuro}
                     </span>
-                    Tayssa <em>Lash</em>
+                    Tayssa <em>Farias</em>
                   </span>
                   {unrevealed.length ? (
                     <span className="tyc3__badge">

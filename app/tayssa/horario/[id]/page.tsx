@@ -41,7 +41,7 @@ export default async function HorarioPage({ params }: Props) {
   );
 
   return (
-    <Entrada aviso="Horário marcado pelo site da Tayssa Lash">
+    <Entrada aviso="Horário marcado pelo site da Tayssa Farias">
       <div className="tyl__body tyl-surge" style={{ "--d": "0.4s" } as CSSProperties}>
         <h1 className="tyl__title">
           {fora ? (

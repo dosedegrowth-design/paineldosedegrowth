@@ -122,7 +122,7 @@ export function Hero({
 
   const temJanela = Boolean(photo) || temVideo(video) || estrutura;
   // o nome dela entra letra a letra: sobe, gira de leve no eixo X e ganha foco
-  const [primeira = "Tayssa", segunda = "Lash"] = business.name.trim().split(/\s+/);
+  const [primeira = "Tayssa", segunda = "Farias"] = business.name.trim().split(/\s+/);
   const letras = (palavra: string, base: number) =>
     Array.from(palavra).map((l, i) => (
       <motion.span

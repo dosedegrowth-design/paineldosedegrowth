@@ -284,7 +284,7 @@ const HORAS_TER_SEX = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15
 
 export const DEFAULT_SETTINGS: Settings = {
   business: {
-    name: "Tayssa Lash",
+    name: "Tayssa Farias",
     tagline: "Private Beauty Experience",
     specialty: "Cílios e embelezamento do olhar",
     whatsapp: "5511999827606",
@@ -365,7 +365,7 @@ export const DEFAULT_SETTINGS: Settings = {
   signup: {
     open: true,
     welcome_template:
-      "Oi, {name}! Seu acesso ao Tayssa Lash foi liberado. Entre por aqui: {url}",
+      "Oi, {name}! Seu acesso ao site da Tayssa Farias foi liberado. Entre por aqui: {url}",
   },
   // números só da Tayssa: nada inventado — vazio, o quadro não aparece
   numeros: {

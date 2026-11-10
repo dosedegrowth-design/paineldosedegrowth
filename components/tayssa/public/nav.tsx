@@ -95,12 +95,12 @@ export function PublicNav({
         data-solid={solid && !open}
         data-menu={open}
       >
-        <TransitionLink href={ROUTES.home} aria-label="Tayssa Lash, início" className="ty-nav__marca">
+        <TransitionLink href={ROUTES.home} aria-label="Tayssa Farias, início" className="ty-nav__marca">
           <span className="ty-nav__flor" aria-hidden>
             <Bloom seed={5} tom="magenta" />
           </span>
           <span className="ty-nav__nome">
-            Tayssa <em>Lash</em>
+            Tayssa <em>Farias</em>
           </span>
         </TransitionLink>
 

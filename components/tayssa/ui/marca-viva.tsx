@@ -13,7 +13,7 @@ export function MarcaViva({ sub = "Cílios e olhar", className }: { sub?: string
       </span>
       <span className="ty-marca-viva__txt">
         <span className="ty-marca-viva__nome">
-          Tayssa <em>Lash</em>
+          Tayssa <em>Farias</em>
         </span>
         <span className="ty-marca-viva__sub">{sub}</span>
       </span>

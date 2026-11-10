@@ -142,7 +142,7 @@ export function PagarSinal({
       .then((r) => (r.ok ? r.blob() : Promise.reject(new Error(`cartão ${r.status}`))))
       .then((blob) => {
         if (!vivo) return;
-        const foto = new File([blob], "horario-tayssa-lash.png", { type: "image/png" });
+        const foto = new File([blob], "horario-tayssa-farias.png", { type: "image/png" });
         const podeFoto = typeof navigator.canShare === "function" && navigator.canShare({ files: [foto] });
         if (previaRef.current) URL.revokeObjectURL(previaRef.current);
         previaRef.current = URL.createObjectURL(blob);

@@ -16,7 +16,7 @@ type Fase = "boot" | "risca" | "cor" | "abre" | "fim";
  *
  * 1. risca  — sobre o vinho do teto do estúdio, a flor da parede se
  *             desenha em contorno, pétala por pétala;
- * 2. cor    — a flor ganha cor e abre; "Tayssa" e "Lash" deslizam para
+ * 2. cor    — a flor ganha cor e abre; "Tayssa" e "Farias" deslizam para
  *             fora de trás dela, um para cada lado;
  * 3. abre   — as palavras somem e a flor cresce até virar a janela: o
  *             véu tem um furo no formato dela, que se expande e revela o
@@ -143,7 +143,7 @@ export function IntroLoader({ onDone }: { onDone: () => void }) {
                 animate={{ x: comCor && !abre ? "0%" : "-105%" }}
                 transition={{ duration: 0.9, ease: EASE, delay: comCor && !abre ? 0.28 : 0 }}
               >
-                <em>Lash</em>
+                <em>Farias</em>
               </motion.span>
             </span>
           </motion.div>
