@@ -137,10 +137,20 @@ export const profileUpdateSchema = z.object({
 // ---------------- Admin ----------------
 
 /** Pedido de acesso feito pela própria cliente, no site. */
+/**
+ * Cadastro VIP pelo site (Lucas, 09/11/2026): nome, como quer ser chamada,
+ * WhatsApp (é o login) e a senha duas vezes. Sem e-mail. A conta nasce
+ * esperando a Tayssa liberar.
+ */
 export const signupSchema = z
   .object({
-    name: z.string().trim().min(2, "Conte seu nome").max(120),
-    email: emailField,
+    name: z.string().trim().min(2, "Conte seu nome").max(80, "Use no máximo 80 letras"),
+    apelido: z
+      .string()
+      .trim()
+      .max(40, "Use no máximo 40 letras")
+      .optional()
+      .transform((v) => v || null),
     phone: phoneField,
     password: passwordField,
     confirm: z.string(),
@@ -152,10 +162,11 @@ export const signupSchema = z
       .refine((v) => !v || /^\d{4}-\d{2}-\d{2}$/.test(v), "Data inválida"),
     message: z.string().trim().max(300).optional().transform((v) => v || null),
   })
-  .refine((v) => v.password === v.confirm, { message: "As senhas não conferem", path: ["confirm"] });
+  .refine((v) => v.password === v.confirm, { message: "As senhas não são iguais", path: ["confirm"] });
 
 export const reviewSignupSchema = z.object({
   id: z.string().uuid(),
+  /** liberar (conta comum, só a agenda), liberar já como VIP, ou recusar */
   decision: z.enum(["approve", "reject"]),
   note: z.string().trim().max(300).optional().transform((v) => v || null),
   vip: z.boolean().optional(),
@@ -320,8 +331,10 @@ export const businessSettingsSchema = z.object({
 
 export const rulesSettingsSchema = z.object({
   vip_aberto: z.boolean(),
-  vip_pontos: z.coerce.number().int().min(0, "Use 0 ou mais").max(10000, "No máximo 10.000"),
-  vip_meses: z.coerce.number().int().min(1, "Pelo menos 1 mês").max(12, "No máximo 12 meses"),
+  vip_visitas: z.coerce.number().int().min(1, "Pelo menos 1").max(20, "No máximo 20"),
+  vip_janela_dias: z.coerce.number().int().min(1, "Pelo menos 1 dia").max(365, "No máximo 365 dias"),
+  vip_intervalo_min: z.coerce.number().int().min(0, "Use 0 ou mais").max(120, "No máximo 120 dias"),
+  vip_intervalo_max: z.coerce.number().int().min(1, "Pelo menos 1 dia").max(180, "No máximo 180 dias"),
   inactivity_days: z.coerce.number().int().min(1).max(365),
   benefit_validity_days: z.coerce.number().int().min(1).max(365),
 });

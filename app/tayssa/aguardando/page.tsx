@@ -10,27 +10,30 @@ import { Entrada } from "@/components/tayssa/auth/entrada";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Pedido em análise",
+  title: "Cadastro em análise",
   robots: { index: false, follow: false },
 };
 
 /** A porta ainda não abriu — mas a cliente sabe exatamente onde está. */
 export default async function PendingPage() {
   const settings = await getSettings();
-  const url = whatsappUrl(settings.business.whatsapp, settings.whatsapp.public_vip_info);
+  const url = whatsappUrl(
+    settings.business.whatsapp,
+    "Oi, Tayssa, tudo bem? Fiz o meu cadastro VIP no site. Pode liberar a minha conta?"
+  );
   return (
     <Entrada links={[{ href: ROUTES.login, label: "Entrar" }]}>
       <div className="tyl__body tyl-surge" style={{ "--d": "0.5s" } as CSSProperties}>
         <h1 className="tyl__title">
-          Seu acesso está <em>com a Tayssa</em>
+          Seu cadastro está <em>com a Tayssa</em>
         </h1>
         <div className="tyl__foot">
           <p>
-            Ela revisa cada pedido pessoalmente. Assim que aprovar, é só entrar com o e-mail e a senha que você escolheu — a
-            gente não manda nada automático.
+            Ela libera cada conta pessoalmente. Mande uma mensagem para ela e, assim que ela liberar, é só entrar com o seu
+            WhatsApp e a senha que você criou.
           </p>
           <a href={url} target="_blank" rel="noopener noreferrer" className="tyl__link">
-            Falar com a Tayssa
+            Avisar a Tayssa no WhatsApp
           </a>
         </div>
       </div>

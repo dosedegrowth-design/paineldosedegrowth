@@ -15,7 +15,7 @@ import { IconeBarra, type IconeBarraNome } from "@/components/tayssa/ui/icones-b
  * Esc ou escolher um destino fecha.
  */
 
-type Item = { href: string; label: string; icone: IconeBarraNome };
+type Item = { href: string; label: string; icone: IconeBarraNome; soVip?: boolean };
 
 const ITEMS: Item[] = [
   { href: ROUTES.vip, label: "Início", icone: "inicio" },
@@ -26,10 +26,18 @@ const ITEMS: Item[] = [
   { href: ROUTES.vipProfile, label: "Meu perfil", icone: "perfil" },
 ];
 
-/** VIP fechado: a área é só a agenda dela (e o perfil, para trocar a senha) */
+/**
+ * Quem ainda não é VIP: a agenda e o perfil abertos, e as telas do VIP com
+ * cadeado (09/11/2026). Tocar leva à tela trancada, com a regra e o
+ * andamento dela.
+ */
 const SO_AGENDA: Item[] = [
   { href: ROUTES.vipBook, label: "Meus agendamentos", icone: "agenda" },
   { href: ROUTES.vipProfile, label: "Meu perfil", icone: "perfil" },
+  { href: ROUTES.vip, label: "Área VIP", icone: "inicio", soVip: true },
+  { href: ROUTES.vipCard, label: "Meu cartão", icone: "cartao", soVip: true },
+  { href: ROUTES.vipBenefits, label: "Benefícios", icone: "presente", soVip: true },
+  { href: ROUTES.vipJourney, label: "Minha jornada", icone: "jornada", soVip: true },
 ];
 
 const EASE: [number, number, number, number] = [0.23, 1, 0.32, 1];
@@ -141,6 +149,14 @@ export function MenuVip({ soAgenda = false }: { soAgenda?: boolean }) {
                             <IconeBarra nome={item.icone} cheio={atual} />
                           </span>
                           {item.label}
+                          {item.soVip ? (
+                            <span className="tyv-menu__tranca" aria-label="só para VIP">
+                              <svg viewBox="0 0 24 24" aria-hidden>
+                                <rect x="5" y="10.5" width="14" height="10" rx="2.6" />
+                                <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" />
+                              </svg>
+                            </span>
+                          ) : null}
                         </Link>
                       );
                     })}

@@ -8,23 +8,38 @@ import type { ActionResult } from "@/lib/tayssa/types";
 import { TyInput, TyTextarea } from "@/components/tayssa/ui/field";
 import { TySenha } from "@/components/tayssa/ui/senha";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
+import { WhatsAppIcon } from "@/components/tayssa/ui/whatsapp";
+import { MENSAGEM_CADASTRO_FEITO, renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { Entrada } from "@/components/tayssa/auth/entrada";
 import { useFormPreservado } from "@/components/tayssa/ui/form-preservado";
 import { useAcaoFormulario } from "@/components/tayssa/ui/acao";
 
 type Result = ActionResult<SignupResult>;
-type Errors = Partial<Record<"name" | "phone" | "birthday" | "email" | "password" | "confirm" | "message", string>>;
+type Campo = "name" | "apelido" | "phone" | "password" | "confirm" | "birthday" | "message";
+type Errors = Partial<Record<Campo, string>>;
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
-const STEPS = ["Quem é você", "Sua chave", "Um recado"] as const;
-const STEP_OF: Record<keyof Errors, number> = { name: 0, phone: 0, birthday: 0, email: 1, password: 1, confirm: 1, message: 2 };
+const STEPS = ["Quem é você", "Sua senha", "Para a Tayssa"] as const;
+const STEP_OF: Record<Campo, number> = { name: 0, apelido: 0, phone: 0, password: 1, confirm: 1, birthday: 2, message: 2 };
 
 /**
- * Pedir acesso não é preencher um formulário: é bater numa porta que só
- * a Tayssa abre. Três passos curtos, um por tela, validados no aparelho;
- * o pedido só existe no banco quando ela aperta "Enviar pedido".
+ * Cadastro VIP (Lucas, 09/11/2026). Três passos curtos, um por tela,
+ * validados no aparelho: quem é ela (nome, como quer ser chamada e o
+ * WhatsApp, que é o login), a senha duas vezes e, se quiser, o aniversário
+ * e um recado. A conta nasce esperando a Tayssa liberar; a tela final
+ * manda a cliente avisar a Tayssa no WhatsApp com a mensagem pronta.
  */
-export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; open: boolean }) {
+export function SignupExperience({
+  open,
+  whatsappTayssa,
+  regraVip,
+}: {
+  open: boolean;
+  /** o WhatsApp da Tayssa (settings.business.whatsapp) */
+  whatsappTayssa: string;
+  /** "4 atendimentos em até 70 dias, com 15 a 20 dias entre um e outro" */
+  regraVip: string;
+}) {
   const reduced = useReducedMotion();
   const [step, setStep] = useState(0);
   const [dir, setDir] = useState(1);
@@ -35,7 +50,7 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
     null
   );
   const serverError = state && !state.ok ? state : null;
-  // recusou? os sete campos continuam como ela deixou (o React 19 limpava tudo)
+  // recusou? os campos continuam como ela deixou (o React 19 limpava tudo)
   const { onReset } = useFormPreservado();
   const done = state?.ok ? state.data : null;
 
@@ -45,7 +60,7 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
   const [seen, setSeen] = useState<Result | null>(null);
   if (state !== seen) {
     setSeen(state);
-    const f = serverError?.field as keyof Errors | undefined;
+    const f = serverError?.field as Campo | undefined;
     if (f && f in STEP_OF) {
       setLocal({ [f]: serverError!.error });
       setDir(-1);
@@ -53,8 +68,7 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
     }
   }
 
-  // passo novo: o foco vai para o primeiro campo dele (antes caía no <body>
-  // quando o "Continuar" sumia no último passo)
+  // passo novo: o foco vai para o primeiro campo dele
   const primeiroRender = useRef(true);
   useEffect(() => {
     if (primeiroRender.current) {
@@ -73,13 +87,12 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
     const v = (k: string) => String(fd.get(k) ?? "").trim();
     const e: Errors = {};
     if (s === 0) {
-      if (v("name").length < 2) e.name = "Conte seu nome.";
+      if (v("name").length < 2) e.name = "Escreva seu nome.";
       if (v("phone").replace(/\D/g, "").length < 10) e.phone = "Seu WhatsApp com DDD.";
     }
     if (s === 1) {
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v("email"))) e.email = "Esse e-mail parece incompleto.";
       if (v("password").length < MIN_PASSWORD_LENGTH) e.password = `Use pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`;
-      if (v("confirm") !== v("password")) e.confirm = "As senhas não conferem.";
+      if (v("confirm") !== v("password")) e.confirm = "As senhas não são iguais.";
     }
     return e;
   };
@@ -98,7 +111,7 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
   };
 
   const shell = (children: React.ReactNode) => (
-    <Entrada links={[{ href: ROUTES.login, label: "Já tenho acesso" }]}>
+    <Entrada links={[{ href: ROUTES.login, label: "Já tenho conta" }]}>
       <motion.div
         className="tyl__body"
         initial={{ opacity: 0, y: reduced ? 0 : 24 }}
@@ -118,7 +131,7 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
         </h1>
         <div className="tyl__foot">
           <p>A Tayssa abre novas vagas de tempos em tempos. Fale com ela pelo WhatsApp e conte que quer entrar.</p>
-          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="tyl__link">
+          <a href={whatsappUrl(whatsappTayssa, "Oi, Tayssa, tudo bem? Quero fazer o meu cadastro VIP.")} target="_blank" rel="noopener noreferrer" className="tyl__link">
             Falar com a Tayssa
           </a>
         </div>
@@ -127,6 +140,7 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
   }
 
   if (done) {
+    const avisar = whatsappUrl(whatsappTayssa, renderTemplate(MENSAGEM_CADASTRO_FEITO, { name: done.firstName }));
     return shell(
       <div className="tyl__done">
         <span className="tyl__done-mark" aria-hidden>
@@ -135,23 +149,23 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
           </svg>
         </span>
         <h1 className="tyl__title">
-          Obrigada, <em>{done.firstName}.</em>
+          Pronto, <em>{done.firstName}.</em>
         </h1>
+        <p className="tyl__sub">Agora avise a Tayssa: ela libera a sua conta e você entra com o seu WhatsApp e a senha que criou.</p>
+        <a href={avisar} target="_blank" rel="noopener noreferrer" className="tyl__submit">
+          <WhatsAppIcon size={20} />
+          Avisar a Tayssa no WhatsApp
+        </a>
+        <div className="tyl__note" style={{ marginTop: 18 }}>
+          <strong>Como você vira VIP</strong>
+          <span>
+            Com {regraVip}. A Tayssa acompanha e confirma o seu VIP.
+          </span>
+        </div>
         <div className="tyl__foot">
-          <p>
-            Seu pedido está com a Tayssa. Ela revisa pessoalmente cada acesso — quando aprovar, você entra com o e-mail{" "}
-            <strong style={{ color: "var(--t-fg)", fontWeight: 600 }}>{done.email}</strong> e a senha que escolheu.
-          </p>
-          <p>Se quiser adiantar, mande um oi para ela.</p>
-          <p>
-            Já tinha acesso?{" "}
-            <TransitionLink href={ROUTES.login} className="tyl__link">
-              Entre com seu e-mail e senha
-            </TransitionLink>
-          </p>
-          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="tyl__link">
-            Falar com a Tayssa
-          </a>
+          <TransitionLink href={ROUTES.login} className="tyl__link">
+            Entrar na minha conta
+          </TransitionLink>
           <TransitionLink href={ROUTES.home} className="tyl__ghost">
             Voltar ao site
           </TransitionLink>
@@ -163,8 +177,11 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
   return shell(
     <>
       <h1 className="tyl__title">
-        Pedir acesso <em>ao VIP</em>
+        Cadastro <em>VIP</em>
       </h1>
+      <p className="tyl__sub">
+        Crie a sua conta para marcar seus horários. Com {regraVip}, a Tayssa libera o seu VIP.
+      </p>
       <div className="tyl__progress" aria-hidden>
         {STEPS.map((s, i) => (
           <i key={s} data-on={i <= step} />
@@ -187,7 +204,7 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
             e.preventDefault();
             setLocal(errs);
             setDir(-1);
-            setStep(STEP_OF[Object.keys(errs)[0] as keyof Errors]);
+            setStep(STEP_OF[Object.keys(errs)[0] as Campo]);
             return;
           }
           enviar(e);
@@ -207,9 +224,17 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
           </motion.div>
         </AnimatePresence>
 
-        {/* os três passos ficam montados: o pedido vai inteiro numa submissão só */}
+        {/* os três passos ficam montados: o cadastro vai inteiro numa submissão só */}
         <div className="tyl__row" hidden={step !== 0}>
           <TyInput label="Seu nome" name="name" autoComplete="name" enterKeyHint="next" error={local.name} />
+          <TyInput
+            label="Como quer ser chamada? (opcional)"
+            name="apelido"
+            autoComplete="nickname"
+            enterKeyHint="next"
+            maxLength={40}
+            error={local.apelido}
+          />
           <TyInput
             label="Seu WhatsApp"
             name="phone"
@@ -218,32 +243,22 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
             placeholder="(11) 9 9999-9999"
             enterKeyHint="next"
             error={local.phone}
+            hint="É com ele que você entra na sua conta."
           />
-          <TyInput label="Aniversário (opcional)" name="birthday" type="date" error={local.birthday} hint="Para o seu presente de aniversário, quando for VIP." />
         </div>
         <div className="tyl__row" hidden={step !== 1}>
-          <TyInput
-            label="E-mail"
-            name="email"
-            type="email"
-            inputMode="email"
-            autoComplete="email"
-            autoCapitalize="none"
-            spellCheck={false}
-            enterKeyHint="next"
-            error={local.email}
-          />
-          <TySenha label="Senha" name="password" autoComplete="new-password" error={local.password} hint={`Pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`} />
-          <TySenha label="Repetir a senha" name="confirm" autoComplete="new-password" enterKeyHint="next" error={local.confirm} />
+          <TySenha label="Crie uma senha" name="password" autoComplete="new-password" error={local.password} hint={`Pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`} />
+          <TySenha label="Repita a senha" name="confirm" autoComplete="new-password" enterKeyHint="next" error={local.confirm} />
         </div>
         <div className="tyl__row" hidden={step !== 2}>
+          <TyInput label="Aniversário (opcional)" name="birthday" type="date" error={local.birthday} hint="Para o seu presente de aniversário, quando for VIP." />
           <TyTextarea
             label="Como conheceu a Tayssa? (opcional)"
             name="message"
             rows={3}
             maxLength={300}
             error={local.message}
-            hint="Ajuda ela a te reconhecer na hora de aprovar."
+            hint="Ajuda ela a te reconhecer na hora de liberar."
           />
         </div>
 
@@ -264,7 +279,7 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
 
         <div style={{ display: "grid", gap: 10, marginTop: 24 }}>
           {/* keys diferentes: sem isso o React reaproveita o nó, o clique em
-              "Continuar" termina num botão que virou submit e o pedido sai
+              "Continuar" termina num botão que virou submit e o cadastro sai
               antes da hora */}
           {step < STEPS.length - 1 ? (
             <button key="next" type="button" className="tyl__submit" onClick={next}>
@@ -273,7 +288,7 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
           ) : (
             <button key="submit" type="submit" className="tyl__submit" disabled={pending}>
               {pending ? <span className="tyl__spin" aria-hidden /> : null}
-              {pending ? "Enviando…" : "Enviar pedido"}
+              {pending ? "Criando…" : "Criar minha conta"}
             </button>
           )}
           {step > 0 ? (
@@ -285,7 +300,7 @@ export function SignupExperience({ whatsappUrl, open }: { whatsappUrl: string; o
       </form>
 
       <div className="tyl__foot">
-        <p>O acesso é liberado pela Tayssa, uma a uma. Nada abre sem a aprovação dela.</p>
+        <p>A Tayssa libera cada conta pessoalmente. Depois de criar, é só avisar ela no WhatsApp.</p>
       </div>
     </>
   );

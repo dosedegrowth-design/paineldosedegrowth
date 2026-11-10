@@ -24,7 +24,7 @@ import type {
   ReferralRow,
 } from "@/lib/tayssa/types";
 import { nowInBusinessTz } from "@/lib/tayssa/format";
-import type { Settings } from "@/lib/tayssa/config";
+import { criteriosVip, type Settings } from "@/lib/tayssa/config";
 
 export type ClientBenefitView = ClientBenefitRow & {
   benefit: Pick<BenefitRow, "key" | "type" | "name"> | null;
@@ -116,7 +116,7 @@ export const getClientOverview = cache(async (user: SessionUser): Promise<Client
     approvedCount: approved.length,
     lastServiceDate: approved[0]?.service_date ?? null,
     loyalty: loyaltyProgress(points, benefitsCatalog, meses),
-    vip: progressoVip(points, meses, { pontos: settings.rules.vip_pontos, meses: settings.rules.vip_meses }),
+    vip: progressoVip(approved.map((s) => s.service_date), today, criteriosVip(settings.rules)),
     catalogo: benefitsCatalog,
     referral,
     benefits,

@@ -2,10 +2,10 @@
 
 import { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
-import { PRIORIDADE_VIP, ROUTES, type Settings } from "@/lib/tayssa/config";
+import { PRIORIDADE_VIP, ROUTES, criteriosVip, type Settings } from "@/lib/tayssa/config";
 import type { BenefitRow, BenefitType } from "@/lib/tayssa/types";
 import { criterioLegivel, numero } from "@/lib/tayssa/format";
-import { mesesDoMarco } from "@/lib/tayssa/rules";
+import { mesesDoMarco, regraVipLegivel } from "@/lib/tayssa/rules";
 import { MaskedLines, Reveal } from "@/components/tayssa/ui/reveal";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { Magnetic } from "@/components/tayssa/ui/magnetic";
@@ -193,7 +193,7 @@ export function VipIntro({ benefits, settings }: { benefits: BenefitRow[]; setti
             {
               n: "01",
               nome: "Você entra",
-              texto: "Pede acesso pelo cadastro e a Tayssa aprova. Desde a primeira visita, cada atendimento soma carimbos e pontos.",
+              texto: "Faz o cadastro VIP e avisa a Tayssa, que libera a sua conta. Desde a primeira visita, cada atendimento soma carimbos e pontos.",
               icone: "mensagem",
             },
             {
@@ -207,7 +207,7 @@ export function VipIntro({ benefits, settings }: { benefits: BenefitRow[]; setti
             {
               n: "03",
               nome: "Você é VIP",
-              texto: `Ao chegar a ${numero(settings.rules.vip_pontos)} pontos, com ${settings.rules.vip_meses} meses seguidos de atendimento, a Tayssa confirma o seu VIP. Entram o presente de aniversário e a ${PRIORIDADE_VIP}.`,
+              texto: `Com ${regraVipLegivel(criteriosVip(settings.rules))}, a Tayssa confirma o seu VIP. Entram o presente de aniversário e a ${PRIORIDADE_VIP}.`,
               icone: "check",
             },
           ]}
@@ -219,24 +219,25 @@ export function VipIntro({ benefits, settings }: { benefits: BenefitRow[]; setti
             <h3 className="ty-h tyvi__porta-h">Como se entra</h3>
           </Reveal>
           <Reveal delay={0.1}>
-            {/* VIP por convite (Lucas e Tayssa, 09/11/2026): sem pedido de acesso no site */}
+            {/* cadastro VIP aberto a todas (Lucas, 09/11/2026): a Tayssa libera a conta e, com a
+                sequência de atendimentos, confirma o VIP */}
             <p className="ty-body ty-measure">
-              O VIP é por convite da Tayssa. Toda cliente marca pelo site com a sua conta; quem ela
-              convida passa a ver a Área VIP com o mesmo WhatsApp e a mesma senha, e tem prioridade na
-              agenda. Nenhum benefício cai sozinho: cada um passa pela confirmação dela.
+              Faça o seu cadastro VIP e avise a Tayssa no WhatsApp: ela libera a sua conta e você já
+              marca seus horários. Com {regraVipLegivel(criteriosVip(settings.rules))}, ela confirma o
+              seu VIP. Nenhum benefício cai sozinho: cada um passa pela confirmação dela.
             </p>
             <div className="tyvi__acoes">
               <Magnetic>
-                <TransitionLink href={ROUTES.vip} className="ty-btn ty-btn--solid">
-                  <span>Área VIP</span>
+                <TransitionLink href={ROUTES.signup} className="ty-btn ty-btn--solid">
+                  <span>Fazer meu cadastro VIP</span>
                   <span className="ty-btn__arrow" aria-hidden />
                 </TransitionLink>
               </Magnetic>
-              <TransitionLink href={ROUTES.vipBook} className="tyvi__entrar">
-                Ainda não é VIP · Meus horários
+              <TransitionLink href={ROUTES.vip} className="tyvi__entrar">
+                Já tenho conta · Entrar
               </TransitionLink>
             </div>
-            <p className="ty-mono tyvi__nota">o convite vem dela, pelo WhatsApp</p>
+            <p className="ty-mono tyvi__nota">a Tayssa libera cada conta pelo WhatsApp</p>
           </Reveal>
         </div>
       </div>

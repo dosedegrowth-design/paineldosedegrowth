@@ -1,3 +1,4 @@
+import { criteriosVip } from "@/lib/tayssa/config";
 import "server-only";
 import { cache } from "react";
 import { nowInBusinessTz } from "@/lib/tayssa/format";
@@ -95,7 +96,7 @@ export const listClients = cache(async (): Promise<ClientSummary[]> => {
   // "hoje" no fuso do estúdio: no relógio do servidor (UTC) já é amanhã depois das 21h
   const today = nowInBusinessTz();
 
-  const criterios = { pontos: settings.rules.vip_pontos, meses: settings.rules.vip_meses };
+  const criterios = criteriosVip(settings.rules);
 
   return users.map((u) => {
     const mine = services.filter((s) => s.client_id === u.id);
@@ -105,7 +106,7 @@ export const listClients = cache(async (): Promise<ClientSummary[]> => {
     const profile = profileOf(u);
     const points = approved.reduce((s, r) => s + r.points, 0);
     const meses = mesesSeguidos(approved.map((s) => s.service_date), today);
-    const vip = progressoVip(points, meses, criterios);
+    const vip = progressoVip(approved.map((s) => s.service_date), today, criterios);
     return {
       user: u,
       profile,

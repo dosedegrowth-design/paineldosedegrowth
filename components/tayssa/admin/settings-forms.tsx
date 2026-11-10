@@ -181,20 +181,36 @@ export function RulesForm({ value }: { value: Settings["rules"] }) {
       </p>
       <div className="tya-grid">
         <Campo
-          label="Pontos para o VIP"
-          name="vip_pontos"
+          label="Atendimentos para o VIP"
+          name="vip_visitas"
           inputMode="numeric"
-          defaultValue={String(value.vip_pontos)}
-          error={erroDe(state, "vip_pontos")}
-          hint="Junto com os meses seguidos. Quem cumpre os dois aparece para você confirmar."
+          defaultValue={String(value.vip_visitas)}
+          error={erroDe(state, "vip_visitas")}
+          hint="Atendimentos que você marcou como Realizado. Quem completa aparece em Prontas para VIP."
         />
         <Campo
-          label="Meses seguidos para o VIP"
-          name="vip_meses"
+          label="Em até (dias)"
+          name="vip_janela_dias"
           inputMode="numeric"
-          defaultValue={String(value.vip_meses)}
-          error={erroDe(state, "vip_meses")}
-          hint="Meses do calendário com pelo menos um atendimento confirmado, sem pular nenhum."
+          defaultValue={String(value.vip_janela_dias)}
+          error={erroDe(state, "vip_janela_dias")}
+          hint="A sequência inteira cabe nesse prazo."
+        />
+        <Campo
+          label="Entre um e outro: no mínimo (dias)"
+          name="vip_intervalo_min"
+          inputMode="numeric"
+          defaultValue={String(value.vip_intervalo_min)}
+          error={erroDe(state, "vip_intervalo_min")}
+          hint="Antes disso o atendimento não conta (e não zera)."
+        />
+        <Campo
+          label="Entre um e outro: no máximo (dias)"
+          name="vip_intervalo_max"
+          inputMode="numeric"
+          defaultValue={String(value.vip_intervalo_max)}
+          error={erroDe(state, "vip_intervalo_max")}
+          hint="Passou disso, a contagem recomeça no próximo atendimento."
         />
         <Campo
           label="Dias sem atendimento = inativa"

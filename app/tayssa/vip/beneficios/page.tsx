@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { requireProgramaVipPage } from "@/lib/tayssa/auth/guards";
+import { VipTrancado } from "@/components/tayssa/vip/vip-trancado";
 import { getClientOverview, getClientReferrals } from "@/lib/tayssa/queries/client";
 import { getActiveServices } from "@/lib/tayssa/queries/catalog";
 import { getCardState } from "@/lib/tayssa/engine";
@@ -19,7 +20,8 @@ import { AbrirPeloEndereco } from "@/components/tayssa/vip/abrir-pelo-endereco";
  * indicação), cada uma com a regra inteira e onde ela está agora.
  */
 export default async function BenefitsPage() {
-  const user = await requireProgramaVipPage();
+  const { user, bloqueado } = await requireProgramaVipPage();
+  if (bloqueado) return <VipTrancado user={user} tela="beneficios" />;
   const [o, referrals, servicos, card] = await Promise.all([
     getClientOverview(user),
     getClientReferrals(user.id),

@@ -150,7 +150,7 @@ export function LoginExperience({
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.4, ease: EASE }}
               >
-                <span className="tyl__eyebrow">{serverError.code === "pending" ? "Pedido em análise" : "Acesso não liberado"}</span>
+                <span className="tyl__eyebrow">{serverError.code === "pending" ? "Cadastro em análise" : "Acesso não liberado"}</span>
                 <p style={{ fontSize: 14.5, lineHeight: 1.5 }}>{serverError.error}</p>
                 <a href={vipInfoUrl} target="_blank" rel="noopener noreferrer" className="tyl__link">
                   Falar com a Tayssa
@@ -176,10 +176,13 @@ export function LoginExperience({
           </button>
         </form>
 
-        {/* sem pedido de acesso (09/11/2026): a conta nasce no primeiro agendamento; o VIP é por convite */}
+        {/* sem conta: o cadastro VIP (09/11/2026) ou o primeiro agendamento pelo site */}
         <div className="tyl__foot">
-          <p>Ainda não tem conta? Ela nasce quando você marca o primeiro horário pelo site.</p>
-          <TransitionLink href={ROUTES.home} className="tyl__link">
+          <p>Ainda não tem conta? Faça o seu cadastro VIP, ou crie a conta ao marcar o primeiro horário pelo site.</p>
+          <TransitionLink href={ROUTES.signup} className="tyl__link">
+            Fazer meu cadastro VIP
+          </TransitionLink>
+          <TransitionLink href={ROUTES.home} className="tyl__ghost">
             Agendar pelo site
           </TransitionLink>
         </div>

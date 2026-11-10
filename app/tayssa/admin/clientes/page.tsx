@@ -21,8 +21,8 @@ export default async function ClientsPage() {
         }
         lead={
           esperando > 0
-            ? `${esperando} ${esperando === 1 ? "pedido de acesso espera" : "pedidos de acesso esperam"} a sua decisão — é o filtro que já está aberto.`
-            : "Nenhum pedido de acesso aberto. A lista mostra todas as clientes."
+            ? `${esperando} ${esperando === 1 ? "cadastro espera" : "cadastros esperam"} você liberar: é o filtro que já está aberto.`
+            : "Nenhum cadastro esperando você liberar. A lista mostra todas as clientes."
         }
         actions={
           <TransitionLink href={ROUTES.adminClientNew} className="tya-btn tya-btn--primary">

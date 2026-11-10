@@ -137,39 +137,96 @@ export function mesesSeguidos(datas: string[], hoje: Date): number {
   return n;
 }
 
-export type CriteriosVip = { pontos: number; meses: number };
+export type CriteriosVip = {
+  /** atendimentos na sequência (4) */
+  visitas: number;
+  /** a sequência inteira cabe nestes dias (70) */
+  janelaDias: number;
+  /** de um atendimento para o seguinte: no mínimo (15) */
+  intervaloMin: number;
+  /** e no máximo (20) */
+  intervaloMax: number;
+};
 
 export type ProgressoVip = {
-  pontos: number;
-  meses: number;
   criterios: CriteriosVip;
-  faltamPontos: number;
-  faltamMeses: number;
-  /** cumpre os dois critérios: o painel avisa e a Tayssa confirma o VIP */
+  /** atendimentos que contam na sequência de agora (0..visitas) */
+  contam: number;
+  faltam: number;
+  /** completou uma sequência inteira: o painel avisa e a Tayssa confirma o VIP */
   cumpre: boolean;
-  /** 0..1, o critério mais atrasado manda */
+  /** o último atendimento que contou (AAAA-MM-DD) */
+  ultima: string | null;
+  /** quando fazer o próximo para seguir a sequência (AAAA-MM-DD) */
+  proximaDe: string | null;
+  proximaAte: string | null;
+  /** passou do intervalo máximo sem atendimento: recomeça no próximo */
+  venceu: boolean;
+  /** 0..1 */
   fracao: number;
 };
 
+const diaUTC = (iso: string) => Date.UTC(Number(iso.slice(0, 4)), Number(iso.slice(5, 7)) - 1, Number(iso.slice(8, 10)));
+const diasEntre = (de: string, ate: string) => Math.round((diaUTC(ate) - diaUTC(de)) / 86400000);
+const somaDias = (iso: string, n: number) => new Date(diaUTC(iso) + n * 86400000).toISOString().slice(0, 10);
+const isoLocal = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
 /**
- * O caminho até o VIP: uma meta de pontos E meses seguidos com
- * atendimento. Pontos de uma vez só não fazem ninguém VIP; a constância,
- * sim. Nunca muda o status sozinho: só diz se ela cumpre.
+ * O caminho até o VIP (Lucas, 09/11/2026): 4 atendimentos feitos em até 70
+ * dias, de 15 a 20 dias entre um e outro. Conta o atendimento que a Tayssa
+ * marcou como realizado. Um feito antes de 15 dias do anterior não conta e
+ * não zera; passou de 20 dias, a sequência recomeça nele. Quem completou uma
+ * sequência inteira cumpre (e continua cumprindo): o painel mostra em
+ * "Prontas para VIP". Nunca muda o status sozinho: a Tayssa confirma.
  */
-export function progressoVip(pontos: number, meses: number, criterios: CriteriosVip): ProgressoVip {
-  const faltamPontos = Math.max(0, criterios.pontos - pontos);
-  const faltamMeses = Math.max(0, criterios.meses - meses);
-  const deP = criterios.pontos > 0 ? Math.min(1, pontos / criterios.pontos) : 1;
-  const deM = criterios.meses > 0 ? Math.min(1, meses / criterios.meses) : 1;
+export function progressoVip(datas: string[], hoje: Date, criterios: CriteriosVip): ProgressoVip {
+  const c = criterios;
+  const ordenadas = [...new Set(datas.map((d) => d.slice(0, 10)))].sort();
+  let seq: string[] = [];
+  let cumpre = false;
+  for (const d of ordenadas) {
+    const ultima = seq[seq.length - 1];
+    if (!ultima) {
+      seq = [d];
+    } else {
+      const intervalo = diasEntre(ultima, d);
+      if (intervalo < c.intervaloMin) continue;
+      if (intervalo > c.intervaloMax || diasEntre(seq[0], d) > c.janelaDias) seq = [d];
+      else seq.push(d);
+    }
+    if (seq.length >= c.visitas) cumpre = true;
+  }
+  const ultima = seq[seq.length - 1] ?? null;
+  const venceu = !cumpre && ultima !== null && diasEntre(ultima, isoLocal(hoje)) > c.intervaloMax;
+  const contam = cumpre ? c.visitas : venceu ? 0 : Math.min(seq.length, c.visitas);
+  const segue = !cumpre && !venceu && ultima !== null;
   return {
-    pontos,
-    meses,
-    criterios,
-    faltamPontos,
-    faltamMeses,
-    cumpre: faltamPontos === 0 && faltamMeses === 0,
-    fracao: Math.min(deP, deM),
+    criterios: c,
+    contam,
+    faltam: Math.max(0, c.visitas - contam),
+    cumpre,
+    ultima,
+    proximaDe: segue ? somaDias(ultima!, c.intervaloMin) : null,
+    proximaAte: segue ? somaDias(ultima!, c.intervaloMax) : null,
+    venceu,
+    fracao: c.visitas > 0 ? Math.min(1, contam / c.visitas) : 1,
   };
+}
+
+/** "4 atendimentos em até 70 dias, com 15 a 20 dias entre um e outro" */
+export function regraVipLegivel(c: CriteriosVip): string {
+  return `${c.visitas} atendimentos em até ${c.janelaDias} dias, com ${c.intervaloMin} a ${c.intervaloMax} dias entre um e outro`;
+}
+
+const diaMes = (iso: string) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`;
+
+/** Onde ela está no caminho do VIP, numa frase. */
+export function andamentoVipLegivel(p: ProgressoVip): string {
+  if (p.cumpre) return "completou a sequência: a Tayssa confirma o VIP";
+  if (p.venceu) return `passaram mais de ${p.criterios.intervaloMax} dias do último: a contagem recomeça no próximo atendimento`;
+  if (!p.contam || !p.proximaDe || !p.proximaAte) return "a contagem começa no próximo atendimento";
+  return `${p.contam} de ${p.criterios.visitas} · o próximo entre ${diaMes(p.proximaDe)} e ${diaMes(p.proximaAte)}`;
 }
 
 /**

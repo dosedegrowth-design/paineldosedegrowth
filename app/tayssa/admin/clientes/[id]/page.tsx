@@ -3,7 +3,7 @@ import { requireAdminPage } from "@/lib/tayssa/auth/guards";
 import { getClientDetail } from "@/lib/tayssa/queries/admin";
 import { getActiveServices, getPublicBenefits } from "@/lib/tayssa/queries/catalog";
 import { getSettings } from "@/lib/tayssa/settings";
-import { toISODate, validadeDoAniversario } from "@/lib/tayssa/rules";
+import { andamentoVipLegivel, regraVipLegivel, toISODate, validadeDoAniversario } from "@/lib/tayssa/rules";
 import { cicloLegivel, criterioLegivel, currency, dateLong, dateShort, dateTime, faltaLegivel, isWithinHours, nowInBusinessTz, numero, plural } from "@/lib/tayssa/format";
 import { formatBrPhone } from "@/lib/tayssa/phone";
 import { MENSAGEM_VIP_INCLUIDA, renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
@@ -92,7 +92,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
     d.summary.pendingServices + d.summary.benefitsPendingValidation + beneficiosPedidos;
   const revisadoAgora = user.signup_source === "self" && user.status !== "pending" && isWithinHours(user.reviewed_at, 48);
 
-  // pedido de acesso: ainda não há ficha para mostrar — só a decisão, num cartão centrado
+  // cadastro para liberar: ainda não há ficha para mostrar, só a decisão, num cartão centrado
   if (user.status === "pending") {
     return (
       <div className="tya-pedido-pagina tya-up">
@@ -105,6 +105,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
         <SignupReviewPanel
           id={user.id}
           name={user.name}
+          nickname={user.nickname}
           email={user.email}
           phone={user.phone}
           message={user.signup_message}
@@ -189,7 +190,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
           <dt>Entrou</dt>
           <dd>
             {user.signup_source === "self"
-              ? "pelo site, com pedido de acesso"
+              ? "pelo cadastro VIP do site (entra com o WhatsApp e a senha dela)"
               : user.signup_source === "agenda"
                 ? "pela agenda do site (entra com o WhatsApp e a senha dela)"
                 : "cadastrada por você"}
@@ -211,17 +212,17 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
 
       {revisadoAgora ? (
         <AdminBlock
-          title="Pedido de acesso"
+          title="Cadastro VIP"
           aside={<span className="tya-small">revisado em {dateTime(user.reviewed_at)}</span>}
         >
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
             <Selo tom={user.status === "rejected" ? "tya-pill--bad" : "tya-pill--ok"}>
-              {user.status === "rejected" ? "Recusado" : "Aprovado"}
+              {user.status === "rejected" ? "Recusado" : "Liberado"}
             </Selo>
             <p className="tya-small" style={{ margin: 0 }}>
               {user.status === "rejected"
                 ? "A conta ficou marcada como recusada. Se mudar de ideia, reative em “Acesso e VIP”."
-                : `${(user.nickname ?? user.name).split(" ")[0]} já pode entrar com o e-mail e a senha que escolheu no cadastro — o botão de boas-vindas está em “Acesso e VIP”.`}
+                : `${(user.nickname ?? user.name).split(" ")[0]} já pode entrar com o WhatsApp e a senha que criou no cadastro.`}
             </p>
           </div>
           {user.review_note ? <p className="tya-quote">Sua nota: “{user.review_note}”</p> : null}
@@ -272,14 +273,12 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
               </p>
             ) : null}
             <p className="tya-small" style={{ margin: 0 }}>
-              Critério do VIP: {criterioLegivel(d.summary.vip.criterios.pontos, d.summary.vip.criterios.meses)}. Ela tem{" "}
-              {numero(d.summary.points)} {plural(d.summary.points, "ponto", "pontos")} e {d.summary.mesesSeguidos}{" "}
-              {plural(d.summary.mesesSeguidos, "mês seguido", "meses seguidos")}
+              Critério do VIP: {regraVipLegivel(d.summary.vip.criterios)}.{" "}
               {vip === "active"
-                ? "."
+                ? ""
                 : d.summary.vip.cumpre
-                  ? ": cumpre os dois. Falta só a sua confirmação."
-                  : ` (${faltaLegivel(d.summary.vip.faltamPontos, d.summary.vip.faltamMeses)}).`}{" "}
+                  ? "Ela completou a sequência: falta só a sua confirmação."
+                  : `Ela está em ${andamentoVipLegivel(d.summary.vip)}.`}{" "}
               A decisão é sua.
             </p>
           </div>
@@ -373,7 +372,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
               <li className="tya-row">
                 <span>
                   VIP
-                  <span className="tya-small"> · {criterioLegivel(d.summary.vip.criterios.pontos, d.summary.vip.criterios.meses)}</span>
+                  <span className="tya-small"> · {regraVipLegivel(d.summary.vip.criterios)}</span>
                 </span>
                 <Selo tom={vip === "active" ? "tya-pill--gold" : d.summary.vip.cumpre ? "tya-pill--ok" : "tya-pill--quiet"}>
                   {vip === "active" ? "VIP ativo" : d.summary.vip.cumpre ? "Cumpre: confirme" : "A caminho"}

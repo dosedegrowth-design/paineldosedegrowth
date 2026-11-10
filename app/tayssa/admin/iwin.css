@@ -1860,6 +1860,13 @@ select.tya-field {
   line-height: 1.5;
   color: var(--tya-muted);
 }
+/* cadastro para liberar: as duas liberações lado a lado, recusar embaixo */
+.tya-pedido__acoes--tres {
+  grid-template-columns: 1fr 1fr;
+}
+.tya-pedido__acoes--tres > :last-child {
+  grid-column: 1 / -1;
+}
 @media (max-width: 480px) {
   .tya-pedido {
     padding: 22px 18px;

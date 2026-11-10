@@ -7,10 +7,11 @@ import { assertAdmin } from "@/lib/tayssa/auth/guards";
 import { hashToken, newToken, revokeAllSessions } from "@/lib/tayssa/auth/session";
 import { logAudit } from "@/lib/tayssa/audit";
 import { referralCode } from "@/lib/tayssa/codes";
-import { PASSWORD_TOKEN_DAYS, ROUTES, publicUrl } from "@/lib/tayssa/config";
+import { PASSWORD_TOKEN_DAYS, ROUTES, criteriosVip, publicUrl } from "@/lib/tayssa/config";
+import { regraVipLegivel } from "@/lib/tayssa/rules";
 import { adminClientSchema, reviewSignupSchema } from "@/lib/tayssa/validation";
 import { getSettings } from "@/lib/tayssa/settings";
-import { renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
+import { MENSAGEM_CONTA_LIBERADA, MENSAGEM_VIP_INCLUIDA, renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { BusinessError, bool, runAction, str } from "@/lib/tayssa/actions/_helpers";
 import type { ActionResult, UserRow, UserStatus } from "@/lib/tayssa/types";
 
@@ -282,13 +283,17 @@ export async function adminReviewSignupAction(input: {
     });
     revalidateAdmin();
 
+    // a resposta para a cliente: liberada (com a regra do VIP) ou já VIP
     let welcomeUrl: string | null = null;
     if (parsed.decision === "approve" && u.phone) {
       const settings = await getSettings();
       const name = (u.nickname ?? u.name).trim().split(/\s+/)[0];
+      const url = publicUrl(ROUTES.login);
       welcomeUrl = whatsappUrl(
         u.phone,
-        renderTemplate(settings.signup.welcome_template, { name, url: publicUrl(ROUTES.login) })
+        parsed.vip
+          ? renderTemplate(MENSAGEM_VIP_INCLUIDA, { name, url })
+          : renderTemplate(MENSAGEM_CONTA_LIBERADA, { name, url, regra: regraVipLegivel(criteriosVip(settings.rules)) })
       );
     }
     return { status, welcomeUrl };

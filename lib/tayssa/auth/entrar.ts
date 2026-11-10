@@ -73,7 +73,7 @@ export async function autenticar(loginBruto: string, senha: string, ip: string |
     // a senha confere, mas a porta ainda não abre: cada motivo tem sua tela
     const err = new BusinessError(
       user.status === "pending"
-        ? "Seu pedido de acesso está com a Tayssa. Assim que ela aprovar, é só entrar."
+        ? "Seu cadastro está com a Tayssa. Mande uma mensagem para ela liberar; assim que ela liberar, é só entrar."
         : user.status === "rejected"
           ? "Esse acesso não foi liberado. Fale com a Tayssa pelo WhatsApp."
           : "Seu acesso está pausado no momento. Fale com a Tayssa para reativar."

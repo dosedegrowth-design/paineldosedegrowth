@@ -1,10 +1,10 @@
-import { ROUTES } from "@/lib/tayssa/config";
+import { ROUTES, criteriosVip } from "@/lib/tayssa/config";
 import type { ReactNode } from "react";
 import { requireAdminPage } from "@/lib/tayssa/auth/guards";
 import { getSettings } from "@/lib/tayssa/settings";
 import { getAllBenefits, getAllServices, getBlackouts } from "@/lib/tayssa/queries/catalog";
 import { criterioLegivel, plural } from "@/lib/tayssa/format";
-import { horariosDoDia, mesesDoMarco } from "@/lib/tayssa/rules";
+import { horariosDoDia, mesesDoMarco, regraVipLegivel } from "@/lib/tayssa/rules";
 import { AdminBlock, AdminHeader } from "@/components/tayssa/admin/shell";
 import {
   BenefitConfigForm,
@@ -209,7 +209,7 @@ export default async function SettingsAdminPage() {
               <b>Pontos e o caminho até o VIP.</b> Cada atendimento confirmado soma os pontos do serviço
               {pontosServicos.length ? ` (de ${Math.min(...pontosServicos)} a ${Math.max(...pontosServicos)})` : ""}.{" "}
               {marcos.map((m) => `${m.name}: ${criterioLegivel(m.threshold ?? 0, mesesDoMarco(m))}`).join(" · ")}
-              {marcos.length ? " · " : ""}VIP: {criterioLegivel(settings.rules.vip_pontos, settings.rules.vip_meses)}, com a
+              {marcos.length ? " · " : ""}VIP: {regraVipLegivel(criteriosVip(settings.rules))}, com a
               sua confirmação. <a href="#servicos" className="tya-link">Pontos</a> ·{" "}
               <a href="#beneficios" className="tya-link">Marcos</a> · <a href="#regras" className="tya-link">VIP</a>
             </p>
@@ -357,7 +357,7 @@ export default async function SettingsAdminPage() {
         <Bloco
           id="regras"
           titulo="VIP e regras gerais"
-          efeito="O critério do VIP (pontos e meses seguidos com atendimento), quem sumiu faz tempo e quanto tempo um benefício dura por padrão. Quem cumpre o critério aparece na visão geral para você confirmar."
+          efeito="O critério do VIP (quantos atendimentos, em quantos dias e o intervalo entre um e outro), quem sumiu faz tempo e quanto tempo um benefício dura por padrão. Quem completa a sequência aparece em “Prontas para VIP” para você confirmar."
         >
           <RulesForm value={settings.rules} />
         </Bloco>

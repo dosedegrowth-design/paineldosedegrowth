@@ -88,11 +88,6 @@ test("a simulação da Tayssa: só cílios chega ao VIP", () => {
   assert.equal(loyaltyProgress(total(3), programa, 2).current, null);
   assert.equal(loyaltyProgress(total(4), programa, 2).current?.key, "loyalty_100");
   assert.equal(loyaltyProgress(total(7), programa, 4).current?.key, "loyalty_250");
-  const vip = { pontos: 1000, meses: 3 };
-  assert.equal(progressoVip(total(8), 4, vip).cumpre, false);
-  assert.equal(progressoVip(total(9), 5, vip).cumpre, true);
-  // os mesmos 1.020 pontos em um mês só não fazem VIP
-  assert.equal(progressoVip(total(9), 1, vip).cumpre, false);
 });
 
 test("constância: meses seguidos com atendimento", () => {
@@ -111,22 +106,42 @@ test("constância: meses seguidos com atendimento", () => {
   assert.equal(mesesSeguidos(["2026-10-01", "2026-10-02", "2026-10-03", "2026-10-04"], hoje), 1);
 });
 
-test("VIP: meta de pontos e meses seguidos, os dois", () => {
-  const c = { pontos: 1000, meses: 3 };
-  const pronta = progressoVip(1020, 3, c);
+test("VIP: 4 atendimentos em até 70 dias, de 15 a 20 dias entre um e outro", () => {
+  const c = { visitas: 4, janelaDias: 70, intervaloMin: 15, intervaloMax: 20 };
+  const hoje = new Date(2026, 10, 9); // 09/11/2026
+  // nenhum atendimento: a contagem começa no próximo
+  const zero = progressoVip([], hoje, c);
+  assert.equal(zero.contam, 0);
+  assert.equal(zero.cumpre, false);
+  assert.equal(zero.proximaDe, null);
+  // dois na sequência: o próximo vai de 15 a 20 dias depois do último
+  const dois = progressoVip(["2026-10-12", "2026-10-30"], hoje, c);
+  assert.equal(dois.contam, 2);
+  assert.equal(dois.faltam, 2);
+  assert.equal(dois.proximaDe, "2026-11-14");
+  assert.equal(dois.proximaAte, "2026-11-19");
+  assert.equal(dois.fracao, 0.5);
+  // os quatro, cada um de 15 a 20 dias do anterior: cumpre
+  const pronta = progressoVip(["2026-08-01", "2026-08-18", "2026-09-05", "2026-09-22"], hoje, c);
   assert.equal(pronta.cumpre, true);
-  assert.equal(pronta.fracao, 1);
-  // muitos pontos de uma vez não fazem ninguém VIP
-  const deUmaVez = progressoVip(1500, 1, c);
-  assert.equal(deUmaVez.cumpre, false);
-  assert.equal(deUmaVez.faltamMeses, 2);
-  assert.equal(deUmaVez.faltamPontos, 0);
-  assert.ok(Math.abs(deUmaVez.fracao - 1 / 3) < 1e-9);
-  // constância sem a meta de pontos também não
-  const semPontos = progressoVip(750, 4, c);
-  assert.equal(semPontos.cumpre, false);
-  assert.equal(semPontos.faltamPontos, 250);
-  assert.equal(semPontos.fracao, 0.75);
+  assert.equal(pronta.contam, 4);
+  // e continua cumprindo mesmo meses depois (a Tayssa ainda vai confirmar)
+  assert.equal(progressoVip(["2026-08-01", "2026-08-18", "2026-09-05", "2026-09-22"], new Date(2027, 0, 10), c).cumpre, true);
+  // um antes de 15 dias não conta e não zera
+  const cedo = progressoVip(["2026-10-20", "2026-10-27", "2026-11-05"], hoje, c);
+  assert.equal(cedo.contam, 2);
+  assert.equal(cedo.ultima, "2026-11-05");
+  // mais de 20 dias entre dois: recomeça no atendimento novo
+  const recomeca = progressoVip(["2026-09-01", "2026-09-18", "2026-10-25"], hoje, c);
+  assert.equal(recomeca.contam, 1);
+  assert.equal(recomeca.ultima, "2026-10-25");
+  // passaram mais de 20 dias sem atendimento: venceu, volta a zero
+  const venceu = progressoVip(["2026-10-01", "2026-10-17"], hoje, c);
+  assert.equal(venceu.venceu, true);
+  assert.equal(venceu.contam, 0);
+  assert.equal(venceu.proximaDe, null);
+  // o mesmo dia duas vezes conta uma
+  assert.equal(progressoVip(["2026-10-30", "2026-10-30"], hoje, c).contam, 1);
 });
 
 test("indicação: cada indicação confirmada vale um benefício", () => {

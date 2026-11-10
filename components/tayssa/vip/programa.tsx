@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { PRIORIDADE_VIP, ROUTES } from "@/lib/tayssa/config";
 import { criterioLegivel, faltaLegivel, numero, plural } from "@/lib/tayssa/format";
-import type { LoyaltyProgress, ProgressoVip } from "@/lib/tayssa/rules";
+import { andamentoVipLegivel, regraVipLegivel, type LoyaltyProgress, type ProgressoVip } from "@/lib/tayssa/rules";
 import type { ServiceRow } from "@/lib/tayssa/types";
 import { Icone, type IconeNome } from "@/components/tayssa/ui/icones";
 
@@ -41,13 +41,9 @@ export function passosDoCaminho(loyalty: LoyaltyProgress, vip: ProgressoVip, ehV
     chave: "vip",
     titulo: "VIP",
     descricao: `O presente de aniversário e ${PRIORIDADE_VIP}.`,
-    criterio: criterioLegivel(vip.criterios.pontos, vip.criterios.meses),
+    criterio: regraVipLegivel(vip.criterios),
     feito: ehVip,
-    nota: ehVip
-      ? "você é VIP"
-      : vip.cumpre
-        ? "você cumpre os critérios: a Tayssa confirma o seu VIP"
-        : faltaLegivel(vip.faltamPontos, vip.faltamMeses),
+    nota: ehVip ? "você é VIP" : andamentoVipLegivel(vip),
   };
   const todos = [...marcos, final];
   const proximo = todos.findIndex((p) => !p.feito);
@@ -92,8 +88,7 @@ export function CaminhoVip({
     <div className="tyv-panel tyv-caminho-bloco">
       {!compacto ? (
         <p className="tyv-sub tyv-caminho__intro">
-          O VIP é de quem volta com constância. Pontos de uma vez só não bastam: são{" "}
-          <b>{criterioLegivel(vip.criterios.pontos, vip.criterios.meses)}</b> com atendimento.
+          O VIP é de quem volta com constância: são <b>{regraVipLegivel(vip.criterios)}</b>.
         </p>
       ) : null}
       <ol className="tyv-caminho">

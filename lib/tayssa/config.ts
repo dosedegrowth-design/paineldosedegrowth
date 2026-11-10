@@ -7,6 +7,7 @@
  */
 
 import { origemDaTayssa, semPrefixo } from "./dominio.ts";
+import type { CriteriosVip } from "./rules.ts";
 
 /**
  * Endereço público do site (links do WhatsApp, metadados, avisos). Desde
@@ -149,15 +150,26 @@ export type RulesSettings = {
    * desmarcar os horários (05/11/2026: o VIP ainda não abriu).
    */
   vip_aberto: boolean;
-  /** Meta de pontos para o VIP (junto com os meses seguidos; a Tayssa confirma). */
-  vip_pontos: number;
-  /** Meses seguidos com pelo menos um atendimento confirmado para o VIP. */
-  vip_meses: number;
+  /**
+   * O caminho até o VIP (Lucas, 09/11/2026): `vip_visitas` atendimentos feitos
+   * em até `vip_janela_dias` dias, de `vip_intervalo_min` a `vip_intervalo_max`
+   * dias entre um e outro (4, 70, 15 e 20). Quem completa aparece em "Prontas
+   * para VIP" e a Tayssa confirma (`progressoVip` em rules.ts).
+   */
+  vip_visitas: number;
+  vip_janela_dias: number;
+  vip_intervalo_min: number;
+  vip_intervalo_max: number;
   /** Dias sem atendimento aprovado para marcar cliente como inativa. */
   inactivity_days: number;
   /** Validade padrão de um benefício liberado (dias). */
   benefit_validity_days: number;
 };
+
+/** O critério do VIP como a regra pura (`progressoVip`) recebe. */
+export function criteriosVip(r: RulesSettings): CriteriosVip {
+  return { visitas: r.vip_visitas, janelaDias: r.vip_janela_dias, intervaloMin: r.vip_intervalo_min, intervaloMax: r.vip_intervalo_max };
+}
 
 export type BirthdaySettings = {
   /** o presente vale o mês inteiro do aniversário (a regra da Tayssa); desligado, valem os dias em volta da data */
@@ -282,8 +294,10 @@ export const DEFAULT_SETTINGS: Settings = {
   // o VIP é de quem volta com constância: pontos de uma vez só não bastam
   rules: {
     vip_aberto: false,
-    vip_pontos: 1000,
-    vip_meses: 3,
+    vip_visitas: 4,
+    vip_janela_dias: 70,
+    vip_intervalo_min: 15,
+    vip_intervalo_max: 20,
     inactivity_days: 30,
     benefit_validity_days: 60,
   },

@@ -10,14 +10,16 @@ import { Area } from "@/components/tayssa/admin/forms";
 import { useTarefa } from "@/components/tayssa/ui/acao";
 
 /**
- * A Tayssa decide quem entra. Um cartão só, centrado e na largura de um
- * cartão (não da tela): quem é, o recado, como falar com ela e duas
- * decisões. Aprovar abre a conta na hora (a senha a cliente já escolheu);
- * recusar guarda o motivo só para ela.
+ * A Tayssa libera quem se cadastrou no site (cadastro VIP, 09/11/2026). Um
+ * cartão só, centrado: quem é, o recado, o WhatsApp e três decisões.
+ * "Liberar" abre a conta para a agenda (o VIP vem com os atendimentos);
+ * "Liberar como VIP" já entra VIP; "Recusar" guarda o motivo só para ela.
+ * Depois, um toque manda a resposta pronta no WhatsApp.
  */
 export function SignupReviewPanel({
   id,
   name,
+  nickname,
   email,
   phone,
   message,
@@ -25,6 +27,7 @@ export function SignupReviewPanel({
 }: {
   id: string;
   name: string;
+  nickname: string | null;
   email: string | null;
   phone: string | null;
   message: string | null;
@@ -38,12 +41,13 @@ export function SignupReviewPanel({
   const [welcome, setWelcome] = useState<string | null>(null);
   const [decided, setDecided] = useState<"approve" | "reject" | null>(null);
   const [pending, start] = useTarefa();
-  const first = name.split(" ")[0];
+  const first = nickname?.trim() || name.split(" ")[0];
 
-  const run = (decision: "approve" | "reject") =>
+  const run = (decision: "approve" | "reject", comoVip = false) =>
     start(async () => {
       setError(null);
-      const r = await adminReviewSignupAction({ id, decision, vip, note: note.trim() || undefined });
+      setVip(comoVip);
+      const r = await adminReviewSignupAction({ id, decision, vip: comoVip, note: note.trim() || undefined });
       if (!r.ok) {
         setError(r.error);
         return;
@@ -60,10 +64,10 @@ export function SignupReviewPanel({
         </span>
         <div className="tya-pedido__quem">
           <span className="tya-pedido__rotulo">
-            {decided === "approve" ? "Acesso aprovado" : decided === "reject" ? "Pedido recusado" : "Pedido de acesso"}
+            {decided === "approve" ? (vip ? "Liberada como VIP" : "Conta liberada") : decided === "reject" ? "Cadastro recusado" : "Cadastro para liberar"}
           </span>
           <h2 className="tya-pedido__nome">{name}</h2>
-          {requestedAt ? <span className="tya-pedido__quando">pediu em {dateTime(requestedAt).replace(" ", " às ")}</span> : null}
+          {requestedAt ? <span className="tya-pedido__quando">se cadastrou em {dateTime(requestedAt).replace(" ", " às ")}</span> : null}
         </div>
       </header>
 
@@ -71,13 +75,13 @@ export function SignupReviewPanel({
         <div className="tya-pedido__fim">
           <p>
             {decided === "approve"
-              ? `${first} já pode entrar com o e-mail e a senha que escolheu${vip ? ", já como VIP" : ""}. Avisa ela:`
+              ? `${first} já pode entrar com o WhatsApp e a senha que criou${vip ? ", já como VIP" : ""}. Avisa ela:`
               : "A conta fica marcada como recusada. Se mudar de ideia, dá para reativar na ficha dela."}
           </p>
           <div className="tya-pedido__acoes">
             {decided === "approve" && welcome ? (
               <a href={welcome} target="_blank" rel="noopener noreferrer" className="tya-btn tya-btn--primary">
-                Mandar boas-vindas no WhatsApp
+                Avisar no WhatsApp
               </a>
             ) : null}
             <button type="button" className="tya-btn tya-btn--ghost" onClick={() => router.refresh()}>
@@ -90,10 +94,12 @@ export function SignupReviewPanel({
           {message ? <blockquote className="tya-pedido__recado">{message}</blockquote> : null}
 
           <dl className="tya-pedido__dados">
-            <div>
-              <dt>E-mail</dt>
-              <dd>{email ?? "sem e-mail"}</dd>
-            </div>
+            {nickname ? (
+              <div>
+                <dt>Chamar de</dt>
+                <dd>{nickname}</dd>
+              </div>
+            ) : null}
             <div>
               <dt>WhatsApp</dt>
               <dd>
@@ -102,30 +108,30 @@ export function SignupReviewPanel({
                     {formatBrPhone(phone)}
                   </a>
                 ) : (
-                  "—"
+                  "sem WhatsApp"
                 )}
               </dd>
             </div>
+            {email ? (
+              <div>
+                <dt>E-mail</dt>
+                <dd>{email}</dd>
+              </div>
+            ) : null}
           </dl>
 
           {!rejecting ? (
-            <>
-              <label className="tya-pedido__vip">
-                <span>
-                  <b>Já entra como VIP</b>
-                  <small>aniversário e benefícios exclusivos liberados</small>
-                </span>
-                <input type="checkbox" role="switch" className="tya-switch" checked={vip} onChange={(e) => setVip(e.target.checked)} />
-              </label>
-              <div className="tya-pedido__acoes">
-                <button type="button" className="tya-btn tya-btn--primary" onClick={() => run("approve")} disabled={pending}>
-                  {pending ? "Aprovando…" : "Aprovar acesso"}
-                </button>
-                <button type="button" className="tya-btn tya-btn--ghost" onClick={() => setRejecting(true)} disabled={pending}>
-                  Recusar
-                </button>
-              </div>
-            </>
+            <div className="tya-pedido__acoes tya-pedido__acoes--tres">
+              <button type="button" className="tya-btn tya-btn--primary" onClick={() => run("approve")} disabled={pending}>
+                {pending && !vip ? "Liberando…" : "Liberar"}
+              </button>
+              <button type="button" className="tya-btn tya-btn--gold" onClick={() => run("approve", true)} disabled={pending}>
+                {pending && vip ? "Liberando…" : "Liberar como VIP"}
+              </button>
+              <button type="button" className="tya-btn tya-btn--ghost" onClick={() => setRejecting(true)} disabled={pending}>
+                Recusar
+              </button>
+            </div>
           ) : (
             <div className="tya-pedido__recusa">
               <Area label="Motivo (só você vê)" name="note" rows={2} maxLength={300} value={note} onChange={(e) => setNote(e.target.value)} />

@@ -47,7 +47,7 @@ function espera(c: ClientSummary) {
 
 function pendencias(c: ClientSummary) {
   const partes: string[] = [];
-  if (c.user.status === "pending") partes.push("pedido de acesso");
+  if (c.user.status === "pending") partes.push("cadastro para liberar");
   if (c.pendingServices > 0) partes.push(`${c.pendingServices} atend.`);
   if (c.benefitsPendingValidation > 0) partes.push(`${c.benefitsPendingValidation} benef.`);
   return partes;
@@ -92,7 +92,7 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
 
   const filtros: [Filtro, string, number | null][] = [
     ["all", "Todas", null],
-    ["pending", "Pedidos de acesso", pendingCount || null],
+    ["pending", "Cadastros para liberar", pendingCount || null],
     ["agenda", "Da agenda", agendaCount || null],
     ["vip", "VIP", null],
     ["pronta", "Prontas para VIP", prontaCount || null],
@@ -136,7 +136,7 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
             {q.trim()
               ? `Nenhuma cliente encontrada para “${q.trim()}”.`
               : only === "pending"
-                ? "Nenhum pedido de acesso esperando."
+                ? "Nenhum cadastro esperando você liberar."
                 : "Nenhuma cliente nesta lista."}
           </Empty>
         </div>

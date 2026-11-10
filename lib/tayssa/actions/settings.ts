@@ -64,8 +64,10 @@ export async function updateRulesSettingsAction(_p: ActionResult | null, fd: For
     const admin = await assertAdmin();
     const input = rulesSettingsSchema.parse({
       vip_aberto: bool(fd, "vip_aberto"),
-      vip_pontos: str(fd, "vip_pontos"),
-      vip_meses: str(fd, "vip_meses"),
+      vip_visitas: str(fd, "vip_visitas"),
+      vip_janela_dias: str(fd, "vip_janela_dias"),
+      vip_intervalo_min: str(fd, "vip_intervalo_min"),
+      vip_intervalo_max: str(fd, "vip_intervalo_max"),
       inactivity_days: str(fd, "inactivity_days"),
       benefit_validity_days: str(fd, "benefit_validity_days"),
     });

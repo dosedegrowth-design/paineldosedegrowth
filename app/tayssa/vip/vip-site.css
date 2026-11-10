@@ -389,3 +389,140 @@ body:has(.tyv-tom-site) {
   box-shadow: none;
   border: 1.5px dashed rgba(247, 193, 209, 0.5);
 }
+
+/* ---------- o cadeado no menu: as telas do VIP para quem ainda não é VIP ---------- */
+.tyv-menu__tranca {
+  display: inline-grid;
+  place-items: center;
+  margin-left: auto;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  opacity: 0.7;
+}
+.tyv-menu__tranca svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- a tela do VIP trancada (09/11/2026): a regra, o andamento e o caminho ---------- */
+.tyv-tranca {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  text-align: center;
+  padding-top: 8px;
+}
+.tyv-tranca .tyv-hello,
+.tyv-tranca .tyv-sub {
+  margin: 0;
+  text-wrap: balance;
+}
+.tyv-tranca__cadeado {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  color: #3d0b20;
+  background: linear-gradient(180deg, #ffffff 0%, #fbe1e9 100%);
+  box-shadow: 0 18px 40px -18px rgba(247, 193, 209, 0.55);
+}
+.tyv-tranca__cadeado svg {
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tyv-tranca__rotulo {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #f7c1d1;
+}
+.tyv-tranca__andamento,
+.tyv-tranca__lista {
+  width: 100%;
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 22px 18px;
+}
+.tyv-tranca__conta {
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  font-size: 15px;
+  color: rgba(248, 236, 239, 0.7);
+}
+.tyv-tranca__conta b {
+  font-size: 44px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+.tyv-tranca__conta span {
+  font-size: 13.5px;
+}
+.tyv-tranca__pontos {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tyv-tranca__pontos li {
+  width: 30px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(248, 236, 239, 0.16);
+}
+.tyv-tranca__pontos li[data-feito] {
+  background: linear-gradient(90deg, #f7c1d1, #fbe1e9);
+}
+.tyv-tranca__nota {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: rgba(248, 236, 239, 0.78);
+  text-wrap: balance;
+}
+.tyv-tranca__lista-titulo {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f7c1d1;
+}
+.tyv-tranca__lista ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 15px;
+  color: #f8ecef;
+}
+.tyv-tranca__acoes {
+  width: 100%;
+  display: grid;
+  gap: 10px;
+  margin-top: 4px;
+}
+.tyv-tranca__acoes .tyv-btn {
+  width: 100%;
+  justify-content: center;
+}

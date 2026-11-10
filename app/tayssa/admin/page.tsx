@@ -1,7 +1,8 @@
 import { requireAdminPage } from "@/lib/tayssa/auth/guards";
 import { getAdminOverview } from "@/lib/tayssa/queries/admin";
 import { getSettings } from "@/lib/tayssa/settings";
-import { ROUTES } from "@/lib/tayssa/config";
+import { ROUTES, criteriosVip } from "@/lib/tayssa/config";
+import { regraVipLegivel } from "@/lib/tayssa/rules";
 import { renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { dateShort, dateTime, dayMonth, hhmm, numero } from "@/lib/tayssa/format";
 import { APPOINTMENT_STATUS_LABEL } from "@/lib/tayssa/types";
@@ -26,7 +27,7 @@ export default async function AdminHome() {
       />
 
       <div className="tya-kpis tya-kpis--home">
-        <Stat n={o.pendingSignups.length} label="Pedidos de acesso" href={ROUTES.adminClients} alert={o.pendingSignups.length > 0} />
+        <Stat n={o.pendingSignups.length} label="Cadastros para liberar" href={ROUTES.adminClients} alert={o.pendingSignups.length > 0} />
         <Stat n={o.appointmentsRequested} label="Horários a confirmar" href={ROUTES.adminAgenda} alert={o.appointmentsRequested > 0} />
         <Stat n={o.pendingServices} label="Atendimentos a confirmar" href={ROUTES.adminServices} alert={o.pendingServices > 0} />
         <Stat n={o.referralsInProgress} label="Indicações em andamento" href={ROUTES.adminReferrals} alert={o.referralsInProgress > 0} />
@@ -39,19 +40,19 @@ export default async function AdminHome() {
 
       <div className="tya-home-blocks">
         {o.pendingSignups.length ? (
-          <AdminBlock title="Pedidos de acesso" aside={<TransitionLink href={ROUTES.adminClients} className="ty-link ty-link--caps">Ver todos</TransitionLink>}>
+          <AdminBlock title="Cadastros para liberar" aside={<TransitionLink href={ROUTES.adminClients} className="ty-link ty-link--caps">Ver todos</TransitionLink>}>
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
               {o.pendingSignups.slice(0, 6).map((c) => (
                 <li key={c.user.id} style={{ display: "flex", justifyContent: "space-between", gap: 12, padding: "10px 0", borderTop: "1px solid var(--t-line)", alignItems: "center" }}>
                   <div>
                     <TransitionLink href={ROUTES.adminClient(c.user.id)} className="ty-link">{c.user.name}</TransitionLink>
                     <span className="ty-small" style={{ display: "block" }}>
-                      {c.user.requested_at ? `pediu em ${dateTime(c.user.requested_at)}` : "pedido de acesso"}
+                      {c.user.requested_at ? `se cadastrou em ${dateTime(c.user.requested_at)}` : "cadastro VIP"}
                       {c.user.signup_message ? ` · “${c.user.signup_message.slice(0, 60)}${c.user.signup_message.length > 60 ? "…" : ""}”` : ""}
                     </span>
                   </div>
                   <TransitionLink href={ROUTES.adminClient(c.user.id)} className="ty-link ty-link--caps">
-                    Revisar
+                    Liberar
                   </TransitionLink>
                 </li>
               ))}
@@ -59,14 +60,14 @@ export default async function AdminHome() {
           </AdminBlock>
         ) : null}
         {o.readyForVip.length ? (
-          <AdminBlock title="Prontas para VIP" aside={<span className="ty-small">cumprem os dois critérios</span>}>
+          <AdminBlock title="Prontas para VIP" aside={<span className="ty-small">completaram a sequência</span>}>
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
               {o.readyForVip.slice(0, 6).map((c) => (
                 <li key={c.user.id} style={{ display: "flex", justifyContent: "space-between", gap: 12, padding: "10px 0", borderTop: "1px solid var(--t-line)", alignItems: "center" }}>
                   <div>
                     <TransitionLink href={ROUTES.adminClient(c.user.id)} className="ty-link">{c.user.name}</TransitionLink>
                     <span className="ty-small" style={{ display: "block" }}>
-                      {numero(c.points)} pontos · {c.mesesSeguidos} meses seguidos
+                      {c.vip.criterios.visitas} atendimentos na sequência · {numero(c.points)} pontos
                     </span>
                   </div>
                   <TransitionLink href={ROUTES.adminClient(c.user.id)} className="ty-link ty-link--caps">
@@ -76,7 +77,7 @@ export default async function AdminHome() {
               ))}
             </ul>
             <p className="ty-small" style={{ marginTop: 10 }}>
-              Critério: {numero(settings.rules.vip_pontos)} pontos e {settings.rules.vip_meses} meses seguidos com atendimento. O VIP só entra quando você ativa.
+              Critério: {regraVipLegivel(criteriosVip(settings.rules))}. O VIP só entra quando você ativa.
             </p>
           </AdminBlock>
         ) : null}

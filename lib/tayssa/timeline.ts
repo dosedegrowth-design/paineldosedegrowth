@@ -7,7 +7,7 @@
  * que a Tayssa deu no admin.
  */
 import { APPOINTMENT_STATUS_LABEL, type AppointmentRow, type ClientBenefitRow, type ClientServiceRow } from "./types.ts";
-import { appointmentEnded, toISODate, type BirthdayInfo, type LoyaltyProgress, type ProgressoVip } from "./rules.ts";
+import { andamentoVipLegivel, appointmentEnded, toISODate, type BirthdayInfo, type LoyaltyProgress, type ProgressoVip } from "./rules.ts";
 import { dateLong, dayLabel, faltaLegivel, hhmm, numero, plural } from "./format.ts";
 
 export type TimelineKind =
@@ -119,8 +119,8 @@ export function buildTimeline({
       kind: "milestone",
       date: null,
       title: "VIP",
-      detail: p.cumpre ? "você cumpre os critérios: a Tayssa confirma" : faltaLegivel(p.faltamPontos, p.faltamMeses),
-      value: numero(p.criterios.pontos),
+      detail: andamentoVipLegivel(p),
+      value: `${p.contam}/${p.criterios.visitas}`,
       tone: p.cumpre ? "gold" : "muted",
     });
   }

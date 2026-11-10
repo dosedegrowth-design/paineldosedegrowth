@@ -1,4 +1,5 @@
 import { requireProgramaVipPage } from "@/lib/tayssa/auth/guards";
+import { VipTrancado } from "@/components/tayssa/vip/vip-trancado";
 import { getCardState } from "@/lib/tayssa/engine";
 import { getSettings } from "@/lib/tayssa/settings";
 import { toCardStamps } from "@/lib/tayssa/queries/vip";
@@ -7,7 +8,8 @@ import { BENEFIT_STATUS_LABEL } from "@/lib/tayssa/types";
 import { LoyaltyCard } from "@/components/tayssa/vip/loyalty-card";
 
 export default async function CardPage() {
-  const user = await requireProgramaVipPage();
+  const { user, bloqueado } = await requireProgramaVipPage();
+  if (bloqueado) return <VipTrancado user={user} tela="cartao" />;
   const [card, settings] = await Promise.all([getCardState(user.id), getSettings()]);
   const stamps = toCardStamps(card.stamps);
   const revealed = stamps.filter((s) => s.revealed).sort((a, b) => b.position - a.position);
