@@ -142,18 +142,28 @@ function calendario() {
     ${papel('marca-papel', marca(), { x: 690, y: 1252, w: 300, rot: 1, rasgo: 'lr', amp: 5, seed: 80, z: 8 })}`;
 }
 
+function pertinho() {
+  return `
+    <div class="pt-titulo"><i>✦</i> Vocês estão a isso aqui <i>✦</i></div>
+    <div class="pt-texto">Descobrir<br>a data da<br>agenda de<br><b>Dezembro</b></div>
+    <svg class="pt-seta" viewBox="0 0 200 160"><path d="M184 128C150 140 104 128 78 96 60 74 52 50 46 22" fill="none" stroke="var(--bordo)" stroke-width="3.2" stroke-linecap="round"/><path d="M30 40 46 20 62 40" fill="none" stroke="var(--bordo)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    ${estrela({ x: 120, y: 330, s: 40, rot: -12 })}${coracao({ x: 900, y: 300, s: 44, rot: 10 })}
+    ${papel('marca-papel', marca(), { x: 700, y: 1232, w: 300, rot: -1.5, rasgo: 'lr', amp: 5, seed: 76, z: 8 })}`;
+}
+
 const SLIDES = [
-  { n: 1, bg: 'capa', html: capa() },
-  { n: 2, bg: 'interna-a', html: abertura() },
-  { n: 3, bg: 'interna-b', html: horarios() },
-  { n: 4, bg: 'interna-a', flip: true, html: avisos() },
-  { n: 5, bg: 'interna-b', flip: true, html: calendario() },
+  { n: 1, bg: 'mao', zoom: true, html: pertinho() },
+  { n: 2, bg: 'capa', html: capa() },
+  { n: 3, bg: 'interna-a', html: abertura() },
+  { n: 4, bg: 'interna-b', html: horarios() },
+  { n: 5, bg: 'interna-a', flip: true, html: avisos() },
+  { n: 6, bg: 'interna-b', flip: true, html: calendario() },
 ];
 
 function page(s) {
   return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
   <link rel="stylesheet" href="fonts/fonts.css"><link rel="stylesheet" href="style.css"></head>
-  <body><div class="slide l${s.n}"><img class="bg${s.flip ? ' bg--flip' : ''}" src="canva/${s.bg}.${EXT}"><div class="fg">${s.html}</div></div>
+  <body><div class="slide l${s.n}"><img class="bg${s.flip ? ' bg--flip' : ''}${s.zoom ? ' bg--zoom' : ''}" src="canva/${s.bg}.${EXT}"><div class="fg">${s.html}</div></div>
   <script>${pecas}</script>
   <script>
     Promise.all([document.fonts.ready, ...[...document.images].map(i => i.decode().catch(() => {}))]).then(() => {
