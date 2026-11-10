@@ -126,7 +126,7 @@ function page(s) {
   let body;
   if (s.kind === 'capa' || s.kind === 'fechamento') {
     const c = s.kind === 'capa'
-      ? { foto: 'fotos/capa-final.webp', fw: 2755, fh: 2591, k: 0.56, l: 108, t: 22, a: 'NA', b: 'TAL', aCheio: true, top: 250,
+      ? { foto: 'fotos/capa-final.webp', fw: 2755, fh: 2591, k: 0.56, l: 108, t: 22, a: (process.env.CAPA || 'AG|ENDA').split('|')[0], b: (process.env.CAPA || 'AG|ENDA').split('|')[1], aCheio: true, top: 250,
           sub: 'O SEU HORÁRIO AGORA É NO SITE · TAYSSAFARIAS.COM.BR', marca: 'esq' }
       : { foto: 'fotos/fech-final.webp', fw: 2740, fh: 3479, k: 0.6, l: -400, t: 60, a: 'AGE', b: 'NDE', aCheio: false, top: 250,
           sub: 'SEU NATAL COMEÇA NO OLHAR · TAYSSAFARIAS.COM.BR · LINK NA BIO', marca: 'dir' };
