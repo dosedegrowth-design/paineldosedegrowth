@@ -94,12 +94,10 @@ function FeedInstagram({
   return (
     <div ref={ref} className="typf-feed">
       <div className="typf-feed__topo">
-        <Avatar handle={handle} />
+        <Avatar />
         <span className="typf-feed__quem">
           <b>{nome}</b>
-          <small>
-            {itens.length} {itens.length === 1 ? "publicação" : "publicações"}
-          </small>
+          <small>{NOME_NO_PERFIL}</small>
         </span>
         <a className="typf-feed__perfil" href={perfilUrl} target="_blank" rel="noopener noreferrer">
           Ver perfil
@@ -211,16 +209,57 @@ function Celular({
   );
 }
 
-/** O avatar da casa: a inicial no vinho, com o anel de story. */
-function Avatar({ handle }: { handle: string }) {
+/**
+ * A foto de perfil dela no Instagram (@1.tayssa, a mesma das publicações;
+ * baixada do perfil público em 09/11/2026, 150 px), com o anel de story.
+ * Trocou a foto no Instagram? Substituir public/tayssa/instagram-perfil.jpg.
+ */
+const FOTO_DE_PERFIL = "/tayssa/instagram-perfil.jpg";
+/** O nome que o Instagram mostra embaixo do @ (o do perfil dela) */
+const NOME_NO_PERFIL = "Tayssa | Lash designer";
+
+function Avatar({ tamanho = 44 }: { tamanho?: number }) {
   return (
     <span className="typf__avatar" aria-hidden>
+      <Image src={FOTO_DE_PERFIL} alt="" width={tamanho} height={tamanho} draggable={false} />
+    </span>
+  );
+}
+
+/** A barra de status do celular: hora, sinal, wi-fi e bateria, dos dois lados da ilha. */
+function BarraDeStatus() {
+  return (
+    <span className="typf__status" aria-hidden>
+      <b>9:41</b>
       <span>
-        {handle
-          .replace(/^@\d*\.?/, "")
-          .charAt(0)
-          .toUpperCase() || "T"}
+        <svg viewBox="0 0 18 12" className="typf__status-sinal">
+          <rect x="0" y="8" width="3" height="4" rx="0.8" />
+          <rect x="5" y="5.5" width="3" height="6.5" rx="0.8" />
+          <rect x="10" y="3" width="3" height="9" rx="0.8" />
+          <rect x="15" y="0" width="3" height="12" rx="0.8" />
+        </svg>
+        <svg viewBox="0 0 16 12" className="typf__status-wifi">
+          <path d="M8 11.2 5.6 8.6a3.4 3.4 0 0 1 4.8 0zM3.4 6.4a6.6 6.6 0 0 1 9.2 0l-1.6 1.7a4.3 4.3 0 0 0-6 0zM1.1 4.1a9.9 9.9 0 0 1 13.8 0l-1.6 1.6a7.6 7.6 0 0 0-10.6 0z" />
+        </svg>
+        <svg viewBox="0 0 27 12" className="typf__status-bateria">
+          <rect x="0.6" y="0.6" width="22.8" height="10.8" rx="3.2" fill="none" stroke="currentColor" strokeOpacity="0.4" strokeWidth="1.2" />
+          <rect x="2.4" y="2.4" width="17" height="7.2" rx="1.8" />
+          <path d="M25 4.2v3.6a1.9 1.9 0 0 0 0-3.6z" fillOpacity="0.45" />
+        </svg>
       </span>
+    </span>
+  );
+}
+
+/** A barra de baixo do app: início, Reels, mensagens, busca e o perfil (a foto dela). */
+function AbasDoApp({ ativa }: { ativa: "inicio" | "reels" }) {
+  return (
+    <span className="typf__abas" aria-hidden>
+      <Ico nome={ativa === "inicio" ? "casaCheia" : "casa"} />
+      <Ico nome={ativa === "reels" ? "reelsCheio" : "reels"} />
+      <Ico nome="enviar" />
+      <Ico nome="lupa" />
+      <Avatar tamanho={24} />
     </span>
   );
 }
@@ -258,6 +297,7 @@ function Reel({ item, handle }: { item: ItemPortfolio; handle: string }) {
         tabIndex={-1}
       />
       <span className="typf__veu" aria-hidden />
+      <BarraDeStatus />
       <span className="typf__reel-topo" aria-hidden>
         <b>Reels</b>
         <Ico nome="camera" />
@@ -270,19 +310,20 @@ function Reel({ item, handle }: { item: ItemPortfolio; handle: string }) {
       </span>
       <span className="typf__reel-base" aria-hidden>
         <span className="typf__autor">
-          <Avatar handle={handle} />
+          <Avatar />
           <b>{handle.replace(/^@/, "")}</b>
           <i>Seguir</i>
         </span>
         {item.legenda ? <span className="typf__legenda">{item.legenda}</span> : null}
         <span className="typf__audio">
           <Ico nome="nota" />
-          áudio original
+          {handle.replace(/^@/, "")} · Áudio original
         </span>
       </span>
       <span className="typf__barra" aria-hidden>
         <i />
       </span>
+      <AbasDoApp ativa="reels" />
       <span className="typf__play" aria-hidden />
     </span>
   );
@@ -292,13 +333,17 @@ function Reel({ item, handle }: { item: ItemPortfolio; handle: string }) {
 function Publicacao({ item, handle }: { item: ItemPortfolio; handle: string }) {
   return (
     <span className="typf__post" aria-hidden>
+      <BarraDeStatus />
       <span className="typf__post-barra">
         <Ico nome="voltar" />
-        <b>Publicações</b>
+        <span className="typf__post-titulo">
+          <small>{handle.replace(/^@/, "").toUpperCase()}</small>
+          <b>Publicações</b>
+        </span>
         <span />
       </span>
       <span className="typf__post-cabeca">
-        <Avatar handle={handle} />
+        <Avatar />
         <b>{handle.replace(/^@/, "")}</b>
         <Ico nome="mais" />
       </span>
@@ -308,6 +353,7 @@ function Publicacao({ item, handle }: { item: ItemPortfolio; handle: string }) {
       <span className="typf__post-acoes">
         <Ico nome="coracao" />
         <Ico nome="balao" />
+        <Ico nome="repost" />
         <Ico nome="enviar" />
         <span />
         <Ico nome="salvar" />
@@ -317,6 +363,7 @@ function Publicacao({ item, handle }: { item: ItemPortfolio; handle: string }) {
           <b>{handle.replace(/^@/, "")}</b> {item.legenda}
         </span>
       ) : null}
+      <AbasDoApp ativa="inicio" />
     </span>
   );
 }
@@ -348,6 +395,22 @@ const ICONES: Record<string, ReactNode> = {
     </>
   ),
   salvar: <path d="M6.5 4h11v16l-5.5-4.6L6.5 20z" />,
+  repost: <path d="M17 3.5 20 6.5 17 9.5M20 6.5H8.5A4.5 4.5 0 0 0 4 11v1M7 20.5 4 17.5 7 14.5M4 17.5h11.5A4.5 4.5 0 0 0 20 13v-1" />,
+  casa: <path d="M4 10.5 12 4l8 6.5V20h-5v-5.5H9V20H4z" />,
+  casaCheia: <path d="M4 10.5 12 4l8 6.5V20h-5v-5.5H9V20H4z" fill="currentColor" />,
+  lupa: (
+    <>
+      <circle cx="10.5" cy="10.5" r="6.5" />
+      <path d="m15.5 15.5 5 5" />
+    </>
+  ),
+  reelsCheio: (
+    <>
+      <rect x="3.5" y="3.5" width="17" height="17" rx="4.5" fill="currentColor" />
+      <path d="M3.5 8.5h17M9 3.5l2.6 5M14.6 3.5l2.6 5" stroke="#000" />
+      <path d="M10.3 11.6v5.2l4.4-2.6z" fill="#000" stroke="none" />
+    </>
+  ),
   som: <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4zM15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" />,
   mudo: <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4zM16 9.5l5 5M21 9.5l-5 5" />,
   instagram: (
@@ -517,7 +580,7 @@ function VisorPortfolio({
               </div>
               <figcaption className="typf-visor__rodape">
                 <span className="typf-visor__quem">
-                  <Avatar handle={handle} />
+                  <Avatar />
                   <span>
                     <b>{handle}</b>
                     {m.legenda ? <span>{m.legenda}</span> : null}
