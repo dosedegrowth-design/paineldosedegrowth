@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { unstable_isUnrecognizedActionError } from "next/navigation";
 
 /**
  * Server actions chamadas FORA de transição do React.
@@ -15,6 +16,30 @@ import { useState, type FormEvent } from "react";
  */
 
 const SEM_CONEXAO = "Não deu para concluir agora. Confira a internet e tente de novo.";
+const ATUALIZADO = "O site acabou de ser atualizado. Recarregue a página e tente de novo.";
+const RECARREGOU = "ty-recarregou-versao";
+
+/**
+ * A tela aberta é de antes de uma atualização do site (o painel instalado no
+ * celular fica dias aberto): a ação dela não existe mais no servidor, que
+ * responde 404, e nada foi feito. Recarregar traz a versão nova; depois disso
+ * o mesmo toque funciona. Uma vez por minuto no máximo, para nunca virar laço.
+ */
+export function recarregarSeVersaoVelha(e: unknown): boolean {
+  if (!unstable_isUnrecognizedActionError(e)) return false;
+  try {
+    const antes = Number(sessionStorage.getItem(RECARREGOU) ?? 0);
+    if (Date.now() - antes > 60_000) {
+      sessionStorage.setItem(RECARREGOU, String(Date.now()));
+      window.location.reload();
+    }
+  } catch {
+    // sem sessionStorage (aba anônima antiga): fica só o recado
+  }
+  return true;
+}
+
+const erroDaAcao = (e: unknown): string => (recarregarSeVersaoVelha(e) ? ATUALIZADO : SEM_CONEXAO);
 
 /** Para botões: `rodar(...)` chama a ação; `pendente` enquanto ela não responde. */
 export function useAcao<A extends unknown[], R>(acao: (...args: A) => Promise<R>) {
@@ -23,8 +48,8 @@ export function useAcao<A extends unknown[], R>(acao: (...args: A) => Promise<R>
     setPendente(true);
     try {
       return await acao(...args);
-    } catch {
-      return { ok: false, error: SEM_CONEXAO };
+    } catch (e) {
+      return { ok: false, error: erroDaAcao(e) };
     } finally {
       setPendente(false);
     }
@@ -51,8 +76,8 @@ export function useAcaoFormulario<S extends { ok: boolean } | null>(
     setPendente(true);
     try {
       setEstado(await acao(estado, fd));
-    } catch {
-      setEstado({ ok: false, error: SEM_CONEXAO } as unknown as S);
+    } catch (e) {
+      setEstado({ ok: false, error: erroDaAcao(e) } as unknown as S);
     } finally {
       setPendente(false);
     }
@@ -71,7 +96,10 @@ export function useTarefa() {
     setPendente(true);
     Promise.resolve()
       .then(fn)
-      .catch(() => undefined)
+      .catch((e: unknown) => {
+        // aqui ninguém mostra o erro: só a versão velha da tela importa (recarrega)
+        recarregarSeVersaoVelha(e);
+      })
       .finally(() => setPendente(false));
   };
   return [pendente, iniciar] as const;

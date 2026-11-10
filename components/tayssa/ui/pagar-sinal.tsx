@@ -138,8 +138,17 @@ export function PagarSinal({
     if (!em) return;
     let vivo = true;
     // trocou o comprovante: busca de novo (a hora do envio muda o endereço)
-    fetch(`${ROUTES.cartaoDoHorario(pedido.id)}?v=${encodeURIComponent(em)}`, { cache: "no-store" })
-      .then((r) => (r.ok ? r.blob() : Promise.reject(new Error(`cartão ${r.status}`))))
+    const endereco = `${ROUTES.cartaoDoHorario(pedido.id)}?v=${encodeURIComponent(em)}`;
+    // um soluço da rede (ou do banco) não tira o cartão: tenta mais uma vez
+    const buscar = (tentativa: number): Promise<Blob> =>
+      fetch(endereco, { cache: "no-store" })
+        .then((r) => (r.ok ? r.blob() : Promise.reject(new Error(`cartão ${r.status}`))))
+        .catch((e: unknown) =>
+          tentativa < 1 && vivo
+            ? new Promise((ok) => setTimeout(ok, 1200)).then(() => buscar(tentativa + 1))
+            : Promise.reject(e),
+        );
+    buscar(0)
       .then((blob) => {
         if (!vivo) return;
         const foto = new File([blob], "horario-tayssa-farias.png", { type: "image/png" });

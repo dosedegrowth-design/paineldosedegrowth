@@ -23,7 +23,8 @@ const SITUACAO: Record<string, string> = {
 
 export default async function Imagem({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [h, settings] = await Promise.all([getHorarioPublico(id), getSettings()]);
+  // banco fora do ar: o WhatsApp ainda recebe o cartão genérico da casa
+  const [h, settings] = await Promise.all([getHorarioPublico(id).catch(() => null), getSettings()]);
   const b = settings.booking;
   const servico = h ? (h.volume ? `${h.servico} · ${h.volume}` : h.servico) : "Seu horário com a Tayssa";
   const quando = h ? `${diaLegivel(h.dia)} · ${horaLegivel(h.hora)}` : "";

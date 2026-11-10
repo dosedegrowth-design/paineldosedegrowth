@@ -27,7 +27,7 @@ import {
   sairDaContaAction,
   type ContaNaAgenda,
 } from "@/lib/tayssa/actions/conta";
-import { useTarefa } from "@/components/tayssa/ui/acao";
+import { recarregarSeVersaoVelha, useTarefa } from "@/components/tayssa/ui/acao";
 import { OlhoDaSenha } from "@/components/tayssa/ui/senha";
 import { PagarSinal } from "@/components/tayssa/ui/pagar-sinal";
 import type { PixDaAgenda } from "@/lib/tayssa/pix";
@@ -287,10 +287,14 @@ function FolhaAgendar({
     });
   };
 
+  // tela de antes de uma atualização do site: recarrega já ao abrir a folha,
+  // antes de ela preencher tudo e a conta ou o pedido falharem no fim
   const buscarAgenda = () =>
-    void agendaPublicaAction().then((r) => {
-      if (r.ok) setFresca(r.data);
-    });
+    void agendaPublicaAction()
+      .then((r) => {
+        if (r.ok) setFresca(r.data);
+      })
+      .catch(recarregarSeVersaoVelha);
 
   // abre/fecha o <dialog> nativo (foco preso, Esc, fundo inerte de graça)
   useEffect(() => {
@@ -298,9 +302,11 @@ function FolhaAgendar({
     if (!d) return;
     if (aberta && !d.open) {
       buscarAgenda();
-      void contaDaAgendaAction().then((r) => {
-        if (r.ok) setConta(r.data);
-      });
+      void contaDaAgendaAction()
+        .then((r) => {
+          if (r.ok) setConta(r.data);
+        })
+        .catch(recarregarSeVersaoVelha);
       d.showModal();
       corpoRef.current?.scrollTo(0, 0);
       document.documentElement.classList.add("ty-sem-rolagem");

@@ -17,7 +17,8 @@ export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const h = await getHorarioPublico((await params).id);
+  // o título não derruba a página: se o banco falhar, a própria página mostra "Tentar de novo"
+  const h = await getHorarioPublico((await params).id).catch(() => null);
   return {
     title: "Seu horário com a Tayssa",
     description: h ? `${h.servico} · ${diaLegivel(h.dia)} às ${horaLegivel(h.hora)}` : undefined,
@@ -32,6 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  */
 export default async function HorarioPage({ params }: Props) {
   const [h, settings] = await Promise.all([getHorarioPublico((await params).id), getSettings()]);
+  // pedido que não existe mais: not-found.tsx ao lado explica, na cara do site
   if (!h) notFound();
   const b = settings.booking;
   const fora = h.status === "cancelled" || h.status === "no_show";
