@@ -6,7 +6,7 @@ import { getVideoAvailability } from "@/lib/tayssa/media-server";
 import { getFotosPorIds, getPhotoLibrary, getPrecosProdutos } from "@/lib/tayssa/queries/photos";
 import { assignPhotos } from "@/lib/tayssa/photos";
 import { capasDosServicos, comPrecos, montarCatalogo, rolosDosServicos } from "@/lib/tayssa/catalogo";
-import { ehManutencao } from "@/lib/tayssa/agendar";
+import { ehManutencao, manutencaoComVolume } from "@/lib/tayssa/agendar";
 import { getAgendaPublica } from "@/lib/tayssa/queries/vip";
 import { montarPortfolio } from "@/lib/tayssa/portfolio";
 import { CONTEUDO } from "@/lib/tayssa/content";
@@ -75,6 +75,7 @@ export default async function TayssaHome() {
       slug: s.slug,
       nome: s.name,
       manutencao: ehManutencao(s.slug, s.name),
+      aPartir: manutencaoComVolume(s.name),
       preco: s.preco != null ? Number(s.preco) : null,
       duracao: s.duration_min ?? settings.booking.default_duration_min,
     })),

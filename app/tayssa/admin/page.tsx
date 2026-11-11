@@ -1,20 +1,50 @@
 import { requireAdminPage } from "@/lib/tayssa/auth/guards";
-import { getAdminOverview } from "@/lib/tayssa/queries/admin";
+import { getAdminOverview, getAgenda, type AppointmentWithClient } from "@/lib/tayssa/queries/admin";
 import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES, criteriosVip } from "@/lib/tayssa/config";
 import { regraVipLegivel } from "@/lib/tayssa/rules";
 import { renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
-import { dateShort, dateTime, dayMonth, hhmm, numero } from "@/lib/tayssa/format";
-import { APPOINTMENT_STATUS_LABEL } from "@/lib/tayssa/types";
+import { dateShort, dateTime, dayLabel, dayMonth, hhmm, numero, weekdayShort } from "@/lib/tayssa/format";
+import { situacaoDoPedido } from "@/lib/tayssa/types";
 import { auditLabel } from "@/lib/tayssa/audit-labels";
 import { AdminBlock, AdminHeader, Empty, Stat } from "@/components/tayssa/admin/shell";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { TyLinkButton } from "@/components/tayssa/ui/button";
 
+/** "Hoje · qua, 11/11", "Amanhã · qui, 12/11" ou "sex, 13 de novembro". */
+function rotuloDoDia(iso: string): string {
+  const dia = dayLabel(iso);
+  const relativo = dia === "hoje" || dia === "amanhã";
+  const texto = relativo ? `${dia} · ${weekdayShort(iso)}, ${dayMonth(iso)}` : dia;
+  return texto.charAt(0).toUpperCase() + texto.slice(1);
+}
+
+/**
+ * Os próximos horários, dia a dia (Lucas, 11/11/2026: "pra ela acordar,
+ * abrir a agenda e ver como está"): de hoje em diante, os pedidos e os
+ * confirmados, até 10, agrupados pelo dia.
+ */
+function proximosPorDia(agenda: { today: string; todayList: AppointmentWithClient[]; requested: AppointmentWithClient[]; upcoming: AppointmentWithClient[] }) {
+  const vistos = new Set<string>();
+  const proximos = [...agenda.todayList, ...agenda.requested, ...agenda.upcoming]
+    .filter((a) => (a.status === "requested" || a.status === "confirmed") && a.scheduled_date >= agenda.today)
+    .filter((a) => (vistos.has(a.id) ? false : (vistos.add(a.id), true)))
+    .sort((a, b) => (a.scheduled_date + a.scheduled_time).localeCompare(b.scheduled_date + b.scheduled_time))
+    .slice(0, 10);
+  const dias: { iso: string; itens: AppointmentWithClient[] }[] = [];
+  for (const a of proximos) {
+    const ultimo = dias[dias.length - 1];
+    if (ultimo?.iso === a.scheduled_date) ultimo.itens.push(a);
+    else dias.push({ iso: a.scheduled_date, itens: [a] });
+  }
+  return dias;
+}
+
 /** "O que precisa da minha atenção?" — a primeira pergunta do admin. */
 export default async function AdminHome() {
   const admin = await requireAdminPage();
-  const [o, settings] = await Promise.all([getAdminOverview(), getSettings()]);
+  const [o, settings, agenda] = await Promise.all([getAdminOverview(), getSettings(), getAgenda()]);
+  const dias = proximosPorDia(agenda);
   const needs = o.pendingSignups.length + o.appointmentsRequested + o.appointmentsToClose + o.pendingServices + o.referralsInProgress + o.benefitsToValidate + o.benefitsRequested + o.readyForVip.length;
 
   return (
@@ -39,6 +69,41 @@ export default async function AdminHome() {
       </div>
 
       <div className="tya-home-blocks">
+        {/* o que ela olha ao acordar: o primeiro quadro, sempre (Lucas, 11/11/2026) */}
+        <AdminBlock title="Próximos horários" aside={<TransitionLink href={ROUTES.adminAgenda} className="ty-link ty-link--caps">Ver agenda</TransitionLink>}>
+          {dias.length ? (
+            <div>
+              {dias.map(({ iso, itens }) => (
+                <div key={iso}>
+                  <p className="tya-eyebrow" style={{ margin: "14px 0 2px" }}>{rotuloDoDia(iso)}</p>
+                  <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+                    {itens.map((a) => (
+                      <li key={a.id} style={{ display: "flex", justifyContent: "space-between", gap: 12, padding: "10px 0", borderTop: "1px solid var(--t-line)", alignItems: "center" }}>
+                        <div>
+                          <span className="ty-num" style={{ fontWeight: 600, marginRight: 10 }}>{hhmm(a.scheduled_time)}</span>
+                          {a.client ? (
+                            <TransitionLink href={ROUTES.adminClient(a.client.id)} className="ty-link">{a.client.nickname?.trim() || a.client.name}</TransitionLink>
+                          ) : (
+                            "Cliente"
+                          )}
+                          <span className="ty-small" style={{ display: "block" }}>
+                            {a.service_name} · {situacaoDoPedido(a).toLowerCase()}
+                          </span>
+                        </div>
+                        <TransitionLink href={a.status === "requested" ? `${ROUTES.adminAgenda}#pedidos` : ROUTES.adminAgenda} className="ty-link ty-link--caps">
+                          {a.status === "requested" ? "Confirmar" : "Abrir"}
+                        </TransitionLink>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <Empty>{o.appointmentsToClose ? `Nenhum horário à frente. ${o.appointmentsToClose} ${o.appointmentsToClose === 1 ? "horário passado espera" : "horários passados esperam"} fechamento na Agenda.` : "Nenhum horário marcado à frente."}</Empty>
+          )}
+        </AdminBlock>
+
         {o.pendingSignups.length ? (
           <AdminBlock title="Cadastros para liberar" aside={<TransitionLink href={ROUTES.adminClients} className="ty-link ty-link--caps">Ver todos</TransitionLink>}>
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
@@ -81,33 +146,6 @@ export default async function AdminHome() {
             </p>
           </AdminBlock>
         ) : null}
-        <AdminBlock title="Agenda de hoje" aside={<TransitionLink href={ROUTES.adminAgenda} className="ty-link ty-link--caps">Ver agenda</TransitionLink>}>
-          {o.agendaToday.length ? (
-            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-              {o.agendaToday.map((a) => (
-                <li key={a.id} style={{ display: "flex", justifyContent: "space-between", gap: 12, padding: "10px 0", borderTop: "1px solid var(--t-line)", alignItems: "center" }}>
-                  <div>
-                    <span className="ty-num" style={{ fontWeight: 600, marginRight: 10 }}>{hhmm(a.scheduled_time)}</span>
-                    {a.client ? (
-                      <TransitionLink href={ROUTES.adminClient(a.client.id)} className="ty-link">{a.client.name}</TransitionLink>
-                    ) : (
-                      "Cliente"
-                    )}
-                    <span className="ty-small" style={{ display: "block" }}>
-                      {a.service_name} · {APPOINTMENT_STATUS_LABEL[a.status].toLowerCase()}
-                    </span>
-                  </div>
-                  <TransitionLink href={ROUTES.adminAgenda} className="ty-link ty-link--caps">
-                    {a.status === "requested" ? "Confirmar" : "Abrir"}
-                  </TransitionLink>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <Empty>{o.appointmentsToClose ? `Nada hoje — mas ${o.appointmentsToClose} ${o.appointmentsToClose === 1 ? "horário passado espera" : "horários passados esperam"} fechamento.` : "Nenhum horário hoje."}</Empty>
-          )}
-        </AdminBlock>
-
         <AdminBlock title="Aniversários nos próximos 7 dias" aside={<TransitionLink href={ROUTES.adminBirthdays} className="ty-link ty-link--caps">Ver mês</TransitionLink>}>
           {o.birthdaysThisWeek.length ? (
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>

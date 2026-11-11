@@ -13,6 +13,7 @@ import {
   horaLegivel,
   horariosDaSemana,
   mensagemAgendamento,
+  manutencaoComVolume,
   mensagemConfirmacao,
   nomeDaCliente,
   diaSoVip,
@@ -172,6 +173,19 @@ test("mensagem de confirmação: sala, interfone e o recado dela entram; sem com
   assert.doesNotMatch(m, /comprovante|tolerância|Endereço|ficam aqui/);
 });
 
+test("manutenção com o volume no nome não pergunta o volume e o valor é de partida", () => {
+  assert.equal(manutencaoComVolume("Manutenção Mega Fox"), true);
+  assert.equal(manutencaoComVolume("Manutenção Mega Volume Glam"), true);
+  assert.equal(manutencaoComVolume("manutencao mega brasileiro"), true);
+  assert.equal(manutencaoComVolume("Manutenção de cílios"), false);
+  assert.equal(manutencaoComVolume("Manutenção"), false);
+  assert.equal(manutencaoComVolume("Volume brasileiro"), false);
+  // a genérica pergunta de qual volume; a do volume, não
+  assert.equal(ehManutencao("manutencao-cilios", "Manutenção de cílios"), true);
+  assert.equal(ehManutencao("manutencao-mega-fox", "Manutenção Mega Fox"), false);
+  assert.equal(ehManutencao("volume-ingles", "Volume inglês"), false);
+});
+
 test("prioridade VIP: dezembro só para VIP até a Tayssa abrir para todas", () => {
   const p = { ativa: true, desde: "2026-12-01", abre_em: "" };
   const agora = new Date(2026, 10, 9, 10, 0); // segunda, 09/11, 10h
@@ -234,6 +248,8 @@ test("tempo e valor do jeito de falar", () => {
   assert.equal(valorLegivel(120, [120, 130, null]), "a partir de R$ 120");
   assert.equal(valorLegivel(120, [120, null]), "R$ 120");
   assert.equal(valorLegivel(null, [130]), null);
+  // manutenção de um volume: o valor é sempre o de partida
+  assert.equal(valorLegivel(150, [], true), "a partir de R$ 150");
   assert.equal(ehManutencao("manutencao-cilios"), true);
   assert.equal(ehManutencao("volume-brasileiro", "Volume brasileiro"), false);
 });

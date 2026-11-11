@@ -106,7 +106,7 @@ export function PublicExperience({
   const trabalho: ItemTrabalho[] = services
     // manutenção e remoção não são técnica para apresentar (pedido do Lucas,
     // 05/11/2026): seguem na lista de serviços e na agenda, só saem daqui
-    .filter((s) => !FORA_DA_APRESENTACAO.has(s.slug))
+    .filter((s) => !FORA_DA_APRESENTACAO.has(s.slug) && !s.slug.startsWith("manutencao"))
     .map((s) => {
       const d = CONTEUDO.servicos[s.slug];
       const capa = capas[s.slug] ?? null;

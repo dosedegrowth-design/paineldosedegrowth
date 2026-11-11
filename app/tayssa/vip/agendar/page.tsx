@@ -6,7 +6,7 @@ import { getAppointments, getAvailability } from "@/lib/tayssa/queries/vip";
 import { getSettings } from "@/lib/tayssa/settings";
 import { nowInBusinessTz, plural } from "@/lib/tayssa/format";
 import { appointmentEnded } from "@/lib/tayssa/rules";
-import { ehManutencao, valorLegivel } from "@/lib/tayssa/agendar";
+import { ehManutencao, manutencaoComVolume, valorLegivel } from "@/lib/tayssa/agendar";
 import { BookingFlow } from "@/components/tayssa/vip/booking-flow";
 import { AppointmentList } from "@/components/tayssa/vip/appointment-list";
 import { AbasDaAgenda, type AbaDaAgenda } from "@/components/tayssa/vip/abas-agenda";
@@ -102,6 +102,8 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
                 ehManutencao(s.slug, s.name)
                   ? services.map((v) => (v.preco_manutencao != null ? Number(v.preco_manutencao) : null))
                   : [],
+                // manutenção de um volume (Mega Fox…): o valor é o de partida
+                manutencaoComVolume(s.name),
               ),
               duracao: s.duration_min ?? settings.booking.default_duration_min,
             }))}

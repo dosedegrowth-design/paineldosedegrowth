@@ -125,6 +125,37 @@ test("cada serviço leva o rolo do seu produto, sem repetir a categoria inteira"
   assert.equal(new Set(todos).size, todos.length);
 });
 
+test("manutenção de um volume (Mega Fox) mostra as fotos do volume, sem tirá-las dele", () => {
+  const cat = montarCatalogo([
+    linha({ id: "a", lash_style: "Volume brasileiro" }),
+    linha({ id: "e", lash_style: "Mega brasileiro" }),
+    linha({ id: "b", lash_style: "Volume Fox eyes" }),
+    linha({ id: "h", lash_style: "Mega Fox eyes" }),
+    linha({ id: "g", lash_style: "Mega inglês" }),
+    linha({ id: "c", lash_style: "Manutenção" }),
+  ]);
+  const servicos = [
+    { slug: "volume-brasileiro", name: "Volume brasileiro" },
+    { slug: "volume-ingles", name: "Volume inglês" },
+    { slug: "volume-fox-eyes", name: "Volume Fox eyes" },
+    { slug: "manutencao-cilios", name: "Manutenção de cílios" },
+    { slug: "manutencao-mega-volume-glam", name: "Manutenção Mega Volume Glam" },
+    { slug: "manutencao-mega-brasileiro", name: "Manutenção Mega Brasileiro" },
+    { slug: "manutencao-mega-fox", name: "Manutenção Mega Fox" },
+  ];
+  const rolos = rolosDosServicos(cat, servicos);
+  const ids = (slug: string) => (rolos[slug] ?? []).map((i) => i.id).join(",");
+  // as do Mega primeiro (vira a capa), depois as da família
+  assert.equal(ids("manutencao-mega-brasileiro"), "e,a");
+  assert.equal(ids("manutencao-mega-fox"), "h,b");
+  // sem foto com esse nome, fica sem foto (nunca a de outro volume)
+  assert.equal(ids("manutencao-mega-volume-glam"), "");
+  // os volumes continuam com as suas, e o produto "Manutenção" segue com a genérica
+  assert.equal([...ids("volume-brasileiro").split(",")].sort().join(","), "a,e");
+  assert.equal([...ids("volume-fox-eyes").split(",")].sort().join(","), "b,h");
+  assert.equal(ids("manutencao-cilios"), "c");
+});
+
 test("intercalar: um de cada produto por vez, sem perder nenhum", () => {
   assert.deepEqual(intercalar([["a1", "a2", "a3"], ["b1"], ["c1", "c2"]]), ["a1", "b1", "c1", "a2", "c2", "a3"]);
   assert.deepEqual(intercalar([]), []);

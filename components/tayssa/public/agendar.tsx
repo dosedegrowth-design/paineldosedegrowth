@@ -50,6 +50,8 @@ export type ServicoAgenda = {
   nome: string;
   /** manutenção pergunta de qual volume é (e o valor vem dele) */
   manutencao: boolean;
+  /** o valor é o de partida ("a partir de"): a manutenção de um volume, que sobe conforme os fios */
+  aPartir?: boolean;
   /** valor cadastrado pela Tayssa (vazio = não mostra) */
   preco?: number | null;
   /** minutos que ocupa na agenda: só aparece o horário em que ele cabe inteiro */
@@ -504,7 +506,11 @@ function FolhaAgendar({
                   <div className="tyag__escolhido">
                     <span>
                       <b>{nomeDoServico}</b>
-                      <small>{[valorLegivel(valor), duracaoLegivel(duracao)].filter(Boolean).join(" · ")}</small>
+                      <small>
+                        {[valorLegivel(valor, [], Boolean(escolhido.aPartir)), duracaoLegivel(duracao)]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </small>
                     </span>
                     <button
                       type="button"
@@ -535,7 +541,11 @@ function FolhaAgendar({
                 ) : (
                   <div className="tyag__chips">
                     {(verTodos ? agenda.servicos : agenda.servicos.slice(0, VISIVEIS)).map((s) => {
-                      const v = valorLegivel(s.preco, s.manutencao ? agenda.volumes.map((x) => x.manutencao) : []);
+                      const v = valorLegivel(
+                        s.preco,
+                        s.manutencao ? agenda.volumes.map((x) => x.manutencao) : [],
+                        Boolean(s.aPartir),
+                      );
                       const ficha = [v, duracaoLegivel(s.duracao)].filter(Boolean).join(" · ");
                       return (
                         <label key={s.slug} className="tyag__chip tyag__chip--servico">

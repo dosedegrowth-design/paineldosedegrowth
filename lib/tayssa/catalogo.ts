@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import type { CategoriaMidia, PhotoRow, ServiceRow } from "@/lib/tayssa/types";
+import { manutencaoComVolume } from "./agendar.ts";
 
 /**
  * O catálogo de mídia do site: cada foto ou vídeo que a Tayssa sobe no
@@ -34,7 +35,8 @@ export function categoriaDoServico(slug: string, nome = ""): CategoriaMidia {
   const achou = CATEGORIAS.find((c) => c.servicos.includes(slug));
   if (achou) return achou.slug;
   const n = `${slug} ${nome}`.toLowerCase();
-  if (/c[ií]lio|lash|volume|fio|fox|extens/.test(n)) return "cilios";
+  // "Manutenção Mega Brasileiro" não diz cílio, volume nem fox: manutenção e mega também são cílios
+  if (/c[ií]lio|lash|volume|fio|fox|extens|manuten|mega/.test(n)) return "cilios";
   if (/sobrancelh|brow/.test(n)) return "sobrancelha";
   if (/l[aá]bio|lip|boca|gloss/.test(n)) return "labios";
   if (/pele|facial|limpeza|skin/.test(n)) return "pele";
@@ -150,7 +152,10 @@ export function rolosDosServicos(
   // "Volume inglês", "Mega inglês" e "inglês" são o mesmo volume
   const base = (k: string) => k.replace(/^(volume|mega)\s+/, "");
   for (const cat of catalogo) {
-    const daCategoria = servicos.filter((s) => categoriaDoServico(s.slug, s.name) === cat.slug);
+    // a manutenção de um volume não disputa produto: ela recebe as fotos do volume logo abaixo
+    const daCategoria = servicos.filter(
+      (s) => categoriaDoServico(s.slug, s.name) === cat.slug && !manutencaoComVolume(s.name),
+    );
     if (!daCategoria.length) continue;
     for (const p of cat.produtos) {
       const kp = chave(p.nome);
@@ -161,7 +166,23 @@ export function rolosDosServicos(
     }
   }
   // Volume inglês e Mega inglês se alternam no rolo, em vez de um depois do outro
-  return Object.fromEntries(Object.entries(listas).map(([slug, ls]) => [slug, intercalar(ls)]));
+  const rolos: Record<string, MidiaCatalogo[]> = Object.fromEntries(
+    Object.entries(listas).map(([slug, ls]) => [slug, intercalar(ls)]),
+  );
+  // a manutenção de um volume (Manutenção Mega Fox; Lucas, 11/11/2026: "pode pôr as fotos
+  // dos volumes que é a manutenção") mostra as fotos desse volume, sem tirá-las do volume:
+  // as do Mega primeiro (Mega Fox eyes), depois as da família (Volume Fox eyes)
+  const produtos = catalogo.filter((c) => c.slug === "cilios").flatMap((c) => c.produtos);
+  const semPrefixo = (k: string) => base(base(k));
+  for (const s of servicos.filter((x) => manutencaoComVolume(x.name))) {
+    const alvo = chave(s.name).replace(/^manutencao\s+/, "");
+    const familia = semPrefixo(alvo);
+    const doMega = produtos.filter((p) => chave(p.nome).startsWith(alvo));
+    const daFamilia = produtos.filter((p) => !doMega.includes(p) && familia && semPrefixo(chave(p.nome)).includes(familia));
+    const fotos = [...doMega, ...daFamilia].flatMap((p) => p.itens);
+    if (fotos.length) rolos[s.slug] = fotos;
+  }
+  return rolos;
 }
 
 /** Uma foto do banco que pode virar capa: só o que a capa precisa. */

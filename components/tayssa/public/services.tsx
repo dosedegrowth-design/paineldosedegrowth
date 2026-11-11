@@ -13,7 +13,7 @@ import { useFinePointer, useMedia } from "@/components/tayssa/ui/use-media";
 import { Magnetic } from "@/components/tayssa/ui/magnetic";
 import { Icone, type IconeNome } from "@/components/tayssa/ui/icones";
 import { LinkAgendar } from "@/components/tayssa/public/agendar";
-import { duracaoLegivel, ehManutencao, reais, valorLegivel } from "@/lib/tayssa/agendar";
+import { duracaoLegivel, ehManutencao, manutencaoComVolume, reais, valorLegivel } from "@/lib/tayssa/agendar";
 
 /** O gesto de cada cuidado, pelo nome (serviço novo acha o seu sozinho; o resto cai na flor). */
 export function iconeDoServico(slug: string, nome: string): IconeNome {
@@ -379,7 +379,9 @@ function fichaDo(s: ServiceRow, todos: ServiceRow[]): { rotulo: string; valor: s
   const valor = valorLegivel(
     s.preco != null ? Number(s.preco) : null,
     // a manutenção do Fox eyes custa mais: a manutenção começa "a partir de"
-    ehManutencao(s.slug, s.name) ? todos.map((v) => (v.preco_manutencao != null ? Number(v.preco_manutencao) : null)) : []
+    ehManutencao(s.slug, s.name) ? todos.map((v) => (v.preco_manutencao != null ? Number(v.preco_manutencao) : null)) : [],
+    // manutenção de um volume (Mega Fox…): o valor é o de partida, sobe conforme os fios
+    manutencaoComVolume(s.name),
   );
   const tempo = duracaoLegivel(s.duration_min);
   const manutencao = s.preco_manutencao != null ? reais(Number(s.preco_manutencao)) : null;

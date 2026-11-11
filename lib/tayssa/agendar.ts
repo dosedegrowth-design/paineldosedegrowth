@@ -194,17 +194,41 @@ export function duracaoLegivel(min: number | null | undefined): string | null {
 
 /**
  * "R$ 120", ou "a partir de R$ 120" quando há variação mais cara (a
- * manutenção do Fox eyes custa mais que a dos outros volumes).
+ * manutenção do Fox eyes custa mais que a dos outros volumes) ou quando o
+ * valor é só o ponto de partida (`sempreAPartir`: a manutenção de um volume,
+ * que sobe conforme os fios que sobraram).
  */
-export function valorLegivel(preco: number | null | undefined, variacoes: (number | null | undefined)[] = []): string | null {
+export function valorLegivel(
+  preco: number | null | undefined,
+  variacoes: (number | null | undefined)[] = [],
+  sempreAPartir = false,
+): string | null {
   if (preco == null) return null;
-  const aPartir = variacoes.some((v) => v != null && v > preco);
+  const aPartir = sempreAPartir || variacoes.some((v) => v != null && v > preco);
   return `${aPartir ? "a partir de " : ""}${reais(preco)}`;
 }
 
-/** Manutenção de cílios: pergunta de qual volume é (e o valor vem dele). */
+/**
+ * Manutenção de um volume só, com o volume no nome ("Manutenção Mega Fox",
+ * Lucas, 11/11/2026): o valor dela é o de partida (pode subir conforme as
+ * condições em que a cliente volta e os fios que ainda tem), a folha não
+ * pergunta de qual volume é e o site mostra as fotos desse volume.
+ * "Manutenção de cílios" é a genérica, que pergunta.
+ */
+export function manutencaoComVolume(nome: string): boolean {
+  const n = nome
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .trim();
+  if (!/^manutencao\b/.test(n)) return false;
+  const resto = n.replace(/^manutencao\s*/, "");
+  return resto !== "" && !/^d[aeo]s?\s+(cilios|extensao|extensoes)$/.test(resto);
+}
+
+/** Manutenção de cílios (a genérica): pergunta de qual volume é (e o valor vem dele). */
 export function ehManutencao(slug: string, nome = ""): boolean {
-  return /manuten/i.test(`${slug} ${nome}`);
+  return /manuten/i.test(`${slug} ${nome}`) && !manutencaoComVolume(nome);
 }
 
 const NOMES_DIAS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
