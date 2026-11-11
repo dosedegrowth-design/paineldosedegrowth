@@ -13,6 +13,8 @@ import {
   horaLegivel,
   horariosDaSemana,
   mensagemAgendamento,
+  mensagemConfirmacao,
+  nomeDaCliente,
   diaSoVip,
   avisoDaReservaVip,
   partesDoDia,
@@ -108,6 +110,66 @@ test("com o comprovante anexado: o sinal vira campo e a mensagem não pede a cha
   assert.doesNotMatch(m, /chave Pix/);
   const comLink = mensagemAgendamento({ servico: "Volume inglês", dia: "2026-11-07", hora: "10:00", nome: "Ana", sinal: 50, comprovante: true, link: "https://x/horario/1" });
   assert.ok(comLink.endsWith("comprovante anexado no site\n\nMeu horário: https://x/horario/1"));
+});
+
+test("nome na mensagem: o apelido, ou o nome do cadastro com as iniciais em maiúscula", () => {
+  assert.equal(nomeDaCliente("Robert israel", null), "Robert Israel");
+  assert.equal(nomeDaCliente("Gabriella Pessoa", "Gabi"), "Gabi");
+  assert.equal(nomeDaCliente("  ana   da silva ", "  "), "Ana da Silva");
+  // o resto da palavra fica como ela escreveu
+  assert.equal(nomeDaCliente("MARIA mcDonald"), "MARIA McDonald");
+});
+
+test("mensagem de confirmação: o nome, confirmado, comprovante aceito e os campos", () => {
+  const m = mensagemConfirmacao({
+    nome: "Robert Israel",
+    servico: "Volume brasileiro",
+    dia: "2026-11-12",
+    hora: "19:00",
+    comprovante: true,
+    endereco: "Rua Constantino Neri, 25, Pirituba, São Paulo - SP, CEP 02936-050",
+    sala: "",
+    interfone: "",
+    tolerancia: 10,
+    recado: null,
+    link: "https://tayssafarias.com.br/meus-horarios",
+  });
+  assert.equal(
+    m,
+    [
+      "Olá, Robert Israel, tudo bem? Seu atendimento acabou de ser confirmado e o seu comprovante foi aceito.",
+      "",
+      "*Serviço:* Volume brasileiro",
+      "*Dia:* quinta, 12/11",
+      "*Horário:* 19h",
+      "*Endereço:* Rua Constantino Neri, 25, Pirituba, São Paulo - SP, CEP 02936-050",
+      "",
+      "A tolerância de atraso é de 10 minutos. Passando disso, o sinal é perdido.",
+      "",
+      "Seus horários ficam aqui: https://tayssafarias.com.br/meus-horarios",
+      "",
+      "Qualquer dúvida, é só me chamar. Te espero!",
+    ].join("\n"),
+  );
+});
+
+test("mensagem de confirmação: sala, interfone e o recado dela entram; sem comprovante não fala dele", () => {
+  const m = mensagemConfirmacao({
+    nome: "Gabi",
+    servico: "Manutenção de cílios",
+    tecnica: "Volume inglês",
+    dia: "2026-11-12",
+    hora: "09:00",
+    comprovante: false,
+    sala: "Sala 12",
+    interfone: "12",
+    tolerancia: 0,
+    recado: " Chega uns 5 minutinhos antes. ",
+  });
+  assert.ok(m.startsWith("Olá, Gabi, tudo bem? Seu atendimento acabou de ser confirmado.\n"));
+  assert.match(m, /\*Serviço:\* Manutenção de cílios \(Volume inglês\)\n/);
+  assert.match(m, /\*Sala:\* Sala 12\n\*Interfone:\* 12\n\nChega uns 5 minutinhos antes\.\n\n/);
+  assert.doesNotMatch(m, /comprovante|tolerância|Endereço|ficam aqui/);
 });
 
 test("prioridade VIP: dezembro só para VIP até a Tayssa abrir para todas", () => {

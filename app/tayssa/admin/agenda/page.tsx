@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Link from "next/link";
 import { requireAdminPage } from "@/lib/tayssa/auth/guards";
 import { getAgenda, getGradeAgenda } from "@/lib/tayssa/queries/admin";
 import { AgendaGrade } from "@/components/tayssa/admin/agenda-grade";
@@ -6,7 +7,7 @@ import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES, publicUrl } from "@/lib/tayssa/config";
 import { dateShort, dayLabel, dayMonth, hhmm, nowInBusinessTz, weekdayShort } from "@/lib/tayssa/format";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
-import { horariosDaSemana, prazoDoSinal, reais } from "@/lib/tayssa/agendar";
+import { horariosDaSemana, mensagemConfirmacao, nomeDaCliente, prazoDoSinal, reais } from "@/lib/tayssa/agendar";
 import { situacaoDoPedido, type AppointmentStatus } from "@/lib/tayssa/types";
 import { pixDoPedido, type PixDaAgenda } from "@/lib/tayssa/pix";
 import type { AppointmentWithClient } from "@/lib/tayssa/queries/admin";
@@ -21,6 +22,10 @@ import { ActionButton, NoteAction } from "@/components/tayssa/admin/controls";
 import { Icone, type IconeNome } from "@/components/tayssa/admin/icons";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { AvisosDePedido } from "@/components/tayssa/admin/avisos";
+import { AvisoDeConfirmacao } from "@/components/tayssa/admin/aviso-confirmacao";
+
+/** A Agenda com a mensagem de confirmação de um horário aberta (logo depois do "Confirmar"). */
+const avisarDe = (id: string) => `${ROUTES.adminAgenda}?avisar=${id}`;
 
 const WEEKDAYS = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
 
@@ -188,6 +193,12 @@ function Slot({
             {esperandoSinal && !comComprovante ? "Pedir o sinal no WhatsApp" : "WhatsApp"}
           </a>
         ) : null}
+        {/* confirmado: a mensagem pronta para a cliente, de novo quando ela precisar */}
+        {a.status === "confirmed" ? (
+          <Link href={avisarDe(a.id)} scroll={false} replace className="tya-link tya-link--quiet tya-slot__wa">
+            Mensagem de confirmação
+          </Link>
+        ) : null}
       </div>
 
       {children ? <div className="tya-slot__acts">{children}</div> : null}
@@ -232,10 +243,40 @@ function CloseActions({ a }: { a: AppointmentWithClient }) {
   );
 }
 
-export default async function AgendaAdminPage() {
+export default async function AgendaAdminPage({ searchParams }: { searchParams: Promise<{ avisar?: string }> }) {
   await requireAdminPage();
-  const [agenda, settings, grade] = await Promise.all([getAgenda(), getSettings(), getGradeAgenda()]);
+  const [agenda, settings, grade, params] = await Promise.all([getAgenda(), getSettings(), getGradeAgenda(), searchParams]);
   const b = settings.booking;
+  // logo depois do "Confirmar": a mensagem pronta para a cliente daquele horário
+  const confirmado = params.avisar
+    ? [...agenda.todayList, ...agenda.upcoming, ...agenda.toClose].find(
+        (a) => a.id === params.avisar && a.status === "confirmed",
+      )
+    : undefined;
+  const aviso = confirmado
+    ? (() => {
+        const nome = nomeDaCliente(confirmado.client?.name ?? "", confirmado.client?.nickname);
+        const mensagem = mensagemConfirmacao({
+          nome,
+          servico: confirmado.service_name,
+          tecnica: confirmado.client_note?.match(/^Manutenção do (.+)\.$/)?.[1] ?? null,
+          dia: confirmado.scheduled_date,
+          hora: confirmado.scheduled_time.slice(0, 5),
+          comprovante: Boolean(confirmado.comprovante_em),
+          endereco: b.local_endereco,
+          sala: b.local_sala,
+          interfone: b.local_interfone,
+          tolerancia: b.tolerancia_min,
+          recado: confirmado.admin_note,
+          link: publicUrl(ROUTES.vipBook),
+        });
+        return {
+          nome: nome || "a cliente",
+          mensagem,
+          whatsapp: confirmado.client?.phone ? whatsappUrl(confirmado.client.phone, mensagem) : null,
+        };
+      })()
+    : null;
   const sinalDoPainel = {
     horas: b.sinal_horas,
     valor: b.deposit_reais,
@@ -325,6 +366,7 @@ export default async function AgendaAdminPage() {
                   args={{ id: a.id }}
                   label="Recado para a cliente (opcional)"
                   variant="accent"
+                  depois={avisarDe(a.id)}
                 >
                   Confirmar
                 </NoteAction>
@@ -360,6 +402,7 @@ export default async function AgendaAdminPage() {
                     args={{ id: a.id }}
                     label="Recado para a cliente (opcional)"
                     variant="accent"
+                    depois={avisarDe(a.id)}
                   >
                     Confirmar
                   </NoteAction>
@@ -506,6 +549,17 @@ export default async function AgendaAdminPage() {
           </Vazio>
         )}
       </AdminBlock>
+
+      {/* logo depois do "Confirmar" (ou de "Mensagem de confirmação"): o texto pronto para a cliente */}
+      {aviso ? (
+        <AvisoDeConfirmacao
+          key={params.avisar}
+          nome={aviso.nome}
+          mensagem={aviso.mensagem}
+          whatsapp={aviso.whatsapp}
+          fechar={ROUTES.adminAgenda}
+        />
+      ) : null}
     </>
   );
 }

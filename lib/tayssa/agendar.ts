@@ -294,3 +294,77 @@ export function mensagemAgendamento(p: PedidoAgenda): string {
     ...(p.link ? ["", `Meu horário: ${p.link}`] : []),
   ].join("\n");
 }
+
+/** Partículas que ficam minúsculas no meio do nome ("Ana da Silva"). */
+const PARTICULAS = new Set(["da", "das", "de", "do", "dos", "e"]);
+
+/**
+ * Como chamar a cliente numa mensagem: o "como quer ser chamada", quando ela
+ * escreveu; senão o nome do cadastro com as iniciais em maiúscula (ele chega
+ * como ela digitou: "Robert israel" vira "Robert Israel"). O resto de cada
+ * palavra fica como ela escreveu.
+ */
+export function nomeDaCliente(nome: string, apelido?: string | null): string {
+  const chamar = apelido?.trim();
+  if (chamar) return chamar;
+  return nome
+    .trim()
+    .split(/\s+/)
+    .map((p, i) => (i > 0 && PARTICULAS.has(p) ? p : p.charAt(0).toLocaleUpperCase("pt-BR") + p.slice(1)))
+    .join(" ");
+}
+
+export type ConfirmacaoDoHorario = {
+  /** como chamar a cliente (`nomeDaCliente`) */
+  nome: string;
+  servico: string;
+  /** de qual volume é a manutenção */
+  tecnica?: string | null;
+  /** "AAAA-MM-DD" */
+  dia: string;
+  /** "HH:MM" */
+  hora: string;
+  /** ela anexou o comprovante do sinal */
+  comprovante: boolean;
+  /** onde é o atendimento (Configurações → Agenda); vazio não entra */
+  endereco?: string;
+  sala?: string;
+  interfone?: string;
+  /** minutos de tolerância de atraso; 0 não entra */
+  tolerancia?: number;
+  /** o recado que a Tayssa escreveu ao confirmar */
+  recado?: string | null;
+  /** "Meus horários" no site */
+  link?: string | null;
+};
+
+/**
+ * A mensagem que a Tayssa manda quando confirma o horário (Lucas,
+ * 11/11/2026: "Olá, Robert Israel, tudo bem? Seu atendimento acabou de ser
+ * confirmado, seu comprovante foi aceito"). Sem a API oficial do WhatsApp,
+ * o painel mostra a mensagem pronta logo depois do "Confirmar": ela copia ou
+ * abre a conversa da cliente com o texto. Em campos, como a do agendamento.
+ */
+export function mensagemConfirmacao(p: ConfirmacaoDoHorario): string {
+  const servico = p.tecnica ? `${p.servico} (${p.tecnica})` : p.servico;
+  const campo = (rotulo: string, valor?: string | null) => (valor?.trim() ? [`*${rotulo}:* ${valor.trim()}`] : []);
+  const recado = p.recado?.trim();
+  const oi = p.nome.trim() ? `Olá, ${p.nome.trim()}, tudo bem?` : "Olá, tudo bem?";
+  return [
+    `${oi} Seu atendimento acabou de ser confirmado${p.comprovante ? " e o seu comprovante foi aceito" : ""}.`,
+    "",
+    `*Serviço:* ${servico}`,
+    `*Dia:* ${diaLegivel(p.dia)}`,
+    `*Horário:* ${horaLegivel(p.hora)}`,
+    ...campo("Endereço", p.endereco),
+    ...campo("Sala", p.sala),
+    ...campo("Interfone", p.interfone),
+    ...(p.tolerancia && p.tolerancia > 0
+      ? ["", `A tolerância de atraso é de ${p.tolerancia} minutos. Passando disso, o sinal é perdido.`]
+      : []),
+    ...(recado ? ["", recado] : []),
+    ...(p.link ? ["", `Seus horários ficam aqui: ${p.link}`] : []),
+    "",
+    "Qualquer dúvida, é só me chamar. Te espero!",
+  ].join("\n");
+}

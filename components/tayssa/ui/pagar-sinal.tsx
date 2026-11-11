@@ -8,6 +8,7 @@ import { diaLegivel, horaLegivel, mensagemAgendamento, reais } from "@/lib/tayss
 import { pixDoPedido, type PixDaAgenda } from "@/lib/tayssa/pix";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { WhatsAppIcon } from "@/components/tayssa/ui/whatsapp";
+import { copiarTexto } from "@/components/tayssa/ui/copiar";
 
 /** O pedido como a mensagem do WhatsApp precisa (o mesmo da folha e de "Meus horários"). */
 export type PedidoDoSinal = {
@@ -33,30 +34,6 @@ function enviarArquivo(url: string, arquivo: File, andamento: (p: number) => voi
     xhr.onerror = () => falha(new Error("rede"));
     xhr.send(arquivo);
   });
-}
-
-/** Copiar no celular: a área de transferência quando dá, e a seleção do texto quando o navegador não deixa. */
-async function copiarTexto(texto: string): Promise<boolean> {
-  try {
-    await navigator.clipboard.writeText(texto);
-    return true;
-  } catch {
-    const campo = document.createElement("textarea");
-    campo.value = texto;
-    campo.setAttribute("readonly", "");
-    campo.style.position = "fixed";
-    campo.style.opacity = "0";
-    document.body.appendChild(campo);
-    campo.select();
-    let deu = false;
-    try {
-      deu = document.execCommand("copy");
-    } catch {
-      deu = false;
-    }
-    campo.remove();
-    return deu;
-  }
 }
 
 /**

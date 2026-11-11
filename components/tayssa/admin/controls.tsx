@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import type { ActionResult, ReferralStatus } from "@/lib/tayssa/types";
 import { REFERRAL_STATUS_LABEL, REFERRAL_STATUS_ORDER } from "@/lib/tayssa/types";
 import { useTarefa } from "@/components/tayssa/ui/acao";
@@ -76,6 +77,7 @@ export function NoteAction<T extends object>({
   label = "Observação para a cliente (opcional)",
   variant = "line",
   extra,
+  depois,
 }: {
   action: (input: T & { note?: string }) => Promise<ActionResult>;
   args: T;
@@ -84,8 +86,14 @@ export function NoteAction<T extends object>({
   variant?: Variant;
   /** campos extras (name/value) renderizados junto */
   extra?: ReactNode;
+  /**
+   * Deu certo: vai para este endereço sem subir a tela (ex.: a Agenda com a
+   * mensagem pronta de confirmação aberta para a Tayssa mandar à cliente).
+   */
+  depois?: string;
 }) {
   const fid = useId();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState("");
   const [pending, start] = useTarefa();
@@ -103,6 +111,7 @@ export function NoteAction<T extends object>({
       else {
         setOpen(false);
         setNote("");
+        if (depois) router.replace(depois, { scroll: false });
       }
     });
   };

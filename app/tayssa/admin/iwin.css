@@ -1951,3 +1951,85 @@ select.tya-field {
 .tya-mini span {
   color: #6e6e73;
 }
+
+/* ============================================================
+   MENSAGEM DE CONFIRMAÇÃO (11/11/2026): logo depois do "Confirmar" na
+   Agenda, a mensagem pronta para a cliente, com a prévia como o
+   WhatsApp mostra, "Abrir a conversa" e "Copiar".
+   ============================================================ */
+.tya-aviso {
+  width: min(520px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
+  /* o reset do painel zera a margem: sem isto o dialog gruda no canto */
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 26px;
+  background: #fff;
+  color: var(--tya-ink);
+  box-shadow: 0 40px 100px -30px rgba(18, 4, 10, 0.55);
+}
+.tya-aviso::backdrop {
+  background: rgba(18, 4, 10, 0.45);
+}
+.tya-aviso[open] {
+  animation: tya-publicar-entra 0.24s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.tya-aviso__corpo {
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+}
+.tya-aviso__topo {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+}
+.tya-aviso__topo h2 {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+/* a bolha verde clara da mensagem enviada no WhatsApp: ela vê o que a cliente vai ler */
+.tya-aviso__bolha {
+  display: grid;
+  gap: 10px;
+  max-height: min(46dvh, 420px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 14px 16px;
+  border-radius: 16px 16px 4px 16px;
+  background: #e2f7d8;
+  color: #111b21;
+  font-size: 14.5px;
+  line-height: 1.45;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.tya-aviso__bolha p {
+  margin: 0;
+}
+.tya-aviso__linha {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.tya-aviso__acoes {
+  display: grid;
+  gap: 10px;
+}
+.tya-aviso__acoes .tya-btn {
+  justify-content: center;
+  width: 100%;
+}
+.tya-aviso__whats svg {
+  flex-shrink: 0;
+}
+@media (min-width: 640px) {
+  .tya-aviso__acoes {
+    grid-template-columns: 1fr 1fr;
+  }
+  .tya-aviso__whats {
+    grid-column: 1 / -1;
+  }
+}
