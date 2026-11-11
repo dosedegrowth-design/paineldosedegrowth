@@ -526,3 +526,21 @@ body:has(.tyv-tom-site) {
   width: 100%;
   justify-content: center;
 }
+
+/* ---------- horário confirmado: endereço, sala, interfone, tolerância e recado ---------- */
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-local {
+  background: rgba(255, 236, 242, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(255, 214, 228, 0.16);
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-local dt,
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-recado__rotulo {
+  color: #f2a7c0;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-local dd,
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-recado__texto {
+  color: #f8ecef;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-recado {
+  border-left-color: #f4a6c0;
+  background: rgba(255, 236, 242, 0.05);
+}

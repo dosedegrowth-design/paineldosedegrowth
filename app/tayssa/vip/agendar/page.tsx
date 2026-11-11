@@ -41,6 +41,8 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
     tolerancia: b.tolerancia_min,
     pix: b.pix_chave ? { chave: b.pix_chave, nome: b.pix_nome, cidade: b.pix_cidade, banco: b.pix_banco } : null,
   };
+  // onde é o atendimento: só aparece no horário confirmado (o site aberto mostra só o bairro)
+  const local = { endereco: b.local_endereco, sala: b.local_sala, interfone: b.local_interfone };
   // realizado: o que a Tayssa fechou como feito, e o confirmado que já passou (ela ainda não fechou)
   const agora = nowInBusinessTz();
   const feitos = appointments.past.filter(
@@ -73,7 +75,7 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
                 Até {max} em aberto. Para trocar de horário, desmarque e marque outro.
               </p>
               <div className="tyv-panel">
-                <AppointmentList items={appointments.upcoming} sinal={sinal} />
+                <AppointmentList items={appointments.upcoming} sinal={sinal} local={local} />
               </div>
             </>
           ) : (

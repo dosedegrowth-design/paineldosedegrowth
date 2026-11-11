@@ -272,37 +272,25 @@ export function sinalNoPrazo(criadoEm: string, horas: number, agora: Date = new 
 }
 
 /**
- * A mensagem que a cliente manda depois de marcar, pelo botão "Pagar o
- * sinal agora": o horário já está na agenda da Tayssa, falta o Pix.
+ * A mensagem que a cliente manda depois de marcar: vai junto com o cartão do
+ * horário (foto) ou, sem foto, com o link dele. Dividida em campos (Lucas,
+ * 11/11/2026: "tem que ser dividida em campos bonitinho"): o cumprimento com
+ * o nome, um campo por linha com o rótulo em negrito do WhatsApp (*Serviço:*)
+ * e o sinal. Sem comprovante, pede a chave Pix.
  */
 export function mensagemAgendamento(p: PedidoAgenda): string {
   const servico = p.tecnica ? `${p.servico} (${p.tecnica})` : p.servico;
   const nome = p.nome.trim();
+  const oi = nome ? `Oi, Tayssa, tudo bem? Aqui é ${nome}.` : "Oi, Tayssa, tudo bem?";
   return [
-    p.comprovante ? "Oi, Tayssa, tudo bem? Fiz meu agendamento pelo site." : "Oi, Tayssa, tudo bem? Marquei meu horário pelo site.",
+    p.comprovante ? `${oi} Fiz meu agendamento pelo site.` : `${oi} Marquei meu horário pelo site.`,
     "",
-    `Serviço: ${servico}`,
-    `Dia: ${diaLegivel(p.dia)}`,
-    `Horário: ${horaLegivel(p.hora)}`,
-    ...(p.valor != null ? [`Valor: ${reais(p.valor)}`] : []),
-    ...(nome ? [`Nome: ${nome}`] : []),
-    "",
-    p.comprovante
-      ? `Já paguei o sinal de ${reais(p.sinal)} no Pix e anexei o comprovante no site.`
-      : `Me manda a chave Pix do sinal de ${reais(p.sinal)} para eu garantir o horário?`,
+    `*Serviço:* ${servico}`,
+    `*Dia:* ${diaLegivel(p.dia)}`,
+    `*Horário:* ${horaLegivel(p.hora)}`,
+    ...(p.valor != null ? [`*Valor:* ${reais(p.valor)}`] : []),
+    ...(p.comprovante ? [`*Sinal:* ${reais(p.sinal)} pago no Pix, comprovante anexado no site`] : []),
+    ...(p.comprovante ? [] : ["", `Me manda a chave Pix do sinal de ${reais(p.sinal)} para eu garantir o horário?`]),
     ...(p.link ? ["", `Meu horário: ${p.link}`] : []),
   ].join("\n");
-}
-
-/**
- * O recado curto que vai com o cartão do horário como foto (Lucas,
- * 05/11/2026: "que aí não fica um textão"). O cartão já diz o serviço, o
- * dia, a hora, o valor e o sinal; o recado só cumprimenta e diz o que ela fez.
- */
-export function recadoDoCartao(p: { nome: string; sinal: number; comprovante?: boolean }): string {
-  const nome = p.nome.trim();
-  const oi = nome ? `Oi, Tayssa, tudo bem? Aqui é ${nome}.` : "Oi, Tayssa, tudo bem?";
-  return p.comprovante
-    ? `${oi} Fiz meu agendamento pelo site, paguei o sinal de ${reais(p.sinal)} no Pix e anexei o comprovante.`
-    : `${oi} Marquei meu horário pelo site. Me manda a chave Pix do sinal de ${reais(p.sinal)}?`;
 }

@@ -1289,3 +1289,60 @@
   vertical-align: 0.12em;
   white-space: nowrap;
 }
+
+/* ============================================================
+   HORÁRIO CONFIRMADO (11/11/2026): onde é, como entrar, a tolerância
+   e o recado da Tayssa, dentro do cartão do horário em "Meus horários".
+   ============================================================ */
+.tyv-local {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 0;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: var(--tyv-surface, rgba(255, 255, 255, 0.06));
+  box-shadow: inset 0 0 0 1px var(--tyv-borda, rgba(255, 214, 228, 0.16));
+}
+.tyv-local > div {
+  display: grid;
+  gap: 2px;
+}
+.tyv-local dt {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.tyv-local dd {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+}
+/* na linha de baixo do endereço; o alvo de toque fica, sem sobrar espaço embaixo */
+.tyv-local .tyv-local__mapa {
+  display: flex;
+  width: fit-content;
+  min-height: 36px;
+  margin: 0 0 -6px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.tyv-recado {
+  margin-top: 12px;
+  padding: 12px 16px;
+  border-left: 2px solid var(--tyv-vinho, #f4a6c0);
+  border-radius: 0 14px 14px 0;
+  background: var(--tyv-surface, rgba(255, 255, 255, 0.04));
+}
+.tyv-recado__rotulo {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.tyv-recado__texto {
+  margin: 4px 0 0;
+  font-size: 15px;
+  line-height: 1.45;
+}

@@ -240,6 +240,14 @@ export type BookingSettings = {
   /** banco, só para a cliente conferir */
   pix_banco: string;
   /**
+   * Onde é o atendimento (Lucas, 11/11/2026): a cliente vê só no horário
+   * confirmado, em "Meus horários", com a tolerância e o recado da Tayssa.
+   * O site aberto continua mostrando só o bairro. Vazio não aparece.
+   */
+  local_endereco: string;
+  local_sala: string;
+  local_interfone: string;
+  /**
    * Prioridade VIP (Lucas e Tayssa, 09/11/2026: "a agenda de fim de ano abre primeiro para as
    * VIPs"): ligada, os dias a partir de `desde` ("AAAA-MM-DD") ficam só para VIP até `abre_em`
    * ("AAAA-MM-DDTHH:MM", horário de Brasília); vazio = só VIP até a Tayssa marcar o dia de abrir
@@ -360,6 +368,9 @@ export const DEFAULT_SETTINGS: Settings = {
     pix_nome: "",
     pix_cidade: "São Paulo",
     pix_banco: "",
+    local_endereco: "",
+    local_sala: "",
+    local_interfone: "",
     prioridade_vip: { ativa: false, desde: "", abre_em: "" },
   },
   signup: {

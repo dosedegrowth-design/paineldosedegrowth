@@ -23,8 +23,28 @@ export type SinalDaAgenda = {
   pix: PixDaAgenda | null;
 };
 
-/** Horários em aberto: ver, e desmarcar sem precisar ligar para ninguém. */
-export function AppointmentList({ items, sinal }: { items: AppointmentRow[]; sinal?: SinalDaAgenda }) {
+/** Onde é o atendimento (Configurações → Agenda). Vazio não aparece. */
+export type LocalDoAtendimento = { endereco: string; sala: string; interfone: string };
+
+/** O endereço no mapa do celular (abre o app de mapas quando ele está instalado). */
+const noMapa = (endereco: string) =>
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(endereco)}`;
+
+/**
+ * Horários em aberto: ver, e desmarcar sem precisar ligar para ninguém.
+ * Confirmado (Lucas, 11/11/2026): "Horário confirmado", com o endereço, a
+ * sala, o interfone, a tolerância de atraso e o recado que a Tayssa deixou
+ * ao confirmar no painel.
+ */
+export function AppointmentList({
+  items,
+  sinal,
+  local,
+}: {
+  items: AppointmentRow[];
+  sinal?: SinalDaAgenda;
+  local?: LocalDoAtendimento;
+}) {
   const router = useRouter();
   const [confirming, setConfirming] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -75,8 +95,42 @@ export function AppointmentList({ items, sinal }: { items: AppointmentRow[]; sin
                 className={`tyv-badge ${a.status === "confirmed" ? "" : "tyv-badge--quiet"}`}
                 style={{ marginTop: 8 }}
               >
-                {situacaoDoPedido(a)}
+                {a.status === "confirmed" ? "Horário confirmado" : situacaoDoPedido(a)}
               </span>
+              {/* confirmado: onde é, como entrar e a tolerância */}
+              {a.status === "confirmed" ? (
+                <dl className="tyv-local">
+                  {local?.endereco ? (
+                    <div>
+                      <dt>Endereço</dt>
+                      <dd>
+                        {local.endereco}
+                        <a className="tyv-link tyv-local__mapa" href={noMapa(local.endereco)} target="_blank" rel="noopener noreferrer">
+                          Abrir no mapa
+                        </a>
+                      </dd>
+                    </div>
+                  ) : null}
+                  {local?.sala ? (
+                    <div>
+                      <dt>Sala</dt>
+                      <dd>{local.sala}</dd>
+                    </div>
+                  ) : null}
+                  {local?.interfone ? (
+                    <div>
+                      <dt>Interfone</dt>
+                      <dd>{local.interfone}</dd>
+                    </div>
+                  ) : null}
+                  {sinal && sinal.tolerancia > 0 ? (
+                    <div>
+                      <dt>Atraso</dt>
+                      <dd>Tolerância de {sinal.tolerancia} minutos. Passando disso, você perde o sinal.</dd>
+                    </div>
+                  ) : null}
+                </dl>
+              ) : null}
               {/* pedido: guardado até o prazo do sinal; Pix copia e cola, comprovante e o aviso no WhatsApp */}
               {a.status === "requested" && sinal ? (
                 <div className="tyv-sinal">
@@ -105,10 +159,12 @@ export function AppointmentList({ items, sinal }: { items: AppointmentRow[]; sin
                   />
                 </div>
               ) : null}
+              {/* o recado que a Tayssa deixou ao confirmar no painel */}
               {a.admin_note ? (
-                <p className="tyv-sub" style={{ fontSize: 13, marginTop: 8 }}>
-                  Tayssa: “{a.admin_note}”
-                </p>
+                <div className="tyv-recado">
+                  <p className="tyv-recado__rotulo">Recado da Tayssa</p>
+                  <p className="tyv-recado__texto">“{a.admin_note}”</p>
+                </div>
               ) : null}
             </div>
             {confirming === a.id ? null : (

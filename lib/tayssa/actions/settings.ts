@@ -163,6 +163,9 @@ export async function updateBookingSettingsAction(_p: ActionResult | null, fd: F
       pix_nome: str(fd, "pix_nome"),
       pix_cidade: str(fd, "pix_cidade"),
       pix_banco: str(fd, "pix_banco"),
+      local_endereco: str(fd, "local_endereco"),
+      local_sala: str(fd, "local_sala"),
+      local_interfone: str(fd, "local_interfone"),
       prioridade_vip: {
         ativa: fd.get("pv_ativa") === "on",
         desde: str(fd, "pv_desde").trim(),

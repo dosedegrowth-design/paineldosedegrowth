@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type MouseEvent } from "react";
 import "@/app/tayssa/sinal.css";
 import { prepararComprovanteAction, salvarComprovanteAction } from "@/lib/tayssa/actions/comprovante";
 import { COMPROVANTE_MAX_BYTES, COMPROVANTE_TIPOS, ROUTES, publicUrl } from "@/lib/tayssa/config";
-import { diaLegivel, horaLegivel, recadoDoCartao, reais } from "@/lib/tayssa/agendar";
+import { diaLegivel, horaLegivel, mensagemAgendamento, reais } from "@/lib/tayssa/agendar";
 import { pixDoPedido, type PixDaAgenda } from "@/lib/tayssa/pix";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { WhatsAppIcon } from "@/components/tayssa/ui/whatsapp";
@@ -64,11 +64,11 @@ async function copiarTexto(texto: string): Promise<boolean> {
  * 1. copiar o Pix copia e cola (o valor do sinal já vai junto);
  * 2. anexar o comprovante (foto ou PDF, direto para o Storage privado);
  * 3. com o comprovante no pedido, aparece "Enviar o cartão no WhatsApp": o
- *    cartão do horário vai como FOTO, com um recado curto (Lucas, 05/11/2026:
- *    "não um link, como se ela estivesse enviando uma foto"), pelo
- *    compartilhar do celular. Onde o navegador não compartilha arquivo
- *    (computador), o botão abre a conversa com o recado e o link do horário,
- *    que o WhatsApp mostra como o folder.
+ *    cartão do horário vai como FOTO (Lucas, 05/11/2026: "não um link, como
+ *    se ela estivesse enviando uma foto"), com a mensagem dividida em campos
+ *    (11/11/2026), pelo compartilhar do celular. Onde o navegador não
+ *    compartilha arquivo (computador), o botão abre a conversa com a mesma
+ *    mensagem e o link do horário, que o WhatsApp mostra como o folder.
  * Sem chave Pix cadastrada no painel, o passo 1 vira "pedir a chave no
  * WhatsApp", como antes. `tema`: "noite" na folha de agendar do site e em
  * "Meus agendamentos" (vinho escuro, a paleta do site; 09/11/2026), "perola"
@@ -119,9 +119,21 @@ export function PagarSinal({
     fimRef.current?.scrollIntoView({ behavior: reduzir ? "auto" : "smooth", block: "center" });
   }, [acabou]);
 
-  // sem foto, o recado curto leva o link do horário (o WhatsApp mostra o folder)
-  const comLink = (comprovante: boolean) =>
-    `${recadoDoCartao({ nome, sinal, comprovante })}\n\nMeu horário: ${publicUrl(ROUTES.horario(pedido.id))}`;
+  // a mensagem em campos (serviço, dia, horário, valor, sinal); com a foto ela vai
+  // como legenda do cartão, sem foto leva o link do horário (o WhatsApp mostra o folder)
+  const mensagem = (comprovante: boolean, link: string | null) =>
+    mensagemAgendamento({
+      servico: pedido.servico,
+      tecnica: pedido.tecnica,
+      dia: pedido.dia,
+      hora: pedido.hora,
+      valor: pedido.valor,
+      nome,
+      sinal,
+      comprovante,
+      link,
+    });
+  const comLink = (comprovante: boolean) => mensagem(comprovante, publicUrl(ROUTES.horario(pedido.id)));
 
   // O cartão do horário como foto: baixado assim que o passo 3 aparece, porque o
   // Safari só abre o compartilhar no mesmo toque (sem esperar a rede no meio).
@@ -171,7 +183,7 @@ export function PagarSinal({
     // segue o link: a conversa da Tayssa com o recado e o link do horário
     if (!foto || semFoto || typeof navigator.share !== "function") return;
     e.preventDefault();
-    navigator.share({ files: [foto], text: recadoDoCartao({ nome, sinal, comprovante: true }) }).catch((err: unknown) => {
+    navigator.share({ files: [foto], text: mensagem(true, null) }).catch((err: unknown) => {
       // fechou o compartilhar: nada a fazer; outra falha: o próximo toque abre a conversa com o texto
       if (err instanceof DOMException && err.name === "AbortError") return;
       setSemFoto(true);

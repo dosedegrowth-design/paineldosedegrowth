@@ -852,6 +852,38 @@ export function BookingForm({ value }: { value: Settings["booking"] }) {
         </div>
       </div>
 
+      {/* onde é: a cliente vê só no horário confirmado; o site aberto mostra só o bairro */}
+      <div className="tya-stack">
+        <span className="tya-eyebrow">Endereço do atendimento</span>
+        <p className="tya-small">
+          A cliente vê quando você confirma o horário dela, em Meus horários, junto com a tolerância de atraso e o seu
+          recado. No site aberto continua só o bairro. O que ficar vazio não aparece.
+        </p>
+        <div className="tya-grid">
+          <Campo
+            label="Endereço"
+            name="local_endereco"
+            defaultValue={value.local_endereco ?? ""}
+            error={erroDe(state, "local_endereco")}
+            hint="Rua, número, bairro, cidade e CEP."
+          />
+          <Campo
+            label="Sala"
+            name="local_sala"
+            defaultValue={value.local_sala ?? ""}
+            error={erroDe(state, "local_sala")}
+            hint="Ex.: Sala 3, 1º andar."
+          />
+          <Campo
+            label="Interfone"
+            name="local_interfone"
+            defaultValue={value.local_interfone ?? ""}
+            error={erroDe(state, "local_interfone")}
+            hint="O número ou o nome que ela chama na portaria."
+          />
+        </div>
+      </div>
+
       <Salvar state={state} pending={pending}>
         Salvar disponibilidade
       </Salvar>

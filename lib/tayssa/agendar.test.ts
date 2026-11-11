@@ -13,7 +13,6 @@ import {
   horaLegivel,
   horariosDaSemana,
   mensagemAgendamento,
-  recadoDoCartao,
   diaSoVip,
   avisoDaReservaVip,
   partesDoDia,
@@ -50,39 +49,41 @@ test("só dias com horário livre", () => {
   assert.deepEqual(diasAbertos(dias).map((d) => d.iso), ["2026-10-24"]);
 });
 
-test("mensagem completa, pedindo o Pix do sinal", () => {
+test("mensagem em campos, pedindo o Pix do sinal", () => {
   const m = mensagemAgendamento({
     servico: "Manutenção de cílios",
     tecnica: "Volume brasileiro",
     dia: "2026-10-23",
     hora: "14:00",
     nome: "  Ana ",
+    valor: 120,
     sinal: 50,
   });
   assert.equal(
     m,
     [
-      "Oi, Tayssa, tudo bem? Marquei meu horário pelo site.",
+      "Oi, Tayssa, tudo bem? Aqui é Ana. Marquei meu horário pelo site.",
       "",
-      "Serviço: Manutenção de cílios (Volume brasileiro)",
-      "Dia: sexta, 23/10",
-      "Horário: 14h",
-      "Nome: Ana",
+      "*Serviço:* Manutenção de cílios (Volume brasileiro)",
+      "*Dia:* sexta, 23/10",
+      "*Horário:* 14h",
+      "*Valor:* R$ 120",
       "",
       "Me manda a chave Pix do sinal de R$ 50 para eu garantir o horário?",
     ].join("\n"),
   );
 });
 
-test("manutenção sem técnica e sem nome ainda", () => {
+test("sem nome e sem valor, os campos que faltam não aparecem", () => {
   const m = mensagemAgendamento({ servico: "Manutenção de cílios", dia: "2026-10-24", hora: "10:30", nome: "", sinal: 50 });
-  assert.match(m, /Serviço: Manutenção de cílios\n/);
-  assert.doesNotMatch(m, /Nome:/);
-  assert.match(m, /Horário: 10h30/);
+  assert.ok(m.startsWith("Oi, Tayssa, tudo bem? Marquei meu horário pelo site."));
+  assert.match(m, /\*Serviço:\* Manutenção de cílios\n/);
+  assert.match(m, /\*Horário:\* 10h30/);
+  assert.doesNotMatch(m, /Aqui é|Valor:/);
 });
 
 test("com o link do horário, a mensagem termina nele (o WhatsApp mostra o folder)", () => {
-  const link = "https://painel.dosedegrowth.com/tayssa/horario/0b0e5c1e-1111-4222-8333-944445555666";
+  const link = "https://tayssafarias.com.br/horario/0b0e5c1e-1111-4222-8333-944445555666";
   const m = mensagemAgendamento({ servico: "Volume inglês", dia: "2026-11-07", hora: "10:00", nome: "Ana", sinal: 50, link });
   assert.ok(m.endsWith(`garantir o horário?\n\nMeu horário: ${link}`));
   // sem link, nada de linha vazia sobrando
@@ -90,26 +91,23 @@ test("com o link do horário, a mensagem termina nele (o WhatsApp mostra o folde
   assert.ok(semLink.endsWith("garantir o horário?"));
 });
 
-test("com o comprovante anexado, a mensagem avisa que o sinal foi pago (não pede a chave)", () => {
-  const m = mensagemAgendamento({ servico: "Volume inglês", dia: "2026-11-07", hora: "10:00", nome: "Ana", sinal: 50, comprovante: true, link: "https://x/tayssa/horario/1" });
-  assert.ok(m.startsWith("Oi, Tayssa, tudo bem? Fiz meu agendamento pelo site."));
-  assert.match(m, /Já paguei o sinal de R\$ 50 no Pix e anexei o comprovante no site\./);
+test("com o comprovante anexado: o sinal vira campo e a mensagem não pede a chave (vai com a foto do cartão)", () => {
+  const m = mensagemAgendamento({ servico: "Volume brasileiro", dia: "2026-11-12", hora: "09:00", nome: "Gabi", valor: 170, sinal: 50, comprovante: true });
+  assert.equal(
+    m,
+    [
+      "Oi, Tayssa, tudo bem? Aqui é Gabi. Fiz meu agendamento pelo site.",
+      "",
+      "*Serviço:* Volume brasileiro",
+      "*Dia:* quinta, 12/11",
+      "*Horário:* 9h",
+      "*Valor:* R$ 170",
+      "*Sinal:* R$ 50 pago no Pix, comprovante anexado no site",
+    ].join("\n"),
+  );
   assert.doesNotMatch(m, /chave Pix/);
-  assert.ok(m.endsWith("Meu horário: https://x/tayssa/horario/1"));
-});
-
-test("o recado que vai com o cartão (foto) é curto: o cartão diz o resto", () => {
-  const r = recadoDoCartao({ nome: " Ana ", sinal: 50, comprovante: true });
-  assert.equal(
-    r,
-    "Oi, Tayssa, tudo bem? Aqui é Ana. Fiz meu agendamento pelo site, paguei o sinal de R$ 50 no Pix e anexei o comprovante.",
-  );
-  // uma linha, sem link: o horário vai na foto
-  assert.doesNotMatch(r, /\n|http/);
-  assert.equal(
-    recadoDoCartao({ nome: "", sinal: 50 }),
-    "Oi, Tayssa, tudo bem? Marquei meu horário pelo site. Me manda a chave Pix do sinal de R$ 50?",
-  );
+  const comLink = mensagemAgendamento({ servico: "Volume inglês", dia: "2026-11-07", hora: "10:00", nome: "Ana", sinal: 50, comprovante: true, link: "https://x/horario/1" });
+  assert.ok(comLink.endsWith("comprovante anexado no site\n\nMeu horário: https://x/horario/1"));
 });
 
 test("prioridade VIP: dezembro só para VIP até a Tayssa abrir para todas", () => {
@@ -144,7 +142,7 @@ test("prioridade VIP: dezembro só para VIP até a Tayssa abrir para todas", () 
 
 test("com valor cadastrado, a mensagem leva o valor", () => {
   const m = mensagemAgendamento({ servico: "Volume inglês", dia: "2026-10-23", hora: "14:00", nome: "Ana", valor: 220, sinal: 50 });
-  assert.match(m, /Horário: 14h\nValor: R\$ 220\nNome: Ana/);
+  assert.match(m, /\*Horário:\* 14h\n\*Valor:\* R\$ 220\n/);
 });
 
 test("serviço longo só cabe onde o tempo dele alcança", () => {
