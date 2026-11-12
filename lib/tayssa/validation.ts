@@ -217,6 +217,14 @@ export const adminServiceEntrySchema = z.object({
   notes: z.string().trim().max(500).optional().transform((v) => v || null),
 });
 
+/** Correção de pontos na ficha: os pontos de um serviço, a mais ou a menos. */
+export const ajustePontosSchema = z.object({
+  client_id: z.string().uuid(),
+  service_id: z.string().uuid("Escolha o serviço"),
+  tipo: z.enum(["tirar", "adicionar"], { message: "Escolha se é para tirar ou adicionar" }),
+  note: z.string().trim().max(300, "Motivo com até 300 letras").optional().transform((v) => v || null),
+});
+
 export const reviewSchema = z.object({
   id: z.string().uuid(),
   note: z.string().trim().max(500).optional().transform((v) => v || null),

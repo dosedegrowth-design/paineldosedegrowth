@@ -6,7 +6,13 @@ import { getSettings } from "@/lib/tayssa/settings";
 import { andamentoVipLegivel, regraVipLegivel, toISODate, validadeDoAniversario } from "@/lib/tayssa/rules";
 import { cicloLegivel, criterioLegivel, currency, dateLong, dateShort, dateTime, faltaLegivel, isWithinHours, nowInBusinessTz, numero, plural } from "@/lib/tayssa/format";
 import { formatBrPhone } from "@/lib/tayssa/phone";
-import { MENSAGEM_VIP_INCLUIDA, renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
+import {
+  MENSAGEM_CADASTRO_VIP_LIBERADO,
+  MENSAGEM_CONTA_LIBERADA,
+  MENSAGEM_VIP_INCLUIDA,
+  renderTemplate,
+  whatsappUrl,
+} from "@/lib/tayssa/whatsapp";
 import { ROUTES, publicUrl } from "@/lib/tayssa/config";
 import { auditLabel } from "@/lib/tayssa/audit-labels";
 import type { ClientBenefitStatus, ReferralStatus, ServiceStatus, UserStatus, VipStatus } from "@/lib/tayssa/types";
@@ -29,6 +35,7 @@ import { AdminBlock, AdminHeader, Empty, Stat } from "@/components/tayssa/admin/
 import { ActionButton, NoteAction } from "@/components/tayssa/admin/controls";
 import { AccessLinkPanel, AdminServiceEntryForm, ClientEditForm, GrantCustomBenefitForm, ReleaseBirthdayForm } from "@/components/tayssa/admin/forms";
 import { SignupReviewPanel } from "@/components/tayssa/admin/signup-review";
+import { CorrigirPontos } from "@/components/tayssa/admin/corrigir-pontos";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 
 /* ---- selos de estado: o dourado é do VIP, o cassis é do que espera ---- */
@@ -300,20 +307,25 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                   Reativar conta
                 </ActionButton>
               )}
+              {/* fez o cadastro VIP no site: a senha já existe (nunca o antigo
+                  "defina sua senha"). VIP: o recado do VIP; senão, a conta liberada com a regra */}
               {user.signup_source === "self" && user.status === "active" && user.phone ? (
                 <a
                   href={whatsappUrl(
                     user.phone,
-                    renderTemplate(settings.signup.welcome_template, {
-                      name: (user.nickname ?? user.name).trim().split(/\s+/)[0],
-                      url: publicUrl(ROUTES.login),
-                    })
+                    vip === "active"
+                      ? renderTemplate(MENSAGEM_CADASTRO_VIP_LIBERADO, { name: first, url: publicUrl(ROUTES.login) })
+                      : renderTemplate(MENSAGEM_CONTA_LIBERADA, {
+                          name: first,
+                          url: publicUrl(ROUTES.login),
+                          regra: regraVipLegivel(d.summary.vip.criterios),
+                        })
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="tya-btn tya-btn--sm tya-btn--primary"
                 >
-                  Boas-vindas no WhatsApp
+                  Avisar no WhatsApp
                 </a>
               ) : null}
               {d.activeSessions > 0 ? (
@@ -387,6 +399,45 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
         ) : (
           <Empty>Nenhum marco de pontos cadastrado no catálogo.</Empty>
         )}
+
+        {/* ---------- corrigir pontos: sempre pelos pontos de um serviço ---------- */}
+        <div id="corrigir-pontos" className="tya-corrigir">
+          <span className="tya-eyebrow">Corrigir pontos</span>
+          <p className="tya-small" style={{ margin: 0 }}>
+            Os pontos saem do serviço, nunca de um número solto. Marcou manutenção e fez aplicação? Tire os pontos da
+            manutenção e adicione os da aplicação. O atendimento continua como foi registrado e ela vê a correção no
+            histórico dela.
+          </p>
+          <CorrigirPontos
+            clientId={user.id}
+            pontos={d.summary.points}
+            servicos={services
+              .filter((s) => s.point_value > 0)
+              .map((s) => ({ id: s.id, name: s.name, point_value: s.point_value }))}
+          />
+          {d.ajustes.length ? (
+            <div>
+              <span className="tya-label">Correções feitas</span>
+              <ul className="tya-list">
+                {d.ajustes.map((a) => (
+                  <li key={a.id} className="tya-row">
+                    <span>
+                      <b className="tya-num" style={{ fontWeight: 600 }}>
+                        {a.points > 0 ? `+${numero(a.points)}` : `−${numero(Math.abs(a.points))}`}
+                      </b>{" "}
+                      {a.service_name}
+                      <span className="tya-small" style={{ display: "block" }}>
+                        {dateTime(a.created_at)}
+                        {a.note ? ` · ${a.note}` : ""}
+                      </span>
+                    </span>
+                    <Selo tom={a.points > 0 ? "tya-pill--ok" : "tya-pill--quiet"}>{a.points > 0 ? "adicionados" : "tirados"}</Selo>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </div>
       </AdminBlock>
 
       {/* ---------- aniversário ---------- */}

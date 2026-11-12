@@ -1,6 +1,6 @@
 import { requireClientPage } from "@/lib/tayssa/auth/guards";
 import { TomDoSite } from "@/components/tayssa/vip/tom-do-site";
-import { getClientServiceHistory } from "@/lib/tayssa/queries/client";
+import { getAjustesDaCliente, getClientServiceHistory } from "@/lib/tayssa/queries/client";
 import { getActiveServices } from "@/lib/tayssa/queries/catalog";
 import { logoutAction } from "@/lib/tayssa/actions/auth";
 import { toISODate } from "@/lib/tayssa/rules";
@@ -10,10 +10,13 @@ import { getSettings } from "@/lib/tayssa/settings";
 import { formatBrPhone } from "@/lib/tayssa/phone";
 import { ChangePasswordForm, ProfileForm, SubmitServiceForm } from "@/components/tayssa/vip/forms";
 
+type LinhaDoHistorico = { id: string; dia: string; correcao: boolean; titulo: string; sub: string; valor: string; apagado: boolean };
+
 export default async function ProfilePage() {
   const user = await requireClientPage();
-  const [history, services, settings] = await Promise.all([
+  const [history, ajustes, services, settings] = await Promise.all([
     getClientServiceHistory(user.id),
+    getAjustesDaCliente(user.id),
     getActiveServices(),
     getSettings(),
   ]);
@@ -21,6 +24,31 @@ export default async function ProfilePage() {
   const vipAberto = settings.rules.vip_aberto || user.isVip;
   const p = user.profile;
   const approved = history.filter((s) => s.status === "approved");
+  // atendimentos e as correções de pontos da Tayssa, do mais novo ao mais
+  // antigo; no mesmo dia a correção vem antes (foi feita depois da visita)
+  const linhas: LinhaDoHistorico[] = [
+    ...ajustes.map((a) => {
+      const dia = toISODate(nowInBusinessTz(new Date(a.created_at)));
+      return {
+        id: `aj-${a.id}`,
+        dia,
+        correcao: true,
+        titulo: a.service_name,
+        sub: `${dateLong(dia)} · correção da Tayssa`,
+        valor: a.points > 0 ? `+${a.points}` : `−${Math.abs(a.points)}`,
+        apagado: a.points < 0,
+      };
+    }),
+    ...history.map((s) => ({
+      id: s.id,
+      dia: s.service_date,
+      correcao: false,
+      titulo: s.service_name,
+      sub: `${dateLong(s.service_date)} · ${SERVICE_STATUS_LABEL[s.status]}`,
+      valor: s.status === "approved" ? `+${s.points}` : "—",
+      apagado: s.status !== "approved",
+    })),
+  ].sort((a, b) => b.dia.localeCompare(a.dia) || Number(b.correcao) - Number(a.correcao));
 
   return (
     <>
@@ -68,27 +96,27 @@ export default async function ProfilePage() {
             <div className="tyv-section-head">
               <h2 className="tyv-h2">Histórico</h2>
               <span className="tyv-label">
-                {history.length} {plural(history.length, "registro", "registros")}
+                {linhas.length} {plural(linhas.length, "registro", "registros")}
               </span>
             </div>
             <div className="tyv-panel">
-              {history.length ? (
-                history.slice(0, 12).map((s) => (
-                  <div key={s.id} className="tyv-row">
+              {linhas.length ? (
+                linhas.slice(0, 12).map((l) => (
+                  <div key={l.id} className="tyv-row">
                     <div>
-                      <p style={{ fontSize: 15 }}>{s.service_name}</p>
+                      <p style={{ fontSize: 15 }}>{l.titulo}</p>
                       <p className="tyv-sub" style={{ fontSize: 12.5 }}>
-                        {dateLong(s.service_date)} · {SERVICE_STATUS_LABEL[s.status]}
+                        {l.sub}
                       </p>
                     </div>
                     <span
                       className="tyv-num"
                       style={{
                         fontSize: 18,
-                        opacity: s.status === "approved" ? 1 : 0.45,
+                        opacity: l.apagado ? 0.45 : 1,
                       }}
                     >
-                      {s.status === "approved" ? `+${s.points}` : "—"}
+                      {l.valor}
                     </span>
                   </div>
                 ))

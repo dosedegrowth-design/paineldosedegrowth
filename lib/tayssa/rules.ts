@@ -107,6 +107,65 @@ export function loyaltyProgress(
 }
 
 // ------------------------------------------------------------
+// Correção de pontos na ficha (a Tayssa tira ou adiciona)
+// ------------------------------------------------------------
+
+export type TipoAjuste = "tirar" | "adicionar";
+
+/**
+ * Tirar ou adicionar os pontos de um serviço: o que entra no registro
+ * (negativo quando tira) e o total que fica. Os pontos vêm sempre do
+ * serviço, nunca de um número solto. Nunca deixa o saldo negativo.
+ */
+export function ajusteDePontos(
+  atual: number,
+  pontosDoServico: number,
+  tipo: TipoAjuste
+): { ok: true; pontos: number; total: number } | { ok: false; motivo: string } {
+  if (!Number.isInteger(pontosDoServico) || pontosDoServico <= 0) {
+    return { ok: false, motivo: "Esse serviço não vale pontos. Escolha outro." };
+  }
+  if (tipo === "adicionar") return { ok: true, pontos: pontosDoServico, total: atual + pontosDoServico };
+  if (pontosDoServico > atual) {
+    return {
+      ok: false,
+      motivo: `Ela tem ${numeroBr(atual)} ${atual === 1 ? "ponto" : "pontos"}: não dá para tirar ${numeroBr(pontosDoServico)}.`,
+    };
+  }
+  return { ok: true, pontos: -pontosDoServico, total: atual - pontosDoServico };
+}
+
+/** Soma dos pontos de uma lista (atendimentos confirmados ou correções). */
+export function somaDePontos(linhas: readonly { points: number }[]): number {
+  return linhas.reduce((s, r) => s + (r.points ?? 0), 0);
+}
+
+/**
+ * Marcos de pontos que a cliente tinha alcançado e deixa de alcançar
+ * quando o total cai de `antes` para `depois` (a Tayssa tirou pontos).
+ * Só o critério de pontos: os meses seguidos não mudam com a correção.
+ */
+export function marcosPerdidos<T extends Pick<BenefitRow, "type" | "threshold" | "threshold_unit">>(
+  antes: number,
+  depois: number,
+  marcos: readonly T[]
+): T[] {
+  return marcos.filter(
+    (b) =>
+      b.type === "loyalty" &&
+      (b.threshold_unit ?? "points") === "points" &&
+      (b.threshold ?? 0) > 0 &&
+      antes >= (b.threshold as number) &&
+      depois < (b.threshold as number)
+  );
+}
+
+/** 1.020 (o `numero()` do format.ts, sem importar a camada de formatação) */
+function numeroBr(n: number): string {
+  return String(Math.trunc(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+// ------------------------------------------------------------
 // Constância e o caminho até o VIP
 // ------------------------------------------------------------
 

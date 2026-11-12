@@ -2449,3 +2449,17 @@ a.tya-kpi {
 .tya-avisos__acoes:empty {
   display: none;
 }
+
+/* ---------- corrigir pontos (ficha da cliente) ----------
+   Mora no fim do bloco "Pontos, marcos e VIP", separado por um fio: é a
+   ferramenta da Tayssa, não informação da cliente. */
+.tya-corrigir {
+  display: grid;
+  gap: 14px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--tya-line-soft);
+}
+.tya-corrigir .tya-list {
+  margin-top: 8px;
+}

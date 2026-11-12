@@ -68,3 +68,38 @@ test("jornada: limites e aniversário na janela", () => {
   assert.equal(t.upcoming[0].detail, "é hoje, parabéns");
   assert.equal(t.upcoming[0].date, "2026-09-16");
 });
+
+test("jornada: correção de pontos da Tayssa aparece com o sinal, antes da visita do mesmo dia", () => {
+  const t = buildTimeline({
+    services: [svc("s1", "2026-11-12", "approved", 95)],
+    // do mais novo ao mais antigo, como vem do banco; 17h20 UTC = 14h20 em Brasília (12/11)
+    ajustes: [
+      { id: "a2", service_name: "Mega Inglês", points: 150, created_at: "2026-11-12T17:21:00Z" },
+      { id: "a1", service_name: "Manutenção Mega Inglês", points: -95, created_at: "2026-11-12T17:20:00Z" },
+    ],
+    benefits: [],
+    appointments: [],
+    birthday: null,
+    loyalty: loyaltyProgress(150, benefitsCatalog),
+    today: new Date(2026, 10, 12),
+  });
+  assert.deepEqual(t.recent.map((i) => i.id), ["aj:a2", "aj:a1", "svc:s1"]);
+  assert.deepEqual(t.recent.map((i) => i.value), ["+150", "−95", "+95"]);
+  assert.equal(t.recent[0].kind, "ajuste");
+  assert.equal(t.recent[0].detail, "12 de novembro · correção da Tayssa");
+  assert.equal(t.recent[1].tone, "muted");
+});
+
+test("jornada: correção feita à noite cai no dia de Brasília, não no de Londres", () => {
+  const t = buildTimeline({
+    services: [],
+    // 01h30 UTC de 13/11 = 22h30 de 12/11 em Brasília
+    ajustes: [{ id: "a", service_name: "Mega Inglês", points: 150, created_at: "2026-11-13T01:30:00Z" }],
+    benefits: [],
+    appointments: [],
+    birthday: null,
+    loyalty: loyaltyProgress(150, benefitsCatalog),
+    today: new Date(2026, 10, 13),
+  });
+  assert.equal(t.recent[0].date, "2026-11-12");
+});

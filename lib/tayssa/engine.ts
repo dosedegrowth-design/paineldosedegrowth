@@ -4,10 +4,12 @@ import { getSettings } from "@/lib/tayssa/settings";
 import { nowInBusinessTz } from "@/lib/tayssa/format";
 import {
   loyaltyCycleKey,
+  marcosPerdidos,
   mesesDoMarco,
   mesesSeguidos,
   referralCycleKey,
   referralProgress,
+  somaDePontos,
 } from "@/lib/tayssa/rules";
 import type {
   BenefitRow,
@@ -34,16 +36,42 @@ export async function getActiveBenefits(): Promise<BenefitRow[]> {
   return (data ?? []) as BenefitRow[];
 }
 
-/** Pontos confirmados e as datas dos atendimentos (para os meses seguidos). */
+/**
+ * Pontos confirmados (atendimentos + as correções da Tayssa) e as datas
+ * dos atendimentos (para os meses seguidos; correção não é visita).
+ */
 export async function getApprovedServiceStats(clientId: string): Promise<{ points: number; datas: string[] }> {
+  const db = vipDb();
+  const [visitas, ajustes] = await Promise.all([
+    db.from("client_services").select("points, service_date").eq("client_id", clientId).eq("status", "approved"),
+    db.from("ajustes_pontos").select("points").eq("client_id", clientId),
+  ]);
+  if (visitas.error) throw new Error(visitas.error.message);
+  if (ajustes.error) throw new Error(ajustes.error.message);
+  const rows = (visitas.data ?? []) as { points: number; service_date: string }[];
+  const points = somaDePontos(rows) + somaDePontos((ajustes.data ?? []) as { points: number }[]);
+  return { points: Math.max(0, points), datas: rows.map((r) => r.service_date) };
+}
+
+/**
+ * A Tayssa tirou pontos e o total caiu abaixo de um marco: o benefício
+ * desse marco que ainda esperava a validação dela sai da fila (como na
+ * indicação desaprovada). O que ela já liberou para a cliente não é
+ * mexido: essa decisão é dela.
+ */
+export async function podarMarcosPerdidos(clientId: string, antes: number, depois: number): Promise<number> {
+  const perdidos = marcosPerdidos(antes, depois, await getActiveBenefits());
+  if (!perdidos.length) return 0;
   const { data, error } = await vipDb()
-    .from("client_services")
-    .select("points, service_date")
+    .from("client_benefits")
+    .delete()
     .eq("client_id", clientId)
-    .eq("status", "approved");
+    .eq("status", "pending_validation")
+    .in("benefit_id", perdidos.map((b) => b.id))
+    .in("cycle_key", perdidos.map((b) => loyaltyCycleKey(b.key)))
+    .select("id");
   if (error) throw new Error(error.message);
-  const rows = (data ?? []) as { points: number; service_date: string }[];
-  return { points: rows.reduce((s, r) => s + (r.points ?? 0), 0), datas: rows.map((r) => r.service_date) };
+  return data?.length ?? 0;
 }
 
 export async function getApprovedReferralCount(clientId: string): Promise<number> {
@@ -82,8 +110,8 @@ async function insertEligibility(
 /**
  * Marcos de fidelidade (em pontos) alcançados que ainda não têm registro.
  * Marco que pede constância (o kit, perto do VIP) só abre com os meses
- * seguidos de atendimento também. Roda a cada visita confirmada, que é o
- * único jeito de os pontos e os meses subirem.
+ * seguidos de atendimento também. Roda a cada visita confirmada e a cada
+ * correção que adiciona pontos (os únicos jeitos de os pontos subirem).
  */
 export async function syncLoyaltyEligibility(clientId: string): Promise<number> {
   const [{ points, datas }, benefits] = await Promise.all([

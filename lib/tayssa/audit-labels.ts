@@ -40,6 +40,8 @@ const LABELS: Record<string, string> = {
   service_added: "Atendimento registrado pela Tayssa",
   service_approved: "Atendimento confirmado",
   service_rejected: "Atendimento não confirmado",
+  pontos_adicionados: "Pontos adicionados pela Tayssa",
+  pontos_tirados: "Pontos tirados pela Tayssa",
   benefit_requested: "Cliente solicitou benefício",
   benefit_validated: "Benefício validado (desbloqueado)",
   benefit_approved: "Benefício confirmado",

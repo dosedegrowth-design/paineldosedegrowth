@@ -11,7 +11,7 @@ import { PASSWORD_TOKEN_DAYS, ROUTES, criteriosVip, publicUrl } from "@/lib/tays
 import { regraVipLegivel } from "@/lib/tayssa/rules";
 import { adminClientSchema, reviewSignupSchema } from "@/lib/tayssa/validation";
 import { getSettings } from "@/lib/tayssa/settings";
-import { MENSAGEM_CONTA_LIBERADA, MENSAGEM_VIP_INCLUIDA, renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
+import { MENSAGEM_CADASTRO_VIP_LIBERADO, MENSAGEM_CONTA_LIBERADA, renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { BusinessError, bool, runAction, str } from "@/lib/tayssa/actions/_helpers";
 import type { ActionResult, UserRow, UserStatus } from "@/lib/tayssa/types";
 
@@ -292,7 +292,7 @@ export async function adminReviewSignupAction(input: {
       welcomeUrl = whatsappUrl(
         u.phone,
         parsed.vip
-          ? renderTemplate(MENSAGEM_VIP_INCLUIDA, { name, url })
+          ? renderTemplate(MENSAGEM_CADASTRO_VIP_LIBERADO, { name, url })
           : renderTemplate(MENSAGEM_CONTA_LIBERADA, { name, url, regra: regraVipLegivel(criteriosVip(settings.rules)) })
       );
     }

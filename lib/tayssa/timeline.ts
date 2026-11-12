@@ -6,12 +6,19 @@
  * Não decide nada: só descreve. Benefício aqui só aparece com o status
  * que a Tayssa deu no admin.
  */
-import { APPOINTMENT_STATUS_LABEL, type AppointmentRow, type ClientBenefitRow, type ClientServiceRow } from "./types.ts";
+import {
+  APPOINTMENT_STATUS_LABEL,
+  type AjustePontosRow,
+  type AppointmentRow,
+  type ClientBenefitRow,
+  type ClientServiceRow,
+} from "./types.ts";
 import { andamentoVipLegivel, appointmentEnded, toISODate, type BirthdayInfo, type LoyaltyProgress, type ProgressoVip } from "./rules.ts";
-import { dateLong, dayLabel, faltaLegivel, hhmm, numero, plural } from "./format.ts";
+import { dateLong, dayLabel, faltaLegivel, hhmm, nowInBusinessTz, numero, plural } from "./format.ts";
 
 export type TimelineKind =
   | "visit"
+  | "ajuste"
   | "pending"
   | "benefit"
   | "validating"
@@ -44,6 +51,8 @@ export type Timeline = {
 
 export type TimelineInput = {
   services: ClientServiceRow[];
+  /** correções de pontos da Tayssa (da mais nova à mais antiga) */
+  ajustes?: Pick<AjustePontosRow, "id" | "service_name" | "points" | "created_at">[];
   benefits: (ClientBenefitRow & { benefit?: { type: string; key: string } | null })[];
   appointments: AppointmentRow[];
   birthday: BirthdayInfo | null;
@@ -59,6 +68,7 @@ const day = (v: string | null | undefined) => (v ? v.slice(0, 10) : null);
 
 export function buildTimeline({
   services,
+  ajustes = [],
   benefits,
   appointments,
   birthday,
@@ -122,6 +132,21 @@ export function buildTimeline({
       detail: andamentoVipLegivel(p),
       value: `${p.contam}/${p.criterios.visitas}`,
       tone: p.cumpre ? "gold" : "muted",
+    });
+  }
+
+  // correção da Tayssa: entra antes das visitas do mesmo dia (veio depois
+  // delas), com o sinal do que mudou
+  for (const a of ajustes) {
+    const dia = toISODate(nowInBusinessTz(new Date(a.created_at)));
+    recent.push({
+      id: `aj:${a.id}`,
+      kind: "ajuste",
+      date: dia,
+      title: a.service_name,
+      detail: `${dateLong(dia)} · correção da Tayssa`,
+      value: a.points > 0 ? `+${numero(a.points)}` : `−${numero(Math.abs(a.points))}`,
+      tone: a.points > 0 ? "plum" : "muted",
     });
   }
 

@@ -220,19 +220,22 @@ function firstName(u: Pick<UserRow, "name" | "nickname">): string {
 
 export const getRanking = cache(async (clientId: string): Promise<Ranking> => {
   const db = vipDb();
-  const [usersRes, servicesRes] = await Promise.all([
+  const [usersRes, servicesRes, ajustesRes] = await Promise.all([
     db.from("users").select("id, name, nickname").eq("role", "client").eq("status", "active"),
     db.from("client_services").select("client_id, points").eq("status", "approved"),
+    db.from("ajustes_pontos").select("client_id, points"),
   ]);
   if (usersRes.error) throw new Error(usersRes.error.message);
   if (servicesRes.error) throw new Error(servicesRes.error.message);
+  if (ajustesRes.error) throw new Error(ajustesRes.error.message);
   const users = (usersRes.data ?? []) as Pick<UserRow, "id" | "name" | "nickname">[];
   const pts = new Map<string, number>();
-  for (const s of (servicesRes.data ?? []) as { client_id: string; points: number }[]) {
+  // atendimentos confirmados + as correções da Tayssa
+  for (const s of [...(servicesRes.data ?? []), ...(ajustesRes.data ?? [])] as { client_id: string; points: number }[]) {
     pts.set(s.client_id, (pts.get(s.client_id) ?? 0) + s.points);
   }
   const board = users
-    .map((u) => ({ id: u.id, name: firstName(u), points: pts.get(u.id) ?? 0 }))
+    .map((u) => ({ id: u.id, name: firstName(u), points: Math.max(0, pts.get(u.id) ?? 0) }))
     .sort((a, b) => b.points - a.points || a.name.localeCompare(b.name));
   const idx = Math.max(0, board.findIndex((r) => r.id === clientId));
   const position = idx + 1;

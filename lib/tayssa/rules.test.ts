@@ -6,6 +6,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   activeBlackout,
+  ajusteDePontos,
   appointmentEnded,
   appointmentStarted,
   birthdayInfo,
@@ -14,9 +15,11 @@ import {
   horariosParaMarcar,
   isInactive,
   loyaltyProgress,
+  marcosPerdidos,
   mesesSeguidos,
   progressoVip,
   referralProgress,
+  somaDePontos,
   trechosOcupados,
   validadeDoAniversario,
   vipPrimeiro,
@@ -408,4 +411,46 @@ test("período especial do banco: só o que está no formato entra", () => {
   assert.deepEqual(Object.keys(p?.dias ?? {}), ["2026-12-24"]);
   assert.deepEqual(p?.folgas, ["2026-12-25"]);
   assert.equal(lerPeriodoEspecial({ desde: "2026-12-01", ate: "2026-12-31", taxa: -5 })?.taxa, 0);
+});
+
+// ------------------------------------------------------------
+// Correção de pontos na ficha (Lucas, 12/11/2026)
+// ------------------------------------------------------------
+
+test("correção de pontos: marcou manutenção, fez aplicação (tira 95, adiciona 150)", () => {
+  const tira = ajusteDePontos(95, 95, "tirar");
+  assert.deepEqual(tira, { ok: true, pontos: -95, total: 0 });
+  const poe = ajusteDePontos(0, 150, "adicionar");
+  assert.deepEqual(poe, { ok: true, pontos: 150, total: 150 });
+  // na ordem contrária dá no mesmo
+  assert.deepEqual(ajusteDePontos(95, 150, "adicionar"), { ok: true, pontos: 150, total: 245 });
+  assert.deepEqual(ajusteDePontos(245, 95, "tirar"), { ok: true, pontos: -95, total: 150 });
+});
+
+test("correção de pontos: nunca deixa o saldo negativo nem usa serviço sem pontos", () => {
+  const r = ajusteDePontos(95, 150, "tirar");
+  assert.equal(r.ok, false);
+  assert.equal(!r.ok && r.motivo, "Ela tem 95 pontos: não dá para tirar 150.");
+  const um = ajusteDePontos(1, 1020, "tirar");
+  assert.equal(!um.ok && um.motivo, "Ela tem 1 ponto: não dá para tirar 1.020.");
+  assert.equal(ajusteDePontos(500, 0, "adicionar").ok, false);
+  assert.equal(ajusteDePontos(500, 0, "tirar").ok, false);
+});
+
+test("correção de pontos: soma e marcos perdidos quando o total cai", () => {
+  assert.equal(somaDePontos([{ points: 95 }, { points: -95 }, { points: 150 }]), 150);
+  assert.equal(somaDePontos([]), 0);
+  const marcos = [
+    { id: "m400", type: "loyalty" as const, threshold: 400, threshold_unit: "points" as const },
+    { id: "m800", type: "loyalty" as const, threshold: 800, threshold_unit: "points" as const },
+    { id: "cartao", type: "loyalty" as const, threshold: 8, threshold_unit: "services" as const },
+    { id: "ind", type: "referral" as const, threshold: 1, threshold_unit: "referrals" as const },
+  ];
+  // 450 → 300: perdeu o de 400 (o cartão e a indicação não são de pontos)
+  assert.deepEqual(marcosPerdidos(450, 300, marcos).map((m) => m.id), ["m400"]);
+  // 900 → 350: perdeu os dois
+  assert.deepEqual(marcosPerdidos(900, 350, marcos).map((m) => m.id), ["m400", "m800"]);
+  // subiu ou não cruzou nada: nenhum
+  assert.deepEqual(marcosPerdidos(300, 450, marcos), []);
+  assert.deepEqual(marcosPerdidos(450, 400, marcos), []);
 });

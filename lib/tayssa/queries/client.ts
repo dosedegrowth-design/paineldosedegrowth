@@ -11,6 +11,7 @@ import {
   mesesSeguidos,
   progressoVip,
   referralProgress,
+  somaDePontos,
   type BirthdayInfo,
   type LoyaltyProgress,
   type ProgressoVip,
@@ -18,6 +19,7 @@ import {
 } from "@/lib/tayssa/rules";
 import type { SessionUser } from "@/lib/tayssa/auth/session";
 import type {
+  AjustePontosRow,
   BenefitRow,
   ClientBenefitRow,
   ClientServiceRow,
@@ -51,11 +53,13 @@ export type ClientOverview = {
   birthdayBenefit: ClientBenefitView | null;
   blackout: { name: string; endsOn: Date } | null;
   recentServices: ClientServiceRow[];
+  /** correções de pontos feitas pela Tayssa, da mais nova à mais antiga */
+  ajustes: AjustePontosRow[];
 };
 
 export const getClientOverview = cache(async (user: SessionUser): Promise<ClientOverview> => {
   const db = vipDb();
-  const [settings, benefitsCatalog, blackouts, servicesRes, referralsRes, benefits] =
+  const [settings, benefitsCatalog, blackouts, servicesRes, referralsRes, benefits, ajustes] =
     await Promise.all([
       getSettings(),
       getPublicBenefits(),
@@ -70,6 +74,7 @@ export const getClientOverview = cache(async (user: SessionUser): Promise<Client
         .select("status")
         .eq("referrer_user_id", user.id),
       getClientBenefits(user.id),
+      getAjustesDaCliente(user.id),
     ]);
 
   if (servicesRes.error) throw new Error(servicesRes.error.message);
@@ -77,7 +82,8 @@ export const getClientOverview = cache(async (user: SessionUser): Promise<Client
 
   const services = (servicesRes.data ?? []) as ClientServiceRow[];
   const approved = services.filter((s) => s.status === "approved");
-  const points = approved.reduce((s, r) => s + r.points, 0);
+  // atendimentos confirmados + as correções da Tayssa
+  const points = Math.max(0, somaDePontos(approved) + somaDePontos(ajustes));
   const pendingServices = services.filter((s) => s.status === "pending").length;
 
   const refs = (referralsRes.data ?? []) as Pick<ReferralRow, "status">[];
@@ -127,7 +133,19 @@ export const getClientOverview = cache(async (user: SessionUser): Promise<Client
     birthdayBenefit,
     blackout: activeBlackout(today, blackouts, "birthday"),
     recentServices: services.slice(0, 5),
+    ajustes,
   };
+});
+
+/** As correções de pontos da cliente, da mais nova à mais antiga. */
+export const getAjustesDaCliente = cache(async (clientId: string): Promise<AjustePontosRow[]> => {
+  const { data, error } = await vipDb()
+    .from("ajustes_pontos")
+    .select("*")
+    .eq("client_id", clientId)
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(error.message);
+  return (data ?? []) as AjustePontosRow[];
 });
 
 export const getClientServiceHistory = cache(

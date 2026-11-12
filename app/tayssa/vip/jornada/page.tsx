@@ -16,6 +16,7 @@ export default async function VipJornada() {
   const { overview: o, appointments, ranking } = await getVipHome(user);
   const timeline = buildTimeline({
     services: o.recentServices,
+    ajustes: o.ajustes,
     benefits: o.benefits,
     appointments: appointments.upcoming,
     birthday: o.birthday,

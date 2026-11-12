@@ -41,6 +41,15 @@ export const MENSAGEM_VIP_INCLUIDA =
 export const MENSAGEM_CADASTRO_FEITO =
   "Oi, Tayssa, tudo bem? Aqui é {name}. Fiz o meu cadastro VIP no site. Pode liberar a minha conta?";
 
+/**
+ * A Tayssa liberou como VIP quem fez o cadastro VIP no site (Lucas,
+ * 12/11/2026: "volte para esse padrão de msg"). O mesmo recado da cliente
+ * da agenda incluída no VIP, mas a senha é a que ela criou no cadastro.
+ * Nunca o antigo "defina sua senha": a senha já existe.
+ */
+export const MENSAGEM_CADASTRO_VIP_LIBERADO =
+  "Oi, {name}! Aqui é a Tayssa. Agora você é VIP: tem prioridade na minha agenda e acesso à área VIP, com cartão de visitas, pontos e presentes. É só entrar com o seu WhatsApp e a senha que você criou no cadastro: {url}";
+
 export const MENSAGEM_CONTA_LIBERADA =
   "Oi, {name}! Aqui é a Tayssa. Liberei a sua conta: é só entrar com o seu WhatsApp e a senha que você criou para marcar seus horários. Para virar VIP são {regra}, e eu confirmo por aqui. {url}";
 

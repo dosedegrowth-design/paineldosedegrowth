@@ -27,6 +27,7 @@ import {
   type ReferralProgress,
 } from "@/lib/tayssa/rules";
 import type {
+  AjustePontosRow,
   AuditRow,
   BenefitRow,
   ClientBenefitRow,
@@ -77,16 +78,23 @@ async function loadClientRows(): Promise<UserWithProfile[]> {
 export const listClients = cache(async (): Promise<ClientSummary[]> => {
   const db = vipDb();
   await expireStaleBenefits();
-  const [users, settings, servicesRes, referralsRes, benefitsRes] = await Promise.all([
+  const [users, settings, servicesRes, referralsRes, benefitsRes, ajustesRes] = await Promise.all([
     loadClientRows(),
     getSettings(),
     db.from("client_services").select("client_id, status, points, service_date"),
     db.from("referrals").select("referrer_user_id, status"),
     db.from("client_benefits").select("client_id, status"),
+    db.from("ajustes_pontos").select("client_id, points"),
   ]);
   if (servicesRes.error) throw new Error(servicesRes.error.message);
   if (referralsRes.error) throw new Error(referralsRes.error.message);
   if (benefitsRes.error) throw new Error(benefitsRes.error.message);
+  if (ajustesRes.error) throw new Error(ajustesRes.error.message);
+  // correções de pontos da Tayssa, somadas por cliente
+  const ajustes = new Map<string, number>();
+  for (const a of (ajustesRes.data ?? []) as { client_id: string; points: number }[]) {
+    ajustes.set(a.client_id, (ajustes.get(a.client_id) ?? 0) + a.points);
+  }
 
   const services = (servicesRes.data ?? []) as Pick<
     ClientServiceRow,
@@ -105,7 +113,7 @@ export const listClients = cache(async (): Promise<ClientSummary[]> => {
     const last = approved.map((s) => s.service_date).sort().reverse()[0] ?? null;
     const myBenefits = benefits.filter((b) => b.client_id === u.id);
     const profile = profileOf(u);
-    const points = approved.reduce((s, r) => s + r.points, 0);
+    const points = Math.max(0, approved.reduce((s, r) => s + r.points, 0) + (ajustes.get(u.id) ?? 0));
     const meses = mesesSeguidos(approved.map((s) => s.service_date), today);
     const vip = progressoVip(approved.map((s) => s.service_date), today, criterios);
     return {
@@ -391,6 +399,8 @@ export const getAdminOverview = cache(async (): Promise<AdminOverview> => {
 export type ClientDetail = {
   summary: ClientSummary;
   services: ClientServiceRow[];
+  /** correções de pontos da Tayssa, da mais nova à mais antiga */
+  ajustes: AjustePontosRow[];
   referrals: ReferralRow[];
   benefits: (ClientBenefitRow & { benefit: Pick<BenefitRow, "key" | "type" | "name"> | null })[];
   audit: AuditRow[];
@@ -407,7 +417,7 @@ export const getClientDetail = cache(async (id: string): Promise<ClientDetail | 
   const clients = await listClients();
   const summary = clients.find((c) => c.user.id === id);
   if (!summary) return null;
-  const [settings, catalog, servicesRes, referralsRes, benefitsRes, auditRes, sessionsRes] =
+  const [settings, catalog, servicesRes, referralsRes, benefitsRes, auditRes, sessionsRes, ajustesRes] =
     await Promise.all([
       getSettings(),
       getPublicBenefits(),
@@ -430,8 +440,9 @@ export const getClientDetail = cache(async (id: string): Promise<ClientDetail | 
         .eq("user_id", id)
         .is("revoked_at", null)
         .gt("expires_at", new Date().toISOString()),
+      db.from("ajustes_pontos").select("*").eq("client_id", id).order("created_at", { ascending: false }),
     ]);
-  for (const r of [servicesRes, referralsRes, benefitsRes, auditRes, sessionsRes]) if (r.error) throw new Error(r.error.message);
+  for (const r of [servicesRes, referralsRes, benefitsRes, auditRes, sessionsRes, ajustesRes]) if (r.error) throw new Error(r.error.message);
   const referralBenefit = catalog.find((b) => b.type === "referral");
   const benefits = (benefitsRes.data ?? []) as ClientDetail["benefits"];
   const today = nowInBusinessTz();
@@ -447,6 +458,7 @@ export const getClientDetail = cache(async (id: string): Promise<ClientDetail | 
   return {
     summary,
     services: (servicesRes.data ?? []) as ClientServiceRow[],
+    ajustes: (ajustesRes.data ?? []) as AjustePontosRow[],
     referrals: (referralsRes.data ?? []) as ReferralRow[],
     benefits,
     audit: (auditRes.data ?? []) as AuditRow[],

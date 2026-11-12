@@ -98,6 +98,22 @@ export type ClientServiceRow = {
   review_note: string | null;
 };
 
+/**
+ * Correção de pontos feita pela Tayssa na ficha: os pontos de um serviço
+ * do catálogo, a mais (positivo) ou a menos (negativo). O total da cliente
+ * é a soma dos atendimentos confirmados mais a soma destas linhas.
+ */
+export type AjustePontosRow = {
+  id: string;
+  client_id: string;
+  service_id: string | null;
+  service_name: string;
+  points: number;
+  note: string | null;
+  created_by: string | null;
+  created_at: string;
+};
+
 export type ReferralRow = {
   id: string;
   referrer_user_id: string | null;

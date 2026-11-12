@@ -937,7 +937,7 @@ export function LoyaltyForm({ value }: { value: Settings["loyalty"] }) {
    Cadastro pelo site
    ------------------------------------------------------------------ */
 
-/** Cadastro pelo site: aberto/fechado e a mensagem de boas-vindas ao aprovar. */
+/** Cadastro pelo site: aberto ou fechado (a mensagem ao liberar sai do painel). */
 export function SignupForm({ value }: { value: Settings["signup"] }) {
   const [state, onSubmit, pending] = useAcaoFormulario<ActionResult | null>(updateSignupSettingsAction, null);
   const { onReset } = useFormPreservado();
@@ -952,15 +952,10 @@ export function SignupForm({ value }: { value: Settings["signup"] }) {
       <p className="tya-small" style={{ marginTop: -4 }}>
         Cada pedido continua passando por você: ninguém entra sozinha.
       </p>
-      <Area
-        label="Mensagem de boas-vindas ao aprovar"
-        name="welcome_template"
-        rows={3}
-        defaultValue={value.welcome_template}
-        maxLength={400}
-        error={erroDe(state, "welcome_template")}
-        hint="Abre no WhatsApp com o nome dela e o link de entrada já preenchidos. Troca sozinho: {name}, {url} — e o {url} é obrigatório."
-      />
+      {/* a mensagem ao liberar é a do painel (VIP ou conta liberada, com a senha
+          que ela já criou); este texto antigo ("defina sua senha") não vai mais
+          para ninguém (Lucas, 12/11/2026). Fica guardado só para o salvar passar. */}
+      <input type="hidden" name="welcome_template" value={value.welcome_template} />
       <Salvar state={state} pending={pending}>
         Salvar cadastro
       </Salvar>
