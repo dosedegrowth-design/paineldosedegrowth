@@ -41,6 +41,7 @@ export default async function AprovarNovosPage() {
   const itens = [...avulsos, ...carrosseis];
 
   return (
+    <div className="min-h-screen bg-white text-neutral-900">
     <main className="mx-auto w-full max-w-[1180px] px-5 pb-24 pt-10 sm:px-8">
       <header className="mx-auto max-w-[760px] border-b-2 border-neutral-900 pb-6">
         <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-[#F15839]">
@@ -52,9 +53,14 @@ export default async function AprovarNovosPage() {
         <p className="mt-4 text-[15px] leading-relaxed text-neutral-600">
           São {NOVOS.length} peças e {CARROSSEIS.length} carrosséis, montados
           só com as fotos da pasta que vocês mandaram. Cada peça aparece nos
-          dois formatos, Feed e Reels, só para vocês verem como fica. Em cada
-          um, diga se <strong className="font-semibold text-neutral-900">fica</strong> ou
-          se <strong className="font-semibold text-neutral-900">sai</strong>.
+          dois formatos, Feed e Reels, só para vocês verem como fica no
+          celular. Em cada um, diga se está{" "}
+          <strong className="font-semibold text-neutral-900">aprovado</strong> ou{" "}
+          <strong className="font-semibold text-neutral-900">recusado</strong>.
+        </p>
+        <p className="mt-3 text-[15px] leading-relaxed text-neutral-600">
+          O que vocês aprovarem já sobe: está tudo montado aqui, é só apertar o
+          botão. Então é rápido.
         </p>
         <p className="mt-3 text-[13px] leading-relaxed text-neutral-500">
           A foto inteira cabe dentro dos dois formatos, sem corte nenhum, então
@@ -80,5 +86,6 @@ export default async function AprovarNovosPage() {
         todas têm modelo, nenhuma é foto de peça sozinha.
       </footer>
     </main>
+    </div>
   );
 }

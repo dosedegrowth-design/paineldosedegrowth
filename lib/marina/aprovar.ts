@@ -14,9 +14,17 @@ export type Link = (typeof LINKS)[number];
 /** 'sim' = Manter/Fica · 'nao' = Tirar/Sai · null = ainda não respondeu. */
 export type Resposta = "sim" | "nao";
 
-export const ROTULOS: Record<Link, { sim: string; nao: string }> = {
-  "no-ar": { sim: "Manter", nao: "Tirar" },
-  novos: { sim: "Fica", nao: "Sai" },
+/**
+ * O que está no ar já existe, então a pergunta é manter ou tirar. O que é
+ * novo ainda não existe, então a pergunta é aprovar ou recusar (Lucas,
+ * 12/11/2026: "como é novo, não tem o que fica; é aprovado ou recusado").
+ */
+export const ROTULOS: Record<
+  Link,
+  { sim: string; nao: string; simPlural: string; naoPlural: string }
+> = {
+  "no-ar": { sim: "Manter", nao: "Tirar", simPlural: "para manter", naoPlural: "para tirar" },
+  novos: { sim: "Aprovado", nao: "Recusado", simPlural: "aprovados", naoPlural: "recusados" },
 };
 
 export const LIMITE_COMENTARIO = 500;

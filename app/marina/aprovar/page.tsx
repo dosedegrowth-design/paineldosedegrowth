@@ -25,6 +25,7 @@ export default async function AprovarNoArPage() {
   }));
 
   return (
+    <div className="min-h-screen bg-white text-neutral-900">
     <main className="mx-auto w-full max-w-[1180px] px-5 pb-24 pt-10 sm:px-8">
       <header className="mx-auto max-w-[760px] border-b-2 border-neutral-900 pb-6">
         <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-[#F15839]">
@@ -63,5 +64,6 @@ export default async function AprovarNoArPage() {
         foto de peça sozinha, todas têm modelo.
       </footer>
     </main>
+    </div>
   );
 }

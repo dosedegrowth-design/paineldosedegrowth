@@ -98,6 +98,7 @@ function Cartao({ peca, i, fora }: { peca: Peca; i: number; fora?: boolean }) {
 
 export default function ProducaoPage() {
   return (
+    <div className="min-h-screen bg-white text-neutral-900">
     <main className="mx-auto w-full max-w-[1180px] px-5 pb-24 pt-10 sm:px-8">
       <header className="border-b-2 border-neutral-900 pb-6">
         <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-[#F15839]">
@@ -161,5 +162,6 @@ export default function ProducaoPage() {
         eu tiro da lista.
       </footer>
     </main>
+    </div>
   );
 }

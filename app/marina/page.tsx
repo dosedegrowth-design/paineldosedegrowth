@@ -13,6 +13,7 @@ export default function MarinaPage() {
   const ajustados = ANUNCIOS.filter((a) => AJUSTES[a.n]);
 
   return (
+    <div className="min-h-screen bg-white text-neutral-900">
     <main className="mx-auto w-full max-w-[1180px] px-5 pb-24 pt-10 sm:px-8">
       <header className="border-b-2 border-neutral-900 pb-6">
         <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-[#F15839]">
@@ -168,5 +169,6 @@ export default function MarinaPage() {
         Dose de Growth
       </footer>
     </main>
+    </div>
   );
 }

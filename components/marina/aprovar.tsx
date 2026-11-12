@@ -284,9 +284,9 @@ export function Aprovar({
       <div className="sticky top-0 z-20 -mx-5 mb-5 border-b border-neutral-200 bg-white/95 px-5 py-3 backdrop-blur sm:-mx-8 sm:px-8">
         <div className="mx-auto flex max-w-[760px] flex-wrap items-center justify-between gap-x-4 gap-y-2">
           <p className="text-[12.5px] text-neutral-600">
-            <strong className="font-semibold text-[#1f7a4d]">{contagem.sim}</strong> {r.sim.toLowerCase()}
+            <strong className="font-semibold text-[#1f7a4d]">{contagem.sim}</strong> {r.simPlural}
             {" · "}
-            <strong className="font-semibold text-[#b02a16]">{contagem.nao}</strong> {r.nao.toLowerCase()}
+            <strong className="font-semibold text-[#b02a16]">{contagem.nao}</strong> {r.naoPlural}
             {contagem.falta > 0 ? (
               <>
                 {" · "}
