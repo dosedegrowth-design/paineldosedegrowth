@@ -28,7 +28,8 @@ export default async function Imagem({ params }: { params: Promise<{ id: string 
   const b = settings.booking;
   const servico = h ? (h.volume ? `${h.servico} · ${h.volume}` : h.servico) : "Seu horário com a Tayssa";
   const quando = h ? `${diaLegivel(h.dia)} · ${horaLegivel(h.hora)}` : "";
-  const rodapeEsq = h?.valor != null ? reais(h.valor) : "";
+  // dezembro: o valor já com a taxa de horário especial
+  const rodapeEsq = h?.valor != null ? reais(h.valor + h.taxa) : h && h.taxa > 0 ? `+ ${reais(h.taxa)} de taxa` : "";
   const rodapeDir =
     h?.status === "requested" && h.comprovante
       ? `Sinal pago no Pix · a Tayssa confirma`

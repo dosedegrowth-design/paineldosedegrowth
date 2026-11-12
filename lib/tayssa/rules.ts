@@ -426,16 +426,24 @@ export function isInactive(
 
 export type BookableDay = { iso: string; weekday: number; date: Date };
 
-/** Dias abertos dentro do horizonte, a partir de hoje. */
+/**
+ * Dias abertos dentro do horizonte, a partir de hoje. No período especial
+ * (dezembro) abre quem tem horário naquela data, domingo inclusive, e a
+ * folga fecha; fora dele valem os dias da semana da casa.
+ */
 export function bookableDays(
   today: Date,
-  booking: { weekdays: number[]; horizon_days: number }
+  booking: { weekdays: number[]; horizon_days: number; especial?: PeriodoEspecial | null }
 ): BookableDay[] {
   const out: BookableDay[] = [];
   for (let i = 0; i <= booking.horizon_days; i++) {
     const d = addDays(today, i);
-    if (!booking.weekdays.includes(d.getDay())) continue;
-    out.push({ iso: toISODate(d), weekday: d.getDay(), date: d });
+    const iso = toISODate(d);
+    const aberto = noPeriodoEspecial(booking.especial, iso)
+      ? horariosDoPeriodo(booking.especial, iso, d.getDay()).length > 0
+      : booking.weekdays.includes(d.getDay());
+    if (!aberto) continue;
+    out.push({ iso, weekday: d.getDay(), date: d });
   }
   return out;
 }
@@ -503,6 +511,115 @@ export function horariosDoDia(
 ): string[] {
   const doDia = booking.slots_por_dia?.[String(weekday)];
   return doDia?.length ? doDia : booking.slots;
+}
+
+/**
+ * Horário especial de um período (dezembro de 2026, do carrossel "Agenda de
+ * Dezembro" da Tayssa). Lucas, 12/11/2026: "24 tem acréscimo de R$ 30 em
+ * qualquer horário" e "horários de dezembro têm que ter acréscimo de 30 no
+ * primeiro e no último horário". Guardado na linha `periodo_especial` de
+ * `vip.settings`, fora de `booking` (salvar Configurações → Agenda regrava
+ * `booking` inteiro), e preso em `settings.booking.especial` ao ler.
+ */
+export type PeriodoEspecial = {
+  /** "AAAA-MM-DD", o primeiro e o último dia do período (inclusive) */
+  desde: string;
+  ate: string;
+  /** os horários de início de cada dia da semana no período ("0" = domingo); dia sem lista fica fechado */
+  slots_por_dia: Record<string, string[]>;
+  /** taxa de horário especial, em reais: no primeiro e no último horário de cada dia */
+  taxa: number;
+  /** dias com horário próprio; `taxa_em_todos`: a taxa vale em qualquer horário do dia (24/12) */
+  dias: Record<string, { slots: string[]; taxa_em_todos?: boolean }>;
+  /** dias sem atendimento */
+  folgas: string[];
+};
+
+const ISO_DIA = /^\d{4}-\d{2}-\d{2}$/;
+const HH_MM = /^([01]\d|2[0-3]):[0-5]\d$/;
+const listaDeHoras = (v: unknown): string[] =>
+  Array.isArray(v) ? [...new Set(v.filter((h): h is string => typeof h === "string" && HH_MM.test(h)))].sort() : [];
+
+/** O que veio do banco, conferido: qualquer peça fora do formato fica de fora (sem período = null). */
+export function lerPeriodoEspecial(v: unknown): PeriodoEspecial | null {
+  if (!v || typeof v !== "object" || Array.isArray(v)) return null;
+  const o = v as Record<string, unknown>;
+  const desde = typeof o.desde === "string" && ISO_DIA.test(o.desde) ? o.desde : "";
+  const ate = typeof o.ate === "string" && ISO_DIA.test(o.ate) ? o.ate : "";
+  if (!desde || !ate || ate < desde) return null;
+  const slots_por_dia: Record<string, string[]> = {};
+  if (o.slots_por_dia && typeof o.slots_por_dia === "object") {
+    for (const [k, l] of Object.entries(o.slots_por_dia as Record<string, unknown>)) {
+      if (/^[0-6]$/.test(k)) slots_por_dia[k] = listaDeHoras(l);
+    }
+  }
+  const dias: PeriodoEspecial["dias"] = {};
+  if (o.dias && typeof o.dias === "object") {
+    for (const [k, d] of Object.entries(o.dias as Record<string, unknown>)) {
+      if (!ISO_DIA.test(k) || !d || typeof d !== "object") continue;
+      const dd = d as Record<string, unknown>;
+      dias[k] = { slots: listaDeHoras(dd.slots), taxa_em_todos: dd.taxa_em_todos === true };
+    }
+  }
+  const folgas = Array.isArray(o.folgas) ? o.folgas.filter((f): f is string => typeof f === "string" && ISO_DIA.test(f)) : [];
+  const taxa = Number(o.taxa);
+  return { desde, ate, slots_por_dia, taxa: Number.isFinite(taxa) && taxa > 0 ? taxa : 0, dias, folgas };
+}
+
+/** O período especial vale nesse dia? */
+export function noPeriodoEspecial(p: PeriodoEspecial | null | undefined, iso: string): p is PeriodoEspecial {
+  return Boolean(p && p.desde <= iso && iso <= p.ate);
+}
+
+/** Os horários de uma data dentro do período: folga não tem nenhum; dia com horário próprio, os dele. */
+function horariosDoPeriodo(p: PeriodoEspecial, iso: string, weekday: number): string[] {
+  if (p.folgas.includes(iso)) return [];
+  const dia = p.dias[iso];
+  if (dia) return [...dia.slots];
+  return [...(p.slots_por_dia[String(weekday)] ?? [])];
+}
+
+/** Os horários de início de uma data: dezembro tem os seus (e a folga, nenhum); fora dele, os de sempre. */
+export function horariosDaData(
+  booking: { slots: string[]; slots_por_dia?: Record<string, string[]> | null; especial?: PeriodoEspecial | null },
+  iso: string
+): string[] {
+  const weekday = parseISODate(iso).getDay();
+  if (noPeriodoEspecial(booking.especial, iso)) return horariosDoPeriodo(booking.especial, iso, weekday);
+  return horariosDoDia(booking, weekday);
+}
+
+/** A data abre para agendamento? (no período, quem tem horário; fora, os dias da semana da casa) */
+export function diaAberto(
+  booking: {
+    weekdays: number[];
+    slots: string[];
+    slots_por_dia?: Record<string, string[]> | null;
+    especial?: PeriodoEspecial | null;
+  },
+  iso: string
+): boolean {
+  if (noPeriodoEspecial(booking.especial, iso)) return horariosDaData(booking, iso).length > 0;
+  return booking.weekdays.includes(parseISODate(iso).getDay());
+}
+
+/**
+ * A taxa de horário especial de um início, em reais (0 = sem taxa): no dia
+ * com taxa em todos (24/12), qualquer horário; nos outros dias do período,
+ * só o primeiro e o último horário do dia; fora do período, nenhuma.
+ */
+export function taxaDoHorario(
+  booking: { slots: string[]; slots_por_dia?: Record<string, string[]> | null; especial?: PeriodoEspecial | null },
+  iso: string,
+  hora: string
+): number {
+  const p = booking.especial;
+  if (!noPeriodoEspecial(p, iso) || !(p.taxa > 0)) return 0;
+  const grade = [...horariosDaData(booking, iso)].sort();
+  const h = hora.slice(0, 5);
+  if (!grade.includes(h)) return 0;
+  if (p.dias[iso]?.taxa_em_todos) return p.taxa;
+  return h === grade[0] || h === grade[grade.length - 1] ? p.taxa : 0;
 }
 
 /** minutos desde a meia-noite -> "HH:MM" */

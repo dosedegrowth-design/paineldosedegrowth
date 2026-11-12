@@ -9,7 +9,8 @@ import { getClientOverview, type ClientOverview } from "@/lib/tayssa/queries/cli
 import {
   appointmentEnded,
   bookableDays,
-  horariosDoDia,
+  horariosDaData,
+  taxaDoHorario,
   horariosParaMarcar,
   trechosOcupados,
   type HorarioParaMarcar,
@@ -70,8 +71,11 @@ export const getAppointments = cache(async (clientId: string): Promise<Appointme
 export type DayAvailability = {
   iso: string;
   weekday: number;
-  /** cada início da grade do dia: livre? e quanto tempo segue livre depois dele */
-  slots: HorarioParaMarcar[];
+  /**
+   * cada início da grade do dia: livre? quanto tempo segue livre depois dele?
+   * e a taxa de horário especial (dezembro: R$ 30 no primeiro e no último; 24/12 em todos)
+   */
+  slots: (HorarioParaMarcar & { taxa: number })[];
 };
 
 /**
@@ -145,9 +149,10 @@ export const getAvailability = cache(async (
 
   return {
     days: days.map((d) => {
-      const grade = horariosDoDia(b, d.weekday);
+      const grade = horariosDaData(b, d.iso);
       const ocupado = trechosOcupados(grade, marcados.get(d.iso) ?? [], fechadosNoDia.get(d.iso) ?? [], b.default_duration_min);
-      return { iso: d.iso, weekday: d.weekday, slots: horariosParaMarcar(d.iso, grade, ocupado, now, b.lead_hours) };
+      const slots = horariosParaMarcar(d.iso, grade, ocupado, now, b.lead_hours);
+      return { iso: d.iso, weekday: d.weekday, slots: slots.map((s) => ({ ...s, taxa: taxaDoHorario(b, d.iso, s.time) })) };
     }),
     services: services.filter((s) => s.slug !== "outro"),
     aviso,
@@ -184,7 +189,10 @@ export const getAgendaPublica = cache(async (): Promise<AgendaPublica> => {
   return {
     dias: dias.map((d) => ({
       iso: d.iso,
-      slots: horariosParaMarcar(d.iso, horariosDoDia(b, d.weekday), [], now, b.lead_hours),
+      slots: horariosParaMarcar(d.iso, horariosDaData(b, d.iso), [], now, b.lead_hours).map((s) => ({
+        ...s,
+        taxa: taxaDoHorario(b, d.iso, s.time),
+      })),
     })),
     aviso,
     quem,

@@ -7,7 +7,7 @@
  */
 
 import { origemDaTayssa, semPrefixo } from "./dominio.ts";
-import type { CriteriosVip } from "./rules.ts";
+import type { CriteriosVip, PeriodoEspecial } from "./rules.ts";
 
 /**
  * Endereço público do site (links do WhatsApp, metadados, avisos). Desde
@@ -254,6 +254,13 @@ export type BookingSettings = {
    * para todas. Quem não é VIP vê o aviso de quando abre. Regra em `diaSoVip()` (lib/tayssa/agendar.ts).
    */
   prioridade_vip: { ativa: boolean; desde: string; abre_em: string };
+  /**
+   * Horário especial de um período (dezembro: horários próprios, folgas e a
+   * taxa de R$ 30). Vem da linha `periodo_especial` de `vip.settings`, não
+   * desta: salvar Configurações → Agenda regrava esta linha inteira e não
+   * pode apagar dezembro. Regra em `lib/tayssa/rules.ts` (`PeriodoEspecial`).
+   */
+  especial: PeriodoEspecial | null;
 };
 
 export type SignupSettings = {
@@ -372,6 +379,7 @@ export const DEFAULT_SETTINGS: Settings = {
     local_sala: "",
     local_interfone: "",
     prioridade_vip: { ativa: false, desde: "", abre_em: "" },
+    especial: null,
   },
   signup: {
     open: true,

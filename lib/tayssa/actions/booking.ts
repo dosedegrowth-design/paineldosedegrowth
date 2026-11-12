@@ -12,7 +12,7 @@ import {
   appointmentEnded,
   appointmentStarted,
   bookableDays,
-  horariosDoDia,
+  horariosDaData,
   horariosParaMarcar,
   slotIsBookable,
   toISODate,
@@ -75,7 +75,7 @@ export async function createAppointmentAction(input: {
     if (!me.isVip && diaSoVip(parsed.date, b.prioridade_vip, now)) {
       throw new BusinessError(avisoDaReservaVip(b.prioridade_vip, now, "cliente") ?? "Essa data ainda não abriu.", "date");
     }
-    const grade = horariosDoDia(b, dia.weekday);
+    const grade = horariosDaData(b, dia.iso);
     if (!grade.includes(parsed.time)) {
       throw new BusinessError("Esse horário não é oferecido.", "time");
     }

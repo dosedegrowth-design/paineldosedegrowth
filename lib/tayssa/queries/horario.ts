@@ -2,6 +2,8 @@ import "server-only";
 import { cache } from "react";
 import { vipDb, isDbConfigured, logServerError } from "@/lib/tayssa/db";
 import type { AppointmentStatus } from "@/lib/tayssa/types";
+import { getSettings } from "@/lib/tayssa/settings";
+import { taxaDoHorario } from "@/lib/tayssa/rules";
 
 /**
  * O horário que vai no "folder" do WhatsApp (05/11/2026): a página
@@ -24,6 +26,8 @@ export type HorarioPublico = {
   comprovante: boolean;
   criadoEm: string;
   valor: number | null;
+  /** taxa de horário especial do horário (dezembro), em reais; 0 = nenhuma */
+  taxa: number;
 };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -94,5 +98,6 @@ async function buscarHorario(id: string): Promise<HorarioPublico | null> {
     comprovante: Boolean(a.comprovante_em),
     criadoEm: a.created_at,
     valor,
+    taxa: taxaDoHorario((await getSettings()).booking, a.scheduled_date, a.scheduled_time),
   };
 }

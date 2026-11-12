@@ -392,6 +392,31 @@ html.ty-sem-rolagem {
 .tyag__chip--hora[data-ocupado] {
   cursor: not-allowed;
 }
+/* dezembro: o horário com a taxa de horário especial leva o "+ R$ 30" embaixo da hora */
+.tyag__chip--hora span:has(.tyag__taxa) {
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+  line-height: 1.05;
+}
+.tyag__taxa {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: #f7c1d1;
+}
+.tyag__chip input:checked + span .tyag__taxa {
+  color: #8a1f43;
+}
+.tyag__chip--hora[data-ocupado] span .tyag__taxa {
+  color: inherit;
+}
+.tyag__nota-taxa {
+  margin: 12px 2px 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(255, 225, 234, 0.62);
+}
 .tyag__chip--hora[data-ocupado] span {
   color: rgba(255, 225, 234, 0.34);
   text-decoration: line-through;

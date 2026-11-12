@@ -40,6 +40,7 @@ import {
   partesDoDia,
   reais,
   diaLegivel,
+  valorComTaxa,
   valorLegivel,
   type DiaAgenda,
 } from "@/lib/tayssa/agendar";
@@ -158,6 +159,8 @@ type Feito = {
   dia: string;
   hora: string;
   valor: number | null;
+  /** taxa de horário especial (dezembro), em reais; 0 = nenhuma */
+  taxa: number;
   nome: string;
 };
 
@@ -253,6 +256,9 @@ function FolhaAgendar({
   const livresNoDia = diaEscolhido ? diaEscolhido.slots.filter((s) => cabeNoHorario(s, duracao)).length : 0;
   // o horário escolhido pode ter sido tomado entre um carregamento e outro
   const horaLivre = Boolean(diaEscolhido?.slots.some((s) => s.time === hora && cabeNoHorario(s, duracao)));
+  // dezembro: R$ 30 no primeiro e no último horário de cada dia; no dia 24, em todos
+  const taxa = (hora && diaEscolhido?.slots.find((s) => s.time === hora)?.taxa) || 0;
+  const diaTemTaxa = Boolean(diaEscolhido?.slots.some((s) => (s.taxa ?? 0) > 0));
   const completo = Boolean(servicoPronto && escolhido && dia && horaLivre);
   // manutenção: o valor é o da manutenção do volume escolhido (o Fox eyes custa mais)
   const valor =
@@ -410,7 +416,7 @@ function FolhaAgendar({
         setErro({ texto: b.error, campo: b.field });
         return;
       }
-      setFeito({ id: b.data.id, servico: escolhido.nome, tecnica, dia, hora, valor, nome: quem.nome });
+      setFeito({ id: b.data.id, servico: escolhido.nome, tecnica, dia, hora, valor, taxa, nome: quem.nome });
       setPasso("pronto");
       buscarAgenda();
     });
@@ -696,9 +702,12 @@ function FolhaAgendar({
                   <span>{hora && horaLivre ? horaLegivel(hora) : "Escolher horário"}</span>
                   <small>
                     {hora && horaLivre
-                      ? duracaoLegivel(duracao)
-                        ? `${duracaoLegivel(duracao)} de atendimento`
-                        : "trocar"
+                      ? [
+                          duracaoLegivel(duracao) ? `${duracaoLegivel(duracao)} de atendimento` : "trocar",
+                          taxa > 0 ? `+ ${reais(taxa)}` : null,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")
                       : `${livresNoDia} ${livresNoDia === 1 ? "livre" : "livres"}`}
                   </small>
                   <svg viewBox="0 0 24 24" aria-hidden>
@@ -723,13 +732,22 @@ function FolhaAgendar({
                                 setErro(null);
                                 setHorasAbertas(false);
                               }}
-                              aria-label={`${horaLegivel(s.time)}${cabe ? "" : s.available ? ", sem tempo para esse serviço" : ", ocupado"}`}
+                              aria-label={`${horaLegivel(s.time)}${(s.taxa ?? 0) > 0 ? `, mais ${reais(s.taxa ?? 0)} de taxa de horário especial` : ""}${cabe ? "" : s.available ? ", sem tempo para esse serviço" : ", ocupado"}`}
                             />
-                            <span aria-hidden>{horaLegivel(s.time)}</span>
+                            {/* o pílula é o span logo depois do input (input:checked + span); a taxa mora dentro dele */}
+                            <span aria-hidden>
+                              {horaLegivel(s.time)}
+                              {(s.taxa ?? 0) > 0 ? <small className="tyag__taxa">+{reais(s.taxa ?? 0)}</small> : null}
+                            </span>
                           </label>
                         );
                       })}
                     </div>
+                    {diaTemTaxa ? (
+                      <p className="tyag__nota-taxa">
+                        Horário especial de dezembro: os horários com +R$&nbsp;30 têm a taxa de horário especial.
+                      </p>
+                    ) : null}
                   </div>
                 ) : null}
               </div>
@@ -749,7 +767,7 @@ function FolhaAgendar({
               <b>{nomeDoServico}</b>
               <span>
                 {diaLegivel(dia)} às {horaLegivel(hora)}
-                {valor != null ? ` · ${reais(valor)}` : ""}
+                {valorComTaxa(valor, taxa) ? ` · ${valorComTaxa(valor, taxa)}` : ""}
               </span>
             </div>
 
@@ -914,7 +932,7 @@ function FolhaAgendar({
               </b>
               <span>
                 {diaLegivel(feito.dia)} às {horaLegivel(feito.hora)}
-                {feito.valor != null ? ` · ${reais(feito.valor)}` : ""}
+                {valorComTaxa(feito.valor, feito.taxa) ? ` · ${valorComTaxa(feito.valor, feito.taxa)}` : ""}
               </span>
             </div>
             <p className="tyag__pronto-texto">
@@ -934,6 +952,7 @@ function FolhaAgendar({
                 dia: feito.dia,
                 hora: feito.hora,
                 valor: feito.valor,
+                taxa: feito.taxa,
               }}
               nome={feito.nome}
               sinal={agenda.sinal}

@@ -9,7 +9,7 @@ import { ROUTES } from "@/lib/tayssa/config";
 import { getSettings } from "@/lib/tayssa/settings";
 import { getAgendaPublica } from "@/lib/tayssa/queries/vip";
 import { isoDateField } from "@/lib/tayssa/validation";
-import { horariosDoDia, toISODate } from "@/lib/tayssa/rules";
+import { diaAberto, horariosDaData, toISODate } from "@/lib/tayssa/rules";
 import { nowInBusinessTz } from "@/lib/tayssa/format";
 import { BusinessError, runAction } from "@/lib/tayssa/actions/_helpers";
 import type { ActionResult } from "@/lib/tayssa/types";
@@ -38,12 +38,10 @@ function revalidar() {
 async function validarDia(dia: string): Promise<string[]> {
   const b = (await getSettings()).booking;
   if (dia < toISODate(nowInBusinessTz())) throw new BusinessError("Esse dia já passou.");
-  const [a, m, d] = dia.split("-").map(Number);
-  const semana = new Date(a, m - 1, d).getDay();
-  if (!b.weekdays.includes(semana)) {
+  if (!diaAberto(b, dia)) {
     throw new BusinessError("Esse dia é folga na agenda. Para abrir, mude os dias em Configurações → Agenda.");
   }
-  return horariosDoDia(b, semana);
+  return horariosDaData(b, dia);
 }
 
 /**

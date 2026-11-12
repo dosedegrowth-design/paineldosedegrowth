@@ -125,9 +125,14 @@ function Foto({ h, sinal, horas, tolerancia }: { h: HorarioPublico; sinal: numbe
       <div style={{ display: "flex", marginTop: 48 }}>
         <Celula rotulo="Dia e horário" valor={`${diaLegivel(h.dia)} às ${horaLegivel(h.hora)}`} largura="100%" />
       </div>
-      {h.valor != null || h.status === "requested" ? (
+      {h.valor != null || h.taxa > 0 || h.status === "requested" ? (
         <div style={{ display: "flex", marginTop: 44 }}>
-          {h.valor != null ? <Celula rotulo="Valor" valor={reais(h.valor)} /> : null}
+          {/* dezembro: o valor já com a taxa de horário especial (R$ 30) */}
+          {h.valor != null ? (
+            <Celula rotulo={h.taxa > 0 ? "Valor com a taxa especial" : "Valor"} valor={reais(h.valor + h.taxa)} />
+          ) : h.taxa > 0 ? (
+            <Celula rotulo="Taxa de horário especial" valor={reais(h.taxa)} />
+          ) : null}
           {h.status === "requested" ? (
             <Celula rotulo="Sinal no Pix" valor={pago ? `${reais(sinal)} pago` : reais(sinal)} />
           ) : null}

@@ -10,7 +10,8 @@ import { horariosFechados } from "@/lib/tayssa/queries/vip";
 import { expireStaleBenefits } from "@/lib/tayssa/engine";
 import {
   birthdayInfo,
-  horariosDoDia,
+  diaAberto,
+  horariosDaData,
   isBirthdayInMonth,
   isInactive,
   loyaltyProgress,
@@ -284,8 +285,8 @@ export const getGradeAgenda = cache(async (): Promise<GradeAgenda> => {
   const dias: DiaGrade[] = [];
   for (let d = new Date(inicio); toISODate(d) <= ate; d = shiftDays(d, 1)) {
     const iso = toISODate(d);
-    const aberto = b.weekdays.includes(d.getDay());
-    const grade = aberto ? horariosDoDia(b, d.getDay()) : [];
+    const aberto = diaAberto(b, iso);
+    const grade = aberto ? horariosDaData(b, iso) : [];
     const marcadas = porDia.get(iso) ?? [];
     const horas = [...new Set([...grade, ...marcadas.map((a) => a.scheduled_time.slice(0, 5))])].sort();
     dias.push({

@@ -18,6 +18,8 @@ export type PedidoDoSinal = {
   dia: string;
   hora: string;
   valor?: number | null;
+  /** taxa de horário especial do horário (dezembro), em reais */
+  taxa?: number | null;
 };
 
 /** Manda o arquivo direto para o Storage pelo endereço assinado, com o andamento. */
@@ -105,6 +107,7 @@ export function PagarSinal({
       dia: pedido.dia,
       hora: pedido.hora,
       valor: pedido.valor,
+      taxa: pedido.taxa,
       nome,
       sinal,
       comprovante,

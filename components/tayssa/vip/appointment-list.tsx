@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { cancelAppointmentAction } from "@/lib/tayssa/actions/booking";
 import { dayLabel, dateLong, hhmm } from "@/lib/tayssa/format";
 import { situacaoDoPedido, type AppointmentRow } from "@/lib/tayssa/types";
-import { prazoDoSinal } from "@/lib/tayssa/agendar";
+import { prazoDoSinal, reais } from "@/lib/tayssa/agendar";
 import type { PixDaAgenda } from "@/lib/tayssa/pix";
 import { useTarefa } from "@/components/tayssa/ui/acao";
 import { PagarSinal } from "@/components/tayssa/ui/pagar-sinal";
@@ -40,10 +40,13 @@ export function AppointmentList({
   items,
   sinal,
   local,
+  taxas,
 }: {
   items: AppointmentRow[];
   sinal?: SinalDaAgenda;
   local?: LocalDoAtendimento;
+  /** taxa de horário especial de cada horário (dezembro), pelo id do pedido */
+  taxas?: Record<string, number>;
 }) {
   const router = useRouter();
   const [confirming, setConfirming] = useState<string | null>(null);
@@ -90,6 +93,7 @@ export function AppointmentList({
               <p className="tyv-sub" style={{ fontSize: 13 }}>
                 {a.service_name}
                 {relativo ? ` · ${dateLong(a.scheduled_date)}` : ""}
+                {(taxas?.[a.id] ?? 0) > 0 ? ` · + ${reais(taxas?.[a.id] ?? 0)} de taxa de horário especial` : ""}
               </p>
               <span
                 className={`tyv-badge ${a.status === "confirmed" ? "" : "tyv-badge--quiet"}`}
@@ -148,6 +152,7 @@ export function AppointmentList({
                       tecnica: a.client_note?.match(/^Manutenção do (.+)\.$/)?.[1] ?? null,
                       dia: a.scheduled_date,
                       hora: a.scheduled_time.slice(0, 5),
+                      taxa: taxas?.[a.id] ?? 0,
                     }}
                     nome={sinal.nome}
                     sinal={sinal.valor}

@@ -20,6 +20,11 @@ import {
   trechosOcupados,
   validadeDoAniversario,
   vipPrimeiro,
+  bookableDays,
+  diaAberto,
+  horariosDaData,
+  lerPeriodoEspecial,
+  taxaDoHorario,
 } from "./rules.ts";
 import { normalizeBrPhone, formatBrPhone } from "./phone.ts";
 import { renderTemplate, whatsappUrl } from "./whatsapp.ts";
@@ -304,4 +309,103 @@ test("prioridade VIP: os pedidos de quem é VIP vêm primeiro, cada grupo do mai
     p("d", true, "2026-12-03", "09:00"),
   ]).map((x) => x.id);
   assert.deepEqual(ordem, ["d", "b", "c", "a"]);
+});
+
+// ------------------------------------------------------------
+// Dezembro de 2026 (carrossel "Agenda de Dezembro" da Tayssa)
+// ------------------------------------------------------------
+
+const horas = (de: number, ate: number) =>
+  Array.from({ length: ate - de + 1 }, (_, i) => `${String(de + i).padStart(2, "0")}:00`);
+
+const DEZEMBRO = lerPeriodoEspecial({
+  desde: "2026-12-01",
+  ate: "2026-12-31",
+  slots_por_dia: {
+    "0": horas(7, 17),
+    "1": horas(7, 21),
+    "2": horas(7, 21),
+    "3": horas(7, 21),
+    "4": horas(7, 21),
+    "5": horas(7, 21),
+    "6": horas(7, 21),
+  },
+  taxa: 30,
+  dias: { "2026-12-24": { slots: horas(6, 15), taxa_em_todos: true } },
+  folgas: ["2026-12-25", "2026-12-30", "2026-12-31"],
+});
+
+const CASA = {
+  weekdays: [1, 2, 3, 4, 5, 6],
+  slots: horas(9, 19),
+  slots_por_dia: { "1": horas(10, 16), "2": horas(9, 19), "6": horas(8, 15) },
+  horizon_days: 60,
+  especial: DEZEMBRO,
+};
+
+test("dezembro: horários próprios, domingo aberto, 24/12 das 6h às 15h e folgas", () => {
+  assert.ok(DEZEMBRO);
+  // terça, 01/12: das 7h às 21h
+  assert.deepEqual(horariosDaData(CASA, "2026-12-01"), horas(7, 21));
+  // domingo, 06/12: das 7h às 17h (fora de dezembro, domingo não abre)
+  assert.deepEqual(horariosDaData(CASA, "2026-12-06"), horas(7, 17));
+  assert.equal(diaAberto(CASA, "2026-12-06"), true);
+  assert.equal(diaAberto(CASA, "2026-11-15"), false);
+  // véspera de Natal: das 6h às 15h
+  assert.deepEqual(horariosDaData(CASA, "2026-12-24"), horas(6, 15));
+  // folgas: sem horário e fechadas
+  for (const folga of ["2026-12-25", "2026-12-30", "2026-12-31"]) {
+    assert.deepEqual(horariosDaData(CASA, folga), []);
+    assert.equal(diaAberto(CASA, folga), false);
+  }
+  // fora de dezembro, os horários de sempre (terça de novembro)
+  assert.deepEqual(horariosDaData(CASA, "2026-11-17"), horas(9, 19));
+  assert.deepEqual(horariosDaData({ ...CASA, especial: null }, "2026-12-01"), horas(9, 19));
+});
+
+test("dezembro: taxa de R$ 30 no primeiro e no último horário; no dia 24, em todos", () => {
+  // dia comum de dezembro: só as pontas
+  assert.equal(taxaDoHorario(CASA, "2026-12-01", "07:00"), 30);
+  assert.equal(taxaDoHorario(CASA, "2026-12-01", "21:00"), 30);
+  assert.equal(taxaDoHorario(CASA, "2026-12-01", "12:00"), 0);
+  // domingo: o último é às 17h
+  assert.equal(taxaDoHorario(CASA, "2026-12-06", "17:00"), 30);
+  assert.equal(taxaDoHorario(CASA, "2026-12-06", "16:00"), 0);
+  // 24/12: qualquer horário do dia, e só os do dia
+  for (const h of horas(6, 15)) assert.equal(taxaDoHorario(CASA, "2026-12-24", h), 30, h);
+  assert.equal(taxaDoHorario(CASA, "2026-12-24", "16:00"), 0);
+  // folga, fora de dezembro e sem período: nada
+  assert.equal(taxaDoHorario(CASA, "2026-12-25", "09:00"), 0);
+  assert.equal(taxaDoHorario(CASA, "2026-11-17", "09:00"), 0);
+  assert.equal(taxaDoHorario({ ...CASA, especial: null }, "2026-12-01", "09:00"), 0);
+  // a hora pode vir com segundos (como vem do banco)
+  assert.equal(taxaDoHorario(CASA, "2026-12-01", "07:00:00"), 30);
+});
+
+test("dezembro: os dias que abrem para marcar conhecem o domingo e as folgas", () => {
+  const dias = bookableDays(new Date(2026, 10, 12), CASA).map((d) => d.iso);
+  assert.ok(dias.includes("2026-12-06"), "domingo de dezembro abre");
+  assert.ok(dias.includes("2026-12-24"), "véspera abre");
+  assert.ok(!dias.includes("2026-11-15"), "domingo de novembro não abre");
+  for (const folga of ["2026-12-25", "2026-12-30", "2026-12-31"]) assert.ok(!dias.includes(folga), folga);
+  assert.ok(dias.includes("2026-11-17"), "terça de novembro segue aberta");
+});
+
+test("período especial do banco: só o que está no formato entra", () => {
+  assert.equal(lerPeriodoEspecial(null), null);
+  assert.equal(lerPeriodoEspecial("dezembro"), null);
+  assert.equal(lerPeriodoEspecial({ desde: "2026-12-31", ate: "2026-12-01" }), null);
+  const p = lerPeriodoEspecial({
+    desde: "2026-12-01",
+    ate: "2026-12-31",
+    slots_por_dia: { "1": ["07:00", "7h", "25:00", "08:00", "07:00"], "9": ["10:00"] },
+    taxa: "30",
+    dias: { "24/12": { slots: ["06:00"] }, "2026-12-24": { slots: ["06:00"], taxa_em_todos: true } },
+    folgas: ["2026-12-25", "25/12"],
+  });
+  assert.deepEqual(p?.slots_por_dia, { "1": ["07:00", "08:00"] });
+  assert.equal(p?.taxa, 30);
+  assert.deepEqual(Object.keys(p?.dias ?? {}), ["2026-12-24"]);
+  assert.deepEqual(p?.folgas, ["2026-12-25"]);
+  assert.equal(lerPeriodoEspecial({ desde: "2026-12-01", ate: "2026-12-31", taxa: -5 })?.taxa, 0);
 });

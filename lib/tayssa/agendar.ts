@@ -11,8 +11,12 @@ import { horariosDoDia } from "./rules.ts";
 
 export type DiaAgenda = {
   iso: string;
-  /** `ate`: minutos livres depois do início (null = o resto do dia) */
-  slots: { time: string; available: boolean; ate?: number | null }[];
+  /**
+   * `ate`: minutos livres depois do início (null = o resto do dia); `taxa`: a
+   * taxa de horário especial em reais (dezembro: R$ 30 no primeiro e no último
+   * horário de cada dia; 24/12 em todos), 0 ou sem = nenhuma
+   */
+  slots: { time: string; available: boolean; ate?: number | null; taxa?: number }[];
 };
 
 export type PedidoAgenda = {
@@ -29,6 +33,8 @@ export type PedidoAgenda = {
   valor?: number | null;
   /** valor do sinal, em reais */
   sinal: number;
+  /** taxa de horário especial do horário escolhido (dezembro), em reais; 0 ou sem = nenhuma */
+  taxa?: number | null;
   /**
    * O link do "folder" do horário (/tayssa/horario/<id>): na conversa, o
    * WhatsApp mostra o cartão com a identidade da casa e os dados do pedido.
@@ -162,6 +168,17 @@ export function reais(v: number): string {
   const [int, dec] = v.toFixed(2).split(".");
   const milhar = int.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   return dec === "00" ? `R$ ${milhar}` : `R$ ${milhar},${dec}`;
+}
+
+/**
+ * O valor com a taxa de horário especial, como a cliente lê no resumo:
+ * "R$ 170 + R$ 30 de taxa de horário especial"; sem taxa, só o valor; sem
+ * valor cadastrado, só a taxa ("+ R$ 30 de taxa…"); sem nenhum dos dois, null.
+ */
+export function valorComTaxa(valor: number | null | undefined, taxa: number | null | undefined): string | null {
+  const t = taxa && taxa > 0 ? `${reais(taxa)} de taxa de horário especial` : null;
+  if (valor == null) return t ? `+ ${t}` : null;
+  return t ? `${reais(valor)} + ${t}` : reais(valor);
 }
 
 /**
@@ -313,6 +330,7 @@ export function mensagemAgendamento(p: PedidoAgenda): string {
     `*Dia:* ${diaLegivel(p.dia)}`,
     `*Horário:* ${horaLegivel(p.hora)}`,
     ...(p.valor != null ? [`*Valor:* ${reais(p.valor)}`] : []),
+    ...(p.taxa && p.taxa > 0 ? [`*Taxa de horário especial:* ${reais(p.taxa)}`] : []),
     ...(p.comprovante ? [`*Sinal:* ${reais(p.sinal)} pago no Pix, comprovante anexado no site`] : []),
     ...(p.comprovante ? [] : ["", `Me manda a chave Pix do sinal de ${reais(p.sinal)} para eu garantir o horário?`]),
     ...(p.link ? ["", `Meu horário: ${p.link}`] : []),
@@ -350,6 +368,8 @@ export type ConfirmacaoDoHorario = {
   hora: string;
   /** ela anexou o comprovante do sinal */
   comprovante: boolean;
+  /** taxa de horário especial do horário (dezembro), em reais; 0 ou sem não entra */
+  taxa?: number | null;
   /** onde é o atendimento (Configurações → Agenda); vazio não entra */
   endereco?: string;
   sala?: string;
@@ -380,6 +400,7 @@ export function mensagemConfirmacao(p: ConfirmacaoDoHorario): string {
     `*Serviço:* ${servico}`,
     `*Dia:* ${diaLegivel(p.dia)}`,
     `*Horário:* ${horaLegivel(p.hora)}`,
+    ...(p.taxa && p.taxa > 0 ? [`*Taxa de horário especial:* ${reais(p.taxa)}`] : []),
     ...campo("Endereço", p.endereco),
     ...campo("Sala", p.sala),
     ...campo("Interfone", p.interfone),

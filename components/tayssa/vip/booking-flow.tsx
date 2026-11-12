@@ -22,7 +22,11 @@ export type BookingService = {
   duracao?: number | null;
 };
 /** `ate`: minutos livres depois do início (null = o resto do dia) */
-export type BookingDay = { iso: string; slots: { time: string; available: boolean; ate?: number | null }[] };
+export type BookingDay = {
+  iso: string;
+  /** `taxa`: taxa de horário especial (dezembro), em reais */
+  slots: { time: string; available: boolean; ate?: number | null; taxa?: number }[];
+};
 
 const STEPS = ["Serviço", "Dia e horário", "Confirmar"];
 /** a lista de serviços começa curta, como na folha do site */
@@ -58,13 +62,15 @@ export function BookingFlow({
   const [time, setTime] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState<{ id: string; date: string; time: string; serviceName: string } | null>(null);
+  const [done, setDone] = useState<{ id: string; date: string; time: string; serviceName: string; taxa: number } | null>(null);
   const [pending, start] = useTarefa();
   // "Mais serviços": abre a lista inteira (o escolhido fora dos três primeiros também a abre)
   const [todos, setTodos] = useState(false);
 
   const service = services.find((s) => s.id === serviceId) ?? null;
   const day = days.find((d) => d.iso === date) ?? null;
+  // dezembro: R$ 30 no primeiro e no último horário de cada dia; no dia 24, em todos
+  const taxa = (time && day?.slots.find((s) => s.time === time)?.taxa) || 0;
   const listaToda = todos || (service ? services.indexOf(service) >= VISIVEIS : false);
   // o serviço escolhido precisa caber inteiro: o volume de 3h não aparece às
   // 10h se às 11h já tem alguém
@@ -105,7 +111,7 @@ export function BookingFlow({
         setError(r.error);
         return;
       }
-      setDone({ id: r.data.id, date: r.data.date, time: r.data.time, serviceName: r.data.serviceName });
+      setDone({ id: r.data.id, date: r.data.date, time: r.data.time, serviceName: r.data.serviceName, taxa });
       // A action já revalida a rota, mas em parte das vezes (medido: ~1 em 3)
       // a tela aplicava a árvore antiga e "Meus horários" ficava sem o pedido
       // novo até recarregar. O refresh vai DEPOIS que a transição da action
@@ -147,7 +153,7 @@ export function BookingFlow({
             <div style={{ marginTop: 16 }}>
               <PagarSinal
                 tema="noite"
-                pedido={{ id: done.id, servico: done.serviceName, dia: done.date, hora: done.time }}
+                pedido={{ id: done.id, servico: done.serviceName, dia: done.date, hora: done.time, taxa: done.taxa }}
                 nome={sinal.nome}
                 sinal={sinal.valor}
                 telefone={sinal.telefone}
@@ -306,7 +312,7 @@ export function BookingFlow({
                         type="button"
                         className="tyv-slot"
                         disabled={!cabe(s)}
-                        aria-label={`${s.time}${cabe(s) ? "" : ", indisponível"}`}
+                        aria-label={`${s.time}${(s.taxa ?? 0) > 0 ? `, mais ${reais(s.taxa ?? 0)} de taxa de horário especial` : ""}${cabe(s) ? "" : ", indisponível"}`}
                         aria-pressed={time === s.time}
                         onClick={() =>
                           pick(() => {
@@ -316,9 +322,19 @@ export function BookingFlow({
                         }
                       >
                         {s.time}
+                        {(s.taxa ?? 0) > 0 ? (
+                          <small className="tyv-slot__taxa" aria-hidden>
+                            +{reais(s.taxa ?? 0)}
+                          </small>
+                        ) : null}
                       </button>
                     ))}
                   </div>
+                  {day.slots.some((s) => (s.taxa ?? 0) > 0) ? (
+                    <p className="tyv-sub tyv-nota-taxa">
+                      Horário especial de dezembro: os horários com +R$&nbsp;30 têm a taxa de horário especial.
+                    </p>
+                  ) : null}
                 </>
               ) : (
                 <p className="tyv-sub" style={{ marginTop: 16 }}>
@@ -343,6 +359,12 @@ export function BookingFlow({
                   <span className="tyv-label">Horário</span>
                   <span style={{ fontSize: 16 }}>{time}</span>
                 </div>
+                {taxa > 0 ? (
+                  <div className="tyv-row">
+                    <span className="tyv-label">Taxa de horário especial</span>
+                    <span style={{ fontSize: 16 }}>+ {reais(taxa)}</span>
+                  </div>
+                ) : null}
                 {duracaoLegivel(duracao) ? (
                   <div className="tyv-row">
                     <span className="tyv-label">Duração</span>

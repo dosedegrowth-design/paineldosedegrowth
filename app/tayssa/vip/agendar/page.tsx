@@ -5,7 +5,7 @@ import { ROUTES } from "@/lib/tayssa/config";
 import { getAppointments, getAvailability } from "@/lib/tayssa/queries/vip";
 import { getSettings } from "@/lib/tayssa/settings";
 import { nowInBusinessTz, plural } from "@/lib/tayssa/format";
-import { appointmentEnded } from "@/lib/tayssa/rules";
+import { appointmentEnded, taxaDoHorario } from "@/lib/tayssa/rules";
 import { ehManutencao, manutencaoComVolume, valorLegivel } from "@/lib/tayssa/agendar";
 import { BookingFlow } from "@/components/tayssa/vip/booking-flow";
 import { AppointmentList } from "@/components/tayssa/vip/appointment-list";
@@ -43,6 +43,10 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
   };
   // onde é o atendimento: só aparece no horário confirmado (o site aberto mostra só o bairro)
   const local = { endereco: b.local_endereco, sala: b.local_sala, interfone: b.local_interfone };
+  // dezembro: a taxa de horário especial de cada pedido em aberto (vai no cartão e na mensagem do sinal)
+  const taxas = Object.fromEntries(
+    appointments.upcoming.map((a) => [a.id, taxaDoHorario(b, a.scheduled_date, a.scheduled_time)]),
+  );
   // realizado: o que a Tayssa fechou como feito, e o confirmado que já passou (ela ainda não fechou)
   const agora = nowInBusinessTz();
   const feitos = appointments.past.filter(
@@ -75,7 +79,7 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
                 Até {max} em aberto. Para trocar de horário, desmarque e marque outro.
               </p>
               <div className="tyv-panel">
-                <AppointmentList items={appointments.upcoming} sinal={sinal} local={local} />
+                <AppointmentList items={appointments.upcoming} sinal={sinal} local={local} taxas={taxas} />
               </div>
             </>
           ) : (

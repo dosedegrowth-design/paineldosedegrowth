@@ -7,7 +7,7 @@ import { getHorarioPublico } from "@/lib/tayssa/queries/horario";
 import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES } from "@/lib/tayssa/config";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
-import { diaLegivel, duracaoLegivel, horaLegivel, prazoDoSinal, reais } from "@/lib/tayssa/agendar";
+import { diaLegivel, duracaoLegivel, horaLegivel, prazoDoSinal, reais, valorComTaxa } from "@/lib/tayssa/agendar";
 import { Entrada } from "@/components/tayssa/auth/entrada";
 import { WhatsAppIcon } from "@/components/tayssa/ui/whatsapp";
 
@@ -62,7 +62,7 @@ export default async function HorarioPage({ params }: Props) {
             {diaLegivel(h.dia)} às {horaLegivel(h.hora)}
             {duracaoLegivel(h.duracao) ? <span> · {duracaoLegivel(h.duracao)}</span> : null}
           </p>
-          {h.valor != null ? <p className="tyhr__valor">{reais(h.valor)}</p> : null}
+          {valorComTaxa(h.valor, h.taxa) ? <p className="tyhr__valor">{valorComTaxa(h.valor, h.taxa)}</p> : null}
           <p className="tyhr__situacao" data-status={h.status}>
             {h.status === "requested" && h.comprovante
               ? `Comprovante do sinal enviado · a Tayssa confere o Pix e confirma`

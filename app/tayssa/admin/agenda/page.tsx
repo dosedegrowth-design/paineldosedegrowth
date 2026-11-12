@@ -9,6 +9,8 @@ import { dateShort, dayLabel, dayMonth, hhmm, nowInBusinessTz, weekdayShort } fr
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { horariosDaSemana, mensagemConfirmacao, nomeDaCliente, prazoDoSinal, reais } from "@/lib/tayssa/agendar";
 import { situacaoDoPedido, type AppointmentStatus } from "@/lib/tayssa/types";
+import { taxaDoHorario } from "@/lib/tayssa/rules";
+import type { BookingSettings } from "@/lib/tayssa/config";
 import { pixDoPedido, type PixDaAgenda } from "@/lib/tayssa/pix";
 import type { AppointmentWithClient } from "@/lib/tayssa/queries/admin";
 import {
@@ -112,10 +114,13 @@ function Slot({
   a,
   tom,
   sinal,
+  booking,
   children,
 }: {
   a: AppointmentWithClient;
   tom?: "warn" | "brand" | "ok" | "quiet" | "bad";
+  /** a agenda da casa: dezembro tem a taxa de horário especial no horário */
+  booking: BookingSettings;
   /** pedido esperando o sinal: o prazo, o comprovante e a mensagem pronta pedindo o Pix */
   sinal?: { horas: number; valor: number; pix: PixDaAgenda | null };
   children?: ReactNode;
@@ -125,6 +130,8 @@ function Slot({
   const comComprovante = Boolean(esperandoSinal && a.comprovante_em);
   // o código do Pix vai na mensagem (ela copia direto do WhatsApp) quando a chave está no painel
   const codigoPix = esperandoSinal ? pixDoPedido(sinal.pix, sinal.valor, a.id) : null;
+  // dezembro: R$ 30 no primeiro e no último horário de cada dia; no dia 24, em todos
+  const taxa = taxaDoHorario(booking, a.scheduled_date, a.scheduled_time);
   return (
     <li className="tya-slot" data-tom={tom ?? TOM[a.status]}>
       <div className="tya-slot__when">
@@ -147,6 +154,7 @@ function Slot({
         </div>
         <p className="tya-slot__meta">
           {a.service_name} · {a.duration_min} min · {weekdayShort(a.scheduled_date)}, {dateShort(a.scheduled_date)}
+          {taxa > 0 ? <> · <b>+ {reais(taxa)} de taxa de horário especial</b></> : null}
         </p>
         {a.client_note ? <p className="tya-quote">“{a.client_note}”</p> : null}
         {esperandoSinal && comComprovante ? (
@@ -182,8 +190,8 @@ function Slot({
               // o link do horário vai junto: no WhatsApp ele vira o cartão (folder) com os dados do pedido
               esperandoSinal && !comComprovante
                 ? codigoPix
-                  ? `Oi, ${first}! Aqui é a Tayssa. Recebi seu pedido de ${a.service_name} para ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}.\n\nSeu horário: ${publicUrl(ROUTES.horario(a.id))}\n\nPara confirmar, pague o sinal de ${reais(sinal.valor)} pelo Pix copia e cola abaixo e anexe o comprovante em Meus horários: ${publicUrl(ROUTES.vipBook)}\n\n${codigoPix}`
-                  : `Oi, ${first}! Aqui é a Tayssa. Recebi seu pedido de ${a.service_name} para ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}.\n\nSeu horário: ${publicUrl(ROUTES.horario(a.id))}\n\nPara confirmar, o sinal é de ${reais(sinal.valor)} no Pix. A chave é: `
+                  ? `Oi, ${first}! Aqui é a Tayssa. Recebi seu pedido de ${a.service_name} para ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}.${taxa > 0 ? ` Esse horário tem a taxa de horário especial de ${reais(taxa)}.` : ""}\n\nSeu horário: ${publicUrl(ROUTES.horario(a.id))}\n\nPara confirmar, pague o sinal de ${reais(sinal.valor)} pelo Pix copia e cola abaixo e anexe o comprovante em Meus horários: ${publicUrl(ROUTES.vipBook)}\n\n${codigoPix}`
+                  : `Oi, ${first}! Aqui é a Tayssa. Recebi seu pedido de ${a.service_name} para ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}.${taxa > 0 ? ` Esse horário tem a taxa de horário especial de ${reais(taxa)}.` : ""}\n\nSeu horário: ${publicUrl(ROUTES.horario(a.id))}\n\nPara confirmar, o sinal é de ${reais(sinal.valor)} no Pix. A chave é: `
                 : `Oi, ${first}! Sobre seu horário de ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}: `,
             )}
             target="_blank"
@@ -263,6 +271,7 @@ export default async function AgendaAdminPage({ searchParams }: { searchParams: 
           dia: confirmado.scheduled_date,
           hora: confirmado.scheduled_time.slice(0, 5),
           comprovante: Boolean(confirmado.comprovante_em),
+          taxa: taxaDoHorario(b, confirmado.scheduled_date, confirmado.scheduled_time),
           endereco: b.local_endereco,
           sala: b.local_sala,
           interfone: b.local_interfone,
@@ -360,7 +369,7 @@ export default async function AgendaAdminPage({ searchParams }: { searchParams: 
         {agenda.requested.length ? (
           <ul className="tya-list">
             {agenda.requested.map((a) => (
-              <Slot key={a.id} a={a} sinal={sinalDoPainel}>
+              <Slot key={a.id} a={a} sinal={sinalDoPainel} booking={b}>
                 <NoteAction
                   action={adminConfirmAppointmentAction}
                   args={{ id: a.id }}
@@ -395,7 +404,7 @@ export default async function AgendaAdminPage({ searchParams }: { searchParams: 
         {agenda.todayList.length ? (
           <ul className="tya-list">
             {agenda.todayList.map((a) => (
-              <Slot key={a.id} a={a} sinal={sinalDoPainel}>
+              <Slot key={a.id} a={a} sinal={sinalDoPainel} booking={b}>
                 {a.status === "requested" ? (
                   <NoteAction
                     action={adminConfirmAppointmentAction}
@@ -427,7 +436,7 @@ export default async function AgendaAdminPage({ searchParams }: { searchParams: 
         <AdminBlock id="fechar" title="Para fechar" aside={<span className="tya-pill tya-pill--bad">já passaram</span>}>
           <ul className="tya-list">
             {agenda.toClose.map((a) => (
-              <Slot key={a.id} a={a} tom="bad">
+              <Slot key={a.id} a={a} tom="bad" booking={b}>
                 <CloseActions a={a} />
                 <NoteAction action={adminCancelAppointmentAction} args={{ id: a.id }} label="Motivo (ela vê)">
                   Cancelar
@@ -442,7 +451,7 @@ export default async function AgendaAdminPage({ searchParams }: { searchParams: 
         {agenda.upcoming.length ? (
           <ul className="tya-list">
             {agenda.upcoming.map((a) => (
-              <Slot key={a.id} a={a}>
+              <Slot key={a.id} a={a} booking={b}>
                 <NoteAction action={adminCancelAppointmentAction} args={{ id: a.id }} label="Motivo (ela vê)">
                   Cancelar
                 </NoteAction>

@@ -592,6 +592,19 @@
   opacity: 0.3;
   text-decoration: line-through;
 }
+/* dezembro: o "+ R$ 30" da taxa de horário especial embaixo da hora */
+.tyv-slot__taxa {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0;
+  opacity: 0.8;
+}
+.tyv-nota-taxa {
+  margin-top: 12px;
+  font-size: 13px;
+}
 /* dia sem horário livre: fica na fita, riscado */
 .tyv-day[disabled] {
   opacity: 0.35;

@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { vipDb, isDbConfigured, logServerError } from "@/lib/tayssa/db";
 import { DEFAULT_SETTINGS, type Settings } from "@/lib/tayssa/config";
+import { lerPeriodoEspecial } from "@/lib/tayssa/rules";
 
 function merge<T extends Record<string, unknown>>(base: T, override: unknown): T {
   if (!override || typeof override !== "object" || Array.isArray(override)) {
@@ -32,7 +33,8 @@ export const getSettings = cache(async (): Promise<Settings> => {
       birthday: merge(DEFAULT_SETTINGS.birthday, byKey.birthday),
       whatsapp: merge(DEFAULT_SETTINGS.whatsapp, byKey.whatsapp),
       loyalty: merge(DEFAULT_SETTINGS.loyalty, byKey.loyalty),
-      booking: merge(DEFAULT_SETTINGS.booking, byKey.booking),
+      // dezembro (horários, folgas e a taxa) mora na própria linha: salvar a agenda no painel não o apaga
+      booking: { ...merge(DEFAULT_SETTINGS.booking, byKey.booking), especial: lerPeriodoEspecial(byKey.periodo_especial) },
       signup: merge(DEFAULT_SETTINGS.signup, byKey.signup),
       numeros: merge(DEFAULT_SETTINGS.numeros, byKey.numeros),
     };

@@ -24,6 +24,7 @@ import {
   mesesDaAgenda,
   prazoDoSinal,
   sinalNoPrazo,
+  valorComTaxa,
 } from "./agendar.ts";
 
 test("hora no jeito de falar", () => {
@@ -299,4 +300,36 @@ test("o pedido segura o horário por 24h, no horário de Brasília", () => {
   assert.equal(prazoDoSinal("2026-11-07T12:00:00Z", 2).legivel, "sábado, 07/11 às 11h");
   assert.equal(sinalNoPrazo("2026-11-05T18:00:00Z", 24, new Date("2026-11-06T17:59:00Z")), true);
   assert.equal(sinalNoPrazo("2026-11-05T18:00:00Z", 24, new Date("2026-11-06T18:00:00Z")), false);
+});
+
+test("dezembro: a taxa de horário especial no resumo e nas mensagens", () => {
+  assert.equal(valorComTaxa(170, 30), "R$ 170 + R$ 30 de taxa de horário especial");
+  assert.equal(valorComTaxa(170, 0), "R$ 170");
+  assert.equal(valorComTaxa(null, 30), "+ R$ 30 de taxa de horário especial");
+  assert.equal(valorComTaxa(null, 0), null);
+  const pedido = mensagemAgendamento({
+    servico: "Volume brasileiro",
+    dia: "2026-12-24",
+    hora: "10:00",
+    nome: "Gabi",
+    valor: 170,
+    taxa: 30,
+    sinal: 50,
+    comprovante: true,
+  });
+  assert.match(pedido, /\*Valor:\* R\$ 170\n\*Taxa de horário especial:\* R\$ 30\n\*Sinal:\*/);
+  // sem taxa, a linha não aparece
+  assert.doesNotMatch(
+    mensagemAgendamento({ servico: "Lip spa", dia: "2026-11-17", hora: "10:00", nome: "Gabi", valor: 35, sinal: 50 }),
+    /Taxa/,
+  );
+  const confirmacao = mensagemConfirmacao({
+    nome: "Gabi",
+    servico: "Volume brasileiro",
+    dia: "2026-12-24",
+    hora: "10:00",
+    comprovante: true,
+    taxa: 30,
+  });
+  assert.match(confirmacao, /\*Horário:\* 10h\n\*Taxa de horário especial:\* R\$ 30\n/);
 });
