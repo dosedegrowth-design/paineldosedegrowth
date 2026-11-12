@@ -230,3 +230,21 @@ main { justify-content: flex-start; padding: 0; }
 .sub2 { -webkit-font-smoothing: antialiased; }
 .sub2--fundo { -webkit-text-stroke: 6px #fbf0f3; text-shadow: none; }
 .sub2--frente { -webkit-text-stroke: 2.2px var(--vinho); }
+.precos--sobr li { padding: 26px 0 !important; }
+.precos--sobr .nome { font-size: 38px; }
+.precos--sobr .val { font-size: 48px; }
+.precos--cilios li { padding: 10px 0 !important; }
+.precos--cilios .nome { font-size: 28px; }
+.precos--cilios small { font-size: 21px; }
+.precos--cilios .val { font-size: 36px; }
+/* duas fotos do trabalho, escalonadas, ao lado do título */
+.arco--par { width: 196px; height: 262px; }
+.arco--p1 { right: 196px; top: 46px; transform: rotate(-4deg); z-index: 1; }
+.arco--p2 { right: 4px; top: 128px; transform: rotate(3deg); z-index: 2; }
+.interna:has(.arco--par) .cabeca h1 { max-width: 500px; }
+.interna:has(.arco--par) .cabeca { min-height: 410px; }
+.interna:has(.precos--cilios) .cabeca { min-height: 372px; }
+.interna:has(.precos--cilios) .arco--p1 { top: 30px; }
+.interna:has(.precos--cilios) .arco--p2 { top: 104px; }
+.precos--cilios li { padding: 9px 0 !important; }
+.interna:has(.precos--cilios) .nota--curta { margin-top: 14px; }

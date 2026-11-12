@@ -58,23 +58,33 @@ const SLIDES = [
   },
   {
     n: 5, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 55, items: [{ t: 'corner', at: 'top-right', size: 0.95 }] },
-    html: `<div class="cabeca"><figure class="arco arco--valores"><img src="fotos/trabalho-a.jpg"></figure>
-      
-      <h1 class="h1--valores">Valores e tempo de cada técnica</h1></div><div class="conteudo">
-      <ul class="precos">
+    html: `<div class="cabeca"><figure class="arco arco--par arco--p1"><img src="fotos/trabalho-a.jpg"></figure><figure class="arco arco--par arco--p2"><img src="fotos/trabalho-e.jpg"></figure>
+      <h1 class="h1--valores">Cílios: valores e tempo</h1></div><div class="conteudo">
+      <ul class="precos precos--cilios">
         <li><span class="nome">Volume brasileiro, inglês ou egípcio<small>manutenção a partir de R$ 120</small></span><span class="val">R$ 170 · 3h</span></li>
         <li><span class="nome">Volume Fox eyes<small>manutenção a partir de R$ 130</small></span><span class="val">R$ 185 · 3h</span></li>
+        <li><span class="nome">Mega Volume Inglês<small>manutenção a partir de R$ 150</small></span><span class="val">R$ 200 · 3h</span></li>
+        <li><span class="nome">Mega Brasileiro<small>manutenção a partir de R$ 150</small></span><span class="val">R$ 190 · 3h</span></li>
+        <li><span class="nome">Mega Fox<small>manutenção a partir de R$ 180</small></span><span class="val">R$ 230 · 3h</span></li>
         <li><span class="nome">Lash lifting</span><span class="val">R$ 160 · 2h</span></li>
+        <li><span class="nome">Remoção da extensão</span><span class="val">R$ 40 · 40 min</span></li>
+      </ul>
+      <p class="nota nota--curta">${ico('estrela')}<span>A manutenção Mega tem valor-base: pode ter acréscimo depois da avaliação.</span></p></div>`,
+  },
+  {
+    n: 6, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 56, items: [{ t: 'corner', at: 'top-right', size: 0.95 }] },
+    html: `<div class="cabeca"><figure class="arco arco--par arco--p1"><img src="fotos/trabalho-c.jpg"></figure><figure class="arco arco--par arco--p2"><img src="fotos/trabalho-d.jpg"></figure>
+      <h1 class="h1--valores">Sobrancelhas e lábios: valores e tempo</h1></div><div class="conteudo">
+      <ul class="precos precos--sobr">
         <li><span class="nome">Brow Lamination</span><span class="val">R$ 120 · 1h30</span></li>
         <li><span class="nome">Design de sobrancelhas</span><span class="val">R$ 50 · 1h</span></li>
         <li><span class="nome">Hidragloss</span><span class="val">R$ 160 · 1h30</span></li>
         <li><span class="nome">Lip spa</span><span class="val">R$ 35 · 30 min</span></li>
-        <li><span class="nome">Remoção da extensão</span><span class="val">R$ 40 · 40 min</span></li>
       </ul>
       <p class="nota nota--curta">${ico('estrela')}<span>No site, cada técnica tem as fotos do trabalho.</span></p></div>`,
   },
   {
-    n: 6, dark: true, img: { src: 'canva/dezembro.jpg', flip: 0 },
+    n: 7, dark: true, img: { src: 'canva/dezembro.jpg', flip: 0 },
     bg: { seed: 66, dark: true, items: [{ t: 'corner', at: 'top-right', size: 1.05 }, { t: 'corner', at: 'bottom-left', size: 1.0 }, { t: 'dust', x0: 0, y0: 0, x1: 1080, y1: 1350, n: 110 }] },
     html: `<div class="dez">
         <div class="dez__palavra" data-fit="860">DEZEMBRO</div>
@@ -83,12 +93,12 @@ const SLIDES = [
       </div>`,
   },
   {
-    n: 7, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 77, items: [{ t: 'corner', at: 'top-right', size: 0.9 }] },
+    n: 8, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 77, items: [{ t: 'corner', at: 'top-right', size: 0.9 }] },
     html: `<div class="cabeca"><h1 class="h1--gigante">Como virar VIP</h1></div><div class="conteudo">
       ${passos(['Faça o seu <strong>Cadastro VIP</strong> no site <em>(nome, WhatsApp e senha)</em>', `Avise a Tayssa no WhatsApp ${wa}: ela libera a sua conta`, 'Com <strong>4 atendimentos em até 70 dias</strong>, com 15 a 20 dias entre um e outro, a Tayssa confirma o seu VIP'])}</div>`,
   },
   {
-    n: 8, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 88, items: [{ t: 'corner', at: 'top-right', size: 0.95 }] },
+    n: 9, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 88, items: [{ t: 'corner', at: 'top-right', size: 0.95 }] },
     html: `<div class="cabeca"><figure class="arco arco--vip"><img src="fotos/trabalho-b.jpg"></figure>
       
       <h1 class="h1--vip">Sendo VIP, você tem</h1></div><div class="conteudo">
@@ -100,7 +110,7 @@ const SLIDES = [
       </ul></div>`,
   },
   {
-    n: 9, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 99, items: [{ t: 'corner', at: 'top-right', size: 0.95 }] },
+    n: 10, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 99, items: [{ t: 'corner', at: 'top-right', size: 0.95 }] },
     html: `<div class="cabeca"><h1 class="h1--gigante">Indique uma amiga</h1></div><div class="conteudo">
       <p class="corpo corpo--grande">Não precisa ser VIP para indicar.</p>
       <div class="cupom">
@@ -110,7 +120,7 @@ const SLIDES = [
       </div></div>`,
   },
   {
-    n: 10, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 110, items: [{ t: 'corner', at: 'top-right', size: 0.95 }] },
+    n: 11, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 110, items: [{ t: 'corner', at: 'top-right', size: 0.95 }] },
     html: `<div class="cabeca"><h1>Combinados da casa</h1></div><div class="conteudo">
       <ul class="beneficios beneficios--combinados">
         <li><span class="ic">${ico('relogio')}</span><p><strong>Atendimento</strong><span class="horas"><span>segunda 10h às 16h</span><span>terça a sexta 9h às 19h</span><span>sábado 8h às 15h</span></span></p></li>
@@ -119,7 +129,7 @@ const SLIDES = [
         <li><span class="ic">${ico('remarcar')}</span><p>Remarcando com <strong>48 horas ou mais</strong>, o sinal vale para a nova data</p></li>
       </ul></div>`,
   },
-  { n: 11, kind: 'fechamento', img: { src: 'canva/capa.jpg', flip: 1 }, bg: { seed: 31, items: [{ t: 'tree', x: 860, top: 600, base: 1150, w: 400 }, { t: 'dust', x0: 0, y0: 0, x1: 1080, y1: 600, n: 26 }] } },
+  { n: 12, kind: 'fechamento', img: { src: 'canva/capa.jpg', flip: 1 }, bg: { seed: 31, items: [{ t: 'tree', x: 860, top: 600, base: 1150, w: 400 }, { t: 'dust', x0: 0, y0: 0, x1: 1080, y1: 600, n: 26 }] } },
 ];
 
 function page(s) {
