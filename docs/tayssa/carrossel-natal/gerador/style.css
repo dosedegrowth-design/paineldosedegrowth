@@ -279,3 +279,13 @@ main { justify-content: flex-start; padding: 0; }
 .ff-linha b { font-weight: 400; color: var(--rose); }
 .ff-titulo { top: 128px; }
 .ff-veu { background: linear-gradient(180deg, rgba(74,13,31,.93) 0, rgba(74,13,31,.85) 330px, rgba(74,13,31,.4) 470px, rgba(74,13,31,0) 620px); }
+/* 7 e 8 novas */
+.corpo strong { font-weight: 700; color: var(--bordo); }
+.cupom--data { margin-top: 44px; }
+.cupom--data .cupom__rotulo { font-size: 34px; }
+.cupom--data .cupom__valor { margin-top: 18px; font-size: 104px; color: var(--rose); line-height: .95; }
+.beneficios--vips { margin-top: 40px; gap: 22px; }
+.beneficios--vips li { padding: 28px 30px 28px 24px; }
+.beneficios--vips p { font-size: 36px; }
+.beneficios--vips .ic { width: 86px; height: 86px; }
+.beneficios--vips .ic svg { width: 42px; height: 42px; }

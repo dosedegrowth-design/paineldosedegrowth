@@ -84,18 +84,22 @@ const SLIDES = [
       <p class="nota nota--curta">${ico('estrela')}<span>No site, cada técnica tem as fotos do trabalho.</span></p></div>`,
   },
   {
-    n: 7, dark: true, img: { src: 'canva/dezembro.jpg', flip: 0 },
-    bg: { seed: 66, dark: true, items: [{ t: 'corner', at: 'top-right', size: 1.05 }, { t: 'corner', at: 'bottom-left', size: 1.0 }, { t: 'dust', x0: 0, y0: 0, x1: 1080, y1: 1350, n: 110 }] },
-    html: `<div class="dez">
-        <div class="dez__palavra" data-fit="860">DEZEMBRO</div>
-        <h1 class="dez__titulo">abre primeiro para as VIPs</h1>
-        <p class="dez__corpo">A agenda de dezembro está guardada para as clientes VIP.<br>Para as demais, abre em breve.</p>
-      </div>`,
+    n: 7, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 66, items: [{ t: 'corner', at: 'top-right', size: 0.95 }] },
+    html: `<div class="cabeca"><h1 class="h1--gigante">Agenda de dezembro</h1></div><div class="conteudo">
+      <p class="corpo corpo--grande">A agenda de dezembro vai estar disponível <strong>primeiro só para as clientes VIP</strong>.</p>
+      <div class="cupom cupom--data">
+        <div class="cupom__rotulo">Dia 14 de novembro</div>
+        <div class="cupom__valor">Abre para todas</div>
+      </div></div>`,
   },
   {
     n: 8, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 77, items: [{ t: 'corner', at: 'top-right', size: 0.9 }] },
-    html: `<div class="cabeca"><h1 class="h1--gigante">Como virar VIP</h1></div><div class="conteudo">
-      ${passos(['Faça o seu <strong>Cadastro VIP</strong> no site <em>(nome, WhatsApp e senha)</em>', `Avise a Tayssa no WhatsApp ${wa}: ela libera a sua conta`, 'Com <strong>4 atendimentos em até 70 dias</strong>, com 15 a 20 dias entre um e outro, a Tayssa confirma o seu VIP'])}</div>`,
+    html: `<div class="cabeca"><h1 class="h1--gigante">Quem são as VIPs</h1></div><div class="conteudo">
+      <p class="corpo corpo--grande">As clientes VIP são as que:</p>
+      <ul class="beneficios beneficios--vips">
+        <li><span class="ic">${ico('estrela')}</span><p><strong>Acompanham o meu trabalho</strong> com fidelidade</p></li>
+        <li><span class="ic">${ico('calendario')}</span><p><strong>Fazem os cílios comigo</strong> com frequência</p></li>
+      </ul></div>`,
   },
   {
     n: 9, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 88, items: [{ t: 'corner', at: 'top-right', size: 0.95 }] },

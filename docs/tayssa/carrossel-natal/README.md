@@ -20,4 +20,5 @@ Post do @1.tayssa anunciando o tayssafarias.com.br. 12 lâminas em 1080 x 1350 (
 ## Antes de postar
 
 - Os valores são os de 12/11/2026 (Mega Inglês R$ 200, Mega Brasileiro R$ 190 e Mega Fox R$ 230, todos 3h, conferidos com `vip.services`). Se a Tayssa mudar preço ou regra, editar `gerador/build.mjs` e gerar de novo.
-- A lâmina 7 diz que dezembro abre primeiro para as VIPs: hoje `settings.booking.prioridade_vip` está ligada a partir de 01/12 e sem data para abrir a todas. Se ela marcar a data antes do post, a lâmina continua certa ("abre em breve").
+- Lâmina 7 (12/11/2026, texto da Tayssa): dezembro abre primeiro só para as clientes VIP e, no dia 14 de novembro, para todas. No site, `settings.booking.prioridade_vip.abre_em` precisa dessa data para bater com o post.
+- Lâmina 8 (12/11/2026): "Como virar VIP" saiu a pedido da Tayssa; no lugar, "Quem são as VIPs" (acompanham o trabalho dela com fidelidade e fazem os cílios com ela com frequência). A legenda não chama mais para o Cadastro VIP.
