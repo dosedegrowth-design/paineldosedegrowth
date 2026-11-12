@@ -134,7 +134,23 @@ const SLIDES = [
 
 function page(s) {
   let body;
-  if (s.kind === 'capa' || s.kind === 'fechamento') {
+    if (s.kind === 'fechamento') {
+    // foto dela de fundo, inteira; o AGENDE passa atrás da cabeça (recorte por cima)
+    const k = 1.5, W = 1080, H = 1920, l = 0, t = -190;
+    const mk = 'fotos/fech-fundo-mask.png';
+    const pos = `left:${l}px;top:${t}px;width:${W}px;height:${H}px`;
+    const mask = `-webkit-mask-image:url(${mk});mask-image:url(${mk});-webkit-mask-size:${W}px ${H}px;mask-size:${W}px ${H}px;-webkit-mask-position:${l}px ${t}px;mask-position:${l}px ${t}px;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat`;
+    body = `<div class="fg fundo-foto">
+      <img class="ff-bg" src="fotos/fech-fundo.webp" style="${pos}">
+      <div class="ff-veu"></div>
+      <div class="ff-titulo ff-titulo--cheio" data-fit="960">AGE<span class="ff-oco">NDE</span></div>
+      <img class="ff-recorte" src="fotos/fech-fundo-cut.png" style="${pos}">
+      <div class="ff-sobre" style="${mask}"><div class="ff-titulo ff-titulo--contorno" data-fit="960">AGE<span>NDE</span></div></div>
+      <div class="ff-pe"></div>
+      <div class="ff-marca">${marca}</div>
+      <div class="ff-linha"><span>SEU NATAL COMEÇA NO OLHAR</span><span><b>TAYSSAFARIAS.COM.BR</b> · LINK NA BIO</span></div>
+    </div>`;
+  } else if (s.kind === 'capa' || s.kind === 'fechamento') {
     const c = s.kind === 'capa'
       ? { foto: 'fotos/capa-final.webp', fw: 2755, fh: 2591, k: 0.56, l: 108, t: 22, a: (process.env.CAPA || 'AG|ENDA').split('|')[0], b: (process.env.CAPA || 'AG|ENDA').split('|')[1], aCheio: true, top: 250,
           sub: 'O SEU HORÁRIO AGORA É NO SITE · TAYSSAFARIAS.COM.BR', marca: 'esq' }
