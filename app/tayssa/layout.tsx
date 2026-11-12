@@ -16,6 +16,7 @@ import { PausaForaDaTela } from "@/components/tayssa/ui/pausa-fora";
 import { TransitionProvider } from "@/components/tayssa/ui/transition";
 import { MovimentoDoAparelho } from "@/components/tayssa/ui/movimento";
 import { EstruturaProvider } from "@/components/tayssa/ui/estrutura";
+import { AnaliseDoSite } from "@/components/tayssa/ui/analise";
 
 /**
  * Uma família sem serifa: a do sistema Apple; Inter nos outros aparelhos.
@@ -74,6 +75,8 @@ export default function TayssaLayout({ children }: { children: React.ReactNode }
       <div className="ty-grain" aria-hidden />
       <SmoothScroll />
       <PausaForaDaTela />
+      {/* Google Analytics (fora do painel, do entrar e do folder do horário) */}
+      <AnaliseDoSite />
       <MovimentoDoAparelho>
         <TransitionProvider>
           <EstruturaProvider>{children}</EstruturaProvider>
