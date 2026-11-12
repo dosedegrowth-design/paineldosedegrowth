@@ -159,13 +159,27 @@ export function rolosDosServicos(
     if (!daCategoria.length) continue;
     for (const p of cat.produtos) {
       const kp = chave(p.nome);
+      const tp = tecnicaDoNome(kp);
+      // o Mega com o Mega, o volume com o volume: a foto "Mega inglês" é do serviço "Mega Volume
+      // Inglês" e a "Mega Fox eyes" do "Mega Fox" (nomes do Lucas, 12/11/2026), nunca do volume normal
+      const mesma = daCategoria.filter((s) => {
+        const ts = tecnicaDoNome(chave(s.name));
+        return ts.mega === tp.mega && mesmoNucleo(ts.nucleo, tp.nucleo);
+      });
       const exatos = daCategoria.filter((s) => chave(s.name) === kp || base(chave(s.name)) === base(kp));
       const contem = daCategoria.filter((s) => chave(s.name).includes(kp) || kp.includes(chave(s.name)));
-      const dono = exatos.length === 1 ? exatos[0] : contem.length === 1 ? contem[0] : daCategoria[0];
+      const dono =
+        mesma.length === 1
+          ? mesma[0]
+          : exatos.length === 1
+            ? exatos[0]
+            : contem.length === 1
+              ? contem[0]
+              : daCategoria[0];
       (listas[dono.slug] ??= []).push(p.itens);
     }
   }
-  // Volume inglês e Mega inglês se alternam no rolo, em vez de um depois do outro
+  // sem serviço Mega, Volume inglês e Mega inglês se alternam no rolo, em vez de um depois do outro
   const rolos: Record<string, MidiaCatalogo[]> = Object.fromEntries(
     Object.entries(listas).map(([slug, ls]) => [slug, intercalar(ls)]),
   );
@@ -173,16 +187,40 @@ export function rolosDosServicos(
   // dos volumes que é a manutenção") mostra as fotos desse volume, sem tirá-las do volume:
   // as do Mega primeiro (Mega Fox eyes), depois as da família (Volume Fox eyes)
   const produtos = catalogo.filter((c) => c.slug === "cilios").flatMap((c) => c.produtos);
-  const semPrefixo = (k: string) => base(base(k));
   for (const s of servicos.filter((x) => manutencaoComVolume(x.name))) {
-    const alvo = chave(s.name).replace(/^manutencao\s+/, "");
-    const familia = semPrefixo(alvo);
-    const doMega = produtos.filter((p) => chave(p.nome).startsWith(alvo));
-    const daFamilia = produtos.filter((p) => !doMega.includes(p) && familia && semPrefixo(chave(p.nome)).includes(familia));
+    const alvo = tecnicaDoNome(chave(s.name).replace(/^manutencao\s+/, ""));
+    if (!alvo.nucleo) continue;
+    const doMega = produtos.filter((p) => {
+      const t = tecnicaDoNome(chave(p.nome));
+      return t.mega === alvo.mega && mesmoNucleo(t.nucleo, alvo.nucleo);
+    });
+    const daFamilia = produtos.filter(
+      (p) => !doMega.includes(p) && mesmoNucleo(tecnicaDoNome(chave(p.nome)).nucleo, alvo.nucleo),
+    );
     const fotos = [...doMega, ...daFamilia].flatMap((p) => p.itens);
     if (fotos.length) rolos[s.slug] = fotos;
   }
   return rolos;
+}
+
+/**
+ * Outro nome da Tayssa para o mesmo volume. A lista do Lucas (12/11/2026) põe as aplicações
+ * Mega Volume Inglês, Mega Brasileiro e Mega Fox ao lado das manutenções Mega Volume Glam,
+ * Mega Brasileiro e Mega Fox: o Glam é o inglês (as fotos dela são "Mega inglês").
+ */
+const MESMO_VOLUME: Record<string, string> = { glam: "ingles" };
+
+/** "Mega Volume Inglês" e "Mega inglês" → Mega + "ingles"; "Volume Fox eyes" → volume normal + "fox eyes". */
+export function tecnicaDoNome(k: string): { mega: boolean; nucleo: string } {
+  const mega = /\bmega\b/.test(k);
+  const nucleo = k.replace(/\b(mega|volume)\b/g, " ").replace(/\s+/g, " ").trim();
+  return { mega, nucleo: MESMO_VOLUME[nucleo] ?? nucleo };
+}
+
+/** "fox" e "fox eyes" são o mesmo volume (Mega Fox x Mega Fox eyes); "ingles" e "ingles" também. */
+function mesmoNucleo(a: string, b: string): boolean {
+  if (!a || !b) return false;
+  return a === b || a.startsWith(`${b} `) || b.startsWith(`${a} `);
 }
 
 /** Uma foto do banco que pode virar capa: só o que a capa precisa. */

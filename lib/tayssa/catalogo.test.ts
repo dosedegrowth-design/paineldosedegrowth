@@ -13,6 +13,7 @@ import {
   montarCatalogo,
   produtoParecido,
   rolosDosServicos,
+  tecnicaDoNome,
 } from "./catalogo.ts";
 
 const linha = (o: Partial<Parameters<typeof montarCatalogo>[0][number]> & { id: string }) => ({
@@ -139,21 +140,73 @@ test("manutenção de um volume (Mega Fox) mostra as fotos do volume, sem tirá-
     { slug: "volume-ingles", name: "Volume inglês" },
     { slug: "volume-fox-eyes", name: "Volume Fox eyes" },
     { slug: "manutencao-cilios", name: "Manutenção de cílios" },
+    { slug: "manutencao-mega-russo", name: "Manutenção Mega russo" },
+    { slug: "manutencao-mega-brasileiro", name: "Manutenção Mega brasileiro" },
+    { slug: "manutencao-mega-fox-eyes", name: "Manutenção Mega Fox eyes" },
+  ];
+  const rolos = rolosDosServicos(cat, servicos);
+  const ids = (slug: string) => (rolos[slug] ?? []).map((i) => i.id).join(",");
+  // as do Mega primeiro (vira a capa), depois as da família
+  assert.equal(ids("manutencao-mega-brasileiro"), "e,a");
+  assert.equal(ids("manutencao-mega-fox-eyes"), "h,b");
+  // sem foto com esse nome, fica sem foto (nunca a de outro volume)
+  assert.equal(ids("manutencao-mega-russo"), "");
+  // os volumes continuam com as suas, e o produto "Manutenção" segue com a genérica
+  assert.equal([...ids("volume-brasileiro").split(",")].sort().join(","), "a,e");
+  assert.equal([...ids("volume-fox-eyes").split(",")].sort().join(","), "b,h");
+  assert.equal(ids("manutencao-cilios"), "c");
+});
+
+test("Mega (lista do Lucas, 12/11/2026): a aplicação leva só as fotos do Mega; a manutenção, as do Mega e as do volume", () => {
+  const cat = montarCatalogo([
+    linha({ id: "a", lash_style: "Volume brasileiro" }),
+    linha({ id: "e", lash_style: "Mega brasileiro" }),
+    linha({ id: "i", lash_style: "Volume inglês" }),
+    linha({ id: "g", lash_style: "Mega inglês" }),
+    linha({ id: "b", lash_style: "Volume Fox eyes" }),
+    linha({ id: "h", lash_style: "Mega Fox eyes" }),
+    linha({ id: "c", lash_style: "Manutenção" }),
+  ]);
+  // os serviços de produção (12/11/2026), com os nomes da lista do Lucas
+  const servicos = [
+    { slug: "volume-brasileiro", name: "Volume brasileiro" },
+    { slug: "volume-ingles", name: "Volume inglês" },
+    { slug: "volume-fox-eyes", name: "Volume Fox eyes" },
+    { slug: "mega-volume-ingles", name: "Mega Volume Inglês" },
+    { slug: "mega-brasileiro", name: "Mega Brasileiro" },
+    { slug: "mega-fox", name: "Mega Fox" },
+    { slug: "manutencao-cilios", name: "Manutenção de cílios" },
     { slug: "manutencao-mega-volume-glam", name: "Manutenção Mega Volume Glam" },
     { slug: "manutencao-mega-brasileiro", name: "Manutenção Mega Brasileiro" },
     { slug: "manutencao-mega-fox", name: "Manutenção Mega Fox" },
   ];
   const rolos = rolosDosServicos(cat, servicos);
   const ids = (slug: string) => (rolos[slug] ?? []).map((i) => i.id).join(",");
-  // as do Mega primeiro (vira a capa), depois as da família
+  // cada aplicação com as do seu nome: o Mega não leva o volume normal, nem o volume leva o Mega
+  assert.equal(ids("volume-brasileiro"), "a");
+  assert.equal(ids("mega-brasileiro"), "e");
+  assert.equal(ids("volume-ingles"), "i");
+  assert.equal(ids("mega-volume-ingles"), "g");
+  assert.equal(ids("volume-fox-eyes"), "b");
+  assert.equal(ids("mega-fox"), "h");
+  // a manutenção: as do Mega primeiro (vira a capa), depois as do volume, sem tirá-las de ninguém;
+  // a Mega Volume Glam é a do Mega Volume Inglês
+  assert.equal(ids("manutencao-mega-volume-glam"), "g,i");
   assert.equal(ids("manutencao-mega-brasileiro"), "e,a");
   assert.equal(ids("manutencao-mega-fox"), "h,b");
-  // sem foto com esse nome, fica sem foto (nunca a de outro volume)
-  assert.equal(ids("manutencao-mega-volume-glam"), "");
-  // os volumes continuam com as suas, e o produto "Manutenção" segue com a genérica
-  assert.equal([...ids("volume-brasileiro").split(",")].sort().join(","), "a,e");
-  assert.equal([...ids("volume-fox-eyes").split(",")].sort().join(","), "b,h");
   assert.equal(ids("manutencao-cilios"), "c");
+  // nenhuma foto de aplicação aparece em dois serviços
+  const aplicacoes = ["volume-brasileiro", "mega-brasileiro", "volume-ingles", "mega-volume-ingles", "volume-fox-eyes", "mega-fox"];
+  const todas = aplicacoes.flatMap((s) => rolos[s] ?? []).map((i) => i.id);
+  assert.equal(new Set(todas).size, todas.length);
+});
+
+test("tecnicaDoNome: Mega x volume normal e o núcleo do volume", () => {
+  assert.deepEqual(tecnicaDoNome("mega volume ingles"), { mega: true, nucleo: "ingles" });
+  assert.deepEqual(tecnicaDoNome("mega ingles"), { mega: true, nucleo: "ingles" });
+  assert.deepEqual(tecnicaDoNome("mega volume glam"), { mega: true, nucleo: "ingles" });
+  assert.deepEqual(tecnicaDoNome("volume fox eyes"), { mega: false, nucleo: "fox eyes" });
+  assert.deepEqual(tecnicaDoNome("mega fox"), { mega: true, nucleo: "fox" });
 });
 
 test("intercalar: um de cada produto por vez, sem perder nenhum", () => {
