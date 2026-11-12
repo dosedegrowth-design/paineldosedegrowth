@@ -36,55 +36,78 @@ const passos = (arr) => `<ol class="passos">${arr.map((t, i) => `<li><span class
 const SLIDES = [
   { n: 1, kind: 'capa', img: { src: 'canva/capa.jpg', flip: 0 }, bg: { seed: 31, items: [{ t: 'tree', x: 235, top: 600, base: 1150, w: 420 }, { t: 'dust', x0: 0, y0: 0, x1: 1080, y1: 600, n: 26 }] } },
   {
-    n: 2, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 12, items: [{ t: 'corner', at: 'top-right', size: 0.95 }] },
-    html: `<div class="cabeca"><div class="eyebrow">AGENDAR FICOU FÁCIL</div>
-      <h1>Você mesma agenda, a qualquer hora</h1></div><div class="conteudo">
-      ${passos(['Escolha o serviço, o dia e o horário', 'Crie sua conta com o seu WhatsApp e uma senha <em>(só na primeira vez)</em>', '<strong>Pronto:</strong> o horário fica guardado para você'])}</div>`,
+    n: 2, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 12, items: [] },
+    html: `<div class="tuto">
+      <div class="tuto__cab"><span class="tuto__eyebrow">COMO AGENDAR · 1 DE 3</span><h1>Pelo site, em poucos toques</h1></div>
+      <div class="tuto__passo"><span class="n">1</span><p>No site, toque em <strong>Agendar horário</strong></p></div>
+      <figure class="print print--1"><img src="prints/1-home.png"><span class="toque" style="left:11%;top:13%;width:78%;height:40%"></span></figure>
+      <div class="tuto__passo"><span class="n">2</span><p>Escolha o <strong>serviço</strong> (em <strong>Mais serviços</strong> estão todos)</p></div>
+      <figure class="print print--2"><img src="prints/2-servico.png"><span class="toque" style="left:3.5%;top:28%;width:63%;height:18.5%"></span></figure>
+    </div>`,
   },
   {
-    n: 3, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 23, items: [{ t: 'corner', at: 'top-right', size: 0.9 }] },
-    html: `<div class="cabeca"><div class="eyebrow">O SINAL EM UM MINUTO</div>
-      <h1 class="h1--estreito">Sinal de R$&nbsp;50 no Pix, sem esperar resposta</h1></div><div class="conteudo">
-      ${passos(['Copie o código Pix <em>(o valor já vem nele)</em>', 'Anexe o comprovante ali mesmo, no site', `Envie o cartão do seu horário para a Tayssa no WhatsApp ${wa}`])}
-      <p class="nota">${ico('relogio')}<span>Seu horário fica guardado por 24 horas esperando o sinal.</span></p></div>`,
+    n: 3, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 23, items: [] },
+    html: `<div class="tuto">
+      <div class="tuto__cab"><span class="tuto__eyebrow">COMO AGENDAR · 2 DE 3</span><h1>Escolha o dia e o horário</h1></div>
+      <div class="tuto__passo"><span class="n">3</span><p>Toque no <strong>dia</strong>, depois em <strong>Escolher horário</strong>: aparecem só os horários livres</p></div>
+      <figure class="print print--3a"><img src="prints/3a-dias.png"></figure>
+      <figure class="print print--3b"><img src="prints/3b-horarios.png"></figure>
+    </div>`,
   },
   {
-    n: 4, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 44, items: [{ t: 'corner', at: 'top-right', size: 0.95 }] },
-    html: `<div class="cabeca"><div class="eyebrow">TUDO NA PALMA DA MÃO</div>
-      <h1 class="h1--gigante">Meus horários</h1></div><div class="conteudo">
-      <div class="abas"><span>Realizados</span><span class="ativa">Em aberto</span><span>Marcar</span></div>
-      <p class="corpo">O que está em aberto, o que você já fez e um botão para marcar de novo.</p>
-      <p class="corpo corpo--destaque">Precisa desmarcar? É por lá também.</p></div>`,
+    n: 4, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 44, items: [] },
+    html: `<div class="tuto">
+      <div class="tuto__cab"><span class="tuto__eyebrow">COMO AGENDAR · 3 DE 3</span><h1>Crie a sua conta</h1></div>
+      <div class="tuto__passo"><span class="n">4</span><p>Seu nome, seu <strong>WhatsApp</strong> e uma <strong>senha</strong>: só na primeira vez</p></div>
+      <figure class="print print--4"><img src="prints/4-conta.png"></figure>
+      <p class="tuto__nota">Toque em <strong>Criar conta e agendar</strong>. Pronto: o horário fica guardado para você.</p>
+    </div>`,
   },
   {
-    n: 5, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 55, items: [{ t: 'corner', at: 'top-right', size: 0.95 }] },
-    html: `<div class="cabeca"><figure class="arco arco--par arco--p1"><img src="fotos/cilios-volume.jpg"></figure><figure class="arco arco--par arco--p2"><img src="fotos/cilios-mega.jpg"></figure>
-      <h1 class="h1--valores">Cílios: valores e tempo</h1></div><div class="conteudo">
-      <ul class="precos precos--cilios">
-        <li><span class="nome">Volume brasileiro, inglês ou egípcio<small>manutenção a partir de R$ 120</small></span><span class="val">R$ 170 · 3h</span></li>
-        <li><span class="nome">Volume Fox eyes<small>manutenção a partir de R$ 130</small></span><span class="val">R$ 185 · 3h</span></li>
-        <li><span class="nome">Mega Volume Inglês<small>manutenção a partir de R$ 150</small></span><span class="val">R$ 200 · 3h</span></li>
-        <li><span class="nome">Mega Brasileiro<small>manutenção a partir de R$ 150</small></span><span class="val">R$ 190 · 3h</span></li>
-        <li><span class="nome">Mega Fox<small>manutenção a partir de R$ 180</small></span><span class="val">R$ 230 · 3h</span></li>
-        <li><span class="nome">Lash lifting</span><span class="val">R$ 160 · 2h</span></li>
-        <li><span class="nome">Remoção da extensão</span><span class="val">R$ 40 · 40 min</span></li>
-      </ul>
+    n: 5, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 55, items: [] },
+    html: `<div class="tuto">
+      <div class="tuto__cab"><span class="tuto__eyebrow">O SINAL EM UM MINUTO</span><h1>Sinal de R$&nbsp;50 no Pix</h1></div>
+      <div class="tuto__passo"><span class="n">5</span><p><strong>Copie o código Pix</strong> (o valor já vem nele) e <strong>anexe o comprovante</strong> ali mesmo</p></div>
+      <figure class="print print--5"><img src="prints/5-sinal.png"><span class="toque" style="left:18%;top:30.5%;width:74%;height:14%"></span></figure>
+      <p class="tuto__nota">Seu horário fica guardado por <strong>24 horas</strong> esperando o sinal. Depois, envie o cartão do horário para a Tayssa no WhatsApp ${wa}</p>
+    </div>`,
+  },
+  {
+    n: 6, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 66, items: [] },
+    html: `<div class="tuto">
+      <div class="tuto__cab"><span class="tuto__eyebrow">TUDO NA PALMA DA MÃO</span><h1>Meus horários</h1></div>
+      <div class="tuto__passo tuto__passo--sem"><p>O que está em aberto, o que você já fez e um botão para <strong>marcar de novo</strong></p></div>
+      <figure class="print print--6"><img src="prints/6-meus.png"></figure>
+      <p class="tuto__nota">Precisa desmarcar? <strong>É por lá também.</strong></p>
+    </div>`,
+  },
+  {
+    n: 7, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 57, items: [] },
+    html: `<div class="cabeca cabeca--tabela"><figure class="arco arco--par arco--p1"><img src="fotos/cilios-volume.jpg"></figure><figure class="arco arco--par arco--p2"><img src="fotos/trabalho-c.jpg"></figure>
+      <h1 class="h1--valores">Valores e tempo</h1></div><div class="conteudo">
+      <div class="tabela">
+        <div class="tabela__grupo">Cílios</div>
+        <ul class="precos precos--tudo">
+          <li><span class="nome">Volume brasileiro, inglês ou egípcio<small>manutenção a partir de R$ 120</small></span><span class="val">R$ 170 · 3h</span></li>
+          <li><span class="nome">Volume Fox eyes<small>manutenção a partir de R$ 130</small></span><span class="val">R$ 185 · 3h</span></li>
+          <li><span class="nome">Mega Volume Inglês<small>manutenção a partir de R$ 150</small></span><span class="val">R$ 200 · 3h</span></li>
+          <li><span class="nome">Mega Brasileiro<small>manutenção a partir de R$ 150</small></span><span class="val">R$ 190 · 3h</span></li>
+          <li><span class="nome">Mega Fox<small>manutenção a partir de R$ 180</small></span><span class="val">R$ 230 · 3h</span></li>
+          <li><span class="nome">Lash lifting</span><span class="val">R$ 160 · 2h</span></li>
+          <li><span class="nome">Remoção da extensão</span><span class="val">R$ 40 · 40 min</span></li>
+        </ul>
+        <div class="tabela__grupo">Sobrancelhas e lábios</div>
+        <ul class="precos precos--tudo">
+          <li><span class="nome">Brow Lamination</span><span class="val">R$ 120 · 1h30</span></li>
+          <li><span class="nome">Design de sobrancelhas</span><span class="val">R$ 50 · 1h</span></li>
+          <li><span class="nome">Hidragloss</span><span class="val">R$ 160 · 1h30</span></li>
+          <li><span class="nome">Lip spa</span><span class="val">R$ 35 · 30 min</span></li>
+        </ul>
+      </div>
       <p class="nota nota--curta">${ico('estrela')}<span>A manutenção Mega tem valor-base: pode ter acréscimo depois da avaliação.</span></p></div>`,
   },
   {
-    n: 6, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 56, items: [{ t: 'corner', at: 'top-right', size: 0.95 }] },
-    html: `<div class="cabeca"><figure class="arco arco--par arco--p1"><img src="fotos/trabalho-c.jpg"></figure><figure class="arco arco--par arco--p2"><img src="fotos/trabalho-d.jpg"></figure>
-      <h1 class="h1--valores">Sobrancelhas e lábios: valores e tempo</h1></div><div class="conteudo">
-      <ul class="precos precos--sobr">
-        <li><span class="nome">Brow Lamination</span><span class="val">R$ 120 · 1h30</span></li>
-        <li><span class="nome">Design de sobrancelhas</span><span class="val">R$ 50 · 1h</span></li>
-        <li><span class="nome">Hidragloss</span><span class="val">R$ 160 · 1h30</span></li>
-        <li><span class="nome">Lip spa</span><span class="val">R$ 35 · 30 min</span></li>
-      </ul>
-      <p class="nota nota--curta">${ico('estrela')}<span>No site, cada técnica tem as fotos do trabalho.</span></p></div>`,
-  },
-  {
-    n: 7, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 66, items: [{ t: 'corner', at: 'top-right', size: 0.95 }] },
+    n: 8, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 66, items: [{ t: 'corner', at: 'top-right', size: 0.95 }] },
     html: `<div class="cabeca"><h1 class="h1--gigante">Agenda de dezembro</h1></div><div class="conteudo">
       <p class="corpo corpo--grande">A agenda de dezembro vai estar disponível <strong>primeiro só para as clientes VIP</strong>.</p>
       <div class="cupom cupom--data">
@@ -93,19 +116,11 @@ const SLIDES = [
       </div></div>`,
   },
   {
-    n: 8, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 77, items: [{ t: 'corner', at: 'top-right', size: 0.9 }] },
-    html: `<div class="cabeca"><h1 class="h1--gigante">Quem são as VIPs</h1></div><div class="conteudo">
-      <p class="corpo corpo--grande">As clientes VIP são as que:</p>
-      <ul class="beneficios beneficios--vips">
-        <li><span class="ic">${ico('estrela')}</span><p><strong>Acompanham o meu trabalho</strong> com fidelidade</p></li>
-        <li><span class="ic">${ico('calendario')}</span><p><strong>Fazem os cílios comigo</strong> com frequência</p></li>
-      </ul></div>`,
-  },
-  {
-    n: 9, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 88, items: [{ t: 'corner', at: 'top-right', size: 0.95 }] },
-    html: `<div class="cabeca"><figure class="arco arco--vip"><img src="fotos/cilios-vip.jpg"></figure>
-      
-      <h1 class="h1--vip">Sendo VIP, você tem</h1></div><div class="conteudo">
+    n: 9, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 88, items: [] },
+    html: `<div class="cabeca cabeca--vip2"><figure class="arco arco--vip"><img src="fotos/cilios-vip.jpg"></figure>
+      <h1 class="h1--vip">Clientes VIP</h1></div><div class="conteudo">
+      <p class="vip2__quem">São as clientes que <strong>acompanham o meu trabalho com fidelidade</strong> e fazem os cílios comigo com frequência.</p>
+      <div class="vip2__rotulo">Sendo VIP, você tem</div>
       <ul class="beneficios">
         <li><span class="ic">${ico('calendario')}</span><p><strong>Prioridade na agenda</strong>, principalmente em dezembro</p></li>
         <li><span class="ic">${ico('cartao')}</span><p><strong>Cartão de visitas:</strong> a cada 8 visitas, um presente escolhido pela Tayssa</p></li>

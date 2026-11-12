@@ -22,3 +22,9 @@ Post do @1.tayssa anunciando o tayssafarias.com.br. 12 lâminas em 1080 x 1350 (
 - Os valores são os de 12/11/2026 (Mega Inglês R$ 200, Mega Brasileiro R$ 190 e Mega Fox R$ 230, todos 3h, conferidos com `vip.services`). Se a Tayssa mudar preço ou regra, editar `gerador/build.mjs` e gerar de novo.
 - Lâmina 7 (12/11/2026, texto da Tayssa): dezembro abre primeiro só para as clientes VIP e, no dia 14 de novembro, para todas. No site, `settings.booking.prioridade_vip.abre_em` precisa dessa data para bater com o post.
 - Lâmina 8 (12/11/2026): "Como virar VIP" saiu a pedido da Tayssa; no lugar, "Quem são as VIPs" (acompanham o trabalho dela com fidelidade e fazem os cílios com ela com frequência). A legenda não chama mais para o Cadastro VIP.
+
+## Versão com prints do site (12/11/2026)
+
+A pedido do Lucas, as lâminas 2 a 6 viraram um passo a passo com prints reais do site no celular (iPhone 13, tayssafarias.com.br), em `gerador/prints/`: 2 · Agendar horário e escolher o serviço; 3 · o dia e os horários livres; 4 · criar a conta; 5 · o sinal no Pix e o comprovante; 6 · Meus horários. Anel rosé onde tocar. Ordem nova: 1 capa, 2 a 4 como agendar, 5 sinal, 6 Meus horários, 7 valores (tabela única: cílios e sobrancelhas e lábios), 8 agenda de dezembro, 9 Clientes VIP (quem são e o que ganham, numa página), 10 indique uma amiga, 11 combinados, 12 fechamento.
+
+Os prints das telas 5 e 6 saíram de uma conta e um pedido de teste ("Maria Exemplo", 30/11 às 16h, sem comprovante), criados e apagados no mesmo minuto com o ok do Lucas (conta, pedido, sessão e as 2 linhas do `vip.audit_log`). Para refazer os prints, os roteiros estão no histórico da sessão; a página e os textos podem mudar, então conferir antes de postar.
