@@ -249,3 +249,11 @@ main { justify-content: flex-start; padding: 0; }
 .precos--cilios li { padding: 9px 0 !important; }
 .interna:has(.precos--cilios) .nota--curta { margin-top: 14px; }
 .arco--par img, .arco--vip img { object-position: 50% 50%; }
+/* fotos em quadrado, no lugar do arco */
+.arco { border-radius: 6px; }
+.arco--par { width: 214px; height: 214px; }
+.arco--p1 { right: 200px; top: 60px; }
+.arco--p2 { right: 4px; top: 150px; }
+.interna:has(.precos--cilios) .arco--p1 { top: 44px; }
+.interna:has(.precos--cilios) .arco--p2 { top: 128px; }
+.arco--vip { width: 260px; height: 260px; top: 24px; }
