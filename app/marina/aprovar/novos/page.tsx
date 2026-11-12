@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Aprovar, type ItemAprovar } from "@/components/marina/aprovar";
 import { getRespostas } from "@/lib/marina/queries/aprovacoes";
-import { CARROSSEIS, CONFERIR, NOVOS } from "./dados";
+import { ATUALIZADO_EM, CARROSSEIS, CONFERIR, NOVOS } from "./dados";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +40,9 @@ export default async function AprovarNovosPage() {
     midia: { tipo: "carrossel", cards: c.cards },
   }));
 
-  const itens = [...avulsos, ...carrosseis];
+  // Os carrosséis vêm primeiro: é o formato que a Marina pediu para as
+  // Últimas Peças, e foi o que ela aprovou.
+  const itens = [...carrosseis, ...avulsos];
 
   return (
     <div className="min-h-screen bg-white text-neutral-900">

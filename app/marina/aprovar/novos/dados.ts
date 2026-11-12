@@ -71,6 +71,8 @@ export const NOVOS: AnuncioNovo[] = [
   // ---- não está no PDF: foto nova, subida em 12/11, idêntica à da loja ----
   faz("camisa-ana-pied-de-poule-preto-1-jpg", "Camisa Ana Pied de Poule Preto", "camisa", "PIED DE POULE",
     "100% seda, estampa exclusiva, caimento leve e elegante."),
+  faz("image-38629060-1160-4e97-90c7-7feeeb40306c-jpg", "Camisa Jota Bastão Imperador", "camisa", "BASTÃO IMPERADOR",
+    "100% crepe de chine, estampa exclusiva, caimento leve e elegante."),
 
   // ---- vestidos e chemises, legendas de chemises-ultimas-pecas.pdf ----
   faz("2e9045c9-f102-4c16-b0a3-72749d5baa67-jpg", "Vestido de Amarrar Geo", "vestido", "GEO",
@@ -87,8 +89,6 @@ export const NOVOS: AnuncioNovo[] = [
     "100% viscose, caimento leve pra todos os momentos."),
   faz("chemises-ultimas-pecas-1-png", "Chemise Miriam Atenas", "vestido", "ATENAS",
     "100% linho, caimento leve e elegante."),
-  faz("image-38629060-1160-4e97-90c7-7feeeb40306c-jpg", "Vestido Princesa Bastão Imperador", "vestido", "BASTÃO IMPERADOR",
-    "100% seda, corte feminino e estampa exclusiva."),
 ];
 
 /**
@@ -103,15 +103,15 @@ export const CONFERIR: Record<string, string> = {
   "chemises-ultimas-pecas-1-png":
     "Chemise amarela lisa: confirmem se é a Chemise Miriam Atenas (a do PDF é 100% linho).",
   "image-38629060-1160-4e97-90c7-7feeeb40306c-jpg":
-    "Mesma estampa do Vestido Princesa Bastão Imperador, mas aqui só aparece o tecido aberto. Confirmem a peça.",
+    "Peça nova, ainda sem legenda no PDF: esta foto é a segunda imagem do produto Camisa Jota Bastão Imperador na loja (100% crepe de chine, R$ 825, resta o G). A legenda foi escrita no padrão das suas.",
   "camisa-ana-pied-de-poule-preto-1-jpg":
-    "Esta não estava no PDF: a foto é a mesma do produto Camisa Ana Pied de Poule Preto na loja. A legenda foi escrita no padrão das outras.",
+    "Peça nova, ainda sem legenda no PDF: esta foto é a do produto Camisa Ana Pied de Poule Preto na loja (100% seda, R$ 825, M, G e GG). A legenda foi escrita no padrão das suas.",
 };
 
 export const CARROSSEIS: CarrosselNovo[] = [
   {
     id: "carrossel-camisas",
-    nome: "Carrossel · Camisas",
+    nome: "Carrossel · Camisas (10 peças)",
     titulo: "Marina Saleme Estamparia",
     botao: BOTAO,
     texto: `Camisas em 100% seda, estampa exclusiva, caimento leve e elegante.\n\n${FECHO}\n\nArraste para ver todas.`,
@@ -125,6 +125,7 @@ export const CARROSSEIS: CarrosselNovo[] = [
       { src: `${N}/camisa-t-casablanca-laranja-jpg__45.jpg`, nome: "Camisa T Casablanca" },
       { src: `${N}/camisa-t-atenas-amarela-jpg__45.jpg`, nome: "Camisa T Atenas" },
       { src: `${N}/camisa-t-linha-branca-png__45.jpg`, nome: "Camisa T Linha" },
+      { src: `${N}/image-38629060-1160-4e97-90c7-7feeeb40306c-jpg__45.jpg`, nome: "Camisa Jota Bastão Imperador" },
     ],
   },
   {
@@ -142,9 +143,25 @@ export const CARROSSEIS: CarrosselNovo[] = [
       { src: `${N}/chemises-ultimas-pecas-jpg__45.jpg`, nome: "Vestido Asa Mikonos" },
     ],
   },
+  {
+    id: "carrossel-bolsas",
+    nome: "Carrossel · Sacolão Stripes nas 3 cores",
+    titulo: "Marina Saleme Estamparia",
+    botao: BOTAO,
+    texto:
+      "Bolsa de lona 100% algodão com alças de couro, forrada e com bolso interno. Fundo estruturado e botões que regulam a largura.\n\nEm três cores: azul, verde e vermelho.\n\nArraste para ver as três.",
+    cards: [
+      { src: "/marina/aprovar/no-ar/out_sacolao_azul.jpg", nome: "Sacolão Stripes Azul" },
+      { src: "/marina/aprovar/no-ar/out_sacolao_verde.jpg", nome: "Sacolão Stripes Verde" },
+      { src: "/marina/aprovar/no-ar/out_sacolao_vermelho.jpg", nome: "Sacolão Stripes Vermelho" },
+    ],
+  },
 ];
 
 export const TODOS_NOVOS = [
-  ...NOVOS.map((a) => ({ id: a.id, nome: a.peca })),
   ...CARROSSEIS.map((c) => ({ id: c.id, nome: c.nome })),
+  ...NOVOS.map((a) => ({ id: a.id, nome: a.peca })),
 ];
+
+/** Quando esta versao das legendas entrou no ar (deploy edc4058). */
+export const ATUALIZADO_EM = "12 de novembro de 2026, 17h13";
