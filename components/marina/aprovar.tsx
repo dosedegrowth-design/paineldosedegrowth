@@ -189,6 +189,8 @@ export type ItemAprovar = {
   /** Um mesmo anúncio em dois formatos (Link 2). */
   segunda?: { rotulo: string; midia: Midia };
   rotuloMidia?: string;
+  /** `meta` é uma pergunta para a cliente, não um dado: aparece em laranja. */
+  metaDestaque?: boolean;
 };
 
 export function Aprovar({
@@ -314,7 +316,15 @@ export function Aprovar({
               <h3 className="text-[15px] font-semibold leading-snug text-neutral-900">{item.nome}</h3>
             </div>
             {item.meta ? (
-              <p className="mb-2.5 text-[11.5px] leading-relaxed text-neutral-500">{item.meta}</p>
+              <p
+                className={
+                  item.metaDestaque
+                    ? "mb-2.5 border-l-2 border-[#F15839] pl-2.5 text-[12px] leading-relaxed text-[#b0441f]"
+                    : "mb-2.5 text-[11.5px] leading-relaxed text-neutral-500"
+                }
+              >
+                {item.meta}
+              </p>
             ) : null}
 
             {item.segunda ? (

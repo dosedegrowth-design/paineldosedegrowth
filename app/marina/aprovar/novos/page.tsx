@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Aprovar, type ItemAprovar } from "@/components/marina/aprovar";
 import { getRespostas } from "@/lib/marina/queries/aprovacoes";
-import { CARROSSEIS, NOVOS } from "./dados";
+import { CARROSSEIS, CONFERIR, NOVOS } from "./dados";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +17,8 @@ export default async function AprovarNovosPage() {
   const avulsos: ItemAprovar[] = NOVOS.map((a) => ({
     id: a.id,
     nome: a.peca,
+    meta: CONFERIR[a.id],
+    metaDestaque: Boolean(CONFERIR[a.id]),
     texto: a.texto,
     titulo: a.titulo,
     botao: a.botao,
@@ -63,10 +65,12 @@ export default async function AprovarNovosPage() {
           botão. Então é rápido.
         </p>
         <p className="mt-3 text-[13px] leading-relaxed text-neutral-500">
-          A foto inteira cabe dentro dos dois formatos, sem corte nenhum, então
-          nenhuma modelo fica com a cabeça cortada. Onde o nome do arquivo não
-          dizia a peça, está escrito &ldquo;nome a confirmar&rdquo;: se puderem
-          escrever o nome certo no comentário, a gente corrige. Preço e link do
+          As legendas são as que vocês escreveram nos dois PDFs que vieram na
+          pasta, do jeito que estão lá. A foto inteira cabe dentro dos dois
+          formatos, sem corte nenhum, então nenhuma modelo fica com a cabeça
+          cortada. Em alguns anúncios tem uma linha em laranja perguntando o
+          nome da peça: é onde o PDF e a loja não batem, e a gente preferiu
+          perguntar a chutar. Podem responder no comentário. Preço e link do
           produto entram depois que vocês aprovarem.
         </p>
       </header>

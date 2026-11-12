@@ -1,107 +1,145 @@
 /**
- * LINK 2 — os anúncios novos, montados SÓ com as fotos da pasta do Drive
- * "146Mpoob0R5J4FwzDN6-6vLqbSKU9GdHv" (baixadas pelo conector em 12/11/2026).
+ * LINK 2 — os anúncios novos, só com as fotos da pasta do Drive
+ * "146Mpoob0R5J4FwzDN6-6vLqbSKU9GdHv".
  *
- * 20 arquivos na pasta: 17 fotos, 2 PDFs e um .DS_Store. As 17 fotos foram
- * olhadas uma a uma: TODAS têm modelo, nenhuma é still, nenhuma é gerada
- * por IA. Nada foi acrescentado de fora da pasta.
+ * AS LEGENDAS SÃO AS DA BIA, copiadas dos dois PDFs que vieram na mesma
+ * pasta (camisas-ultimas-pecas.pdf e chemises-ultimas-pecas.pdf). Nada
+ * aqui é escrito por nós (Lucas, 12/11/2026: "o PDF que a Bia enviou já
+ * tem as legendas corretas"). A primeira versão descrevia a foto por
+ * conta própria e errou: trocou nome de produto e chamou de calça um pano
+ * amarrado na cintura. Só foram corrigidos os acentos que vieram tortos
+ * no PDF ("Condiçòes" → "Condições", "fluído" → "fluido").
  *
- * Cada foto vira o mesmo anúncio nos dois formatos. O 4:5 e o 9:16 são
- * feitos por encaixe, com a foto inteira dentro do quadro e o resto
- * preenchido com a própria foto desfocada: nada é cortado, então a cabeça
- * da modelo nunca é cortada.
+ * COMO CADA FOTO FOI AMARRADA AO PRODUTO, em ordem de força da prova:
+ *  1. arquivo idêntico ao da loja (a Bia tirou a foto do próprio produto
+ *     na Shopify): Camisa Ana Pied de Poule Preto e Vestido de Amarrar Geo;
+ *  2. nome do arquivo bate com o nome do produto na loja;
+ *  3. estampa igual à de um anúncio cujo nome a API do Meta confirma
+ *     (Camisa Ana Tribeca).
+ * Onde a prova não fecha, o campo `conferir` diz o que falta. Não
+ * inventamos nome.
  *
- * Os nomes vêm do nome do arquivo, que é como a marca nomeia. Onde o
- * arquivo não diz a peça, está escrito "nome a confirmar": não inventamos.
- * Preço e link entram depois da aprovação.
+ * As 17 fotos foram olhadas uma a uma: todas têm modelo, nenhuma é still,
+ * nenhuma é gerada por IA. Nada foi acrescentado de fora da pasta.
  */
 
 import type { AnuncioNovo, CarrosselNovo } from "@/lib/marina/aprovar";
 
 const N = "/marina/aprovar/novos";
 const BOTAO = "Comprar agora";
+const FECHO = "Condições especiais, aproveite, últimas peças.";
+
+/** Monta o texto do anúncio: nome da peça e a legenda da Bia. */
+const texto = (peca: string, legenda: string) => `${peca}\n\n${legenda}\n\n${FECHO}`;
 
 const faz = (
   id: string,
   peca: string,
   tipo: AnuncioNovo["tipo"],
   titulo: string,
-  texto: string,
+  legenda: string,
 ): AnuncioNovo => ({
-  id, peca, tipo, titulo, texto, botao: BOTAO,
+  id,
+  peca,
+  tipo,
+  titulo,
+  texto: texto(peca, legenda),
+  botao: BOTAO,
   feed: `${N}/${id}__45.jpg`,
   reels: `${N}/${id}__916.jpg`,
 });
 
 export const NOVOS: AnuncioNovo[] = [
-  faz("camisa-ana-casablanca-laranja-jpg", "Camisa Ana Casablanca Laranja", "camisa", "CASABLANCA",
-    "A Camisa Ana é o corte clássico da casa: não é larga nem justa, tem o caimento certo.\n\nColarinho e punho, sem bolso na frente.\n\nNa estampa Casablanca, em laranja e vermelho."),
-  faz("camisa-ana-copacabana-png", "Camisa Ana Copacabana", "camisa", "COPACABANA",
-    "A Camisa Ana no corte clássico da casa, colarinho e punho.\n\nNa estampa Copacabana, em rosa, preto e branco.\n\nCompõe com a calça da mesma estampa."),
+  // ---- camisas, legendas de camisas-ultimas-pecas.pdf ----
+  faz("camisas-ultimas-pecas-jpg", "Camisa Ana Tribeca", "camisa", "TRIBECA",
+    "100% seda, estampa exclusiva, perfeita caimento leve e elegante."),
+  faz("camisa-ana-casablanca-laranja-jpg", "Camisa Ana Casablanca", "camisa", "CASABLANCA",
+    "100% seda, corte clássico e atemporal."),
   faz("camisa-ana-riviera-jpg", "Camisa Ana Riviera", "camisa", "RIVIERA",
-    "A Camisa Ana é o corte clássico da casa: colarinho, punho e o caimento certo.\n\nNa estampa Riviera, em verde oliva claro.\n\nA estampa aparece de perto, no tom sobre tom."),
+    "100% seda, estampa exclusiva, perfeita para toda ocasião, leve e elegante."),
   faz("camisa-ana-damas-jpg", "Camisa Ana Damas", "camisa", "DAMAS",
-    "A Camisa Ana na estampa Damas, em losangos vermelhos, rosa e azuis.\n\nCorte clássico, colarinho e punho.\n\nCompõe com a calça da mesma estampa, como na foto."),
+    "100% seda, estampa exclusiva, perfeita caimento leve e elegante."),
+  faz("camisa-t-casablanca-laranja-jpg", "Camisa T Casablanca", "camisa", "CASABLANCA",
+    "100% seda, estampa exclusiva, perfeita, caimento leve e elegante."),
+  faz("camisa-ana-copacabana-png", "Camisa Ana Copacabana", "camisa", "COPACABANA",
+    "100% seda, estampa exclusiva, perfeita, caimento leve e elegante."),
+  faz("camisa-t-linha-branca-png", "Camisa T Linha", "camisa", "LINHA",
+    "100% seda, estampa elegante e caimento sofisticado."),
+  faz("camisa-t-atenas-amarela-jpg", "Camisa T Atenas", "camisa", "ATENAS",
+    "100% seda, estampa elegante e atemporal."),
+
+  // ---- não está no PDF: foto nova, subida em 12/11, idêntica à da loja ----
   faz("camisa-ana-pied-de-poule-preto-1-jpg", "Camisa Ana Pied de Poule Preto", "camisa", "PIED DE POULE",
-    "A Camisa Ana na Pied de Poule preta sobre fundo claro.\n\nCorte clássico da casa: colarinho, punho e caimento certo.\n\nA estampa resolve sozinha, com calça lisa."),
-  faz("camisa-t-atenas-amarela-jpg", "Camisa T Atenas Amarela", "camisa", "ATENAS",
-    "A Camisa T tem corte reto e gola careca, com mangas 3/4 e regulador em botão.\n\nNa estampa Atenas, em amarelo.\n\nCompõe com a calça da mesma cor."),
-  faz("camisa-t-casablanca-laranja-jpg", "Camisa T Casablanca Laranja", "camisa", "CASABLANCA",
-    "A Camisa T tem corte reto e gola careca, com mangas 3/4.\n\nNa estampa Casablanca, em vermelho e laranja.\n\nUsa aberta sobre a calça, ou amarrada na cintura."),
-  faz("camisa-t-linha-branca-png", "Camisa T Linha Branca", "camisa", "LINHA",
-    "A Camisa T de corte reto, gola careca e mangas 3/4.\n\nNa estampa Linha, um quadriculado fino em branco e preto.\n\nA peça neutra que entra em qualquer look."),
-  faz("camisas-ultimas-pecas-jpg", "Camisa estampa geométrica (nome a confirmar)", "camisa", "ÚLTIMAS PEÇAS",
-    "Camisa de estampa geométrica em preto, bege e branco, amarrada na cintura.\n\nÚltimas peças: são poucas unidades."),
-  faz("vestido-de-amarrar-pied-poule-verde-jpg", "Vestido de Amarrar Pied de Poule Verde", "vestido", "PIED DE POULE",
-    "O Vestido de Amarrar tem a frente presa atrás do pescoço, deixando os ombros à mostra.\n\nNa Pied de Poule verde, em seda.\n\nPode ser usado solto ou com cinto."),
-  faz("chemise-miriam-ultimas-pecas-jpg", "Chemise Miriam", "vestido", "MIRIAM",
-    "A Chemise Miriam é longa, de mangas 3/4 e faixa para amarrar na cintura.\n\nEm mostarda, com a estampa miúda por toda a peça.\n\nÚltimas peças."),
-  faz("chemises-ultimas-pecas-jpg", "Chemise Miriam · segunda foto", "vestido", "MIRIAM",
-    "A Chemise Miriam vista de outro ângulo, com a faixa amarrada na frente.\n\nLonga, de mangas 3/4, em mostarda.\n\nÚltimas peças."),
-  faz("chemises-ultimas-pecas-png", "Chemise estampa floral vermelha (nome a confirmar)", "vestido", "ÚLTIMAS PEÇAS",
-    "Chemise longa de manga curta, em estampa floral vermelha sobre fundo creme.\n\nFenda frontal que abre com o movimento.\n\nÚltimas peças."),
-  faz("chemises-ultimas-pecas-1-png", "Chemise amarela (nome a confirmar)", "vestido", "ÚLTIMAS PEÇAS",
-    "Chemise midi abotoada na frente, de mangas 3/4 dobradas.\n\nEm amarelo claro, com textura miúda.\n\nÚltimas peças."),
-  faz("2e9045c9-f102-4c16-b0a3-72749d5baa67-jpg", "Vestido estampa geométrica (nome a confirmar)", "vestido", "ÚLTIMAS PEÇAS",
-    "Vestido longo de alças, em estampa geométrica azul, vinho e branco.\n\nCaimento reto, com fenda lateral.\n\nÚltimas peças."),
-  faz("marina-saleme-056-jpg", "Vestido listrado verde (nome a confirmar)", "vestido", "ÚLTIMAS PEÇAS",
-    "Vestido longo e amplo, em listras verdes e brancas.\n\nTecido leve, que acompanha o movimento.\n\nÚltimas peças."),
-  faz("image-38629060-1160-4e97-90c7-7feeeb40306c-jpg", "Peça estampa floral vermelha (nome a confirmar)", "outro", "ÚLTIMAS PEÇAS",
-    "A estampa floral vermelha sobre fundo creme, aberta para ver o desenho inteiro.\n\nÚltimas peças."),
+    "100% seda, estampa exclusiva, caimento leve e elegante."),
+
+  // ---- vestidos e chemises, legendas de chemises-ultimas-pecas.pdf ----
+  faz("2e9045c9-f102-4c16-b0a3-72749d5baa67-jpg", "Vestido de Amarrar Geo", "vestido", "GEO",
+    "100% seda, perfeito para o verão, caimento leve e moderno."),
+  faz("vestido-de-amarrar-pied-poule-verde-jpg", "Vestido de Amarrar Pied Poule", "vestido", "PIED DE POULE",
+    "100% seda, perfeito para o verão, tecido fluido e elegante."),
+  faz("chemise-miriam-ultimas-pecas-jpg", "Chemise Miriam Atenas", "vestido", "ATENAS",
+    "100% linho, caimento leve e elegante."),
+  faz("chemises-ultimas-pecas-jpg", "Vestido Asa Mikonos", "vestido", "MIKONOS",
+    "100% seda, corte elegante e estampa exclusiva."),
+  faz("chemises-ultimas-pecas-png", "Vestido Princesa Bastão Imperador", "vestido", "BASTÃO IMPERADOR",
+    "100% seda, corte feminino e estampa exclusiva."),
+  faz("marina-saleme-056-jpg", "Chemise Stripes", "vestido", "STRIPES",
+    "100% viscose, caimento leve pra todos os momentos."),
+  faz("chemises-ultimas-pecas-1-png", "Chemise Miriam Atenas", "vestido", "ATENAS",
+    "100% linho, caimento leve e elegante."),
+  faz("image-38629060-1160-4e97-90c7-7feeeb40306c-jpg", "Vestido Princesa Bastão Imperador", "vestido", "BASTÃO IMPERADOR",
+    "100% seda, corte feminino e estampa exclusiva."),
 ];
+
+/**
+ * O que ainda precisa da palavra da Bia. Aparece na tela, para elas
+ * corrigirem no comentário em vez de a gente chutar.
+ */
+export const CONFERIR: Record<string, string> = {
+  "camisa-t-linha-branca-png":
+    "O PDF escreve Camisa T Linha; na loja o produto é Camisa Ana Linha. Qual é o certo?",
+  "chemises-ultimas-pecas-jpg":
+    "Esta é a mesma peça da foto da Chemise Miriam Atenas, mas é a foto que a loja usa no Vestido Asa Mikonos. Qual dos dois é?",
+  "chemises-ultimas-pecas-1-png":
+    "Chemise amarela lisa: confirmem se é a Chemise Miriam Atenas (a do PDF é 100% linho).",
+  "image-38629060-1160-4e97-90c7-7feeeb40306c-jpg":
+    "Mesma estampa do Vestido Princesa Bastão Imperador, mas aqui só aparece o tecido aberto. Confirmem a peça.",
+  "camisa-ana-pied-de-poule-preto-1-jpg":
+    "Esta não estava no PDF: a foto é a mesma do produto Camisa Ana Pied de Poule Preto na loja. A legenda foi escrita no padrão das outras.",
+};
 
 export const CARROSSEIS: CarrosselNovo[] = [
   {
     id: "carrossel-camisas",
-    nome: "Carrossel · Camisas sortidas",
+    nome: "Carrossel · Camisas",
     titulo: "Marina Saleme Estamparia",
     botao: BOTAO,
-    texto: "A camisa da casa em nove estampas.\n\nCamisa Ana no corte clássico, Camisa T de gola careca.\n\nArraste para ver todas.",
+    texto: `Camisas em 100% seda, estampa exclusiva, caimento leve e elegante.\n\n${FECHO}\n\nArraste para ver todas.`,
     cards: [
-      { src: `${N}/camisa-ana-casablanca-laranja-jpg__45.jpg`, nome: "Camisa Ana Casablanca Laranja" },
-      { src: `${N}/camisa-ana-copacabana-png__45.jpg`, nome: "Camisa Ana Copacabana" },
+      { src: `${N}/camisas-ultimas-pecas-jpg__45.jpg`, nome: "Camisa Ana Tribeca" },
+      { src: `${N}/camisa-ana-casablanca-laranja-jpg__45.jpg`, nome: "Camisa Ana Casablanca" },
       { src: `${N}/camisa-ana-riviera-jpg__45.jpg`, nome: "Camisa Ana Riviera" },
       { src: `${N}/camisa-ana-damas-jpg__45.jpg`, nome: "Camisa Ana Damas" },
+      { src: `${N}/camisa-ana-copacabana-png__45.jpg`, nome: "Camisa Ana Copacabana" },
       { src: `${N}/camisa-ana-pied-de-poule-preto-1-jpg__45.jpg`, nome: "Camisa Ana Pied de Poule Preto" },
-      { src: `${N}/camisa-t-atenas-amarela-jpg__45.jpg`, nome: "Camisa T Atenas Amarela" },
-      { src: `${N}/camisa-t-casablanca-laranja-jpg__45.jpg`, nome: "Camisa T Casablanca Laranja" },
-      { src: `${N}/camisa-t-linha-branca-png__45.jpg`, nome: "Camisa T Linha Branca" },
-      { src: `${N}/camisas-ultimas-pecas-jpg__45.jpg`, nome: "Camisa estampa geométrica" },
+      { src: `${N}/camisa-t-casablanca-laranja-jpg__45.jpg`, nome: "Camisa T Casablanca" },
+      { src: `${N}/camisa-t-atenas-amarela-jpg__45.jpg`, nome: "Camisa T Atenas" },
+      { src: `${N}/camisa-t-linha-branca-png__45.jpg`, nome: "Camisa T Linha" },
     ],
   },
   {
     id: "carrossel-vestidos",
-    nome: "Carrossel · Vestidos",
+    nome: "Carrossel · Vestidos e chemises",
     titulo: "Marina Saleme Estamparia",
     botao: BOTAO,
-    texto: "Seis vestidos, seis estampas.\n\nSão poucas unidades de cada.\n\nArraste para ver.",
+    texto: `Vestidos e chemises, cada um em uma estampa exclusiva.\n\n${FECHO}\n\nArraste para ver.`,
     cards: [
-      { src: `${N}/vestido-de-amarrar-pied-poule-verde-jpg__45.jpg`, nome: "Vestido de Amarrar Pied de Poule Verde" },
-      { src: `${N}/chemise-miriam-ultimas-pecas-jpg__45.jpg`, nome: "Chemise Miriam" },
-      { src: `${N}/chemises-ultimas-pecas-png__45.jpg`, nome: "Chemise floral vermelha" },
-      { src: `${N}/chemises-ultimas-pecas-1-png__45.jpg`, nome: "Chemise amarela" },
-      { src: `${N}/2e9045c9-f102-4c16-b0a3-72749d5baa67-jpg__45.jpg`, nome: "Vestido estampa geométrica" },
-      { src: `${N}/marina-saleme-056-jpg__45.jpg`, nome: "Vestido listrado verde" },
+      { src: `${N}/2e9045c9-f102-4c16-b0a3-72749d5baa67-jpg__45.jpg`, nome: "Vestido de Amarrar Geo" },
+      { src: `${N}/vestido-de-amarrar-pied-poule-verde-jpg__45.jpg`, nome: "Vestido de Amarrar Pied Poule" },
+      { src: `${N}/chemise-miriam-ultimas-pecas-jpg__45.jpg`, nome: "Chemise Miriam Atenas" },
+      { src: `${N}/chemises-ultimas-pecas-png__45.jpg`, nome: "Vestido Princesa Bastão Imperador" },
+      { src: `${N}/marina-saleme-056-jpg__45.jpg`, nome: "Chemise Stripes" },
+      { src: `${N}/chemises-ultimas-pecas-jpg__45.jpg`, nome: "Vestido Asa Mikonos" },
     ],
   },
 ];
