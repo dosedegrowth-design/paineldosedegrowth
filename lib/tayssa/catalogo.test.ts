@@ -176,7 +176,7 @@ test("Mega (lista do Lucas, 12/11/2026): a aplicação leva só as fotos do Mega
     { slug: "mega-brasileiro", name: "Mega Brasileiro" },
     { slug: "mega-fox", name: "Mega Fox" },
     { slug: "manutencao-cilios", name: "Manutenção de cílios" },
-    { slug: "manutencao-mega-volume-glam", name: "Manutenção Mega Volume Glam" },
+    { slug: "manutencao-mega-volume-ingles", name: "Manutenção Mega Volume Inglês" },
     { slug: "manutencao-mega-brasileiro", name: "Manutenção Mega Brasileiro" },
     { slug: "manutencao-mega-fox", name: "Manutenção Mega Fox" },
   ];
@@ -189,9 +189,8 @@ test("Mega (lista do Lucas, 12/11/2026): a aplicação leva só as fotos do Mega
   assert.equal(ids("mega-volume-ingles"), "g");
   assert.equal(ids("volume-fox-eyes"), "b");
   assert.equal(ids("mega-fox"), "h");
-  // a manutenção: as do Mega primeiro (vira a capa), depois as do volume, sem tirá-las de ninguém;
-  // a Mega Volume Glam é a do Mega Volume Inglês
-  assert.equal(ids("manutencao-mega-volume-glam"), "g,i");
+  // a manutenção: as do Mega primeiro (vira a capa), depois as do volume, sem tirá-las de ninguém
+  assert.equal(ids("manutencao-mega-volume-ingles"), "g,i");
   assert.equal(ids("manutencao-mega-brasileiro"), "e,a");
   assert.equal(ids("manutencao-mega-fox"), "h,b");
   assert.equal(ids("manutencao-cilios"), "c");
@@ -204,7 +203,6 @@ test("Mega (lista do Lucas, 12/11/2026): a aplicação leva só as fotos do Mega
 test("tecnicaDoNome: Mega x volume normal e o núcleo do volume", () => {
   assert.deepEqual(tecnicaDoNome("mega volume ingles"), { mega: true, nucleo: "ingles" });
   assert.deepEqual(tecnicaDoNome("mega ingles"), { mega: true, nucleo: "ingles" });
-  assert.deepEqual(tecnicaDoNome("mega volume glam"), { mega: true, nucleo: "ingles" });
   assert.deepEqual(tecnicaDoNome("volume fox eyes"), { mega: false, nucleo: "fox eyes" });
   assert.deepEqual(tecnicaDoNome("mega fox"), { mega: true, nucleo: "fox" });
 });

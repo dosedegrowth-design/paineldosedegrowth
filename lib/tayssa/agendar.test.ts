@@ -176,7 +176,7 @@ test("mensagem de confirmação: sala, interfone e o recado dela entram; sem com
 test("manutenção com o volume no nome não pergunta o volume e o valor é de partida", () => {
   // os nomes de produção (lista do Lucas, 12/11/2026)
   assert.equal(manutencaoComVolume("Manutenção Mega Fox"), true);
-  assert.equal(manutencaoComVolume("Manutenção Mega Volume Glam"), true);
+  assert.equal(manutencaoComVolume("Manutenção Mega Volume Inglês"), true);
   assert.equal(manutencaoComVolume("manutencao mega brasileiro"), true);
   assert.equal(manutencaoComVolume("Manutenção de cílios"), false);
   assert.equal(manutencaoComVolume("Manutenção"), false);

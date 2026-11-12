@@ -203,18 +203,11 @@ export function rolosDosServicos(
   return rolos;
 }
 
-/**
- * Outro nome da Tayssa para o mesmo volume. A lista do Lucas (12/11/2026) põe as aplicações
- * Mega Volume Inglês, Mega Brasileiro e Mega Fox ao lado das manutenções Mega Volume Glam,
- * Mega Brasileiro e Mega Fox: o Glam é o inglês (as fotos dela são "Mega inglês").
- */
-const MESMO_VOLUME: Record<string, string> = { glam: "ingles" };
-
 /** "Mega Volume Inglês" e "Mega inglês" → Mega + "ingles"; "Volume Fox eyes" → volume normal + "fox eyes". */
 export function tecnicaDoNome(k: string): { mega: boolean; nucleo: string } {
   const mega = /\bmega\b/.test(k);
   const nucleo = k.replace(/\b(mega|volume)\b/g, " ").replace(/\s+/g, " ").trim();
-  return { mega, nucleo: MESMO_VOLUME[nucleo] ?? nucleo };
+  return { mega, nucleo };
 }
 
 /** "fox" e "fox eyes" são o mesmo volume (Mega Fox x Mega Fox eyes); "ingles" e "ingles" também. */
