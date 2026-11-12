@@ -8,7 +8,7 @@ import { cicloLegivel, criterioLegivel, currency, dateLong, dateShort, dateTime,
 import { formatBrPhone } from "@/lib/tayssa/phone";
 import {
   MENSAGEM_CADASTRO_VIP_LIBERADO,
-  MENSAGEM_CONTA_LIBERADA,
+  MENSAGEM_SAUDACAO,
   MENSAGEM_VIP_INCLUIDA,
   renderTemplate,
   whatsappUrl,
@@ -99,7 +99,8 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
     d.summary.pendingServices + d.summary.benefitsPendingValidation + beneficiosPedidos;
   const revisadoAgora = user.signup_source === "self" && user.status !== "pending" && isWithinHours(user.reviewed_at, 48);
 
-  // cadastro para liberar: ainda não há ficha para mostrar, só a decisão, num cartão centrado
+  // conta antiga ainda em "pending" (de antes de 12/11/2026): só a decisão do VIP, num cartão centrado.
+  // A resposta abre a conta nos dois casos (fora o VIP, não há o que aprovar)
   if (user.status === "pending") {
     return (
       <div className="tya-pedido-pagina tya-up">
@@ -151,6 +152,20 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
           </>
         }
       />
+
+      {/* cliente nova do cadastro do site: a conta já marca horário; falta o VIP e a saudação */}
+      {d.summary.pedidoVip ? (
+        <SignupReviewPanel
+          naFicha
+          id={user.id}
+          name={user.name}
+          nickname={user.nickname}
+          email={user.email}
+          phone={user.phone}
+          message={user.signup_message}
+          requestedAt={user.requested_at}
+        />
+      ) : null}
 
       {/* ---------- quem é ela ---------- */}
       <div className="tya-kpis tya-kpis--tight">
@@ -219,17 +234,19 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
 
       {revisadoAgora ? (
         <AdminBlock
-          title="Cadastro VIP"
-          aside={<span className="tya-small">revisado em {dateTime(user.reviewed_at)}</span>}
+          title="Cliente nova"
+          aside={<span className="tya-small">respondido em {dateTime(user.reviewed_at)}</span>}
         >
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
-            <Selo tom={user.status === "rejected" ? "tya-pill--bad" : "tya-pill--ok"}>
-              {user.status === "rejected" ? "Recusado" : "Liberado"}
+            <Selo tom={user.status === "rejected" ? "tya-pill--bad" : vip === "active" ? "tya-pill--gold" : "tya-pill--quiet"}>
+              {user.status === "rejected" ? "Recusado" : vip === "active" ? "VIP aprovado" : "VIP não aprovado"}
             </Selo>
             <p className="tya-small" style={{ margin: 0 }}>
               {user.status === "rejected"
                 ? "A conta ficou marcada como recusada. Se mudar de ideia, reative em “Acesso e VIP”."
-                : `${(user.nickname ?? user.name).split(" ")[0]} já pode entrar com o WhatsApp e a senha que criou no cadastro.`}
+                : vip === "active"
+                  ? `${first} entra com o WhatsApp e a senha que criou no cadastro e já vê a área VIP.`
+                  : `${first} continua com a conta para marcar horário. Para incluir no VIP depois, é em “Acesso e VIP”.`}
             </p>
           </div>
           {user.review_note ? <p className="tya-quote">Sua nota: “{user.review_note}”</p> : null}
@@ -307,25 +324,22 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                   Reativar conta
                 </ActionButton>
               )}
-              {/* fez o cadastro VIP no site: a senha já existe (nunca o antigo
-                  "defina sua senha"). VIP: o recado do VIP; senão, a conta liberada com a regra */}
-              {user.signup_source === "self" && user.status === "active" && user.phone ? (
+              {/* fez o cadastro no site: a saudação (VIP: o recado do VIP; senão, as boas-vindas),
+                  nunca o antigo "defina sua senha". Com a decisão aberta, ela sai do cartão do topo */}
+              {user.signup_source === "self" && user.status === "active" && !d.summary.pedidoVip && user.phone ? (
                 <a
                   href={whatsappUrl(
                     user.phone,
-                    vip === "active"
-                      ? renderTemplate(MENSAGEM_CADASTRO_VIP_LIBERADO, { name: first, url: publicUrl(ROUTES.login) })
-                      : renderTemplate(MENSAGEM_CONTA_LIBERADA, {
-                          name: first,
-                          url: publicUrl(ROUTES.login),
-                          regra: regraVipLegivel(d.summary.vip.criterios),
-                        })
+                    renderTemplate(vip === "active" ? MENSAGEM_CADASTRO_VIP_LIBERADO : MENSAGEM_SAUDACAO, {
+                      name: first,
+                      url: publicUrl(ROUTES.login),
+                    })
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="tya-btn tya-btn--sm tya-btn--primary"
                 >
-                  Avisar no WhatsApp
+                  Saudação no WhatsApp
                 </a>
               ) : null}
               {d.activeSessions > 0 ? (

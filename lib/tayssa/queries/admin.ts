@@ -16,6 +16,7 @@ import {
   isInactive,
   loyaltyProgress,
   mesesSeguidos,
+  pedidoDeVip,
   progressoVip,
   referralProgress,
   timeToMinutes,
@@ -62,6 +63,8 @@ export type ClientSummary = {
   vip: ProgressoVip;
   /** cumpre os critérios e ainda não é VIP: espera a confirmação da Tayssa */
   prontaParaVip: boolean;
+  /** fez o cadastro VIP no site e a Tayssa ainda não decidiu o VIP (a conta já marca horário) */
+  pedidoVip: boolean;
 };
 
 async function loadClientRows(): Promise<UserWithProfile[]> {
@@ -135,6 +138,7 @@ export const listClients = cache(async (): Promise<ClientSummary[]> => {
       vip,
       // suspensa por ela não volta a pedir: só quem nunca foi VIP (ou saiu) e está com a conta ativa
       prontaParaVip: vip.cumpre && (profile?.vip_status ?? "none") === "none" && u.status === "active",
+      pedidoVip: pedidoDeVip(u, profile?.vip_status),
     };
   });
 });
@@ -373,8 +377,9 @@ export const getAdminOverview = cache(async (): Promise<AdminOverview> => {
     return info.daysUntil >= 0 && info.daysUntil <= 7;
   });
   return {
+    // pedidos de VIP do cadastro do site (a conta já marca horário; só o VIP espera a Tayssa)
     pendingSignups: clients
-      .filter((c) => c.user.status === "pending")
+      .filter((c) => c.pedidoVip)
       .sort((a, b) => (a.user.requested_at ?? "").localeCompare(b.user.requested_at ?? "")),
     appointmentsRequested: agenda.requested.length,
     agendaToday: agenda.todayList,

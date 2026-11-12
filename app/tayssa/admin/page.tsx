@@ -57,7 +57,7 @@ export default async function AdminHome() {
       />
 
       <div className="tya-kpis tya-kpis--home">
-        <Stat n={o.pendingSignups.length} label="Cadastros para liberar" href={ROUTES.adminClients} alert={o.pendingSignups.length > 0} />
+        <Stat n={o.pendingSignups.length} label="Novas clientes" href={ROUTES.adminClients} alert={o.pendingSignups.length > 0} />
         <Stat n={o.appointmentsRequested} label="Horários a confirmar" href={ROUTES.adminAgenda} alert={o.appointmentsRequested > 0} />
         <Stat n={o.pendingServices} label="Atendimentos a confirmar" href={ROUTES.adminServices} alert={o.pendingServices > 0} />
         <Stat n={o.referralsInProgress} label="Indicações em andamento" href={ROUTES.adminReferrals} alert={o.referralsInProgress > 0} />
@@ -105,7 +105,7 @@ export default async function AdminHome() {
         </AdminBlock>
 
         {o.pendingSignups.length ? (
-          <AdminBlock title="Cadastros para liberar" aside={<TransitionLink href={ROUTES.adminClients} className="ty-link ty-link--caps">Ver todos</TransitionLink>}>
+          <AdminBlock title="Novas clientes" aside={<TransitionLink href={ROUTES.adminClients} className="ty-link ty-link--caps">Ver todos</TransitionLink>}>
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
               {o.pendingSignups.slice(0, 6).map((c) => (
                 <li key={c.user.id} style={{ display: "flex", justifyContent: "space-between", gap: 12, padding: "10px 0", borderTop: "1px solid var(--t-line)", alignItems: "center" }}>
@@ -117,7 +117,7 @@ export default async function AdminHome() {
                     </span>
                   </div>
                   <TransitionLink href={ROUTES.adminClient(c.user.id)} className="ty-link ty-link--caps">
-                    Liberar
+                    Responder
                   </TransitionLink>
                 </li>
               ))}

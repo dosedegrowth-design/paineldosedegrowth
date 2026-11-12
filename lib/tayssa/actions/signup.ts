@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { vipDb } from "@/lib/tayssa/db";
 import { hashPassword } from "@/lib/tayssa/auth/password";
 import { logAudit } from "@/lib/tayssa/audit";
@@ -9,18 +10,20 @@ import { ROUTES } from "@/lib/tayssa/config";
 import { getSettings } from "@/lib/tayssa/settings";
 import { signupSchema } from "@/lib/tayssa/validation";
 import { ipDaRequisicao, passouDoLimite } from "@/lib/tayssa/limite";
+import { avisarTayssa } from "@/lib/tayssa/avisos";
 import { BusinessError, runAction, str } from "@/lib/tayssa/actions/_helpers";
 import type { ActionResult } from "@/lib/tayssa/types";
 
 export type SignupResult = { firstName: string };
 
 /**
- * Cadastro VIP pelo site (Lucas, 09/11/2026). A conta nasce em `pending`,
- * com a senha que ela escolheu, e nada abre até a Tayssa liberar no painel
- * (ela avisa a Tayssa pelo WhatsApp na tela final). Nenhuma sessão é criada
- * aqui. Sem e-mail: ela entra com o WhatsApp. Um WhatsApp, uma conta: quem
- * já agendou pelo site é mandada para entrar (a folha de agendar já diz o
- * mesmo, então isso não revela nada novo).
+ * Cadastro VIP pelo site (Lucas, 09/11/2026; 12/11/2026: "se a cliente faz o
+ * cadastro e não é VIP, ela vai ter atendimento, horários, tudo mais;
+ * aprovar o quê?"). A conta nasce ativa, com a senha que ela escolheu: ela
+ * já entra e marca horário. O cadastro fica como pedido de VIP
+ * (`requested_at`, sem `reviewed_at`) e a Tayssa só decide o VIP no painel. Sem e-mail: ela entra com o WhatsApp.
+ * Um WhatsApp, uma conta: quem já agendou pelo site é mandada para entrar
+ * (a folha de agendar já diz o mesmo, então isso não revela nada novo).
  */
 export async function signupAction(
   _prev: ActionResult<SignupResult> | null,
@@ -65,12 +68,7 @@ export async function signupAction(
         entityId: existente.id,
         meta: { ip, por: "phone" },
       });
-      throw new BusinessError(
-        existente.status === "pending"
-          ? "Esse WhatsApp já fez o cadastro e está esperando a Tayssa liberar. Mande uma mensagem para ela."
-          : "Esse WhatsApp já tem conta. Toque em “Já tenho conta” e entre com a sua senha.",
-        "phone"
-      );
+      throw new BusinessError("Esse WhatsApp já tem conta. Toque em “Já tenho conta” e entre com a sua senha.", "phone");
     }
 
     const password_hash = await hashPassword(input.password);
@@ -84,7 +82,7 @@ export async function signupAction(
         nickname: input.apelido,
         phone: input.phone,
         password_hash,
-        status: "pending",
+        status: "active",
         signup_source: "self",
         signup_message: input.message,
         requested_at: now,
@@ -120,6 +118,15 @@ export async function signupAction(
       entityId: id,
       meta: { source: "self", ip },
     });
+    // nova cliente: aviso no celular da Tayssa (VIP ou não), para ela mandar a saudação
+    after(() =>
+      avisarTayssa({
+        titulo: "Nova cliente",
+        corpo: `${input.name} fez o cadastro no site.`,
+        url: ROUTES.adminClient(id),
+        tag: `cliente-${id}`,
+      }),
+    );
     revalidatePath(ROUTES.admin, "layout");
     return { firstName };
   });

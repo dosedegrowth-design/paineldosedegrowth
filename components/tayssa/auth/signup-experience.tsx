@@ -27,8 +27,9 @@ const STEP_OF: Record<Campo, number> = { name: 0, apelido: 0, phone: 0, password
  * Cadastro VIP (Lucas, 09/11/2026). Três passos curtos, um por tela,
  * validados no aparelho: quem é ela (nome, como quer ser chamada e o
  * WhatsApp, que é o login), a senha duas vezes e, se quiser, o aniversário
- * e um recado. A conta nasce esperando a Tayssa liberar; a tela final
- * manda a cliente avisar a Tayssa no WhatsApp com a mensagem pronta.
+ * e um recado. A conta já nasce pronta para marcar horário (12/11/2026:
+ * fora o VIP, não há o que aprovar); a tela final manda a cliente avisar a
+ * Tayssa no WhatsApp para ela aprovar o VIP.
  */
 export function SignupExperience({
   open,
@@ -152,7 +153,7 @@ export function SignupExperience({
         <h1 className="tyl__title">
           Pronto, <em>{done.firstName}.</em>
         </h1>
-        <p className="tyl__sub">Agora avise a Tayssa: ela libera a sua conta e você entra com o seu WhatsApp e a senha que criou.</p>
+        <p className="tyl__sub">Sua conta está pronta: entre com o seu WhatsApp e a senha para marcar seus horários. E avise a Tayssa para ela aprovar o seu VIP.</p>
         <a href={avisar} target="_blank" rel="noopener noreferrer" className="tyl__submit">
           <WhatsAppIcon size={20} />
           Avisar a Tayssa no WhatsApp

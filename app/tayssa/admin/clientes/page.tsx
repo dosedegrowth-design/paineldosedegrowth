@@ -8,7 +8,7 @@ import { TransitionLink } from "@/components/tayssa/ui/transition";
 export default async function ClientsPage() {
   await requireAdminPage();
   const clients = await listClients();
-  const esperando = clients.filter((c) => c.user.status === "pending").length;
+  const esperando = clients.filter((c) => c.pedidoVip).length;
 
   return (
     <>
@@ -21,8 +21,8 @@ export default async function ClientsPage() {
         }
         lead={
           esperando > 0
-            ? `${esperando} ${esperando === 1 ? "cadastro espera" : "cadastros esperam"} você liberar: é o filtro que já está aberto.`
-            : "Nenhum cadastro esperando você liberar. A lista mostra todas as clientes."
+            ? `${esperando} ${esperando === 1 ? "cliente nova espera" : "clientes novas esperam"} a sua saudação e o VIP: é o filtro que já está aberto.`
+            : "Nenhuma cliente nova esperando você. A lista mostra todas as clientes."
         }
         actions={
           <TransitionLink href={ROUTES.adminClientNew} className="tya-btn tya-btn--primary">

@@ -166,10 +166,8 @@ export const signupSchema = z
 
 export const reviewSignupSchema = z.object({
   id: z.string().uuid(),
-  /** liberar (conta comum, só a agenda), liberar já como VIP, ou recusar */
-  decision: z.enum(["approve", "reject"]),
-  note: z.string().trim().max(300).optional().transform((v) => v || null),
-  vip: z.boolean().optional(),
+  /** pedido de VIP do cadastro: aprova o VIP (true) ou "agora não" (false); a conta já marca horário */
+  vip: z.boolean(),
 });
 
 /** Metadados de uma foto da biblioteca. */

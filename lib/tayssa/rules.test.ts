@@ -17,6 +17,7 @@ import {
   loyaltyProgress,
   marcosPerdidos,
   mesesSeguidos,
+  pedidoDeVip,
   progressoVip,
   referralProgress,
   somaDePontos,
@@ -453,4 +454,17 @@ test("correção de pontos: soma e marcos perdidos quando o total cai", () => {
   // subiu ou não cruzou nada: nenhum
   assert.deepEqual(marcosPerdidos(300, 450, marcos), []);
   assert.deepEqual(marcosPerdidos(450, 400, marcos), []);
+});
+
+test("pedido de VIP: cadastro do site sem resposta da Tayssa (a conta já marca horário)", () => {
+  const cadastro = { signup_source: "self", reviewed_at: null, status: "active" };
+  assert.equal(pedidoDeVip(cadastro, "none"), true);
+  // conta antiga, de antes da mudança, ainda em "pending"
+  assert.equal(pedidoDeVip({ ...cadastro, status: "pending" }, "none"), true);
+  // respondido (aprovou ou "agora não"), já VIP, veio da agenda ou conta desativada: não é pedido
+  assert.equal(pedidoDeVip({ ...cadastro, reviewed_at: "2026-11-12T21:00:00Z" }, "none"), false);
+  assert.equal(pedidoDeVip(cadastro, "active"), false);
+  assert.equal(pedidoDeVip({ ...cadastro, signup_source: "agenda" }, "none"), false);
+  assert.equal(pedidoDeVip({ ...cadastro, status: "inactive" }, "none"), false);
+  assert.equal(pedidoDeVip(cadastro, undefined), true);
 });

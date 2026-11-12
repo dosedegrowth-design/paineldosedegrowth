@@ -42,12 +42,12 @@ function SeloConta({ status }: { status: UserStatus }) {
  * "Pendências 1" e a linha dela na lista dizia "—": o panorama mentia.
  */
 function espera(c: ClientSummary) {
-  return (c.user.status === "pending" ? 1 : 0) + c.pendingServices + c.benefitsPendingValidation;
+  return (c.pedidoVip ? 1 : 0) + c.pendingServices + c.benefitsPendingValidation;
 }
 
 function pendencias(c: ClientSummary) {
   const partes: string[] = [];
-  if (c.user.status === "pending") partes.push("cadastro para liberar");
+  if (c.pedidoVip) partes.push("nova cliente");
   if (c.pendingServices > 0) partes.push(`${c.pendingServices} atend.`);
   if (c.benefitsPendingValidation > 0) partes.push(`${c.benefitsPendingValidation} benef.`);
   return partes;
@@ -71,7 +71,8 @@ const contato = (c: ClientSummary) => c.user.email ?? (c.user.phone ? formatBrPh
 
 export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
   const [q, setQ] = useState("");
-  const pendingCount = clients.filter((c) => c.user.status === "pending").length;
+  // pediram o VIP no cadastro do site e esperam a resposta (a conta já marca horário)
+  const pendingCount = clients.filter((c) => c.pedidoVip).length;
   // cadastradas pela agenda e ainda fora do VIP: a Tayssa escolhe quem incluir (Lucas, 05/11/2026)
   const agendaCount = clients.filter((c) => c.user.signup_source === "agenda" && c.profile?.vip_status !== "active").length;
   const attentionCount = clients.filter((c) => espera(c) > 0).length;
@@ -80,7 +81,7 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
   const list = useMemo(() => {
     return clients.filter((c) => {
       if (!bateBusca(q, [c.user.name, c.user.nickname, c.user.email, c.user.phone])) return false;
-      if (only === "pending") return c.user.status === "pending";
+      if (only === "pending") return c.pedidoVip;
       if (only === "agenda") return c.user.signup_source === "agenda";
       if (only === "vip") return c.profile?.vip_status === "active";
       if (only === "pronta") return c.prontaParaVip;
@@ -92,7 +93,7 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
 
   const filtros: [Filtro, string, number | null][] = [
     ["all", "Todas", null],
-    ["pending", "Cadastros para liberar", pendingCount || null],
+    ["pending", "Novas clientes", pendingCount || null],
     ["agenda", "Da agenda", agendaCount || null],
     ["vip", "VIP", null],
     ["pronta", "Prontas para VIP", prontaCount || null],
@@ -136,7 +137,7 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
             {q.trim()
               ? `Nenhuma cliente encontrada para “${q.trim()}”.`
               : only === "pending"
-                ? "Nenhum cadastro esperando você liberar."
+                ? "Nenhuma cliente nova esperando você."
                 : "Nenhuma cliente nesta lista."}
           </Empty>
         </div>

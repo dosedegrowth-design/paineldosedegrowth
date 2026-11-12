@@ -34,12 +34,11 @@ export const MENSAGEM_VIP_INCLUIDA =
   "Oi, {name}! Aqui é a Tayssa. Agora você é VIP: tem prioridade na minha agenda e acesso à área VIP, com cartão de visitas, pontos e presentes. É só entrar com o mesmo WhatsApp e a mesma senha que você usa para agendar: {url}";
 
 /**
- * Cadastro VIP (Lucas, 09/11/2026): a cliente se cadastra no site e avisa a
- * Tayssa para liberar (botão da tela final). A Tayssa libera no painel e
- * responde com a conta liberada; a regra do VIP vai junto.
+ * Cadastro VIP (Lucas, 09/11/2026; 12/11/2026: a conta já abre na hora, a
+ * Tayssa só decide o VIP). A cliente avisa a Tayssa pelo botão da tela final.
  */
 export const MENSAGEM_CADASTRO_FEITO =
-  "Oi, Tayssa, tudo bem? Aqui é {name}. Fiz o meu cadastro VIP no site. Pode liberar a minha conta?";
+  "Oi, Tayssa, tudo bem? Aqui é {name}. Fiz o meu cadastro VIP no site. Pode aprovar o meu VIP?";
 
 /**
  * A Tayssa liberou como VIP quem fez o cadastro VIP no site (Lucas,
@@ -50,8 +49,12 @@ export const MENSAGEM_CADASTRO_FEITO =
 export const MENSAGEM_CADASTRO_VIP_LIBERADO =
   "Oi, {name}! Aqui é a Tayssa. Agora você é VIP: tem prioridade na minha agenda e acesso à área VIP, com cartão de visitas, pontos e presentes. É só entrar com o seu WhatsApp e a senha que você criou no cadastro: {url}";
 
-export const MENSAGEM_CONTA_LIBERADA =
-  "Oi, {name}! Aqui é a Tayssa. Liberei a sua conta: é só entrar com o seu WhatsApp e a senha que você criou para marcar seus horários. Para virar VIP são {regra}, e eu confirmo por aqui. {url}";
+/**
+ * Saudação para a cliente nova que não entrou no VIP (Lucas, 12/11/2026:
+ * "para ela dar uma mensagem de saudação ali para a menina").
+ */
+export const MENSAGEM_SAUDACAO =
+  "Oi, {name}! Aqui é a Tayssa. Que bom ter você aqui! Sua conta já está pronta: é só entrar com o seu WhatsApp e a senha que você criou para marcar seus horários. {url}";
 
 export function whatsappUrl(phoneDigits: string, message?: string): string {
   const digits = phoneDigits.replace(/\D/g, "");

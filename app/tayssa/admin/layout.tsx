@@ -24,7 +24,15 @@ export const dynamic = "force-dynamic";
 async function contarAtencao(): Promise<Atencao> {
   const db = vipDb();
   const [cadastros, horarios, atendimentos, indicacoes, beneficios] = await Promise.all([
-    db.from("users").select("id", { count: "exact", head: true }).eq("status", "pending"),
+    // pedidos de VIP do cadastro do site ainda sem resposta (a conta já marca horário)
+    db
+      .from("users")
+      .select("id, client_profiles!inner(vip_status)", { count: "exact", head: true })
+      .eq("role", "client")
+      .eq("signup_source", "self")
+      .is("reviewed_at", null)
+      .in("status", ["active", "pending"])
+      .eq("client_profiles.vip_status", "none"),
     db.from("appointments").select("id", { count: "exact", head: true }).eq("status", "requested"),
     db.from("client_services").select("id", { count: "exact", head: true }).eq("status", "pending"),
     db

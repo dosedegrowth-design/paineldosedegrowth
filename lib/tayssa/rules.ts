@@ -160,6 +160,25 @@ export function marcosPerdidos<T extends Pick<BenefitRow, "type" | "threshold" |
   );
 }
 
+/**
+ * Pedido de VIP esperando a Tayssa (Lucas, 12/11/2026: "se a cliente faz o
+ * cadastro e não é VIP, ela vai ter atendimento, horários, tudo mais;
+ * aprovar o quê?"). Quem faz o cadastro VIP no site já tem a conta para
+ * marcar horário; a única decisão da Tayssa é o VIP: aprovar ou "agora não".
+ * Conta antiga ainda em `pending` (de antes da mudança) também conta.
+ */
+export function pedidoDeVip(
+  u: { signup_source: string | null; reviewed_at: string | null; status: string },
+  vipStatus: string | null | undefined
+): boolean {
+  return (
+    u.signup_source === "self" &&
+    !u.reviewed_at &&
+    (u.status === "active" || u.status === "pending") &&
+    (vipStatus ?? "none") === "none"
+  );
+}
+
 /** 1.020 (o `numero()` do format.ts, sem importar a camada de formatação) */
 function numeroBr(n: number): string {
   return String(Math.trunc(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");

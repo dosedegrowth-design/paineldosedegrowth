@@ -6,6 +6,8 @@ const LABELS: Record<string, string> = {
   signup_requested: "Pediu acesso pelo site",
   signup_approved: "Pedido de acesso aprovado",
   signup_rejected: "Pedido de acesso recusado",
+  vip_pedido_aprovado: "Pedido de VIP aprovado",
+  vip_pedido_nao_aprovado: "Pedido de VIP não aprovado",
   stamp_revealed: "Cliente raspou um carimbo",
   appointment_requested: "Cliente pediu horário",
   appointment_cancelled: "Cliente desmarcou horário",

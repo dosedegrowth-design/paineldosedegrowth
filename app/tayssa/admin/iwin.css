@@ -2033,3 +2033,18 @@ select.tya-field {
     grid-column: 1 / -1;
   }
 }
+
+/* pedido de VIP (12/11/2026): só a decisão do VIP, os dois botões lado a lado */
+.tya-pedido__acoes--dois {
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 480px) {
+  .tya-pedido__acoes--dois {
+    grid-template-columns: 1fr;
+  }
+}
+/* dentro da ficha (conta já ativa), o pedido abre o topo da página na largura do conteúdo */
+.tya-pedido--na-ficha {
+  width: 100%;
+  margin-bottom: 18px;
+}
