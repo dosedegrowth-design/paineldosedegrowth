@@ -248,3 +248,4 @@ main { justify-content: flex-start; padding: 0; }
 .interna:has(.precos--cilios) .arco--p2 { top: 104px; }
 .precos--cilios li { padding: 9px 0 !important; }
 .interna:has(.precos--cilios) .nota--curta { margin-top: 14px; }
+.arco--par img, .arco--vip img { object-position: 50% 50%; }

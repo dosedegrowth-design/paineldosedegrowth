@@ -58,7 +58,7 @@ const SLIDES = [
   },
   {
     n: 5, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 55, items: [{ t: 'corner', at: 'top-right', size: 0.95 }] },
-    html: `<div class="cabeca"><figure class="arco arco--par arco--p1"><img src="fotos/trabalho-a.jpg"></figure><figure class="arco arco--par arco--p2"><img src="fotos/trabalho-e.jpg"></figure>
+    html: `<div class="cabeca"><figure class="arco arco--par arco--p1"><img src="fotos/cilios-volume.jpg"></figure><figure class="arco arco--par arco--p2"><img src="fotos/cilios-mega.jpg"></figure>
       <h1 class="h1--valores">Cílios: valores e tempo</h1></div><div class="conteudo">
       <ul class="precos precos--cilios">
         <li><span class="nome">Volume brasileiro, inglês ou egípcio<small>manutenção a partir de R$ 120</small></span><span class="val">R$ 170 · 3h</span></li>
@@ -99,7 +99,7 @@ const SLIDES = [
   },
   {
     n: 9, img: { src: 'canva/interna-a.jpg', flip: 0 }, bg: { seed: 88, items: [{ t: 'corner', at: 'top-right', size: 0.95 }] },
-    html: `<div class="cabeca"><figure class="arco arco--vip"><img src="fotos/trabalho-b.jpg"></figure>
+    html: `<div class="cabeca"><figure class="arco arco--vip"><img src="fotos/cilios-vip.jpg"></figure>
       
       <h1 class="h1--vip">Sendo VIP, você tem</h1></div><div class="conteudo">
       <ul class="beneficios">
