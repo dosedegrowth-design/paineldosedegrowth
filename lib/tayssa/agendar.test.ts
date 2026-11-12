@@ -175,18 +175,18 @@ test("mensagem de confirmação: sala, interfone e o recado dela entram; sem com
 
 test("manutenção com o volume no nome não pergunta o volume e o valor é de partida", () => {
   // os nomes de produção (lista do Lucas, 12/11/2026)
-  assert.equal(manutencaoComVolume("Manutenção Mega Fox"), true);
-  assert.equal(manutencaoComVolume("Manutenção Mega Volume Inglês"), true);
+  assert.equal(manutencaoComVolume("Manutenção Mega Fox eyes"), true);
+  assert.equal(manutencaoComVolume("Manutenção Mega Inglês"), true);
   assert.equal(manutencaoComVolume("manutencao mega brasileiro"), true);
   assert.equal(manutencaoComVolume("Manutenção de cílios"), false);
   assert.equal(manutencaoComVolume("Manutenção"), false);
   assert.equal(manutencaoComVolume("Volume brasileiro"), false);
   // a aplicação Mega não é manutenção
-  assert.equal(manutencaoComVolume("Mega Volume Inglês"), false);
-  assert.equal(ehManutencao("mega-volume-ingles", "Mega Volume Inglês"), false);
+  assert.equal(manutencaoComVolume("Mega Inglês"), false);
+  assert.equal(ehManutencao("mega-ingles", "Mega Inglês"), false);
   // a genérica pergunta de qual volume; a do volume, não
   assert.equal(ehManutencao("manutencao-cilios", "Manutenção de cílios"), true);
-  assert.equal(ehManutencao("manutencao-mega-fox", "Manutenção Mega Fox"), false);
+  assert.equal(ehManutencao("manutencao-mega-fox-eyes", "Manutenção Mega Fox eyes"), false);
   assert.equal(ehManutencao("volume-ingles", "Volume inglês"), false);
 });
 

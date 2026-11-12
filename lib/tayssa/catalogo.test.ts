@@ -167,18 +167,18 @@ test("Mega (lista do Lucas, 12/11/2026): a aplicação leva só as fotos do Mega
     linha({ id: "h", lash_style: "Mega Fox eyes" }),
     linha({ id: "c", lash_style: "Manutenção" }),
   ]);
-  // os serviços de produção (12/11/2026), com os nomes da lista do Lucas
+  // os serviços de produção (12/11/2026): Mega Inglês, Mega Brasileiro, Mega Fox eyes
   const servicos = [
     { slug: "volume-brasileiro", name: "Volume brasileiro" },
     { slug: "volume-ingles", name: "Volume inglês" },
     { slug: "volume-fox-eyes", name: "Volume Fox eyes" },
-    { slug: "mega-volume-ingles", name: "Mega Volume Inglês" },
+    { slug: "mega-ingles", name: "Mega Inglês" },
     { slug: "mega-brasileiro", name: "Mega Brasileiro" },
-    { slug: "mega-fox", name: "Mega Fox" },
+    { slug: "mega-fox-eyes", name: "Mega Fox eyes" },
     { slug: "manutencao-cilios", name: "Manutenção de cílios" },
-    { slug: "manutencao-mega-volume-ingles", name: "Manutenção Mega Volume Inglês" },
+    { slug: "manutencao-mega-ingles", name: "Manutenção Mega Inglês" },
     { slug: "manutencao-mega-brasileiro", name: "Manutenção Mega Brasileiro" },
-    { slug: "manutencao-mega-fox", name: "Manutenção Mega Fox" },
+    { slug: "manutencao-mega-fox-eyes", name: "Manutenção Mega Fox eyes" },
   ];
   const rolos = rolosDosServicos(cat, servicos);
   const ids = (slug: string) => (rolos[slug] ?? []).map((i) => i.id).join(",");
@@ -186,16 +186,16 @@ test("Mega (lista do Lucas, 12/11/2026): a aplicação leva só as fotos do Mega
   assert.equal(ids("volume-brasileiro"), "a");
   assert.equal(ids("mega-brasileiro"), "e");
   assert.equal(ids("volume-ingles"), "i");
-  assert.equal(ids("mega-volume-ingles"), "g");
+  assert.equal(ids("mega-ingles"), "g");
   assert.equal(ids("volume-fox-eyes"), "b");
-  assert.equal(ids("mega-fox"), "h");
+  assert.equal(ids("mega-fox-eyes"), "h");
   // a manutenção: as do Mega primeiro (vira a capa), depois as do volume, sem tirá-las de ninguém
-  assert.equal(ids("manutencao-mega-volume-ingles"), "g,i");
+  assert.equal(ids("manutencao-mega-ingles"), "g,i");
   assert.equal(ids("manutencao-mega-brasileiro"), "e,a");
-  assert.equal(ids("manutencao-mega-fox"), "h,b");
+  assert.equal(ids("manutencao-mega-fox-eyes"), "h,b");
   assert.equal(ids("manutencao-cilios"), "c");
   // nenhuma foto de aplicação aparece em dois serviços
-  const aplicacoes = ["volume-brasileiro", "mega-brasileiro", "volume-ingles", "mega-volume-ingles", "volume-fox-eyes", "mega-fox"];
+  const aplicacoes = ["volume-brasileiro", "mega-brasileiro", "volume-ingles", "mega-ingles", "volume-fox-eyes", "mega-fox-eyes"];
   const todas = aplicacoes.flatMap((s) => rolos[s] ?? []).map((i) => i.id);
   assert.equal(new Set(todas).size, todas.length);
 });
