@@ -79,8 +79,8 @@ export const NOVOS: AnuncioNovo[] = [
     "100% seda, perfeito para o verão, caimento leve e moderno."),
   faz("vestido-de-amarrar-pied-poule-verde-jpg", "Vestido de Amarrar Pied Poule", "vestido", "PIED DE POULE",
     "100% seda, perfeito para o verão, tecido fluido e elegante."),
-  faz("chemise-miriam-ultimas-pecas-jpg", "Chemise Miriam Atenas", "vestido", "ATENAS",
-    "100% linho, caimento leve e elegante."),
+  faz("chemise-miriam-ultimas-pecas-jpg", "Vestido Asa Mikonos", "vestido", "MIKONOS",
+    "100% seda, corte elegante e estampa exclusiva."),
   faz("chemises-ultimas-pecas-jpg", "Vestido Asa Mikonos", "vestido", "MIKONOS",
     "100% seda, corte elegante e estampa exclusiva."),
   faz("chemises-ultimas-pecas-png", "Vestido Princesa Bastão Imperador", "vestido", "BASTÃO IMPERADOR",
@@ -98,10 +98,10 @@ export const NOVOS: AnuncioNovo[] = [
 export const CONFERIR: Record<string, string> = {
   "camisa-t-linha-branca-png":
     "O PDF escreve Camisa T Linha; na loja o produto é Camisa Ana Linha. Qual é o certo?",
-  "chemises-ultimas-pecas-jpg":
-    "Esta é a mesma peça da foto da Chemise Miriam Atenas, mas é a foto que a loja usa no Vestido Asa Mikonos. Qual dos dois é?",
+  "chemise-miriam-ultimas-pecas-jpg":
+    "A Aninha avisou que esta foto é do Vestido Asa amarelo, não da Chemise Miriam. Corrigido: é a segunda foto do Vestido Asa Mikonos.",
   "chemises-ultimas-pecas-1-png":
-    "Chemise amarela lisa: confirmem se é a Chemise Miriam Atenas (a do PDF é 100% linho).",
+    "Esta é a Chemise Miriam Atenas, a de linho do PDF. É ela que entrou no carrossel de vestidos.",
   "image-38629060-1160-4e97-90c7-7feeeb40306c-jpg":
     "Peça nova, ainda sem legenda no PDF: esta foto é a segunda imagem do produto Camisa Jota Bastão Imperador na loja (100% crepe de chine, R$ 825, resta o G). A legenda foi escrita no padrão das suas.",
   "camisa-ana-pied-de-poule-preto-1-jpg":
@@ -137,7 +137,7 @@ export const CARROSSEIS: CarrosselNovo[] = [
     cards: [
       { src: `${N}/2e9045c9-f102-4c16-b0a3-72749d5baa67-jpg__45.jpg`, nome: "Vestido de Amarrar Geo" },
       { src: `${N}/vestido-de-amarrar-pied-poule-verde-jpg__45.jpg`, nome: "Vestido de Amarrar Pied Poule" },
-      { src: `${N}/chemise-miriam-ultimas-pecas-jpg__45.jpg`, nome: "Chemise Miriam Atenas" },
+      { src: `${N}/chemises-ultimas-pecas-1-png__45.jpg`, nome: "Chemise Miriam Atenas" },
       { src: `${N}/chemises-ultimas-pecas-png__45.jpg`, nome: "Vestido Princesa Bastão Imperador" },
       { src: `${N}/marina-saleme-056-jpg__45.jpg`, nome: "Chemise Stripes" },
       { src: `${N}/chemises-ultimas-pecas-jpg__45.jpg`, nome: "Vestido Asa Mikonos" },
