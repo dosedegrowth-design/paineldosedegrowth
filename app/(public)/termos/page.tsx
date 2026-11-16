@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Termos de Serviço",
-  description: "Termos de uso das plataformas da Dose de Growth: Tráfego DDG, CRM Dose de Growth e Disparador de WhatsApp",
+  description: "Termos de uso das plataformas da Dose de Growth: Tráfego DDG, CRM Dose de Growth, Disparador de WhatsApp e Hub de Marketplaces",
 };
 
 export default function TermosPage() {
@@ -10,13 +10,14 @@ export default function TermosPage() {
     <article>
       <h1>Termos de Serviço</h1>
       <p className="text-xs text-muted-foreground">
-        Última atualização: 27 de outubro de 2026
+        Última atualização: 16 de novembro de 2026
       </p>
 
       <h2>1. Aceitação</h2>
       <p>
         Ao acessar e utilizar as plataformas <strong>Tráfego DDG</strong>,{" "}
-        <strong>CRM Dose de Growth</strong> e <strong>Disparador</strong>{" "}
+        <strong>CRM Dose de Growth</strong>, <strong>Disparador</strong> e{" "}
+        <strong>Hub de Marketplaces DDG</strong>{" "}
         (&ldquo;Plataforma&rdquo;), operadas pela <strong>Dose de Growth</strong>{" "}
         (&ldquo;DDG&rdquo;), você concorda com estes Termos de Serviço. Se você
         não concorda, não utilize a Plataforma.
@@ -39,6 +40,11 @@ export default function TermosPage() {
           receber mensagens do número oficial da empresa cliente
         </li>
         <li>Painéis comerciais de clientes via webhook autenticado</li>
+        <li>
+          Mercado Livre, Magalu, Shopee, Amazon e TikTok Shop, pelas APIs
+          oficiais de cada marketplace, para vender os produtos da loja cliente
+          (Hub de Marketplaces DDG)
+        </li>
       </ul>
 
       <h2>3. Quem pode usar</h2>
@@ -189,7 +195,35 @@ export default function TermosPage() {
         removendo o acesso no Gerenciador de Negócios da Meta.
       </p>
 
-      <h2>11. Disponibilidade</h2>
+      <h2>11. Hub de Marketplaces DDG</h2>
+      <p>
+        O Hub de Marketplaces DDG conecta a conta de vendedor da loja cliente aos
+        marketplaces. A loja autoriza a integração na conta dela e pode
+        revogar a autorização a qualquer momento, pelo próprio marketplace ou
+        pedindo à DDG.
+      </p>
+      <ul>
+        <li>
+          A venda é feita no CNPJ e na conta de vendedor da loja cliente, que
+          continua responsável pelos produtos, pela nota fiscal e pelas regras
+          de cada marketplace
+        </li>
+        <li>
+          A DDG opera os anúncios, o estoque, os pedidos e o atendimento ao
+          comprador conforme o contrato com a loja, e usa os dados de pedido e
+          de comprador só para isso
+        </li>
+        <li>
+          O estoque é único: quando um produto vende em um canal, a quantidade é
+          baixada nos demais
+        </li>
+        <li>
+          A DDG cumpre os termos e as políticas de uso de API e de proteção de
+          dados de cada marketplace
+        </li>
+      </ul>
+
+      <h2>12. Disponibilidade</h2>
       <p>
         Buscamos manter a Plataforma operacional 24/7, mas não garantimos
         disponibilidade contínua. Manutenções programadas e falhas eventuais de
@@ -197,7 +231,7 @@ export default function TermosPage() {
         temporária.
       </p>
 
-      <h2>12. Limitação de responsabilidade</h2>
+      <h2>13. Limitação de responsabilidade</h2>
       <p>
         A Plataforma é fornecida &ldquo;como está&rdquo;. A DDG não se
         responsabiliza por:
@@ -213,7 +247,7 @@ export default function TermosPage() {
         de responsabilidade dos seus operadores.
       </p>
 
-      <h2>13. Encerramento</h2>
+      <h2>14. Encerramento</h2>
       <p>
         A DDG pode suspender ou encerrar o acesso de qualquer usuário que viole
         estes termos. O cliente também pode encerrar o acesso a qualquer momento
@@ -225,20 +259,20 @@ export default function TermosPage() {
         <a href="/privacidade">Política de Privacidade</a>.
       </p>
 
-      <h2>14. Alterações nos termos</h2>
+      <h2>15. Alterações nos termos</h2>
       <p>
         Podemos atualizar estes Termos a qualquer momento. Mudanças significativas
         serão notificadas com pelo menos 30 dias de antecedência aos usuários
         ativos.
       </p>
 
-      <h2>15. Lei aplicável e foro</h2>
+      <h2>16. Lei aplicável e foro</h2>
       <p>
         Estes Termos são regidos pelas leis brasileiras. Fica eleito o foro da
         comarca de São Paulo/SP para dirimir quaisquer controvérsias.
       </p>
 
-      <h2>16. Contato</h2>
+      <h2>17. Contato</h2>
       <p>
         Para qualquer questão sobre estes Termos:
         <br />

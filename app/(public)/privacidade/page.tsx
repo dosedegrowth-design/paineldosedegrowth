@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Política de Privacidade",
-  description: "Política de privacidade das plataformas da Dose de Growth: Tráfego DDG, CRM Dose de Growth e Disparador de WhatsApp",
+  description: "Política de privacidade das plataformas da Dose de Growth: Tráfego DDG, CRM Dose de Growth, Disparador de WhatsApp e Hub de Marketplaces",
 };
 
 export default function PrivacidadePage() {
@@ -10,7 +10,7 @@ export default function PrivacidadePage() {
     <article>
       <h1>Política de Privacidade</h1>
       <p className="text-xs text-muted-foreground">
-        Última atualização: 27 de outubro de 2026 · Vigência imediata
+        Última atualização: 16 de novembro de 2026 · Vigência imediata
       </p>
 
       <h2>1. Quem somos</h2>
@@ -35,6 +35,13 @@ export default function PrivacidadePage() {
         <li>
           <strong>Disparador</strong>: envio de mensagens com modelos aprovados
           pela Meta, pelo número oficial de WhatsApp da empresa cliente
+        </li>
+        <li>
+          <strong>Hub de Marketplaces DDG</strong>: integração que publica os
+          produtos de uma loja cliente no Mercado Livre, Magalu, Shopee, Amazon
+          e TikTok Shop, mantém um estoque único entre os canais e processa os
+          pedidos dessa loja (nota fiscal, etiqueta de envio e atendimento ao
+          comprador)
         </li>
       </ul>
       <p>
@@ -107,7 +114,7 @@ export default function PrivacidadePage() {
           Identificadores de clique (gclid, fbclid) para atribuição de campanhas
         </li>
         <li>
-          Email e telefone do lead — <strong>sempre transformados em hash SHA-256
+          Email e telefone do lead, <strong>sempre transformados em hash SHA-256
           antes do armazenamento</strong> (não armazenamos versão original)
         </li>
         <li>Valor da venda e data do fechamento</li>
@@ -142,6 +149,39 @@ export default function PrivacidadePage() {
         vendemos esses dados.
       </p>
 
+      <h3>3.5. Dados dos marketplaces (Hub de Marketplaces DDG)</h3>
+      <p>
+        Quando uma loja cliente autoriza o Hub de Marketplaces DDG na conta de
+        vendedor dela, recebemos do marketplace (Mercado Livre, Magalu, Shopee,
+        Amazon ou TikTok Shop), pelas APIs oficiais de cada um:
+      </p>
+      <ul>
+        <li>Anúncios, preços, estoque e status dos produtos da loja</li>
+        <li>
+          Pedidos da loja: itens, valores, tarifas, status de pagamento e de
+          envio
+        </li>
+        <li>
+          Do comprador, só o necessário para cumprir o pedido: nome, endereço de
+          entrega, CPF ou CNPJ para a nota fiscal, e as perguntas e mensagens
+          enviadas à loja pelo marketplace
+        </li>
+        <li>
+          Token de acesso à API de cada marketplace, criptografado e guardado
+          só no servidor
+        </li>
+      </ul>
+      <p>
+        Nesses dados a loja cliente é a <strong>controladora</strong> e a DDG
+        atua como <strong>operadora</strong>. Usamos os dados do comprador
+        apenas para emitir a nota fiscal, gerar a etiqueta, entregar o pedido e
+        responder o comprador em nome da loja. Não usamos esses dados para
+        publicidade, não cruzamos com outras bases, não montamos perfis e não
+        vendemos nem repassamos a terceiros. Seguimos também as políticas de
+        proteção de dados de cada marketplace, que prevalecem quando forem mais
+        restritivas que esta.
+      </p>
+
       <h2>4. Como usamos os dados</h2>
       <ul>
         <li>
@@ -155,6 +195,12 @@ export default function PrivacidadePage() {
           cliente ativa o atendimento automático, o conteúdo da conversa é
           processado por provedores de IA só para gerar a resposta daquela
           conversa
+        </li>
+        <li>
+          <strong>Venda nos marketplaces:</strong> publicar e atualizar anúncios,
+          manter o estoque único da loja entre os canais, receber os pedidos,
+          emitir a nota fiscal, gerar a etiqueta de envio e responder perguntas
+          e mensagens dos compradores em nome da loja
         </li>
         <li>
           <strong>Operação do painel:</strong> exibir métricas, alertas, relatórios
@@ -188,6 +234,16 @@ export default function PrivacidadePage() {
         </li>
         <li>
           <strong>Google:</strong> via Google Ads API e Enhanced Conversions
+        </li>
+        <li>
+          <strong>Mercado Livre, Magalu, Shopee, Amazon e TikTok Shop:</strong>{" "}
+          pelas APIs oficiais de cada marketplace, só os dados da loja que
+          autorizou a integração e só para operar as vendas dela
+        </li>
+        <li>
+          <strong>Emissor de nota fiscal eletrônica:</strong> dados do pedido e do
+          comprador necessários para emitir a NF-e da loja cliente junto à
+          Secretaria da Fazenda
         </li>
         <li>
           <strong>Supabase (PostgreSQL gerenciado):</strong> banco de dados,
@@ -230,7 +286,7 @@ export default function PrivacidadePage() {
         </li>
         <li>
           <strong>RLS (Row Level Security):</strong> banco de dados isolado por
-          cliente — cada usuário só acessa os dados dele
+          cliente: cada usuário só acessa os dados dele
         </li>
         <li>
           <strong>HMAC SHA-256:</strong> webhooks autenticados com assinatura
@@ -242,6 +298,14 @@ export default function PrivacidadePage() {
         </li>
         <li>
           <strong>Auditoria:</strong> todos os acessos e ações são registrados
+        </li>
+        <li>
+          <strong>Marketplaces:</strong> dados de comprador acessíveis só às
+          pessoas da DDG que operam os pedidos daquela loja; criptografia em
+          repouso e em trânsito; tokens de cada marketplace guardados só no
+          servidor; nenhum dado de comprador em planilhas, e-mails ou
+          dispositivos pessoais; incidente de segurança comunicado ao
+          marketplace e à loja em até 24 horas
         </li>
         <li>
           <strong>WhatsApp:</strong> webhooks da Meta conferidos pela assinatura
@@ -262,6 +326,12 @@ export default function PrivacidadePage() {
         </li>
         <li>
           <strong>Tokens OAuth:</strong> até o cliente desconectar a integração
+        </li>
+        <li>
+          <strong>Dados de comprador vindos de marketplaces</strong> (nome,
+          endereço e documento): apagados ou anonimizados em até 30 dias depois
+          da entrega do pedido, exceto o que a lei fiscal exige guardar junto da
+          nota fiscal emitida
         </li>
         <li>
           <strong>Conversas e arquivos do WhatsApp:</strong> enquanto o contrato
