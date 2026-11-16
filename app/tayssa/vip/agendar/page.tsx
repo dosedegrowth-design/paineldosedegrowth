@@ -110,6 +110,9 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
                 manutencaoComVolume(s.name),
               ),
               duracao: s.duration_min ?? settings.booking.default_duration_min,
+              // para o total de vários serviços no mesmo horário (manutenção: valor de partida)
+              preco: s.preco != null ? Number(s.preco) : null,
+              aPartir: ehManutencao(s.slug, s.name) || manutencaoComVolume(s.name),
             }))}
             days={days.map((d) => ({ iso: d.iso, slots: d.slots }))}
             atLimit={full}

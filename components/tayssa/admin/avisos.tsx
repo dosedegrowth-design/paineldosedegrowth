@@ -138,9 +138,9 @@ export function AvisosDePedido() {
         <b>Avisos de novos pedidos</b>
         <p className="tya-small">
           {estado === "ligado"
-            ? "Ligados neste celular: cada horário marcado pelo site chega como notificação."
+            ? "Ligados neste celular: chega uma notificação a cada horário marcado, comprovante enviado e cliente nova."
             : estado === "desligado"
-              ? "Ligue para receber uma notificação neste celular a cada horário marcado pelo site."
+              ? "Ligue para receber uma notificação neste celular a cada horário marcado, comprovante enviado e cliente nova."
               : estado === "iphone"
                 ? "No iPhone: toque em Compartilhar e em “Adicionar à Tela de Início”, abra o painel por lá e ligue os avisos."
                 : estado === "bloqueado"

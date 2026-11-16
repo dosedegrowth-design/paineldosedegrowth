@@ -31,7 +31,10 @@ export type IconeNome =
   | "site"
   | "cilio"
   | "menu"
-  | "mais";
+  | "mais"
+  | "relatorios"
+  | "manual"
+  | "aviso";
 
 const CAMINHOS: Record<IconeNome, React.ReactNode> = {
   menu: <path d="M4 8h16M4 16h11" />,
@@ -120,11 +123,32 @@ const CAMINHOS: Record<IconeNome, React.ReactNode> = {
       <path d="M16 16.5 20.5 12 16 7.5M20 12H9.2" />
     </>
   ),
+  // a folha com o download: os comprovantes do sinal e a planilha (16/11/2026)
+  relatorios: (
+    <>
+      <path d="M14 3.5H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8.5L14 3.5z" />
+      <path d="M14 3.5v5h5M12 11.5v5.5M9.6 14.6 12 17l2.4-2.4" />
+    </>
+  ),
+  // o livro aberto: o manual do painel (16/11/2026)
+  manual: (
+    <>
+      <path d="M12 6.5C10.4 5.2 8.2 4.5 5.5 4.5H4v13h1.5c2.7 0 4.9.7 6.5 2 1.6-1.3 3.8-2 6.5-2H20v-13h-1.5c-2.7 0-4.9.7-6.5 2z" />
+      <path d="M12 6.5v13" />
+    </>
+  ),
   site: (
     <>
       <circle cx="12" cy="12" r="9" />
       <path d="M3.3 9.4h17.4M3.3 14.6h17.4" />
       <path d="M12 3c-2.4 2.4-3.6 5.4-3.6 9s1.2 6.6 3.6 9c2.4-2.4 3.6-5.4 3.6-9S14.4 5.4 12 3z" />
+    </>
+  ),
+  // o sino: avisos e mensagens (manual do painel)
+  aviso: (
+    <>
+      <path d="M6 16.5V11a6 6 0 1 1 12 0v5.5l1.5 2H4.5z" />
+      <path d="M10 20.5a2.2 2.2 0 0 0 4 0" />
     </>
   ),
   cilio: (

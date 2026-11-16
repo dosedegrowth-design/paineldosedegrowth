@@ -81,7 +81,8 @@ export default async function Imagem({ params }: { params: Promise<{ id: string 
         <span
           style={{
             marginTop: 14,
-            fontSize: servico.length > 30 ? 64 : 80,
+            // vários serviços num horário só: o nome junto fica longo
+            fontSize: servico.length > 48 ? 48 : servico.length > 30 ? 64 : 80,
             fontWeight: 700,
             lineHeight: 1.05,
             letterSpacing: -2,

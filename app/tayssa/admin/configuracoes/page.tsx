@@ -319,7 +319,7 @@ export default async function SettingsAdminPage() {
             {settings.signup.open ? "aberto" : "fechado"}
           </span>
         }
-        efeito="Com o cadastro aberto, quem chega pelo site pede acesso e fica esperando a sua aprovação na lista de clientes. Fechado, o site deixa de oferecer o pedido."
+        efeito="Com o cadastro aberto, quem chega pelo site cria a conta na hora (WhatsApp e senha) e já pode marcar horário; você recebe o aviso de cliente nova e decide só o VIP. Fechado, a página de cadastro VIP fecha (quem marca horário continua criando a conta na hora de agendar)."
       >
         <SignupForm value={settings.signup} />
       </Bloco>

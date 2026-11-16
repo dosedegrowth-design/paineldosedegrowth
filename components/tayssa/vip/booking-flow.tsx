@@ -6,7 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { createAppointmentAction } from "@/lib/tayssa/actions/booking";
 import { dateLong, dayLabel, monthName, plural, weekdayShort } from "@/lib/tayssa/format";
 import { TyTextarea } from "@/components/tayssa/ui/field";
-import { cabeNoHorario, duracaoLegivel, reais } from "@/lib/tayssa/agendar";
+import { cabeNoHorario, duracaoLegivel, reais, somaDoPedido, valorLegivel } from "@/lib/tayssa/agendar";
 import { PagarSinal } from "@/components/tayssa/ui/pagar-sinal";
 import type { SinalDaAgenda } from "@/components/tayssa/vip/appointment-list";
 import { useTarefa } from "@/components/tayssa/ui/acao";
@@ -20,6 +20,10 @@ export type BookingService = {
   precoLabel?: string | null;
   /** minutos que o serviço ocupa na agenda */
   duracao?: number | null;
+  /** valor em número, para o total de vários serviços (vazio = sem valor cadastrado) */
+  preco?: number | null;
+  /** o valor é de partida (manutenção) */
+  aPartir?: boolean;
 };
 /** `ate`: minutos livres depois do início (null = o resto do dia) */
 export type BookingDay = {
@@ -31,11 +35,17 @@ export type BookingDay = {
 const STEPS = ["Serviço", "Dia e horário", "Confirmar"];
 /** a lista de serviços começa curta, como na folha do site */
 const VISIVEIS = 3;
+/** serviços num horário só (o servidor aceita o mesmo tanto) */
+const MAX_SERVICOS = 5;
 
 /**
  * Marcar horário sem sair daqui: serviço, dia, hora, confirmar.
  * Um passo por tela, sempre com volta. O pedido nasce "aguardando
  * confirmação" — quem fecha a agenda é a Tayssa.
+ *
+ * Vários serviços num horário só (Lucas, 16/11/2026): no "Confirmar",
+ * "+ Adicionar outro serviço" volta à lista; o tempo soma, o horário
+ * precisa caber tudo e o sinal é um só.
  */
 export function BookingFlow({
   services,
@@ -57,24 +67,37 @@ export function BookingFlow({
   const router = useRouter();
   const reduced = useReducedMotion();
   const [step, setStep] = useState(0);
-  const [serviceId, setServiceId] = useState<string | null>(null);
+  // os serviços escolhidos, na ordem; "adicionando" = voltou à lista pelo "+ Adicionar outro serviço"
+  const [serviceIds, setServiceIds] = useState<string[]>([]);
+  const [adicionando, setAdicionando] = useState(false);
   const [date, setDate] = useState<string | null>(null);
   const [time, setTime] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState<{ id: string; date: string; time: string; serviceName: string; taxa: number } | null>(null);
+  const [done, setDone] = useState<{
+    id: string;
+    date: string;
+    time: string;
+    serviceName: string;
+    taxa: number;
+    valor: number | null;
+  } | null>(null);
   const [pending, start] = useTarefa();
   // "Mais serviços": abre a lista inteira (o escolhido fora dos três primeiros também a abre)
   const [todos, setTodos] = useState(false);
 
-  const service = services.find((s) => s.id === serviceId) ?? null;
+  const escolhidos = serviceIds.flatMap((sid) => services.filter((s) => s.id === sid));
   const day = days.find((d) => d.iso === date) ?? null;
   // dezembro: R$ 30 no primeiro e no último horário de cada dia; no dia 24, em todos
   const taxa = (time && day?.slots.find((s) => s.time === time)?.taxa) || 0;
-  const listaToda = todos || (service ? services.indexOf(service) >= VISIVEIS : false);
-  // o serviço escolhido precisa caber inteiro: o volume de 3h não aparece às
-  // 10h se às 11h já tem alguém
-  const duracao = service?.duracao ?? null;
+  // na lista, só o que ainda não foi escolhido
+  const disponiveis = services.filter((s) => !serviceIds.includes(s.id));
+  const listaToda = todos;
+  // os serviços precisam caber inteiros, um depois do outro: o volume de 3h não
+  // aparece às 10h se às 11h já tem alguém
+  const soma = somaDoPedido(escolhidos);
+  const duracao = escolhidos.length ? soma.duracao || null : null;
+  const valorTotal = valorLegivel(soma.valor, [], escolhidos.some((s) => s.aPartir));
   const cabe = (s: BookingDay["slots"][number]) => cabeNoHorario(s, duracao);
   // nada some: dia sem horário livre continua na fita, riscado e sem toque
   const openDays = new Set(days.filter((d) => d.slots.some(cabe)).map((d) => d.iso));
@@ -102,16 +125,45 @@ export function BookingFlow({
     fn();
   };
 
+  /** escolheu um serviço na lista: o primeiro leva ao dia; no "+ Adicionar", volta ao Confirmar se ainda couber */
+  const escolher = (id: string) => {
+    const lista = [...serviceIds, id];
+    setServiceIds(lista);
+    setTodos(false);
+    if (!adicionando) {
+      setStep(1);
+      return;
+    }
+    setAdicionando(false);
+    const novo = somaDoPedido(services.filter((s) => lista.includes(s.id))).duracao || null;
+    const slot = day?.slots.find((s) => s.time === time);
+    if (slot && cabeNoHorario(slot, novo)) setStep(2);
+    else {
+      // com o tempo somado o horário não comporta tudo: escolhe outro
+      setTime(null);
+      setStep(1);
+      setError("Com os serviços juntos, escolha um horário em que caiba tudo.");
+    }
+  };
+  const tirar = (id: string) => {
+    const lista = serviceIds.filter((x) => x !== id);
+    setServiceIds(lista);
+    if (!lista.length) {
+      setTime(null);
+      setStep(0);
+    }
+  };
+
   const confirm = () => {
-    if (!serviceId || !date || !time) return;
+    if (!serviceIds.length || !date || !time) return;
     setError(null);
     start(async () => {
-      const r = await createAppointmentAction({ service_id: serviceId, date, time, note: note.trim() || undefined });
+      const r = await createAppointmentAction({ service_ids: serviceIds, date, time, note: note.trim() || undefined });
       if (!r.ok) {
         setError(r.error);
         return;
       }
-      setDone({ id: r.data.id, date: r.data.date, time: r.data.time, serviceName: r.data.serviceName, taxa });
+      setDone({ id: r.data.id, date: r.data.date, time: r.data.time, serviceName: r.data.serviceName, taxa, valor: soma.valor });
       // A action já revalida a rota, mas em parte das vezes (medido: ~1 em 3)
       // a tela aplicava a árvore antiga e "Meus horários" ficava sem o pedido
       // novo até recarregar. O refresh vai DEPOIS que a transição da action
@@ -153,7 +205,7 @@ export function BookingFlow({
             <div style={{ marginTop: 16 }}>
               <PagarSinal
                 tema="noite"
-                pedido={{ id: done.id, servico: done.serviceName, dia: done.date, hora: done.time, taxa: done.taxa }}
+                pedido={{ id: done.id, servico: done.serviceName, dia: done.date, hora: done.time, taxa: done.taxa, valor: done.valor }}
                 nome={sinal.nome}
                 sinal={sinal.valor}
                 telefone={sinal.telefone}
@@ -175,7 +227,8 @@ export function BookingFlow({
               onClick={() => {
                 setDone(null);
                 setStep(0);
-                setServiceId(null);
+                setServiceIds([]);
+                setAdicionando(false);
                 setDate(null);
                 setTime(null);
                 setNote("");
@@ -219,9 +272,20 @@ export function BookingFlow({
         <h2 ref={titulo} tabIndex={-1} className="tyv-h2">
           {STEPS[step]}
         </h2>
-        {step > 0 ? (
-          <button type="button" className="tyv-link" style={{ opacity: 0.7 }} onClick={() => setStep((s) => s - 1)}>
-            Voltar
+        {step > 0 || adicionando ? (
+          <button
+            type="button"
+            className="tyv-link"
+            style={{ opacity: 0.7 }}
+            onClick={() => {
+              setError(null);
+              if (adicionando) {
+                setAdicionando(false);
+                setStep(2);
+              } else setStep((s) => s - 1);
+            }}
+          >
+            {adicionando ? "Não quero outro" : "Voltar"}
           </button>
         ) : null}
       </div>
@@ -238,19 +302,13 @@ export function BookingFlow({
             // como a folha do site: três serviços e "Mais serviços"; cada linha só com nome, valor e
             // tempo (a descrição longa fazia a lista virar formulário, 12 cartões de rolagem)
             <div className="tyv-servicos">
-              {(listaToda ? services : services.slice(0, VISIVEIS)).map((s) => (
-                <button
-                  key={s.id}
-                  type="button"
-                  className="tyv-servico"
-                  aria-pressed={serviceId === s.id}
-                  onClick={() =>
-                    pick(() => {
-                      setServiceId(s.id);
-                      setStep(1);
-                    })
-                  }
-                >
+              {adicionando ? (
+                <p className="tyv-sub" style={{ fontSize: 14, margin: "0 0 4px" }}>
+                  Escolha o serviço que vem junto: é no mesmo horário, com um sinal só.
+                </p>
+              ) : null}
+              {(listaToda ? disponiveis : disponiveis.slice(0, VISIVEIS)).map((s) => (
+                <button key={s.id} type="button" className="tyv-servico" onClick={() => pick(() => escolher(s.id))}>
                   <span className="tyv-servico__nome">{s.name}</span>
                   <span className="tyv-servico__info">
                     {[s.precoLabel, duracaoLegivel(s.duracao)].filter(Boolean).join(" · ")}
@@ -258,10 +316,10 @@ export function BookingFlow({
                   <span className="tyv-servico__seta" aria-hidden />
                 </button>
               ))}
-              {!listaToda && services.length > VISIVEIS ? (
+              {!listaToda && disponiveis.length > VISIVEIS ? (
                 <button type="button" className="tyv-servicos__mais" onClick={() => setTodos(true)}>
                   Mais serviços
-                  <span className="tyv-servicos__n">{services.length - VISIVEIS}</span>
+                  <span className="tyv-servicos__n">{disponiveis.length - VISIVEIS}</span>
                 </button>
               ) : null}
             </div>
@@ -269,6 +327,11 @@ export function BookingFlow({
 
           {step === 1 ? (
             <div>
+              {error ? (
+                <p className="ty-form-error" role="alert" style={{ marginBottom: 14 }}>
+                  {error}
+                </p>
+              ) : null}
               <div className="tyv-days" role="group" aria-label="Escolha o dia">
                 {days.map((d, i) => (
                   <button
@@ -303,7 +366,7 @@ export function BookingFlow({
                 <>
                   <p className="tyv-label" style={{ margin: "16px 0 10px" }}>
                     {dayLabel(day.iso)} · {livres} {plural(livres, "horário livre", "horários livres")}
-                    {service && duracaoLegivel(duracao) ? ` para ${duracaoLegivel(duracao)}` : ""}
+                    {escolhidos.length && duracaoLegivel(duracao) ? ` para ${duracaoLegivel(duracao)}` : ""}
                   </p>
                   <div className="tyv-slots" role="group" aria-label="Escolha o horário">
                     {day.slots.map((s) => (
@@ -344,13 +407,22 @@ export function BookingFlow({
             </div>
           ) : null}
 
-          {step === 2 && service && date && time ? (
+          {step === 2 && escolhidos.length && date && time ? (
             <div>
               <div className="tyv-panel">
-                <div className="tyv-row">
-                  <span className="tyv-label">Serviço</span>
-                  <span style={{ fontSize: 16 }}>{service.name}</span>
-                </div>
+                {escolhidos.map((s, i) => (
+                  <div key={s.id} className="tyv-row">
+                    <span className="tyv-label">{i === 0 ? (escolhidos.length > 1 ? "Serviços" : "Serviço") : ""}</span>
+                    <span className="tyv-servico-escolhido">
+                      <span style={{ fontSize: 16 }}>{s.name}</span>
+                      {escolhidos.length > 1 ? (
+                        <button type="button" className="tyv-link tyv-servico-escolhido__tirar" onClick={() => tirar(s.id)}>
+                          Tirar
+                        </button>
+                      ) : null}
+                    </span>
+                  </div>
+                ))}
                 <div className="tyv-row">
                   <span className="tyv-label">Dia</span>
                   <span style={{ fontSize: 16 }}>{dateLong(date)}</span>
@@ -371,7 +443,35 @@ export function BookingFlow({
                     <span style={{ fontSize: 16 }}>{duracaoLegivel(duracao)}</span>
                   </div>
                 ) : null}
+                {escolhidos.length > 1 && valorTotal ? (
+                  <div className="tyv-row">
+                    <span className="tyv-label">Total</span>
+                    <span style={{ fontSize: 16 }}>{valorTotal}</span>
+                  </div>
+                ) : null}
               </div>
+              {/* vários serviços no mesmo horário, um depois do outro, com um sinal só */}
+              {escolhidos.length < MAX_SERVICOS ? (
+                <button
+                  type="button"
+                  className="tyv-adicionar"
+                  onClick={() => {
+                    setError(null);
+                    setAdicionando(true);
+                    setStep(0);
+                  }}
+                >
+                  <span className="tyv-adicionar__mais" aria-hidden>
+                    <svg viewBox="0 0 24 24">
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
+                  </span>
+                  <span>
+                    Adicionar outro serviço
+                    <small>no mesmo horário, com um sinal só</small>
+                  </span>
+                </button>
+              ) : null}
               <div style={{ marginTop: 18 }}>
                 <TyTextarea
                   label="Quer deixar um recado? (opcional)"

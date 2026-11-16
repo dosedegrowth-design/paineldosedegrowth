@@ -1006,3 +1006,99 @@ html.ty-sem-rolagem {
 .tyag__lembrar input {
   accent-color: #f7c1d1;
 }
+
+/* ---------- vários serviços num horário só (Lucas, 16/11/2026) ----------
+   As linhas brancas são o que ela escolheu; embaixo, "Adicionar outro
+   serviço" em pontilhado (é um convite, não um campo), e o total quando há
+   mais de um: um horário, um sinal só. */
+.tyag__escolhidos {
+  display: grid;
+  gap: 8px;
+}
+.tyag__adicionar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 58px;
+  margin-top: 10px;
+  padding: 10px 16px;
+  border: 1.5px dashed rgba(255, 214, 228, 0.38);
+  border-radius: 18px;
+  background: transparent;
+  color: #ffe9f0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    transform 0.16s var(--ag-ease),
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+.tyag__adicionar > span:last-child {
+  display: grid;
+  gap: 1px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.tyag__adicionar small {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #f7c1d1;
+}
+.tyag__adicionar-mais {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: rgba(247, 193, 209, 0.16);
+  color: #f7c1d1;
+}
+.tyag__adicionar-mais svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+.tyag__adicionar:active {
+  transform: scale(0.98);
+}
+@media (hover: hover) and (pointer: fine) {
+  .tyag__adicionar:hover {
+    background: rgba(255, 214, 228, 0.06);
+    border-color: rgba(255, 214, 228, 0.55);
+  }
+}
+.tyag__total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 12px 4px 0;
+  font-size: 14px;
+  color: #f7c1d1;
+}
+.tyag__total b {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+/* "Não quero outro": fecha a lista sem escolher (no fundo vinho, não no cartão branco) */
+.tyag__trocar--claro {
+  height: 42px;
+  background: rgba(255, 214, 228, 0.12);
+  color: #ffe9f0;
+}
+.tyag__resumo-mais {
+  justify-self: start;
+  min-height: 36px;
+  margin-top: 6px;
+  font-size: 14px;
+}

@@ -1,7 +1,8 @@
 import "server-only";
 import { cache } from "react";
 import { vipDb, isDbConfigured, logServerError } from "@/lib/tayssa/db";
-import type { AppointmentStatus } from "@/lib/tayssa/types";
+import type { AppointmentStatus, ServicoDoPedido } from "@/lib/tayssa/types";
+import { somaDoPedido } from "@/lib/tayssa/agendar";
 import { getSettings } from "@/lib/tayssa/settings";
 import { taxaDoHorario } from "@/lib/tayssa/rules";
 
@@ -57,7 +58,7 @@ async function buscarHorario(id: string): Promise<HorarioPublico | null> {
   const db = vipDb();
   const { data, error } = await db
     .from("appointments")
-    .select("id, service_id, service_name, scheduled_date, scheduled_time, duration_min, status, created_at, client_note, comprovante_em")
+    .select("id, service_id, service_name, scheduled_date, scheduled_time, duration_min, status, created_at, client_note, comprovante_em, servicos")
     .eq("id", id)
     .maybeSingle();
   if (error) throw new Error(error.message);
@@ -73,9 +74,12 @@ async function buscarHorario(id: string): Promise<HorarioPublico | null> {
     created_at: string;
     client_note: string | null;
     comprovante_em: string | null;
+    servicos: ServicoDoPedido[] | null;
   };
   // manutenção: o valor é o da manutenção do volume dela (a nota diz qual)
   const volume = a.client_note?.match(/^Manutenção do (.+)\.$/)?.[1] ?? null;
+  // pedido de agora: a soma dos serviços como estavam na hora de marcar (um ou vários)
+  if (a.servicos?.length) return montar(a, volume, somaDoPedido(a.servicos).valor);
   let valor: number | null = null;
   const { data: servicos } = await db.from("services").select("id, name, preco, preco_manutencao");
   const lista = (servicos ?? []) as { id: string; name: string; preco: number | null; preco_manutencao: number | null }[];
@@ -87,6 +91,23 @@ async function buscarHorario(id: string): Promise<HorarioPublico | null> {
     const s = lista.find((x) => x.id === a.service_id);
     valor = s?.preco != null ? Number(s.preco) : null;
   }
+  return montar(a, volume, valor);
+}
+
+async function montar(
+  a: {
+    id: string;
+    service_name: string;
+    scheduled_date: string;
+    scheduled_time: string;
+    duration_min: number | null;
+    status: AppointmentStatus;
+    created_at: string;
+    comprovante_em: string | null;
+  },
+  volume: string | null,
+  valor: number | null,
+): Promise<HorarioPublico> {
   return {
     id: a.id,
     servico: a.service_name,

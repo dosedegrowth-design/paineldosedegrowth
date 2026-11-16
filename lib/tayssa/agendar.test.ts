@@ -25,6 +25,10 @@ import {
   prazoDoSinal,
   sinalNoPrazo,
   valorComTaxa,
+  juntarServicos,
+  separarServicos,
+  listaLegivel,
+  somaDoPedido,
 } from "./agendar.ts";
 
 test("hora no jeito de falar", () => {
@@ -332,4 +336,44 @@ test("dezembro: a taxa de horário especial no resumo e nas mensagens", () => {
     taxa: 30,
   });
   assert.match(confirmacao, /\*Horário:\* 10h\n\*Taxa de horário especial:\* R\$ 30\n/);
+});
+
+// ------------------------------------------------------------
+// Vários serviços num horário só (Lucas, 16/11/2026)
+// ------------------------------------------------------------
+
+test("vários serviços: nome junto, de volta em lista e lido em português", () => {
+  const nome = juntarServicos(["Volume brasileiro", " Design de sobrancelhas ", "Lip spa"]);
+  assert.equal(nome, "Volume brasileiro + Design de sobrancelhas + Lip spa");
+  assert.deepEqual(separarServicos(nome), ["Volume brasileiro", "Design de sobrancelhas", "Lip spa"]);
+  assert.deepEqual(separarServicos("Volume inglês"), ["Volume inglês"]);
+  assert.equal(listaLegivel(["Volume inglês"]), "Volume inglês");
+  assert.equal(listaLegivel(["Volume inglês", "Lip spa"]), "Volume inglês e Lip spa");
+  assert.equal(listaLegivel(["A", "B", "C"]), "A, B e C");
+});
+
+test("vários serviços: tempo somado e valor só quando todos têm valor", () => {
+  assert.deepEqual(somaDoPedido([{ duracao: 180, preco: 170 }, { duracao: 40, preco: 30 }, { duracao: 30, preco: 30 }]), { duracao: 250, valor: 230 });
+  assert.deepEqual(somaDoPedido([{ duracao: 180, preco: 170 }, { duracao: 40, preco: null }]), { duracao: 220, valor: null });
+  assert.deepEqual(somaDoPedido([]), { duracao: 0, valor: null });
+});
+
+test("vários serviços: a mensagem lista todos, com o volume na manutenção e um sinal só", () => {
+  const m = mensagemAgendamento({
+    servico: "Manutenção de cílios + Design de sobrancelhas + Lip spa",
+    tecnica: "Volume brasileiro",
+    dia: "2026-11-20",
+    hora: "10:00",
+    nome: "Gabi",
+    valor: 180,
+    sinal: 50,
+    comprovante: true,
+  });
+  assert.match(m, /\*Serviços:\* Manutenção de cílios \(Volume brasileiro\), Design de sobrancelhas e Lip spa/);
+  assert.match(m, /\*Valor:\* R\$ 180/);
+  assert.match(m, /\*Sinal:\* R\$ 50 pago no Pix/);
+  // um serviço só continua "Serviço"
+  assert.match(mensagemAgendamento({ servico: "Volume inglês", dia: "2026-11-20", hora: "10:00", nome: "Gabi", sinal: 50 }), /\*Serviço:\* Volume inglês/);
+  const c = mensagemConfirmacao({ nome: "Gabi", servico: "Volume inglês + Lip spa", dia: "2026-11-20", hora: "10:00", comprovante: true });
+  assert.match(c, /\*Serviços:\* Volume inglês e Lip spa/);
 });

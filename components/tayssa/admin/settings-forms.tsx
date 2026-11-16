@@ -196,29 +196,30 @@ export function RulesForm({ value }: { value: Settings["rules"] }) {
           error={erroDe(state, "vip_janela_dias")}
           hint="A sequência inteira cabe nesse prazo."
         />
+        {/* explicados para quem está começando (Tayssa, 16/11/2026): o que cada número muda, com exemplo */}
         <Campo
-          label="Entre um e outro: no mínimo (dias)"
+          label="Entre um atendimento e outro: no mínimo (dias)"
           name="vip_intervalo_min"
           inputMode="numeric"
           defaultValue={String(value.vip_intervalo_min)}
           error={erroDe(state, "vip_intervalo_min")}
-          hint="Antes disso o atendimento não conta (e não zera)."
+          hint={`Para contar na sequência do VIP, o próximo atendimento vem pelo menos estes dias depois do anterior. Ex.: com ${value.vip_intervalo_min}, quem volta antes não conta esse atendimento, mas não perde os que já tinha.`}
         />
         <Campo
-          label="Entre um e outro: no máximo (dias)"
+          label="Entre um atendimento e outro: no máximo (dias)"
           name="vip_intervalo_max"
           inputMode="numeric"
           defaultValue={String(value.vip_intervalo_max)}
           error={erroDe(state, "vip_intervalo_max")}
-          hint="Passou disso, a contagem recomeça no próximo atendimento."
+          hint={`Se ela passar destes dias sem voltar, a sequência do VIP começa de novo. Ex.: com ${value.vip_intervalo_max}, quem volta depois de ${value.vip_intervalo_max + 5} dias recomeça do primeiro.`}
         />
         <Campo
-          label="Dias sem atendimento = inativa"
+          label="Dias sem atendimento para virar inativa"
           name="inactivity_days"
           inputMode="numeric"
           defaultValue={String(value.inactivity_days)}
           error={erroDe(state, "inactivity_days")}
-          hint="Alimenta a lista de clientes para chamar, na visão geral."
+          hint="Quem passa estes dias sem um atendimento Realizado aparece como inativa (Clientes › Inativas e a lista na visão geral), para você chamar. Não muda nada para a cliente."
         />
         <Campo
           label="Validade padrão de benefício (dias)"
@@ -226,7 +227,7 @@ export function RulesForm({ value }: { value: Settings["rules"] }) {
           inputMode="numeric"
           defaultValue={String(value.benefit_validity_days)}
           error={erroDe(state, "benefit_validity_days")}
-          hint="Usada quando o benefício não tem validade própria."
+          hint={`Quanto tempo a cliente tem para usar um benefício depois que você libera, quando ele não tem validade própria. Ex.: liberou hoje, vale ${value.benefit_validity_days} dias. Dá para mudar na hora de liberar.`}
         />
       </div>
       <Salvar state={state} pending={pending} />
@@ -392,7 +393,7 @@ export function CatalogServiceForm({ service }: { service?: ServiceRow }) {
           inputMode="decimal"
           defaultValue={service?.preco != null ? String(service.preco).replace(".", ",") : ""}
           error={erroDe(state, "preco")}
-          hint="Vazio = o site não mostra valor."
+          hint="O preço do serviço (nos volumes de cílios, o da aplicação). Vazio = o site não mostra valor."
         />
         <Campo
           label="Tempo"
@@ -402,13 +403,14 @@ export function CatalogServiceForm({ service }: { service?: ServiceRow }) {
           error={erroDe(state, "duration_min")}
           hint="Quanto ocupa na agenda. Vazio = duração padrão."
         />
+        {/* não é o valor do serviço (Tayssa, 16/11/2026: "fiquei com dúvida sobre a finalidade desse campo") */}
         <Campo
-          label="Manutenção (R$)"
+          label="Valor da manutenção deste volume (R$)"
           name="preco_manutencao"
           inputMode="decimal"
           defaultValue={service?.preco_manutencao != null ? String(service.preco_manutencao).replace(".", ",") : ""}
           error={erroDe(state, "preco_manutencao")}
-          hint="Só nos volumes de cílios."
+          hint="Só nos volumes de cílios. É o preço de quando a cliente volta para a manutenção deste volume, diferente do Valor acima (a aplicação). No site aparece como “Manutenção”, e é o valor quando ela marca “Manutenção de cílios” e escolhe este volume. Vazio: o volume não aparece nessa escolha. Nos outros serviços, deixe vazio."
         />
         <Campo
           label="Pontos"
@@ -946,11 +948,11 @@ export function SignupForm({ value }: { value: Settings["signup"] }) {
       <div className="tya-marcas">
         <label className="tya-marca">
           <input type="checkbox" name="open" defaultChecked={value.open} />
-          <span>Aceitar pedidos de acesso pelo site</span>
+          <span>Aceitar cadastro pelo site</span>
         </label>
       </div>
       <p className="tya-small" style={{ marginTop: -4 }}>
-        Cada pedido continua passando por você: ninguém entra sozinha.
+        A conta abre na hora e ela já marca horário; o VIP continua sendo decisão sua (Clientes › Novas clientes).
       </p>
       {/* a mensagem ao liberar é a do painel (VIP ou conta liberada, com a senha
           que ela já criou); este texto antigo ("defina sua senha") não vai mais

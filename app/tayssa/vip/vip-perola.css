@@ -1473,3 +1473,67 @@ body:has(.tyv) {
     animation: none;
   }
 }
+
+/* ---------- Marcar: vários serviços num horário só (Lucas, 16/11/2026) ---------- */
+.tyv-adicionar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 58px;
+  margin-top: 14px;
+  padding: 10px 16px;
+  border: 1.5px dashed rgba(122, 20, 52, 0.35);
+  border-radius: 18px;
+  background: transparent;
+  color: #4b0c20;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.16s cubic-bezier(0.23, 1, 0.32, 1), background-color 0.2s ease;
+}
+.tyv-adicionar > span:last-child {
+  display: grid;
+  gap: 1px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.tyv-adicionar small {
+  font-size: 12.5px;
+  font-weight: 500;
+  opacity: 0.75;
+}
+.tyv-adicionar__mais {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: rgba(122, 20, 52, 0.1);
+}
+.tyv-adicionar__mais svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+.tyv-adicionar:active {
+  transform: scale(0.98);
+}
+/* o serviço no Confirmar, com "Tirar" quando há mais de um */
+.tyv-servico-escolhido {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  text-align: right;
+}
+.tyv-servico-escolhido__tirar {
+  font-size: 13px;
+  min-height: 32px;
+}

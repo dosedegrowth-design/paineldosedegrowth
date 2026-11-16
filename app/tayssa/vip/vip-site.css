@@ -544,3 +544,22 @@ body:has(.tyv-tom-site) {
   border-left-color: #f4a6c0;
   background: rgba(255, 236, 242, 0.05);
 }
+
+/* ---------- Marcar: "Adicionar outro serviço" (vários serviços num horário só) ---------- */
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-adicionar {
+  border-color: rgba(255, 214, 228, 0.38);
+  color: #ffe9f0;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-adicionar small {
+  color: #f7c1d1;
+  opacity: 1;
+}
+.ty-scope.tyv:has(.tyv-tom-site) .tyv-adicionar__mais {
+  background: rgba(247, 193, 209, 0.16);
+  color: #f7c1d1;
+}
+@media (hover: hover) and (pointer: fine) {
+  .ty-scope.tyv:has(.tyv-tom-site) .tyv-adicionar:hover {
+    background: rgba(255, 214, 228, 0.06);
+  }
+}

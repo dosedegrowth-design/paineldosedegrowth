@@ -248,6 +248,67 @@ export function ehManutencao(slug: string, nome = ""): boolean {
   return /manuten/i.test(`${slug} ${nome}`) && !manutencaoComVolume(nome);
 }
 
+// ------------------------------------------------------------
+// Vários serviços num horário só (Lucas, 16/11/2026: "se ela marcar boca,
+// cílios e sobrancelha, ela manda só R$ 50"). O pedido guarda os nomes
+// juntos ("Volume brasileiro + Design de sobrancelhas"), feitos um depois
+// do outro, com o tempo somado e um sinal só.
+// ------------------------------------------------------------
+
+/** O que separa os serviços no nome do pedido (nome de serviço nunca tem " + "). */
+export const SEPARADOR_SERVICOS = " + ";
+
+/** "Volume brasileiro + Design de sobrancelhas" */
+export function juntarServicos(nomes: readonly string[]): string {
+  return nomes.map((n) => n.trim()).filter(Boolean).join(SEPARADOR_SERVICOS);
+}
+
+/** O nome do pedido de volta em serviços (pedido antigo: um só). */
+export function separarServicos(nome: string): string[] {
+  return nome
+    .split(SEPARADOR_SERVICOS)
+    .map((n) => n.trim())
+    .filter(Boolean);
+}
+
+/** "Volume brasileiro"; "Volume brasileiro e Lip spa"; "A, B e C" */
+export function listaLegivel(nomes: readonly string[]): string {
+  if (nomes.length <= 1) return nomes[0] ?? "";
+  return `${nomes.slice(0, -1).join(", ")} e ${nomes[nomes.length - 1]}`;
+}
+
+/**
+ * O tempo e o valor do que ela escolheu, somados: o horário precisa caber
+ * tudo, um serviço depois do outro. Valor null quando algum serviço não tem
+ * valor cadastrado (o site não mostra total pela metade).
+ */
+export function somaDoPedido(itens: readonly { duracao?: number | null; preco?: number | null }[]): {
+  duracao: number;
+  valor: number | null;
+} {
+  const duracao = itens.reduce((s, i) => s + (i.duracao && i.duracao > 0 ? i.duracao : 0), 0);
+  const valor = itens.length && itens.every((i) => i.preco != null) ? itens.reduce((s, i) => s + Number(i.preco), 0) : null;
+  return { duracao, valor };
+}
+
+/**
+ * Os serviços como entram na mensagem: o volume da manutenção junto dela
+ * ("Manutenção de cílios (Volume brasileiro)") e o rótulo no plural quando
+ * são vários ("Serviços").
+ */
+function servicosDaMensagem(servico: string, tecnica?: string | null): { rotulo: string; texto: string } {
+  const nomes = separarServicos(servico);
+  let usou = false;
+  const comVolume = nomes.map((n) => {
+    if (!tecnica || usou || !ehManutencao("", n)) return n;
+    usou = true;
+    return `${n} (${tecnica})`;
+  });
+  // volume sem a manutenção genérica no nome (pedido antigo): vai no primeiro, como antes
+  if (tecnica && !usou && comVolume.length) comVolume[0] = `${comVolume[0]} (${tecnica})`;
+  return { rotulo: comVolume.length > 1 ? "Serviços" : "Serviço", texto: listaLegivel(comVolume) };
+}
+
 const NOMES_DIAS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
 /**
@@ -320,13 +381,13 @@ export function sinalNoPrazo(criadoEm: string, horas: number, agora: Date = new 
  * e o sinal. Sem comprovante, pede a chave Pix.
  */
 export function mensagemAgendamento(p: PedidoAgenda): string {
-  const servico = p.tecnica ? `${p.servico} (${p.tecnica})` : p.servico;
+  const servicos = servicosDaMensagem(p.servico, p.tecnica);
   const nome = p.nome.trim();
   const oi = nome ? `Oi, Tayssa, tudo bem? Aqui é ${nome}.` : "Oi, Tayssa, tudo bem?";
   return [
     p.comprovante ? `${oi} Fiz meu agendamento pelo site.` : `${oi} Marquei meu horário pelo site.`,
     "",
-    `*Serviço:* ${servico}`,
+    `*${servicos.rotulo}:* ${servicos.texto}`,
     `*Dia:* ${diaLegivel(p.dia)}`,
     `*Horário:* ${horaLegivel(p.hora)}`,
     ...(p.valor != null ? [`*Valor:* ${reais(p.valor)}`] : []),
@@ -390,14 +451,14 @@ export type ConfirmacaoDoHorario = {
  * abre a conversa da cliente com o texto. Em campos, como a do agendamento.
  */
 export function mensagemConfirmacao(p: ConfirmacaoDoHorario): string {
-  const servico = p.tecnica ? `${p.servico} (${p.tecnica})` : p.servico;
+  const servicos = servicosDaMensagem(p.servico, p.tecnica);
   const campo = (rotulo: string, valor?: string | null) => (valor?.trim() ? [`*${rotulo}:* ${valor.trim()}`] : []);
   const recado = p.recado?.trim();
   const oi = p.nome.trim() ? `Olá, ${p.nome.trim()}, tudo bem?` : "Olá, tudo bem?";
   return [
     `${oi} Seu atendimento acabou de ser confirmado${p.comprovante ? " e o seu comprovante foi aceito" : ""}.`,
     "",
-    `*Serviço:* ${servico}`,
+    `*${servicos.rotulo}:* ${servicos.texto}`,
     `*Dia:* ${diaLegivel(p.dia)}`,
     `*Horário:* ${horaLegivel(p.hora)}`,
     ...(p.taxa && p.taxa > 0 ? [`*Taxa de horário especial:* ${reais(p.taxa)}`] : []),

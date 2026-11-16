@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { getHorarioPublico, type HorarioPublico } from "@/lib/tayssa/queries/horario";
 import { getSettings } from "@/lib/tayssa/settings";
-import { diaLegivel, horaLegivel, prazoDoSinal, reais } from "@/lib/tayssa/agendar";
+import { diaLegivel, horaLegivel, prazoDoSinal, reais, separarServicos } from "@/lib/tayssa/agendar";
 import { situacaoDoPedido } from "@/lib/tayssa/types";
 
 /**
@@ -49,7 +49,11 @@ function Celula({ rotulo, valor, largura = "50%" }: { rotulo: string; valor: str
 
 function Foto({ h, sinal, horas, tolerancia }: { h: HorarioPublico; sinal: number; horas: number; tolerancia: number }) {
   const pago = h.status === "requested" && h.comprovante;
-  const grande = h.servico.length > 24 ? 80 : h.servico.length > 17 ? 96 : 112;
+  // vários serviços num horário só (16/11/2026): um por linha, menores
+  const servicos = separarServicos(h.servico);
+  const maior = Math.max(...servicos.map((s) => s.length));
+  const grande =
+    servicos.length > 2 ? 64 : servicos.length > 1 ? (maior > 20 ? 68 : 76) : maior > 24 ? 80 : maior > 17 ? 96 : 112;
   const rodape = pago
     ? "A Tayssa confere o Pix e confirma o seu horário."
     : h.status === "requested"
@@ -108,9 +112,13 @@ function Foto({ h, sinal, horas, tolerancia }: { h: HorarioPublico; sinal: numbe
       <div style={{ display: "flex", flexGrow: 1 }} />
 
       <span style={{ fontSize: 30, letterSpacing: 8, textTransform: "uppercase", color: "#f7c1d1" }}>Seu horário</span>
-      <span style={{ marginTop: 18, fontSize: grande, fontWeight: 700, lineHeight: 1.04, letterSpacing: -2 }}>
-        {h.servico}
-      </span>
+      <div style={{ display: "flex", flexDirection: "column", marginTop: 18 }}>
+        {servicos.map((s, i) => (
+          <span key={i} style={{ marginTop: i ? 10 : 0, fontSize: grande, fontWeight: 700, lineHeight: 1.04, letterSpacing: -2 }}>
+            {servicos.length > 1 ? `${s}${i < servicos.length - 1 ? " +" : ""}` : s}
+          </span>
+        ))}
+      </div>
       {h.volume ? <span style={{ marginTop: 16, fontSize: 46, color: CREME }}>{h.volume}</span> : null}
 
       <div

@@ -73,11 +73,18 @@ export function AdminTopbar({ nome, onAbrirMenu }: { nome: string; onAbrirMenu?:
           <kbd>⌘K</kbd>
         </button>
 
+        {/* cada um com uma função só (Tayssa, 16/11/2026: "o globo e o outro ícone parecem fazer a mesma coisa"):
+            o manual, o site da cliente numa aba nova, e sair do painel (vai para a tela de entrar) */}
         <div className="tya-top__right">
+          <a href={ROUTES.adminManual} className="tya-btn tya-btn--ghost tya-btn--sm" title="Manual do painel" aria-label="Manual do painel">
+            <Icone nome="manual" />
+            <span className="tya-hide-sm">Manual</span>
+          </a>
           <a
             href={ROUTES.home}
             className="tya-btn tya-btn--ghost tya-btn--sm"
-            title="Ver o site"
+            title="Ver o site como a cliente vê (abre em outra aba)"
+            aria-label="Ver o site (abre em outra aba)"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -85,8 +92,9 @@ export function AdminTopbar({ nome, onAbrirMenu }: { nome: string; onAbrirMenu?:
             <span className="tya-hide-sm">Ver o site</span>
           </a>
           <form action={logoutAction}>
-            <button type="submit" className="tya-btn tya-btn--ghost tya-btn--sm tya-btn--icon" title="Sair" aria-label="Sair do painel">
+            <button type="submit" className="tya-btn tya-btn--ghost tya-btn--sm tya-top__sair" title="Sair do painel" aria-label="Sair do painel">
               <Icone nome="sair" />
+              <span>Sair</span>
             </button>
           </form>
           <div className="tya-who">

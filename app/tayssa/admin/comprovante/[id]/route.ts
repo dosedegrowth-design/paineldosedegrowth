@@ -35,7 +35,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
         ? linha.comprovante_tipo
         : "application/octet-stream";
     const ext = COMPROVANTE_TIPOS[tipo] ?? "bin";
-    return new NextResponse(await arquivo.arrayBuffer(), {
+    // em fluxo: a Vercel corta resposta inteira acima de 4,5 MB (o comprovante pode ter até 8 MB)
+    return new NextResponse(arquivo.stream(), {
       headers: {
         "content-type": tipo,
         "content-disposition": `inline; filename="comprovante-${id.slice(0, 8)}.${ext}"`,

@@ -18,17 +18,35 @@ import {
   toISODate,
   trechosOcupados,
 } from "@/lib/tayssa/rules";
-import { avisoDaReservaVip, cabeNoHorario, diaLegivel, diaSoVip, duracaoLegivel, horaLegivel } from "@/lib/tayssa/agendar";
+import {
+  avisoDaReservaVip,
+  cabeNoHorario,
+  diaLegivel,
+  diaSoVip,
+  duracaoLegivel,
+  ehManutencao,
+  horaLegivel,
+  juntarServicos,
+  somaDoPedido,
+} from "@/lib/tayssa/agendar";
 import { avisarTayssa } from "@/lib/tayssa/avisos";
 import { isoDateField } from "@/lib/tayssa/validation";
 import { horariosFechados } from "@/lib/tayssa/queries/vip";
 import { expirarPedidosSemSinal } from "@/lib/tayssa/queries/expira";
 import { nowInBusinessTz } from "@/lib/tayssa/format";
 import { BusinessError, runAction } from "@/lib/tayssa/actions/_helpers";
-import type { ActionResult, AppointmentRow, ServiceRow } from "@/lib/tayssa/types";
+import type { ActionResult, AppointmentRow, ServiceRow, ServicoDoPedido } from "@/lib/tayssa/types";
+
+/** Quantos serviços cabem num pedido (cílios, sobrancelha, lábios, pele e mais um). */
+const MAX_SERVICOS = 5;
 
 const createSchema = z.object({
-  service_id: z.string().uuid("Escolha um serviço"),
+  // vários serviços num horário só, um depois do outro (16/11/2026)
+  service_ids: z
+    .array(z.string().uuid("Escolha um serviço"))
+    .min(1, "Escolha um serviço")
+    .max(MAX_SERVICOS, `Até ${MAX_SERVICOS} serviços no mesmo horário`)
+    .transform((ids) => [...new Set(ids)]),
   date: isoDateField,
   time: z.string().regex(/^\d{2}:\d{2}$/, "Escolha um horário"),
   note: z.string().trim().max(300).optional().transform((v) => v || null),
@@ -44,18 +62,27 @@ export type BookingResult = {
 /**
  * Agendamento interno. Tudo validado contra a configuração da casa:
  * dia aberto, horário da grade daquele dia, antecedência, horário livre
- * pelo tempo inteiro do serviço, limite de horários em aberto por
+ * pelo tempo inteiro dos serviços, limite de horários em aberto por
  * cliente. Nasce em "requested"; a Tayssa confirma no painel dela.
+ *
+ * Vários serviços num horário só (Lucas, 16/11/2026: "se ela marcar boca,
+ * cílios e sobrancelha, ela manda só R$ 50"): um pedido, um sinal, os
+ * serviços um depois do outro, com o tempo somado. `service_id` sozinho
+ * (tela aberta de antes da mudança) vale como um serviço.
  */
 export async function createAppointmentAction(input: {
-  service_id: string;
+  service_ids?: string[];
+  service_id?: string;
   date: string;
   time: string;
   note?: string;
 }): Promise<ActionResult<BookingResult>> {
   return runAction("booking.create", async () => {
     const me = await assertClient();
-    const parsed = createSchema.parse(input);
+    const parsed = createSchema.parse({
+      ...input,
+      service_ids: input.service_ids?.length ? input.service_ids : input.service_id ? [input.service_id] : [],
+    });
     const db = vipDb();
     // o horário de um pedido que perdeu o prazo do sinal já está livre de novo
     await expirarPedidosSemSinal();
@@ -63,9 +90,30 @@ export async function createAppointmentAction(input: {
     const b = settings.booking;
     const now = nowInBusinessTz();
 
-    const { data: s } = await db.from("services").select("*").eq("id", parsed.service_id).maybeSingle();
-    const service = s as ServiceRow | null;
-    if (!service || !service.active) throw new BusinessError("Escolha um serviço válido.", "service_id");
+    const { data: lidos, error: sErr } = await db.from("services").select("*").in("id", parsed.service_ids);
+    if (sErr) throw new Error(sErr.message);
+    // na ordem em que ela escolheu (é a ordem em que a Tayssa faz)
+    const escolhidos = parsed.service_ids.map((sid) => ((lidos ?? []) as ServiceRow[]).find((x) => x.id === sid));
+    if (escolhidos.some((x) => !x || !x.active)) throw new BusinessError("Escolha um serviço válido.", "service_id");
+    const servicos = escolhidos as ServiceRow[];
+    // manutenção (a genérica): o valor é o da manutenção do volume dela (a nota diz qual)
+    const volume = parsed.note?.match(/^Manutenção do (.+)\.$/)?.[1] ?? null;
+    const precoDaManutencao = volume
+      ? (((await db.from("services").select("preco_manutencao").eq("name", volume).maybeSingle()).data as { preco_manutencao: number | null } | null)
+          ?.preco_manutencao ?? null)
+      : null;
+    const lista: ServicoDoPedido[] = servicos.map((x) => ({
+      id: x.id,
+      nome: x.name,
+      duracao: x.duration_min ?? b.default_duration_min,
+      preco:
+        precoDaManutencao != null && ehManutencao(x.slug, x.name)
+          ? Number(precoDaManutencao)
+          : x.preco != null
+            ? Number(x.preco)
+            : null,
+    }));
+    const nomeDoPedido = juntarServicos(lista.map((x) => x.nome));
 
     const dia = bookableDays(now, b).find((d) => d.iso === parsed.date);
     if (!dia) {
@@ -103,8 +151,8 @@ export async function createAppointmentAction(input: {
       );
     }
 
-    // o serviço precisa caber inteiro: o volume de 3h às 10h não entra se às 11h já tem alguém
-    const duracao = service.duration_min ?? b.default_duration_min;
+    // os serviços precisam caber inteiros, um depois do outro: o volume de 3h às 10h não entra se às 11h já tem alguém
+    const duracao = somaDoPedido(lista).duracao || b.default_duration_min;
     const [{ data: doDia, error: dErr }, fechados] = await Promise.all([
       db
         .from("appointments")
@@ -131,7 +179,9 @@ export async function createAppointmentAction(input: {
     }
     if (!cabeNoHorario(slot, duracao)) {
       throw new BusinessError(
-        `${service.name} leva ${duracaoLegivel(duracao)} e não cabe a partir desse horário. Escolha outro.`,
+        lista.length > 1
+          ? `Os serviços juntos levam ${duracaoLegivel(duracao)} e não cabem a partir desse horário. Escolha outro.`
+          : `${nomeDoPedido} leva ${duracaoLegivel(duracao)} e não cabe a partir desse horário. Escolha outro.`,
         "time"
       );
     }
@@ -140,13 +190,14 @@ export async function createAppointmentAction(input: {
       .from("appointments")
       .insert({
         client_id: me.id,
-        service_id: service.id,
-        service_name: service.name,
+        service_id: lista[0].id,
+        service_name: nomeDoPedido,
         scheduled_date: parsed.date,
         scheduled_time: `${parsed.time}:00`,
         duration_min: duracao,
         status: "requested",
         client_note: parsed.note,
+        servicos: lista,
       })
       .select("id")
       .single();
@@ -163,20 +214,20 @@ export async function createAppointmentAction(input: {
       action: "appointment_requested",
       entityType: "appointment",
       entityId: id,
-      meta: { service: service.name, date: parsed.date, time: parsed.time },
+      meta: { service: nomeDoPedido, date: parsed.date, time: parsed.time },
     });
     // o aviso no celular da Tayssa sai depois da resposta: ela confirma quando o sinal cair
     after(() =>
       avisarTayssa({
         titulo: "Novo pedido de horário",
-        corpo: `${me.name} · ${service.name} · ${diaLegivel(parsed.date)} às ${horaLegivel(parsed.time)}`,
+        corpo: `${me.name} · ${nomeDoPedido} · ${diaLegivel(parsed.date)} às ${horaLegivel(parsed.time)}`,
         url: `${ROUTES.adminAgenda}#pedidos`,
         tag: `pedido-${id}`,
       }),
     );
     revalidatePath(ROUTES.vip, "layout");
     revalidatePath(ROUTES.admin, "layout");
-    return { id, serviceName: service.name, date: parsed.date, time: parsed.time };
+    return { id, serviceName: nomeDoPedido, date: parsed.date, time: parsed.time };
   });
 }
 

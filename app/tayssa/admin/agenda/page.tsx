@@ -7,7 +7,7 @@ import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES, publicUrl } from "@/lib/tayssa/config";
 import { dateShort, dayLabel, dayMonth, hhmm, nowInBusinessTz, weekdayShort } from "@/lib/tayssa/format";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
-import { horariosDaSemana, mensagemConfirmacao, nomeDaCliente, prazoDoSinal, reais } from "@/lib/tayssa/agendar";
+import { horariosDaSemana, listaLegivel, mensagemConfirmacao, nomeDaCliente, prazoDoSinal, reais, separarServicos } from "@/lib/tayssa/agendar";
 import { situacaoDoPedido, type AppointmentStatus } from "@/lib/tayssa/types";
 import { taxaDoHorario } from "@/lib/tayssa/rules";
 import type { BookingSettings } from "@/lib/tayssa/config";
@@ -25,6 +25,7 @@ import { Icone, type IconeNome } from "@/components/tayssa/admin/icons";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { AvisosDePedido } from "@/components/tayssa/admin/avisos";
 import { AvisoDeConfirmacao } from "@/components/tayssa/admin/aviso-confirmacao";
+import { CorrigirData } from "@/components/tayssa/admin/corrigir-data";
 
 /** A Agenda com a mensagem de confirmação de um horário aberta (logo depois do "Confirmar"). */
 const avisarDe = (id: string) => `${ROUTES.adminAgenda}?avisar=${id}`;
@@ -190,8 +191,8 @@ function Slot({
               // o link do horário vai junto: no WhatsApp ele vira o cartão (folder) com os dados do pedido
               esperandoSinal && !comComprovante
                 ? codigoPix
-                  ? `Oi, ${first}! Aqui é a Tayssa. Recebi seu pedido de ${a.service_name} para ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}.${taxa > 0 ? ` Esse horário tem a taxa de horário especial de ${reais(taxa)}.` : ""}\n\nSeu horário: ${publicUrl(ROUTES.horario(a.id))}\n\nPara confirmar, pague o sinal de ${reais(sinal.valor)} pelo Pix copia e cola abaixo e anexe o comprovante em Meus horários: ${publicUrl(ROUTES.vipBook)}\n\n${codigoPix}`
-                  : `Oi, ${first}! Aqui é a Tayssa. Recebi seu pedido de ${a.service_name} para ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}.${taxa > 0 ? ` Esse horário tem a taxa de horário especial de ${reais(taxa)}.` : ""}\n\nSeu horário: ${publicUrl(ROUTES.horario(a.id))}\n\nPara confirmar, o sinal é de ${reais(sinal.valor)} no Pix. A chave é: `
+                  ? `Oi, ${first}! Aqui é a Tayssa. Recebi seu pedido de ${listaLegivel(separarServicos(a.service_name))} para ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}.${taxa > 0 ? ` Esse horário tem a taxa de horário especial de ${reais(taxa)}.` : ""}\n\nSeu horário: ${publicUrl(ROUTES.horario(a.id))}\n\nPara confirmar, pague o sinal de ${reais(sinal.valor)} pelo Pix copia e cola abaixo e anexe o comprovante em Meus horários: ${publicUrl(ROUTES.vipBook)}\n\n${codigoPix}`
+                  : `Oi, ${first}! Aqui é a Tayssa. Recebi seu pedido de ${listaLegivel(separarServicos(a.service_name))} para ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}.${taxa > 0 ? ` Esse horário tem a taxa de horário especial de ${reais(taxa)}.` : ""}\n\nSeu horário: ${publicUrl(ROUTES.horario(a.id))}\n\nPara confirmar, o sinal é de ${reais(sinal.valor)} no Pix. A chave é: `
                 : `Oi, ${first}! Sobre seu horário de ${dayLabel(a.scheduled_date)} às ${hhmm(a.scheduled_time)}: `,
             )}
             target="_blank"
@@ -206,6 +207,10 @@ function Slot({
           <Link href={avisarDe(a.id)} scroll={false} replace className="tya-link tya-link--quiet tya-slot__wa">
             Mensagem de confirmação
           </Link>
+        ) : null}
+        {/* data errada (ou o atendimento já aconteceu antes): corrige este pedido, sem criar outro */}
+        {["requested", "confirmed", "done"].includes(a.status) ? (
+          <CorrigirData id={a.id} data={a.scheduled_date} hora={a.scheduled_time} tipo="horario" />
         ) : null}
       </div>
 

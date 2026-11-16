@@ -261,7 +261,16 @@ export type AppointmentRow = {
   comprovante_tipo?: string | null;
   /** quando ela anexou: pedido com comprovante não cai sozinho no prazo do sinal */
   comprovante_em?: string | null;
+  /**
+   * Os serviços do pedido, como estavam na hora de marcar (vários serviços
+   * num horário só, 16/11/2026). Vazio em pedido antigo: um serviço, o de
+   * `service_id`.
+   */
+  servicos?: ServicoDoPedido[] | null;
 };
+
+/** Um serviço de um pedido: nome, minutos que ocupa e valor (null = sem valor cadastrado). */
+export type ServicoDoPedido = { id: string; nome: string; duracao: number; preco: number | null };
 
 /** O que a cliente e a Tayssa leem do pedido: "Comprovante enviado" quando ela já anexou. */
 export function situacaoDoPedido(a: { status: AppointmentStatus; comprovante_em?: string | null }): string {

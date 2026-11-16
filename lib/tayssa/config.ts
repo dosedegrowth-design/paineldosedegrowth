@@ -61,6 +61,12 @@ export const ROUTES = {
   adminAgenda: `${B}/admin/agenda`,
   /** o comprovante do sinal (só a Tayssa logada abre) */
   adminComprovante: (id: string) => `${B}/admin/comprovante/${id}`,
+  /** os comprovantes do sinal do mês, para baixar e mandar para a Larissa (16/11/2026) */
+  adminRelatorios: `${B}/admin/relatorios`,
+  adminRelatorioComprovantes: (mes: string) => `${B}/admin/relatorios/comprovantes?mes=${mes}`,
+  adminRelatorioPlanilha: (mes: string) => `${B}/admin/relatorios/planilha?mes=${mes}`,
+  /** o manual do painel, sempre atualizado (16/11/2026) */
+  adminManual: `${B}/admin/manual`,
 } as const;
 
 /**

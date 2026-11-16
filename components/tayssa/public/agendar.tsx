@@ -40,6 +40,8 @@ import {
   partesDoDia,
   reais,
   diaLegivel,
+  juntarServicos,
+  somaDoPedido,
   valorComTaxa,
   valorLegivel,
   type DiaAgenda,
@@ -84,6 +86,11 @@ const AgendarCtx = createContext<Ctx | null>(null);
 const NAO_SEI = "Ainda não sei, quero ajuda para escolher";
 /** a lista de serviços começa curta: três e "Mais serviços" */
 const VISIVEIS = 3;
+/** serviços num horário só (o servidor aceita o mesmo tanto) */
+const MAX_SERVICOS = 5;
+
+/** um serviço escolhido; a manutenção leva o volume */
+type Item = { slug: string; tecnica: string | null };
 
 /**
  * O "Agendar" do site inteiro. Todo botão de agendar abre esta folha, um
@@ -187,9 +194,12 @@ function FolhaAgendar({
   const semServicos = agenda.servicos.length === 0;
 
   const [passo, setPasso] = useState<Passo>("escolha");
-  const [servico, setServico] = useState<string | null>(null);
+  // vários serviços num horário só (Lucas, 16/11/2026: "se ela marcar boca,
+  // cílios e sobrancelha, ela manda só R$ 50"): a lista do que ela escolheu,
+  // na ordem, e a lista de escolher aberta (sem nada, ou no "+ Adicionar")
+  const [itens, setItens] = useState<Item[]>([]);
+  const [escolhendo, setEscolhendo] = useState(true);
   const [verTodos, setVerTodos] = useState(false);
-  const [tecnica, setTecnica] = useState<string | null>(null);
   const [dia, setDia] = useState<string | null>(null);
   const [hora, setHora] = useState<string | null>(null);
   const [horasAbertas, setHorasAbertas] = useState(false);
@@ -210,13 +220,9 @@ function FolhaAgendar({
   const [feito, setFeito] = useState<Feito | null>(null);
   const [enviando, iniciar] = useTarefa();
 
-  /** troca de serviço: o dia e a hora que não comportam o tempo dele saem */
-  const escolherServico = (slug: string) => {
-    setServico(slug);
-    setVerTodos(false);
-    setTecnica(null);
-    setErro(null);
-    const novo = agenda.servicos.find((s) => s.slug === slug)?.duracao ?? null;
+  /** o tempo mudou (entrou ou saiu um serviço): o dia e a hora que não comportam tudo saem */
+  const ajustarAoTempo = (lista: Item[]) => {
+    const novo = somaDoPedido(lista.map((i) => ({ duracao: agenda.servicos.find((s) => s.slug === i.slug)?.duracao }))).duracao || null;
     const d = dias.find((x) => x.iso === dia);
     if (!d || !d.slots.some((s) => cabeNoHorario(s, novo))) {
       setDia(null);
@@ -225,6 +231,25 @@ function FolhaAgendar({
       setHora(null);
     }
   };
+  const adicionarServico = (slug: string) => {
+    if (itens.some((i) => i.slug === slug) || itens.length >= MAX_SERVICOS) return;
+    const lista = [...itens, { slug, tecnica: null }];
+    setItens(lista);
+    setEscolhendo(false);
+    setVerTodos(false);
+    setErro(null);
+    ajustarAoTempo(lista);
+  };
+  /** "Trocar" (um serviço só) ou "Tirar" (vários): sem nenhum, a lista de escolher volta */
+  const tirarServico = (slug: string) => {
+    const lista = itens.filter((i) => i.slug !== slug);
+    setItens(lista);
+    setErro(null);
+    if (!lista.length) setEscolhendo(true);
+    ajustarAoTempo(lista);
+  };
+  const escolherVolume = (slug: string, nome: string) =>
+    setItens((l) => l.map((i) => (i.slug === slug ? { ...i, tecnica: nome } : i)));
 
   // pedido novo: começa do zero no primeiro passo (o horário de antes pode já
   // ter sido tomado), com o serviço do botão que abriu. A conta continua.
@@ -237,20 +262,28 @@ function FolhaAgendar({
     setErro(null);
     setHorasAbertas(false);
     setVerTodos(false);
-    setServico(null);
-    setTecnica(null);
     setDia(null);
     setHora(null);
-    if (pedido.servico && agenda.servicos.some((s) => s.slug === pedido.servico)) {
-      setServico(pedido.servico);
-    }
+    // o serviço do botão que abriu já vem escolhido
+    const doBotao = pedido.servico && agenda.servicos.some((s) => s.slug === pedido.servico) ? pedido.servico : null;
+    setItens(doBotao ? [{ slug: doBotao, tecnica: null }] : []);
+    setEscolhendo(!doBotao);
   }
 
-  const escolhido = agenda.servicos.find((s) => s.slug === servico) ?? null;
-  const perguntaTecnica = Boolean(escolhido?.manutencao && agenda.volumes.length);
-  const servicoPronto = Boolean((escolhido || semServicos) && (!perguntaTecnica || tecnica));
-  // o serviço precisa caber inteiro: o volume de 3h não aparece às 10h se às 11h já tem alguém
-  const duracao = escolhido?.duracao ?? null;
+  const escolhidos = itens.flatMap((i) => {
+    const s = agenda.servicos.find((x) => x.slug === i.slug);
+    return s ? [{ ...s, tecnica: i.tecnica }] : [];
+  });
+  // manutenção: o valor é o da manutenção do volume escolhido (o Fox eyes custa mais)
+  const precoDe = (e: (typeof escolhidos)[number]) =>
+    (e.manutencao ? agenda.volumes.find((v) => v.nome === e.tecnica)?.manutencao : null) ?? e.preco ?? null;
+  // a manutenção que ainda não disse de qual volume é
+  const pendente = agenda.volumes.length ? (escolhidos.find((e) => e.manutencao && !e.tecnica) ?? null) : null;
+  const servicoPronto = Boolean((escolhidos.length || semServicos) && !pendente);
+  const disponiveis = agenda.servicos.filter((s) => !itens.some((i) => i.slug === s.slug));
+  // os serviços precisam caber inteiros, um depois do outro: o volume de 3h não aparece às 10h se às 11h já tem alguém
+  const soma = somaDoPedido(escolhidos.map((e) => ({ duracao: e.duracao, preco: precoDe(e) })));
+  const duracao = escolhidos.length ? soma.duracao || null : null;
   const temLivre = new Set(diasAbertos(dias, duracao).map((d) => d.iso));
   const diaEscolhido = dias.find((d) => d.iso === dia) ?? null;
   const livresNoDia = diaEscolhido ? diaEscolhido.slots.filter((s) => cabeNoHorario(s, duracao)).length : 0;
@@ -259,12 +292,10 @@ function FolhaAgendar({
   // dezembro: R$ 30 no primeiro e no último horário de cada dia; no dia 24, em todos
   const taxa = (hora && diaEscolhido?.slots.find((s) => s.time === hora)?.taxa) || 0;
   const diaTemTaxa = Boolean(diaEscolhido?.slots.some((s) => (s.taxa ?? 0) > 0));
-  const completo = Boolean(servicoPronto && escolhido && dia && horaLivre);
-  // manutenção: o valor é o da manutenção do volume escolhido (o Fox eyes custa mais)
-  const valor =
-    (escolhido?.manutencao ? agenda.volumes.find((v) => v.nome === tecnica)?.manutencao : null) ??
-    escolhido?.preco ??
-    null;
+  const completo = Boolean(servicoPronto && escolhidos.length && !escolhendo && dia && horaLivre);
+  // o total: todos com valor cadastrado; "a partir de" quando algum é valor de partida
+  const valor = soma.valor;
+  const aPartir = escolhidos.some((e) => e.aPartir);
 
   // a fita de dias vai até o fim do ano (50 e tantos dias): o botão do mês
   // leva direto a ele, e o mês que está à vista na fita fica aceso
@@ -362,9 +393,9 @@ function FolhaAgendar({
   };
 
   const falta =
-    !escolhido && !semServicos
+    (!escolhidos.length || escolhendo) && !semServicos
       ? "Escolha o serviço"
-      : perguntaTecnica && !tecnica
+      : pendente
         ? "Escolha o volume"
         : !dia
           ? "Escolha o dia"
@@ -372,16 +403,16 @@ function FolhaAgendar({
             ? "Escolha o horário"
             : "";
 
-  const nomeDoServico = escolhido
-    ? tecnica && tecnica !== NAO_SEI
-      ? `${escolhido.nome} · ${tecnica}`
-      : escolhido.nome
-    : "";
+  const nomeDoServico = juntarServicos(
+    escolhidos.map((e) => (e.tecnica && e.tecnica !== NAO_SEI ? `${e.nome} · ${e.tecnica}` : e.nome)),
+  );
+  // o volume da manutenção (vai na mensagem do WhatsApp, junto da manutenção)
+  const tecnica = escolhidos.find((e) => e.manutencao && e.tecnica)?.tecnica ?? null;
 
   /** marca o horário: entra (ou cria a conta) se precisar e grava o pedido */
   const agendar = (e?: FormEvent) => {
     e?.preventDefault();
-    if (!escolhido || !dia || !hora || enviando) return;
+    if (!escolhidos.length || !dia || !hora || enviando) return;
     setErro(null);
     iniciar(async () => {
       let quem = conta;
@@ -398,13 +429,17 @@ function FolhaAgendar({
         setConta(quem);
         setSenha("");
       }
-      const nota =
-        escolhido.manutencao && tecnica
-          ? tecnica === NAO_SEI
-            ? "Manutenção: ainda não sei o volume, quero ajuda para escolher."
-            : `Manutenção do ${tecnica}.`
-          : undefined;
-      const b = await createAppointmentAction({ service_id: escolhido.id, date: dia, time: hora, note: nota });
+      const nota = tecnica
+        ? tecnica === NAO_SEI
+          ? "Manutenção: ainda não sei o volume, quero ajuda para escolher."
+          : `Manutenção do ${tecnica}.`
+        : undefined;
+      const b = await createAppointmentAction({
+        service_ids: escolhidos.map((e) => e.id),
+        date: dia,
+        time: hora,
+        note: nota,
+      });
       if (!b.ok) {
         buscarAgenda();
         // o horário foi tomado (ou fechado) enquanto ela escolhia: volta para escolher outro
@@ -416,7 +451,16 @@ function FolhaAgendar({
         setErro({ texto: b.error, campo: b.field });
         return;
       }
-      setFeito({ id: b.data.id, servico: escolhido.nome, tecnica, dia, hora, valor, taxa, nome: quem.nome });
+      setFeito({
+        id: b.data.id,
+        servico: juntarServicos(escolhidos.map((e) => e.nome)),
+        tecnica,
+        dia,
+        hora,
+        valor,
+        taxa,
+        nome: quem.nome,
+      });
       setPasso("pronto");
       buscarAgenda();
     });
@@ -507,46 +551,39 @@ function FolhaAgendar({
           <div className="tyag__passo" key="escolha">
             {semServicos ? null : (
               <fieldset className="tyag__grupo">
-                <legend className="tyag__rotulo">O que você vai fazer?</legend>
-                {escolhido && !verTodos && (!perguntaTecnica || tecnica) ? (
-                  <div className="tyag__escolhido">
-                    <span>
-                      <b>{nomeDoServico}</b>
-                      <small>
-                        {[valorLegivel(valor, [], Boolean(escolhido.aPartir)), duracaoLegivel(duracao)]
-                          .filter(Boolean)
-                          .join(" · ")}
-                      </small>
-                    </span>
-                    <button
-                      type="button"
-                      className="tyag__trocar"
-                      onClick={() => {
-                        setVerTodos(true);
-                        setTecnica(null);
-                      }}
-                    >
-                      Trocar
-                    </button>
+                <legend className="tyag__rotulo">
+                  {escolhidos.length > 1 ? "Seus serviços" : "O que você vai fazer?"}
+                </legend>
+                {escolhidos.length ? (
+                  <div className="tyag__escolhidos">
+                    {escolhidos.map((e) => (
+                      <div key={e.slug} className="tyag__escolhido">
+                        <span>
+                          <b>{e.tecnica && e.tecnica !== NAO_SEI ? `${e.nome} · ${e.tecnica}` : e.nome}</b>
+                          <small>
+                            {[
+                              valorLegivel(
+                                precoDe(e),
+                                e.manutencao && !e.tecnica ? agenda.volumes.map((v) => v.manutencao) : [],
+                                Boolean(e.aPartir),
+                              ),
+                              duracaoLegivel(e.duracao),
+                            ]
+                              .filter(Boolean)
+                              .join(" · ")}
+                          </small>
+                        </span>
+                        <button type="button" className="tyag__trocar" onClick={() => tirarServico(e.slug)}>
+                          {escolhidos.length > 1 ? "Tirar" : "Trocar"}
+                        </button>
+                      </div>
+                    ))}
                   </div>
-                ) : escolhido && perguntaTecnica && !tecnica && !verTodos ? (
-                  <div className="tyag__escolhido">
-                    <span>
-                      <b>{escolhido.nome}</b>
-                      <small>
-                        {valorLegivel(
-                          escolhido.preco,
-                          agenda.volumes.map((v) => v.manutencao),
-                        )}
-                      </small>
-                    </span>
-                    <button type="button" className="tyag__trocar" onClick={() => setVerTodos(true)}>
-                      Trocar
-                    </button>
-                  </div>
-                ) : (
+                ) : null}
+
+                {escolhendo || !escolhidos.length ? (
                   <div className="tyag__chips">
-                    {(verTodos ? agenda.servicos : agenda.servicos.slice(0, VISIVEIS)).map((s) => {
+                    {(verTodos ? disponiveis : disponiveis.slice(0, VISIVEIS)).map((s) => {
                       const v = valorLegivel(
                         s.preco,
                         s.manutencao ? agenda.volumes.map((x) => x.manutencao) : [],
@@ -559,12 +596,8 @@ function FolhaAgendar({
                             type="radio"
                             name={`${id}-servico`}
                             value={s.slug}
-                            checked={servico === s.slug}
-                            onChange={() => escolherServico(s.slug)}
-                            // tocar de novo no que já estava marcado (depois de "Trocar") fecha a lista
-                            onClick={() => {
-                              if (servico === s.slug) setVerTodos(false);
-                            }}
+                            checked={false}
+                            onChange={() => adicionarServico(s.slug)}
                           />
                           <span>
                             {s.nome}
@@ -573,21 +606,53 @@ function FolhaAgendar({
                         </label>
                       );
                     })}
-                    {!verTodos && agenda.servicos.length > VISIVEIS ? (
+                    {!verTodos && disponiveis.length > VISIVEIS ? (
                       <button type="button" className="tyag__mais" onClick={() => setVerTodos(true)}>
                         Mais serviços
-                        <small>{agenda.servicos.length - VISIVEIS}</small>
+                        <small>{disponiveis.length - VISIVEIS}</small>
                         <svg viewBox="0 0 24 24" aria-hidden>
                           <path d="M9 6l6 6-6 6" />
                         </svg>
                       </button>
                     ) : null}
+                    {escolhidos.length ? (
+                      <button
+                        type="button"
+                        className="tyag__trocar tyag__trocar--claro"
+                        onClick={() => {
+                          setEscolhendo(false);
+                          setVerTodos(false);
+                        }}
+                      >
+                        Não quero outro
+                      </button>
+                    ) : null}
                   </div>
-                )}
+                ) : !pendente && escolhidos.length < MAX_SERVICOS ? (
+                  // vários serviços no mesmo horário, um depois do outro, com um sinal só
+                  <button type="button" className="tyag__adicionar" onClick={() => setEscolhendo(true)}>
+                    <span className="tyag__adicionar-mais" aria-hidden>
+                      <svg viewBox="0 0 24 24">
+                        <path d="M12 5v14M5 12h14" />
+                      </svg>
+                    </span>
+                    <span>
+                      Adicionar outro serviço
+                      <small>no mesmo horário, com um sinal só</small>
+                    </span>
+                  </button>
+                ) : null}
+
+                {escolhidos.length > 1 && !pendente ? (
+                  <p className="tyag__total">
+                    <span>Total</span>
+                    <b>{[valorLegivel(valor, [], aPartir), duracaoLegivel(duracao)].filter(Boolean).join(" · ")}</b>
+                  </p>
+                ) : null}
               </fieldset>
             )}
 
-            {perguntaTecnica && !tecnica && !verTodos ? (
+            {pendente && !escolhendo ? (
               <fieldset className="tyag__grupo tyag__grupo--entra">
                 <legend className="tyag__rotulo">De qual volume é a manutenção?</legend>
                 <div className="tyag__chips">
@@ -600,8 +665,8 @@ function FolhaAgendar({
                         type="radio"
                         name={`${id}-tecnica`}
                         value={v.nome}
-                        checked={tecnica === v.nome}
-                        onChange={() => setTecnica(v.nome)}
+                        checked={pendente.tecnica === v.nome}
+                        onChange={() => escolherVolume(pendente.slug, v.nome)}
                       />
                       <span>
                         {v.nome === NAO_SEI ? "Ainda não sei" : v.nome}
@@ -613,7 +678,7 @@ function FolhaAgendar({
               </fieldset>
             ) : null}
 
-            {servicoPronto && !verTodos ? (
+            {servicoPronto && !escolhendo ? (
               <fieldset className="tyag__grupo tyag__grupo--entra">
                 <legend className="tyag__rotulo">Qual dia?</legend>
                 {/* prioridade VIP: o fim de ano abre primeiro para as VIPs (09/11/2026) */}
@@ -685,7 +750,7 @@ function FolhaAgendar({
               </fieldset>
             ) : null}
 
-            {servicoPronto && !verTodos && diaEscolhido ? (
+            {servicoPronto && !escolhendo && diaEscolhido ? (
               <div className="tyag__grupo tyag__grupo--entra">
                 <span className="tyag__rotulo" id={`${id}-h`}>
                   Qual horário?
@@ -761,7 +826,7 @@ function FolhaAgendar({
           </div>
         ) : null}
 
-        {passo === "conta" && escolhido && dia && hora ? (
+        {passo === "conta" && escolhidos.length && dia && hora ? (
           <form className="tyag__passo" key="conta" id={`${id}-form`} onSubmit={agendar} noValidate>
             <div className="tyag__resumo">
               <b>{nomeDoServico}</b>
@@ -769,6 +834,19 @@ function FolhaAgendar({
                 {diaLegivel(dia)} às {horaLegivel(hora)}
                 {valorComTaxa(valor, taxa) ? ` · ${valorComTaxa(valor, taxa)}` : ""}
               </span>
+              {escolhidos.length < MAX_SERVICOS ? (
+                <button
+                  type="button"
+                  className="tyag__link tyag__resumo-mais"
+                  onClick={() => {
+                    setErro(null);
+                    setPasso("escolha");
+                    setEscolhendo(true);
+                  }}
+                >
+                  + Adicionar outro serviço
+                </button>
+              ) : null}
             </div>
 
             {conta ? (

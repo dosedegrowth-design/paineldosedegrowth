@@ -25,6 +25,8 @@ const SECOES: { titulo: string; itens: Item[] }[] = [
       { href: ROUTES.adminAgenda, label: "Agenda", icone: "agenda", chave: "appointments" },
       { href: ROUTES.adminServices, label: "Atendimentos", icone: "atendimentos", chave: "services" },
       { href: ROUTES.adminClients, label: "Clientes", icone: "clientes", chave: "signups" },
+      // os comprovantes do sinal do mês, para mandar para a Larissa (16/11/2026)
+      { href: ROUTES.adminRelatorios, label: "Relatórios", icone: "relatorios" },
     ],
   },
   {
@@ -41,7 +43,11 @@ const SECOES: { titulo: string; itens: Item[] }[] = [
   },
   {
     titulo: "Ajustes",
-    itens: [{ href: ROUTES.adminSettings, label: "Configurações", icone: "config" }],
+    itens: [
+      { href: ROUTES.adminSettings, label: "Configurações", icone: "config" },
+      // como usar cada parte do painel, sempre atualizado (16/11/2026)
+      { href: ROUTES.adminManual, label: "Manual do painel", icone: "manual" },
+    ],
   },
 ];
 

@@ -36,6 +36,7 @@ import { ActionButton, NoteAction } from "@/components/tayssa/admin/controls";
 import { AccessLinkPanel, AdminServiceEntryForm, ClientEditForm, GrantCustomBenefitForm, ReleaseBirthdayForm } from "@/components/tayssa/admin/forms";
 import { SignupReviewPanel } from "@/components/tayssa/admin/signup-review";
 import { CorrigirPontos } from "@/components/tayssa/admin/corrigir-pontos";
+import { CorrigirData } from "@/components/tayssa/admin/corrigir-data";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 
 /* ---- selos de estado: o dourado é do VIP, o cassis é do que espera ---- */
@@ -539,6 +540,8 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                             </NoteAction>
                           </div>
                         ) : null}
+                        {/* data errada: corrige este atendimento (e o horário da agenda ligado), sem duplicar */}
+                        {s.status !== "rejected" ? <CorrigirData id={s.id} data={s.service_date} tipo="visita" /> : null}
                       </td>
                     </tr>
                   ))}

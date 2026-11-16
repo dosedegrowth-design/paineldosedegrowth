@@ -129,7 +129,9 @@ export async function logoutAction(): Promise<void> {
       entityId: user.id,
     });
   }
-  redirect(ROUTES.home);
+  // a Tayssa saindo do painel vai para a tela de entrar (ir para o site parecia o mesmo
+  // que o botão do globo, 16/11/2026); a cliente volta para o site
+  redirect(user?.role === "admin" ? ROUTES.login : ROUTES.home);
 }
 
 export async function setPasswordAction(
