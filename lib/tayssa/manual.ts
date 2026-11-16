@@ -3,8 +3,9 @@
  * categorias, passo a passo, em linguagem simples, dentro do painel.
  *
  * REGRA: mudou o painel, muda o manual no mesmo commit (o tópico, o print
- * se a tela mudou e `MANUAL_ATUALIZADO_EM`). A versão para o grupo sai
- * daqui também (`docs/tayssa/manual-grupo.mjs`).
+ * se a tela mudou e `MANUAL_ATUALIZADO_EM`). Os prints saem do painel local
+ * com dados falsos (`docs/tayssa/manual-prints.mjs`) e o PDF para o grupo,
+ * desta mesma página (`docs/tayssa/manual-pdf.mjs`).
  *
  * `*assim*` vira negrito: nome de botão, de menu ou de campo, escrito
  * exatamente como aparece na tela. Sem travessão (texto de cliente).
@@ -76,6 +77,13 @@ export const MANUAL: CategoriaDoManual[] = [
         texto:
           "No computador, o menu fica à esquerda, em quatro grupos: *Atendimento* (Visão geral, Agenda, Atendimentos, Clientes, Relatórios), *Relacionamento* (Indicações, Benefícios, Aniversários), *Marca* (Mídia) e *Ajustes* (Configurações, Manual do painel). No celular, a barra de baixo tem *Início*, *Agenda*, *Clientes*, *Benefícios* e *Mais*; o *Mais* abre o menu inteiro.",
         dica: "Um número ao lado de um item do menu quer dizer que tem coisa esperando você ali: pedido de horário, cliente nova, atendimento ou benefício para conferir.",
+        imagem: {
+          src: "/tayssa/manual/menu.webp",
+          alt: "Menu do painel aberto no celular, com Atendimento, Relacionamento, Marca e Ajustes",
+          largura: 780,
+          altura: 1380,
+          legenda: "No celular, o Mais abre o menu inteiro.",
+        },
       },
       {
         id: "inicio",
@@ -95,12 +103,27 @@ export const MANUAL: CategoriaDoManual[] = [
           "Toque no resultado.",
         ],
         dica: "Essa busca acha telas e ações. Para achar uma cliente pelo nome ou telefone, use a busca da tela *Clientes*.",
+        imagem: {
+          src: "/tayssa/manual/busca.webp",
+          alt: "Busca do painel aberta com a palavra agen e o resultado Agenda",
+          largura: 780,
+          altura: 600,
+          legenda: "A busca do topo acha telas e ações.",
+        },
       },
       {
         id: "topo",
         titulo: "Os botões do topo: Manual, Ver o site e Sair",
         texto:
           "*Manual* abre este manual. *Ver o site* abre o site como a cliente vê, em outra aba (o painel continua aberto na aba dele). *Sair* fecha o painel neste aparelho e volta para a tela de entrar. No celular, Manual e Ver o site aparecem só com o ícone (o livro e o globo).",
+        imagem: {
+          src: "/tayssa/manual/topo.webp",
+          alt: "Botões Manual, Ver o site e Sair no alto do painel",
+          largura: 1300,
+          altura: 128,
+          legenda: "No alto, à direita: Manual, Ver o site e Sair.",
+          larga: true,
+        },
       },
     ],
   },
@@ -133,6 +156,13 @@ export const MANUAL: CategoriaDoManual[] = [
           "Nos outros serviços (design, lash lifting, lábios…): deixe vazio.",
           "Vazio num volume: ele não aparece na pergunta “de qual volume é a sua manutenção?”.",
         ],
+        imagem: {
+          src: "/tayssa/manual/servico.webp",
+          alt: "Formulário do Volume brasileiro com Valor 170 e Valor da manutenção deste volume 120",
+          largura: 664,
+          altura: 1844,
+          legenda: "O valor da aplicação em cima; o da manutenção embaixo, com a explicação.",
+        },
       },
       {
         id: "novo-servico",
@@ -187,6 +217,13 @@ export const MANUAL: CategoriaDoManual[] = [
         titulo: "Pedido com mais de um serviço",
         texto:
           "A cliente pode marcar vários serviços no mesmo horário, um depois do outro (ex.: Manutenção de cílios + Design de sobrancelhas). Chega *um pedido só*, com os nomes juntos, o tempo somado (a agenda segura o tempo todo) e *um sinal só*. Você confirma uma vez e, no fim, marca *Realizado* uma vez: os pontos de todos os serviços entram juntos, num atendimento e num carimbo do cartão.",
+        imagem: {
+          src: "/tayssa/manual/folha-varios.webp",
+          alt: "Folha de agendar do site com dois serviços escolhidos, o total e o botão Adicionar outro serviço",
+          largura: 780,
+          altura: 1500,
+          legenda: "O que a cliente vê no site: dois serviços, o total e um sinal só.",
+        },
       },
       {
         id: "confirmar",
@@ -199,6 +236,13 @@ export const MANUAL: CategoriaDoManual[] = [
           "Abre a mensagem pronta para a cliente: toque em *Abrir a conversa no WhatsApp* e envie (ou *Copiar mensagem*).",
         ],
         dica: "Fechou sem mandar? Todo horário confirmado tem *Mensagem de confirmação* para abrir a mensagem de novo.",
+        imagem: {
+          src: "/tayssa/manual/pedido.webp",
+          alt: "Pedido de teste com comprovante enviado, Ver comprovante, Confirmar e Recusar",
+          largura: 664,
+          altura: 636,
+          legenda: "Pedido com comprovante: confira e toque em Confirmar.",
+        },
       },
       {
         id: "pedir-sinal",
@@ -219,6 +263,13 @@ export const MANUAL: CategoriaDoManual[] = [
           "Folga ou viagem: toque em *Fechar dia* no alto do dia. *Abrir dia* devolve.",
         ],
         dica: "O horário fechado aparece riscado para a cliente, ela não consegue marcar. Toque num horário com cliente para abrir a ficha dela.",
+        imagem: {
+          src: "/tayssa/manual/semana.webp",
+          alt: "Grade da semana na Agenda com horários livres, pedidos e confirmados",
+          largura: 764,
+          altura: 1240,
+          legenda: "Na Semana, um toque fecha ou abre um horário livre.",
+        },
       },
       {
         id: "fechar-atendimento",
@@ -241,6 +292,13 @@ export const MANUAL: CategoriaDoManual[] = [
           "É o mesmo pedido que muda de lugar: o serviço, o valor, a cliente e o comprovante continuam. Se o horário novo já tem outra cliente, o painel avisa.",
         ],
         dica: "Atendimento que entrou com o dia errado no passado (ex.: marcado para dezembro, mas feito antes): corrija a data para o dia em que ela veio. Ele vai para *Para fechar*, e aí é só tocar em *Realizado*.",
+        imagem: {
+          src: "/tayssa/manual/corrigir-data.webp",
+          alt: "Corrigir data aberto num pedido, com Dia certo, Hora e Gravar a data",
+          largura: 664,
+          altura: 1116,
+          legenda: "Corrigir data: o dia certo, a hora e Gravar a data.",
+        },
       },
       {
         id: "corrigir-data-ficha",
@@ -321,6 +379,13 @@ export const MANUAL: CategoriaDoManual[] = [
           "Depois, toque em *Mandar saudação no WhatsApp*: a mensagem certa já vem pronta para cada caso.",
         ],
         dica: "Não aprovou agora? Ela ainda pode virar VIP pela sequência de atendimentos ou pelo *Incluir no VIP* da ficha.",
+        imagem: {
+          src: "/tayssa/manual/nova-cliente.webp",
+          alt: "Ficha de uma cliente de teste com o cartão Nova cliente e os botões Aprovar VIP e Não aprovar",
+          largura: 780,
+          altura: 1688,
+          legenda: "O cartão Nova cliente fica no alto da ficha.",
+        },
       },
       {
         id: "nova-cliente",
@@ -456,6 +521,13 @@ export const MANUAL: CategoriaDoManual[] = [
           "Toque em *Adicionar pontos*, escolha o serviço certo (ex.: aplicação) e confirme.",
         ],
         dica: "Os pontos sempre saem do serviço, nunca um número solto. O motivo é opcional e só você vê. O saldo nunca fica negativo.",
+        imagem: {
+          src: "/tayssa/manual/corrigir-pontos.webp",
+          alt: "Corrigir pontos com Tirar pontos, o serviço Manutenção de cílios e a conta antes de gravar",
+          largura: 664,
+          altura: 984,
+          legenda: "O painel mostra a conta antes de gravar.",
+        },
       },
       {
         id: "vip",
@@ -580,6 +652,13 @@ export const MANUAL: CategoriaDoManual[] = [
         onde: ["Visão geral"],
         texto:
           "É a tela de abrir o dia: o que espera você, os *Próximos horários* (com *Confirmar* nos pedidos), as *Novas clientes*, quem está *Pronta para VIP*, os aniversários da semana, quem sumiu e os últimos movimentos. Cada cartão de número leva para a tela certa.",
+        imagem: {
+          src: "/tayssa/manual/visao-geral.webp",
+          alt: "Visão geral do painel com o que espera você e os cartões de números",
+          largura: 780,
+          altura: 1688,
+          legenda: "A Visão geral: o que espera você e os números do dia.",
+        },
       },
       {
         id: "comprovantes",
@@ -592,6 +671,13 @@ export const MANUAL: CategoriaDoManual[] = [
           "No WhatsApp da Larissa, toque no clipe (ou no +), escolha *Documento* e mande os dois arquivos.",
         ],
         dica: "No iPhone, os arquivos baixados ficam no app *Arquivos* (pasta Downloads). *Ver comprovante* abre um de cada vez.",
+        imagem: {
+          src: "/tayssa/manual/relatorios.webp",
+          alt: "Tela de Relatórios com os números do mês, os passos e o botão Baixar os comprovantes",
+          largura: 780,
+          altura: 1688,
+          legenda: "Relatórios: os números do mês e os botões de baixar.",
+        },
       },
       {
         id: "numeros",

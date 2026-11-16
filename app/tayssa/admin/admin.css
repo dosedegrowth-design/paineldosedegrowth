@@ -2813,3 +2813,23 @@ a.tya-kpi {
     break-inside: avoid;
   }
 }
+/* Relatórios: com três números no celular, o terceiro ocupa a linha inteira (nada sozinho pela metade) */
+@media (max-width: 860px) {
+  .tya-kpis--rel > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+/* os links do horário (WhatsApp, Mensagem de confirmação, Corrigir data) lado a lado com
+   respiro: em JSX não há espaço entre eles e liam "WHATSAPPCORRIGIR DATA" */
+.tya-slot__wa {
+  margin-right: 16px;
+}
+.tya-slot .tya-corrigir-data:not(.tya-corrigir-data--aberto) {
+  margin-top: 9px;
+}
+.tya-manual__onde svg {
+  display: block;
+  width: 15px;
+  height: 15px;
+  color: var(--tya-brand);
+}

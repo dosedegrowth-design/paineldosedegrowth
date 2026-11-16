@@ -4,6 +4,7 @@ import { vipDb } from "@/lib/tayssa/db";
 import { COMPROVANTE_TIPOS } from "@/lib/tayssa/config";
 import { limitesDoMes, type ComprovanteDoRelatorio } from "@/lib/tayssa/relatorios";
 import { somaDoPedido } from "@/lib/tayssa/agendar";
+import { formatBrPhone } from "@/lib/tayssa/phone";
 import { situacaoDoPedido, type AppointmentStatus, type ServicoDoPedido } from "@/lib/tayssa/types";
 
 /** O comprovante do relatório com o que só o painel usa: o arquivo no bucket privado e a ficha da cliente. */
@@ -73,7 +74,7 @@ export const getComprovantesDoMes = cache(async (mes: string): Promise<Comprovan
     id: a.id,
     enviadoEm: a.comprovante_em,
     cliente: a.client?.name ?? "Cliente",
-    whatsapp: a.client?.phone ?? null,
+    whatsapp: a.client?.phone ? formatBrPhone(a.client.phone) : null,
     servico: a.service_name,
     dia: a.scheduled_date,
     hora: a.scheduled_time.slice(0, 5),

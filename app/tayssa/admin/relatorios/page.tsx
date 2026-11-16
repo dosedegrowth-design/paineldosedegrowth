@@ -63,7 +63,7 @@ function Linha({ c }: { c: ComprovanteComArquivo }) {
         <p className="tya-slot__mine">Comprovante enviado em {dateTime(c.enviadoEm)}</p>
       </div>
       <div className="tya-item__acts">
-        <a href={ROUTES.adminComprovante(c.id)} target="_blank" rel="noopener noreferrer" className="tya-btn tya-btn--sm">
+        <a href={ROUTES.adminComprovante(c.id)} target="_blank" rel="noopener noreferrer" className="tya-btn tya-btn--ghost tya-btn--sm">
           Ver comprovante
         </a>
       </div>
@@ -113,7 +113,7 @@ export default async function RelatoriosPage({ searchParams }: { searchParams: P
         </div>
       </div>
 
-      <div className="tya-kpis tya-kpis--2sm tya-stagger">
+      <div className="tya-kpis tya-kpis--2sm tya-kpis--rel tya-stagger">
         <Atalho n={lista.length} label={plural(lista.length, "Comprovante", "Comprovantes")} />
         <Atalho n={reais(lista.length * sinal)} label={`Em sinais (${reais(sinal)} cada)`} />
         <Atalho n={paraConferir} label="Ainda para conferir" alerta={paraConferir > 0} />
@@ -139,7 +139,7 @@ export default async function RelatoriosPage({ searchParams }: { searchParams: P
                 <Icone nome="relatorios" />
                 Baixar os comprovantes (.zip)
               </a>
-              <a href={ROUTES.adminRelatorioPlanilha(mes)} download className="tya-btn">
+              <a href={ROUTES.adminRelatorioPlanilha(mes)} download className="tya-btn tya-btn--ghost">
                 Baixar a planilha
               </a>
             </>

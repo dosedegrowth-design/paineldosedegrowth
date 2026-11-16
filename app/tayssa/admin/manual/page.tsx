@@ -26,7 +26,9 @@ export default async function ManualPage() {
         }
         lead="Tudo o que dá para fazer aqui, passo a passo. Quando algo muda no painel, este manual muda junto."
       />
-      <p className="tya-manual__regra">Atualizado em {dateLong(MANUAL_ATUALIZADO_EM, true)}.</p>
+      <p className="tya-manual__regra">
+        Atualizado em {dateLong(MANUAL_ATUALIZADO_EM, true)}. Os prints usam clientes de teste.
+      </p>
 
       <BuscaNoManual />
 
