@@ -218,3 +218,12 @@
     text-align: left;
   }
 }
+/* valores nunca quebram no meio ("R$" de um lado, número do outro) */
+.tyrel__lista b,
+.tyrel__valor b,
+.tyrel__valor span {
+  white-space: nowrap;
+}
+.tyrel__valor span {
+  display: block;
+}

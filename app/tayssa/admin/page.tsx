@@ -11,9 +11,9 @@ import { AdminBlock, AdminHeader, Empty, Stat } from "@/components/tayssa/admin/
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { TyLinkButton } from "@/components/tayssa/ui/button";
 import { agoraNaCasa, getFinanceiroDoPeriodo } from "@/lib/tayssa/queries/gestao";
-import { brl, parametrosDoPeriodo, resolverPeriodo } from "@/lib/tayssa/financeiro";
+import { brl, linhaFin, parametrosDoPeriodo, resolverPeriodo, resumoDoRelatorio } from "@/lib/tayssa/financeiro";
 import { PeriodoSeletor } from "@/components/tayssa/admin/periodo";
-import { DivisaoTabela } from "@/components/tayssa/admin/financeiro-resumo";
+import { RepasseLista } from "@/components/tayssa/admin/financeiro-resumo";
 import { BarrasDeServicos, ColunasDoPeriodo, RoscaDoPeriodo } from "@/components/tayssa/admin/graficos";
 import { fatiasDoPeriodo, serieDoPeriodo, servicosMaisFeitos } from "@/lib/tayssa/graficos";
 import { Conta } from "@/components/tayssa/ui/conta";
@@ -64,6 +64,10 @@ export default async function AdminHome({
   // os gráficos do período (Lucas, 17/11/2026: "o Dash tá mó seco"); num dia só, sem colunas
   const serie = periodo.de === periodo.ate ? null : serieDoPeriodo(fin.lista, periodo.de, periodo.ate, hoje);
   const rosca = fatiasDoPeriodo(r);
+  // o modelo do repasse (17/11/2026): a cliente paga no salão e a Larissa repassa a parte da Tayssa por quinzena
+  const rel = resumoDoRelatorio(fin.lista.map((a) => linhaFin(a)), periodo.de, periodo.ate);
+  const pctT = rel.pctTayssa ?? settings.financeiro.pct_tayssa;
+  const pct = (n: number) => `${String(Math.round(n * 10) / 10).replace(".", ",")}%`;
   const larissa = settings.financeiro.larissa_nome || "Larissa";
   const qsPeriodo = new URLSearchParams(parametrosDoPeriodo(periodo)).toString();
   const rotuloMinusculo = periodo.rotulo.charAt(0).toLowerCase() + periodo.rotulo.slice(1);
@@ -96,6 +100,7 @@ export default async function AdminHome({
               { tipo: "hoje", rotulo: "Hoje" },
               { tipo: "ontem", rotulo: "Ontem" },
               { tipo: "semana", rotulo: "Esta semana" },
+              { tipo: "quinzena", rotulo: "Esta quinzena" },
               { tipo: "mes", rotulo: "Este mês" },
               { tipo: "mes-passado", rotulo: "Mês passado" },
             ]}
@@ -131,30 +136,32 @@ export default async function AdminHome({
               </p>
             </div>
             <div className="tyad-fin__tiles">
-              <div>
-                <span>Valor recebido</span>
+              <div data-destaque>
+                <span>Parte da Tayssa ({pct(pctT)})</span>
                 <b>
-                  <Conta valor={brl(r.recebido)} duracao={950} atraso={80} />
+                  <Conta valor={brl(rel.tayssa)} duracao={950} atraso={80} />
                 </b>
               </div>
-              <div data-alerta={r.pendente > 0 || undefined}>
-                <span>Valor pendente</span>
+              <div>
+                <span>
+                  Parte da {larissa} ({pct(100 - pctT)})
+                </span>
                 <b>
-                  <Conta valor={brl(r.pendente)} duracao={950} atraso={160} />
+                  <Conta valor={brl(rel.larissa)} duracao={950} atraso={160} />
                 </b>
               </div>
             </div>
           </div>
           <div className="tyad-fin__graficos">
             {serie ? <ColunasDoPeriodo serie={serie} /> : null}
-            <RoscaDoPeriodo fatias={rosca.fatias} pctRecebido={rosca.pctRecebido} />
+            <RoscaDoPeriodo fatias={rosca.fatias} total={rosca.total} />
             <BarrasDeServicos barras={servicosMaisFeitos(r.servicos)} />
-            <section className="tyg" aria-label="Divisão">
+            <section className="tyg" aria-label="Repasse para a Tayssa">
               <p className="tyg__titulo">
-                <b>Divisão</b>
-                <span>a parte de cada uma no período</span>
+                <b>Repasse para a Tayssa</b>
+                <span>as clientes pagam no salão; a Larissa repassa por quinzena</span>
               </p>
-              <DivisaoTabela resumo={r} larissa={larissa} />
+              <RepasseLista resumo={rel} />
             </section>
           </div>
         </div>

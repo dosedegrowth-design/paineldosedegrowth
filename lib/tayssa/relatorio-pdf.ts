@@ -1,5 +1,6 @@
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
 import type { RelatorioDados } from "@/lib/tayssa/queries/gestao";
+import { resumoDoRelatorio } from "./financeiro.ts";
 
 /**
  * O relatório em PDF (17/11/2026): A4, na cara do painel (vinho, dourado,
@@ -17,14 +18,6 @@ const MUDO = rgb(0x7a / 255, 0x52 / 255, 0x60 / 255);
 const LINHA = rgb(0xee / 255, 0xdf / 255, 0xe3 / 255);
 const BRANCO = rgb(1, 1, 1);
 
-const FORMAS: Record<string, string> = {
-  pix: "Pix",
-  dinheiro: "Dinheiro",
-  cartao_credito: "Cartão de crédito",
-  cartao_debito: "Cartão de débito",
-  outro: "Outra forma",
-};
-const SITUACAO: Record<string, string> = { pago: "Pago", parcial: "Parcial", pendente: "Pendente", sem_valor: "Sem valor" };
 
 const A4 = { w: 595.28, h: 841.89 };
 const MARGEM = 40;
@@ -154,13 +147,15 @@ export async function gerarPdfRelatorio(d: RelatorioDados): Promise<Uint8Array> 
   const b = await doc.embedFont(StandardFonts.HelveticaBold);
   const page = doc.addPage([A4.w, A4.h]);
   const c: Ctx = { doc, page, y: A4.h, f, b, paginas: [page], rodape: `${d.negocio} · ${d.periodo.rotulo}` };
-  const r = d.resumo;
+  // o modelo do repasse (17/11/2026): a cliente paga no salão e a Larissa repassa a parte da Tayssa por quinzena
+  const r = resumoDoRelatorio(d.linhas, d.periodo.de, d.periodo.ate);
+  const pctT = r.pctTayssa ?? 70;
 
   // cabeçalho vinho com o fio dourado
   page.drawRectangle({ x: 0, y: A4.h - 104, width: A4.w, height: 104, color: VINHO });
   page.drawRectangle({ x: 0, y: A4.h - 107, width: A4.w, height: 3, color: OURO });
   texto(c, d.negocio, MARGEM, A4.h - 46, 21, b, BRANCO);
-  texto(c, "Relatório de atendimentos e financeiro", MARGEM, A4.h - 66, 10.5, f, ROSA);
+  texto(c, "Relatório de atendimentos e repasse", MARGEM, A4.h - 66, 10.5, f, ROSA);
   aDireita(c, d.periodo.rotulo, A4.w - MARGEM, A4.h - 46, 12.5, b, BRANCO);
   aDireita(c, d.periodo.de === d.periodo.ate ? dataBr(d.periodo.de) : `${dataBr(d.periodo.de)} a ${dataBr(d.periodo.ate)}`, A4.w - MARGEM, A4.h - 63, 9.5, f, ROSA);
   const gerado = new Date(d.geradoEm);
@@ -168,95 +163,50 @@ export async function gerarPdfRelatorio(d: RelatorioDados): Promise<Uint8Array> 
   aDireita(c, `Gerado em ${geradoTxt}`, A4.w - MARGEM, A4.h - 80, 8.5, f, ROSA);
   c.y = A4.h - 112;
 
-  titulo(c, "Resumo de atendimentos");
+  titulo(c, "Resumo");
   caixas(c, [
     { rotulo: "Atendimentos realizados", valor: String(r.atendimentos) },
-    { rotulo: "Clientes atendidas", valor: String(r.clientes) },
-    { rotulo: "Ticket médio", valor: brl(r.ticketMedio) },
-    { rotulo: "Faturamento bruto", valor: brl(r.bruto) },
+    { rotulo: "Faturamento", valor: brl(r.faturamento) },
+    { rotulo: `Parte da Tayssa (${pct(pctT)})`, valor: brl(r.tayssa) },
+    { rotulo: `Parte da ${d.larissa} (${pct(Math.round((100 - pctT) * 10) / 10)})`, valor: brl(r.larissa) },
   ]);
-  if (r.servicos.length) {
-    espaco(c, 16);
-    const linha = r.servicos.map((s) => `${s.nome} (${s.vezes})`).join("  ·  ");
-    // os serviços em linhas que cabem na largura
-    const palavras = linha.split("  ·  ");
-    let atual = "Serviços: ";
-    const linhas: string[] = [];
-    for (const p of palavras) {
-      const tentativa = atual === "Serviços: " ? atual + p : `${atual}  ·  ${p}`;
-      if (f.widthOfTextAtSize(textoSeguro(tentativa), 8.5) > A4.w - MARGEM * 2) {
-        linhas.push(atual);
-        atual = p;
-      } else atual = tentativa;
-    }
-    linhas.push(atual);
-    for (const l of linhas) {
-      espaco(c, 12);
-      texto(c, l, MARGEM, c.y - 4, 8.5, f, MUDO);
-      c.y -= 12;
-    }
-    c.y -= 4;
-  }
+  espaco(c, 14);
+  texto(c, "As clientes pagam no salão (Pix ou maquininha). A parte da Tayssa é repassada por quinzena.", MARGEM, c.y - 2, 8.5, f, MUDO);
+  c.y -= 16;
 
-  titulo(c, "Resumo financeiro");
-  caixas(c, [
-    { rotulo: "Total efetivamente recebido", valor: brl(r.recebido) },
-    { rotulo: "Valores pendentes", valor: brl(r.pendente) },
-    { rotulo: "Comprovantes do sinal", valor: String(d.comprovantes) },
-  ]);
+  titulo(c, "Repasse para a Tayssa");
   tabela(
     c,
     [
-      { rotulo: "Forma de pagamento", largura: 3 },
-      { rotulo: "Valor", largura: 1.4, direita: true },
+      { rotulo: "Quinzena", largura: 2.1 },
+      { rotulo: "Dias", largura: 1.3 },
+      { rotulo: "Atendimentos", largura: 1.05, direita: true },
+      { rotulo: "Faturamento", largura: 1.25, direita: true },
+      { rotulo: "Repasse", largura: 1.2, direita: true },
+      { rotulo: "Data do repasse", largura: 1.3, direita: true },
     ],
     [
-      ...Object.keys(FORMAS).map((k) => ({ valores: [FORMAS[k], brl(r.porForma[k as keyof typeof r.porForma] ?? 0)] })),
-      { valores: ["Pendente (não recebido)", brl(r.pendente)] },
-      { valores: ["Total efetivamente recebido", brl(r.recebido)], negrito: true },
+      ...r.repasses.map((q) => ({
+        valores: [q.nome, `${dataBr(q.inicio).slice(0, 5)} a ${dataBr(q.fim).slice(0, 5)}`, String(q.atendimentos), brl(q.faturamento), brl(q.tayssa), dataBr(q.repasseEm)],
+      })),
+      ...(r.repasses.length > 1 ? [{ valores: ["Total", "", String(r.atendimentos), brl(r.faturamento), brl(r.tayssa), ""], negrito: true }] : []),
     ],
   );
 
-  titulo(c, "Divisão");
-  tabela(
-    c,
-    [
-      { rotulo: "Destinatária", largura: 1.6 },
-      { rotulo: "Percentual", largura: 1, direita: true },
-      { rotulo: "Valor", largura: 1.3, direita: true },
-      { rotulo: "Já recebido", largura: 1.3, direita: true },
-      { rotulo: "A receber", largura: 1.3, direita: true },
-    ],
-    [
-      { valores: ["Tayssa", pct(r.tayssa.pct), brl(r.tayssa.bruto), brl(r.tayssa.recebido), brl(r.tayssa.aReceber)], negrito: true },
-      { valores: [d.larissa, pct(r.larissa.pct), brl(r.larissa.bruto), brl(r.larissa.recebido), brl(r.larissa.aReceber)], negrito: true },
-    ],
-  );
-  if (r.divisaoVariou) {
-    espaco(c, 12);
-    texto(c, "A divisão mudou dentro do período: cada atendimento conta com a regra da data em que fechou.", MARGEM, c.y - 2, 8, f, MUDO);
-    c.y -= 12;
-  }
-  if (r.semValor) {
-    espaco(c, 12);
-    texto(c, `${r.semValor} atendimento(s) sem valor registrado ficaram fora do faturamento.`, MARGEM, c.y - 2, 8, f, MUDO);
-    c.y -= 12;
-  }
-
-  titulo(c, "Detalhamento dos atendimentos");
+  titulo(c, "Atendimentos");
   if (d.linhas.length) {
     tabela(
       c,
       [
         { rotulo: "Data", largura: 1.05 },
         { rotulo: "Cliente", largura: 1.3 },
-        { rotulo: "Serviço", largura: 2.6 },
+        { rotulo: "Serviço", largura: 2.5 },
         { rotulo: "Valor", largura: 1.05, direita: true },
-        { rotulo: "Forma", largura: 1.35 },
-        { rotulo: "Situação", largura: 0.95 },
+        { rotulo: "Tayssa", largura: 1, direita: true },
+        { rotulo: d.larissa, largura: 1, direita: true },
       ],
       d.linhas.map((l) => ({
-        valores: [`${dataBr(l.data).slice(0, 5)}${l.hora ? ` ${l.hora}` : ""}`, l.cliente, l.servico, l.valor != null ? brl(l.valor) : "-", l.formas || "-", SITUACAO[l.situacao] ?? l.situacao],
+        valores: [`${dataBr(l.data).slice(0, 5)}${l.hora ? ` ${l.hora}` : ""}`, l.cliente, l.servico, l.valor != null ? brl(l.valor) : "-", brl(l.tayssa), brl(l.larissa)],
       })),
     );
   } else {

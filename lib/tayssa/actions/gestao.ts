@@ -14,7 +14,7 @@ import { duracaoField, isoDateField } from "@/lib/tayssa/validation";
 import { BusinessError, runAction } from "@/lib/tayssa/actions/_helpers";
 import { juntarServicos } from "@/lib/tayssa/agendar";
 import { minutos, seCruzam } from "@/lib/tayssa/agenda-visual";
-import { brl, centavos, divisaoValida, formaValida, lerNumero, resolverPeriodo } from "@/lib/tayssa/financeiro";
+import { brl, centavos, diaMes, divisaoValida, formaValida, lerNumero, resolverPeriodo, resumoDoRelatorio } from "@/lib/tayssa/financeiro";
 import { registrarPagamentos } from "@/lib/tayssa/pagamentos";
 import { agoraNaCasa, getCatalogo, montarRelatorio } from "@/lib/tayssa/queries/gestao";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
@@ -429,14 +429,24 @@ export async function adminGerarLinkRelatorioAction(input: {
     if (error) throw new Error(error.message);
     const id = (data as { id: string }).id;
     const url = publicUrl(ROUTES.relatorioCompartilhado(token));
-    const r = dados.resumo;
+    // o modelo do repasse (17/11/2026): a cliente paga no salão e a Larissa repassa a parte da Tayssa por quinzena
+    const r = resumoDoRelatorio(dados.linhas, periodo.de, periodo.ate);
+    const pctT = r.pctTayssa ?? settings.financeiro.pct_tayssa;
+    const pct = (n: number) => `${String(Math.round(n * 10) / 10).replace(".", ",")}%`;
+    const datas = periodo.de === periodo.ate ? diaMes(periodo.de) : `${diaMes(periodo.de)} a ${diaMes(periodo.ate)}`;
+    const repasse =
+      r.repasses.length === 1
+        ? `dia ${diaMes(r.repasses[0].repasseEm)}`
+        : r.repasses.map((q) => `${brl(q.tayssa)} dia ${diaMes(q.repasseEm)}`).join(" e ");
     const mensagem = [
       `Oi, ${settings.financeiro.larissa_nome || "Larissa"}! Aqui é a Tayssa.`,
-      `Segue o relatório de ${periodo.rotulo.charAt(0).toLowerCase() + periodo.rotulo.slice(1)}:`,
+      `Segue o relatório ${/quinzena|semana/i.test(periodo.rotulo) ? "da" : "de"} ${periodo.rotulo.charAt(0).toLowerCase() + periodo.rotulo.slice(1)} (${datas}):`,
       "",
       `*Atendimentos:* ${r.atendimentos}`,
-      `*Faturamento:* ${brl(r.bruto)}`,
-      `*Sua parte (${String(r.larissa.pct).replace(".", ",")}%):* ${brl(r.larissa.bruto)}`,
+      `*Faturamento:* ${brl(r.faturamento)}`,
+      `*Minha parte (${pct(pctT)}):* ${brl(r.tayssa)}`,
+      `*Sua parte (${pct(100 - pctT)}):* ${brl(r.larissa)}`,
+      `*Repasse:* ${repasse}`,
       "",
       url,
     ].join("\n");

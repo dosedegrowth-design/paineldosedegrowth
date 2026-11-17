@@ -119,7 +119,7 @@ export function ColunasDoPeriodo({ serie }: { serie: SerieDoPeriodo }) {
 }
 
 /** "Como entrou": a rosca do período (formas de pagamento e o pendente) com a legenda dos valores. */
-export function RoscaDoPeriodo({ fatias, pctRecebido }: { fatias: Fatia[]; pctRecebido: number }) {
+export function RoscaDoPeriodo({ fatias, total }: { fatias: Fatia[]; total: number }) {
   const R = 46;
   const vazio = !fatias.length;
   const partes = arcos(fatias);
@@ -129,7 +129,7 @@ export function RoscaDoPeriodo({ fatias, pctRecebido }: { fatias: Fatia[]; pctRe
     <figure className="tyg tyg-rosca">
       <figcaption className="tyg__titulo">
         <b>Como entrou o dinheiro</b>
-        <span>formas de pagamento e o que falta receber</span>
+        <span>como as clientes pagaram no salão</span>
       </figcaption>
       <div className="tyg-rosca__corpo">
         <ComDica className="tyg-rosca__desenho" rotulo="Como entrou o dinheiro. Use as setas para ver cada parte.">
@@ -166,8 +166,9 @@ export function RoscaDoPeriodo({ fatias, pctRecebido }: { fatias: Fatia[]; pctRe
               <span>sem valores</span>
             ) : (
               <>
-                <b>{pctRecebido}%</b>
-                <span>já recebido</span>
+                <span className="tyg-rosca__moeda">R$</span>
+                <b data-longo={reaisCurto(total).length > 8 || undefined}>{reaisCurto(total).replace(/^R\$\s*/, "")}</b>
+                <span>faturado</span>
               </>
             )}
           </div>
@@ -216,19 +217,5 @@ export function BarrasDeServicos({ barras }: { barras: BarraDeServico[] }) {
         <p className="tyg-vazio">Nenhum atendimento realizado neste período.</p>
       )}
     </figure>
-  );
-}
-
-/** A barrinha de "quanto já entrou" de cada parte da divisão. */
-export function Medidor({ parte, total, quem }: { parte: number; total: number; quem: "tayssa" | "larissa" }) {
-  const fr = total > 0 ? Math.min(1, parte / total) : 0;
-  const pct = Math.floor(fr * 100);
-  return (
-    <div className="tyg-medidor" data-quem={quem}>
-      <span className="tyg-medidor__trilho" role="img" aria-label={`${pct}% já recebido`}>
-        <i style={v({ "--w": fr })} />
-      </span>
-      <small className="tya-num">{total > 0 ? `${pct}% já recebido` : "nada no período"}</small>
-    </div>
   );
 }

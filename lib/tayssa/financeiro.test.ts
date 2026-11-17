@@ -9,8 +9,11 @@ import {
   historicoDaCliente,
   lerNumero,
   nomeCurto,
+  linhaFin,
   parametrosDoPeriodo,
   periodoVizinho,
+  quinzenaDe,
+  resumoDoRelatorio,
   resolverPeriodo,
   resumir,
   situacaoPagamento,
@@ -143,4 +146,61 @@ test("nome curto e dinheiro do relatório", () => {
   assert.equal(nomeCurto(""), "Cliente");
   assert.equal(brl(1234.5), "R$ 1.234,50");
   assert.equal(brl(70), "R$ 70,00");
+});
+
+
+test("quinzena: 1 a 15 repassa no dia 15; 16 ao fim do mês repassa no dia 1º", () => {
+  assert.deepEqual(quinzenaDe("2026-11-03"), { numero: 1, inicio: "2026-11-01", fim: "2026-11-15", repasseEm: "2026-11-15", nome: "1ª quinzena de novembro" });
+  assert.deepEqual(quinzenaDe("2026-11-16"), { numero: 2, inicio: "2026-11-16", fim: "2026-11-30", repasseEm: "2026-12-01", nome: "2ª quinzena de novembro" });
+  assert.equal(quinzenaDe("2026-12-31").repasseEm, "2027-01-01");
+  assert.equal(quinzenaDe("2027-02-20").fim, "2027-02-28");
+  assert.equal(quinzenaDe("2028-02-20").fim, "2028-02-29");
+});
+
+test("período por quinzena: esta, a anterior e as setas", () => {
+  const hoje = "2026-11-17";
+  const esta = resolverPeriodo({ periodo: "quinzena" }, hoje);
+  assert.equal(esta.de, "2026-11-16");
+  assert.equal(esta.ate, "2026-11-30");
+  assert.equal(esta.rotulo, "2ª quinzena de novembro de 2026");
+  const passada = resolverPeriodo({ periodo: "quinzena-passada" }, hoje);
+  assert.deepEqual([passada.de, passada.ate], ["2026-11-01", "2026-11-15"]);
+  assert.equal(passada.rotulo, "1ª quinzena de novembro de 2026");
+  // no começo do mês, a quinzena passada é a segunda do mês anterior
+  const virada = resolverPeriodo({ periodo: "quinzena-passada" }, "2026-12-01");
+  assert.deepEqual([virada.de, virada.ate], ["2026-11-16", "2026-11-30"]);
+  assert.deepEqual([periodoVizinho(esta, 1, hoje).de, periodoVizinho(esta, 1, hoje).ate], ["2026-12-01", "2026-12-15"]);
+  assert.deepEqual([periodoVizinho(passada, -1, hoje).de, periodoVizinho(passada, -1, hoje).ate], ["2026-10-16", "2026-10-31"]);
+  assert.deepEqual(parametrosDoPeriodo(esta), { periodo: "quinzena", data: "2026-11-16" });
+  assert.deepEqual(parametrosDoPeriodo(passada), { periodo: "quinzena-passada" });
+});
+
+test("relatório: faturamento, parte de cada uma e o repasse de cada quinzena do período", () => {
+  const linhas = [
+    linhaFin({ data: "2026-11-03", valor: 240, pctTayssa: 70 }),
+    linhaFin({ data: "2026-11-03", valor: 200, pctTayssa: 70 }),
+    linhaFin({ data: "2026-11-06", valor: 150, pctTayssa: null }),
+    linhaFin({ data: "2026-11-20", valor: 170, pctTayssa: 70 }),
+    linhaFin({ data: "2026-12-02", valor: 999, pctTayssa: 70 }), // fora do período
+  ];
+  const r = resumoDoRelatorio(linhas, "2026-11-01", "2026-11-30");
+  assert.equal(r.atendimentos, 4);
+  assert.equal(r.faturamento, 760);
+  assert.equal(r.tayssa, 532);
+  assert.equal(r.larissa, 228);
+  assert.equal(r.tayssa + r.larissa, r.faturamento);
+  assert.equal(r.pctTayssa, 70);
+  assert.equal(r.ticketMedio, 190);
+  assert.deepEqual(
+    r.repasses.map((q) => [q.nome, q.repasseEm, q.atendimentos, q.faturamento, q.tayssa]),
+    [
+      ["1ª quinzena de novembro", "2026-11-15", 3, 590, 413],
+      ["2ª quinzena de novembro", "2026-12-01", 1, 170, 119],
+    ],
+  );
+  // a quinzena sem atendimento aparece zerada (o repasse dela é zero, não some)
+  const vazia = resumoDoRelatorio([], "2026-11-16", "2026-11-30");
+  assert.equal(vazia.repasses.length, 1);
+  assert.equal(vazia.repasses[0].tayssa, 0);
+  assert.equal(vazia.pctTayssa, null);
 });

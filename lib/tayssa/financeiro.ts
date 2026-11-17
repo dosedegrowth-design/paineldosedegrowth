@@ -88,7 +88,7 @@ export function situacaoPagamento(valor: number | null, recebido: number): Situa
 // Períodos (hoje, ontem, semana, mês, mês passado, dia, personalizado)
 // ------------------------------------------------------------
 
-export type TipoPeriodo = "hoje" | "ontem" | "dia" | "semana" | "mes" | "mes-passado" | "personalizado";
+export type TipoPeriodo = "hoje" | "ontem" | "dia" | "semana" | "quinzena" | "quinzena-passada" | "mes" | "mes-passado" | "personalizado";
 
 export type Periodo = {
   tipo: TipoPeriodo;
@@ -146,9 +146,38 @@ function dma(iso: string): string {
   return `${d}/${m}/${a}`;
 }
 
+// ------------------------------------------------------------
+// Repasse por quinzena (Lucas, 17/11/2026): toda cliente paga no salão (Pix
+// ou maquininha da Larissa) e a Larissa repassa a parte da Tayssa por
+// quinzena: do dia 1 ao 15, no dia 15; do dia 16 ao fim do mês, no dia 1º do
+// mês seguinte. A Tayssa não recebe nada direto da cliente.
+// ------------------------------------------------------------
+
+export type Quinzena = {
+  numero: 1 | 2;
+  inicio: string;
+  fim: string;
+  /** o dia em que a Larissa repassa a parte da Tayssa */
+  repasseEm: string;
+  /** "1ª quinzena de novembro" */
+  nome: string;
+};
+
+export function quinzenaDe(iso: string): Quinzena {
+  const [a, m, d] = iso.split("-").map(Number);
+  const mes = iso.slice(0, 7);
+  if (d <= 15) return { numero: 1, inicio: `${mes}-01`, fim: `${mes}-15`, repasseEm: `${mes}-15`, nome: `1ª quinzena de ${MESES[m - 1]}` };
+  const fim = fimDoMes(a, m - 1);
+  return { numero: 2, inicio: `${mes}-16`, fim, repasseEm: somarDias(fim, 1), nome: `2ª quinzena de ${MESES[m - 1]}` };
+}
+
 /** O nome do período como aparece no painel, no PDF e na mensagem. */
 export function rotuloDoPeriodo(tipo: TipoPeriodo, de: string, ate: string, hoje: string): string {
   if (tipo === "hoje") return `Hoje, ${dm(de)}`;
+  if (tipo === "quinzena" || tipo === "quinzena-passada") {
+    const nome = `${quinzenaDe(de).nome} de ${de.slice(0, 4)}`;
+    return nome.charAt(0).toUpperCase() + nome.slice(1);
+  }
   if (tipo === "ontem") return `Ontem, ${dm(de)}`;
   if (tipo === "dia") return de === hoje ? `Hoje, ${dm(de)}` : dma(de);
   if (tipo === "mes" || tipo === "mes-passado") {
@@ -171,7 +200,7 @@ export function resolverPeriodo(
   hoje: string,
   padrao: TipoPeriodo = "mes",
 ): Periodo {
-  const tipo = (["hoje", "ontem", "dia", "semana", "mes", "mes-passado", "personalizado"] as const).includes(
+  const tipo = (["hoje", "ontem", "dia", "semana", "quinzena", "quinzena-passada", "mes", "mes-passado", "personalizado"] as const).includes(
     params.periodo as TipoPeriodo,
   )
     ? (params.periodo as TipoPeriodo)
@@ -193,6 +222,18 @@ export function resolverPeriodo(
       de = inicioDaSemana(base);
       ate = somarDias(de, 6);
       break;
+    case "quinzena": {
+      const q = quinzenaDe(base);
+      de = q.inicio;
+      ate = q.fim;
+      break;
+    }
+    case "quinzena-passada": {
+      const q = quinzenaDe(somarDias(quinzenaDe(hoje).inicio, -1));
+      de = q.inicio;
+      ate = q.fim;
+      break;
+    }
     case "mes-passado": {
       const [a, m] = hoje.split("-").map(Number);
       const anterior = new Date(Date.UTC(a, m - 2, 1));
@@ -226,6 +267,9 @@ export function periodoVizinho(p: Periodo, passo: 1 | -1, hoje: string): Periodo
     return resolverPeriodo({ periodo: "mes", mes }, hoje);
   }
   if (p.tipo === "semana") return resolverPeriodo({ periodo: "semana", data: somarDias(p.de, 7 * passo) }, hoje);
+  if (p.tipo === "quinzena" || p.tipo === "quinzena-passada") {
+    return resolverPeriodo({ periodo: "quinzena", data: passo === 1 ? somarDias(p.ate, 1) : somarDias(p.de, -1) }, hoje);
+  }
   if (p.tipo === "personalizado") {
     const n = diasEntre(p.de, p.ate) + 1;
     return resolverPeriodo({ periodo: "personalizado", de: somarDias(p.de, n * passo), ate: somarDias(p.ate, n * passo) }, hoje);
@@ -235,8 +279,8 @@ export function periodoVizinho(p: Periodo, passo: 1 | -1, hoje: string): Periodo
 
 /** O período como parâmetros de endereço (para links e para o PDF). */
 export function parametrosDoPeriodo(p: Periodo): Record<string, string> {
-  if (p.tipo === "hoje" || p.tipo === "ontem" || p.tipo === "mes-passado") return { periodo: p.tipo };
-  if (p.tipo === "dia" || p.tipo === "semana") return { periodo: p.tipo, data: p.de };
+  if (p.tipo === "hoje" || p.tipo === "ontem" || p.tipo === "mes-passado" || p.tipo === "quinzena-passada") return { periodo: p.tipo };
+  if (p.tipo === "dia" || p.tipo === "semana" || p.tipo === "quinzena") return { periodo: p.tipo, data: p.de };
   if (p.tipo === "mes") return { periodo: "mes", mes: p.de.slice(0, 7) };
   return { periodo: "personalizado", de: p.de, ate: p.ate };
 }
@@ -355,6 +399,82 @@ export function resumir(lista: readonly AtendimentoFin[], pctPadrao: number = PC
     divisaoVariou: pcts.size > 1,
     servicos: [...servicos.entries()].map(([nome, vezes]) => ({ nome, vezes })).sort((a, b) => b.vezes - a.vezes || a.nome.localeCompare(b.nome)),
   };
+}
+
+// ------------------------------------------------------------
+// O relatório no modelo do repasse: faturamento, a parte de cada uma e o
+// repasse de cada quinzena do período. Sem "recebido" nem "pendente": o
+// dinheiro das clientes entra todo no salão.
+// ------------------------------------------------------------
+
+/** Uma linha do relatório: o atendimento e a divisão dele (a regra da hora em que fechou). */
+export type LinhaFin = { data: string; valor: number | null; tayssa: number; larissa: number };
+
+export type RepasseDaQuinzena = Quinzena & { atendimentos: number; faturamento: number; tayssa: number; larissa: number };
+
+export type ResumoDoRelatorio = {
+  atendimentos: number;
+  faturamento: number;
+  tayssa: number;
+  larissa: number;
+  ticketMedio: number;
+  /** % efetivo da Tayssa no período (null sem faturamento) */
+  pctTayssa: number | null;
+  /** uma por quinzena que toca o período, em ordem, mesmo vazia */
+  repasses: RepasseDaQuinzena[];
+};
+
+/** A divisão de um atendimento em centavos exatos (a mesma conta do resumo). */
+export function linhaFin(a: Pick<AtendimentoFin, "data" | "valor" | "pctTayssa">, pctPadrao: number = PCT_TAYSSA_PADRAO): LinhaFin {
+  if (a.valor == null || a.valor <= 0) return { data: a.data, valor: a.valor, tayssa: 0, larissa: 0 };
+  const d = dividir(a.valor, a.pctTayssa ?? pctPadrao);
+  return { data: a.data, valor: a.valor, tayssa: d.tayssa, larissa: d.larissa };
+}
+
+export function resumoDoRelatorio(linhas: readonly LinhaFin[], de: string, ate: string): ResumoDoRelatorio {
+  const repasses: (RepasseDaQuinzena & { c: { f: number; t: number; l: number } })[] = [];
+  for (let d = de; d <= ate; ) {
+    const q = quinzenaDe(d);
+    repasses.push({ ...q, atendimentos: 0, faturamento: 0, tayssa: 0, larissa: 0, c: { f: 0, t: 0, l: 0 } });
+    d = somarDias(q.fim, 1);
+  }
+  let f = 0;
+  let t = 0;
+  let l = 0;
+  let comValor = 0;
+  let atendimentos = 0;
+  for (const x of linhas) {
+    if (x.data < de || x.data > ate) continue;
+    atendimentos++;
+    const r = repasses.find((q) => x.data >= q.inicio && x.data <= q.fim);
+    const cf = x.valor != null && x.valor > 0 ? centavos(x.valor) : 0;
+    const ct = centavos(x.tayssa);
+    const cl = centavos(x.larissa);
+    if (cf > 0) comValor++;
+    f += cf;
+    t += ct;
+    l += cl;
+    if (r) {
+      r.atendimentos++;
+      r.c.f += cf;
+      r.c.t += ct;
+      r.c.l += cl;
+    }
+  }
+  return {
+    atendimentos,
+    faturamento: f / 100,
+    tayssa: t / 100,
+    larissa: l / 100,
+    ticketMedio: comValor ? Math.round(f / comValor) / 100 : 0,
+    pctTayssa: f ? Math.round((t / f) * 1000) / 10 : null,
+    repasses: repasses.map(({ c, ...r }) => ({ ...r, faturamento: c.f / 100, tayssa: c.t / 100, larissa: c.l / 100 })),
+  };
+}
+
+/** "15/11" */
+export function diaMes(iso: string): string {
+  return dm(iso);
 }
 
 // ------------------------------------------------------------

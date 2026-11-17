@@ -3,13 +3,12 @@ import { requireAdminPage } from "@/lib/tayssa/auth/guards";
 import { agoraNaCasa, getFinanceiroDoPeriodo, getHistoricoDaDivisao } from "@/lib/tayssa/queries/gestao";
 import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES } from "@/lib/tayssa/config";
-import { dateShort, dateTime } from "@/lib/tayssa/format";
-import { brl, parametrosDoPeriodo, resolverPeriodo, SITUACAO_PAGAMENTO } from "@/lib/tayssa/financeiro";
-import { AdminBlock, AdminHeader, Empty } from "@/components/tayssa/admin/shell";
+import { dateTime } from "@/lib/tayssa/format";
+import { brl, linhaFin, parametrosDoPeriodo, resolverPeriodo, resumoDoRelatorio } from "@/lib/tayssa/financeiro";
+import { AdminBlock, AdminHeader } from "@/components/tayssa/admin/shell";
 import { Icone } from "@/components/tayssa/admin/icons";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { PeriodoSeletor } from "@/components/tayssa/admin/periodo";
-import { PagamentoAcoes } from "@/components/tayssa/admin/pagamentos";
 import { DivisaoTabela, FormasDePagamento } from "@/components/tayssa/admin/financeiro-resumo";
 import { BarrasDeServicos, ColunasDoPeriodo, RoscaDoPeriodo } from "@/components/tayssa/admin/graficos";
 import { fatiasDoPeriodo, serieDoPeriodo, servicosMaisFeitos } from "@/lib/tayssa/graficos";
@@ -20,15 +19,18 @@ export const metadata: Metadata = { title: "Financeiro" };
 
 const OPCOES = [
   { tipo: "hoje" as const, rotulo: "Hoje" },
-  { tipo: "semana" as const, rotulo: "Esta semana" },
+  { tipo: "quinzena" as const, rotulo: "Esta quinzena" },
+  { tipo: "quinzena-passada" as const, rotulo: "Quinzena anterior" },
   { tipo: "mes" as const, rotulo: "Este mês" },
   { tipo: "mes-passado" as const, rotulo: "Mês passado" },
 ];
 
 /**
- * Financeiro (17/11/2026): o faturado, o recebido e o pendente dos
- * atendimentos realizados no período, a divisão Tayssa/Larissa (sozinha,
- * pela regra de cada atendimento) e onde mudar a divisão.
+ * Financeiro (17/11/2026): o faturado dos atendimentos realizados no
+ * período, a parte de cada uma e o repasse da Tayssa por quinzena (a
+ * cliente paga no salão, Pix ou maquininha da Larissa; a Larissa repassa
+ * do dia 1 ao 15 no dia 15 e do dia 16 ao fim do mês no dia 1º), como as
+ * clientes pagaram e onde mudar a divisão.
  */
 export default async function FinanceiroPage({
   searchParams,
@@ -42,7 +44,9 @@ export default async function FinanceiroPage({
   const [{ lista, resumo }, settings, historico] = await Promise.all([getFinanceiroDoPeriodo(periodo.de, periodo.ate), getSettings(), getHistoricoDaDivisao()]);
   const f = settings.financeiro;
   const larissa = f.larissa_nome || "Larissa";
-  const pendentes = lista.filter((a) => a.situacao === "pendente" || a.situacao === "parcial" || a.situacao === "sem_valor");
+  const rel = resumoDoRelatorio(lista.map((a) => linhaFin(a)), periodo.de, periodo.ate);
+  const pctT = rel.pctTayssa ?? f.pct_tayssa;
+  const pct = (n: number) => `${String(Math.round(n * 10) / 10).replace(".", ",")}%`;
   const qs = new URLSearchParams(parametrosDoPeriodo(periodo)).toString();
   const serie = periodo.de === periodo.ate ? null : serieDoPeriodo(lista, periodo.de, periodo.ate, hoje);
   const rosca = fatiasDoPeriodo(resumo);
@@ -56,7 +60,7 @@ export default async function FinanceiroPage({
             {brl(resumo.bruto)} <em>faturados</em>
           </>
         }
-        lead="Faturado é o valor dos atendimentos realizados. Recebido é o que já entrou; pendente, o que falta. A divisão Tayssa/Larissa sai sozinha, pela regra de cada atendimento."
+        lead="Faturado é o valor dos atendimentos realizados. As clientes pagam no salão (Pix ou maquininha da Larissa) e a parte da Tayssa é repassada por quinzena: do dia 1 ao 15, no dia 15; do dia 16 ao fim do mês, no dia 1º."
         actions={
           <>
             <TransitionLink href={`${ROUTES.adminRelatorios}?${qs}`} className="tya-btn tya-btn--ghost">
@@ -85,15 +89,17 @@ export default async function FinanceiroPage({
           </p>
         </div>
         <div className="tya-card tya-kpi">
-          <span className="tya-eyebrow">Valor recebido</span>
+          <span className="tya-eyebrow">Parte da Tayssa ({pct(pctT)})</span>
           <p className="tya-kpi__n">
-            <Conta valor={brl(resumo.recebido)} duracao={900} atraso={60} />
+            <Conta valor={brl(rel.tayssa)} duracao={900} atraso={60} />
           </p>
         </div>
-        <div className={`tya-card tya-kpi${resumo.pendente > 0 ? " tya-kpi--alert" : ""}`}>
-          <span className="tya-eyebrow">Valor pendente</span>
+        <div className="tya-card tya-kpi">
+          <span className="tya-eyebrow">
+            Parte da {larissa} ({pct(100 - pctT)})
+          </span>
           <p className="tya-kpi__n">
-            <Conta valor={brl(resumo.pendente)} duracao={900} atraso={120} />
+            <Conta valor={brl(rel.larissa)} duracao={900} atraso={120} />
           </p>
         </div>
         <div className="tya-card tya-kpi">
@@ -114,14 +120,14 @@ export default async function FinanceiroPage({
         <div className="tya-card tyad-fin">
           <div className="tyad-fin__graficos tyad-fin__graficos--solto">
             {serie ? <ColunasDoPeriodo serie={serie} /> : null}
-            <RoscaDoPeriodo fatias={rosca.fatias} pctRecebido={rosca.pctRecebido} />
+            <RoscaDoPeriodo fatias={rosca.fatias} total={rosca.total} />
             <BarrasDeServicos barras={servicosMaisFeitos(resumo.servicos)} />
           </div>
         </div>
       </section>
 
-      <AdminBlock title="Divisão" aside={<span className="tya-small">{periodo.rotulo}</span>}>
-        <DivisaoTabela resumo={resumo} larissa={larissa} />
+      <AdminBlock title="Divisão e repasse" aside={<span className="tya-small">{periodo.rotulo}</span>}>
+        <DivisaoTabela resumo={rel} larissa={larissa} pctPadrao={f.pct_tayssa} />
         {resumo.divisaoVariou ? (
           <p className="tya-small" style={{ marginTop: 8 }}>
             A divisão mudou dentro deste período: cada atendimento conta com a regra da data em que fechou.
@@ -129,41 +135,13 @@ export default async function FinanceiroPage({
         ) : null}
         {resumo.semValor ? (
           <p className="tya-small" style={{ marginTop: 8 }}>
-            {resumo.semValor} {resumo.semValor === 1 ? "atendimento está" : "atendimentos estão"} sem valor e fora da conta. Informe o valor logo abaixo.
+            {resumo.semValor} {resumo.semValor === 1 ? "atendimento está" : "atendimentos estão"} sem valor e fora da conta. Informe o valor em Atendimentos realizados.
           </p>
         ) : null}
       </AdminBlock>
 
-      <AdminBlock title="Por forma de pagamento">
+      <AdminBlock title="Como as clientes pagaram">
         <FormasDePagamento resumo={resumo} />
-      </AdminBlock>
-
-      <AdminBlock
-        title="A receber"
-        aside={pendentes.length ? <span className="tya-pill tya-pill--warn">{pendentes.length} em aberto</span> : <span className="tya-pill tya-pill--ok">tudo recebido</span>}
-      >
-        {pendentes.length ? (
-          <ul className="tya-list">
-            {pendentes.map((a) => (
-              <li key={a.id} className="tyar" data-situacao={a.situacao}>
-                <div className="tyar__corpo">
-                  <div className="tya-slot__top">
-                    <TransitionLink href={ROUTES.adminClient(a.clienteId)} className="tya-link tya-slot__name">
-                      {a.cliente}
-                    </TransitionLink>
-                    <span className="tya-pill tya-pill--warn">{SITUACAO_PAGAMENTO[a.situacao]}</span>
-                  </div>
-                  <p className="tya-slot__meta">
-                    {dateShort(a.data)} · {a.servico} · {a.valor != null ? `${brl(a.valor)}, recebido ${brl(a.recebido)}` : "sem valor"}
-                  </p>
-                  <PagamentoAcoes atendimentoId={a.id} valor={a.valor} recebido={a.recebido} situacao={a.situacao} formaPadrao={a.pagamentos[0]?.forma ?? null} />
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <Empty>Nenhum valor pendente neste período.</Empty>
-        )}
       </AdminBlock>
 
       <AdminBlock id="divisao" title="Configurar a divisão">

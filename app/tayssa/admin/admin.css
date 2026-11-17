@@ -4600,41 +4600,6 @@ a.tya-kpi {
   }
 }
 
-/* a barrinha do "já recebido" na divisão */
-.tyg-medidor {
-  display: grid;
-  gap: 5px;
-  margin-top: 8px;
-}
-.tyg-medidor[data-quem="tayssa"] {
-  --cor: #943569;
-  --trilho: #f3e3eb;
-}
-.tyg-medidor[data-quem="larissa"] {
-  --cor: #ac8130;
-  --trilho: #f3ead7;
-}
-.tyg-medidor__trilho {
-  display: block;
-  height: 8px;
-  border-radius: 999px;
-  background: var(--trilho);
-  overflow: hidden;
-}
-.tyg-medidor__trilho i {
-  display: block;
-  width: calc(var(--w) * 100%);
-  height: 100%;
-  border-radius: 999px;
-  background: var(--cor);
-  animation: tyg-estica 950ms var(--tyg-ease) both;
-  animation-delay: 240ms;
-}
-.tyg-medidor small {
-  font-size: 11.5px;
-  color: var(--tya-muted);
-}
-
 /* o financeiro da Visão geral com os gráficos */
 .tyad-fin__resumo {
   display: grid;
@@ -4711,8 +4676,7 @@ a.tya-kpi {
   .tyg-rosca__fatia,
   .tyg-legenda li,
   .tyg-barras__barra,
-  .tyg-barras__linha b,
-  .tyg-medidor__trilho i {
+  .tyg-barras__linha b {
     animation: none;
   }
 }
@@ -5064,5 +5028,142 @@ a.tya-kpi {
   .tyap__form--aberto {
     grid-template-columns: minmax(0, 220px) minmax(0, 220px) auto;
     justify-content: start;
+  }
+}
+
+/* o modelo do repasse (17/11/2026): a parte da Tayssa com a data de cada
+   repasse, a lista do repasse por quinzena e os comprovantes fora do relatório */
+.tyaf-parte__repasses {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 8px 0 0;
+  display: grid;
+  gap: 4px;
+  border-top: 1px solid var(--tya-line-soft);
+}
+.tyaf-parte__repasses li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--tya-ink-2);
+}
+.tyaf-parte__repasses small {
+  color: var(--tya-muted);
+}
+.tyaf-parte__nota {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  color: var(--tya-muted);
+}
+.tyaf-repasse {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  border: 1px solid var(--tya-line-soft);
+  border-radius: var(--tya-radius-sm);
+  overflow: hidden;
+}
+.tyaf-repasse li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--tya-surface);
+}
+.tyaf-repasse li + li {
+  border-top: 1px solid var(--tya-line-soft);
+}
+.tyaf-repasse li > div:first-child {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.tyaf-repasse b {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--tya-ink);
+}
+.tyaf-repasse span {
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: var(--tya-muted);
+}
+.tyaf-repasse__valor {
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+}
+.tyaf-repasse__valor b {
+  font-size: 16px;
+  color: var(--tya-brand);
+  white-space: nowrap;
+}
+.tyaf-repasse__total {
+  background: var(--tya-surface-2) !important;
+}
+.tyad-fin__tiles div[data-destaque] b,
+.tyad-fin__numeros div[data-destaque] b {
+  color: var(--tya-brand);
+}
+.tyad-quem__forma {
+  font-size: 11.5px;
+  color: var(--tya-muted);
+  white-space: nowrap;
+}
+.tyarel-comprovantes summary {
+  display: grid;
+  gap: 2px;
+  cursor: pointer;
+  list-style: none;
+}
+.tyarel-comprovantes summary::-webkit-details-marker {
+  display: none;
+}
+.tyarel-comprovantes summary b {
+  font-size: 15px;
+  color: var(--tya-ink);
+}
+.tyarel-comprovantes summary b::after {
+  content: " ›";
+  color: var(--tya-muted);
+}
+.tyarel-comprovantes[open] summary b::after {
+  content: " ⌄";
+}
+.tyarel-comprovantes summary span {
+  font-size: 12.5px;
+  color: var(--tya-muted);
+}
+.tyarel-split {
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: var(--tya-muted);
+  text-align: right;
+  white-space: nowrap;
+}
+/* no relatório os quatro números ficam dois a dois (sem o primeiro esticado) */
+@media (max-width: 900px) {
+  .tyarel-numeros div:first-child {
+    grid-column: auto;
+  }
+}
+/* o meio da rosca: o total faturado, com o "R$" pequeno em cima */
+.tyg-rosca__meio .tyg-rosca__moeda {
+  margin: 0 0 1px;
+  font-size: 10.5px;
+  color: var(--tya-muted);
+}
+.tyg-rosca__meio b[data-longo] {
+  font-size: 19px;
+}
+@container rosca (max-width: 430px) {
+  .tyg-rosca__meio b {
+    font-size: 19px;
+  }
+  .tyg-rosca__meio b[data-longo] {
+    font-size: 15px;
   }
 }

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { writeFileSync } from "node:fs";
 import { PDFDocument } from "pdf-lib";
 import { gerarPdfRelatorio, textoSeguro } from "./relatorio-pdf.ts";
-import { resumir } from "./financeiro.ts";
+import { linhaFin } from "./financeiro.ts";
 
 const atend = Array.from({ length: 60 }, (_, i) => ({
   id: `a${i}`,
@@ -16,27 +16,25 @@ const atend = Array.from({ length: 60 }, (_, i) => ({
 }));
 
 test("o PDF do relatório abre, quebra páginas e escreve acentos", async () => {
-  const resumo = resumir(atend, 70);
   const bytes = await gerarPdfRelatorio({
-    versao: 1,
+    versao: 2,
     periodo: { de: "2026-11-01", ate: "2026-11-30", rotulo: "Novembro de 2026" },
     geradoEm: "2026-11-17T18:00:00.000Z",
     negocio: "Tayssa Farias",
     larissa: "Larissa",
-    resumo,
-    comprovantes: 12,
-    linhas: atend.map((a, i) => ({
-      data: a.data,
-      hora: "10:00",
-      cliente: i % 2 ? "Mariana L." : "Bia",
-      servico: a.servico,
-      valor: a.valor,
-      recebido: a.pagamentos.reduce((s, p) => s + p.valor, 0),
-      formas: i % 2 ? "Pix + Dinheiro" : "Pix",
-      situacao: a.valor == null ? "sem_valor" : i % 2 ? "pago" : "parcial",
-      tayssa: 119,
-      larissa: 51,
-    })),
+    linhas: atend.map((a, i) => {
+      const div = linhaFin(a);
+      return {
+        data: a.data,
+        hora: "10:00",
+        cliente: i % 2 ? "Mariana L." : "Bia",
+        servico: a.servico,
+        valor: a.valor,
+        formas: i % 2 ? "Pix + Dinheiro" : "Pix",
+        tayssa: div.tayssa,
+        larissa: div.larissa,
+      };
+    }),
   });
   assert.equal(new TextDecoder().decode(bytes.slice(0, 5)), "%PDF-");
   const doc = await PDFDocument.load(bytes);

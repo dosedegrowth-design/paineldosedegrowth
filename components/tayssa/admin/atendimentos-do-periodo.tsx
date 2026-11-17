@@ -1,5 +1,5 @@
 import { ROUTES } from "@/lib/tayssa/config";
-import { SITUACAO_PAGAMENTO, brl, type SituacaoPagamento } from "@/lib/tayssa/financeiro";
+import { brl } from "@/lib/tayssa/financeiro";
 import { dayMonth, plural, weekdayShort } from "@/lib/tayssa/format";
 import type { AtendimentoRealizado } from "@/lib/tayssa/queries/gestao";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
@@ -10,15 +10,10 @@ import { TransitionLink } from "@/components/tayssa/ui/transition";
  * atendeu nesse período; tá confuso pra ela ver só pelo relatório").
  * Os atendimentos realizados do período escolhido no cartão de datas, por
  * dia (o mais novo primeiro) e, dentro do dia, pela hora. Os primeiros
- * aparecem aqui; o resto, em Atendimentos realizados.
+ * aparecem aqui; o resto, em Atendimentos realizados. Sem pago/pendente:
+ * toda cliente paga no salão (modelo do repasse, 17/11/2026).
  */
 
-const TOM: Record<SituacaoPagamento, "ok" | "warn" | "bad" | "quiet"> = {
-  pago: "ok",
-  parcial: "warn",
-  pendente: "bad",
-  sem_valor: "quiet",
-};
 
 export function AtendimentosDoPeriodo({
   lista,
@@ -87,7 +82,8 @@ export function AtendimentosDoPeriodo({
                     </div>
                     <div className="tyad-quem__valor">
                       <b className="tya-num">{a.valor != null ? brl(a.valor) : "sem valor"}</b>
-                      <span className={`tya-pill tya-pill--${TOM[a.situacao]}`}>{SITUACAO_PAGAMENTO[a.situacao]}</span>
+                      {/* a cliente paga no salão: aqui só a forma, quando foi informada (sem "pendente") */}
+                      {a.formas ? <span className="tyad-quem__forma">{a.formas}</span> : null}
                     </div>
                   </li>
                 ))}

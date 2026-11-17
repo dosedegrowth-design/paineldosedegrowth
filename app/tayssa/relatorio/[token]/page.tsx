@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import "../relatorio.css";
 import { relatorioDoToken } from "@/lib/tayssa/queries/gestao";
 import { ROUTES } from "@/lib/tayssa/config";
-import { FORMAS, LISTA_FORMAS, SITUACAO_PAGAMENTO, brl } from "@/lib/tayssa/financeiro";
+import { brl, diaMes, resumoDoRelatorio } from "@/lib/tayssa/financeiro";
 
 /**
  * O relatório que vai para a Larissa (17/11/2026): a página que o link do
@@ -22,7 +22,7 @@ function dataBr(iso: string): string {
   const [a, m, d] = iso.slice(0, 10).split("-");
   return `${d}/${m}/${a}`;
 }
-const pct = (n: number) => `${String(n).replace(".", ",")}%`;
+const pct = (n: number) => `${String(Math.round(n * 10) / 10).replace(".", ",")}%`;
 
 export default async function RelatorioCompartilhado({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
@@ -40,7 +40,8 @@ export default async function RelatorioCompartilhado({ params }: { params: Promi
     );
   }
   const d = r.dados;
-  const s = d.resumo;
+  const s = resumoDoRelatorio(d.linhas, d.periodo.de, d.periodo.ate);
+  const pctT = s.pctTayssa ?? 70;
   const gerado = new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(d.geradoEm));
 
   return (
@@ -49,7 +50,7 @@ export default async function RelatorioCompartilhado({ params }: { params: Promi
         <header className="tyrel__topo">
           <div>
             <p className="tyrel__marca">{d.negocio}</p>
-            <p className="tyrel__sub">Relatório de atendimentos e financeiro</p>
+            <p className="tyrel__sub">Relatório de atendimentos e repasse</p>
           </div>
           <div className="tyrel__periodo">
             <h1>{d.periodo.rotulo}</h1>
@@ -66,82 +67,42 @@ export default async function RelatorioCompartilhado({ params }: { params: Promi
               <b>{s.atendimentos}</b>
             </div>
             <div>
-              <span>Clientes atendidas</span>
-              <b>{s.clientes}</b>
+              <span>Faturamento</span>
+              <b>{brl(s.faturamento)}</b>
             </div>
             <div>
-              <span>Faturamento bruto</span>
-              <b>{brl(s.bruto)}</b>
+              <span>Parte da Tayssa ({pct(pctT)})</span>
+              <b>{brl(s.tayssa)}</b>
             </div>
             <div>
-              <span>Ticket médio</span>
-              <b>{brl(s.ticketMedio)}</b>
-            </div>
-            <div>
-              <span>Recebido</span>
-              <b>{brl(s.recebido)}</b>
-            </div>
-            <div>
-              <span>Pendente</span>
-              <b>{brl(s.pendente)}</b>
+              <span>
+                Parte da {d.larissa} ({pct(100 - pctT)})
+              </span>
+              <b>{brl(s.larissa)}</b>
             </div>
           </div>
+          <p className="tyrel__nota">As clientes pagam no salão (Pix ou maquininha). A parte da Tayssa é repassada por quinzena.</p>
         </section>
 
         <section className="tyrel__secao">
-          <h2>Divisão</h2>
-          <div className="tyrel__divisao">
-            {[
-              { nome: "Tayssa", p: s.tayssa },
-              { nome: d.larissa, p: s.larissa },
-            ].map(({ nome, p }) => (
-              <div key={nome} className="tyrel__parte">
-                <p>
-                  <b>{nome}</b> <span>{pct(p.pct)}</span>
-                </p>
-                <strong>{brl(p.bruto)}</strong>
-                <p className="tyrel__detalhe">
-                  já recebido {brl(p.recebido)} · a receber {brl(p.aReceber)}
-                </p>
-              </div>
-            ))}
-          </div>
-          {s.divisaoVariou ? <p className="tyrel__nota">A divisão mudou dentro do período: cada atendimento conta com a regra da data em que fechou.</p> : null}
-        </section>
-
-        <section className="tyrel__secao">
-          <h2>Formas de pagamento</h2>
+          <h2>Repasse para a Tayssa</h2>
           <ul className="tyrel__lista">
-            {LISTA_FORMAS.map((f) => (
-              <li key={f}>
-                <span>{FORMAS[f]}</span>
-                <b>{brl(s.porForma[f])}</b>
+            {s.repasses.map((q) => (
+              <li key={q.inicio}>
+                <span>
+                  {q.nome} ({diaMes(q.inicio)} a {diaMes(q.fim)}) · repasse dia {diaMes(q.repasseEm)}
+                </span>
+                <b>{brl(q.tayssa)}</b>
               </li>
             ))}
-            <li>
-              <span>Pendente (não recebido)</span>
-              <b>{brl(s.pendente)}</b>
-            </li>
-            <li className="tyrel__total">
-              <span>Total efetivamente recebido</span>
-              <b>{brl(s.recebido)}</b>
-            </li>
+            {s.repasses.length > 1 ? (
+              <li className="tyrel__total">
+                <span>Total</span>
+                <b>{brl(s.tayssa)}</b>
+              </li>
+            ) : null}
           </ul>
-          {d.comprovantes ? <p className="tyrel__nota">{d.comprovantes} comprovantes do sinal anexados no período.</p> : null}
         </section>
-
-        {s.servicos.length ? (
-          <section className="tyrel__secao">
-            <h2>Serviços realizados</h2>
-            <p className="tyrel__servicos">
-              {s.servicos.map((x) => (
-                <span key={x.nome}>
-                  {x.nome} · {x.vezes}x
-                </span>
-              ))}
-            </p>
-          </section>
-        ) : null}
 
         <section className="tyrel__secao">
           <h2>Atendimentos</h2>
@@ -158,8 +119,9 @@ export default async function RelatorioCompartilhado({ params }: { params: Promi
                   </div>
                   <div className="tyrel__valor">
                     <b>{l.valor != null ? brl(l.valor) : "sem valor"}</b>
+                    <span>Tayssa {brl(l.tayssa)}</span>
                     <span>
-                      {l.formas || "sem pagamento"} · {SITUACAO_PAGAMENTO[l.situacao]}
+                      {d.larissa} {brl(l.larissa)}
                     </span>
                   </div>
                 </li>

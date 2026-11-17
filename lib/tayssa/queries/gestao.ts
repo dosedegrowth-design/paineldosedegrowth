@@ -13,6 +13,7 @@ import {
   PCT_TAYSSA_PADRAO,
   formaValida,
   historicoDaCliente,
+  linhaFin,
   nomeCurto,
   resumir,
   situacaoPagamento,
@@ -465,62 +466,58 @@ export type LinhaDoRelatorio = {
   cliente: string;
   servico: string;
   valor: number | null;
-  recebido: number;
+  /** como a cliente pagou no salão (Pix, cartão…), quando foi informado */
   formas: string;
-  situacao: SituacaoPagamento;
   tayssa: number;
   larissa: number;
+  /** só nos links gerados antes do modelo do repasse (versão 1) */
+  recebido?: number;
+  situacao?: SituacaoPagamento;
 };
 
+/**
+ * A foto do fechamento que vai no link da Larissa e no PDF. Versão 2
+ * (17/11/2026): só os atendimentos e a divisão; o resumo e os repasses saem
+ * de `resumoDoRelatorio()` na hora de mostrar (o link antigo, versão 1, tem
+ * as mesmas linhas e aparece igual).
+ */
 export type RelatorioDados = {
-  versao: 1;
+  versao: 1 | 2;
   periodo: { de: string; ate: string; rotulo: string };
   geradoEm: string;
   negocio: string;
   larissa: string;
-  resumo: ResumoFinanceiro;
   linhas: LinhaDoRelatorio[];
-  /** comprovantes do sinal anexados no período (para conferir com o extrato) */
-  comprovantes: number;
 };
 
-export async function montarRelatorio(p: Periodo): Promise<RelatorioDados> {
-  const [{ lista, resumo }, settings, compRes] = await Promise.all([
-    getFinanceiroDoPeriodo(p.de, p.ate),
-    getSettings(),
-    vipDb()
-      .from("appointments")
-      .select("id", { count: "exact", head: true })
-      .not("comprovante_path", "is", null)
-      .gte("comprovante_em", `${p.de}T00:00:00-03:00`)
-      .lt("comprovante_em", `${proximoDia(p.ate)}T00:00:00-03:00`),
-  ]);
-  const ordenados = [...lista].sort((a, b) => (a.data + (a.hora ?? "")).localeCompare(b.data + (b.hora ?? "")));
-  return {
-    versao: 1,
-    periodo: { de: p.de, ate: p.ate, rotulo: p.rotulo },
-    geradoEm: new Date().toISOString(),
-    negocio: settings.business.name,
-    larissa: settings.financeiro.larissa_nome || "Larissa",
-    resumo,
-    comprovantes: compRes.count ?? 0,
-    linhas: ordenados.map((a) => {
-      const v = a.valor ?? 0;
-      const pct = a.pctTayssa ?? PCT_TAYSSA_PADRAO;
-      const t = Math.round(v * 100 * (pct / 100));
+/** Os atendimentos do período como linhas do relatório, em ordem de dia e hora. */
+export function linhasDoRelatorio(lista: AtendimentoRealizado[]): LinhaDoRelatorio[] {
+  return [...lista]
+    .sort((a, b) => (a.data + (a.hora ?? "")).localeCompare(b.data + (b.hora ?? "")))
+    .map((a) => {
+      const div = linhaFin(a);
       return {
         data: a.data,
         hora: a.hora,
         cliente: nomeCurto(a.cliente),
         servico: a.servico,
         valor: a.valor,
-        recebido: a.recebido,
         formas: a.formas,
-        situacao: a.situacao,
-        tayssa: t / 100,
-        larissa: (Math.round(v * 100) - t) / 100,
+        tayssa: div.tayssa,
+        larissa: div.larissa,
       };
-    }),
+    });
+}
+
+export async function montarRelatorio(p: Periodo): Promise<RelatorioDados> {
+  const [{ lista }, settings] = await Promise.all([getFinanceiroDoPeriodo(p.de, p.ate), getSettings()]);
+  return {
+    versao: 2,
+    periodo: { de: p.de, ate: p.ate, rotulo: p.rotulo },
+    geradoEm: new Date().toISOString(),
+    negocio: settings.business.name,
+    larissa: settings.financeiro.larissa_nome || "Larissa",
+    linhas: linhasDoRelatorio(lista),
   };
 }
 

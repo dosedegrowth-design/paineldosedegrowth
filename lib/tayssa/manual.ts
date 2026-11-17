@@ -334,7 +334,7 @@ export const MANUAL: CategoriaDoManual[] = [
           "Em *O restante*, escolha *Recebi agora* ou *Fica pendente* e toque em *Confirmar realizado*.",
           "Pronto: entra em Atendimentos realizados e no Financeiro, com os pontos, o carimbo do cartão e a divisão Tayssa/Larissa.",
         ],
-        dica: "*Não compareceu* não soma nada (nem ponto, nem faturamento). O que ficou pendente você marca como pago depois, em *Atendimentos realizados* ou no *Financeiro*.",
+        dica: "*Não compareceu* não soma nada (nem ponto, nem faturamento). O que ficou pendente você marca como pago depois, em *Atendimentos realizados*.",
         imagem: {
           src: "/tayssa/manual/realizado.webp",
           alt: "Formulário Realizado com o valor cobrado, a forma de pagamento e Recebi agora ou Fica pendente",
@@ -724,7 +724,7 @@ export const MANUAL: CategoriaDoManual[] = [
         titulo: "A Visão geral",
         onde: ["Visão geral"],
         texto:
-          "É a tela de abrir o dia. No alto, o cartão *Escolha a data* (*Hoje*, *Ontem*, *Esta semana*, *Este mês*, *Mês passado* ou *De* e *Até*): ele muda os dois cartões de baixo. Primeiro, *Atendimentos realizados*: quem você atendeu no período. Depois, o *Financeiro* do período: o faturamento total em destaque, os atendimentos realizados, o ticket médio, o valor recebido e o pendente. Embaixo, os gráficos: *Faturamento por dia* (uma coluna por dia; toque numa coluna para ver o valor e quantos atendimentos teve), *Como entrou o dinheiro* (a rosca com Pix, dinheiro, cartão e o que ainda falta receber, e no meio quanto já entrou), *Serviços mais feitos* e a *Divisão* Tayssa/Larissa, com a barrinha do quanto cada uma já recebeu. Depois, o que espera você, os *Próximos horários*, as *Novas clientes*, quem está *Pronta para VIP*, os aniversários, quem sumiu e os últimos movimentos.",
+          "É a tela de abrir o dia. No alto, o cartão *Escolha a data* (*Hoje*, *Ontem*, *Esta semana*, *Este mês*, *Mês passado* ou *De* e *Até*): ele muda os dois cartões de baixo. Primeiro, *Atendimentos realizados*: quem você atendeu no período. Depois, o *Financeiro* do período: o faturamento total em destaque, os atendimentos realizados, o ticket médio, a *Parte da Tayssa* e a *Parte da Larissa*. Embaixo, os gráficos: *Faturamento por dia* (uma coluna por dia; toque numa coluna para ver o valor e quantos atendimentos teve), *Como entrou o dinheiro* (como as clientes pagaram no salão: Pix, dinheiro ou cartão), *Serviços mais feitos* e o *Repasse para a Tayssa* de cada quinzena, com a data. Depois, o que espera você, os *Próximos horários*, as *Novas clientes*, quem está *Pronta para VIP*, os aniversários, quem sumiu e os últimos movimentos.",
         imagem: {
           src: "/tayssa/manual/visao-geral.webp",
           alt: "Visão geral com o faturamento do mês em destaque e o gráfico de colunas do faturamento por dia",
@@ -740,7 +740,7 @@ export const MANUAL: CategoriaDoManual[] = [
         passos: [
           "Abra a *Visão geral* (no celular, *Início*). No cartão *Escolha a data*, toque em *Hoje*, *Ontem*, *Esta semana*, *Este mês* ou *Mês passado*; as setas levam ao dia, à semana ou ao mês ao lado.",
           "Para outras datas, preencha *De* e *Até* e toque em *Ver o período* (um dia só: a mesma data nos dois).",
-          "Logo embaixo, *Atendimentos realizados* mostra quem você atendeu, separado por dia: a hora, o nome (toque para abrir a ficha), o serviço, o valor e se está *Pago* ou *Pendente*.",
+          "Logo embaixo, *Atendimentos realizados* mostra quem você atendeu, separado por dia: a hora, o nome (toque para abrir a ficha), o serviço, o valor e a forma de pagamento, quando foi informada.",
           "Mais de 10 no período? Toque em *Ver os atendimentos do período*: abre *Atendimentos realizados* com as mesmas datas.",
         ],
         dica: "O *Financeiro* logo abaixo usa o mesmo período. Cancelamento e falta não aparecem: só quem foi atendida.",
@@ -757,15 +757,17 @@ export const MANUAL: CategoriaDoManual[] = [
         titulo: "O relatório de um período",
         onde: ["Relatórios"],
         passos: [
-          "Abra *Relatórios* e escolha *Hoje*, *Esta semana*, *Este mês*, *Mês anterior* ou *Escolher as datas* (para um dia só, use a mesma data em De e Até).",
-          "Tudo muda junto: *Resumo de atendimentos* (atendimentos, clientes, ticket médio, serviços), *Resumo financeiro* (Pix, dinheiro, cartão, outras formas, pendente e total recebido), *Divisão* e o *Detalhamento* de cada atendimento.",
+          "Abra *Relatórios* e escolha *Esta quinzena*, *Quinzena anterior*, *Este mês* ou *Mês anterior*, ou preencha *De* e *Até* e toque em *Ver o período* (para um dia só, a mesma data nos dois).",
+          "No *Resumo*: os atendimentos realizados, o faturamento, a *Parte da Tayssa (70%)* e a *Parte da Larissa (30%)*.",
+          "Em *Repasse para a Tayssa*: o valor de cada quinzena e o dia do repasse. As clientes pagam no salão (Pix ou maquininha da Larissa) e a Larissa repassa a parte da Tayssa: do dia 1 ao 15, no dia 15; do dia 16 ao fim do mês, no dia 1º.",
+          "Em *Atendimentos*: cada um com a data, a cliente, o serviço, o valor e quanto fica para cada uma.",
         ],
         imagem: {
           src: "/tayssa/manual/relatorios.webp",
-          alt: "Tela de Relatórios com o período, o fechamento e os botões de PDF e WhatsApp",
+          alt: "Tela de Relatórios com a quinzena escolhida, o resumo e o repasse para a Tayssa",
           largura: 780,
           altura: 1500,
-          legenda: "Relatórios: escolha o período e feche.",
+          legenda: "Relatórios: a quinzena, o resumo e o repasse.",
         },
       },
       {
@@ -774,7 +776,7 @@ export const MANUAL: CategoriaDoManual[] = [
         onde: ["Relatórios", "Fechamento do período"],
         passos: [
           "Com o período escolhido, toque em *Baixar relatório em PDF*.",
-          "Vem um PDF com o período, os atendimentos, o faturamento, as formas de pagamento, a divisão e o detalhamento (só o primeiro nome e a inicial da cliente).",
+          "Vem um PDF com o período, o resumo (atendimentos, faturamento, a parte da Tayssa e a da Larissa), o repasse de cada quinzena com a data e os atendimentos (só o primeiro nome e a inicial da cliente).",
         ],
         dica: "No iPhone, o PDF fica no app *Arquivos* (pasta Downloads); dá para mandar no WhatsApp como *Documento*.",
       },
@@ -784,17 +786,17 @@ export const MANUAL: CategoriaDoManual[] = [
         onde: ["Relatórios", "Fechamento do período"],
         passos: [
           "Com o período escolhido, toque em *Enviar relatório para Larissa*.",
-          "O painel cria a página do relatório e mostra o link. Toque em *Abrir o WhatsApp da Larissa*: a conversa dela abre com a mensagem e o link prontos. Confira e envie.",
+          "O painel cria a página do relatório e mostra o link. Toque em *Abrir o WhatsApp da Larissa*: a conversa dela abre com a mensagem pronta (atendimentos, faturamento, a sua parte, a parte dela e o dia do repasse) e o link. Confira e envie.",
           "Para tirar o acesso, em *Links enviados* toque em *Desativar link*. Quem abrir depois vê “Este link foi desativado”.",
         ],
-        dica: "A página guarda os números da hora em que o link foi gerado (é o fechamento) e não mostra telefone nem sobrenome de cliente. O WhatsApp da Larissa fica em *Financeiro* › *Configurar a divisão* › *Para onde vai o relatório*.",
+        dica: "A página guarda os números da hora em que o link foi gerado (é o fechamento) e não mostra telefone nem sobrenome de cliente. Lançou algo depois? Gere outro link e desative o antigo. O WhatsApp da Larissa fica em *Financeiro* › *Configurar a divisão* › *Para onde vai o relatório*.",
       },
       {
         id: "comprovantes",
-        titulo: "Baixar os comprovantes do mês e mandar para a Larissa",
+        titulo: "Os comprovantes do sinal (fora do relatório)",
         onde: ["Relatórios"],
         passos: [
-          "Abra *Relatórios* e escolha o período (o mês já vem escolhido). Desça até *Comprovantes do sinal*.",
+          "Os comprovantes não entram no relatório. Abra *Relatórios*, escolha o período e, no fim da tela, toque em *Comprovantes do sinal* para abrir.",
           "Toque em *Baixar os comprovantes (.zip)*: vem um arquivo só, com um comprovante por cliente, cada um com o dia, a hora e o nome no arquivo.",
           "Toque em *Baixar a planilha*: a lista com cliente, WhatsApp, serviço, dia, situação, sinal e valor (abre no Excel).",
           "No WhatsApp da Larissa, toque no clipe (ou no +), escolha *Documento* e mande os dois arquivos.",
@@ -842,14 +844,13 @@ export const MANUAL: CategoriaDoManual[] = [
         onde: ["Financeiro"],
         passos: [
           "Abra *Financeiro* e escolha o período.",
-          "*Faturamento bruto* é o valor dos atendimentos realizados; *Valor recebido* é o que já entrou; *Valor pendente* é o que falta. Pendente nunca conta como recebido.",
+          "*Faturamento bruto* é o valor dos atendimentos realizados. Ao lado, a *Parte da Tayssa* e a *Parte da Larissa*.",
           "Os gráficos mostram o período de outro jeito: *Faturamento por dia* (toque numa coluna para ver o dia; *Ver em tabela* mostra todos os dias), *Como entrou o dinheiro* e *Serviços mais feitos*.",
-          "Em *Divisão*, a parte da Tayssa e a da Larissa, cada uma com o que já recebeu, o que tem a receber e a barrinha do quanto já entrou. Em *Por forma de pagamento*, quanto entrou em Pix, dinheiro e cartão.",
-          "Em *A receber*, os atendimentos com pagamento em aberto: toque em *Recebi R$…* quando entrar.",
+          "Em *Divisão e repasse*: a parte da Tayssa com o repasse de cada quinzena (do dia 1 ao 15, no dia 15; do 16 ao fim do mês, no dia 1º) e a parte da Larissa, que fica no salão. Em *Como as clientes pagaram*, quanto foi em Pix, dinheiro e cartão.",
         ],
         imagem: {
           src: "/tayssa/manual/financeiro.webp",
-          alt: "Tela Financeiro com faturamento, recebido, pendente e a divisão Tayssa e Larissa",
+          alt: "Tela Financeiro com o faturamento, a parte da Tayssa e a parte da Larissa",
           largura: 780,
           altura: 1500,
           legenda: "O Financeiro do período.",
@@ -860,7 +861,7 @@ export const MANUAL: CategoriaDoManual[] = [
         titulo: "A divisão 70/30 e como mudar",
         onde: ["Financeiro", "Configurar a divisão"],
         texto:
-          "Todo atendimento realizado se divide sozinho: hoje, 70% para a Tayssa e 30% para a Larissa (num serviço de R$ 100, R$ 70 e R$ 30; de R$ 200, R$ 140 e R$ 60). Você não precisa fazer conta.",
+          "Todo atendimento realizado se divide sozinho: hoje, 70% para a Tayssa e 30% para a Larissa (num serviço de R$ 100, R$ 70 e R$ 30; de R$ 200, R$ 140 e R$ 60). Você não precisa fazer conta. As clientes pagam no salão (Pix ou maquininha da Larissa), e a Larissa repassa os 70% da Tayssa por quinzena: do dia 1 ao 15, no dia 15; do dia 16 ao fim do mês, no dia 1º.",
         passos: [
           "Em *Financeiro*, desça até *Configurar a divisão* e mude um dos campos (o outro acompanha: a soma é sempre 100%).",
           "Toque em *Salvar a divisão*. Vale para os atendimentos que fecharem daqui para frente; os que já fecharam continuam com a divisão da época.",

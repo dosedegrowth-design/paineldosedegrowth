@@ -7,7 +7,8 @@
  * - Faturamento por dia: até 31 dias, uma coluna por dia; até 120, por
  *   semana (começa no domingo, como a agenda); mais que isso, por mês.
  * - Como entrou: Pix, dinheiro, cartão (crédito + débito), outra forma e o
- *   que ainda está pendente. Os percentuais somam 100 (maior resto).
+ *   que foi faturado sem a forma informada (no modelo do repasse toda
+ *   cliente paga no salão; não existe "pendente"). Os percentuais somam 100.
  * - Serviços mais feitos: os cinco primeiros e o resto em "Outros".
  */
 import { diasEntre, inicioDaSemana, somarDias, type ResumoFinanceiro } from "./financeiro.ts";
@@ -144,7 +145,7 @@ export const NOME_DA_FATIA: Record<FatiaId, string> = {
   dinheiro: "Dinheiro",
   cartao: "Cartão",
   outro: "Outra forma",
-  pendente: "Ainda pendente",
+  pendente: "Forma não informada",
 };
 
 /** Percentuais inteiros que somam 100: arredonda para baixo e dá o que falta aos maiores restos. */
