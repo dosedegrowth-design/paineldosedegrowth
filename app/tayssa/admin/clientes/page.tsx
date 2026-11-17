@@ -1,5 +1,6 @@
 import { requireAdminPage } from "@/lib/tayssa/auth/guards";
 import { listClients } from "@/lib/tayssa/queries/admin";
+import { getEstatisticasDasClientes } from "@/lib/tayssa/queries/gestao";
 import { ROUTES } from "@/lib/tayssa/config";
 import { AdminHeader } from "@/components/tayssa/admin/shell";
 import { ClientsTable } from "@/components/tayssa/admin/clients-table";
@@ -7,7 +8,11 @@ import { TransitionLink } from "@/components/tayssa/ui/transition";
 
 export default async function ClientsPage() {
   await requireAdminPage();
-  const clients = await listClients();
+  const [clients, stats] = await Promise.all([listClients(), getEstatisticasDasClientes()]);
+  // por cliente: atendimentos, total gasto e frequência de retorno (dos atendimentos realizados)
+  const estatisticas = Object.fromEntries(
+    [...stats.entries()].map(([id, h]) => [id, { quantidade: h.quantidade, totalGasto: h.totalGasto, frequenciaDias: h.frequenciaDias }]),
+  );
   const esperando = clients.filter((c) => c.pedidoVip).length;
 
   return (
@@ -30,7 +35,7 @@ export default async function ClientsPage() {
           </TransitionLink>
         }
       />
-      <ClientsTable clients={clients} />
+      <ClientsTable clients={clients} estatisticas={estatisticas} />
     </>
   );
 }

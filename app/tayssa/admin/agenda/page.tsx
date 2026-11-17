@@ -1,8 +1,11 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { requireAdminPage } from "@/lib/tayssa/auth/guards";
-import { getAgenda, getGradeAgenda } from "@/lib/tayssa/queries/admin";
-import { AgendaGrade } from "@/components/tayssa/admin/agenda-grade";
+import { cookies } from "next/headers";
+import { getAgenda } from "@/lib/tayssa/queries/admin";
+import { getAgendaVisao, getCatalogo, listarClientesDaAgenda } from "@/lib/tayssa/queries/gestao";
+import { AgendaCalendario } from "@/components/tayssa/admin/agenda-calendario";
+import { FORMAS, LISTA_FORMAS } from "@/lib/tayssa/financeiro";
 import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES, publicUrl } from "@/lib/tayssa/config";
 import { dateShort, dayLabel, dayMonth, hhmm, nowInBusinessTz, weekdayShort } from "@/lib/tayssa/format";
@@ -229,17 +232,41 @@ function CloseActions({ a }: { a: AppointmentWithClient }) {
         label="Observação (opcional)"
         variant="accent"
         extra={
-          <div>
-            <label className="tya-label" htmlFor={`pontos-${a.id}`}>
-              Pontos desta visita (vazio = do catálogo)
-            </label>
-            <input
-              id={`pontos-${a.id}`}
-              className="tya-field"
-              name="points"
-              inputMode="numeric"
-              placeholder="ex.: 40"
-            />
+          // o atendimento entra com o valor e o pagamento (o sinal já pago no Pix entra sozinho)
+          <div className="tyac-campos">
+            <div>
+              <label className="tya-label" htmlFor={`valor-${a.id}`}>
+                Valor cobrado (R$)
+              </label>
+              <input id={`valor-${a.id}`} className="tya-field" name="valor" inputMode="decimal" placeholder="vazio = o do agendamento" />
+            </div>
+            <div>
+              <label className="tya-label" htmlFor={`forma-${a.id}`}>
+                Forma de pagamento
+              </label>
+              <select id={`forma-${a.id}`} className="tya-field" name="forma" defaultValue={a.forma_pagamento ?? "pix"}>
+                {LISTA_FORMAS.map((f) => (
+                  <option key={f} value={f}>
+                    {FORMAS[f]}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="tya-label" htmlFor={`recebido-${a.id}`}>
+                O restante
+              </label>
+              <select id={`recebido-${a.id}`} className="tya-field" name="recebido" defaultValue="sim">
+                <option value="sim">Recebi agora</option>
+                <option value="nao">Fica pendente</option>
+              </select>
+            </div>
+            <div>
+              <label className="tya-label" htmlFor={`pontos-${a.id}`}>
+                Pontos (vazio = do catálogo)
+              </label>
+              <input id={`pontos-${a.id}`} className="tya-field" name="points" inputMode="numeric" placeholder="ex.: 40" />
+            </div>
           </div>
         }
       >
@@ -256,9 +283,30 @@ function CloseActions({ a }: { a: AppointmentWithClient }) {
   );
 }
 
-export default async function AgendaAdminPage({ searchParams }: { searchParams: Promise<{ avisar?: string }> }) {
+export default async function AgendaAdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ avisar?: string; vista?: string; data?: string; novo?: string; ver?: string }>;
+}) {
   await requireAdminPage();
-  const [agenda, settings, grade, params] = await Promise.all([getAgenda(), getSettings(), getGradeAgenda(), searchParams]);
+  const params = await searchParams;
+  // a visão (dia, semana, mês): a do endereço, ou a última que ela usou neste aparelho; o dia no celular
+  const lembrada = (await cookies()).get("tya_agenda_vista")?.value;
+  const vista = (["dia", "semana", "mes"] as const).find((v) => v === params.vista) ?? (["dia", "semana", "mes"] as const).find((v) => v === lembrada) ?? "dia";
+  const hojeIso = (() => {
+    const n = nowInBusinessTz();
+    return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, "0")}-${String(n.getDate()).padStart(2, "0")}`;
+  })();
+  const dataDaVista = params.data && /^\d{4}-\d{2}-\d{2}$/.test(params.data) && !Number.isNaN(Date.parse(params.data)) ? params.data : hojeIso;
+  // "?novo=2026-11-18T10:00" abre o formulário já no horário
+  const novo = params.novo && /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2})?$/.test(params.novo) ? { data: params.novo.slice(0, 10), hora: params.novo.slice(11, 16) } : null;
+  const [agenda, settings, visao, catalogo, clientes] = await Promise.all([
+    getAgenda(),
+    getSettings(),
+    getAgendaVisao(vista, dataDaVista),
+    getCatalogo(),
+    listarClientesDaAgenda(),
+  ]);
   const b = settings.booking;
   // logo depois do "Confirmar": a mensagem pronta para a cliente daquele horário
   const confirmado = params.avisar
@@ -298,12 +346,6 @@ export default async function AgendaAdminPage({ searchParams }: { searchParams: 
   };
   const comComprovante = agenda.requested.filter((a) => a.comprovante_em).length;
   const semComprovante = agenda.requested.length - comComprovante;
-  const todayISO = agenda.today;
-  const now = nowInBusinessTz();
-  const alreadyHappened = (a: AppointmentWithClient) => {
-    const [h, m] = a.scheduled_time.split(":").map(Number);
-    return now.getHours() > h || (now.getHours() === h && now.getMinutes() >= m);
-  };
   const attention = agenda.requested.length + agenda.toClose.length;
   const diasAbertos = WEEKDAYS.filter((_, i) => b.weekdays.includes(i));
   const diasFolga = WEEKDAYS.filter((_, i) => !b.weekdays.includes(i));
@@ -323,11 +365,7 @@ export default async function AgendaAdminPage({ searchParams }: { searchParams: 
             </>
           )
         }
-        lead={
-          sinalDoPainel.pix
-            ? `A semana como no Google Agenda: toque num horário para abrir ou fechar. A cliente marca pelo site, paga o sinal pelo Pix copia e cola e anexa o comprovante: confira e confirme. Sem comprovante em ${b.sinal_horas}h, o pedido cai sozinho e o horário volta para a agenda.`
-            : `A semana como no Google Agenda: toque num horário para abrir ou fechar. A cliente marca pelo site com a conta dela e o pedido segura o horário por ${b.sinal_horas}h esperando o sinal: peça o Pix no WhatsApp e confirme quando ele cair. Sem comprovante nesse prazo, o pedido cai sozinho e o horário volta para a agenda.`
-        }
+        lead={`Toque num horário livre para marcar e num agendamento para ver, confirmar, remarcar ou fechar como realizado (com o pagamento). Pedido do site sem comprovante em ${b.sinal_horas}h cai sozinho e o horário volta para a agenda.`}
         actions={
           <TransitionLink href={`${ROUTES.adminSettings}#agenda`} className="tya-btn tya-btn--ghost">
             <Icone nome="config" />
@@ -338,7 +376,7 @@ export default async function AgendaAdminPage({ searchParams }: { searchParams: 
 
       <div className="tya-kpis tya-kpis--2sm tya-stagger">
         <Atalho n={agenda.requested.length} label="Pedidos" href="#pedidos" alerta={agenda.requested.length > 0} />
-        <Atalho n={agenda.todayList.length} label="Hoje" href="#hoje" />
+        <Atalho n={agenda.todayList.length} label="Hoje" href="#calendario" />
         <Atalho
           n={agenda.toClose.length}
           label="Para fechar"
@@ -351,9 +389,18 @@ export default async function AgendaAdminPage({ searchParams }: { searchParams: 
       {/* a notificação no celular dela a cada horário marcado pelo site */}
       <AvisosDePedido />
 
-      <AdminBlock id="semana" title="Semana">
-        <AgendaGrade grade={grade} />
-      </AdminBlock>
+      <section id="calendario" className="tya-sec tya-up">
+        <div className="tya-card tyac-cartao">
+          <AgendaCalendario
+            visao={visao}
+            servicos={catalogo.filter((s) => s.active).map((s) => ({ id: s.id, nome: s.name, preco: s.preco, duracao: s.duration_min }))}
+            clientes={clientes}
+            sinal={b.deposit_reais}
+            abrirNovo={novo}
+            abrirId={params.ver && /^[0-9a-f-]{36}$/.test(params.ver) ? params.ver : null}
+          />
+        </div>
+      </section>
 
       <AdminBlock
         id="pedidos"
@@ -397,46 +444,6 @@ export default async function AgendaAdminPage({ searchParams }: { searchParams: 
         )}
       </AdminBlock>
 
-      <AdminBlock
-        id="hoje"
-        title="Hoje"
-        aside={
-          <span className="tya-pill tya-pill--quiet">
-            {weekdayShort(todayISO)}, {dateShort(todayISO)}
-          </span>
-        }
-      >
-        {agenda.todayList.length ? (
-          <ul className="tya-list">
-            {agenda.todayList.map((a) => (
-              <Slot key={a.id} a={a} sinal={sinalDoPainel} booking={b}>
-                {a.status === "requested" ? (
-                  <NoteAction
-                    action={adminConfirmAppointmentAction}
-                    args={{ id: a.id }}
-                    label="Recado para a cliente (opcional)"
-                    variant="accent"
-                    depois={avisarDe(a.id)}
-                  >
-                    Confirmar
-                  </NoteAction>
-                ) : null}
-                {alreadyHappened(a) ? <CloseActions a={a} /> : null}
-                <NoteAction action={adminCancelAppointmentAction} args={{ id: a.id }} label="Motivo (ela vê)">
-                  Cancelar
-                </NoteAction>
-              </Slot>
-            ))}
-          </ul>
-        ) : (
-          <Vazio icone="agenda" titulo="Nenhum horário hoje">
-            {agenda.toClose.length
-              ? `Mas ${agenda.toClose.length} ${agenda.toClose.length === 1 ? "horário passado espera" : "horários passados esperam"} fechamento logo abaixo.`
-              : "O dia está livre na agenda."}
-          </Vazio>
-        )}
-      </AdminBlock>
-
       {agenda.toClose.length ? (
         <AdminBlock id="fechar" title="Para fechar" aside={<span className="tya-pill tya-pill--bad">já passaram</span>}>
           <ul className="tya-list">
@@ -452,7 +459,7 @@ export default async function AgendaAdminPage({ searchParams }: { searchParams: 
         </AdminBlock>
       ) : null}
 
-      <AdminBlock id="proximos" title="Próximos confirmados">
+      <AdminBlock id="proximos" title="Próximos atendimentos">
         {agenda.upcoming.length ? (
           <ul className="tya-list">
             {agenda.upcoming.map((a) => (

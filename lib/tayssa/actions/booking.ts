@@ -153,6 +153,8 @@ export async function createAppointmentAction(input: {
 
     // os serviços precisam caber inteiros, um depois do outro: o volume de 3h às 10h não entra se às 11h já tem alguém
     const duracao = somaDoPedido(lista).duracao || b.default_duration_min;
+    // o banco aceita até 8h num horário: juntos, três volumes passam disso
+    if (duracao > 480) throw new BusinessError("Juntos, esses serviços passam de 8 horas. Marque em dois horários.");
     const [{ data: doDia, error: dErr }, fechados] = await Promise.all([
       db
         .from("appointments")

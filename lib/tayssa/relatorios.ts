@@ -46,6 +46,13 @@ export function limitesDoMes(mes: string): { de: string; ate: string } {
   return { de: `${mes}-01T00:00:00-03:00`, ate: `${outroMes(mes, 1)}-01T00:00:00-03:00` };
 }
 
+/** Qualquer período (dia, semana, personalizado): do começo do primeiro dia ao começo do dia seguinte ao último. */
+export function limitesDoPeriodo(de: string, ate: string): { de: string; ate: string } {
+  const [a, m, d] = ate.split("-").map(Number);
+  const seguinte = new Date(Date.UTC(a, m - 1, d + 1)).toISOString().slice(0, 10);
+  return { de: `${de}T00:00:00-03:00`, ate: `${seguinte}T00:00:00-03:00` };
+}
+
 /** Sem acento e sem nada que atrapalhe num nome de arquivo: "Manutenção Mega Inglês" → "Manutencao-Mega-Ingles" */
 export function paraNomeDeArquivo(texto: string): string {
   return texto

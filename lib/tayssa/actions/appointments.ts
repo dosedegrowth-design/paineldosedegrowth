@@ -13,6 +13,9 @@ import { getSettings } from "@/lib/tayssa/settings";
 import { syncLoyaltyEligibility } from "@/lib/tayssa/engine";
 import { nowInBusinessTz } from "@/lib/tayssa/format";
 import { BusinessError, runAction } from "@/lib/tayssa/actions/_helpers";
+import { registrarPagamentos } from "@/lib/tayssa/pagamentos";
+import { formaValida, lerNumero } from "@/lib/tayssa/financeiro";
+import { getCatalogo, valorDoAgendamento } from "@/lib/tayssa/queries/gestao";
 import type { ActionResult, AppointmentRow, ServiceRow } from "@/lib/tayssa/types";
 
 async function loadAppointment(id: string): Promise<AppointmentRow> {
@@ -86,6 +89,12 @@ export async function adminCompleteAppointmentAction(input: {
   note?: string;
   /** pontos diferentes do catálogo (opcional) */
   points?: string;
+  /** o valor cobrado (vazio = o do agendamento) — 17/11/2026 */
+  valor?: string;
+  /** a forma do que ela pagou na hora (pix, dinheiro, cartao_credito, cartao_debito, outro) */
+  forma?: string;
+  /** "sim": o restante foi recebido agora · "nao": fica pendente */
+  recebido?: string;
 }): Promise<ActionResult> {
   return runAction("appointments.complete", async () => {
     const admin = await assertAdmin();
@@ -95,6 +104,19 @@ export async function adminCompleteAppointmentAction(input: {
     if (a.scheduled_date > toISODate(nowInBusinessTz())) {
       throw new BusinessError("Esse horário ainda não aconteceu.");
     }
+    // o pagamento: o valor cobrado, o sinal que já entrou no Pix e o resto (agora ou pendente)
+    const settings = await getSettings();
+    const catalogo = await getCatalogo();
+    const valorDigitado = lerNumero(input.valor);
+    if (input.valor?.trim() && (valorDigitado == null || valorDigitado < 0 || valorDigitado > 100000)) {
+      throw new BusinessError("Valor inválido. Use só números, ex.: 170 ou 170,50.", "valor");
+    }
+    const valorCobrado = valorDigitado ?? valorDoAgendamento(a, catalogo, settings.booking);
+    const sinal = a.comprovante_em ? settings.booking.deposit_reais : 0;
+    const resto = valorCobrado != null ? Math.max(0, Math.round((valorCobrado - sinal) * 100) / 100) : 0;
+    const recebeuAgora = input.recebido === "sim";
+    if (recebeuAgora && resto > 0 && !formaValida(input.forma)) throw new BusinessError("Escolha a forma de pagamento.", "forma");
+
     const override = input.points?.trim();
     let points: number | null = null;
     if (override) {
@@ -142,6 +164,8 @@ export async function adminCompleteAppointmentAction(input: {
         clientId: a.client_id,
         service,
         serviceDate: a.scheduled_date,
+        amount: valorCobrado,
+        pctTayssa: settings.financeiro.pct_tayssa,
         points,
         notes: parsed.note,
         auditMeta: { appointment_id: a.id },
@@ -157,6 +181,20 @@ export async function adminCompleteAppointmentAction(input: {
 
     const { error } = await db.from("appointments").update({ client_service_id: visit.id }).eq("id", a.id);
     if (error) throw new Error(error.message);
+    // o sinal (comprovante anexado) já entrou no Pix; o resto entra agora ou fica pendente
+    try {
+      await registrarPagamentos(
+        visit.id,
+        [
+          ...(sinal > 0 ? [{ valor: Math.min(sinal, valorCobrado ?? sinal), forma: "pix" as const, origem: "sinal" as const, recebidoEm: a.comprovante_em ?? undefined, nota: "Sinal do agendamento" }] : []),
+          ...(recebeuAgora && resto > 0 && formaValida(input.forma) ? [{ valor: resto, forma: input.forma, origem: "atendimento" as const }] : []),
+        ],
+        admin.id,
+      );
+    } catch (e) {
+      // o atendimento já está registrado: o pagamento dá para lançar depois em Atendimentos realizados
+      logServerError("appointments.complete.pagamento", e);
+    }
     await logAudit({
       actorId: admin.id,
       actorRole: "admin",

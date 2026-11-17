@@ -6,7 +6,7 @@
  * outro com um cruzamento curto (`.tyib[data-cheio]`).
  */
 
-export type IconeBarraNome = "inicio" | "cartao" | "agenda" | "presente" | "perfil" | "grade" | "clientes" | "mais" | "jornada";
+export type IconeBarraNome = "inicio" | "cartao" | "agenda" | "presente" | "perfil" | "grade" | "clientes" | "mais" | "jornada" | "carteira";
 
 type Par = { linha: React.ReactNode; cheio: React.ReactNode };
 
@@ -49,6 +49,22 @@ const PARES: Record<IconeBarraNome, Par> = {
           d={`${FOLHA}M6.9 12.5h2.2v2.1H6.9zM10.9 12.5h2.2v2.1h-2.2zM14.9 12.5h2.2v2.1h-2.2zM6.9 16h2.2v2.1H6.9zM10.9 16h2.2v2.1h-2.2z`}
         />
         <path className="tyib__traco" d="M8 3.2v3.1M16 3.2v3.1" />
+      </>
+    ),
+  },
+  // a carteira: o Financeiro na barra do celular (17/11/2026)
+  carteira: {
+    linha: (
+      <>
+        <path d="M5.5 6h12a1.5 1.5 0 0 1 1.5 1.5V9" />
+        <path d="M3.5 8a2 2 0 0 1 2-2M3.5 8v10a2 2 0 0 0 2 2h13.5a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-13.5a2 2 0 0 1-2-2z" />
+        <path className="tyib__ponto" d="M16 14.5h.01" />
+      </>
+    ),
+    cheio: (
+      <>
+        <path d="M3.5 8a2 2 0 0 0 2 2h13.5a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H5.5a2 2 0 0 1-2-2z" />
+        <path className="tyib__traco" d="M5.5 6h12a1.5 1.5 0 0 1 1.5 1.5V9M3.5 8a2 2 0 0 1 2-2" />
       </>
     ),
   },

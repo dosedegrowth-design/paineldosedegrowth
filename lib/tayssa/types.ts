@@ -96,6 +96,21 @@ export type ClientServiceRow = {
   reviewed_by: string | null;
   reviewed_at: string | null;
   review_note: string | null;
+  /** a parte da Tayssa (%) da hora em que o atendimento fechou (17/11/2026); null = antigo, vale 70 */
+  pct_tayssa?: number | null;
+};
+
+/** Um pagamento de um atendimento (o sinal no Pix, o resto em dinheiro…) — 17/11/2026 */
+export type PagamentoRow = {
+  id: string;
+  client_service_id: string;
+  valor: number;
+  forma: "pix" | "dinheiro" | "cartao_credito" | "cartao_debito" | "outro";
+  origem: "sinal" | "atendimento" | "manual";
+  recebido_em: string;
+  nota: string | null;
+  created_by: string | null;
+  created_at: string;
 };
 
 /**
@@ -267,6 +282,12 @@ export type AppointmentRow = {
    * `service_id`.
    */
   servicos?: ServicoDoPedido[] | null;
+  /** valor combinado (o painel pode mudar); null = soma dos serviços ou o catálogo (17/11/2026) */
+  valor?: number | null;
+  /** forma de pagamento prevista (pix, dinheiro, cartao_credito, cartao_debito, outro) */
+  forma_pagamento?: string | null;
+  /** "site" (a cliente marcou) ou "painel" (a Tayssa marcou na agenda) */
+  origem?: "site" | "painel";
 };
 
 /** Um serviço de um pedido: nome, minutos que ocupa e valor (null = sem valor cadastrado). */

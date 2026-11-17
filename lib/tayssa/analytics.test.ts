@@ -16,6 +16,8 @@ test("o Analytics conta o site e a área da cliente, e fica fora do painel, do e
     "/tayssa/entrar/definir-senha",
     "/horario/0f1c9477-4caa-475d-b4d3-737fe1a24c12",
     "/tayssa/horario/abc/cartao",
+    "/relatorio/abcdefghijklmnopqrstuvwxyz0123456789ABCDEFG",
+    "/tayssa/relatorio/abc/pdf",
   ]) {
     assert.equal(foraDaAnalise(fora), true, fora);
   }

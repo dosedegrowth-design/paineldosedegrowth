@@ -14,6 +14,9 @@ import {
   serviceSubmissionSchema,
 } from "@/lib/tayssa/validation";
 import { nowInBusinessTz } from "@/lib/tayssa/format";
+import { getSettings } from "@/lib/tayssa/settings";
+import { registrarPagamentos } from "@/lib/tayssa/pagamentos";
+import { formaValida } from "@/lib/tayssa/financeiro";
 import { BusinessError, runAction, str } from "@/lib/tayssa/actions/_helpers";
 import type { ActionResult, ClientServiceRow, ServiceRow } from "@/lib/tayssa/types";
 
@@ -104,6 +107,10 @@ export async function adminAddServiceAction(
     });
     notInFuture(input.service_date);
     const service = await getService(input.service_id);
+    const forma = str(formData, "forma");
+    const recebido = str(formData, "recebido") === "sim";
+    if (recebido && !formaValida(forma)) throw new BusinessError("Escolha a forma de pagamento.", "forma");
+    if (recebido && !(input.amount && input.amount > 0)) throw new BusinessError("Informe o valor para registrar o pagamento.", "amount");
     const row = await registerVisit({
       adminId: admin.id,
       clientId: input.client_id,
@@ -113,6 +120,14 @@ export async function adminAddServiceAction(
       points: input.points_override,
       notes: input.notes,
     });
+    // pago na hora: o valor inteiro entra como recebido; senão fica pendente (Atendimentos realizados)
+    if (recebido && formaValida(forma) && input.amount) {
+      try {
+        await registrarPagamentos(row.id, [{ valor: input.amount, forma, origem: "atendimento" }], admin.id);
+      } catch (e) {
+        logServerError("services.adminAdd.pagamento", e);
+      }
+    }
     revalidatePath(ROUTES.admin, "layout");
     revalidatePath(ROUTES.vip, "layout");
     return { id: row.id };
@@ -144,6 +159,8 @@ export async function adminReviewServiceAction(input: {
       .update({
         status: decision === "approve" ? "approved" : "rejected",
         points,
+        // a divisão Tayssa/Larissa da hora em que ela confirmou (17/11/2026)
+        ...(decision === "approve" ? { pct_tayssa: (await getSettings()).financeiro.pct_tayssa } : {}),
         reviewed_by: admin.id,
         reviewed_at: new Date().toISOString(),
         review_note: parsed.note,

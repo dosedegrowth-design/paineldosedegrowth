@@ -12,7 +12,7 @@
  */
 import type { IconeNome } from "@/components/tayssa/admin/icons";
 
-export const MANUAL_ATUALIZADO_EM = "2026-11-16";
+export const MANUAL_ATUALIZADO_EM = "2026-11-17";
 
 export type ImagemDoManual = {
   src: string;
@@ -24,9 +24,15 @@ export type ImagemDoManual = {
   larga?: boolean;
 };
 
+import { type LadoDoManual } from "./manual-lados.ts";
+
+export { LADOS, type LadoDoManual } from "./manual-lados.ts";
+
 export type TopicoDoManual = {
   id: string;
   titulo: string;
+  /** quando foge do lado da categoria (ex.: no painel, um tópico que explica o que a cliente faz) */
+  lado?: LadoDoManual;
   /** o caminho até a tela: ["Agenda", "Pedidos de horário"] */
   onde?: string[];
   texto?: string;
@@ -37,12 +43,18 @@ export type TopicoDoManual = {
 
 export type CategoriaDoManual = {
   letra: string;
+  lado: "painel" | "cliente";
   id: string;
   titulo: string;
   resumo: string;
   icone: IconeNome;
   topicos: TopicoDoManual[];
 };
+
+/** O lado de um tópico: o dele, se tiver; senão, o da categoria. */
+export function ladoDoTopico(t: TopicoDoManual, c: CategoriaDoManual): LadoDoManual {
+  return t.lado ?? c.lado;
+}
 
 /** O texto que a busca "O que você quer fazer?" procura (sem as marcas de negrito). */
 export function textoDaBusca(t: TopicoDoManual): string {
@@ -55,6 +67,7 @@ export function textoDaBusca(t: TopicoDoManual): string {
 export const MANUAL: CategoriaDoManual[] = [
   {
     letra: "A",
+    lado: "painel",
     id: "acesso",
     titulo: "Acesso e navegação",
     resumo: "Entrar no painel, usar o menu, buscar uma tela e voltar ao início.",
@@ -75,13 +88,13 @@ export const MANUAL: CategoriaDoManual[] = [
         id: "menu",
         titulo: "Usar o menu",
         texto:
-          "No computador, o menu fica à esquerda, em quatro grupos: *Atendimento* (Visão geral, Agenda, Atendimentos, Clientes, Relatórios), *Relacionamento* (Indicações, Benefícios, Aniversários), *Marca* (Mídia) e *Ajustes* (Configurações, Manual do painel). No celular, a barra de baixo tem *Início*, *Agenda*, *Clientes*, *Benefícios* e *Mais*; o *Mais* abre o menu inteiro.",
-        dica: "Um número ao lado de um item do menu quer dizer que tem coisa esperando você ali: pedido de horário, cliente nova, atendimento ou benefício para conferir.",
+          "No computador, o menu fica à esquerda, em quatro grupos: *Atendimento* (Visão geral, Agenda, Atendimentos realizados, Clientes, Financeiro, Relatórios), *Relacionamento* (Indicações, Benefícios, Aniversários), *Marca* (Mídia) e *Ajustes* (Configurações, Manual do painel). No celular, a barra de atalhos no alto tem *Início*, *Agenda*, *Clientes*, *Financeiro* e *Mais*; o *Mais* abre o menu inteiro.",
+        dica: "Um número ao lado de um item do menu quer dizer que tem coisa esperando você ali: pedido de horário, cliente nova, atendimento ou benefício para conferir. No celular, o número no *Mais* avisa o que espera dentro do menu (benefícios, indicações).",
         imagem: {
           src: "/tayssa/manual/menu.webp",
           alt: "Menu do painel aberto no celular, com Atendimento, Relacionamento, Marca e Ajustes",
           largura: 780,
-          altura: 1380,
+          altura: 1500,
           legenda: "No celular, o Mais abre o menu inteiro.",
         },
       },
@@ -89,7 +102,7 @@ export const MANUAL: CategoriaDoManual[] = [
         id: "inicio",
         titulo: "Voltar para o início",
         passos: [
-          "Toque em *Visão geral* no menu (no celular, em *Início* na barra de baixo).",
+          "Toque em *Visão geral* no menu (no celular, em *Início* na barra de atalhos no alto).",
           "Ou toque no nome *Tayssa Farias* no alto do menu.",
         ],
       },
@@ -129,6 +142,7 @@ export const MANUAL: CategoriaDoManual[] = [
   },
   {
     letra: "B",
+    lado: "painel",
     id: "servicos",
     titulo: "Serviços",
     resumo: "Criar e editar serviços, valor, tempo, manutenção, pontos, capa e tirar do site.",
@@ -201,6 +215,7 @@ export const MANUAL: CategoriaDoManual[] = [
   },
   {
     letra: "C",
+    lado: "painel",
     id: "agenda",
     titulo: "Agenda e agendamentos",
     resumo: "Ver a semana, conferir pedidos e comprovantes, confirmar, remarcar, cancelar e abrir novos dias.",
@@ -208,12 +223,14 @@ export const MANUAL: CategoriaDoManual[] = [
     topicos: [
       {
         id: "como-chega",
+        lado: "ambos",
         titulo: "Como um horário chega até você",
         texto:
           "A cliente escolhe o serviço, o dia e a hora no site, cria a conta (ou entra) e o pedido aparece na sua *Agenda* como *Aguardando sinal*. Ela paga o sinal no Pix e anexa o comprovante no site: o pedido vira *Comprovante enviado* e sobe para o topo da lista. Pedido sem comprovante cai sozinho depois de 24 horas e o horário volta para a agenda; pedido com comprovante nunca cai sozinho, espera você.",
       },
       {
         id: "varios-servicos",
+        lado: "ambos",
         titulo: "Pedido com mais de um serviço",
         texto:
           "A cliente pode marcar vários serviços no mesmo horário, um depois do outro (ex.: Manutenção de cílios + Design de sobrancelhas). Chega *um pedido só*, com os nomes juntos, o tempo somado (a agenda segura o tempo todo) e *um sinal só*. Você confirma uma vez e, no fim, marca *Realizado* uma vez: os pontos de todos os serviços entram juntos, num atendimento e num carimbo do cartão.",
@@ -254,42 +271,86 @@ export const MANUAL: CategoriaDoManual[] = [
         ],
       },
       {
-        id: "semana",
-        titulo: "Ver a semana e fechar um horário ou um dia",
-        onde: ["Agenda", "Semana"],
+        id: "ver-agenda",
+        titulo: "Ver a agenda: dia, semana e mês",
+        onde: ["Agenda"],
         passos: [
-          "Em *Semana*, use as setas para mudar de semana e *Hoje* para voltar.",
-          "Toque num horário *Livre* para fechar (ex.: compromisso). Toque num *Fechado* para abrir de novo.",
-          "Folga ou viagem: toque em *Fechar dia* no alto do dia. *Abrir dia* devolve.",
+          "Abra *Agenda*. No alto, escolha *Dia*, *Semana* ou *Mês* (o painel lembra a última que você usou neste aparelho).",
+          "*Dia*: a linha do tempo com cada horário, os livres (“Livre · tocar para marcar”) e os fechados. A fita com os dias da semana leva a outro dia com um toque.",
+          "*Semana*: um cartão por dia, com os agendamentos e quantos horários estão livres. *Mês*: o calendário com um pontinho por horário; toque no dia para abrir.",
+          "As setas mudam de dia, semana ou mês; *Hoje* volta para hoje; o calendário ao lado leva a qualquer data.",
         ],
-        dica: "O horário fechado aparece riscado para a cliente, ela não consegue marcar. Toque num horário com cliente para abrir a ficha dela.",
+        dica: "As cores: dourado é *Agendado* (pedido esperando o sinal), vinho é *Confirmado*, rosa cheio é *Em atendimento* (está acontecendo agora), verde é *Concluído*, cinza riscado é *Cancelado* e vermelho é *Não compareceu*.",
         imagem: {
-          src: "/tayssa/manual/semana.webp",
-          alt: "Grade da semana na Agenda com horários livres, pedidos e confirmados",
-          largura: 764,
-          altura: 1240,
-          legenda: "Na Semana, um toque fecha ou abre um horário livre.",
+          src: "/tayssa/manual/agenda-dia.webp",
+          alt: "Agenda do dia no celular com a fita da semana, horários livres e um agendamento",
+          largura: 780,
+          altura: 1500,
+          legenda: "O dia: livres para tocar e marcar, e cada agendamento na sua cor.",
+        },
+      },
+      {
+        id: "marcar",
+        titulo: "Marcar um horário pela agenda",
+        onde: ["Agenda", "Novo agendamento"],
+        passos: [
+          "Toque num horário *Livre* e em *Marcar um horário aqui* (ou em *Novo agendamento* no alto).",
+          "Em *Cliente*, escreva o nome ou o WhatsApp e toque nela. Cliente nova? Toque em *+ Cliente nova* e preencha nome e WhatsApp.",
+          "Escolha o serviço (pode mais de um), confira *Data* e *Horário* (os horários livres aparecem embaixo) e, se precisar, a *Duração*, o *Valor* e a *Forma de pagamento*.",
+          "Toque em *Marcar horário*. Marcado por você, o horário já entra *Confirmado*.",
+        ],
+        dica: "Duração e valor vazios usam a soma dos serviços. Se o WhatsApp digitado já é de uma cliente, o painel avisa e usa o cadastro dela (nada de cadastro duplicado). Se o horário cruzar com outro, o painel avisa e não marca.",
+        imagem: {
+          src: "/tayssa/manual/novo-agendamento.webp",
+          alt: "Formulário Novo agendamento com a cliente escolhida, os serviços, a data e os horários livres",
+          largura: 780,
+          altura: 1500,
+          legenda: "Novo agendamento: cliente, serviço, dia e horário.",
+        },
+      },
+      {
+        id: "detalhes",
+        titulo: "Ver um agendamento e o que dá para fazer",
+        onde: ["Agenda", "o agendamento"],
+        passos: [
+          "Toque no agendamento: abre quando, serviço, valor, sinal, observações, o WhatsApp dela e *Ver ficha*.",
+          "Embaixo ficam só as ações que valem agora: *Confirmar* (pedido), *Editar ou reagendar*, *Mensagem de confirmação*, *Cancelar* ou *Recusar*; depois do horário, *Realizado* e *Não compareceu*.",
+        ],
+        imagem: {
+          src: "/tayssa/manual/detalhes.webp",
+          alt: "Detalhes de um agendamento confirmado com as ações Realizado, Editar ou reagendar, Não compareceu e Cancelar",
+          largura: 780,
+          altura: 1500,
+          legenda: "Os detalhes e as ações do agendamento.",
         },
       },
       {
         id: "fechar-atendimento",
-        titulo: "Depois do atendimento: Realizado ou Não compareceu",
-        onde: ["Agenda", "Hoje ou Para fechar"],
+        titulo: "Depois do atendimento: Realizado (com o pagamento) ou Não compareceu",
+        onde: ["Agenda", "o agendamento", "Realizado"],
         passos: [
-          "Passado o horário, o pedido mostra *Realizado* e *Não compareceu* (em *Hoje* ou, nos dias seguintes, em *Para fechar*).",
-          "Toque em *Realizado*. Se fez outro serviço ou quer outros pontos, escreva em *Pontos desta visita*; vazio usa os pontos do serviço. Toque em *Confirmar*.",
-          "Pronto: o atendimento entra no histórico dela com os pontos e o carimbo do cartão.",
+          "Passado o horário, toque no agendamento e em *Realizado* (nos dias seguintes ele também fica em *Para fechar*).",
+          "Confira o *Valor cobrado* e a *Forma de pagamento*. Se ela pagou o sinal, o painel já conta os R$ 50 no Pix.",
+          "Em *O restante*, escolha *Recebi agora* ou *Fica pendente* e toque em *Confirmar realizado*.",
+          "Pronto: entra em Atendimentos realizados e no Financeiro, com os pontos, o carimbo do cartão e a divisão Tayssa/Larissa.",
         ],
-        dica: "*Não compareceu* não soma nada para a cliente.",
+        dica: "*Não compareceu* não soma nada (nem ponto, nem faturamento). O que ficou pendente você marca como pago depois, em *Atendimentos realizados* ou no *Financeiro*.",
+        imagem: {
+          src: "/tayssa/manual/realizado.webp",
+          alt: "Formulário Realizado com o valor cobrado, a forma de pagamento e Recebi agora ou Fica pendente",
+          largura: 780,
+          altura: 1500,
+          legenda: "Realizado: o valor, a forma e se recebeu agora.",
+        },
       },
       {
         id: "corrigir-data",
-        titulo: "Remarcar ou corrigir a data de um horário",
-        onde: ["Agenda", "o horário", "Corrigir data"],
+        titulo: "Reagendar, editar ou corrigir a data",
+        onde: ["Agenda", "o agendamento", "Editar ou reagendar"],
         passos: [
-          "Ache o horário na *Agenda* (pedido, confirmado ou para fechar) e toque em *Corrigir data*.",
-          "Escolha o *Dia certo* e a *Hora* e toque em *Gravar a data*.",
-          "É o mesmo pedido que muda de lugar: o serviço, o valor, a cliente e o comprovante continuam. Se o horário novo já tem outra cliente, o painel avisa.",
+          "Horário em aberto: toque no agendamento e em *Editar ou reagendar*. Mude dia, hora, serviço, duração, valor, forma ou observação e toque em *Salvar alterações*.",
+          "Já realizado com o dia errado: toque em *Corrigir data*, escolha o *Dia certo* e toque em *Gravar a data*.",
+          "É o mesmo agendamento que muda de lugar: a cliente e o comprovante continuam. Se o horário novo cruzar com outra cliente, o painel avisa.",
         ],
         dica: "Atendimento que entrou com o dia errado no passado (ex.: marcado para dezembro, mas feito antes): corrija a data para o dia em que ela veio. Ele vai para *Para fechar*, e aí é só tocar em *Realizado*.",
         imagem: {
@@ -320,10 +381,14 @@ export const MANUAL: CategoriaDoManual[] = [
         ],
       },
       {
-        id: "marcar-por-ela",
-        titulo: "Uma cliente pediu horário pelo WhatsApp",
-        texto:
-          "O painel não marca horário no lugar da cliente. Mande o link do site para ela marcar (leva 1 minuto e já sai com o sinal). Se ela não conseguir, feche o horário na *Semana* para ninguém pegar e, depois do atendimento, registre em *Clientes* › a ficha › *Atendimentos* › *Registrar atendimento confirmado*.",
+        id: "fechar-horario",
+        titulo: "Fechar um horário ou dias (folga, compromisso)",
+        onde: ["Agenda", "Dia"],
+        passos: [
+          "No *Dia*, toque num horário *Livre* e em *Fechar este horário (a cliente não marca)*. Para abrir de novo, toque no *Fechado* e em *Abrir este horário*.",
+          "Dia inteiro (folga, viagem): feche os horários do dia, ou tire o dia em *Configurações* › *Agenda* › *Dias e horários*.",
+        ],
+        dica: "Fechado aparece riscado para a cliente: ela vê, mas não consegue marcar. Você ainda pode marcar nele pelo *Novo agendamento*.",
       },
       {
         id: "novos-dias",
@@ -339,6 +404,7 @@ export const MANUAL: CategoriaDoManual[] = [
       },
       {
         id: "dezembro",
+        lado: "ambos",
         titulo: "Dezembro: horário especial",
         texto:
           "Em dezembro a agenda abre das 7h às 21h de segunda a sábado e das 7h às 17h no domingo. O primeiro e o último horário de cada dia têm R$ 30 a mais. No dia 24, das 6h às 15h, todo horário tem R$ 30 a mais. Nos dias 25, 30 e 31 não tem atendimento. A taxa aparece para a cliente no site, na mensagem e no pedido, e é uma só por pedido (mesmo com vários serviços). Para mudar essas regras, fale com a DDG.",
@@ -347,6 +413,7 @@ export const MANUAL: CategoriaDoManual[] = [
   },
   {
     letra: "D",
+    lado: "painel",
     id: "clientes",
     titulo: "Clientes",
     resumo: "Achar uma cliente, ver o histórico, responder as novas, editar dados e acompanhar quem sumiu.",
@@ -358,7 +425,8 @@ export const MANUAL: CategoriaDoManual[] = [
         onde: ["Clientes"],
         passos: [
           "Abra *Clientes* e digite em *Buscar por nome, e-mail ou telefone* (pode ser sem acento e o telefone de qualquer jeito).",
-          "Ou use os filtros: *Todas*, *Novas clientes*, *Da agenda*, *VIP*, *Prontas para VIP*, *Com pendência*, *Inativas*.",
+          "Ou use os filtros: *Todas*, *Novas clientes*, *Da agenda*, *VIP*, *Prontas para VIP*, *Com pendência*, *Recorrentes* (3 atendimentos ou mais) e *Sem voltar há tempo*.",
+          "Cada cliente mostra quantos atendimentos fez, o total gasto, o último atendimento e de quanto em quanto tempo ela volta.",
           "Toque no nome para abrir a ficha.",
         ],
       },
@@ -367,7 +435,7 @@ export const MANUAL: CategoriaDoManual[] = [
         titulo: "O que tem na ficha da cliente",
         onde: ["Clientes", "a ficha"],
         texto:
-          "No alto, os números (pontos, atendimentos, indicações, benefícios, aniversário, pendências). Depois: *Quem é ela*, *Acesso e VIP*, *Pontos, marcos e VIP*, *Aniversário*, *Atendimentos* (o histórico de procedimentos), *Benefícios*, *Indicações feitas por ela*, *Dados* e o *Histórico de ações*. O botão *WhatsApp* no alto abre a conversa com ela.",
+          "No alto, os números (pontos, atendimentos, indicações, benefícios, aniversário, pendências). Depois: *Quem é ela*, *Acesso e VIP*, *Pontos, marcos e VIP*, *Aniversário*, *Resumo do relacionamento* (atendimentos, primeira e última visita, frequência, total gasto, valores pagos, horários à frente, cancelados e faltas), *Atendimentos* (cada um com o pagamento), *Benefícios*, *Indicações feitas por ela*, *Dados* e o *Histórico de ações*. O botão *WhatsApp* no alto abre a conversa com ela.",
       },
       {
         id: "novas",
@@ -414,7 +482,7 @@ export const MANUAL: CategoriaDoManual[] = [
         onde: ["Clientes", "a ficha", "Atendimentos"],
         passos: [
           "Na ficha, em *Atendimentos*, vá em *Registrar atendimento confirmado*.",
-          "Escolha o *Serviço* e a *Data* (hoje ou antes), e o valor se quiser. *Pontos* vazio usa os do serviço.",
+          "Escolha o *Serviço* e a *Data* (hoje ou antes), o *Valor*, a *Forma de pagamento* e se foi *Recebido* ou fica *Pendente*. *Pontos* vazio usa os do serviço.",
           "Toque em *Registrar atendimento confirmado*: entra no histórico com os pontos e o carimbo.",
         ],
       },
@@ -448,6 +516,7 @@ export const MANUAL: CategoriaDoManual[] = [
   },
   {
     letra: "E",
+    lado: "painel",
     id: "mensagens",
     titulo: "Mensagens e avisos",
     resumo: "Ligar os avisos no celular, mandar as mensagens prontas e acompanhar as novidades.",
@@ -490,6 +559,7 @@ export const MANUAL: CategoriaDoManual[] = [
   },
   {
     letra: "F",
+    lado: "painel",
     id: "beneficios",
     titulo: "Benefícios, pontos e recorrência",
     resumo: "Como os pontos e o VIP funcionam, liberar presentes, corrigir pontos e as regras de tempo.",
@@ -497,6 +567,7 @@ export const MANUAL: CategoriaDoManual[] = [
     topicos: [
       {
         id: "como-funciona",
+        lado: "ambos",
         titulo: "Como funciona (o resumo)",
         texto:
           "Cada atendimento *Realizado* dá os pontos do serviço e um carimbo no cartão. O cartão cheio e os marcos de pontos geram presentes, mas *nada é liberado sozinho*: o sistema avisa e você valida. O VIP também é sempre decisão sua: o painel só mostra quem completou a sequência (em *Prontas para VIP*).",
@@ -585,6 +656,7 @@ export const MANUAL: CategoriaDoManual[] = [
   },
   {
     letra: "G",
+    lado: "painel",
     id: "site",
     titulo: "Site e configurações gerais",
     resumo: "Ver o site, fotos e vídeos, Pix, endereço e as opções que mudam o que a cliente vê.",
@@ -641,9 +713,10 @@ export const MANUAL: CategoriaDoManual[] = [
   },
   {
     letra: "H",
+    lado: "painel",
     id: "relatorios",
     titulo: "Relatórios e visão geral",
-    resumo: "Ler a visão geral e baixar os comprovantes do mês para mandar à Larissa.",
+    resumo: "A visão geral do dia, o relatório de qualquer período, o PDF e o link para a Larissa.",
     icone: "relatorios",
     topicos: [
       {
@@ -651,21 +724,58 @@ export const MANUAL: CategoriaDoManual[] = [
         titulo: "A Visão geral",
         onde: ["Visão geral"],
         texto:
-          "É a tela de abrir o dia: o que espera você, os *Próximos horários* (com *Confirmar* nos pedidos), as *Novas clientes*, quem está *Pronta para VIP*, os aniversários da semana, quem sumiu e os últimos movimentos. Cada cartão de número leva para a tela certa.",
+          "É a tela de abrir o dia. No alto, o *Financeiro* do período (*Hoje*, *Semana*, *Mês* ou as datas que quiser): o faturamento total em destaque, os atendimentos realizados, o ticket médio, o valor recebido e o pendente. Embaixo, os gráficos: *Faturamento por dia* (uma coluna por dia; toque numa coluna para ver o valor e quantos atendimentos teve), *Como entrou o dinheiro* (a rosca com Pix, dinheiro, cartão e o que ainda falta receber, e no meio quanto já entrou), *Serviços mais feitos* e a *Divisão* Tayssa/Larissa, com a barrinha do quanto cada uma já recebeu. Depois, o que espera você, os *Próximos horários*, as *Novas clientes*, quem está *Pronta para VIP*, os aniversários, quem sumiu e os últimos movimentos.",
         imagem: {
           src: "/tayssa/manual/visao-geral.webp",
-          alt: "Visão geral do painel com o que espera você e os cartões de números",
+          alt: "Visão geral com o faturamento do mês em destaque e o gráfico de colunas do faturamento por dia",
           largura: 780,
-          altura: 1688,
-          legenda: "A Visão geral: o que espera você e os números do dia.",
+          altura: 1500,
+          legenda: "A Visão geral abre com o financeiro e os gráficos do período.",
         },
+      },
+      {
+        id: "relatorio-periodo",
+        titulo: "O relatório de um período",
+        onde: ["Relatórios"],
+        passos: [
+          "Abra *Relatórios* e escolha *Hoje*, *Esta semana*, *Este mês*, *Mês anterior* ou *Escolher as datas* (para um dia só, use a mesma data em De e Até).",
+          "Tudo muda junto: *Resumo de atendimentos* (atendimentos, clientes, ticket médio, serviços), *Resumo financeiro* (Pix, dinheiro, cartão, outras formas, pendente e total recebido), *Divisão* e o *Detalhamento* de cada atendimento.",
+        ],
+        imagem: {
+          src: "/tayssa/manual/relatorios.webp",
+          alt: "Tela de Relatórios com o período, o fechamento e os botões de PDF e WhatsApp",
+          largura: 780,
+          altura: 1500,
+          legenda: "Relatórios: escolha o período e feche.",
+        },
+      },
+      {
+        id: "pdf",
+        titulo: "Baixar o relatório em PDF",
+        onde: ["Relatórios", "Fechamento do período"],
+        passos: [
+          "Com o período escolhido, toque em *Baixar relatório em PDF*.",
+          "Vem um PDF com o período, os atendimentos, o faturamento, as formas de pagamento, a divisão e o detalhamento (só o primeiro nome e a inicial da cliente).",
+        ],
+        dica: "No iPhone, o PDF fica no app *Arquivos* (pasta Downloads); dá para mandar no WhatsApp como *Documento*.",
+      },
+      {
+        id: "enviar-larissa",
+        titulo: "Enviar o relatório para a Larissa",
+        onde: ["Relatórios", "Fechamento do período"],
+        passos: [
+          "Com o período escolhido, toque em *Enviar relatório para Larissa*.",
+          "O painel cria a página do relatório e mostra o link. Toque em *Abrir o WhatsApp da Larissa*: a conversa dela abre com a mensagem e o link prontos. Confira e envie.",
+          "Para tirar o acesso, em *Links enviados* toque em *Desativar link*. Quem abrir depois vê “Este link foi desativado”.",
+        ],
+        dica: "A página guarda os números da hora em que o link foi gerado (é o fechamento) e não mostra telefone nem sobrenome de cliente. O WhatsApp da Larissa fica em *Financeiro* › *Configurar a divisão* › *Para onde vai o relatório*.",
       },
       {
         id: "comprovantes",
         titulo: "Baixar os comprovantes do mês e mandar para a Larissa",
         onde: ["Relatórios"],
         passos: [
-          "Abra *Relatórios*. Ele abre no mês atual; *‹* e *›* mudam o mês.",
+          "Abra *Relatórios* e escolha o período (o mês já vem escolhido). Desça até *Comprovantes do sinal*.",
           "Toque em *Baixar os comprovantes (.zip)*: vem um arquivo só, com um comprovante por cliente, cada um com o dia, a hora e o nome no arquivo.",
           "Toque em *Baixar a planilha*: a lista com cliente, WhatsApp, serviço, dia, situação, sinal e valor (abre no Excel).",
           "No WhatsApp da Larissa, toque no clipe (ou no +), escolha *Documento* e mande os dois arquivos.",
@@ -675,16 +785,325 @@ export const MANUAL: CategoriaDoManual[] = [
           src: "/tayssa/manual/relatorios.webp",
           alt: "Tela de Relatórios com os números do mês, os passos e o botão Baixar os comprovantes",
           largura: 780,
-          altura: 1688,
+          altura: 1500,
           legenda: "Relatórios: os números do mês e os botões de baixar.",
         },
       },
+    ],
+  },
+  {
+    letra: "I",
+    lado: "painel",
+    id: "financeiro",
+    titulo: "Financeiro e atendimentos realizados",
+    resumo: "Quanto entrou, o que falta receber, a divisão 70/30 e quem já foi atendida.",
+    icone: "financeiro",
+    topicos: [
       {
-        id: "numeros",
-        titulo: "Os números dos relatórios",
-        onde: ["Relatórios"],
+        id: "atendimentos-realizados",
+        titulo: "Atendimentos realizados",
+        onde: ["Atendimentos realizados"],
+        passos: [
+          "Abra *Atendimentos realizados*: só entra atendimento que aconteceu (cancelamento e falta ficam de fora).",
+          "Escolha o período (*Hoje*, *Ontem*, *Esta semana*, *Este mês*, *Mês passado* ou as datas) e, se quiser, filtre por *Cliente*, *Serviço*, *Forma de pagamento* ou *Pagamento* (pago, pendente, parcial).",
+          "Cada linha mostra a data, a hora, a cliente, o serviço, o valor, como pagou e a situação. Pendente? Toque em *Recebi R$…* (ou *Recebi só uma parte*).",
+        ],
+        dica: "Toque no nome da cliente para ver o histórico dela: quantos atendimentos, primeira e última visita, frequência, serviços, valores pagos e total gasto.",
+        imagem: {
+          src: "/tayssa/manual/atendimentos.webp",
+          alt: "Atendimentos realizados com o período, os filtros e os números do mês",
+          largura: 780,
+          altura: 1500,
+          legenda: "Atendimentos realizados: período, filtros e o que entrou.",
+        },
+      },
+      {
+        id: "financeiro",
+        titulo: "O Financeiro",
+        onde: ["Financeiro"],
+        passos: [
+          "Abra *Financeiro* e escolha o período.",
+          "*Faturamento bruto* é o valor dos atendimentos realizados; *Valor recebido* é o que já entrou; *Valor pendente* é o que falta. Pendente nunca conta como recebido.",
+          "Os gráficos mostram o período de outro jeito: *Faturamento por dia* (toque numa coluna para ver o dia; *Ver em tabela* mostra todos os dias), *Como entrou o dinheiro* e *Serviços mais feitos*.",
+          "Em *Divisão*, a parte da Tayssa e a da Larissa, cada uma com o que já recebeu, o que tem a receber e a barrinha do quanto já entrou. Em *Por forma de pagamento*, quanto entrou em Pix, dinheiro e cartão.",
+          "Em *A receber*, os atendimentos com pagamento em aberto: toque em *Recebi R$…* quando entrar.",
+        ],
+        imagem: {
+          src: "/tayssa/manual/financeiro.webp",
+          alt: "Tela Financeiro com faturamento, recebido, pendente e a divisão Tayssa e Larissa",
+          largura: 780,
+          altura: 1500,
+          legenda: "O Financeiro do período.",
+        },
+      },
+      {
+        id: "divisao",
+        titulo: "A divisão 70/30 e como mudar",
+        onde: ["Financeiro", "Configurar a divisão"],
         texto:
-          "*Comprovantes*: quantas clientes anexaram o comprovante no mês. *Em sinais*: o total que entrou de sinal (comprovantes × valor do sinal). *Ainda para conferir*: comprovantes que você ainda não confirmou na Agenda. Pedido cancelado depois do Pix continua na lista, porque o dinheiro entrou.",
+          "Todo atendimento realizado se divide sozinho: hoje, 70% para a Tayssa e 30% para a Larissa (num serviço de R$ 100, R$ 70 e R$ 30; de R$ 200, R$ 140 e R$ 60). Você não precisa fazer conta.",
+        passos: [
+          "Em *Financeiro*, desça até *Configurar a divisão* e mude um dos campos (o outro acompanha: a soma é sempre 100%).",
+          "Toque em *Salvar a divisão*. Vale para os atendimentos que fecharem daqui para frente; os que já fecharam continuam com a divisão da época.",
+        ],
+        dica: "Toda mudança fica em *Histórico da divisão*, com a data e quem mudou.",
+      },
+    ],
+  },
+  // ------------------------------------------------------------------
+  // No site da cliente (17/11/2026): o que a cliente vê e faz, para a
+  // Tayssa responder as dúvidas com certeza. Cada parte do site, um cartão.
+  // ------------------------------------------------------------------
+  {
+    letra: "J",
+    lado: "cliente",
+    id: "cliente-site",
+    titulo: "O site",
+    resumo: "O que a cliente encontra no site e os botões que levam para a conta dela.",
+    icone: "site",
+    topicos: [
+      {
+        id: "partes-do-site",
+        titulo: "O que a cliente encontra no site",
+        onde: ["tayssafarias.com.br"],
+        texto:
+          "O site abre com o seu retrato e o botão *Agendar horário*. Descendo: *Cada serviço, um olhar* (cada técnica com a capa e o seu jeito de fazer), a lista de serviços (valor, tempo, manutenção e as fotos de cada um), *Cada técnica, de perto* (a galeria por categoria), a sua história, o Instagram, as avaliações (prints do WhatsApp), o VIP, a indicação e as informações de atendimento (bairro, horários, sinal e a regra de remarcar).",
+        dica: "Para ver exatamente o que ela vê, toque em *Ver o site* no alto do painel.",
+      },
+      {
+        id: "botoes-do-site",
+        titulo: "Os botões que levam a cliente para a conta",
+        onde: ["tayssafarias.com.br", "Menu"],
+        passos: [
+          "*Agendar* (em qualquer lugar do site) abre a folha de marcar horário, sem sair da página.",
+          "*Meus horários* leva para a conta dela: os horários marcados, o sinal e o histórico. Pede o WhatsApp e a senha.",
+          "*Área VIP* leva para o mesmo login; quem é VIP cai direto na área VIP.",
+          "*Indicar* abre a página de indicar uma amiga.",
+        ],
+        dica: "Quando uma cliente perguntar “onde eu vejo o meu horário?”, a resposta é *Meus horários*, no alto do site (no celular, também no menu).",
+      },
+    ],
+  },
+  {
+    letra: "K",
+    lado: "cliente",
+    id: "cliente-agendar",
+    titulo: "Agendar pelo site",
+    resumo: "Como a cliente escolhe o serviço, o dia e o horário, cria a conta e marca.",
+    icone: "agenda",
+    topicos: [
+      {
+        id: "como-marca",
+        titulo: "Como a cliente marca um horário",
+        onde: ["Site", "Agendar"],
+        passos: [
+          "Ela toca em *Agendar* e abre a folha *Seu horário com a Tayssa*.",
+          "Escolhe o serviço: três aparecem primeiro e *Mais serviços* mostra o resto. Na manutenção, o site pergunta de qual volume é.",
+          "Escolhe o dia na fita de dias (os botões de mês levam direto ao mês) e toca em *Escolher horário*. Aparecem os horários em que o serviço cabe; ocupado e fechado aparecem riscados.",
+          "Toca em *Continuar*. Em *Quase lá*: se já entrou neste celular, aparece *Agendando como* com o nome dela e é só tocar em *Agendar*. Se não, ela cria a conta ali mesmo (*Criar conta*: nome, como quer ser chamada, WhatsApp e senha) ou entra (*Já tenho conta*: WhatsApp ou e-mail e senha).",
+          "Aparece *Horário reservado*, com o sinal para pagar. Na sua Agenda chega o pedido *Aguardando sinal* (e o aviso no celular, se estiver ligado).",
+        ],
+        dica: "Se ela disser que um horário “sumiu”: ou outra cliente marcou, ou você fechou, ou o serviço dela é longo e não cabe ali. Riscado quer dizer ocupado ou fechado.",
+      },
+      {
+        id: "varios-servicos-site",
+        titulo: "Marcar mais de um serviço no mesmo horário",
+        onde: ["Site", "Agendar", "Adicionar outro serviço"],
+        passos: [
+          "Depois do primeiro serviço, ela toca em *Adicionar outro serviço* (no mesmo horário, com um sinal só).",
+          "Cada serviço vira uma linha com *Tirar*, e embaixo aparece o *Total*, com o valor e o tempo somados. Cabem até 5 serviços.",
+          "O horário precisa caber todos juntos. Se não couber mais, o site pede outro horário.",
+        ],
+        dica: "No painel chega um pedido só, com os nomes juntos, o tempo somado e um sinal só.",
+        imagem: {
+          src: "/tayssa/manual/folha-varios.webp",
+          alt: "Folha de agendar do site com dois serviços escolhidos, o total e o botão Adicionar outro serviço",
+          largura: 780,
+          altura: 1500,
+          legenda: "No site: dois serviços, o total e um sinal só.",
+        },
+      },
+      {
+        id: "dezembro-site",
+        titulo: "Dezembro: o que a cliente vê",
+        onde: ["Site", "Agendar"],
+        texto:
+          "Em dezembro, os horários com taxa aparecem com *+R$ 30* e a folha avisa que é horário especial de dezembro. O valor com a taxa aparece no resumo, na mensagem do WhatsApp e no cartão do horário. A taxa é uma só por pedido, mesmo com vários serviços.",
+      },
+    ],
+  },
+  {
+    letra: "L",
+    lado: "cliente",
+    id: "cliente-sinal",
+    titulo: "Sinal e comprovante",
+    resumo: "O Pix do sinal, o comprovante, o aviso no WhatsApp e o prazo de 24 horas.",
+    icone: "financeiro",
+    topicos: [
+      {
+        id: "pagar-sinal",
+        titulo: "Como a cliente paga o sinal e avisa você",
+        onde: ["Site", "Horário reservado"],
+        texto: "Depois de marcar (e também em *Meus horários*), aparecem três passos:",
+        passos: [
+          "*Pague o sinal no Pix*: ela toca em *Copiar código Pix* e cola no app do banco, em Pix copia e cola. O valor já vai junto, e o site mostra em nome de quem o Pix sai.",
+          "*Anexe o comprovante*: ela toca em *Anexar comprovante* e escolhe o print ou o PDF.",
+          "*Avise a Tayssa*: ela toca em *Enviar no WhatsApp* e o cartão do horário vai como foto, com a mensagem pronta (serviço, dia, horário, valor e sinal).",
+        ],
+        dica: "Não achou a sua conversa na lista do WhatsApp? Embaixo do botão tem *Não achou a Tayssa? Abrir a conversa dela*. No painel, o pedido dela sobe para o topo como *Comprovante enviado*.",
+      },
+      {
+        id: "prazo-sinal",
+        titulo: "O prazo de 24 horas, a tolerância e a regra de remarcar",
+        texto:
+          "O horário fica guardado por 24 horas esperando o comprovante. Sem comprovante nesse prazo, o pedido cai sozinho e o horário volta para a agenda. Com comprovante, nunca cai sozinho: espera você conferir e confirmar. No site ela lê a tolerância de atraso (10 minutos; passando disso, perde o sinal) e a regra de remarcar: com 48 horas ou mais de antecedência, o sinal vale para a nova data; com menos, ou se ela não vier, o sinal não é devolvido.",
+      },
+      {
+        id: "cartao-horario",
+        titulo: "O cartão do horário (a foto que vai no WhatsApp)",
+        texto:
+          "É a imagem do horário dela: serviço, dia, hora, valor, sinal e a situação do pedido (esperando o sinal, comprovante enviado ou confirmado). Quem abre o link vê só o horário, nunca nome nem telefone. Se o horário for apagado, o link mostra “Esse horário não está mais na agenda”.",
+      },
+    ],
+  },
+  {
+    letra: "M",
+    lado: "cliente",
+    id: "cliente-horarios",
+    titulo: "Meus agendamentos",
+    resumo: "Onde a cliente vê os horários dela, o confirmado com o endereço e como desmarca.",
+    icone: "atendimentos",
+    topicos: [
+      {
+        id: "onde-ve",
+        titulo: "Onde a cliente vê os horários dela",
+        onde: ["Site", "Meus horários"],
+        passos: [
+          "No site, ela toca em *Meus horários* e entra com o WhatsApp e a senha.",
+          "Abre *Meus agendamentos*, com três abas: *Realizados* (o que já foi feito), *Em aberto* (o que está marcado) e *Marcar* (marcar outro horário).",
+          "Em *Em aberto*, o pedido sem comprovante mostra os passos do sinal; com comprovante, mostra *Sinal pago e Tayssa avisada*.",
+          "Depois que você confirma, o cartão diz *Horário confirmado* e mostra o endereço (com *Abrir no mapa*), a sala, o interfone, a tolerância de atraso e o recado que você escreveu ao confirmar.",
+        ],
+        dica: "O endereço completo só aparece para quem tem horário confirmado. O site aberto mostra só o bairro.",
+      },
+      {
+        id: "desmarcar",
+        titulo: "Quando a cliente desmarca pelo site",
+        onde: ["Meus horários", "Em aberto", "Desmarcar"],
+        texto:
+          "Em *Em aberto*, ela pode tocar em *Desmarcar* e confirmar em *Sim, desmarcar*, até a hora do atendimento. O horário volta a ficar livre na sua agenda e o pedido aparece como cancelado. O sinal segue a regra de remarcar do site.",
+      },
+      {
+        id: "realizados-cliente",
+        titulo: "O que ela vê em Realizados",
+        onde: ["Meus horários", "Realizados"],
+        texto:
+          "Cada atendimento que você marcou como *Realizado* aparece riscado, com o check. Embaixo, apagados, os cancelados e os não confirmados.",
+      },
+    ],
+  },
+  {
+    letra: "N",
+    lado: "cliente",
+    id: "cliente-conta",
+    titulo: "Conta, cadastro e senha",
+    resumo: "Entrar, esqueceu a senha, o cadastro VIP pelo site e o perfil da cliente.",
+    icone: "clientes",
+    topicos: [
+      {
+        id: "entrar-cliente",
+        titulo: "Como a cliente entra na conta",
+        onde: ["Site", "Meus horários ou Área VIP"],
+        texto:
+          "Ela entra com o *WhatsApp ou e-mail* e a *Senha*. *Manter conectada neste celular* já vem marcado: a conta fica aberta no aparelho. Cada WhatsApp tem uma conta só.",
+      },
+      {
+        id: "esqueci-senha",
+        titulo: "Cliente esqueceu a senha",
+        onde: ["Clientes", "a ficha", "Acesso e VIP"],
+        lado: "ambos",
+        passos: [
+          "O site não tem “esqueci a senha”: ela fala com você.",
+          "Abra a ficha dela e, em *Acesso e VIP*, toque em *Gerar link de redefinição* (ou *Gerar link de acesso*, se ela nunca criou senha).",
+          "Mande o link pelo WhatsApp. Ela abre, cria a senha nova e entra.",
+        ],
+        dica: "O link vale uma vez, por 7 dias.",
+      },
+      {
+        id: "cadastro-vip",
+        titulo: "O cadastro VIP pelo site",
+        onde: ["Site", "Fazer meu cadastro VIP"],
+        lado: "ambos",
+        passos: [
+          "Ela toca em *Fazer meu cadastro VIP* (na parte VIP do site ou na tela de entrar).",
+          "Preenche em três passos: nome, como quer ser chamada e WhatsApp; a senha duas vezes; e, se quiser, o aniversário e como conheceu você.",
+          "A conta já nasce pronta para marcar horário. No fim, ela pode tocar em *Avisar a Tayssa no WhatsApp*.",
+          "Você recebe o aviso de cliente nova e decide: *Aprovar VIP* ou *Não aprovar* (veja “Cliente nova”, em Clientes).",
+        ],
+      },
+      {
+        id: "meu-perfil",
+        titulo: "Meu perfil: dados, senha e sair",
+        onde: ["Conta da cliente", "Meu perfil"],
+        texto:
+          "Em *Meu perfil*, ela muda os dados e toca em *Salvar*, troca a senha (*Senha atual*, *Nova senha* e *Repetir nova senha*) e toca em *Sair da minha conta* para sair.",
+      },
+    ],
+  },
+  {
+    letra: "O",
+    lado: "cliente",
+    id: "cliente-vip",
+    titulo: "Área VIP",
+    resumo: "O que a VIP vê: o cartão e os carimbos, os benefícios, a jornada e a indicação.",
+    icone: "beneficios",
+    topicos: [
+      {
+        id: "area-vip",
+        titulo: "O que a cliente VIP vê",
+        onde: ["Site", "Área VIP"],
+        texto:
+          "O início da área VIP mostra o nome dela, o cartão e os atalhos *Agendar*, *Meu cartão*, *Benefícios*, *Minha jornada*, *Indicar alguém* e *Meu perfil*. Quem ainda não é VIP vê essas telas trancadas, com a regra do VIP e quantos atendimentos da sequência já fez.",
+      },
+      {
+        id: "carimbos",
+        titulo: "O cartão e os carimbos",
+        onde: ["Área VIP", "Meu cartão"],
+        texto:
+          "Cada atendimento que você marca como *Realizado* vira um carimbo no cartão dela. No celular, ela raspa o carimbo com o dedo e vê os pontos (ou toca em *Revelar sem raspar*). Os pontos já valem desde a sua confirmação: raspar só mostra. A cada 8 visitas, o cartão cheio gera o presente, que espera a sua validação em *Benefícios*.",
+      },
+      {
+        id: "beneficios-cliente",
+        titulo: "Benefícios: como ela pede para usar",
+        onde: ["Área VIP", "Benefícios"],
+        lado: "ambos",
+        texto:
+          "O que você liberou fica em *Para usar*: ela toca em *Quero usar* e o pedido chega para você em *Benefícios*, no bloco *Solicitados*. O que ainda espera a sua validação aparece para ela em *Em validação*. Embaixo, *O seu caminho até o VIP* e *Como funciona* explicam as regras.",
+      },
+      {
+        id: "jornada",
+        titulo: "Minha jornada e o ranking",
+        onde: ["Área VIP", "Minha jornada"],
+        texto:
+          "Em *Minha jornada*, ela vê os pontos, os marcos e o ranking. No ranking aparece só o primeiro nome das outras clientes, nunca contato nem histórico.",
+      },
+      {
+        id: "indicar-cliente",
+        titulo: "Indicar uma amiga",
+        onde: ["Site", "Indicar"],
+        lado: "ambos",
+        passos: [
+          "No site (*Indicar*) ou na área VIP (*Indicar alguém*), ela preenche os dados de quem indica e envia.",
+          "A indicação chega para você em *Indicações*. Só vale depois que a indicada faz o atendimento, e o benefício de quem indicou é você quem libera.",
+        ],
+      },
+      {
+        id: "registrar-visita",
+        titulo: "Quando a cliente registra um atendimento",
+        onde: ["Área VIP", "Meu perfil", "Registrar visita"],
+        lado: "ambos",
+        texto:
+          "Em *Meu perfil*, a cliente VIP pode registrar um atendimento em *Registrar visita* (atendimento, data e, se quiser, o valor). Ele chega para você em *Atendimentos realizados*, nos registros das clientes, e só soma pontos depois que você confirma.",
       },
     ],
   },

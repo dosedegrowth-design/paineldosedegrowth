@@ -4,12 +4,19 @@ import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES, criteriosVip } from "@/lib/tayssa/config";
 import { regraVipLegivel } from "@/lib/tayssa/rules";
 import { renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
-import { dateShort, dateTime, dayLabel, dayMonth, hhmm, numero, weekdayShort } from "@/lib/tayssa/format";
+import { dateShort, dateTime, dayLabel, dayMonth, hhmm, numero, plural, weekdayShort } from "@/lib/tayssa/format";
 import { situacaoDoPedido } from "@/lib/tayssa/types";
 import { auditLabel } from "@/lib/tayssa/audit-labels";
 import { AdminBlock, AdminHeader, Empty, Stat } from "@/components/tayssa/admin/shell";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { TyLinkButton } from "@/components/tayssa/ui/button";
+import { agoraNaCasa, getFinanceiroDoPeriodo } from "@/lib/tayssa/queries/gestao";
+import { brl, parametrosDoPeriodo, resolverPeriodo } from "@/lib/tayssa/financeiro";
+import { PeriodoSeletor } from "@/components/tayssa/admin/periodo";
+import { DivisaoTabela } from "@/components/tayssa/admin/financeiro-resumo";
+import { BarrasDeServicos, ColunasDoPeriodo, RoscaDoPeriodo } from "@/components/tayssa/admin/graficos";
+import { fatiasDoPeriodo, serieDoPeriodo, servicosMaisFeitos } from "@/lib/tayssa/graficos";
+import { Conta } from "@/components/tayssa/ui/conta";
 
 /** "Hoje · qua, 11/11", "Amanhã · qui, 12/11" ou "sex, 13 de novembro". */
 function rotuloDoDia(iso: string): string {
@@ -41,9 +48,22 @@ function proximosPorDia(agenda: { today: string; todayList: AppointmentWithClien
 }
 
 /** "O que precisa da minha atenção?" — a primeira pergunta do admin. */
-export default async function AdminHome() {
+export default async function AdminHome({
+  searchParams,
+}: {
+  searchParams: Promise<{ periodo?: string; data?: string; mes?: string; de?: string; ate?: string }>;
+}) {
   const admin = await requireAdminPage();
-  const [o, settings, agenda] = await Promise.all([getAdminOverview(), getSettings(), getAgenda()]);
+  const params = await searchParams;
+  const hoje = agoraNaCasa().iso;
+  // o financeiro do período escolhido (Lucas e Tayssa, 17/11/2026: "ao abrir o painel, ver rapidamente")
+  const periodo = resolverPeriodo(params, hoje, "mes");
+  const [o, settings, agenda, fin] = await Promise.all([getAdminOverview(), getSettings(), getAgenda(), getFinanceiroDoPeriodo(periodo.de, periodo.ate)]);
+  const r = fin.resumo;
+  // os gráficos do período (Lucas, 17/11/2026: "o Dash tá mó seco"); num dia só, sem colunas
+  const serie = periodo.de === periodo.ate ? null : serieDoPeriodo(fin.lista, periodo.de, periodo.ate, hoje);
+  const rosca = fatiasDoPeriodo(r);
+  const larissa = settings.financeiro.larissa_nome || "Larissa";
   const dias = proximosPorDia(agenda);
   const needs = o.pendingSignups.length + o.appointmentsRequested + o.appointmentsToClose + o.pendingServices + o.referralsInProgress + o.benefitsToValidate + o.benefitsRequested + o.readyForVip.length;
 
@@ -55,6 +75,68 @@ export default async function AdminHome() {
         lead="Aprovações, indicações e benefícios só acontecem com a sua confirmação."
         actions={<TyLinkButton href={ROUTES.adminClientNew} size="sm" variant="solid" arrow>Nova cliente</TyLinkButton>}
       />
+
+      <section className="tya-sec tya-up" id="financeiro">
+        <div className="tya-card tyad-fin">
+          <div className="tya-head">
+            <h2>Financeiro</h2>
+            <TransitionLink href={`${ROUTES.adminFinanceiro}?${new URLSearchParams(parametrosDoPeriodo(periodo)).toString()}`} className="ty-link ty-link--caps">
+              Ver financeiro
+            </TransitionLink>
+          </div>
+          <PeriodoSeletor
+            base={ROUTES.admin}
+            periodo={periodo}
+            hoje={hoje}
+            ancora="#financeiro"
+            opcoes={[
+              { tipo: "hoje", rotulo: "Hoje" },
+              { tipo: "semana", rotulo: "Semana" },
+              { tipo: "mes", rotulo: "Mês" },
+            ]}
+          />
+          <div className="tyad-fin__resumo">
+            <div className="tyad-fin__hero">
+              <span>Faturamento total</span>
+              <strong>
+                <Conta valor={brl(r.bruto)} duracao={950} />
+              </strong>
+              <p>
+                <span>
+                  {r.atendimentos} {plural(r.atendimentos, "atendimento realizado", "atendimentos realizados")}
+                </span>
+                <span>Ticket médio {brl(r.ticketMedio)}</span>
+              </p>
+            </div>
+            <div className="tyad-fin__tiles">
+              <div>
+                <span>Valor recebido</span>
+                <b>
+                  <Conta valor={brl(r.recebido)} duracao={950} atraso={80} />
+                </b>
+              </div>
+              <div data-alerta={r.pendente > 0 || undefined}>
+                <span>Valor pendente</span>
+                <b>
+                  <Conta valor={brl(r.pendente)} duracao={950} atraso={160} />
+                </b>
+              </div>
+            </div>
+          </div>
+          <div className="tyad-fin__graficos">
+            {serie ? <ColunasDoPeriodo serie={serie} /> : null}
+            <RoscaDoPeriodo fatias={rosca.fatias} pctRecebido={rosca.pctRecebido} />
+            <BarrasDeServicos barras={servicosMaisFeitos(r.servicos)} />
+            <section className="tyg" aria-label="Divisão">
+              <p className="tyg__titulo">
+                <b>Divisão</b>
+                <span>a parte de cada uma no período</span>
+              </p>
+              <DivisaoTabela resumo={r} larissa={larissa} />
+            </section>
+          </div>
+        </div>
+      </section>
 
       <div className="tya-kpis tya-kpis--home">
         <Stat n={o.pendingSignups.length} label="Novas clientes" href={ROUTES.adminClients} alert={o.pendingSignups.length > 0} />

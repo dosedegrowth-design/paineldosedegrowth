@@ -14,8 +14,9 @@ export const GA_TAYSSA = "G-WCRGDB68B5";
  * - o painel (`/admin`): é a Tayssa trabalhando, não cliente chegando;
  * - o entrar (`/entrar`): o link de entrada leva o código de acesso no `?t=`;
  * - o folder do horário (`/horario/<id>`): o id do pedido vai no endereço.
+ * - o relatório da Larissa (`/relatorio/<token>`): o token vai no endereço.
  */
-export const FORA_DA_ANALISE = /^\/(?:tayssa\/)?(?:admin|entrar|horario)(?:\/|$)/;
+export const FORA_DA_ANALISE = /^\/(?:tayssa\/)?(?:admin|entrar|horario|relatorio)(?:\/|$)/;
 
 export function foraDaAnalise(caminho: string): boolean {
   return FORA_DA_ANALISE.test(caminho);

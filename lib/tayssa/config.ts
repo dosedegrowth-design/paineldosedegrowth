@@ -52,7 +52,10 @@ export const ROUTES = {
   adminClients: `${B}/admin/clientes`,
   adminClientNew: `${B}/admin/clientes/novo`,
   adminClient: (id: string) => `${B}/admin/clientes/${id}`,
+  /** Atendimentos realizados (17/11/2026: filtros, pagamento e o histórico de cada cliente) */
   adminServices: `${B}/admin/atendimentos`,
+  /** Financeiro: faturamento, recebido, pendente e a divisão Tayssa/Larissa (17/11/2026) */
+  adminFinanceiro: `${B}/admin/financeiro`,
   adminReferrals: `${B}/admin/indicacoes`,
   adminBenefits: `${B}/admin/beneficios`,
   adminBirthdays: `${B}/admin/aniversarios`,
@@ -65,6 +68,11 @@ export const ROUTES = {
   adminRelatorios: `${B}/admin/relatorios`,
   adminRelatorioComprovantes: (mes: string) => `${B}/admin/relatorios/comprovantes?mes=${mes}`,
   adminRelatorioPlanilha: (mes: string) => `${B}/admin/relatorios/planilha?mes=${mes}`,
+  /** o relatório do período em PDF (só a Tayssa logada) */
+  adminRelatorioPdf: (qs: string) => `${B}/admin/relatorios/pdf?${qs}`,
+  /** a página do relatório que vai para a Larissa: pública só com o token (revogável) */
+  relatorioCompartilhado: (token: string) => `${B}/relatorio/${token}`,
+  relatorioCompartilhadoPdf: (token: string) => `${B}/relatorio/${token}/pdf`,
   /** o manual do painel, sempre atualizado (16/11/2026) */
   adminManual: `${B}/admin/manual`,
 } as const;
@@ -299,6 +307,21 @@ export type Settings = {
   booking: BookingSettings;
   signup: SignupSettings;
   numeros: NumerosSettings;
+  financeiro: FinanceiroSettings;
+};
+
+/**
+ * Financeiro (17/11/2026): a divisão de cada atendimento entre a Tayssa e a
+ * Larissa (70/30 por padrão; a soma é sempre 100) e o WhatsApp da Larissa,
+ * para onde vai o relatório. Mudar a divisão vale para os próximos
+ * atendimentos: cada um guarda a da hora em que fechou.
+ */
+export type FinanceiroSettings = {
+  pct_tayssa: number;
+  pct_larissa: number;
+  larissa_nome: string;
+  /** só dígitos, com 55 */
+  larissa_whatsapp: string;
 };
 
 const HORAS_TER_SEX = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"];
@@ -398,5 +421,11 @@ export const DEFAULT_SETTINGS: Settings = {
     fonte: "Instagram Insights",
     itens: [],
     nao_seguidores: null,
+  },
+  financeiro: {
+    pct_tayssa: 70,
+    pct_larissa: 30,
+    larissa_nome: "Larissa",
+    larissa_whatsapp: "5511913216079",
   },
 };

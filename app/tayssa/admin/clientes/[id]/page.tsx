@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 import { requireAdminPage } from "@/lib/tayssa/auth/guards";
 import { getClientDetail } from "@/lib/tayssa/queries/admin";
+import { getHistoricoDaCliente } from "@/lib/tayssa/queries/gestao";
+import { SITUACAO_PAGAMENTO, brl, ehRecorrente, frequenciaLegivel } from "@/lib/tayssa/financeiro";
+import { PagamentoAcoes } from "@/components/tayssa/admin/pagamentos";
 import { getActiveServices, getPublicBenefits } from "@/lib/tayssa/queries/catalog";
 import { getSettings } from "@/lib/tayssa/settings";
 import { andamentoVipLegivel, regraVipLegivel, toISODate, validadeDoAniversario } from "@/lib/tayssa/rules";
@@ -83,12 +86,15 @@ const Selo = ({ tom, children }: { tom: string; children: React.ReactNode }) => 
 export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   await requireAdminPage();
   const { id } = await params;
-  const [d, services, benefits, settings] = await Promise.all([
+  const [d, services, benefits, settings, rel] = await Promise.all([
     getClientDetail(id),
     getActiveServices(),
     getPublicBenefits(),
     getSettings(),
+    getHistoricoDaCliente(id),
   ]);
+  // o pagamento de cada atendimento realizado (17/11/2026)
+  const pagamentoDe = new Map(rel.atendimentos.map((a) => [a.id, a]));
   if (!d) notFound();
   const { user, profile } = d.summary;
   const first = user.nickname ?? user.name.split(" ")[0];
@@ -493,6 +499,58 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
 
       {/* ---------- atendimentos ---------- */}
       <AdminBlock
+        title="Resumo do relacionamento"
+        aside={ehRecorrente(rel.historico.quantidade) ? <Selo tom="tya-pill--ok">recorrente</Selo> : null}
+      >
+        <dl className="tyar-hist">
+          <div>
+            <dt>Atendimentos realizados</dt>
+            <dd>{rel.historico.quantidade}</dd>
+          </div>
+          <div>
+            <dt>Primeira visita</dt>
+            <dd>{rel.historico.primeira ? dateShort(rel.historico.primeira) : "—"}</dd>
+          </div>
+          <div>
+            <dt>Última visita</dt>
+            <dd>{rel.historico.ultima ? dateShort(rel.historico.ultima) : "—"}</dd>
+          </div>
+          <div>
+            <dt>Frequência de retorno</dt>
+            <dd>{frequenciaLegivel(rel.historico.frequenciaDias, rel.historico.quantidade) || "—"}</dd>
+          </div>
+          <div>
+            <dt>Total gasto</dt>
+            <dd>{brl(rel.historico.totalGasto)}</dd>
+          </div>
+          <div>
+            <dt>Valores pagos</dt>
+            <dd>{brl(rel.historico.totalPago)}</dd>
+          </div>
+          <div>
+            <dt>Horários à frente</dt>
+            <dd>{rel.futuros.length}</dd>
+          </div>
+          <div>
+            <dt>Cancelados · faltas</dt>
+            <dd>
+              {rel.cancelados} · {rel.faltas}
+            </dd>
+          </div>
+        </dl>
+        {rel.historico.servicos.length ? (
+          <p className="tyar-hist__servicos">
+            <span className="tya-eyebrow">Serviços realizados</span>
+            {rel.historico.servicos.map((s) => (
+              <span key={s.nome} className="tya-pill tya-pill--quiet">
+                {s.nome} · {s.vezes}x
+              </span>
+            ))}
+          </p>
+        ) : null}
+      </AdminBlock>
+
+      <AdminBlock
         title="Atendimentos"
         aside={
           <span style={{ display: "inline-flex", gap: 6, flexWrap: "wrap" }}>
@@ -524,7 +582,24 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                         {s.notes ? <span className="tya-small" style={{ display: "block" }}>{s.notes}</span> : null}
                         <span className="tya-small" style={{ display: "block" }}>por {s.submitted_by === "client" ? "ela" : "você"}</span>
                       </td>
-                      <td className="tya-num">{s.amount != null ? currency(s.amount) : "—"}</td>
+                      <td className="tya-num">
+                        {s.amount != null ? currency(s.amount) : "—"}
+                        {pagamentoDe.get(s.id) ? (
+                          <span className="tya-small" style={{ display: "block" }}>
+                            {SITUACAO_PAGAMENTO[pagamentoDe.get(s.id)!.situacao]}
+                            {pagamentoDe.get(s.id)!.formas ? ` · ${pagamentoDe.get(s.id)!.formas}` : ""}
+                          </span>
+                        ) : null}
+                        {pagamentoDe.get(s.id) ? (
+                          <PagamentoAcoes
+                            atendimentoId={s.id}
+                            valor={pagamentoDe.get(s.id)!.valor}
+                            recebido={pagamentoDe.get(s.id)!.recebido}
+                            situacao={pagamentoDe.get(s.id)!.situacao}
+                            formaPadrao={pagamentoDe.get(s.id)!.pagamentos[0]?.forma ?? null}
+                          />
+                        ) : null}
+                      </td>
                       <td className="tya-num">{s.points}</td>
                       <td>
                         <Selo tom={SERVICO_TOM[s.status]}>{SERVICE_STATUS_LABEL[s.status]}</Selo>

@@ -23,9 +23,11 @@ const SECOES: { titulo: string; itens: Item[] }[] = [
     itens: [
       { href: ROUTES.admin, label: "Visão geral", icone: "visao", exato: true },
       { href: ROUTES.adminAgenda, label: "Agenda", icone: "agenda", chave: "appointments" },
-      { href: ROUTES.adminServices, label: "Atendimentos", icone: "atendimentos", chave: "services" },
+      { href: ROUTES.adminServices, label: "Atendimentos realizados", icone: "atendimentos", chave: "services" },
       { href: ROUTES.adminClients, label: "Clientes", icone: "clientes", chave: "signups" },
-      // os comprovantes do sinal do mês, para mandar para a Larissa (16/11/2026)
+      // faturado, recebido, pendente e a divisão Tayssa/Larissa (17/11/2026)
+      { href: ROUTES.adminFinanceiro, label: "Financeiro", icone: "financeiro" },
+      // o fechamento do período: PDF, link para a Larissa e os comprovantes do sinal
       { href: ROUTES.adminRelatorios, label: "Relatórios", icone: "relatorios" },
     ],
   },

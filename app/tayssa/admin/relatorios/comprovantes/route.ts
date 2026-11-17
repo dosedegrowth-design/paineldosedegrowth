@@ -3,7 +3,7 @@ import { vipDb, logServerError } from "@/lib/tayssa/db";
 import { getSessionUser } from "@/lib/tayssa/auth/session";
 import { COMPROVANTE_BUCKET } from "@/lib/tayssa/config";
 import { nowInBusinessTz } from "@/lib/tayssa/format";
-import { getComprovantesDoMes } from "@/lib/tayssa/queries/relatorios";
+import { getComprovantesDoMes, getComprovantesDoPeriodo } from "@/lib/tayssa/queries/relatorios";
 import { mesValido, montadorDeZip, nomesDosArquivos } from "@/lib/tayssa/relatorios";
 
 /**
@@ -21,11 +21,19 @@ const JUNTOS = 4;
 export async function GET(req: Request) {
   const user = await getSessionUser();
   if (!user || user.role !== "admin") return new NextResponse("Sem acesso.", { status: 403 });
-  const mes = new URL(req.url).searchParams.get("mes");
-  if (!mesValido(mes)) return new NextResponse("Mês inválido.", { status: 400 });
+  // o mês (?mes=2026-11) ou qualquer período do relatório (?de=2026-11-01&ate=2026-11-15)
+  const q = new URL(req.url).searchParams;
+  const iso = /^\d{4}-\d{2}-\d{2}$/;
+  const de = q.get("de");
+  const ate = q.get("ate");
+  const porPeriodo = Boolean(de && ate && iso.test(de) && iso.test(ate) && de <= ate);
+  const mes = q.get("mes");
+  if (!porPeriodo && !mesValido(mes)) return new NextResponse("Período inválido.", { status: 400 });
+  const nomeDoPeriodo = porPeriodo ? (de === ate ? de! : `${de}_a_${ate}`) : mes!;
+  const buscar = () => (porPeriodo ? getComprovantesDoPeriodo(de!, ate!) : getComprovantesDoMes(mes!));
   let lista;
   try {
-    lista = await getComprovantesDoMes(mes);
+    lista = await buscar();
   } catch (e) {
     logServerError("relatorios.zip", e);
     return new NextResponse("Não deu para juntar os comprovantes agora. Tente de novo.", { status: 502 });
@@ -77,7 +85,7 @@ export async function GET(req: Request) {
   return new NextResponse(corpo, {
     headers: {
       "content-type": "application/zip",
-      "content-disposition": `attachment; filename="comprovantes-sinal-${mes}.zip"`,
+      "content-disposition": `attachment; filename="comprovantes-sinal-${nomeDoPeriodo}.zip"`,
       "cache-control": "private, no-store",
       "x-robots-tag": "noindex",
     },

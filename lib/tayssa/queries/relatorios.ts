@@ -2,7 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { vipDb } from "@/lib/tayssa/db";
 import { COMPROVANTE_TIPOS } from "@/lib/tayssa/config";
-import { limitesDoMes, type ComprovanteDoRelatorio } from "@/lib/tayssa/relatorios";
+import { limitesDoMes, limitesDoPeriodo, type ComprovanteDoRelatorio } from "@/lib/tayssa/relatorios";
 import { somaDoPedido } from "@/lib/tayssa/agendar";
 import { formatBrPhone } from "@/lib/tayssa/phone";
 import { situacaoDoPedido, type AppointmentStatus, type ServicoDoPedido } from "@/lib/tayssa/types";
@@ -54,6 +54,16 @@ function valorDoPedido(a: Linha, catalogo: Catalogo): number | null {
  */
 export const getComprovantesDoMes = cache(async (mes: string): Promise<ComprovanteComArquivo[]> => {
   const { de, ate } = limitesDoMes(mes);
+  return comprovantesEntre(de, ate);
+});
+
+/** Os comprovantes anexados entre dois dias (inclusive), para os relatórios de qualquer período. */
+export const getComprovantesDoPeriodo = cache(async (deIso: string, ateIso: string): Promise<ComprovanteComArquivo[]> => {
+  const { de, ate } = limitesDoPeriodo(deIso, ateIso);
+  return comprovantesEntre(de, ate);
+});
+
+async function comprovantesEntre(de: string, ate: string): Promise<ComprovanteComArquivo[]> {
   const db = vipDb();
   const [pedidos, servicos] = await Promise.all([
     db
@@ -85,4 +95,4 @@ export const getComprovantesDoMes = cache(async (mes: string): Promise<Comprovan
     status: a.status,
     clienteId: a.client?.id ?? null,
   }));
-});
+}

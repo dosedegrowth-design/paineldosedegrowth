@@ -1,0 +1,220 @@
+/* O relatório que vai para a Larissa (17/11/2026): papel branco, vinho e
+   dourado da casa, feito para o celular (abre pelo WhatsApp). */
+.tyrel {
+  --rel-vinho: #6d1530;
+  --rel-vinho-claro: #f7ecef;
+  --rel-ouro: #ac802e;
+  --rel-tinta: #2a0d18;
+  --rel-mudo: #7a5260;
+  --rel-linha: #eedfe3;
+  --rel-fundo: #fbf7f6;
+  min-height: 100svh;
+  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 32px max(16px, env(safe-area-inset-left, 0px));
+  background: var(--rel-fundo);
+  color: var(--rel-tinta);
+  font-family: var(--t-font-body, "Inter", system-ui, sans-serif);
+}
+.tyrel__papel {
+  max-width: 760px;
+  margin: 0 auto;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(42, 13, 24, 0.04), 0 18px 50px -28px rgba(42, 13, 24, 0.35);
+  overflow: hidden;
+}
+.tyrel__papel--aviso {
+  display: grid;
+  gap: 10px;
+  padding: 32px 24px;
+  text-align: center;
+}
+.tyrel__papel--aviso h1 {
+  font-size: 22px;
+  color: var(--rel-vinho);
+}
+.tyrel__topo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 22px 22px 20px;
+  border-bottom: 3px solid var(--rel-ouro);
+  background: var(--rel-vinho);
+  color: #fff;
+}
+.tyrel__marca {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.tyrel__papel--aviso .tyrel__marca {
+  color: var(--rel-vinho);
+}
+.tyrel__sub {
+  margin-top: 2px;
+  font-size: 13px;
+  color: #f3dbe3;
+}
+.tyrel__periodo {
+  text-align: right;
+}
+.tyrel__periodo h1 {
+  font-size: 18px;
+  font-weight: 700;
+}
+.tyrel__periodo p {
+  font-size: 12.5px;
+  color: #f3dbe3;
+}
+.tyrel__secao {
+  display: grid;
+  gap: 12px;
+  padding: 20px 22px 4px;
+}
+.tyrel__secao h2 {
+  position: relative;
+  padding-bottom: 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--rel-vinho);
+}
+.tyrel__secao h2::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 26px;
+  height: 2px;
+  background: var(--rel-ouro);
+}
+.tyrel__numeros {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.tyrel__numeros div {
+  display: grid;
+  gap: 2px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--rel-vinho-claro);
+}
+.tyrel__numeros span,
+.tyrel__detalhe,
+.tyrel__nota {
+  font-size: 12px;
+  color: var(--rel-mudo);
+}
+.tyrel__numeros b {
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
+.tyrel__divisao {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.tyrel__parte {
+  display: grid;
+  gap: 4px;
+  padding: 14px;
+  border: 1px solid var(--rel-linha);
+  border-radius: 14px;
+}
+.tyrel__parte span {
+  color: var(--rel-mudo);
+}
+.tyrel__parte strong {
+  font-size: 22px;
+  color: var(--rel-vinho);
+  font-variant-numeric: tabular-nums;
+}
+.tyrel__lista,
+.tyrel__atendimentos {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tyrel__lista li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  border-top: 1px solid var(--rel-linha);
+  font-size: 14px;
+}
+.tyrel__lista b,
+.tyrel__valor b {
+  font-variant-numeric: tabular-nums;
+}
+.tyrel__total {
+  font-weight: 700;
+}
+.tyrel__servicos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tyrel__servicos span {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--rel-vinho-claro);
+  font-size: 12.5px;
+}
+.tyrel__atendimentos li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--rel-linha);
+}
+.tyrel__atendimentos li > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.tyrel__atendimentos span {
+  font-size: 12.5px;
+  color: var(--rel-mudo);
+}
+.tyrel__valor {
+  text-align: right;
+}
+.tyrel__pe {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 22px;
+  text-align: center;
+}
+.tyrel__pe p {
+  font-size: 12px;
+  color: var(--rel-mudo);
+}
+.tyrel__botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: var(--rel-vinho);
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+}
+.ty-scope .tyrel a.tyrel__botao {
+  color: #fff;
+}
+@media (max-width: 560px) {
+  .tyrel__numeros {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .tyrel__divisao {
+    grid-template-columns: 1fr;
+  }
+  .tyrel__periodo {
+    text-align: left;
+  }
+}

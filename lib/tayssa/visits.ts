@@ -2,6 +2,7 @@ import "server-only";
 import { logServerError, vipDb } from "@/lib/tayssa/db";
 import { logAudit } from "@/lib/tayssa/audit";
 import { stampVisit, syncLoyaltyEligibility } from "@/lib/tayssa/engine";
+import { getSettings } from "@/lib/tayssa/settings";
 import type { ServiceRow } from "@/lib/tayssa/types";
 
 /**
@@ -18,6 +19,8 @@ export async function registerVisit(input: {
   service: Pick<ServiceRow, "name" | "point_value"> & { id: string | null };
   serviceDate: string;
   amount?: number | null;
+  /** a parte da Tayssa (%) deste atendimento; sem ela, a divisão vigente (Financeiro) */
+  pctTayssa?: number | null;
   points?: number | null;
   notes?: string | null;
   auditAction?: string;
@@ -25,6 +28,8 @@ export async function registerVisit(input: {
 }): Promise<{ id: string; points: number }> {
   const now = new Date().toISOString();
   const points = Number.isInteger(input.points) && (input.points as number) >= 0 ? (input.points as number) : input.service.point_value;
+  // a divisão da hora em que fechou: mudar os percentuais depois não mexe neste atendimento
+  const pctTayssa = input.pctTayssa ?? (await getSettings()).financeiro.pct_tayssa;
   const { data, error } = await vipDb()
     .from("client_services")
     .insert({
@@ -33,6 +38,7 @@ export async function registerVisit(input: {
       service_name: input.service.name,
       service_date: input.serviceDate,
       amount: input.amount ?? null,
+      pct_tayssa: pctTayssa,
       points,
       status: "approved",
       notes: input.notes ?? null,

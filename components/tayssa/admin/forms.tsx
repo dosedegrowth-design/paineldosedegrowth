@@ -13,6 +13,7 @@ import { adminGrantCustomBenefitAction, adminReleaseBirthdayAction } from "@/lib
 import { formatBrPhone } from "@/lib/tayssa/phone";
 import { whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { PASSWORD_TOKEN_DAYS, ROUTES } from "@/lib/tayssa/config";
+import { FORMAS, LISTA_FORMAS } from "@/lib/tayssa/financeiro";
 import type { ActionResult, BenefitRow, ClientProfileRow, ServiceRow, UserRow } from "@/lib/tayssa/types";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
 import { CopyField } from "@/components/tayssa/admin/controls";
@@ -335,8 +336,20 @@ export function AdminServiceEntryForm({ clientId, services, todayISO }: { client
           ))}
         </Escolha>
         <Campo label="Data" name="service_date" type="date" max={todayISO} defaultValue={todayISO} required error={err?.field === "service_date" ? err.error : undefined} />
-        <Campo label="Valor (R$)" name="amount" inputMode="decimal" placeholder="150,00" />
+        <Campo label="Valor (R$)" name="amount" inputMode="decimal" placeholder="150,00" error={err?.field === "amount" ? err.error : undefined} />
         <Campo label="Pontos (opcional)" name="points_override" inputMode="numeric" placeholder="padrão do serviço" error={err?.field === "points_override" ? err.error : undefined} />
+        {/* o pagamento (17/11/2026): recebido entra no Financeiro; pendente fica em Atendimentos realizados */}
+        <Escolha label="Forma de pagamento" name="forma" defaultValue="pix" error={err?.field === "forma" ? err.error : undefined}>
+          {LISTA_FORMAS.map((f) => (
+            <option key={f} value={f}>
+              {FORMAS[f]}
+            </option>
+          ))}
+        </Escolha>
+        <Escolha label="Pagamento" name="recebido" defaultValue="sim">
+          <option value="sim">Recebido</option>
+          <option value="nao">Pendente</option>
+        </Escolha>
       </div>
       <Campo label="Observação" name="notes" maxLength={500} />
       {err && !err.field ? (

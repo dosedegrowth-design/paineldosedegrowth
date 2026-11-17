@@ -14,7 +14,8 @@ const BAIXO: { href: string; label: string; icone: IconeBarraNome; chave?: keyof
   { href: ROUTES.admin, label: "Início", icone: "grade", exato: true },
   { href: ROUTES.adminAgenda, label: "Agenda", icone: "agenda", chave: "appointments" },
   { href: ROUTES.adminClients, label: "Clientes", icone: "clientes", chave: "signups" },
-  { href: ROUTES.adminBenefits, label: "Benefícios", icone: "presente", chave: "benefits" },
+  // o dinheiro do dia a dia no polegar (17/11/2026); Benefícios segue no "Mais"
+  { href: ROUTES.adminFinanceiro, label: "Financeiro", icone: "carteira" },
 ];
 
 /**
@@ -75,6 +76,10 @@ export function AdminFrame({ atencao, nome, children }: { atencao: Atencao; nome
           <button type="button" className="tya-baixo__item" onClick={() => setAberta(true)} aria-expanded={aberta}>
             <span className="tya-baixo__ico">
               <IconeBarra nome="mais" cheio={aberta} />
+              {/* o que espera e mora no "Mais" (benefícios, atendimentos, indicações) não some do celular */}
+              {(atencao.benefits ?? 0) + (atencao.services ?? 0) + (atencao.referrals ?? 0) > 0 ? (
+                <em aria-label="Tem coisa esperando no menu">{Math.min(9, (atencao.benefits ?? 0) + (atencao.services ?? 0) + (atencao.referrals ?? 0))}</em>
+              ) : null}
             </span>
             <span className="tya-baixo__rotulo">Mais</span>
           </button>

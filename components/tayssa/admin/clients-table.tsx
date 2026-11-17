@@ -6,6 +6,7 @@ import { ROUTES } from "@/lib/tayssa/config";
 import { dateShort } from "@/lib/tayssa/format";
 import { bateBusca } from "@/lib/tayssa/busca";
 import { formatBrPhone } from "@/lib/tayssa/phone";
+import { brl, ehRecorrente, frequenciaLegivel } from "@/lib/tayssa/financeiro";
 import { USER_STATUS_LABEL, VIP_STATUS_LABEL } from "@/lib/tayssa/types";
 import type { UserStatus, VipStatus } from "@/lib/tayssa/types";
 import { TransitionLink } from "@/components/tayssa/ui/transition";
@@ -64,12 +65,17 @@ function SeloInativa({ c }: { c: ClientSummary }) {
   );
 }
 
-type Filtro = "all" | "pending" | "agenda" | "vip" | "pronta" | "attention" | "inactive";
+type Filtro = "all" | "pending" | "agenda" | "vip" | "pronta" | "attention" | "inactive" | "recorrente";
 
 /** a cliente da agenda não tem e-mail: a linha de baixo mostra o WhatsApp */
 const contato = (c: ClientSummary) => c.user.email ?? (c.user.phone ? formatBrPhone(c.user.phone) : "");
 
-export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
+export type EstatisticaDaCliente = { quantidade: number; totalGasto: number; frequenciaDias: number | null };
+
+export function ClientsTable({ clients, estatisticas = {} }: { clients: ClientSummary[]; estatisticas?: Record<string, EstatisticaDaCliente> }) {
+  const est = (c: ClientSummary) => estatisticas[c.user.id];
+  // recorrente: 3 atendimentos realizados ou mais (17/11/2026)
+  const recorrente = (c: ClientSummary) => ehRecorrente(est(c)?.quantidade ?? 0);
   const [q, setQ] = useState("");
   // pediram o VIP no cadastro do site e esperam a resposta (a conta já marca horário)
   const pendingCount = clients.filter((c) => c.pedidoVip).length;
@@ -87,9 +93,10 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
       if (only === "pronta") return c.prontaParaVip;
       if (only === "attention") return espera(c) > 0;
       if (only === "inactive") return c.inactive;
+      if (only === "recorrente") return ehRecorrente(estatisticas[c.user.id]?.quantidade ?? 0);
       return true;
     });
-  }, [clients, q, only]);
+  }, [clients, q, only, estatisticas]);
 
   const filtros: [Filtro, string, number | null][] = [
     ["all", "Todas", null],
@@ -98,7 +105,8 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
     ["vip", "VIP", null],
     ["pronta", "Prontas para VIP", prontaCount || null],
     ["attention", "Com pendência", attentionCount || null],
-    ["inactive", "Inativas", null],
+    ["recorrente", "Recorrentes", clients.filter((c) => recorrente(c)).length || null],
+    ["inactive", "Sem voltar há tempo", null],
   ];
 
   return (
@@ -151,10 +159,11 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
                   <tr>
                     <th>Cliente</th>
                     <th>VIP</th>
-                    <th>Pontos</th>
+                    <th>Atendimentos</th>
+                    <th>Total gasto</th>
                     <th>Último atendimento</th>
+                    <th>Pontos</th>
                     <th>Pendências</th>
-                    <th>Benefícios</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -179,15 +188,29 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
                           <SeloVip status={c.profile?.vip_status ?? "none"} />
                           {c.prontaParaVip ? <span className="tya-pill tya-pill--gold" style={{ marginLeft: 6 }}>pronta p/ VIP</span> : null}
                         </td>
-                        <td className="tya-num">{c.points}</td>
+                        <td className="tya-num">
+                          {est(c)?.quantidade ?? 0}
+                          {recorrente(c) ? (
+                            <span className="tya-pill tya-pill--ok" style={{ marginLeft: 6 }}>
+                              recorrente
+                            </span>
+                          ) : null}
+                        </td>
+                        <td className="tya-num">{est(c)?.totalGasto ? brl(est(c)!.totalGasto) : "—"}</td>
                         <td className="tya-num">
                           {c.lastServiceDate ? dateShort(c.lastServiceDate) : "—"}
+                          {est(c)?.quantidade ? (
+                            <span className="tya-small" style={{ display: "block" }}>
+                              {frequenciaLegivel(est(c)!.frequenciaDias, est(c)!.quantidade)}
+                            </span>
+                          ) : null}
                           {c.inactive ? (
                             <span style={{ display: "block", marginTop: 5 }}>
                               <SeloInativa c={c} />
                             </span>
                           ) : null}
                         </td>
+                        <td className="tya-num">{c.points}</td>
                         <td>
                           {p.length ? (
                             <span className="tya-pill tya-pill--brand">{p.join(" · ")}</span>
@@ -195,7 +218,6 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
                             <span className="tya-small">—</span>
                           )}
                         </td>
-                        <td className="tya-num">{c.benefitsAvailable || "—"}</td>
                       </tr>
                     );
                   })}
@@ -219,21 +241,23 @@ export function ClientsTable({ clients }: { clients: ClientSummary[] }) {
                       <SeloConta status={c.user.status} />
                       {p.length ? <span className="tya-pill tya-pill--brand">{p.join(" · ")}</span> : null}
                       <SeloInativa c={c} />
+                      {recorrente(c) ? <span className="tya-pill tya-pill--ok">recorrente</span> : null}
                     </div>
                     <div className="tya-mini">
                       <div>
-                        <b>{c.points}</b>
-                        <span>Pontos</span>
+                        <b>{est(c)?.quantidade ?? 0}</b>
+                        <span>Atendimentos</span>
+                      </div>
+                      <div>
+                        <b>{est(c)?.totalGasto ? brl(est(c)!.totalGasto).replace(",00", "") : "—"}</b>
+                        <span>Total gasto</span>
                       </div>
                       <div>
                         <b>{c.lastServiceDate ? dateShort(c.lastServiceDate).slice(0, 5) : "—"}</b>
                         <span>Último</span>
                       </div>
-                      <div>
-                        <b>{c.benefitsAvailable || "—"}</b>
-                        <span>Benefícios</span>
-                      </div>
                     </div>
+                    {est(c)?.quantidade ? <p className="tya-small" style={{ marginTop: 8 }}>{frequenciaLegivel(est(c)!.frequenciaDias, est(c)!.quantidade)}</p> : null}
                   </article>
                 </TransitionLink>
               );

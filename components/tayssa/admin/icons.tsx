@@ -34,7 +34,8 @@ export type IconeNome =
   | "mais"
   | "relatorios"
   | "manual"
-  | "aviso";
+  | "aviso"
+  | "financeiro";
 
 const CAMINHOS: Record<IconeNome, React.ReactNode> = {
   menu: <path d="M4 8h16M4 16h11" />,
@@ -142,6 +143,14 @@ const CAMINHOS: Record<IconeNome, React.ReactNode> = {
       <circle cx="12" cy="12" r="9" />
       <path d="M3.3 9.4h17.4M3.3 14.6h17.4" />
       <path d="M12 3c-2.4 2.4-3.6 5.4-3.6 9s1.2 6.6 3.6 9c2.4-2.4 3.6-5.4 3.6-9S14.4 5.4 12 3z" />
+    </>
+  ),
+  // a carteira: o financeiro (17/11/2026)
+  financeiro: (
+    <>
+      <path d="M5 6.5h12.5a1.5 1.5 0 0 1 1.5 1.5v1.5" />
+      <path d="M4 8a2 2 0 0 1 2-2v0M4 8v9.5a2 2 0 0 0 2 2h13a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1H6a2 2 0 0 1-2-2z" />
+      <path d="M16 14.5h.01" />
     </>
   ),
   // o sino: avisos e mensagens (manual do painel)

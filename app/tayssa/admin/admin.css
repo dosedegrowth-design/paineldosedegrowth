@@ -2833,3 +2833,2074 @@ a.tya-kpi {
   height: 15px;
   color: var(--tya-brand);
 }
+
+/* ============================================================
+   AGENDA (17/11/2026): dia, semana e mês, no jeito simples do app
+   Tua Agenda, com as cores da casa. Uma cor por estado:
+   agendado (dourado), confirmado (vinho), em atendimento (rosa
+   cheio), concluído (verde), cancelado (cinza riscado), falta (vermelho).
+   ============================================================ */
+.tyac-cartao {
+  padding: 16px;
+}
+.tyac {
+  --ag-agendado: var(--tya-gold);
+  --ag-agendado-bg: var(--tya-gold-bg);
+  --ag-confirmado: var(--tya-brand);
+  --ag-confirmado-bg: var(--tya-brand-soft);
+  --ag-atendimento: var(--tya-brand-2);
+  --ag-concluido: var(--tya-ok);
+  --ag-concluido-bg: #e9f1ec;
+  --ag-cancelado: var(--tya-muted-2);
+  --ag-cancelado-bg: #f5f1f2;
+  --ag-faltou: var(--tya-bad);
+  --ag-faltou-bg: #f8e9e8;
+  display: grid;
+  gap: 14px;
+}
+.tyac__barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.tyac__vistas {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--tya-surface-2);
+  border: 1px solid var(--tya-line);
+}
+.tyac__vista {
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--tya-muted);
+  text-decoration: none;
+  transition: background 160ms var(--tya-ease), color 160ms var(--tya-ease);
+}
+.tyac__vista[data-on] {
+  background: var(--tya-brand);
+  color: #fff;
+}
+.tya.ty-scope a.tyac__vista[data-on] {
+  color: #fff;
+}
+.tyac__novo svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.tyac__nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tyac__titulo {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  font-family: var(--t-font-display);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--tya-ink);
+  text-align: center;
+  text-wrap: balance;
+}
+/* a flor discreta da casa, ao lado da data */
+.tyac__flor {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  background: url("/tayssa/flor-faixa-rosa.svg") center / contain no-repeat;
+  opacity: 0.85;
+}
+.tyac__seta,
+.tyac__hoje {
+  display: inline-grid;
+  place-items: center;
+  height: 40px;
+  min-width: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--tya-line);
+  border-radius: 999px;
+  background: var(--tya-surface);
+  color: var(--tya-ink);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.tyac__hoje[aria-disabled] {
+  opacity: 0.45;
+  pointer-events: none;
+}
+.tyac__seta svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tyac__ir input {
+  height: 40px;
+  width: 44px;
+  padding: 0 8px;
+  border: 1px solid var(--tya-line);
+  border-radius: 999px;
+  background: var(--tya-surface);
+  color: transparent;
+  font-size: 16px;
+  cursor: pointer;
+}
+.tyac__ir input::-webkit-datetime-edit {
+  display: none;
+}
+@media (min-width: 720px) {
+  .tyac__ir input {
+    width: auto;
+    color: var(--tya-ink);
+  }
+  .tyac__ir input::-webkit-datetime-edit {
+    display: inline;
+  }
+}
+
+/* a fita da semana (vista do dia) */
+.tyac-fita {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+.tyac-fita__dia {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 8px 0;
+  border-radius: 14px;
+  color: var(--tya-muted);
+  text-decoration: none;
+}
+.tyac-fita__dia span {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.tyac-fita__dia b {
+  font-size: 17px;
+  color: var(--tya-ink);
+}
+.tyac-fita__dia[data-hoje] b {
+  color: var(--tya-brand);
+}
+.tyac-fita__dia[data-on] {
+  background: var(--tya-brand);
+}
+.tyac-fita__dia[data-on] span,
+.tyac-fita__dia[data-on] b {
+  color: #fff;
+}
+
+/* o dia em linha do tempo */
+.tyac-dia__aviso {
+  padding: 10px 12px;
+  border-radius: var(--tya-radius-sm);
+  background: var(--tya-surface-2);
+  font-size: 13px;
+  color: var(--tya-muted);
+}
+.tyac-linha {
+  position: relative;
+  margin-top: 6px;
+}
+.tyac-linha__hora {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px solid var(--tya-line-soft);
+}
+.tyac-linha__hora span {
+  position: absolute;
+  left: 0;
+  top: -8px;
+  width: 50px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--tya-muted-2);
+  background: var(--tya-surface);
+}
+.tyac-vaga {
+  position: absolute;
+  left: 58px;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px dashed #e3cdd4;
+  border-radius: 10px;
+  background: transparent;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--tya-muted);
+  text-align: left;
+  cursor: pointer;
+  transition: background 160ms var(--tya-ease), border-color 160ms var(--tya-ease);
+}
+.tyac-vaga span {
+  font-weight: 600;
+  color: var(--tya-ink);
+}
+.tyac-vaga:active {
+  transform: scale(0.99);
+}
+@media (hover: hover) and (pointer: fine) {
+  .tyac-vaga:hover {
+    background: var(--tya-brand-soft);
+    border-color: var(--tya-brand-2);
+  }
+}
+.tyac-vaga[data-fechado] {
+  border-style: solid;
+  border-color: var(--tya-line);
+  background: repeating-linear-gradient(-45deg, #f8f3f4 0 6px, #fff 6px 12px);
+  color: var(--tya-muted-2);
+}
+.tyac-linha__bloco {
+  position: absolute;
+  display: flex;
+}
+.tyac-linha__agora {
+  position: absolute;
+  left: 50px;
+  right: 0;
+  height: 2px;
+  background: var(--tya-bad);
+  pointer-events: none;
+}
+.tyac-linha__agora::before {
+  content: "";
+  position: absolute;
+  left: -4px;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--tya-bad);
+}
+
+/* o agendamento: a mesma peça no dia, na semana e na lista */
+.tyac-bloco {
+  display: grid;
+  align-content: start;
+  gap: 1px;
+  width: 100%;
+  height: 100%;
+  min-height: 34px;
+  padding: 6px 9px;
+  overflow: hidden;
+  border: 0;
+  border-left: 4px solid var(--ag-confirmado);
+  border-radius: 10px;
+  background: var(--ag-confirmado-bg);
+  color: var(--tya-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 140ms var(--tya-ease), box-shadow 140ms var(--tya-ease);
+}
+.tyac-bloco:active {
+  transform: scale(0.98);
+}
+@media (hover: hover) and (pointer: fine) {
+  .tyac-bloco:hover {
+    box-shadow: var(--tya-shadow-hover);
+  }
+}
+.tyac-bloco__hora {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--tya-muted);
+}
+.tyac-bloco__nome {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tyac-bloco__vip {
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--tya-gold-bg);
+  color: #6b4d12;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.tyac-bloco__servico {
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--tya-ink-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tyac-bloco__estado {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ag-confirmado);
+}
+.tyac-bloco[data-compacto] {
+  grid-template-columns: auto 1fr;
+  column-gap: 8px;
+  align-items: baseline;
+  padding: 7px 9px;
+}
+.tyac-bloco[data-compacto] .tyac-bloco__servico,
+.tyac-bloco[data-compacto] .tyac-bloco__estado {
+  grid-column: 2;
+}
+.tyac-bloco[data-estado="agendado"] {
+  border-left-color: var(--ag-agendado);
+  background: var(--ag-agendado-bg);
+}
+.tyac-bloco[data-estado="agendado"] .tyac-bloco__estado {
+  color: #7d5c1d;
+}
+.tyac-bloco[data-estado="em_atendimento"] {
+  border-left-color: #fff;
+  background: var(--ag-atendimento);
+  color: #fff;
+}
+.tyac-bloco[data-estado="em_atendimento"] .tyac-bloco__hora,
+.tyac-bloco[data-estado="em_atendimento"] .tyac-bloco__servico,
+.tyac-bloco[data-estado="em_atendimento"] .tyac-bloco__estado {
+  color: #fbe9ef;
+}
+.tyac-bloco[data-estado="concluido"] {
+  border-left-color: var(--ag-concluido);
+  background: var(--ag-concluido-bg);
+}
+.tyac-bloco[data-estado="concluido"] .tyac-bloco__estado {
+  color: var(--ag-concluido);
+}
+.tyac-bloco[data-estado="cancelado"] {
+  border-left-color: var(--ag-cancelado);
+  background: var(--ag-cancelado-bg);
+  color: var(--tya-muted);
+}
+.tyac-bloco[data-estado="cancelado"] .tyac-bloco__nome,
+.tyac-bloco[data-estado="cancelado"] .tyac-bloco__servico {
+  text-decoration: line-through;
+}
+.tyac-bloco[data-estado="cancelado"] .tyac-bloco__estado {
+  color: var(--tya-muted);
+}
+.tyac-bloco[data-estado="faltou"] {
+  border-left-color: var(--ag-faltou);
+  background: var(--ag-faltou-bg);
+}
+.tyac-bloco[data-estado="faltou"] .tyac-bloco__estado {
+  color: var(--ag-faltou);
+}
+.tyac-encerrados {
+  display: grid;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+/* a semana: um cartão por dia (no computador, sete colunas) */
+.tyac-semana {
+  display: grid;
+  gap: 10px;
+}
+.tyac-semana__dia {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--tya-line);
+  border-radius: 14px;
+  background: var(--tya-surface);
+}
+.tyac-semana__dia[data-hoje] {
+  border-color: var(--tya-brand-2);
+  box-shadow: 0 0 0 1px var(--tya-brand-2) inset;
+}
+.tyac-semana__dia[data-folga] {
+  background: var(--tya-surface-2);
+}
+.tyac-semana__topo {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--tya-ink);
+  text-decoration: none;
+}
+.tyac-semana__topo span {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--tya-muted);
+}
+.tyac-semana__topo b {
+  font-size: 18px;
+}
+.tyac-semana__topo small {
+  margin-left: auto;
+  font-size: 11.5px;
+  color: var(--tya-muted);
+}
+.tyac-semana__lista {
+  display: grid;
+  gap: 6px;
+}
+.tyac-semana__mais {
+  min-height: 36px;
+  border: 1px dashed #e3cdd4;
+  border-radius: 10px;
+  background: none;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--tya-brand);
+  cursor: pointer;
+}
+@media (min-width: 1100px) {
+  .tyac-semana {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .tyac-semana__dia {
+    min-height: 220px;
+  }
+  .tyac-semana .tyac-bloco[data-compacto] {
+    grid-template-columns: 1fr;
+  }
+  .tyac-semana .tyac-bloco[data-compacto] .tyac-bloco__servico,
+  .tyac-semana .tyac-bloco[data-compacto] .tyac-bloco__estado {
+    grid-column: 1;
+  }
+}
+
+/* o mês */
+.tyac-mes {
+  display: grid;
+  gap: 4px;
+}
+.tyac-mes__cabeca,
+.tyac-mes__semana {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+.tyac-mes__cabeca span {
+  font-size: 11px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--tya-muted);
+}
+.tyac-mes__dia {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  min-height: 58px;
+  padding: 6px;
+  border: 1px solid var(--tya-line-soft);
+  border-radius: 10px;
+  background: var(--tya-surface);
+  color: var(--tya-ink);
+  text-decoration: none;
+  min-width: 0;
+}
+.tyac-mes__dia b {
+  font-size: 13px;
+}
+.tyac-mes__dia[data-fora] {
+  opacity: 0.4;
+}
+.tyac-mes__dia[data-folga] {
+  background: var(--tya-surface-2);
+}
+.tyac-mes__dia[data-hoje] {
+  border-color: var(--tya-brand);
+}
+.tyac-mes__dia[data-hoje] b {
+  color: var(--tya-brand);
+}
+.tyac-mes__pontos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+.tyac-mes__pontos i,
+.tyac__legenda li::before {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ag-confirmado);
+}
+.tyac-mes__itens {
+  display: none;
+}
+.tyac-mes__itens em {
+  display: block;
+  padding: 1px 5px;
+  border-left: 3px solid var(--ag-confirmado);
+  border-radius: 4px;
+  background: var(--ag-confirmado-bg);
+  font-size: 11px;
+  font-style: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (min-width: 900px) {
+  .tyac-mes__dia {
+    min-height: 96px;
+  }
+  .tyac-mes__pontos {
+    display: none;
+  }
+  .tyac-mes__itens {
+    display: grid;
+    gap: 2px;
+  }
+}
+.tyac-mes__pontos i[data-estado="agendado"],
+.tyac__legenda li[data-estado="agendado"]::before {
+  background: var(--ag-agendado);
+}
+.tyac-mes__pontos i[data-estado="em_atendimento"],
+.tyac__legenda li[data-estado="em_atendimento"]::before {
+  background: var(--ag-atendimento);
+}
+.tyac-mes__pontos i[data-estado="concluido"],
+.tyac__legenda li[data-estado="concluido"]::before {
+  background: var(--ag-concluido);
+}
+.tyac__legenda li[data-estado="cancelado"]::before {
+  background: var(--ag-cancelado);
+}
+.tyac__legenda li[data-estado="faltou"]::before {
+  background: var(--ag-faltou);
+}
+.tyac-mes__itens em[data-estado="agendado"] {
+  border-left-color: var(--ag-agendado);
+  background: var(--ag-agendado-bg);
+}
+.tyac-mes__itens em[data-estado="concluido"] {
+  border-left-color: var(--ag-concluido);
+  background: var(--ag-concluido-bg);
+}
+.tyac-mes__itens em[data-estado="em_atendimento"] {
+  border-left-color: var(--ag-atendimento);
+}
+.tyac__legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  color: var(--tya-muted);
+}
+.tyac__legenda li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.tyac__legenda li::before {
+  content: "";
+}
+
+/* a folha: no celular sobe de baixo; no computador, janela no meio */
+.tyac-folha {
+  width: 100%;
+  max-width: 100%;
+  max-height: 92dvh;
+  margin: auto 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: 22px 22px 0 0;
+  background: var(--tya-surface);
+  color: var(--tya-ink);
+  box-shadow: var(--tya-shadow-pop);
+}
+.tyac-folha::backdrop {
+  background: rgba(42, 13, 24, 0.45);
+}
+.tyac-folha[open] {
+  animation: tyac-sobe 260ms var(--tya-ease);
+}
+@keyframes tyac-sobe {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tyac-folha[open] {
+    animation: none;
+  }
+}
+@media (min-width: 720px) {
+  .tyac-folha {
+    width: min(560px, calc(100vw - 32px));
+    margin: auto;
+    border-radius: 18px;
+  }
+}
+.tyac-folha__caixa {
+  display: flex;
+  flex-direction: column;
+  max-height: 92dvh;
+}
+.tyac-folha__topo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 18px 10px;
+  border-bottom: 1px solid var(--tya-line-soft);
+}
+.tyac-folha__topo h2 {
+  flex: 1;
+  font-family: var(--t-font-display);
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.tyac-folha__x {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--tya-surface-2);
+  color: var(--tya-ink);
+  cursor: pointer;
+}
+.tyac-folha__x svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.tyac-folha__corpo {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 14px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+}
+
+/* detalhes, formulários e ações dentro da folha */
+.tyac-info {
+  display: grid;
+  gap: 10px;
+}
+.tyac-info__estado {
+  justify-self: start;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--ag-confirmado-bg);
+  color: var(--ag-confirmado);
+  font-size: 12px;
+  font-weight: 700;
+}
+.tyac-info__estado[data-estado="agendado"] {
+  background: var(--ag-agendado-bg);
+  color: #7d5c1d;
+}
+.tyac-info__estado[data-estado="em_atendimento"] {
+  background: var(--ag-atendimento);
+  color: #fff;
+}
+.tyac-info__estado[data-estado="concluido"] {
+  background: var(--ag-concluido-bg);
+  color: var(--ag-concluido);
+}
+.tyac-info__estado[data-estado="cancelado"] {
+  background: var(--ag-cancelado-bg);
+  color: var(--tya-muted);
+}
+.tyac-info__estado[data-estado="faltou"] {
+  background: var(--ag-faltou-bg);
+  color: var(--ag-faltou);
+}
+.tyac-info__linha {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--tya-line-soft);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.tyac-info__linha > span {
+  font-size: 12px;
+  color: var(--tya-muted);
+}
+.tyac-info__linha small {
+  color: var(--tya-muted);
+}
+.tyac-contato {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 4px;
+}
+.tyac-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.tyac-acoes--coluna {
+  flex-direction: column;
+  align-items: stretch;
+  padding-top: 6px;
+}
+.tyac-folha .tya-btn {
+  min-height: 44px;
+  white-space: normal;
+  text-align: center;
+}
+.tya-btn.tyac-perigo {
+  color: var(--tya-bad);
+}
+.tyac-corrigir {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 6px;
+}
+.tyac-form {
+  display: grid;
+  gap: 12px;
+}
+.tyac-form .tya-field,
+.tyac-form select,
+.tyac-form textarea {
+  font-size: 16px;
+}
+.tyac-form--linha {
+  gap: 6px;
+}
+.tyac-campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+.tyac-campos > div {
+  display: grid;
+  gap: 4px;
+  align-content: start;
+}
+.tyac-escolha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.tyac-escolha legend {
+  width: 100%;
+  margin-bottom: 6px;
+}
+.tyac-escolha label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  font-size: 14px;
+}
+.tyac-mais summary {
+  font-size: 12.5px;
+  color: var(--tya-muted);
+  cursor: pointer;
+}
+.tyac-mais .tya-field {
+  margin-top: 6px;
+}
+.tyac-cliente {
+  display: grid;
+  gap: 8px;
+}
+.tyac-escolhida {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  padding: 10px 12px;
+  border-radius: var(--tya-radius-sm);
+  background: var(--tya-brand-soft);
+}
+.tyac-escolhida span {
+  font-size: 13px;
+  color: var(--tya-muted);
+}
+.tyac-escolhida .tya-link {
+  margin-left: auto;
+}
+.tyac-sugestoes {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tyac-sugestoes button {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--tya-line);
+  border-radius: var(--tya-radius-sm);
+  background: var(--tya-surface);
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+.tyac-sugestoes span {
+  color: var(--tya-muted);
+  font-size: 13px;
+}
+.tyac-aviso {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--tya-gold-bg);
+  color: #4a3612;
+}
+.tyac-servicos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 220px;
+  margin-top: 6px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.tyac-servico {
+  display: grid;
+  gap: 1px;
+  padding: 8px 12px;
+  border: 1px solid var(--tya-line);
+  border-radius: 12px;
+  background: var(--tya-surface);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 140ms var(--tya-ease), border-color 140ms var(--tya-ease);
+}
+.tyac-servico b {
+  font-size: 13px;
+}
+.tyac-servico small {
+  font-size: 11.5px;
+  color: var(--tya-muted);
+}
+.tyac-servico[aria-pressed="true"] {
+  border-color: var(--tya-brand);
+  background: var(--tya-brand);
+  color: #fff;
+}
+.tyac-servico[aria-pressed="true"] small {
+  color: #f3dbe3;
+}
+.tyac-livres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tyac-livre {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--tya-line);
+  border-radius: 999px;
+  background: var(--tya-surface);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.tyac-livre[aria-pressed="true"] {
+  border-color: var(--tya-brand);
+  background: var(--tya-brand);
+  color: #fff;
+}
+@media (max-width: 720px) {
+  .tyac-cartao {
+    padding: 12px;
+  }
+  .tyac__barra .tyac__novo {
+    flex: 1 1 100%;
+    min-height: 44px;
+  }
+  .tyac__vistas {
+    flex: 1 1 100%;
+  }
+  .tyac__vista {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+/* ============================================================
+   PERÍODO, ATENDIMENTOS REALIZADOS E FINANCEIRO (17/11/2026)
+   ============================================================ */
+.tyap {
+  display: grid;
+  gap: 10px;
+}
+.tyap__atalhos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tyap__nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tyap__rotulo {
+  flex: 1;
+  font-family: var(--t-font-display);
+  font-size: 16px;
+  text-align: center;
+}
+.tyap__livre summary {
+  font-size: 12.5px;
+  color: var(--tya-muted);
+  cursor: pointer;
+}
+.tyap__form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+.tyap__form label,
+.tyaf-filtros__form label {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--tya-muted);
+}
+.tyap__form .tya-field,
+.tyaf-filtros__form .tya-field {
+  font-size: 16px;
+}
+.tyaf-filtros {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+.tyaf-filtros__form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+  align-items: end;
+  padding-top: 12px;
+  border-top: 1px solid var(--tya-line-soft);
+}
+.tyaf-filtros__botoes {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.tyaf-kpis {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+@media (max-width: 1100px) {
+  .tyaf-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .tyaf-kpis > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+.tyaf-kpis .tya-kpi__n {
+  font-size: clamp(20px, 5.4vw, 28px);
+  font-variant-numeric: tabular-nums;
+}
+
+/* um atendimento realizado */
+.tyar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  padding: 14px 0;
+  border-top: 1px solid var(--tya-line-soft);
+}
+.tyar:first-child {
+  border-top: 0;
+}
+.tyar:not(:has(.tyar__quando)) {
+  grid-template-columns: minmax(0, 1fr);
+}
+.tyar__quando {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  min-width: 46px;
+  gap: 1px;
+}
+.tyar__dia {
+  font-size: 20px;
+  font-weight: 600;
+}
+.tyar__hora {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--tya-muted);
+}
+.tyar__corpo {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.tyar__valores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-size: 13.5px;
+}
+.tyar__valores span {
+  color: var(--tya-muted);
+}
+.tyar__falta {
+  color: var(--tya-bad) !important;
+  font-weight: 600;
+}
+.tyapg {
+  margin-top: 6px;
+}
+.tyapg__linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.tyapg__linha .tya-field {
+  width: auto;
+  min-width: 0;
+  flex: 1 1 130px;
+  font-size: 16px;
+}
+.tyapg__linha .tya-btn {
+  min-height: 42px;
+}
+.tyapg__tirar {
+  margin-left: 6px;
+  font-size: 12px;
+}
+.tyar-hist {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+.tyar-hist div {
+  padding: 10px 12px;
+  border-radius: var(--tya-radius-sm);
+  background: var(--tya-surface-2);
+}
+.tyar-hist dt {
+  font-size: 11.5px;
+  color: var(--tya-muted);
+}
+.tyar-hist dd {
+  margin: 2px 0 0;
+  font-size: 16px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.tyar-hist__servicos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+.tyar-pag {
+  display: block;
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+
+/* divisão, formas de pagamento e configuração */
+.tyaf-tabela td b {
+  color: var(--tya-ink);
+}
+.tyaf-formas {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tyaf-formas li {
+  display: grid;
+  grid-template-columns: minmax(110px, 160px) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  font-size: 13.5px;
+}
+.tyaf-formas__barra {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--tya-surface-2);
+  overflow: hidden;
+}
+.tyaf-formas__barra i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--tya-brand-2);
+}
+.tyaf-formas li[data-forma="pix"] .tyaf-formas__barra i {
+  background: var(--tya-brand);
+}
+.tyaf-formas li[data-forma="pendente"] .tyaf-formas__barra i {
+  background: repeating-linear-gradient(-45deg, var(--tya-gold) 0 5px, #d9c08c 5px 10px);
+}
+.tyaf-formas__total {
+  padding-top: 10px;
+  border-top: 1px solid var(--tya-line);
+  font-weight: 600;
+}
+.tyaf-config {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
+}
+.tyaf-divisao {
+  display: grid;
+  gap: 10px;
+  max-width: 460px;
+}
+.tyaf-divisao .tya-field {
+  font-size: 16px;
+}
+.tyaf-historico {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+}
+.tyaf-historico li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--tya-surface-2);
+}
+.tyaf-historico li span {
+  color: var(--tya-muted);
+}
+@media (max-width: 560px) {
+  .tyaf-formas li {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .tyaf-formas__barra {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+/* o financeiro na Visão geral (17/11/2026) */
+.tyad-fin {
+  display: grid;
+  gap: 14px;
+}
+.tyad-fin__numeros {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+.tyad-fin__numeros div {
+  display: grid;
+  gap: 2px;
+  padding: 12px;
+  border-radius: var(--tya-radius-sm);
+  background: var(--tya-surface-2);
+}
+.tyad-fin__numeros span {
+  font-size: 11.5px;
+  color: var(--tya-muted);
+}
+.tyad-fin__numeros b {
+  font-family: var(--t-font-display);
+  font-size: clamp(18px, 4.6vw, 22px);
+  font-variant-numeric: tabular-nums;
+}
+.tyad-fin__numeros div[data-alerta] b {
+  color: var(--tya-brand);
+}
+@media (max-width: 900px) {
+  .tyad-fin__numeros {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .tyad-fin__numeros div:first-child {
+    grid-column: 1 / -1;
+  }
+}
+/* Relatórios: o fechamento (PDF e o link para a Larissa) */
+.tyaenv__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+}
+.tyaenv {
+  display: grid;
+  gap: 8px;
+}
+.tyaenv__link {
+  font-size: 14px;
+}
+.tyaenv__botoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+@media (min-width: 900px) {
+  .tyarel-numeros {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@media (max-width: 720px) {
+  .tyaenv__acoes > *,
+  .tyaenv__acoes .tya-btn {
+    width: 100%;
+  }
+  .tyaenv__acoes .tya-btn {
+    min-height: 46px;
+  }
+}
+/* a divisão em dois cartões (no celular a tabela virava uma lista comprida) */
+.tyaf-partes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+.tyaf-parte {
+  display: grid;
+  gap: 4px;
+  padding: 14px;
+  border: 1px solid var(--tya-line);
+  border-radius: var(--tya-radius);
+  background: var(--tya-surface);
+}
+.tyaf-parte__quem {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 14px;
+}
+.tyaf-parte__quem span {
+  color: var(--tya-muted);
+}
+.tyaf-parte strong {
+  font-family: var(--t-font-display);
+  font-size: 24px;
+  color: var(--tya-brand);
+}
+.tyaf-parte dl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 2px 0 0;
+}
+.tyaf-parte dt {
+  font-size: 11.5px;
+  color: var(--tya-muted);
+}
+.tyaf-parte dd {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+@media (max-width: 720px) {
+  .tyac__titulo {
+    font-size: 15.5px;
+  }
+}
+/* no celular o título da data cabe numa linha: a flor fica só no computador */
+@media (max-width: 720px) {
+  .tyac__titulo {
+    white-space: nowrap;
+  }
+  .tyac__flor {
+    display: none;
+  }
+}
+
+/* ---------- Gráficos (Visão geral e Financeiro, 17/11/2026) ----------
+   Lucas: "o Dash tá mó seco, não tem uma animação, um gráfico pizza, um
+   gráfico coluna deitado". Cores validadas (daltonismo e contraste no
+   branco): vinho = Pix e série única, dourado = dinheiro, azul petróleo =
+   cartão, terracota = outra forma, rosé claro = ainda pendente. Marcas
+   finas, ponta arredondada de 4px, linhas de grade em fio. Movimento só na
+   entrada (ease-out forte) e parado para quem pede menos movimento. */
+.tyg,
+.tyad-fin {
+  --tyg-1: #943569;
+  --tyg-2: #ac8130;
+  --tyg-3: #2a73a0;
+  --tyg-4: #c0705a;
+  --tyg-pendente: #eadde1;
+  --tyg-ease: cubic-bezier(0.23, 1, 0.32, 1);
+}
+.tyg {
+  margin: 0;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  min-width: 0;
+}
+.tyg__titulo {
+  display: grid;
+  gap: 2px;
+}
+.tyg__titulo b {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--tya-ink);
+}
+.tyg__titulo span {
+  font-size: 12px;
+  color: var(--tya-muted);
+}
+.tyg-vazio {
+  margin: 0;
+  font-size: 13px;
+  color: var(--tya-muted);
+}
+@keyframes tyg-aparece {
+  from {
+    opacity: 0;
+  }
+}
+
+/* a dica (mouse, toque ou setas) */
+.tyg-dica-area {
+  position: relative;
+  outline: none;
+  border-radius: 12px;
+  -webkit-tap-highlight-color: transparent;
+}
+.tyg-dica-area:focus-visible {
+  box-shadow: 0 0 0 2px var(--tya-surface), 0 0 0 4px rgba(109, 21, 48, 0.35);
+}
+.tyg-dica {
+  position: absolute;
+  z-index: 6;
+  left: 0;
+  top: 0;
+  display: grid;
+  gap: 1px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  background: var(--tya-ink);
+  color: #fff;
+  box-shadow: var(--tya-shadow-pop);
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 10px));
+  animation: tyg-dica 150ms var(--tyg-ease) both;
+}
+.tyg-dica[hidden] {
+  display: none;
+}
+.tyg-dica b {
+  font-size: 14px;
+  font-weight: 600;
+}
+.tyg-dica span {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.74);
+}
+@keyframes tyg-dica {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-100% - 6px)) scale(0.97);
+  }
+}
+
+/* colunas: faturamento por dia, semana ou mês */
+.tyg-colunas__corpo {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: 150px auto;
+  column-gap: 8px;
+  margin-top: 14px; /* o valor do maior mora em cima da coluna */
+}
+.tyg-colunas__eixo {
+  grid-row: 1;
+  grid-column: 1;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+  margin: -7px 0; /* cada número no meio da sua linha */
+  font-size: 10.5px;
+  line-height: 14px;
+  color: var(--tya-muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.tyg-colunas__plot {
+  grid-row: 1;
+  grid-column: 2;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+  align-items: end;
+}
+.tyg-colunas__grade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--y) * 100%);
+  height: 1px;
+  background: var(--tya-line);
+  pointer-events: none;
+}
+.tyg-colunas__faixa {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+.tyg-colunas__faixa[data-atual] {
+  background: linear-gradient(to top, rgba(148, 53, 105, 0.08), rgba(148, 53, 105, 0));
+}
+.tyg-colunas__faixa[data-ativo] {
+  background: rgba(148, 53, 105, 0.09);
+}
+.tyg-colunas__barra {
+  position: relative;
+  width: min(22px, calc(100% - 2px));
+  height: calc(var(--h) * 100%);
+  min-height: 2px;
+  border-radius: 4px 4px 0 0;
+  background: var(--tyg-1);
+  animation: tyg-sobe 720ms var(--tyg-ease) both;
+  animation-delay: calc(var(--i) * var(--passo, 24ms));
+  transition: filter 160ms ease;
+}
+.tyg-colunas__faixa[data-ativo] .tyg-colunas__barra {
+  filter: brightness(1.16);
+}
+@keyframes tyg-sobe {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+.tyg-colunas__topo {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--h) * 100% + 4px);
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--tya-ink-2);
+  white-space: nowrap;
+  pointer-events: none;
+  animation: tyg-aparece 420ms ease-out both;
+  animation-delay: 620ms;
+}
+.tyg-colunas__topo[data-borda="inicio"] {
+  left: 0;
+  transform: none;
+}
+.tyg-colunas__topo[data-borda="fim"] {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+.tyg-colunas__x {
+  grid-row: 2;
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+  padding-top: 6px;
+}
+.tyg-colunas__x span {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  min-width: 0;
+  font-size: 10.5px;
+  line-height: 1.25;
+  color: var(--tya-muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.tyg-colunas__x small {
+  font-size: 10px;
+}
+.tyg-colunas__x span[data-atual] {
+  color: var(--tya-brand);
+  font-weight: 700;
+}
+/* hoje: um pontinho embaixo, mesmo quando o número não aparece */
+.tyg-colunas__x span[data-atual]::after {
+  content: "";
+  width: 4px;
+  height: 4px;
+  margin-top: 3px;
+  border-radius: 50%;
+  background: var(--tyg-1);
+}
+.tyg-tabela summary {
+  width: fit-content;
+  font-size: 12.5px;
+  color: var(--tya-muted);
+  cursor: pointer;
+}
+.tyg-tabela table {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.tyg-tabela th,
+.tyg-tabela td {
+  padding: 6px 4px;
+  border-bottom: 1px solid var(--tya-line-soft);
+  text-align: left;
+  font-weight: 400;
+}
+.tyg-tabela th {
+  font-size: 11.5px;
+  color: var(--tya-muted);
+}
+.tyg-tabela .tya-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* a rosca: como entrou o dinheiro */
+.tyg-rosca__corpo {
+  display: grid;
+  grid-template-columns: minmax(0, 140px) minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+}
+.tyg-rosca__desenho {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+}
+.tyg-rosca__desenho svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.tyg-rosca__trilho {
+  fill: none;
+  stroke: var(--tya-line-soft);
+  stroke-width: 14;
+}
+[data-fatia="pix"] {
+  --cor: var(--tyg-1);
+}
+[data-fatia="dinheiro"] {
+  --cor: var(--tyg-2);
+}
+[data-fatia="cartao"] {
+  --cor: var(--tyg-3);
+}
+[data-fatia="outro"] {
+  --cor: var(--tyg-4);
+}
+[data-fatia="pendente"] {
+  --cor: var(--tyg-pendente);
+}
+.tyg-rosca__fatia {
+  fill: none;
+  stroke: var(--cor);
+  stroke-width: 14;
+  cursor: pointer;
+  animation: tyg-arco 950ms var(--tyg-ease) both;
+  animation-delay: calc(var(--i) * 110ms);
+  transition: stroke-width 180ms var(--tyg-ease);
+}
+.tyg-rosca__fatia[data-ativo] {
+  stroke-width: 18;
+}
+@keyframes tyg-arco {
+  from {
+    stroke-dasharray: 0 100;
+  }
+}
+.tyg-rosca__meio {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+.tyg-rosca__meio b {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--tya-ink);
+}
+.tyg-rosca__meio span {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--tya-muted);
+}
+.tyg-legenda {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 9px;
+}
+.tyg-legenda li {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) auto 2.6em;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  animation: tyg-aparece 420ms ease-out both;
+  animation-delay: calc(260ms + var(--i, 0) * 70ms);
+}
+.tyg-legenda i {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--cor);
+}
+/* o rosé claro some no branco sem um fio em volta da amostra */
+.tyg-legenda li[data-fatia="pendente"] i {
+  box-shadow: inset 0 0 0 1px #d8c2ca;
+}
+.tyg-legenda span {
+  color: var(--tya-ink-2);
+}
+.tyg-legenda b {
+  font-weight: 600;
+  color: var(--tya-ink);
+  font-variant-numeric: tabular-nums;
+}
+.tyg-legenda small {
+  font-size: 12px;
+  color: var(--tya-muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 380px) {
+  .tyg-rosca__corpo {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+  }
+  .tyg-rosca__desenho {
+    width: 150px;
+  }
+  .tyg-legenda {
+    width: 100%;
+  }
+}
+
+/* barras deitadas: serviços mais feitos */
+.tyg-barras ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.tyg-barras li {
+  display: grid;
+  gap: 5px;
+}
+.tyg-barras__nome {
+  font-size: 13px;
+  line-height: 1.3;
+  color: var(--tya-ink-2);
+}
+.tyg-barras__linha {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tyg-barras__barra {
+  height: 10px;
+  width: calc(var(--w) * (100% - 3em));
+  min-width: 3px;
+  border-radius: 0 4px 4px 0;
+  background: var(--tyg-1);
+  animation: tyg-estica 680ms var(--tyg-ease) both;
+  animation-delay: calc(var(--i) * 70ms);
+}
+.tyg-barras li[data-outros] .tyg-barras__barra {
+  background: #c99bb3;
+}
+.tyg-barras__linha b {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tya-ink);
+  font-variant-numeric: tabular-nums;
+  animation: tyg-aparece 420ms ease-out both;
+  animation-delay: calc(380ms + var(--i) * 70ms);
+}
+@keyframes tyg-estica {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* a barrinha do "já recebido" na divisão */
+.tyg-medidor {
+  display: grid;
+  gap: 5px;
+  margin-top: 8px;
+}
+.tyg-medidor[data-quem="tayssa"] {
+  --cor: #943569;
+  --trilho: #f3e3eb;
+}
+.tyg-medidor[data-quem="larissa"] {
+  --cor: #ac8130;
+  --trilho: #f3ead7;
+}
+.tyg-medidor__trilho {
+  display: block;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--trilho);
+  overflow: hidden;
+}
+.tyg-medidor__trilho i {
+  display: block;
+  width: calc(var(--w) * 100%);
+  height: 100%;
+  border-radius: 999px;
+  background: var(--cor);
+  animation: tyg-estica 950ms var(--tyg-ease) both;
+  animation-delay: 240ms;
+}
+.tyg-medidor small {
+  font-size: 11.5px;
+  color: var(--tya-muted);
+}
+
+/* o financeiro da Visão geral com os gráficos */
+.tyad-fin__resumo {
+  display: grid;
+  gap: 14px;
+}
+.tyad-fin__hero {
+  display: grid;
+  gap: 4px;
+}
+.tyad-fin__hero > span {
+  font-size: 12.5px;
+  color: var(--tya-muted);
+}
+.tyad-fin__hero strong {
+  font-family: var(--t-font-display);
+  font-size: clamp(34px, 9vw, 48px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: var(--tya-ink);
+}
+.tyad-fin__hero p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--tya-muted);
+}
+.tyad-fin__tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.tyad-fin__tiles div {
+  display: grid;
+  gap: 2px;
+  padding: 12px;
+  border-radius: var(--tya-radius-sm);
+  background: var(--tya-surface-2);
+}
+.tyad-fin__tiles span {
+  font-size: 11.5px;
+  color: var(--tya-muted);
+}
+.tyad-fin__tiles b {
+  font-family: var(--t-font-display);
+  font-size: clamp(17px, 4.6vw, 21px);
+  font-weight: 600;
+  color: var(--tya-ink);
+}
+.tyad-fin__tiles div[data-alerta] b {
+  color: var(--tya-brand);
+}
+.tyad-fin__graficos {
+  display: grid;
+  gap: 26px;
+  padding-top: 18px;
+  border-top: 1px solid var(--tya-line-soft);
+}
+@media (min-width: 900px) {
+  .tyad-fin__resumo {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    align-items: end;
+  }
+}
+@media (min-width: 1000px) {
+  .tyad-fin__graficos {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    column-gap: 36px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tyg-dica,
+  .tyg-colunas__barra,
+  .tyg-colunas__topo,
+  .tyg-rosca__fatia,
+  .tyg-legenda li,
+  .tyg-barras__barra,
+  .tyg-barras__linha b,
+  .tyg-medidor__trilho i {
+    animation: none;
+  }
+}
+/* no Financeiro os gráficos vêm num cartão próprio, sem o fio de cima */
+.tyad-fin__graficos--solto {
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* Manual: de onde é cada explicação (17/11/2026). Painel em vinho, site da
+   cliente em dourado, as duas pontas em vinho e dourado. Cada lado com o seu
+   índice de cartões e o filtro no alto. */
+.tya-manual__lado {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  padding: 4px 10px 4px 8px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.tya-manual__lado svg {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tya-manual__lado[data-lado="painel"] {
+  background: var(--tya-brand-soft);
+  color: var(--tya-brand);
+}
+.tya-manual__lado[data-lado="cliente"] {
+  background: var(--tya-gold-bg);
+  color: #7d5a17;
+}
+.tya-manual__lado[data-lado="ambos"] {
+  background: linear-gradient(90deg, var(--tya-brand-soft), var(--tya-gold-bg));
+  color: var(--tya-brand-ink);
+}
+.tya-manual__topico > .tya-manual__lado {
+  margin-bottom: -2px;
+}
+/* o cartão de cada tópico leva a cor do lado num fio à esquerda */
+.tya-manual__topico[data-lado] {
+  border-left: 3px solid var(--tya-brand-soft);
+}
+.tya-manual__topico[data-lado="cliente"] {
+  border-left-color: var(--tya-gold-soft);
+}
+.tya-manual__topico[data-lado="ambos"] {
+  border-left-color: #dcc2a0;
+}
+.tya-manual__secao > header .tya-manual__lado {
+  margin-bottom: 6px;
+}
+.tya-manual__secao[data-lado="cliente"] > header .tya-manual__letra {
+  background: var(--tya-gold);
+}
+.tya-manual__grupo {
+  margin: 0 0 22px;
+}
+.tya-manual__grupo-titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: var(--tya-muted);
+}
+.tya-manual__grupo .tya-manual__indice {
+  margin-bottom: 0;
+}
+.tya-manual__indice li[data-lado="cliente"] a {
+  border-color: #ecdfc2;
+  background: linear-gradient(180deg, #fffdf8, var(--tya-surface));
+}
+.tya-manual__indice li[data-lado="cliente"] .tya-manual__letra {
+  background: var(--tya-gold-bg);
+  color: #7d5a17;
+}
+.tya-manual__filtro {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tya-manual__filtro button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--tya-line);
+  border-radius: 999px;
+  background: var(--tya-surface);
+  color: var(--tya-ink-2);
+  font: inherit;
+  font-size: 13.5px;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color 160ms var(--tya-ease), border-color 160ms var(--tya-ease), transform 120ms var(--tya-ease);
+}
+.tya-manual__filtro button:active {
+  transform: scale(0.97);
+}
+.tya-manual__filtro button svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tya-manual__filtro button[aria-checked="true"] {
+  border-color: var(--tya-brand);
+  background: var(--tya-brand);
+  color: #fff;
+}
+.tya-manual__filtro button[data-lado="cliente"][aria-checked="true"] {
+  border-color: var(--tya-gold);
+  background: var(--tya-gold);
+}
+@media (max-width: 720px) {
+  .tya-manual__filtro button {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
+/* rosca estreita (celular): desenho menor e a legenda em duas linhas por forma */
+.tyg-rosca {
+  container: rosca / inline-size;
+}
+@container rosca (max-width: 430px) {
+  .tyg-rosca__corpo {
+    grid-template-columns: 118px minmax(0, 1fr);
+    gap: 16px;
+  }
+  .tyg-rosca__meio b {
+    font-size: 22px;
+  }
+  .tyg-rosca__meio span {
+    font-size: 10.5px;
+  }
+  .tyg-legenda {
+    gap: 10px;
+  }
+  .tyg-legenda li {
+    grid-template-columns: 10px minmax(0, 1fr) auto;
+    row-gap: 1px;
+  }
+  .tyg-legenda i {
+    grid-row: 1 / span 2;
+    align-self: start;
+    margin-top: 4px;
+  }
+  .tyg-legenda span {
+    grid-column: 2 / 4;
+  }
+  .tyg-legenda b {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .tyg-legenda small {
+    grid-column: 3;
+    grid-row: 2;
+  }
+}
+/* hoje sem número embaixo: o pontinho desce para a linha de baixo, longe do número vizinho */
+.tyg-colunas__x span[data-atual]:empty::after {
+  margin-top: calc(1.25em + 3px);
+}
+.tyad-fin__hero p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+}
+.tyad-fin__hero p span {
+  white-space: nowrap;
+}
+.tyad-fin__tiles b {
+  font-weight: 650;
+}

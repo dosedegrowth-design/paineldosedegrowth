@@ -1,10 +1,15 @@
 import { requireAdminPage } from "@/lib/tayssa/auth/guards";
-import { getComprovantesDoMes, type ComprovanteComArquivo } from "@/lib/tayssa/queries/relatorios";
+import { getComprovantesDoPeriodo, type ComprovanteComArquivo } from "@/lib/tayssa/queries/relatorios";
+import { agoraNaCasa, getFinanceiroDoPeriodo, listarLinksDoRelatorio } from "@/lib/tayssa/queries/gestao";
+import { SITUACAO_PAGAMENTO, brl, parametrosDoPeriodo, resolverPeriodo } from "@/lib/tayssa/financeiro";
+import { dateShort } from "@/lib/tayssa/format";
+import { PeriodoSeletor } from "@/components/tayssa/admin/periodo";
+import { DivisaoTabela, FormasDePagamento } from "@/components/tayssa/admin/financeiro-resumo";
+import { EnviarRelatorio, RevogarLink } from "@/components/tayssa/admin/enviar-relatorio";
 import { getSettings } from "@/lib/tayssa/settings";
 import { ROUTES } from "@/lib/tayssa/config";
-import { dateTime, dayMonth, hhmm, nowInBusinessTz, plural, weekdayShort } from "@/lib/tayssa/format";
+import { dateTime, dayMonth, hhmm, plural, weekdayShort } from "@/lib/tayssa/format";
 import { reais } from "@/lib/tayssa/agendar";
-import { mesLegivel, mesValido, outroMes } from "@/lib/tayssa/relatorios";
 import type { AppointmentStatus } from "@/lib/tayssa/types";
 import { AdminBlock, AdminHeader, Empty } from "@/components/tayssa/admin/shell";
 import { Icone } from "@/components/tayssa/admin/icons";
@@ -12,8 +17,10 @@ import { TransitionLink } from "@/components/tayssa/ui/transition";
 
 /**
  * Relatórios (Lucas, 16/11/2026: "no painel tem que ter relatórios para ela
- * baixar os comprovantes e enviar para a Larissa"). Os comprovantes do
- * sinal de um mês: a lista, o .zip com todos e a planilha.
+ * baixar os comprovantes e enviar para a Larissa"; 17/11/2026: o fechamento
+ * do período). Escolhido o período: os atendimentos, o financeiro, a divisão
+ * Tayssa/Larissa, o detalhamento, o PDF, o link para a Larissa e os
+ * comprovantes do sinal (o .zip e a planilha de antes continuam aqui).
  */
 
 /** "Comprovante enviado" ainda espera a Tayssa conferir; o resto já andou. */
@@ -25,19 +32,7 @@ const TOM: Record<AppointmentStatus, "warn" | "brand" | "ok" | "quiet"> = {
   no_show: "quiet",
 };
 
-function mesAtual(): string {
-  const d = nowInBusinessTz();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-}
 
-function Atalho({ n, label, alerta }: { n: string | number; label: string; alerta?: boolean }) {
-  return (
-    <div className={`tya-card tya-kpi${alerta ? " tya-kpi--alert" : ""}`}>
-      <span className="tya-eyebrow">{label}</span>
-      <p className="tya-kpi__n">{n}</p>
-    </div>
-  );
-}
 
 function Linha({ c }: { c: ComprovanteComArquivo }) {
   return (
@@ -71,19 +66,36 @@ function Linha({ c }: { c: ComprovanteComArquivo }) {
   );
 }
 
-export default async function RelatoriosPage({ searchParams }: { searchParams: Promise<{ mes?: string }> }) {
+const OPCOES = [
+  { tipo: "hoje" as const, rotulo: "Hoje" },
+  { tipo: "semana" as const, rotulo: "Esta semana" },
+  { tipo: "mes" as const, rotulo: "Este mês" },
+  { tipo: "mes-passado" as const, rotulo: "Mês anterior" },
+];
+
+export default async function RelatoriosPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ periodo?: string; data?: string; mes?: string; de?: string; ate?: string }>;
+}) {
   await requireAdminPage();
-  const { mes: pedido } = await searchParams;
-  const atual = mesAtual();
-  // mês que ainda não chegou não tem comprovante: volta para o de agora
-  const mes = mesValido(pedido) && pedido <= atual ? pedido : atual;
-  const [lista, settings] = await Promise.all([getComprovantesDoMes(mes), getSettings()]);
+  const params = await searchParams;
+  const hoje = agoraNaCasa().iso;
+  const periodo = resolverPeriodo(params, hoje, "mes");
+  const [{ lista: atendimentos, resumo }, comprovantes, settings, links] = await Promise.all([
+    getFinanceiroDoPeriodo(periodo.de, periodo.ate),
+    getComprovantesDoPeriodo(periodo.de, periodo.ate),
+    getSettings(),
+    listarLinksDoRelatorio(),
+  ]);
   const sinal = settings.booking.deposit_reais;
-  const paraConferir = lista.filter((c) => c.status === "requested").length;
-  const nome = mesLegivel(mes);
-  const soMes = nome.split(" de ")[0];
-  const anterior = outroMes(mes, -1);
-  const seguinte = outroMes(mes, 1);
+  const larissa = settings.financeiro.larissa_nome || "Larissa";
+  const paraConferir = comprovantes.filter((c) => c.status === "requested").length;
+  const parametros = parametrosDoPeriodo(periodo);
+  const qsPeriodo = new URLSearchParams(parametros).toString();
+  const qsComprovantes = new URLSearchParams({ de: periodo.de, ate: periodo.ate }).toString();
+  const rotulo = periodo.rotulo.charAt(0).toLowerCase() + periodo.rotulo.slice(1);
+  const ordenados = [...atendimentos].sort((a, b) => (a.data + (a.hora ?? "")).localeCompare(b.data + (b.hora ?? "")));
 
   return (
     <>
@@ -91,39 +103,124 @@ export default async function RelatoriosPage({ searchParams }: { searchParams: P
         eyebrow="Relatórios"
         title={
           <>
-            Comprovantes de <em>{soMes}</em>
+            Relatório · <em>{rotulo}</em>
           </>
         }
-        lead="Os comprovantes do sinal que as clientes anexaram no mês. Baixe tudo de uma vez e mande para a Larissa."
+        lead="Escolha o período: os atendimentos, o financeiro, a divisão e os comprovantes do sinal mudam juntos. Baixe em PDF ou mande o link para a Larissa."
       />
 
-      <div className="tya-toolbar">
-        <div className="tya-chips">
-          <a href={`${ROUTES.adminRelatorios}?mes=${anterior}`} className="tya-chip">
-            ‹ {mesLegivel(anterior).split(" de ")[0]}
-          </a>
-          <span className="tya-chip" data-on="true" aria-current="page">
-            {nome}
-          </span>
-          {seguinte <= atual ? (
-            <a href={`${ROUTES.adminRelatorios}?mes=${seguinte}`} className="tya-chip">
-              {mesLegivel(seguinte).split(" de ")[0]} ›
-            </a>
-          ) : null}
+      <section className="tya-sec tya-up">
+        <div className="tya-card tyaf-filtros">
+          <PeriodoSeletor base={ROUTES.adminRelatorios} periodo={periodo} hoje={hoje} opcoes={OPCOES} />
+          <p className="tya-small">Para um dia específico, em “Escolher as datas” use a mesma data em De e Até.</p>
         </div>
-      </div>
+      </section>
 
-      <div className="tya-kpis tya-kpis--2sm tya-kpis--rel tya-stagger">
-        <Atalho n={lista.length} label={plural(lista.length, "Comprovante", "Comprovantes")} />
-        <Atalho n={reais(lista.length * sinal)} label={`Em sinais (${reais(sinal)} cada)`} />
-        <Atalho n={paraConferir} label="Ainda para conferir" alerta={paraConferir > 0} />
-      </div>
+      <AdminBlock id="fechamento" title="Fechamento do período">
+        <div className="tyaenv__acoes">
+          <a href={ROUTES.adminRelatorioPdf(qsPeriodo)} download className="tya-btn tya-btn--ghost">
+            <Icone nome="relatorios" />
+            Baixar relatório em PDF
+          </a>
+          <EnviarRelatorio periodo={parametros} nomeLarissa={larissa} />
+        </div>
+        <p className="tya-small" style={{ marginTop: 10 }}>
+          O link abre uma página só deste relatório (não mostra telefone nem sobrenome de cliente). Ele guarda os números da hora em que foi gerado e você pode desativá-lo quando quiser, aqui embaixo.
+        </p>
+      </AdminBlock>
 
-      <AdminBlock id="baixar" title="Mandar para a Larissa">
+      <AdminBlock title="Resumo de atendimentos">
+        <div className="tyad-fin__numeros tyarel-numeros">
+          <div>
+            <span>Atendimentos realizados</span>
+            <b>{resumo.atendimentos}</b>
+          </div>
+          <div>
+            <span>Clientes atendidas</span>
+            <b>{resumo.clientes}</b>
+          </div>
+          <div>
+            <span>Ticket médio</span>
+            <b>{brl(resumo.ticketMedio)}</b>
+          </div>
+          <div>
+            <span>Faturamento bruto</span>
+            <b>{brl(resumo.bruto)}</b>
+          </div>
+        </div>
+        {resumo.servicos.length ? (
+          <p className="tyar-hist__servicos">
+            <span className="tya-eyebrow">Serviços realizados</span>
+            {resumo.servicos.map((x) => (
+              <span key={x.nome} className="tya-pill tya-pill--quiet">
+                {x.nome} · {x.vezes}x
+              </span>
+            ))}
+          </p>
+        ) : null}
+      </AdminBlock>
+
+      <AdminBlock title="Resumo financeiro">
+        <FormasDePagamento resumo={resumo} />
+      </AdminBlock>
+
+      <AdminBlock title="Divisão">
+        <DivisaoTabela resumo={resumo} larissa={larissa} />
+      </AdminBlock>
+
+      <AdminBlock title="Detalhamento" aside={<span className="tya-small">{ordenados.length} atendimentos</span>}>
+        {ordenados.length ? (
+          <div className="tya-tablewrap tya-tablewrap--bare">
+            <table className="tya-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Cliente</th>
+                  <th>Serviço</th>
+                  <th className="tya-num">Valor</th>
+                  <th>Forma de pagamento</th>
+                  <th>Situação</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ordenados.map((a) => (
+                  <tr key={a.id}>
+                    <td data-rotulo="Data" className="tya-num" style={{ whiteSpace: "nowrap" }}>
+                      {dateShort(a.data)}
+                      {a.hora ? ` ${a.hora}` : ""}
+                    </td>
+                    <td data-rotulo="Cliente">
+                      <TransitionLink href={ROUTES.adminClient(a.clienteId)} className="tya-link">
+                        {a.cliente}
+                      </TransitionLink>
+                    </td>
+                    <td data-rotulo="Serviço">{a.servico}</td>
+                    <td data-rotulo="Valor" className="tya-num">
+                      {a.valor != null ? brl(a.valor) : "—"}
+                    </td>
+                    <td data-rotulo="Forma">{a.formas || "—"}</td>
+                    <td data-rotulo="Situação">{SITUACAO_PAGAMENTO[a.situacao]}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <Empty>Nenhum atendimento realizado neste período.</Empty>
+        )}
+      </AdminBlock>
+
+      <AdminBlock
+        id="comprovantes"
+        title="Comprovantes do sinal"
+        aside={paraConferir ? <span className="tya-pill tya-pill--warn">{paraConferir} para conferir na Agenda</span> : <span className="tya-small">{comprovantes.length} no período</span>}
+      >
+        <p className="tya-small" style={{ marginBottom: 12 }}>
+          {comprovantes.length} {plural(comprovantes.length, "comprovante", "comprovantes")} · {reais(comprovantes.length * sinal)} em sinais ({reais(sinal)} cada)
+        </p>
         <ol className="tya-passos">
           <li>
-            Toque em <b>Baixar os comprovantes</b>: vem um arquivo .zip com todos, cada um com o dia e o nome da
-            cliente.
+            Toque em <b>Baixar os comprovantes</b>: vem um arquivo .zip com todos, cada um com o dia e o nome da cliente.
           </li>
           <li>
             Toque em <b>Baixar a planilha</b>: a lista com cliente, serviço, dia e valor (abre no Excel).
@@ -133,47 +230,54 @@ export default async function RelatoriosPage({ searchParams }: { searchParams: P
           </li>
         </ol>
         <div className="tya-baixar">
-          {lista.length ? (
+          {comprovantes.length ? (
             <>
-              <a href={ROUTES.adminRelatorioComprovantes(mes)} download className="tya-btn tya-btn--primary">
+              <a href={`${ROUTES.adminRelatorios}/comprovantes?${qsComprovantes}`} download className="tya-btn tya-btn--primary">
                 <Icone nome="relatorios" />
                 Baixar os comprovantes (.zip)
               </a>
-              <a href={ROUTES.adminRelatorioPlanilha(mes)} download className="tya-btn tya-btn--ghost">
+              <a href={`${ROUTES.adminRelatorios}/planilha?${qsComprovantes}`} download className="tya-btn tya-btn--ghost">
                 Baixar a planilha
               </a>
             </>
           ) : (
-            <span className="tya-small">Nada para baixar em {soMes}.</span>
+            <span className="tya-small">Nenhum comprovante neste período.</span>
           )}
         </div>
-      </AdminBlock>
-
-      <AdminBlock
-        id="lista"
-        title={`Os comprovantes de ${soMes}`}
-        aside={
-          paraConferir ? (
-            <TransitionLink href={`${ROUTES.adminAgenda}#pedidos`} className="tya-pill tya-pill--warn">
-              {paraConferir} para conferir na Agenda
-            </TransitionLink>
-          ) : null
-        }
-      >
-        {lista.length ? (
-          <ul className="tya-list">
-            {lista.map((c) => (
+        {comprovantes.length ? (
+          <ul className="tya-list" style={{ marginTop: 14 }}>
+            {comprovantes.map((c) => (
               <Linha key={c.id} c={c} />
             ))}
           </ul>
+        ) : null}
+      </AdminBlock>
+
+      <AdminBlock id="links" title="Links enviados" aside={<span className="tya-small">os 20 mais recentes</span>}>
+        {links.length ? (
+          <ul className="tya-list">
+            {links.map((l) => (
+              <li key={l.id} className="tya-item">
+                <div>
+                  <div className="tya-slot__top">
+                    <span className="tya-slot__name">{l.rotulo}</span>
+                    <span className={`tya-pill ${l.revogadoEm ? "tya-pill--quiet" : "tya-pill--ok"}`}>{l.revogadoEm ? "desativado" : "ativo"}</span>
+                  </div>
+                  <p className="tya-slot__meta">
+                    Gerado em {dateTime(l.criadoEm)} · {l.acessos} {plural(l.acessos, "acesso", "acessos")}
+                    {l.ultimoAcesso ? ` · último em ${dateTime(l.ultimoAcesso)}` : ""}
+                  </p>
+                </div>
+                {!l.revogadoEm ? (
+                  <div className="tya-item__acts">
+                    <RevogarLink id={l.id} />
+                  </div>
+                ) : null}
+              </li>
+            ))}
+          </ul>
         ) : (
-          <Empty>
-            <span className="tya-nada">
-              <Icone nome="relatorios" />
-              <b>Nenhum comprovante em {soMes}</b>
-              <span>Quando uma cliente anexar o comprovante do sinal, ele aparece aqui.</span>
-            </span>
-          </Empty>
+          <Empty>Nenhum link gerado ainda. Use “Enviar relatório para {larissa}”.</Empty>
         )}
       </AdminBlock>
     </>
