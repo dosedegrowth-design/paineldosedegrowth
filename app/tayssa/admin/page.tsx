@@ -17,6 +17,7 @@ import { DivisaoTabela } from "@/components/tayssa/admin/financeiro-resumo";
 import { BarrasDeServicos, ColunasDoPeriodo, RoscaDoPeriodo } from "@/components/tayssa/admin/graficos";
 import { fatiasDoPeriodo, serieDoPeriodo, servicosMaisFeitos } from "@/lib/tayssa/graficos";
 import { Conta } from "@/components/tayssa/ui/conta";
+import { AtendimentosDoPeriodo } from "@/components/tayssa/admin/atendimentos-do-periodo";
 
 /** "Hoje · qua, 11/11", "Amanhã · qui, 12/11" ou "sex, 13 de novembro". */
 function rotuloDoDia(iso: string): string {
@@ -64,6 +65,8 @@ export default async function AdminHome({
   const serie = periodo.de === periodo.ate ? null : serieDoPeriodo(fin.lista, periodo.de, periodo.ate, hoje);
   const rosca = fatiasDoPeriodo(r);
   const larissa = settings.financeiro.larissa_nome || "Larissa";
+  const qsPeriodo = new URLSearchParams(parametrosDoPeriodo(periodo)).toString();
+  const rotuloMinusculo = periodo.rotulo.charAt(0).toLowerCase() + periodo.rotulo.slice(1);
   const dias = proximosPorDia(agenda);
   const needs = o.pendingSignups.length + o.appointmentsRequested + o.appointmentsToClose + o.pendingServices + o.referralsInProgress + o.benefitsToValidate + o.benefitsRequested + o.readyForVip.length;
 
@@ -76,25 +79,44 @@ export default async function AdminHome({
         actions={<TyLinkButton href={ROUTES.adminClientNew} size="sm" variant="solid" arrow>Nova cliente</TyLinkButton>}
       />
 
-      <section className="tya-sec tya-up" id="financeiro">
-        <div className="tya-card tyad-fin">
-          <div className="tya-head">
-            <h2>Financeiro</h2>
-            <TransitionLink href={`${ROUTES.adminFinanceiro}?${new URLSearchParams(parametrosDoPeriodo(periodo)).toString()}`} className="ty-link ty-link--caps">
-              Ver financeiro
-            </TransitionLink>
+      {/* o cartão de datas: escolhe o período dos atendimentos e do financeiro (Lucas, 17/11/2026) */}
+      <section className="tya-sec tya-up" id="periodo">
+        <div className="tya-card tyad-datas">
+          <div className="tyad-datas__head">
+            <h2>Escolha a data</h2>
+            <p>Os atendimentos realizados e o financeiro logo abaixo mostram este período.</p>
           </div>
           <PeriodoSeletor
             base={ROUTES.admin}
             periodo={periodo}
             hoje={hoje}
-            ancora="#financeiro"
+            ancora="#periodo"
+            datasAbertas
             opcoes={[
               { tipo: "hoje", rotulo: "Hoje" },
-              { tipo: "semana", rotulo: "Semana" },
-              { tipo: "mes", rotulo: "Mês" },
+              { tipo: "ontem", rotulo: "Ontem" },
+              { tipo: "semana", rotulo: "Esta semana" },
+              { tipo: "mes", rotulo: "Este mês" },
+              { tipo: "mes-passado", rotulo: "Mês passado" },
             ]}
           />
+        </div>
+      </section>
+
+      <section className="tya-sec tya-up" id="atendimentos-realizados">
+        <div className="tya-card">
+          <AtendimentosDoPeriodo lista={fin.lista} hoje={hoje} rotulo={rotuloMinusculo} verTodos={`${ROUTES.adminServices}?${qsPeriodo}`} />
+        </div>
+      </section>
+
+      <section className="tya-sec tya-up" id="financeiro">
+        <div className="tya-card tyad-fin">
+          <div className="tya-head">
+            <h2>Financeiro · {rotuloMinusculo}</h2>
+            <TransitionLink href={`${ROUTES.adminFinanceiro}?${qsPeriodo}`} className="ty-link ty-link--caps">
+              Ver financeiro
+            </TransitionLink>
+          </div>
           <div className="tyad-fin__resumo">
             <div className="tyad-fin__hero">
               <span>Faturamento total</span>

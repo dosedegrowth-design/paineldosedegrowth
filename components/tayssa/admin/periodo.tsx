@@ -14,6 +14,7 @@ export function PeriodoSeletor({
   opcoes,
   manter = {},
   ancora = "",
+  datasAbertas = false,
 }: {
   base: string;
   periodo: Periodo;
@@ -21,6 +22,8 @@ export function PeriodoSeletor({
   opcoes: { tipo: TipoPeriodo; rotulo: string }[];
   manter?: Record<string, string | undefined>;
   ancora?: string;
+  /** De e Até sempre à vista (o cartão de datas da Visão geral), sem o "Escolher as datas" */
+  datasAbertas?: boolean;
 }) {
   const fixos = Object.fromEntries(Object.entries(manter).filter(([, v]) => v)) as Record<string, string>;
   const link = (p: Periodo) => `${base}?${new URLSearchParams({ ...fixos, ...parametrosDoPeriodo(p) }).toString()}${ancora}`;
@@ -52,26 +55,37 @@ export function PeriodoSeletor({
           </svg>
         </Link>
       </div>
-      <details className="tyap__livre" open={periodo.tipo === "personalizado" || undefined}>
-        <summary>Escolher as datas</summary>
-        <form method="get" action={base} className="tyap__form">
-          {Object.entries(fixos).map(([k, v]) => (
-            <input key={k} type="hidden" name={k} value={v} />
-          ))}
-          <input type="hidden" name="periodo" value="personalizado" />
-          <label>
-            <span>De</span>
-            <input type="date" name="de" defaultValue={periodo.de} className="tya-field" required />
-          </label>
-          <label>
-            <span>Até</span>
-            <input type="date" name="ate" defaultValue={periodo.ate} className="tya-field" required />
-          </label>
-          <button type="submit" className="tya-btn tya-btn--ghost">
-            Ver o período
-          </button>
-        </form>
-      </details>
+      {datasAbertas ? (
+        <FormDatas base={base} ancora={ancora} fixos={fixos} periodo={periodo} aberto />
+      ) : (
+        <details className="tyap__livre" open={periodo.tipo === "personalizado" || undefined}>
+          <summary>Escolher as datas</summary>
+          <FormDatas base={base} ancora={ancora} fixos={fixos} periodo={periodo} />
+        </details>
+      )}
     </div>
+  );
+}
+
+/** De e Até: formulário GET (funciona sem JavaScript) que volta para o mesmo lugar da página. */
+function FormDatas({ base, ancora, fixos, periodo, aberto = false }: { base: string; ancora: string; fixos: Record<string, string>; periodo: Periodo; aberto?: boolean }) {
+  return (
+    <form method="get" action={`${base}${ancora}`} className={`tyap__form${aberto ? " tyap__form--aberto" : ""}`}>
+      {Object.entries(fixos).map(([k, v]) => (
+        <input key={k} type="hidden" name={k} value={v} />
+      ))}
+      <input type="hidden" name="periodo" value="personalizado" />
+      <label>
+        <span>De</span>
+        <input type="date" name="de" defaultValue={periodo.de} className="tya-field" required />
+      </label>
+      <label>
+        <span>Até</span>
+        <input type="date" name="ate" defaultValue={periodo.ate} className="tya-field" required />
+      </label>
+      <button type="submit" className="tya-btn tya-btn--ghost">
+        Ver o período
+      </button>
+    </form>
   );
 }

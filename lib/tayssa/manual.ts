@@ -724,13 +724,32 @@ export const MANUAL: CategoriaDoManual[] = [
         titulo: "A Visão geral",
         onde: ["Visão geral"],
         texto:
-          "É a tela de abrir o dia. No alto, o *Financeiro* do período (*Hoje*, *Semana*, *Mês* ou as datas que quiser): o faturamento total em destaque, os atendimentos realizados, o ticket médio, o valor recebido e o pendente. Embaixo, os gráficos: *Faturamento por dia* (uma coluna por dia; toque numa coluna para ver o valor e quantos atendimentos teve), *Como entrou o dinheiro* (a rosca com Pix, dinheiro, cartão e o que ainda falta receber, e no meio quanto já entrou), *Serviços mais feitos* e a *Divisão* Tayssa/Larissa, com a barrinha do quanto cada uma já recebeu. Depois, o que espera você, os *Próximos horários*, as *Novas clientes*, quem está *Pronta para VIP*, os aniversários, quem sumiu e os últimos movimentos.",
+          "É a tela de abrir o dia. No alto, o cartão *Escolha a data* (*Hoje*, *Ontem*, *Esta semana*, *Este mês*, *Mês passado* ou *De* e *Até*): ele muda os dois cartões de baixo. Primeiro, *Atendimentos realizados*: quem você atendeu no período. Depois, o *Financeiro* do período: o faturamento total em destaque, os atendimentos realizados, o ticket médio, o valor recebido e o pendente. Embaixo, os gráficos: *Faturamento por dia* (uma coluna por dia; toque numa coluna para ver o valor e quantos atendimentos teve), *Como entrou o dinheiro* (a rosca com Pix, dinheiro, cartão e o que ainda falta receber, e no meio quanto já entrou), *Serviços mais feitos* e a *Divisão* Tayssa/Larissa, com a barrinha do quanto cada uma já recebeu. Depois, o que espera você, os *Próximos horários*, as *Novas clientes*, quem está *Pronta para VIP*, os aniversários, quem sumiu e os últimos movimentos.",
         imagem: {
           src: "/tayssa/manual/visao-geral.webp",
           alt: "Visão geral com o faturamento do mês em destaque e o gráfico de colunas do faturamento por dia",
           largura: 780,
           altura: 1500,
           legenda: "A Visão geral abre com o financeiro e os gráficos do período.",
+        },
+      },
+      {
+        id: "quem-atendi",
+        titulo: "Ver quem você atendeu num dia ou período",
+        onde: ["Visão geral", "Escolha a data"],
+        passos: [
+          "Abra a *Visão geral* (no celular, *Início*). No cartão *Escolha a data*, toque em *Hoje*, *Ontem*, *Esta semana*, *Este mês* ou *Mês passado*; as setas levam ao dia, à semana ou ao mês ao lado.",
+          "Para outras datas, preencha *De* e *Até* e toque em *Ver o período* (um dia só: a mesma data nos dois).",
+          "Logo embaixo, *Atendimentos realizados* mostra quem você atendeu, separado por dia: a hora, o nome (toque para abrir a ficha), o serviço, o valor e se está *Pago* ou *Pendente*.",
+          "Mais de 10 no período? Toque em *Ver os atendimentos do período*: abre *Atendimentos realizados* com as mesmas datas.",
+        ],
+        dica: "O *Financeiro* logo abaixo usa o mesmo período. Cancelamento e falta não aparecem: só quem foi atendida.",
+        imagem: {
+          src: "/tayssa/manual/quem-atendi.webp",
+          alt: "Cartão Escolha a data e, embaixo, os atendimentos realizados do período separados por dia",
+          largura: 780,
+          altura: 1500,
+          legenda: "Escolha a data e veja quem você atendeu.",
         },
       },
       {

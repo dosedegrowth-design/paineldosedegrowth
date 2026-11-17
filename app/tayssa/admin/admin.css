@@ -4904,3 +4904,165 @@ a.tya-kpi {
 .tyad-fin__tiles b {
   font-weight: 650;
 }
+
+/* Visão geral: o cartão de datas e o "quem eu atendi" (Lucas, 17/11/2026:
+   "ela escolhe a data e vê quem ela atendeu nesse período") */
+.tyad-datas {
+  display: grid;
+  gap: 14px;
+}
+.tyad-datas__head h2 {
+  margin: 0;
+  font-family: var(--t-font-display);
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--tya-ink);
+}
+.tyad-datas__head p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--tya-muted);
+}
+.tyap__form--aberto {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: end;
+  margin-top: 2px;
+  padding-top: 14px;
+  border-top: 1px solid var(--tya-line-soft);
+}
+.tyap__form--aberto .tya-field {
+  width: 100%;
+  min-width: 0;
+}
+@media (max-width: 560px) {
+  .tyap__form--aberto {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .tyap__form--aberto .tya-btn {
+    grid-column: 1 / -1;
+    justify-content: center;
+    min-height: 46px;
+  }
+}
+.tyad-quem {
+  display: grid;
+  gap: 12px;
+}
+.tyad-quem__resumo {
+  display: grid;
+  gap: 2px;
+  margin: -6px 0 0;
+  font-size: 13px;
+  color: var(--tya-muted);
+}
+.tyad-quem__resumo b {
+  font-weight: 600;
+  color: var(--tya-ink-2);
+}
+.tyad-quem__dias {
+  display: grid;
+  gap: 16px;
+}
+.tyad-quem__dia h3 {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--tya-muted);
+}
+.tyad-quem__dia ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  border: 1px solid var(--tya-line-soft);
+  border-radius: var(--tya-radius-sm);
+  overflow: hidden;
+}
+.tyad-quem__dia li {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  background: var(--tya-surface);
+  animation: tya-up 0.5s var(--tya-ease) both;
+}
+.tyad-quem__dia li + li {
+  border-top: 1px solid var(--tya-line-soft);
+}
+.tyad-quem__hora {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tya-brand);
+}
+.tyad-quem__corpo {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+.tyad-quem__nome {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--tya-ink);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+@media (hover: hover) and (pointer: fine) {
+  .tyad-quem__nome:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+.tyad-quem__servico {
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: var(--tya-muted);
+}
+.tyad-quem__valor {
+  display: grid;
+  justify-items: end;
+  gap: 3px;
+}
+.tyad-quem__valor b {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--tya-ink);
+  white-space: nowrap;
+}
+.tyad-quem__vazio {
+  margin: 0;
+  padding: 14px;
+  border-radius: var(--tya-radius-sm);
+  background: var(--tya-surface-2);
+  font-size: 13.5px;
+  color: var(--tya-muted);
+}
+.tyad-quem__mais {
+  justify-self: start;
+}
+@media (max-width: 560px) {
+  .tyad-quem__mais {
+    justify-self: stretch;
+    justify-content: center;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tyad-quem__dia li {
+    animation: none;
+  }
+}
+.tyad-quem__hora[data-sem-hora] {
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--tya-muted-2);
+}
+@media (min-width: 900px) {
+  .tyap__form--aberto {
+    grid-template-columns: minmax(0, 220px) minmax(0, 220px) auto;
+    justify-content: start;
+  }
+}
