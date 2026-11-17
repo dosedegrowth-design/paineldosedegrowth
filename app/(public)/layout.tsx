@@ -23,6 +23,9 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             <Link href="/termos" className="text-muted-foreground hover:text-foreground">
               Termos
             </Link>
+            <Link href="/seguranca" className="text-muted-foreground hover:text-foreground">
+              Segurança
+            </Link>
             <Link href="/excluir-dados" className="text-muted-foreground hover:text-foreground">
               Excluir Dados
             </Link>

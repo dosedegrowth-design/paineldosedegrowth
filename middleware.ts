@@ -191,6 +191,7 @@ export async function middleware(request: NextRequest) {
     "/apostilas",
     // Páginas legais públicas (Meta + LGPD)
     "/privacidade",
+    "/seguranca",
     "/termos",
     "/excluir-dados",
     // LP pública da Tayssa (verificação de anunciante/BM Meta)
