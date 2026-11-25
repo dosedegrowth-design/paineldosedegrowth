@@ -15,6 +15,12 @@
  * 25/11 (Lucas: "peça nenhuma pode cortar a cabeça"): 9 fotos tinham a cabeça
  * na borda. Fundo estendido por IA (nano-banana-2) só fora da foto; a foto
  * original foi colada por cima, sem mudar roupa nem modelo.
+ *
+ * 25/11 tarde (respostas da Bia): 5 fotos de Feed trocadas pelas que ela colocou
+ * na pasta Carrossel (Chemise e Calça Onça, Camisa Ana Tijolo, Vestido Luiza,
+ * Caftan e Camisa Ana Rei Rainha). Camisa T Tijolo refeita como ela pediu
+ * (modelo centralizada nos dois formatos, barra da camisa inteira no Feed) e
+ * reenviada com id novo "tijolo-camisa-t-v2"; a resposta antiga fica no banco.
  */
 
 import type { AnuncioNovo } from "@/lib/marina/aprovar";
@@ -48,7 +54,7 @@ export const NOVOS: AnuncioNovo[] = [
   faz("onca-chemise-calca", "Chemise Onça e Calça Onça", "vestido", "ONÇA",
     "O animal print nunca sai de moda e está com nova cara no Chemise Onça + Calça Onça 100% linho, perfeito para viver o verão."),
   // ---- Tijolo (páginas 4 a 7) ----
-  faz("tijolo-camisa-t", "Camisa T Tijolo", "camisa", "TIJOLO",
+  faz("tijolo-camisa-t-v2", "Camisa T Tijolo", "camisa", "TIJOLO",
     "A Camisa T na estampa Tijolo. Feita 100% em seda com modelagem moderna fora do básico, sem perder elegância."),
   faz("tijolo-vestido-asa", "Vestido Asa Tijolo", "vestido", "TIJOLO",
     "Versátil e elegante, Vestido Asa Tijolo feito 100% seda tem modelagem exclusiva com o DNA Marina Saleme."),
@@ -66,21 +72,21 @@ export const NOVOS: AnuncioNovo[] = [
     "Top Lelê estampa Paraíso, modelo único com mangas amplas, fora do óbvio, mas com a elegância do 100% seda."),
 ];
 
-const RECORTE = "O Feed é um recorte nosso da foto de Reels (essa veio só em 9:16). Se preferirem outra foto para o Feed, digam no comentário.";
-
 const FUNDO = (onde: string) =>
   `Na foto ${onde}, a cabeça encostava na borda. Aumentamos só o fundo acima dela para não cortar; a roupa e a modelo são a foto original.`;
 
+const DA_PASTA = "Feed: a foto que vocês colocaram na pasta.";
+
 /** Avisos que aparecem em laranja no card. */
 export const CONFERIR: Record<string, string> = {
-  "onca-chemise-calca": RECORTE,
-  "tijolo-camisa-t": `${RECORTE} ${FUNDO("de Feed e na de Reels")}`,
-  "rei-rainha-caftan": RECORTE,
-  "rei-rainha-camisa-ana": `${RECORTE} ${FUNDO("de Feed e na de Reels")}`,
+  "tijolo-camisa-t-v2": "Refeita como pediram: modelo centralizada no Feed e no Reels e, no Feed, a barra da camisa inteira. Para centralizar, aumentamos só o fundo nas laterais e em cima; a roupa e a modelo são a foto original.",
+  "onca-chemise-calca": DA_PASTA,
+  "tijolo-vestido-luiza": DA_PASTA,
+  "rei-rainha-caftan": DA_PASTA,
+  "tijolo-camisa-ana": `${DA_PASTA} ${FUNDO("de Reels")}`,
+  "rei-rainha-camisa-ana": `${DA_PASTA} ${FUNDO("de Reels")}`,
   "onca-regata-saia-degrau": FUNDO("de Feed"),
-  "tijolo-camisa-ana": FUNDO("de Feed e na de Reels"),
   "tijolo-vestido-asa": FUNDO("de Feed"),
-  "tijolo-vestido-luiza": FUNDO("de Feed"),
 };
 
 export const TODOS = NOVOS.map((a) => ({ id: a.id, nome: a.peca }));
