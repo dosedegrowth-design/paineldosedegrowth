@@ -3,13 +3,13 @@
  *
  * "no-ar"  → o que está rodando hoje na conta Marina Saleme - 02. Manter / Tirar.
  * "novos"  → os anúncios montados com as fotos do Drive. Fica / Sai.
- * "dezembro" → estampas novas (Onça, Tijolo, Rei Rainha, Paraíso), 24/11/2026.
+ * "novembro" → estampas novas (Onça, Tijolo, Rei Rainha, Paraíso), 24/11/2026.
  *
  * A resposta é por item e a última vale. Sem login: o link é o segredo,
  * como no briefing da Bia.
  */
 
-export const LINKS = ["no-ar", "novos", "dezembro"] as const;
+export const LINKS = ["no-ar", "novos", "novembro"] as const;
 export type Link = (typeof LINKS)[number];
 
 /** 'sim' = Manter/Fica · 'nao' = Tirar/Sai · null = ainda não respondeu. */
@@ -26,7 +26,7 @@ export const ROTULOS: Record<
 > = {
   "no-ar": { sim: "Manter", nao: "Tirar", simPlural: "para manter", naoPlural: "para tirar" },
   novos: { sim: "Aprovado", nao: "Recusado", simPlural: "aprovados", naoPlural: "recusados" },
-  dezembro: { sim: "Aprovado", nao: "Recusado", simPlural: "aprovados", naoPlural: "recusados" },
+  novembro: { sim: "Aprovado", nao: "Recusado", simPlural: "aprovados", naoPlural: "recusados" },
 };
 
 export const LIMITE_COMENTARIO = 500;

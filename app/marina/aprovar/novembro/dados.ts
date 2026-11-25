@@ -11,11 +11,15 @@
  * Tijolo, Caftan e Camisa Ana Rei Rainha) só vieram em 9:16: o Feed delas
  * é um recorte nosso da mesma foto, a partir do topo, sem cortar cabeça.
  * O campo CONFERIR avisa isso no card.
+ *
+ * 25/11 (Lucas: "peça nenhuma pode cortar a cabeça"): 9 fotos tinham a cabeça
+ * na borda. Fundo estendido por IA (nano-banana-2) só fora da foto; a foto
+ * original foi colada por cima, sem mudar roupa nem modelo.
  */
 
 import type { AnuncioNovo } from "@/lib/marina/aprovar";
 
-const D = "/marina/aprovar/dezembro";
+const D = "/marina/aprovar/novembro";
 const BOTAO = "Comprar agora";
 
 const faz = (
@@ -64,12 +68,19 @@ export const NOVOS: AnuncioNovo[] = [
 
 const RECORTE = "O Feed é um recorte nosso da foto de Reels (essa veio só em 9:16). Se preferirem outra foto para o Feed, digam no comentário.";
 
+const FUNDO = (onde: string) =>
+  `Na foto ${onde}, a cabeça encostava na borda. Aumentamos só o fundo acima dela para não cortar; a roupa e a modelo são a foto original.`;
+
 /** Avisos que aparecem em laranja no card. */
 export const CONFERIR: Record<string, string> = {
   "onca-chemise-calca": RECORTE,
-  "tijolo-camisa-t": RECORTE,
+  "tijolo-camisa-t": `${RECORTE} ${FUNDO("de Feed e na de Reels")}`,
   "rei-rainha-caftan": RECORTE,
-  "rei-rainha-camisa-ana": RECORTE,
+  "rei-rainha-camisa-ana": `${RECORTE} ${FUNDO("de Feed e na de Reels")}`,
+  "onca-regata-saia-degrau": FUNDO("de Feed"),
+  "tijolo-camisa-ana": FUNDO("de Feed e na de Reels"),
+  "tijolo-vestido-asa": FUNDO("de Feed"),
+  "tijolo-vestido-luiza": FUNDO("de Feed"),
 };
 
 export const TODOS = NOVOS.map((a) => ({ id: a.id, nome: a.peca }));

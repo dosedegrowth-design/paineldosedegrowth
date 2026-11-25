@@ -11,8 +11,8 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function AprovarDezembroPage() {
-  const salvas = await getRespostas("dezembro");
+export default async function AprovarNovembroPage() {
+  const salvas = await getRespostas("novembro");
 
   const itens: ItemAprovar[] = NOVOS.map((a) => ({
     id: a.id,
@@ -63,7 +63,7 @@ export default async function AprovarDezembroPage() {
 
       <div className="mt-6">
         <Aprovar
-          link="dezembro"
+          link="novembro"
           titulo="Marina Saleme · estampas novas"
           itens={itens}
           salvas={salvas}

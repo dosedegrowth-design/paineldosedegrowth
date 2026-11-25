@@ -13,6 +13,10 @@ const storage = (() => {
 const storageLocal = storage ? ["localhost", "127.0.0.1"].includes(storage.hostname) : false;
 
 const nextConfig: NextConfig = {
+  // o link de aprovação da Marina saiu como /dezembro e virou /novembro (25/11/2026)
+  async redirects() {
+    return [{ source: "/marina/aprovar/dezembro", destination: "/marina/aprovar/novembro", permanent: false }];
+  },
   images: {
     remotePatterns: [
       // fotos da Tayssa Lash (Supabase Storage, bucket público)
