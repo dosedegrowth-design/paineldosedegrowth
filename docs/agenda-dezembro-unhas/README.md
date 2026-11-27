@@ -35,3 +35,9 @@ Prints da busca "agenda de dezembro aberta" no Instagram (`referencias/`): capas
 - Chamadas: "Tudo que você precisa saber", "Protocolos de atendimento", "Deslize para conferir as orientações", "Aberta!".
 
 Os dois prints marcados com rabisco verde foram riscados pelo Lucas (fora da referência).
+
+Mais uma referência (só referência, **não copiar**): https://www.instagram.com/p/DfqXH6-jgIH/
+
+## Pendente
+
+- Foto da profissional e o @ do Instagram dela (o Lucas vai mandar). O carrossel é dela.
