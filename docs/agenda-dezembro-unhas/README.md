@@ -38,7 +38,21 @@ Os dois prints marcados com rabisco verde foram riscados pelo Lucas (fora da ref
 
 Mais uma referência (só referência, **não copiar**): https://www.instagram.com/p/DfqXH6-jgIH/
 
-## Pendente
+## Carrossel (feito em 27/11/2026)
 
-- Profissional: nail designer, Instagram @snts_beauty (https://www.instagram.com/snts_beauty/). O carrossel é dela.
-- Foto dela: o Lucas vai mandar.
+5 lâminas em 1080 x 1350 para o Instagram da Thais (@snts_beauty, "Thais // Nail Designer", SP; bio: manicure, pedicure e extensionista de unhas, massoterapeuta, agendamentos via direct).
+
+- `laminas/`: as 5 lâminas na ordem do post (`snts-dezembro-01.jpg` a `05`). `visao-geral.jpg`: as 5 lado a lado. `legenda.txt`: a legenda.
+- `gerador/`: o que monta as lâminas. Para refazer: `cd gerador && NODE_PATH=$(npm root -g) node build.mjs && python3 reduz.py .` (ou `node build.mjs 3` para uma só). Renderiza em 2x e reduz para 1080 x 1350; sai em `gerador/out/`.
+
+1. **Capa:** "Agenda de" + DEZEMBRO inteiro acima da cabeça dela (o Lucas pediu o título visível e harmônico, nada escondido atrás da foto). Foto da blusa preta e batom vermelho, recortada; o laço da frente é recortado do próprio fundo e esconde o corte reto do ombro. "Tudo o que você precisa saber para garantir o seu horário".
+2. **Horário de atendimento:** 07h às 21h e o calendário de dezembro de 2026 (começa numa terça, semana a partir do domingo) com 02/12 (quarta) e 14/12 (segunda) marcados: não haverá atendimento.
+3. **Valores · Extensão e gel:** aplicação simples/decorada, manutenção simples/decorada, banho de gel, manutenção banho de gel e a faixa "Manutenção de unhas feitas por outra profissional + R$ 30".
+4. **Valores · Esmaltação e tradicionais:** esmaltação em gel (pé e mão), manicure, pedicure e combo tradicional.
+5. **Final:** foto da blusa azul **quadrada** (o Lucas pediu sem o arco), "Garanta o seu horário", "Agendamentos e informações pelo direct", @snts_beauty.
+
+**Visual (próprio dela, não copia nenhuma referência nem o carrossel da Tayssa):** cetim marfim e cetim cereja com laços de cetim (as fotos de unha dela são em cetim branco e o post de Dia dos Namorados dela é vermelho com serifa fina); cartões de menu marfim com fio duplo cereja e pontilhado até o valor. Fontes: Cormorant Garamond (números com os algarismos da Cormorant Infant, porque a do Google só tem os de estilo antigo, em que o 1 parece um I), Pinyon Script e Montserrat.
+
+- **Fundos e recortes:** fundos de cetim gerados no Magnific (plano grátis, 1K, ampliados para 2160 x 2700); recorte da foto e do laço também no Magnific. A chave da kie.ai deste ambiente deu 401.
+- **Não usada:** a terceira foto (selfie de quarto, mais escura e com menos nitidez).
+- **Não inventar:** sinal, tolerância, abertura da agenda, prazos de cancelamento e o que entra no combo não foram passados; não estão no carrossel.
