@@ -71,20 +71,20 @@ body { font-feature-settings: "lnum" 1; font-variant-numeric: lining-nums; font-
 .hor .horas { left: 0; right: 0; top: 372px; text-align: center; color: var(--creme); font: 500 158px/1 var(--serif); letter-spacing: -.01em; }
 .hor .horas em { font: italic 400 76px/1 var(--serif); margin: 0 18px; opacity: .9; }
 .hor .horas-leg { left: 0; right: 0; top: 530px; display: flex; justify-content: center; gap: 250px; color: var(--rose); }
-.cal { position: absolute; left: 110px; right: 110px; top: 600px; background: var(--perola); padding: 40px 54px 40px; box-shadow: 0 30px 60px rgba(40,0,6,.35); }
+.cal { position: absolute; left: 100px; right: 100px; top: 566px; background: var(--perola); padding: 40px 54px 40px; box-shadow: 0 30px 60px rgba(40,0,6,.35); }
 .cal::before { content: ''; position: absolute; inset: 14px; border: 1.5px solid rgba(138,16,32,.45); pointer-events: none; }
-.cal__cab { display: flex; align-items: baseline; justify-content: center; gap: 18px; color: var(--cereja); margin-bottom: 18px; }
+.cal__cab { display: flex; align-items: baseline; justify-content: center; gap: 18px; color: var(--cereja); margin-bottom: 12px; }
 .cal__cab .script { font-size: 78px; }
 .cal__cab .rotulo { font-size: 18px; }
 .cal__grade { display: grid; grid-template-columns: repeat(7, 1fr); row-gap: 6px; text-align: center; }
 .cal__grade .sem { font: 600 17px/1 var(--sans); letter-spacing: .1em; color: var(--cereja); opacity: .75; padding-bottom: 12px; }
-.cal__grade .d { font: 500 34px/62px var(--serif); color: var(--tinta); height: 62px; position: relative; }
+.cal__grade .d { font: 500 33px/56px var(--serif); color: var(--tinta); height: 56px; position: relative; }
 .cal__grade .d.fora { visibility: hidden; }
 .cal__grade .d.folga { color: var(--creme); }
-.cal__grade .d span { position: relative; display: inline-block; width: 60px; height: 60px; line-height: 60px; border-radius: 50%; }
+.cal__grade .d span { position: relative; display: inline-block; width: 56px; height: 56px; line-height: 56px; border-radius: 50%; }
 .cal__grade .d.folga span { background: var(--cereja); color: var(--creme); font-weight: 600; }
 .cal__grade .d.folga span::after { content: ''; position: absolute; left: -8px; right: -8px; top: 50%; height: 2px; background: var(--creme); transform: rotate(-38deg); opacity: .9; }
-.cal__leg { margin-top: 22px; padding-top: 22px; border-top: 1px solid rgba(138,16,32,.25); display: flex; align-items: center; gap: 20px; }
+.cal__leg { margin-top: 16px; padding-top: 18px; border-top: 1px solid rgba(138,16,32,.25); display: flex; align-items: center; gap: 20px; }
 .cal__leg .bola { width: 30px; height: 30px; border-radius: 50%; background: var(--cereja); flex: none; }
 .cal__leg p { font: 500 30px/1.25 var(--serif); color: var(--tinta); }
 .cal__leg p b { color: var(--cereja); font-weight: 700; }
@@ -111,3 +111,8 @@ body { font-feature-settings: "lnum" 1; font-variant-numeric: lining-nums; font-
 /* horários: título à esquerda, longe do laço */
 .hor .tit { left: 80px !important; right: auto !important; text-align: left !important; }
 .hor .horas { left: 80px !important; right: auto !important; text-align: left !important; }
+
+.cal__taxa { margin-top: 16px; display: flex; align-items: center; gap: 18px; }
+.cal__taxa .selo { flex: none; background: var(--cereja); color: var(--creme); font: 600 30px/1 var(--serif); padding: 10px 16px 11px; white-space: nowrap; }
+.cal__taxa p { font: 500 30px/1.22 var(--serif); color: var(--tinta); }
+.cal__taxa p b { color: var(--cereja); font-weight: 700; }

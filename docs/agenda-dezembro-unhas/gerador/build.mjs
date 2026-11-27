@@ -48,6 +48,7 @@ function horarios() {
       <div class="cal__cab"><span class="script">Dezembro</span><span class="rotulo">2026</span></div>
       <div class="cal__grade">${dias}</div>
       <div class="cal__leg"><span class="bola"></span><p><b>02/12</b> (quarta) e <b>14/12</b> (segunda): não haverá atendimento.</p></div>
+      <div class="cal__taxa"><span class="selo">+ R$ 30</span><p>O <b>primeiro</b> e o <b>último</b> horário de qualquer dia têm adicional de R$ 30.</p></div>
     </div>
     ${pe('creme')}`;
 }

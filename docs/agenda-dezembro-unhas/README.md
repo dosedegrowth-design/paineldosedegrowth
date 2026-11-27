@@ -46,7 +46,7 @@ Mais uma referência (só referência, **não copiar**): https://www.instagram.c
 - `gerador/`: o que monta as lâminas. Para refazer: `cd gerador && NODE_PATH=$(npm root -g) node build.mjs && python3 reduz.py .` (ou `node build.mjs 3` para uma só). Renderiza em 2x e reduz para 1080 x 1350; sai em `gerador/out/`.
 
 1. **Capa:** "Agenda de" + DEZEMBRO inteiro acima da cabeça dela (o Lucas pediu o título visível e harmônico, nada escondido atrás da foto). Foto da blusa preta e batom vermelho, recortada; o laço da frente é recortado do próprio fundo e esconde o corte reto do ombro. "Tudo o que você precisa saber para garantir o seu horário".
-2. **Horário de atendimento:** 07h às 21h e o calendário de dezembro de 2026 (começa numa terça, semana a partir do domingo) com 02/12 (quarta) e 14/12 (segunda) marcados: não haverá atendimento.
+2. **Horário de atendimento:** 07h às 21h e o calendário de dezembro de 2026 (começa numa terça, semana a partir do domingo) com 02/12 (quarta) e 14/12 (segunda) marcados: não haverá atendimento. Embaixo, no mesmo cartão: "+ R$ 30 · O primeiro e o último horário de qualquer dia têm adicional de R$ 30".
 3. **Valores · Extensão e gel:** aplicação simples/decorada, manutenção simples/decorada, banho de gel, manutenção banho de gel e a faixa "Manutenção de unhas feitas por outra profissional + R$ 30".
 4. **Valores · Esmaltação e tradicionais:** esmaltação em gel (pé e mão), manicure, pedicure e combo tradicional.
 5. **Final:** foto da blusa azul **quadrada** (o Lucas pediu sem o arco), "Garanta o seu horário", "Agendamentos e informações pelo direct", @snts_beauty.
