@@ -1,6 +1,6 @@
 # Agenda de Dezembro (unhas)
 
-Informações passadas pelo Lucas em 27/11/2026 para guardar. Ainda **não foi dito de qual profissional é** (serviços de unha, não é a Tayssa, que faz cílios). Confirmar antes de usar.
+Informações passadas pelo Lucas em 27/11/2026. Profissional: **@snts_beauty** (nails). Carrossel "Agenda de Dezembro" para ela.
 
 ## Valores
 
@@ -40,4 +40,5 @@ Mais uma referência (só referência, **não copiar**): https://www.instagram.c
 
 ## Pendente
 
-- Foto da profissional e o @ do Instagram dela (o Lucas vai mandar). O carrossel é dela.
+- Profissional: nail designer, Instagram @snts_beauty (https://www.instagram.com/snts_beauty/). O carrossel é dela.
+- Foto dela: o Lucas vai mandar.
