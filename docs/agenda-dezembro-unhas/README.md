@@ -23,6 +23,7 @@ Informações passadas pelo Lucas em 27/11/2026. Profissional: **@snts_beauty** 
 
 - Horário de atendimento: **das 07h às 21h**.
 - **Dias 02 e 14 de dezembro: não haverá atendimento.**
+- **O primeiro e o último horário de qualquer dia têm adicional de R$ 30** (Lucas, 27/11/2026).
 
 ## Referências visuais
 
