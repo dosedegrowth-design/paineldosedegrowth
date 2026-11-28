@@ -203,6 +203,26 @@ export type WhatsappTemplates = {
   benefit_request: string;
   birthday_request: string;
   inactive_outreach: string;
+  /**
+   * As respostas prontas da Tayssa (Lucas, 28/11/2026: "todas as mensagens
+   * vão ter que ter a que a cliente manda, pra Tayssa saber, e a resposta
+   * genérica que ela tem que dar"). Uma para cada recado que chega pelo
+   * site; ela copia em Configurações › Mensagens de WhatsApp. Sem o nome da
+   * cliente (ela copia sem o painel saber para quem); `{regra}` vira a regra
+   * do VIP. `resp_cadastro` também é o "Mandar saudação" da cliente nova.
+   */
+  resp_public_schedule: string;
+  resp_agendamento: string;
+  resp_cadastro: string;
+  resp_public_vip_info: string;
+  resp_public_refer: string;
+  resp_falar: string;
+  resp_vip_support: string;
+  resp_vip_refer: string;
+  resp_benefit_request: string;
+  resp_birthday_request: string;
+  resp_horario: string;
+  resp_link_vencido: string;
 };
 
 export type LoyaltySettings = {
@@ -373,6 +393,27 @@ export const DEFAULT_SETTINGS: Settings = {
       "Oi, Tayssa! Aqui é {name} e quero agendar meu benefício de aniversário.",
     inactive_outreach:
       "Oi, {name}! Faz um tempinho que não te vejo por aqui. Que tal marcarmos sua próxima manutenção?",
+    resp_public_schedule:
+      "Oi, tudo bem? Que bom que você quer vir! Você marca direto pelo site, em Agendar: escolhe o serviço, o dia e o horário, e ele fica reservado para você. Depois é só pagar o sinal no Pix e anexar o comprovante ali mesmo. tayssafarias.com.br",
+    resp_agendamento:
+      "Oi! Recebi o seu agendamento e o comprovante, obrigada! Vou conferir o Pix e já te mando a confirmação com o endereço e as informações do atendimento.",
+    resp_cadastro:
+      "Oi! Que bom ter você aqui! Isso mesmo: o VIP é para as minhas clientes fixas, são {regra}. Na sua conta você acompanha quanto falta e, quando completar, eu ativo o seu VIP, com prioridade na minha agenda e presente no mês do seu aniversário.\n\nEnquanto isso, sua conta já está pronta para marcar seus horários: é só entrar no site com o seu WhatsApp e a senha que você criou. tayssafarias.com.br",
+    resp_public_vip_info:
+      "Oi! O VIP é para as minhas clientes fixas: são {regra}. Quem é VIP tem prioridade na minha agenda e presente no mês do aniversário. Para começar, é só fazer o seu cadastro no site e marcar o primeiro horário. tayssafarias.com.br",
+    resp_public_refer:
+      "Oi! Muito obrigada pela indicação, fico muito feliz! Quando ela fizer o primeiro atendimento comigo, eu confirmo a sua indicação.",
+    resp_falar:
+      "Oi! Tudo bem? Me conta como posso te ajudar. Se for a senha, eu te mando um link para você criar uma nova.",
+    resp_vip_support: "Oi! Tudo bem? Me conta, como posso te ajudar?",
+    resp_vip_refer: "Oi! Que alegria, obrigada por indicar! Me manda o nome e o WhatsApp dela que eu chamo.",
+    resp_benefit_request:
+      "Oi! Que bom! Me fala o melhor dia e horário para você que eu confiro na agenda e reservo o seu benefício.",
+    resp_birthday_request:
+      "Oi! Feliz aniversário! Me fala o melhor dia e horário para você, dentro do mês do seu aniversário, que eu confiro na agenda e reservo o seu presente.",
+    resp_horario:
+      "Oi! Claro, me conta. Se precisar mudar o dia ou o horário, me fala qual fica melhor para você que eu vejo na agenda.",
+    resp_link_vencido: "Oi! Claro, já te mando um link novo para você entrar.",
   },
   loyalty: {
     card_size: 8,

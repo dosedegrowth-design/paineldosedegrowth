@@ -7,10 +7,11 @@ import { assertAdmin } from "@/lib/tayssa/auth/guards";
 import { hashToken, newToken, revokeAllSessions } from "@/lib/tayssa/auth/session";
 import { logAudit } from "@/lib/tayssa/audit";
 import { referralCode } from "@/lib/tayssa/codes";
-import { PASSWORD_TOKEN_DAYS, ROUTES, publicUrl } from "@/lib/tayssa/config";
-import { pedidoDeVip } from "@/lib/tayssa/rules";
+import { PASSWORD_TOKEN_DAYS, ROUTES, criteriosVip, publicUrl } from "@/lib/tayssa/config";
+import { getSettings } from "@/lib/tayssa/settings";
+import { pedidoDeVip, regraVipLegivel } from "@/lib/tayssa/rules";
 import { adminClientSchema, reviewSignupSchema } from "@/lib/tayssa/validation";
-import { MENSAGEM_CADASTRO_VIP_LIBERADO, MENSAGEM_SAUDACAO, renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
+import { mensagemDaSaudacao, whatsappUrl } from "@/lib/tayssa/whatsapp";
 import { BusinessError, bool, runAction, str } from "@/lib/tayssa/actions/_helpers";
 import type { ActionResult, UserRow, UserStatus } from "@/lib/tayssa/types";
 
@@ -298,16 +299,22 @@ export async function adminReviewSignupAction(input: { id: string; vip: boolean 
     });
     revalidateAdmin();
 
-    // a saudação pronta: aprovou o VIP, o recado do VIP (o padrão da Gabi); senão, as boas-vindas
-    const welcomeUrl = u.phone
-      ? whatsappUrl(
-          u.phone,
-          renderTemplate(parsed.vip ? MENSAGEM_CADASTRO_VIP_LIBERADO : MENSAGEM_SAUDACAO, {
-            name: (u.nickname ?? u.name).trim().split(/\s+/)[0],
-            url: publicUrl(ROUTES.login),
-          })
-        )
-      : null;
+    // a saudação pronta: aprovou o VIP, o recado do VIP (o padrão da Gabi); senão, a
+    // resposta pronta do cadastro (Configurações › Mensagens de WhatsApp, 28/11/2026)
+    const settings = u.phone ? await getSettings() : null;
+    const welcomeUrl =
+      u.phone && settings
+        ? whatsappUrl(
+            u.phone,
+            mensagemDaSaudacao({
+              vip: parsed.vip,
+              respCadastro: settings.whatsapp.resp_cadastro,
+              regra: regraVipLegivel(criteriosVip(settings.rules)),
+              name: (u.nickname ?? u.name).trim().split(/\s+/)[0],
+              url: publicUrl(ROUTES.login),
+            })
+          )
+        : null;
     return { vip: parsed.vip, welcomeUrl };
   });
 }

@@ -2169,6 +2169,83 @@ a.tya-kpi {
   background: var(--tya-line-soft);
 }
 
+/* Mensagens de WhatsApp (28/11/2026): cada recado que chega pelo site, com a
+   resposta pronta da Tayssa e o "Copiar resposta". Fechado, só o nome e onde
+   a cliente toca; aberto, o recado e a resposta. */
+.tya-wa {
+  border: 1px solid var(--tya-line-soft);
+  border-radius: var(--tya-radius-sm);
+  background: var(--tya-surface-2);
+}
+.tya-wa > summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  list-style: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.tya-wa > summary::-webkit-details-marker {
+  display: none;
+}
+.tya-wa > summary b {
+  grid-column: 1;
+  font-size: 14.5px;
+  color: var(--tya-ink);
+}
+.tya-wa > summary span {
+  grid-column: 1;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--tya-muted);
+}
+.tya-wa > summary::after {
+  content: "";
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  width: 8px;
+  height: 8px;
+  margin-right: 2px;
+  border-right: 1.5px solid var(--tya-muted);
+  border-bottom: 1.5px solid var(--tya-muted);
+  transform: rotate(-45deg);
+  transition: transform 160ms var(--tya-ease);
+}
+.tya-wa[open] > summary::after {
+  transform: rotate(45deg);
+}
+.tya-wa__corpo {
+  display: grid;
+  gap: 14px;
+  padding: 0 16px 16px;
+}
+/* o recado que o site escreve sozinho, como um balão da conversa */
+.tya-wa__chega {
+  display: grid;
+  gap: 6px;
+}
+.tya-wa__chega p {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--tya-line-soft);
+  border-radius: 12px 12px 12px 4px;
+  background: var(--tya-surface);
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--tya-ink);
+  white-space: pre-line;
+}
+.tya-wa__copiar {
+  justify-self: start;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tya-wa > summary::after {
+    transition: none;
+  }
+}
+
 /* catálogo de serviços: nome, descrição e dois números miúdos */
 .tya-grid--serv {
   grid-template-columns: minmax(150px, 2fr) minmax(170px, 3fr) minmax(0, 0.8fr) minmax(0, 0.7fr);

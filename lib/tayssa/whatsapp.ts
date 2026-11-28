@@ -36,9 +36,13 @@ export const MENSAGEM_VIP_INCLUIDA =
 /**
  * Cadastro VIP (Lucas, 09/11/2026; 12/11/2026: a conta já abre na hora, a
  * Tayssa só decide o VIP). A cliente avisa a Tayssa pelo botão da tela final.
+ * Desde 28/11/2026 não pede mais "aprova o meu VIP": fala dos horários e
+ * termina numa pergunta sobre a regra (Lucas: "vem como uma pergunta... aí a
+ * mensagem que a Tayssa vai responder já vai ser padrão", a `resp_cadastro`).
+ * `{visitas}` e `{dias}` saem de Configurações › VIP e regras gerais.
  */
 export const MENSAGEM_CADASTRO_FEITO =
-  "Oi, Tayssa, tudo bem? Aqui é {name}. Fiz o meu cadastro VIP no site. Pode aprovar o meu VIP?";
+  "Oi, Tayssa, tudo bem? Aqui é {name}. Fiz meu cadastro no site e já estou com a minha conta para marcar e acompanhar meus horários com você. Vi também como funciona o VIP: ele vem depois de {visitas} atendimentos seguidos em até {dias} dias, né?";
 
 /**
  * A Tayssa liberou como VIP quem fez o cadastro VIP no site (Lucas,
@@ -51,10 +55,29 @@ export const MENSAGEM_CADASTRO_VIP_LIBERADO =
 
 /**
  * Saudação para a cliente nova que não entrou no VIP (Lucas, 12/11/2026:
- * "para ela dar uma mensagem de saudação ali para a menina").
+ * "para ela dar uma mensagem de saudação ali para a menina"). Desde
+ * 28/11/2026 o botão manda a resposta pronta `resp_cadastro` (Configurações
+ * › Mensagens de WhatsApp); esta fica só para quando ela a deixar vazia.
  */
 export const MENSAGEM_SAUDACAO =
   "Oi, {name}! Aqui é a Tayssa. Que bom ter você aqui! Sua conta já está pronta: é só entrar com o seu WhatsApp e a senha que você criou para marcar seus horários. {url}";
+
+/** Uma resposta pronta como ela vai para a cliente: `{regra}` vira a regra do VIP de hoje. */
+export function respostaPronta(texto: string, regra: string): string {
+  return texto.replace(/\{regra\}/g, regra);
+}
+
+/**
+ * O "Mandar saudação no WhatsApp" da cliente nova: aprovou o VIP, o recado do
+ * VIP; senão, a resposta pronta do cadastro (a que responde a pergunta do
+ * recado dela), ou a saudação antiga se ela deixou essa resposta vazia.
+ */
+export function mensagemDaSaudacao(o: { vip: boolean; respCadastro: string; regra: string; name: string; url: string }): string {
+  if (o.vip) return renderTemplate(MENSAGEM_CADASTRO_VIP_LIBERADO, { name: o.name, url: o.url });
+  const resp = o.respCadastro.trim();
+  if (!resp) return renderTemplate(MENSAGEM_SAUDACAO, { name: o.name, url: o.url });
+  return renderTemplate(respostaPronta(resp, o.regra), { name: o.name, url: o.url });
+}
 
 export function whatsappUrl(phoneDigits: string, message?: string): string {
   const digits = phoneDigits.replace(/\D/g, "");

@@ -29,18 +29,22 @@ const STEP_OF: Record<Campo, number> = { name: 0, apelido: 0, phone: 0, password
  * WhatsApp, que é o login), a senha duas vezes e, se quiser, o aniversário
  * e um recado. A conta já nasce pronta para marcar horário (12/11/2026:
  * fora o VIP, não há o que aprovar); a tela final manda a cliente avisar a
- * Tayssa no WhatsApp para ela aprovar o VIP.
+ * Tayssa no WhatsApp. Desde 28/11/2026 o recado fala dos horários e termina
+ * perguntando da regra do VIP, e a Tayssa responde com a resposta pronta.
  */
 export function SignupExperience({
   open,
   whatsappTayssa,
   regraVip,
+  vip,
 }: {
   open: boolean;
   /** o WhatsApp da Tayssa (settings.business.whatsapp) */
   whatsappTayssa: string;
   /** "4 atendimentos em até 70 dias, com 15 a 20 dias entre um e outro" */
   regraVip: string;
+  /** os números da regra, para o recado do WhatsApp ("4 atendimentos seguidos em até 70 dias") */
+  vip: { visitas: number; dias: number };
 }) {
   const reduced = useReducedMotion();
   const [step, setStep] = useState(0);
@@ -142,7 +146,10 @@ export function SignupExperience({
   }
 
   if (done) {
-    const avisar = whatsappUrl(whatsappTayssa, renderTemplate(MENSAGEM_CADASTRO_FEITO, { name: done.firstName }));
+    const avisar = whatsappUrl(
+      whatsappTayssa,
+      renderTemplate(MENSAGEM_CADASTRO_FEITO, { name: done.firstName, visitas: vip.visitas, dias: vip.dias })
+    );
     return shell(
       <div className="tyl__done">
         <span className="tyl__done-mark" aria-hidden>
@@ -153,7 +160,7 @@ export function SignupExperience({
         <h1 className="tyl__title">
           Pronto, <em>{done.firstName}.</em>
         </h1>
-        <p className="tyl__sub">Sua conta está pronta: entre com o seu WhatsApp e a senha para marcar seus horários. E avise a Tayssa para ela aprovar o seu VIP.</p>
+        <p className="tyl__sub">Sua conta está pronta: entre com o seu WhatsApp e a senha para marcar e acompanhar seus horários.</p>
         <a href={avisar} target="_blank" rel="noopener noreferrer" className="tyl__submit">
           <WhatsAppIcon size={20} />
           Avisar a Tayssa no WhatsApp
@@ -161,7 +168,7 @@ export function SignupExperience({
         <div className="tyl__note" style={{ marginTop: 18 }}>
           <strong>Como você vira VIP</strong>
           <span>
-            Com {regraVip}. A Tayssa acompanha e confirma o seu VIP.
+            Com {regraVip}. Na sua conta você acompanha quanto falta, e quando completar a Tayssa ativa o seu VIP.
           </span>
         </div>
         <div className="tyl__foot">

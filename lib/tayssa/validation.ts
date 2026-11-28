@@ -355,6 +355,8 @@ export const birthdaySettingsSchema = z.object({
     .max(20, "No máximo 20 regras"),
 });
 
+const resposta = z.string().trim().max(700, "Use no máximo 700 caracteres");
+
 export const whatsappTemplatesSchema = z.object({
   public_schedule: z.string().trim().min(1).max(300),
   public_vip_info: z.string().trim().min(1).max(300),
@@ -364,6 +366,19 @@ export const whatsappTemplatesSchema = z.object({
   benefit_request: z.string().trim().min(1).max(300),
   birthday_request: z.string().trim().min(1).max(300),
   inactive_outreach: z.string().trim().min(1).max(300),
+  // as respostas prontas da Tayssa (28/11/2026): vazia pode, ela só some do "Copiar"
+  resp_public_schedule: resposta,
+  resp_agendamento: resposta,
+  resp_cadastro: resposta,
+  resp_public_vip_info: resposta,
+  resp_public_refer: resposta,
+  resp_falar: resposta,
+  resp_vip_support: resposta,
+  resp_vip_refer: resposta,
+  resp_benefit_request: resposta,
+  resp_birthday_request: resposta,
+  resp_horario: resposta,
+  resp_link_vencido: resposta,
 });
 
 // ---------------- Agenda (admin) ----------------

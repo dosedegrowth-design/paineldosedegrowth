@@ -110,7 +110,8 @@ export default async function SettingsAdminPage() {
   const beneficiosAtivos = benefits.filter((b) => b.active).length;
   const restricoesAtivas = blackouts.filter((b) => b.active).length;
   const dias = [...settings.booking.weekdays].sort((a, b) => a - b);
-  const botoes = Object.keys(settings.whatsapp).length;
+  // as respostas prontas da Tayssa que têm texto (28/11/2026)
+  const respostas = Object.entries(settings.whatsapp).filter(([k, v]) => k.startsWith("resp_") && v.trim()).length;
 
   return (
     <>
@@ -329,12 +330,19 @@ export default async function SettingsAdminPage() {
         titulo="Mensagens de WhatsApp"
         selo={
           <span className="tya-pill tya-pill--quiet">
-            {botoes} {plural(botoes, "botão", "botões")}
+            {respostas} {plural(respostas, "resposta pronta", "respostas prontas")}
           </span>
         }
-        efeito="O texto que já vem escrito quando alguém abre a conversa por um botão do site, do espaço da cliente ou daqui do painel."
+        efeito="O que a cliente manda quando toca num botão do site ou da conta dela, e a sua resposta pronta para cada recado. Abra o recado que chegou, toque em Copiar resposta e cole na conversa."
       >
-        <WhatsappForm value={settings.whatsapp} />
+        <WhatsappForm
+          value={settings.whatsapp}
+          vip={{
+            visitas: settings.rules.vip_visitas,
+            dias: settings.rules.vip_janela_dias,
+            regra: regraVipLegivel(criteriosVip(settings.rules)),
+          }}
+        />
       </Bloco>
 
       <Bloco

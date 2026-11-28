@@ -98,18 +98,11 @@ export async function updateBirthdaySettingsAction(_p: ActionResult | null, fd: 
 export async function updateWhatsappTemplatesAction(_p: ActionResult | null, fd: FormData): Promise<ActionResult> {
   return runAction("settings.whatsapp", async () => {
     const admin = await assertAdmin();
-    const keys = [
-      "public_schedule",
-      "public_vip_info",
-      "public_refer",
-      "vip_support",
-      "vip_refer",
-      "benefit_request",
-      "birthday_request",
-      "inactive_outreach",
-    ] as const;
+    // os recados e as respostas prontas: as chaves saem do próprio esquema
+    const keys = Object.keys(whatsappTemplatesSchema.shape);
+    // o formulário manda as quebras de linha como \r\n: guardadas como \n
     const input = whatsappTemplatesSchema.parse(
-      Object.fromEntries(keys.map((k) => [k, str(fd, k)]))
+      Object.fromEntries(keys.map((k) => [k, str(fd, k).replace(/\r\n?/g, "\n")]))
     );
     await saveSetting("whatsapp", input, admin.id);
     return undefined;

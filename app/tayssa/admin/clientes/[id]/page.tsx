@@ -9,14 +9,8 @@ import { getSettings } from "@/lib/tayssa/settings";
 import { andamentoVipLegivel, regraVipLegivel, toISODate, validadeDoAniversario } from "@/lib/tayssa/rules";
 import { cicloLegivel, criterioLegivel, currency, dateLong, dateShort, dateTime, faltaLegivel, isWithinHours, nowInBusinessTz, numero, plural } from "@/lib/tayssa/format";
 import { formatBrPhone } from "@/lib/tayssa/phone";
-import {
-  MENSAGEM_CADASTRO_VIP_LIBERADO,
-  MENSAGEM_SAUDACAO,
-  MENSAGEM_VIP_INCLUIDA,
-  renderTemplate,
-  whatsappUrl,
-} from "@/lib/tayssa/whatsapp";
-import { ROUTES, publicUrl } from "@/lib/tayssa/config";
+import { MENSAGEM_VIP_INCLUIDA, mensagemDaSaudacao, renderTemplate, whatsappUrl } from "@/lib/tayssa/whatsapp";
+import { ROUTES, criteriosVip, publicUrl } from "@/lib/tayssa/config";
 import { auditLabel } from "@/lib/tayssa/audit-labels";
 import type { ClientBenefitStatus, ReferralStatus, ServiceStatus, UserStatus, VipStatus } from "@/lib/tayssa/types";
 import {
@@ -153,6 +147,11 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                 WhatsApp
               </a>
             ) : null}
+            {/* o formulário dos dados mora no fim da ficha; daqui ela chega nele (28/11/2026:
+                "não tô conseguindo adicionar o sobrenome dela") */}
+            <a href="#dados" className="tya-btn tya-btn--ghost">
+              Editar nome e dados
+            </a>
             <TransitionLink href={ROUTES.adminClients} className="tya-btn tya-btn--ghost">
               Todas as clientes
             </TransitionLink>
@@ -337,7 +336,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                 <a
                   href={whatsappUrl(
                     user.phone,
-                    renderTemplate(vip === "active" ? MENSAGEM_CADASTRO_VIP_LIBERADO : MENSAGEM_SAUDACAO, {
+                    mensagemDaSaudacao({
+                      vip: vip === "active",
+                      respCadastro: settings.whatsapp.resp_cadastro,
+                      regra: regraVipLegivel(criteriosVip(settings.rules)),
                       name: first,
                       url: publicUrl(ROUTES.login),
                     })
@@ -716,7 +718,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
       </AdminBlock>
 
       {/* ---------- dados e histórico ---------- */}
-      <AdminBlock title="Dados">
+      <AdminBlock title="Dados" id="dados">
         <ClientEditForm user={user} profile={profile} />
         {profile?.notes ? (
           <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid var(--tya-line-soft)" }}>

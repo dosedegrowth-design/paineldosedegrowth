@@ -17,8 +17,8 @@ export const metadata: Metadata = {
 
 /**
  * Cadastro VIP (Lucas, 09/11/2026): toda cliente pode se cadastrar. A conta
- * espera a Tayssa liberar no painel; liberada, ela marca os horários e, com
- * a sequência de atendimentos da regra, a Tayssa confirma o VIP.
+ * abre na hora (12/11/2026) e ela já marca os horários; com a sequência de
+ * atendimentos da regra, a Tayssa confirma o VIP.
  */
 export default async function SignupPage() {
   const [user, settings] = await Promise.all([getSessionUser(), getSettings()]);
@@ -28,6 +28,7 @@ export default async function SignupPage() {
       open={settings.signup.open}
       whatsappTayssa={settings.business.whatsapp}
       regraVip={regraVipLegivel(criteriosVip(settings.rules))}
+      vip={{ visitas: settings.rules.vip_visitas, dias: settings.rules.vip_janela_dias }}
     />
   );
 }

@@ -23,6 +23,7 @@ import { formatBrPhone } from "@/lib/tayssa/phone";
 import { dateShort } from "@/lib/tayssa/format";
 import { duracaoLegivel, horariosDaSemana, reais } from "@/lib/tayssa/agendar";
 import { horariosDoDia, mesesDoMarco } from "@/lib/tayssa/rules";
+import { MENSAGEM_CADASTRO_FEITO, MENSAGENS_DA_AGENDA, renderTemplate, respostaPronta } from "@/lib/tayssa/whatsapp";
 import { Area, Campo, Marcar, useFormPreservado } from "@/components/tayssa/admin/forms";
 import { ActionButton } from "@/components/tayssa/admin/controls";
 import { Icone } from "@/components/tayssa/admin/icons";
@@ -277,57 +278,169 @@ export function BirthdayForm({ value }: { value: Settings["birthday"] }) {
 }
 
 /* ------------------------------------------------------------------
-   Mensagens de WhatsApp
+   Mensagens de WhatsApp: o que a cliente manda e a resposta da Tayssa
+   (Lucas, 28/11/2026: "todas as mensagens vão ter que ter a que a cliente
+   manda, pra Tayssa saber, e a resposta genérica que ela tem que dar").
+   Cada recado que chega pelo site vem com a resposta pronta dela ao lado,
+   para copiar e colar na conversa. O recado montado pelo próprio site
+   (agendamento, cadastro…) aparece como chega, sem campo.
    ------------------------------------------------------------------ */
 
-type WaCampo = { key: keyof Settings["whatsapp"]; label: string; marcas?: string };
+type WaChave = keyof Settings["whatsapp"];
+type WaPar = {
+  titulo: string;
+  /** onde a cliente toca para mandar */
+  onde: string;
+  /** o recado dela: um campo daqui ou o texto que o site monta sozinho */
+  cliente: { campo: WaChave; marcas?: string } | { fixo: string };
+  /** uma linha a mais embaixo do recado */
+  clienteNota?: string;
+  /** a resposta pronta; sem ela, a mensagem sai daqui (não chega) */
+  resposta?: WaChave;
+  respostaNota?: string;
+};
 
-const WA_GRUPOS: { titulo: string; campos: WaCampo[] }[] = [
-  {
-    titulo: "Pelo site",
-    campos: [
-      { key: "public_schedule", label: "Agendar" },
-      { key: "public_vip_info", label: "Quero saber do VIP" },
-      { key: "public_refer", label: "Indicar" },
-    ],
-  },
-  {
-    titulo: "Pelo espaço da cliente",
-    campos: [
-      { key: "vip_support", label: "Falar com você", marcas: "{name}" },
-      { key: "vip_refer", label: "Indicar" },
-      { key: "benefit_request", label: "Agendar benefício", marcas: "{name}, {benefit}" },
-      { key: "birthday_request", label: "Aniversário", marcas: "{name}" },
-    ],
-  },
-  {
-    titulo: "Daqui do painel",
-    campos: [{ key: "inactive_outreach", label: "Chamar cliente inativa", marcas: "{name}" }],
-  },
-];
+function gruposDoWhatsapp(vip: { visitas: number; dias: number }): { titulo: string; pares: WaPar[] }[] {
+  return [
+    {
+      titulo: "Chega pelo site",
+      pares: [
+        {
+          titulo: "Agendamento feito",
+          onde: "Depois de agendar e anexar o comprovante, com o cartão do horário em foto",
+          cliente: { fixo: "Oi, Tayssa, tudo bem? Aqui é {nome}. Fiz meu agendamento pelo site." },
+          clienteNota: "Embaixo vêm o serviço, o dia, o horário, o valor e o sinal, um em cada linha.",
+          resposta: "resp_agendamento",
+          respostaNota: "Conferiu o Pix? Em Agenda, toque em Confirmar: a mensagem de confirmação abre pronta.",
+        },
+        {
+          titulo: "Cadastro feito",
+          onde: "Fim do cadastro, em Avisar a Tayssa no WhatsApp",
+          cliente: { fixo: renderTemplate(MENSAGEM_CADASTRO_FEITO, { name: "{nome}", visitas: vip.visitas, dias: vip.dias }) },
+          resposta: "resp_cadastro",
+          respostaNota: "É também a do Mandar saudação no WhatsApp, quando você não aprova o VIP.",
+        },
+        { titulo: "Agendar", onde: "Agendar, quando a folha de agendar não abre no aparelho dela", cliente: { campo: "public_schedule" }, resposta: "resp_public_schedule" },
+        { titulo: "Indicar", onde: "Fim da indicação pelo site, em Avisar a Tayssa", cliente: { campo: "public_refer" }, resposta: "resp_public_refer" },
+        { titulo: "Falar com a Tayssa", onde: "Tela de entrar (quem esqueceu a senha costuma vir por aqui)", cliente: { fixo: MENSAGENS_DA_AGENDA.falar }, resposta: "resp_falar" },
+        { titulo: "Link de acesso vencido", onde: "Tela de entrar, quando o link que você mandou venceu", cliente: { fixo: MENSAGENS_DA_AGENDA.linkVencido }, resposta: "resp_link_vencido" },
+        {
+          titulo: "Sobre um horário",
+          onde: "Página do horário, o link que vai na conversa",
+          cliente: { fixo: "Oi, Tayssa! Sobre o meu horário de {dia} às {hora}:" },
+          clienteNota: "E o que ela escrever depois.",
+          resposta: "resp_horario",
+        },
+        { titulo: "Quero saber do VIP", onde: "Falar com a Tayssa, quando a área VIP está aberta a todas", cliente: { campo: "public_vip_info" }, resposta: "resp_public_vip_info" },
+      ],
+    },
+    {
+      titulo: "Chega pela conta da cliente",
+      pares: [
+        {
+          titulo: "Falar com você",
+          onde: "Botão do WhatsApp no alto da conta",
+          cliente: { campo: "vip_support", marcas: "{name}" },
+          clienteNota: `Quem não é VIP manda: ${MENSAGENS_DA_AGENDA.falarComNome.replace("{name}", "{nome}")}`,
+          resposta: "resp_vip_support",
+        },
+        { titulo: "Agendar benefício", onde: "Benefícios, na conta VIP", cliente: { campo: "benefit_request", marcas: "{name}, {benefit}" }, resposta: "resp_benefit_request" },
+        { titulo: "Aniversário", onde: "Presente de aniversário, na conta VIP", cliente: { campo: "birthday_request", marcas: "{name}" }, resposta: "resp_birthday_request" },
+        { titulo: "Indicar", onde: "Indicar, na conta VIP", cliente: { campo: "vip_refer" }, resposta: "resp_vip_refer" },
+      ],
+    },
+    {
+      titulo: "Sai daqui do painel",
+      pares: [{ titulo: "Chamar cliente inativa", onde: "Chamar, nas clientes que sumiram", cliente: { campo: "inactive_outreach", marcas: "{name}" } }],
+    },
+  ];
+}
 
-export function WhatsappForm({ value }: { value: Settings["whatsapp"] }) {
+/** Copia a resposta como está no campo agora, com a regra do VIP no lugar do {regra}. */
+function CopiarResposta({ campo, regra }: { campo: string; regra: string }) {
+  const [copiada, setCopiada] = useState(false);
+  return (
+    <button
+      type="button"
+      className="tya-btn tya-btn--sm tya-btn--dark tya-wa__copiar"
+      onClick={async () => {
+        const area = document.getElementById(`f-${campo}`) as HTMLTextAreaElement | null;
+        const texto = respostaPronta(area?.value.trim() ?? "", regra);
+        if (!texto) return;
+        try {
+          await navigator.clipboard.writeText(texto);
+          setCopiada(true);
+          setTimeout(() => setCopiada(false), 1800);
+        } catch {
+          // sem permissão de copiar: deixa o texto selecionado para ela copiar na mão
+          area?.focus();
+          area?.select();
+        }
+      }}
+    >
+      {copiada ? "Resposta copiada" : "Copiar resposta"}
+    </button>
+  );
+}
+
+export function WhatsappForm({ value, vip }: { value: Settings["whatsapp"]; vip: { visitas: number; dias: number; regra: string } }) {
   const [state, onSubmit, pending] = useAcaoFormulario<ActionResult | null>(updateWhatsappTemplatesAction, null);
   const { onReset } = useFormPreservado();
+  const grupos = gruposDoWhatsapp(vip);
   return (
     <form onSubmit={onSubmit} noValidate onReset={onReset} className="tya-stack" style={{ gap: 22 }}>
-      {WA_GRUPOS.map((g) => (
+      {grupos.map((g) => (
         <div key={g.titulo} className="tya-set">
           <span className="tya-set__t">
             <span className="tya-eyebrow">{g.titulo}</span>
           </span>
-          {g.campos.map((f) => (
-            <Area
-              key={f.key}
-              label={f.label}
-              name={f.key}
-              rows={2}
-              defaultValue={value[f.key]}
-              maxLength={300}
-              error={erroDe(state, f.key)}
-              hint={f.marcas ? `Troca sozinho: ${f.marcas}` : undefined}
-            />
-          ))}
+          {g.pares.map((par) => {
+            const chaveCliente = "campo" in par.cliente ? par.cliente.campo : null;
+            // erro num campo de dentro: o cartão já abre mostrando
+            const comErro = Boolean((chaveCliente && erroDe(state, chaveCliente)) || (par.resposta && erroDe(state, par.resposta)));
+            return (
+              <details key={`${g.titulo}-${par.titulo}`} className="tya-wa" {...(comErro ? { open: true } : {})}>
+                <summary>
+                  <b>{par.titulo}</b>
+                  <span>{par.onde}</span>
+                </summary>
+                <div className="tya-wa__corpo">
+                  {"campo" in par.cliente ? (
+                    <Area
+                      label={par.resposta ? "A cliente manda" : "Você manda"}
+                      name={par.cliente.campo}
+                      rows={2}
+                      defaultValue={value[par.cliente.campo]}
+                      maxLength={300}
+                      error={erroDe(state, par.cliente.campo)}
+                      hint={[par.clienteNota, par.cliente.marcas ? `Troca sozinho: ${par.cliente.marcas}` : null].filter(Boolean).join(" ") || undefined}
+                    />
+                  ) : (
+                    <div className="tya-wa__chega">
+                      <span className="tya-label">A cliente manda</span>
+                      <p>{par.cliente.fixo}</p>
+                      <small className="tya-small">{par.clienteNota ? `${par.clienteNota} ` : ""}O site escreve sozinho.</small>
+                    </div>
+                  )}
+                  {par.resposta ? (
+                    <>
+                      <Area
+                        label="Sua resposta"
+                        name={par.resposta}
+                        // a resposta inteira à vista no celular (cerca de 34 letras por linha)
+                        rows={Math.min(10, Math.max(3, Math.ceil(value[par.resposta].length / 34)))}
+                        defaultValue={value[par.resposta]}
+                        maxLength={700}
+                        error={erroDe(state, par.resposta)}
+                        hint={[par.respostaNota, value[par.resposta].includes("{regra}") ? `{regra} vira: ${vip.regra}.` : null].filter(Boolean).join(" ") || undefined}
+                      />
+                      <CopiarResposta campo={par.resposta} regra={vip.regra} />
+                    </>
+                  ) : null}
+                </div>
+              </details>
+            );
+          })}
         </div>
       ))}
       <Salvar state={state} pending={pending}>

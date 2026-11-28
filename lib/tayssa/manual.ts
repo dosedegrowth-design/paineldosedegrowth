@@ -12,7 +12,7 @@
  */
 import type { IconeNome } from "@/components/tayssa/admin/icons";
 
-export const MANUAL_ATUALIZADO_EM = "2026-11-17";
+export const MANUAL_ATUALIZADO_EM = "2026-11-28";
 
 export type ImagemDoManual = {
   src: string;
@@ -435,7 +435,7 @@ export const MANUAL: CategoriaDoManual[] = [
         titulo: "O que tem na ficha da cliente",
         onde: ["Clientes", "a ficha"],
         texto:
-          "No alto, os números (pontos, atendimentos, indicações, benefícios, aniversário, pendências). Depois: *Quem é ela*, *Acesso e VIP*, *Pontos, marcos e VIP*, *Aniversário*, *Resumo do relacionamento* (atendimentos, primeira e última visita, frequência, total gasto, valores pagos, horários à frente, cancelados e faltas), *Atendimentos* (cada um com o pagamento), *Benefícios*, *Indicações feitas por ela*, *Dados* e o *Histórico de ações*. O botão *WhatsApp* no alto abre a conversa com ela.",
+          "No alto, os números (pontos, atendimentos, indicações, benefícios, aniversário, pendências). Depois: *Quem é ela*, *Acesso e VIP*, *Pontos, marcos e VIP*, *Aniversário*, *Resumo do relacionamento* (atendimentos, primeira e última visita, frequência, total gasto, valores pagos, horários à frente, cancelados e faltas), *Atendimentos* (cada um com o pagamento), *Benefícios*, *Indicações feitas por ela*, *Dados* e o *Histórico de ações*. O botão *WhatsApp* no alto abre a conversa com ela, e *Editar nome e dados* leva direto ao bloco *Dados*.",
       },
       {
         id: "novas",
@@ -444,7 +444,7 @@ export const MANUAL: CategoriaDoManual[] = [
         passos: [
           "Quando alguém faz o cadastro no site, chega o aviso *Nova cliente* e ela aparece em *Novas clientes*. A conta dela já funciona: ela já marca horário.",
           "Abra a ficha. No alto, o cartão *Nova cliente* tem dois botões: *Aprovar VIP* (vira VIP) ou *Não aprovar* (continua cliente comum).",
-          "Depois, toque em *Mandar saudação no WhatsApp*: a mensagem certa já vem pronta para cada caso.",
+          "Depois, toque em *Mandar saudação no WhatsApp*: a mensagem certa já vem pronta para cada caso. Sem o VIP, vai a sua resposta pronta do *Cadastro feito*, que responde a pergunta do VIP que ela manda.",
         ],
         dica: "Não aprovou agora? Ela ainda pode virar VIP pela sequência de atendimentos ou pelo *Incluir no VIP* da ficha.",
         imagem: {
@@ -471,10 +471,11 @@ export const MANUAL: CategoriaDoManual[] = [
         titulo: "Atualizar os dados da cliente",
         onde: ["Clientes", "a ficha", "Dados"],
         passos: [
-          "Na ficha, desça até *Dados*.",
+          "Na ficha, toque em *Editar nome e dados*, no alto (ou desça até *Dados*).",
           "Mude nome, apelido, e-mail, WhatsApp, aniversário ou *Notas internas* (só você vê).",
           "Toque em *Salvar*.",
         ],
+        dica: "Quem se cadastra pelo site às vezes põe só o primeiro nome: o sobrenome que ela mandar no WhatsApp entra em *Nome completo*.",
       },
       {
         id: "registrar",
@@ -537,16 +538,19 @@ export const MANUAL: CategoriaDoManual[] = [
         id: "mensagens-prontas",
         titulo: "As mensagens prontas do WhatsApp",
         texto:
-          "O painel não manda nada sozinho: ele monta a mensagem e abre a conversa da cliente no WhatsApp, e você só confere e envia. As principais: *Pedir o sinal no WhatsApp* (Agenda), a mensagem de confirmação (abre ao *Confirmar*), *Mandar saudação no WhatsApp* (cliente nova), *Avisar no WhatsApp* (quando você inclui no VIP), *Enviar pelo WhatsApp* (link de acesso) e *Chamar* (inativas).",
+          "O painel não manda nada sozinho: ele monta a mensagem e abre a conversa da cliente no WhatsApp, e você só confere e envia. As principais: *Pedir o sinal no WhatsApp* (Agenda), a mensagem de confirmação (abre ao *Confirmar*), *Mandar saudação no WhatsApp* (cliente nova), *Avisar no WhatsApp* (quando você inclui no VIP), *Enviar pelo WhatsApp* (link de acesso) e *Chamar* (inativas). E cada recado que chega pelo site tem a sua resposta pronta para copiar (veja “Respostas prontas”).",
       },
       {
         id: "editar-mensagens",
-        titulo: "Mudar os textos das mensagens",
+        titulo: "Respostas prontas e os textos das mensagens",
         onde: ["Configurações", "Mensagens de WhatsApp"],
         passos: [
-          "Em *Configurações* › *Mensagens de WhatsApp*, edite os textos de *Pelo site*, *Pelo espaço da cliente* e *Daqui do painel*.",
-          "Toque em *Salvar mensagens*.",
+          "Em *Configurações* › *Mensagens de WhatsApp*, cada cartão é um recado: *Chega pelo site*, *Chega pela conta da cliente* e *Sai daqui do painel*.",
+          "Toque no cartão do recado que chegou: em cima, o que a cliente manda; embaixo, *Sua resposta*.",
+          "Toque em *Copiar resposta* e cole na conversa dela no WhatsApp.",
+          "Quer mudar um texto? Escreva no campo e toque em *Salvar mensagens*.",
         ],
+        dica: "Na resposta, *{regra}* vira a regra do VIP de hoje (a de *VIP e regras gerais*). Os recados que o site escreve sozinho, como o do agendamento e o do cadastro, aparecem só para você saber; a resposta deles você muda.",
       },
       {
         id: "novidades",
@@ -1057,8 +1061,8 @@ export const MANUAL: CategoriaDoManual[] = [
         passos: [
           "Ela toca em *Fazer meu cadastro VIP* (na parte VIP do site ou na tela de entrar).",
           "Preenche em três passos: nome, como quer ser chamada e WhatsApp; a senha duas vezes; e, se quiser, o aniversário e como conheceu você.",
-          "A conta já nasce pronta para marcar horário. No fim, ela pode tocar em *Avisar a Tayssa no WhatsApp*.",
-          "Você recebe o aviso de cliente nova e decide: *Aprovar VIP* ou *Não aprovar* (veja “Cliente nova”, em Clientes).",
+          "A conta já nasce pronta para marcar horário. No fim, ela pode tocar em *Avisar a Tayssa no WhatsApp*: o recado diz que ela fez o cadastro para marcar e acompanhar os horários e pergunta se o VIP vem depois de 4 atendimentos seguidos em até 70 dias.",
+          "Você recebe o aviso de cliente nova e decide: *Aprovar VIP* ou *Não aprovar* (veja “Cliente nova”, em Clientes). A resposta para ela está pronta em *Configurações* › *Mensagens de WhatsApp* › *Cadastro feito*.",
         ],
       },
       {
